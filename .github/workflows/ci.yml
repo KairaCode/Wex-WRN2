@@ -37,6 +37,7 @@ jobs:
         with:
           msystem: UCRT64
           update: false
-          install: git mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-python
+          # libgomp.a ships in its own package in current MSYS2; without it -fopenmp links fail
+          install: git mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-libgomp mingw-w64-ucrt-x86_64-python
       - name: All CPU checks
         run: bash scripts/check_all.sh
