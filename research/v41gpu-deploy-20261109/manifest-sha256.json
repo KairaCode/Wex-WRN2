@@ -1,0 +1,41 @@
+{
+  "created": "2026-11-09",
+  "git_commit": "cfb7ea0 (src/colibri/c clean; 6be34da included)",
+  "method": "build map recommendation: the W3-measured ws-ab binaries as they are, not a fresh build_native.ps1 build. ws-ab/c sources are byte-identical to git HEAD cfb7ea0 for every engine source (checked deepseek_v4.c, deepseek_v4_internal.h, backend_cuda_dsv4.cu/.h, backend_loader_dsv4.c, dsv4.def, Makefile.deepseek-v4, wex_decode.c, expert_store_wex.c, v4_route_tap.c; diff -rq finds only build outputs). exe: make -f Makefile.deepseek-v4 Windows defaults (-O3 -march=x86-64-v3 -flto -DCOLI_V4_GPU_TIER) with C:/msys64/ucrt64 gcc (imports UCRT api-ms-win-crt-*, like qwen38/qwen36/deepseek_v41.exe; 11-07 used mingw64/msvcrt). DLLs: build_native.ps1 nvcc recipes (ws-ab/dll-out/build-dll.cmd, build-dg-dll.cmd; dg = sm_120a + DeepGEMM), 110 exports each incl. dsv4_cuda_upload_fp8_ex/set_act_group/upload_head_exact/head_scores_exact; imports only cublasLt64_13.dll + KERNEL32 (cudart static). nvcc DLL hashes are not reproducible by rebuild.",
+  "not_replaced": {
+    "kaira_wex_cuda.dll": "a79772004426c38fe2ed1196d27cb4e17a52512c0368d5bb71b86b2e3286b049 (same bridge source as W3 cceb4fb5; already exports wex_cuda_decode_batch_to_device)",
+    "coli_cuda.dll": "kept by rule (installed one exports 6 symbols the src build lacks)",
+    "KAIRA.exe/KAIRA.dll": "no host change needed (COLI_FAMILY_ENGINE=deepseek_v4 switch already in app/KAIRA.dll)"
+  },
+  "install_rule": "deepseek_v4.exe and both coli_cuda_dsv4*.dll go in together (the new exports are optional in the loader: the new exe with old DLLs loads but silently loses the V4.1 G1/G3 GPU paths)",
+  "artifacts": {
+    "deepseek_v4.exe": {
+      "bytes": 1586846,
+      "sha256": "7a6f3e3f30e608c900af35f7d2ea13a0d81a6432c295693e465f6351a9b7459f",
+      "source": "<KAIRA>/lab/v41-port-20261106/ws-ab/bin/deepseek_v4.exe",
+      "install_to": "app/colibri-optimized/deepseek_v4.exe",
+      "replaces_sha256": "041dbb2d3cfdbb202aa08f06e6345f74e93ab75af6c621634a4aeede39ec4ab2"
+    },
+    "coli_cuda_dsv4_dg.dll": {
+      "bytes": 4976640,
+      "sha256": "b1b7cdb518d2f309371602efbe58c48736574962caa1ef9b7a12af81f12e404b",
+      "source": "<KAIRA>/lab/v41-port-20261106/ws-ab/dll-out/coli_cuda_dsv4_dg.dll",
+      "install_to": "app/colibri-optimized/coli_cuda_dsv4_dg.dll",
+      "replaces_sha256": "c736e424247c7cefaf4c20ae3b8ec7c4482ddd15dbf9ddd2c43b3d8350023aa6"
+    },
+    "coli_cuda_dsv4.dll": {
+      "bytes": 2997760,
+      "sha256": "5483b6a774c2bab892809d7561a434936d1bc3803ac46e9877c03e3b5320fc52",
+      "source": "<KAIRA>/lab/v41-port-20261106/ws-ab/dll-out/coli_cuda_dsv4.dll",
+      "install_to": "app/colibri-optimized/coli_cuda_dsv4.dll",
+      "replaces_sha256": "21b51095c5e85ec4b74127f2b43de2a50b7211c164af0d3edf0d78cf5995a1aa"
+    },
+    "mcp_server.py": {
+      "bytes": 20218,
+      "sha256": "2d5126b1d490f751b2279a91057897f02af85792376e76b7a5593273a00a4629",
+      "source": "git show cfb7ea0:src/colibri/c/mcp_server.py (6be34da change)",
+      "install_to": "app/colibri-optimized/mcp_server.py",
+      "replaces_sha256": "6f0db98206110876db3d092ea907fd7b668c2961dea5fd2b2868e6991e486e8f"
+    }
+  }
+}

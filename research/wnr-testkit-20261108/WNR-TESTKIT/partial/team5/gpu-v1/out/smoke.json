@@ -1,0 +1,393 @@
+{
+ "info": {
+  "gpu": "NVIDIA GeForce RTX 3070",
+  "sms": 46,
+  "clock_khz_max": 1755000,
+  "smem_per_sm": 102400,
+  "regs_per_sm": 65536,
+  "driver": 13050,
+  "runtime": 12090,
+  "cupy": "14.2.0",
+  "rounds": 5,
+  "nts": [
+   32
+  ],
+  "opts": [
+   "lb"
+  ]
+ },
+ "nvsmi_start": "210 MHz, 405 MHz, 0 %, 17.33 W, 37.34",
+ "original_bytes": {
+  "files": [
+   "L04_E038.bin",
+   "L00_E097.bin",
+   "L10_E015.bin",
+   "L20_E005.bin",
+   "L30_E002.bin",
+   "L39_E156.bin",
+   "L15_E025.bin",
+   "L25_E000.bin"
+  ],
+  "sha256_ok": 8,
+  "eq_encoder_raw": true,
+  "eq_encoder_scales": true,
+  "eq_team4_common_raw": true,
+  "eq_team4_common_scales": true
+ },
+ "compile_s": 0.10519528388977051,
+ "h32_gpu": {
+  "empty_seed0": "0x00000000",
+  "empty_seedWNR3": "0xE7F741F1",
+  "bytes00_0F": "0x31CE0919",
+  "weight_vector_h23": "0x0C48D3",
+  "random_4096x528B_gpu_eq_numpy": 4096,
+  "pass": true
+ },
+ "scale_decode": {
+  "S_t4o/nt32": {
+   "kernel": "sdec<32>",
+   "nt": 32,
+   "regs": 78,
+   "local_bytes": 0,
+   "static_smem": 16912,
+   "occ_blocks_per_sm": 5,
+   "bad_streams": 0,
+   "bad_streams_out2": 0,
+   "errors": 0,
+   "rec1_bad": 0,
+   "rec1_err": 0,
+   "multi_bad": 0,
+   "multi_err": 0,
+   "byte_exact": true,
+   "streams": 17280
+  },
+  "S_t4c/nt32": {
+   "kernel": "sdec<32>",
+   "nt": 32,
+   "regs": 78,
+   "local_bytes": 0,
+   "static_smem": 16912,
+   "occ_blocks_per_sm": 5,
+   "bad_streams": 0,
+   "bad_streams_out2": 0,
+   "errors": 0,
+   "rec1_bad": 0,
+   "rec1_err": 0,
+   "multi_bad": 0,
+   "multi_err": 0,
+   "byte_exact": true,
+   "streams": 17280
+  },
+  "SG/nt32": {
+   "kernel": "sdec3<32,0,0,0,0>",
+   "nt": 32,
+   "regs": 78,
+   "local_bytes": 0,
+   "static_smem": 16912,
+   "occ_blocks_per_sm": 5,
+   "bad_streams": 0,
+   "bad_streams_out2": 0,
+   "errors": 0,
+   "rec1_bad": 0,
+   "rec1_err": 0,
+   "multi_bad": 0,
+   "multi_err": 0,
+   "byte_exact": true,
+   "streams": 17280
+  },
+  "SH/nt32": {
+   "kernel": "sdec3<32,1,0,0,0>",
+   "nt": 32,
+   "regs": 80,
+   "local_bytes": 0,
+   "static_smem": 16912,
+   "occ_blocks_per_sm": 5,
+   "bad_streams": 0,
+   "bad_streams_out2": 0,
+   "errors": 0,
+   "rec1_bad": 0,
+   "rec1_err": 0,
+   "multi_bad": 0,
+   "multi_err": 0,
+   "byte_exact": true,
+   "streams": 17280
+  },
+  "SL/nt32": {
+   "kernel": "sdec3<32,0,1,0,0>",
+   "nt": 32,
+   "regs": 83,
+   "local_bytes": 0,
+   "static_smem": 16912,
+   "occ_blocks_per_sm": 5,
+   "bad_streams": 0,
+   "bad_streams_out2": 0,
+   "errors": 0,
+   "rec1_bad": 0,
+   "rec1_err": 0,
+   "multi_bad": 0,
+   "multi_err": 0,
+   "byte_exact": true,
+   "streams": 17280
+  },
+  "SHL/nt32": {
+   "kernel": "sdec3<32,1,1,0,0>",
+   "nt": 32,
+   "regs": 83,
+   "local_bytes": 0,
+   "static_smem": 16912,
+   "occ_blocks_per_sm": 5,
+   "bad_streams": 0,
+   "bad_streams_out2": 0,
+   "errors": 0,
+   "rec1_bad": 0,
+   "rec1_err": 0,
+   "multi_bad": 0,
+   "multi_err": 0,
+   "byte_exact": true,
+   "streams": 17280
+  },
+  "SHLd/nt32": {
+   "kernel": "sdec3<32,1,1,1,0>",
+   "nt": 32,
+   "regs": 83,
+   "local_bytes": 0,
+   "static_smem": 16912,
+   "occ_blocks_per_sm": 5,
+   "bad_streams": 0,
+   "bad_streams_out2": 0,
+   "errors": 0,
+   "rec1_bad": 0,
+   "rec1_err": 0,
+   "multi_bad": 0,
+   "multi_err": 0,
+   "byte_exact": true,
+   "streams": 17280
+  },
+  "SGd/nt32": {
+   "kernel": "sdec3<32,0,0,1,0>",
+   "nt": 32,
+   "regs": 78,
+   "local_bytes": 0,
+   "static_smem": 16912,
+   "occ_blocks_per_sm": 5,
+   "bad_streams": 0,
+   "bad_streams_out2": 0,
+   "errors": 0,
+   "rec1_bad": 0,
+   "rec1_err": 0,
+   "multi_bad": 0,
+   "multi_err": 0,
+   "byte_exact": true,
+   "streams": 17280
+  }
+ },
+ "weight": {
+  "nt32/lb": {
+   "A259": {
+    "kernel": "wdec<16,1,0,32,0>",
+    "regs": 74,
+    "local_bytes": 0,
+    "smem_per_block": 8304,
+    "occ_blocks_per_sm": 10,
+    "occ_warps_per_sm": 10,
+    "weight_bad_streams": 0,
+    "scale_bad_streams": 0,
+    "errors": 0,
+    "byte_exact_vs_original": true,
+    "multistream_recheck": {
+     "weight_bad_streams": 0,
+     "scale_bad_streams": 0,
+     "errors": 0
+    },
+    "m1_recheck": {
+     "weight_bad_streams": 0,
+     "scale_bad_streams": 0,
+     "errors": 0
+    },
+    "m3_recheck": {
+     "weight_bad_streams": 0,
+     "scale_bad_streams": 0,
+     "errors": 0
+    },
+    "all_exact": true
+   },
+   "CF5": {
+    "kernel": "wdec<16,1,0,32,5>",
+    "regs": 76,
+    "local_bytes": 0,
+    "smem_per_block": 8304,
+    "occ_blocks_per_sm": 10,
+    "occ_warps_per_sm": 10,
+    "weight_bad_streams": 0,
+    "scale_bad_streams": 0,
+    "errors": 0,
+    "byte_exact_vs_original": true,
+    "multistream_recheck": {
+     "weight_bad_streams": 0,
+     "scale_bad_streams": 0,
+     "errors": 0
+    },
+    "m1_recheck": {
+     "weight_bad_streams": 0,
+     "scale_bad_streams": 0,
+     "errors": 0
+    },
+    "m3_recheck": {
+     "weight_bad_streams": 0,
+     "scale_bad_streams": 0,
+     "errors": 0
+    },
+    "all_exact": true
+   },
+   "G5": {
+    "kernel": "wdec3<32,0,0,5,0>",
+    "regs": 78,
+    "local_bytes": 0,
+    "smem_per_block": 8304,
+    "occ_blocks_per_sm": 10,
+    "occ_warps_per_sm": 10,
+    "weight_bad_streams": 0,
+    "scale_bad_streams": 0,
+    "errors": 0,
+    "byte_exact_vs_original": true,
+    "multistream_recheck": {
+     "weight_bad_streams": 0,
+     "scale_bad_streams": 0,
+     "errors": 0
+    },
+    "m1_recheck": {
+     "weight_bad_streams": 0,
+     "scale_bad_streams": 0,
+     "errors": 0
+    },
+    "m3_recheck": {
+     "weight_bad_streams": 0,
+     "scale_bad_streams": 0,
+     "errors": 0
+    },
+    "all_exact": true
+   },
+   "G5H": {
+    "kernel": "wdec3<32,1,0,5,0>",
+    "regs": 78,
+    "local_bytes": 0,
+    "smem_per_block": 8304,
+    "occ_blocks_per_sm": 10,
+    "occ_warps_per_sm": 10,
+    "weight_bad_streams": 0,
+    "scale_bad_streams": 0,
+    "errors": 0,
+    "byte_exact_vs_original": true,
+    "multistream_recheck": {
+     "weight_bad_streams": 0,
+     "scale_bad_streams": 0,
+     "errors": 0
+    },
+    "m1_recheck": {
+     "weight_bad_streams": 0,
+     "scale_bad_streams": 0,
+     "errors": 0
+    },
+    "m3_recheck": {
+     "weight_bad_streams": 0,
+     "scale_bad_streams": 0,
+     "errors": 0
+    },
+    "all_exact": true
+   },
+   "G5L": {
+    "kernel": "wdec3<32,0,1,5,0>",
+    "regs": 81,
+    "local_bytes": 0,
+    "smem_per_block": 8416,
+    "occ_blocks_per_sm": 10,
+    "occ_warps_per_sm": 10,
+    "weight_bad_streams": 0,
+    "scale_bad_streams": 0,
+    "errors": 0,
+    "byte_exact_vs_original": true,
+    "multistream_recheck": {
+     "weight_bad_streams": 0,
+     "scale_bad_streams": 0,
+     "errors": 0
+    },
+    "m1_recheck": {
+     "weight_bad_streams": 0,
+     "scale_bad_streams": 0,
+     "errors": 0
+    },
+    "m3_recheck": {
+     "weight_bad_streams": 0,
+     "scale_bad_streams": 0,
+     "errors": 0
+    },
+    "all_exact": true
+   },
+   "G5HL": {
+    "kernel": "wdec3<32,1,1,5,0>",
+    "regs": 80,
+    "local_bytes": 0,
+    "smem_per_block": 8416,
+    "occ_blocks_per_sm": 10,
+    "occ_warps_per_sm": 10,
+    "weight_bad_streams": 0,
+    "scale_bad_streams": 0,
+    "errors": 0,
+    "byte_exact_vs_original": true,
+    "multistream_recheck": {
+     "weight_bad_streams": 0,
+     "scale_bad_streams": 0,
+     "errors": 0
+    },
+    "m1_recheck": {
+     "weight_bad_streams": 0,
+     "scale_bad_streams": 0,
+     "errors": 0
+    },
+    "m3_recheck": {
+     "weight_bad_streams": 0,
+     "scale_bad_streams": 0,
+     "errors": 0
+    },
+    "all_exact": true
+   },
+   "NC_inverse_off": {
+    "kernel": "wdec3<32,1,1,0,0>",
+    "weight_bad_streams": 138240,
+    "scale_bad_streams": 138240,
+    "errors": 0,
+    "streams": 138240
+   },
+   "NC_hash_off": {
+    "kernel": "wdec3<32,0,1,5,0>",
+    "weight_bad_streams": 0,
+    "scale_bad_streams": 0,
+    "errors": 138240,
+    "streams": 138240
+   },
+   "NC_hash_on_plain": {
+    "kernel": "wdec3<32,1,0,5,0>",
+    "weight_bad_streams": 0,
+    "scale_bad_streams": 0,
+    "errors": 138240,
+    "streams": 138240
+   },
+   "NC_wrong_model_id": {
+    "kernel": "wdec3<32,1,1,5,0>",
+    "weight_bad_streams": 0,
+    "scale_bad_streams": 0,
+    "errors": 138240,
+    "streams": 138240
+   },
+   "NC_wrong_flags_ident": {
+    "kernel": "wdec3<32,1,1,5,0>",
+    "weight_bad_streams": 0,
+    "scale_bad_streams": 0,
+    "errors": 138240,
+    "streams": 138240
+   }
+  }
+ },
+ "weight_all_exact": true,
+ "nvsmi_end": "2070 MHz, 6801 MHz, 53 %, 43.73 W, 41.69"
+}

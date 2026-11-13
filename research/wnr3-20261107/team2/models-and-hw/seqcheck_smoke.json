@@ -1,0 +1,20 @@
+{
+ "train": [
+  "L00_E097.bin",
+  "L39_E137.bin"
+ ],
+ "test": [
+  "L00_E113.bin"
+ ],
+ "K": 4,
+ "bpw_no_flush": {
+  "table80_ideal": 3.7619694573506997,
+  "table80_q14": 3.7619723772039264,
+  "tableNtr_ideal": 3.7855936662255494,
+  "latent_seq_float": NaN,
+  "latent_seq_q14": 3.7067327735304767,
+  "runctx_ideal": 3.788669008194855,
+  "runctx_q14": 3.788609609659681
+ },
+ "runctx_rows": 2688
+}

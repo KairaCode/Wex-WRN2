@@ -1,0 +1,65 @@
+{
+ "mma_f16": {
+  "random A (20000 tiles), C=+0: differing D": 0,
+  "random A (20000 tiles), C=-0: differing D": 0,
+  "random A (20000 tiles), C=random: differing D": 0,
+  "all-zero A (random signs vs +0), C=+0: differing D": 0,
+  "all-zero A (random signs), C=+0: D==-0 count / D==+0 count": [
+   0,
+   2560000
+  ],
+  "all-zero A (+0), C=+0: D==-0 count / D==+0 count": [
+   0,
+   2560000
+  ],
+  "all-zero A (random signs vs +0), C=-0: differing D": 0,
+  "all-zero A (random signs), C=-0: D==-0 count / D==+0 count": [
+   0,
+   2560000
+  ],
+  "all-zero A (+0), C=-0: D==-0 count / D==+0 count": [
+   0,
+   2560000
+  ],
+  "A all -0, B all >0 (every product -0), C=+0: D==-0 / D==+0": [
+   0,
+   2560000
+  ],
+  "A all -0, B all >0 (every product -0), C=-0: D==-0 / D==+0": [
+   0,
+   2560000
+  ]
+ },
+ "mma_bf16": {
+  "random A (20000 tiles), C=+0: differing D": 0,
+  "random A (20000 tiles), C=-0: differing D": 0,
+  "random A (20000 tiles), C=random: differing D": 0,
+  "all-zero A (random signs vs +0), C=+0: differing D": 0,
+  "all-zero A (random signs), C=+0: D==-0 count / D==+0 count": [
+   0,
+   2560000
+  ],
+  "all-zero A (+0), C=+0: D==-0 count / D==+0 count": [
+   0,
+   2560000
+  ],
+  "all-zero A (random signs vs +0), C=-0: differing D": 0,
+  "all-zero A (random signs), C=-0: D==-0 count / D==+0 count": [
+   0,
+   2560000
+  ],
+  "all-zero A (+0), C=-0: D==-0 count / D==+0 count": [
+   0,
+   2560000
+  ],
+  "A all -0, B all >0 (every product -0), C=+0: D==-0 / D==+0": [
+   0,
+   2560000
+  ],
+  "A all -0, B all >0 (every product -0), C=-0: D==-0 / D==+0": [
+   0,
+   2560000
+  ]
+ },
+ "device": "NVIDIA GeForce RTX 3070"
+}

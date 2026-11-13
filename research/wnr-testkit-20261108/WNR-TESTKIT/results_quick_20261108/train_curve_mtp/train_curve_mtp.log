@@ -1,0 +1,109 @@
+[     0.2s] == train_curve_mtp (quick) root=<KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT out=<KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\results\train_curve_mtp jobs=15
+[     0.2s] environment {"os": "Windows-11-10.0.26300-SP0", "system": "Windows", "machine": "AMD64", "cpu": "AMD Ryzen 9 7950X3D 16-Core Processor", "logical_cpus": 32, "ram_gb": 31.2, "gpu": ["NVIDIA GeForce RTX 5090, 621.01, 32607 MiB, 12.0"], "python": "3.14.8", "python_impl": "CPython", "numpy": "2.5.4", "cupy": {"cupy-cuda12x": "14.2.0"}, "nvrtc": {"nvidia-cuda-nvrtc-cu12": "12.9.86"}}
+[     0.2s] sample dir <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\data\v41-sample: 160/160 experts present, manifest = kit
+[     0.2s] extra dir <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\data\extra: 76/76 experts present, manifest = kit
+[     0.2s] counts: 46 experts (cache <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\results\_cache\cpu_counts)
+[     5.7s] count 1/46 done (6s)
+[     5.8s] count 2/46 done (6s)
+[     5.8s] count 3/46 done (6s)
+[     5.9s] count 4/46 done (6s)
+[     5.9s] count 5/46 done (6s)
+[     5.9s] count 6/46 done (6s)
+[     6.0s] count 7/46 done (6s)
+[     6.0s] count 8/46 done (6s)
+[     6.0s] count 9/46 done (6s)
+[     6.1s] count 10/46 done (6s)
+[     6.1s] count 11/46 done (6s)
+[     6.1s] count 12/46 done (6s)
+[     6.2s] count 13/46 done (6s)
+[     6.2s] count 14/46 done (6s)
+[     6.2s] count 15/46 done (6s)
+[    11.1s] count 16/46 done (11s)
+[    11.1s] count 17/46 done (11s)
+[    11.2s] count 18/46 done (11s)
+[    11.3s] count 19/46 done (11s)
+[    11.3s] count 20/46 done (11s)
+[    11.4s] count 21/46 done (11s)
+[    11.4s] count 22/46 done (11s)
+[    11.5s] count 23/46 done (11s)
+[    11.5s] count 24/46 done (11s)
+[    11.5s] count 25/46 done (11s)
+[    11.6s] count 26/46 done (11s)
+[    11.6s] count 27/46 done (11s)
+[    11.6s] count 28/46 done (11s)
+[    11.7s] count 29/46 done (11s)
+[    11.7s] count 30/46 done (12s)
+[    16.3s] count 31/46 done (16s)
+[    16.4s] count 32/46 done (16s)
+[    16.5s] count 33/46 done (16s)
+[    16.5s] count 34/46 done (16s)
+[    16.6s] count 35/46 done (16s)
+[    16.6s] count 36/46 done (16s)
+[    16.6s] count 37/46 done (16s)
+[    16.7s] count 38/46 done (16s)
+[    16.7s] count 39/46 done (17s)
+[    16.7s] count 40/46 done (17s)
+[    16.8s] count 41/46 done (17s)
+[    16.8s] count 42/46 done (17s)
+[    16.8s] count 43/46 done (17s)
+[    16.8s] count 44/46 done (17s)
+[    16.8s] count 45/46 done (17s)
+[    18.0s] count 46/46 done (18s)
+[    18.1s] check sources_sha256: ok 46/46
+[    18.1s] check no_test_leakage: ok {'n_test': 8, 'n_pool': 32, 'n_mtp': 6, 'pool_layer_expert_overlap_with_test': 0, 'pool_duplicate_layer_expert': 0, 'pool_sha_overlap_with_test': 0, 'pool_duplicate_sha': 0, 'pool_sample': 16, 'pool_extra_routed': 16, 'roundtrip_fail': 0, 'ceil_not_applicable': 0, 'pool_per_layer': [2, 0, 2, 0, 0, 2, 0, 0, 2, 0, 2, 0, 0, 2, 0, 0, 2, 0, 2, 0, 0, 2, 0, 2, 0, 0, 2, 0, 0, 2, 0, 2, 0, 0, 2, 0, 1, 1, 0, 2]}
+[    18.1s] check ceil_roundtrip_all_matrices: ok
+[    18.2s] curve: arrays for 40 experts x 4 families (0s)
+[    18.2s] curve: N 10 done (0s)
+[    18.3s] curve: N 20 done (0s)
+[    18.3s] curve: N 32 done (0s)
+[    18.5s] curve random fg0           10:0.88227 20:0.88222 32:0.88225
+[    18.5s] curve random wnr2          10:0.90211 20:0.90154 32:0.90138
+[    18.5s] curve random d_fg0_wnr2    10:-1.98399 20:-1.93185 32:-1.91321
+[    18.5s] curve random d_fg0_wnr2g0  10:-1.55230 20:-1.54937 32:-1.54957
+[    18.5s] curve strat  fg0           10:0.88235 32:0.88225
+[    18.5s] curve strat  wnr2          10:0.90301 32:0.90138
+[    18.5s] curve strat  d_fg0_wnr2    10:-2.06616 32:-1.91321
+[    18.5s] curve strat  d_fg0_wnr2g0  10:-1.55324 32:-1.54957
+[    18.6s] mtp est WNR2 routed model (median anchors)                                                                   mean 1.0932 stored 0.9970 raw#3
+[    18.6s] mtp est WNR2-g0 routed model (anchor 120)                                                                    mean 1.0981 stored 1.0000 raw#6
+[    18.6s] mtp est (i) ceil, routed set, anchor 120 (g0)                                                                mean 1.0954 stored 1.0000 raw#6
+[    18.6s] mtp est (i) ceil, routed set (190 pool), anchor 120                                                          mean 1.1372 stored 1.0000 raw#6
+[    18.6s] mtp est (ii) ceil, routed set, per-matrix densest-pair anchor                                                mean 1.0617 stored 0.9835 raw#3
+[    18.6s] mtp est (ii-b) ceil, routed set g0 tables, MTP densest-pair anchor                                           mean 1.0584 stored 0.9838 raw#3
+[    18.6s] mtp est WNR2 MTP-own model (LOO, median anchors)                                                             mean 0.8897 stored 0.8897 raw#0
+[    18.6s] mtp est (iii) ceil, MTP-own set (LOO), per-matrix densest pair                                               mean 0.8733 stored 0.8733 raw#0
+[    18.6s] mtp est (iii) ceil, MTP-own set (LOO), per-matrix median                                                     mean 0.8784 stored 0.8784 raw#0
+[    18.6s] mtp est (iii) ceil, MTP-own set (LOO), constant 120                                                          mean 0.8694 stored 0.8694 raw#0
+[    18.6s] mtp est (iii) ceil, MTP-own set (LOO), constant anchor0 = mode of densest pair                               mean 0.8724 stored 0.8724 raw#0
+[    18.6s] mtp est (iv-K2) routed g0 set + MTP-own set (LOO), constant anchor0 = mode of densest pair, per-matrix choice mean 0.8724 stored 0.8724 raw#0
+[    18.6s] mtp est (iv-K2) routed g0 set + MTP-own set (LOO), per-matrix densest pair, per-matrix choice                mean 0.8733 stored 0.8733 raw#0
+[    18.6s] mtp est WNR2 MTP-own model (LOLO, median anchors)                                                            mean 0.8991 stored 0.8991 raw#0
+[    18.6s] mtp est (iii) ceil, MTP-own set (LOLO), per-matrix densest pair                                              mean 0.8802 stored 0.8802 raw#0
+[    18.6s] mtp est (iii) ceil, MTP-own set (LOLO), per-matrix median                                                    mean 0.8916 stored 0.8916 raw#0
+[    18.6s] mtp est (iii) ceil, MTP-own set (LOLO), constant 120                                                         mean 0.8842 stored 0.8842 raw#0
+[    18.6s] mtp est (iii) ceil, MTP-own set (LOLO), constant anchor0 = mode of densest pair                              mean 0.8870 stored 0.8870 raw#0
+[    18.6s] mtp est (iv-K2) routed g0 set + MTP-own set (LOLO), constant anchor0 = mode of densest pair, per-matrix choice mean 0.8870 stored 0.8870 raw#0
+[    18.6s] mtp est (iv-K2) routed g0 set + MTP-own set (LOLO), per-matrix densest pair, per-matrix choice               mean 0.8802 stored 0.8802 raw#0
+[    18.6s] mtp side check {"routed_test_matrices_picking_mtp_set": 0, "of": 24, "bytes_gained_total": 0.0} (0s)
+[    18.8s] real records: 8 payload jobs, 9 models, 15 workers
+[    23.2s] record 1/8 done (4s)
+[    23.2s] S_L00_E113 wnr2 pool190: total 16900096 ratio 0.89891 anchors [120, 120, 120] exact True real-est +23.5
+[    24.0s] record 2/8 done (5s)
+[    24.0s] S_L00_E113 fg0 pool190: total 16572416 ratio 0.88148 anchors [120, 120, 120] exact True real-est +25.6
+[    24.6s] record 3/8 done (6s)
+[    24.6s] X_M00_E001 fg0 routed (i): total 19210240 ratio 1.02179 anchors [120, 120, 120] exact True real-est +3655.7
+[    24.7s] record 4/8 done (6s)
+[    24.7s] X_M00_E001 fg MTP-own LOO, densest pair: total 15773696 ratio 0.83900 anchors [114, 121, 114] exact True real-est -80.7
+[    24.8s] record 5/8 done (6s)
+[    24.8s] X_M00_E001 fg MTP-own LOO, 120: total 15912960 ratio 0.84641 anchors [120, 120, 120] exact True real-est -32.0
+[    24.9s] record 6/8 done (6s)
+[    24.9s] X_M01_E024 fg MTP-own LOO, densest pair: total 17252352 ratio 0.91765 anchors [122, 122, 122] exact True real-est +58.9
+[    25.1s] record 7/8 done (6s)
+[    25.1s] X_M01_E024 fg0 routed (i): total 21696512 ratio 1.15403 anchors [120, 120, 120] exact True real-est +245.7
+[    25.2s] record 8/8 done (6s)
+[    25.2s] X_M01_E024 fg MTP-own LOO, 120: total 17137664 ratio 0.91155 anchors [120, 120, 120] exact True real-est +80.5
+[    25.2s] check real_records_decode_byte_exact: ok {'records': 8, 'bad': []}
+[    25.2s] check real_records_equal_team5_spot: ok {'compared': 4, 'equal': 4, 'diff': []}
+[    25.2s] real records done (7s): MTP mean stored ratio {"fg MTP-own LOO, 120": 0.8789760348583878, "fg MTP-own LOO, densest pair": 0.878322440087146, "fg0 routed (i)": 1.0, "K2 real-composed: routed g0 + fg MTP-own LOO, densest pair": 0.878322440087146, "K2 real-composed: routed g0 + fg MTP-own LOO, 120": 0.8789760348583878}
+[    25.2s] summary <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\results\train_curve_mtp\summary.json
+RESULT train_curve_mtp PASS fg0-wnr2 @N=32 -1.913%raw; MTP best est (iii) ceil, MTP-own set (LOO), constant 120 0.8694; MTP real fg MTP-own LOO, 120 0.8790, fg MTP-own LOO, densest pair 0.8783, fg0 routed (i) 1.0000, K2 real-composed: routed g0 + fg MTP-own LOO, densest pair 0.8783, K2 real-composed: routed g0 + fg MTP-own LOO, 120 0.8790

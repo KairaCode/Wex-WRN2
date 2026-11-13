@@ -1,0 +1,106 @@
+== r9subreads A1  words: V4_WEX_SUBREADS=
+A1  ready    18 s  prompt   657  ttft  115.2 s
+    [OMP] deepseek-v4: 16 compute threads (the physical cores of 32 logical CPUs; the 3 expert-loader workers take the SMT siblings); OMP_NUM_THREADS=<n> overrides, COLI_NO_OMP_TUNE=1 disables
+    ram_plan os_available=16.866GiB + gpu_preflight=0.303GiB = 17.169GiB (the RAM the plan saw before the early GPU check)
+    ram_tiers available=15.00GiB dense=resident(6.65GiB) target_slots=8 target_cache=5.60GiB head=gpu-bf16 projected=14.43GiB
+    [wex] Neural CUDA reconstruction enabled: <KAIRA>\lab\gpu-miss-20261112\rel6-v41\kaira_wex_cuda.dll
+    [v4_wex] value-exact (canonical-zero) container
+    [v4_wex] WEX4 container (hashed header and index)
+    [v4_wex] WEX4 first-read SHA-256 of every record: on
+    [v4_wex] Container v3 WNR3 value-exact active: U:\kaira_wex\v41-reap\v4_flash_experts.nr3.wex (40 layers, 192 experts, 18800640 decoded bytes/expert, direct_io=on)
+    [v4_wex] value-exact (canonical-zero) container
+    [v4_wex] WEX4 container (hashed header and index)
+    [v4_wex] Matching mirror container active: C:\kaira_wex\v41-reap\v4_flash_experts.nr3.wex
+    [v4_wex] read split over 2 drives: 38% 62%
+    v4_ssd_io mode=wex-direct-aligned fallback=buffered-pread
+    [v4_wex] GPU-direct Neural-rANS reconstruction enabled: VRAM-first misses outside RAM skip the host slab; the next-layer prefetcher loads them to VRAM too
+    v41_prefill chunk=1024 pool=host (chunk-major; the MoE union runs on host slots, or on the GPU prefill bank with V41_GPU_MOE=1)
+    v41_attn path=gpu-decode projections=gpu (layer 0; prefill rows: cpu)
+    v41_moe path=cpu-union experts=192 hidden=5120 moe=2304 topk=6 (every row without expert mirrors, else prefill and multi-slot rows; the GPU route is V4-only, the GPU prefill bank needs V41_GPU_MOE=1 a
+    v4_ckpt store prefix=636
+    v4_ckpt disk write prefix=636
+    v4_ckpt store prompt_end=656
+    v41_moe decode=gpu-pipeline (VRAM expert mirrors, act_quant per 32); prefill and multi-slot rows keep the cpu union
+    [v4_wex] V4_WEX_BATCH=1: a layer's WNR2 misses are decoded in one batch call, the prefetcher's same-layer guesses too
+== r9subreads B1  words: V4_WEX_SUBREADS=4
+B1  ready    18 s  prompt   657  ttft  116.2 s
+    [OMP] deepseek-v4: 16 compute threads (the physical cores of 32 logical CPUs; the 3 expert-loader workers take the SMT siblings); OMP_NUM_THREADS=<n> overrides, COLI_NO_OMP_TUNE=1 disables
+    ram_plan os_available=18.171GiB + gpu_preflight=0.305GiB = 18.476GiB (the RAM the plan saw before the early GPU check)
+    ram_tiers available=15.00GiB dense=resident(6.65GiB) target_slots=8 target_cache=5.60GiB head=gpu-bf16 projected=14.43GiB
+    [wex] Neural CUDA reconstruction enabled: <KAIRA>\lab\gpu-miss-20261112\rel6-v41\kaira_wex_cuda.dll
+    [v4_wex] value-exact (canonical-zero) container
+    [v4_wex] WEX4 container (hashed header and index)
+    [v4_wex] WEX4 first-read SHA-256 of every record: on
+    [v4_wex] Container v3 WNR3 value-exact active: U:\kaira_wex\v41-reap\v4_flash_experts.nr3.wex (40 layers, 192 experts, 18800640 decoded bytes/expert, direct_io=on)
+    [v4_wex] value-exact (canonical-zero) container
+    [v4_wex] WEX4 container (hashed header and index)
+    [v4_wex] Matching mirror container active: C:\kaira_wex\v41-reap\v4_flash_experts.nr3.wex
+    [v4_wex] read split over 2 drives: 38% 62%
+    v4_ssd_io mode=wex-direct-aligned fallback=buffered-pread
+    [v4_wex] GPU-direct Neural-rANS reconstruction enabled: VRAM-first misses outside RAM skip the host slab; the next-layer prefetcher loads them to VRAM too
+    v41_prefill chunk=1024 pool=host (chunk-major; the MoE union runs on host slots, or on the GPU prefill bank with V41_GPU_MOE=1)
+    v41_attn path=gpu-decode projections=gpu (layer 0; prefill rows: cpu)
+    v41_moe path=cpu-union experts=192 hidden=5120 moe=2304 topk=6 (every row without expert mirrors, else prefill and multi-slot rows; the GPU route is V4-only, the GPU prefill bank needs V41_GPU_MOE=1 a
+    v4_ckpt store prefix=636
+    v4_ckpt disk write prefix=636
+    v4_ckpt store prompt_end=656
+    v41_moe decode=gpu-pipeline (VRAM expert mirrors, act_quant per 32); prefill and multi-slot rows keep the cpu union
+    [v4_wex] V4_WEX_BATCH=1: a layer's WNR2 misses are decoded in one batch call, the prefetcher's same-layer guesses too
+    [v4_wex] V4_WEX_SUBREADS=4: each drive's part of a record read as up to 4 sub-reads, records cut across primary and mirror
+== r9subreads B2  words: V4_WEX_SUBREADS=4
+B2  ready    18 s  prompt   657  ttft  118.7 s
+    [OMP] deepseek-v4: 16 compute threads (the physical cores of 32 logical CPUs; the 3 expert-loader workers take the SMT siblings); OMP_NUM_THREADS=<n> overrides, COLI_NO_OMP_TUNE=1 disables
+    ram_plan os_available=17.467GiB + gpu_preflight=0.297GiB = 17.764GiB (the RAM the plan saw before the early GPU check)
+    ram_tiers available=15.00GiB dense=resident(6.65GiB) target_slots=8 target_cache=5.60GiB head=gpu-bf16 projected=14.43GiB
+    [wex] Neural CUDA reconstruction enabled: <KAIRA>\lab\gpu-miss-20261112\rel6-v41\kaira_wex_cuda.dll
+    [v4_wex] value-exact (canonical-zero) container
+    [v4_wex] WEX4 container (hashed header and index)
+    [v4_wex] WEX4 first-read SHA-256 of every record: on
+    [v4_wex] Container v3 WNR3 value-exact active: U:\kaira_wex\v41-reap\v4_flash_experts.nr3.wex (40 layers, 192 experts, 18800640 decoded bytes/expert, direct_io=on)
+    [v4_wex] value-exact (canonical-zero) container
+    [v4_wex] WEX4 container (hashed header and index)
+    [v4_wex] Matching mirror container active: C:\kaira_wex\v41-reap\v4_flash_experts.nr3.wex
+    [v4_wex] read split over 2 drives: 38% 62%
+    v4_ssd_io mode=wex-direct-aligned fallback=buffered-pread
+    [v4_wex] GPU-direct Neural-rANS reconstruction enabled: VRAM-first misses outside RAM skip the host slab; the next-layer prefetcher loads them to VRAM too
+    v41_prefill chunk=1024 pool=host (chunk-major; the MoE union runs on host slots, or on the GPU prefill bank with V41_GPU_MOE=1)
+    v41_attn path=gpu-decode projections=gpu (layer 0; prefill rows: cpu)
+    v41_moe path=cpu-union experts=192 hidden=5120 moe=2304 topk=6 (every row without expert mirrors, else prefill and multi-slot rows; the GPU route is V4-only, the GPU prefill bank needs V41_GPU_MOE=1 a
+    v4_ckpt store prefix=636
+    v4_ckpt disk write prefix=636
+    v4_ckpt store prompt_end=656
+    v41_moe decode=gpu-pipeline (VRAM expert mirrors, act_quant per 32); prefill and multi-slot rows keep the cpu union
+    [v4_wex] V4_WEX_BATCH=1: a layer's WNR2 misses are decoded in one batch call, the prefetcher's same-layer guesses too
+    [v4_wex] V4_WEX_SUBREADS=4: each drive's part of a record read as up to 4 sub-reads, records cut across primary and mirror
+== r9subreads A2  words: V4_WEX_SUBREADS=
+A2  ready    18 s  prompt   657  ttft  115.5 s
+    [OMP] deepseek-v4: 16 compute threads (the physical cores of 32 logical CPUs; the 3 expert-loader workers take the SMT siblings); OMP_NUM_THREADS=<n> overrides, COLI_NO_OMP_TUNE=1 disables
+    ram_plan os_available=17.921GiB + gpu_preflight=0.300GiB = 18.221GiB (the RAM the plan saw before the early GPU check)
+    ram_tiers available=15.00GiB dense=resident(6.65GiB) target_slots=8 target_cache=5.60GiB head=gpu-bf16 projected=14.43GiB
+    [wex] Neural CUDA reconstruction enabled: <KAIRA>\lab\gpu-miss-20261112\rel6-v41\kaira_wex_cuda.dll
+    [v4_wex] value-exact (canonical-zero) container
+    [v4_wex] WEX4 container (hashed header and index)
+    [v4_wex] WEX4 first-read SHA-256 of every record: on
+    [v4_wex] Container v3 WNR3 value-exact active: U:\kaira_wex\v41-reap\v4_flash_experts.nr3.wex (40 layers, 192 experts, 18800640 decoded bytes/expert, direct_io=on)
+    [v4_wex] value-exact (canonical-zero) container
+    [v4_wex] WEX4 container (hashed header and index)
+    [v4_wex] Matching mirror container active: C:\kaira_wex\v41-reap\v4_flash_experts.nr3.wex
+    [v4_wex] read split over 2 drives: 38% 62%
+    v4_ssd_io mode=wex-direct-aligned fallback=buffered-pread
+    [v4_wex] GPU-direct Neural-rANS reconstruction enabled: VRAM-first misses outside RAM skip the host slab; the next-layer prefetcher loads them to VRAM too
+    v41_prefill chunk=1024 pool=host (chunk-major; the MoE union runs on host slots, or on the GPU prefill bank with V41_GPU_MOE=1)
+    v41_attn path=gpu-decode projections=gpu (layer 0; prefill rows: cpu)
+    v41_moe path=cpu-union experts=192 hidden=5120 moe=2304 topk=6 (every row without expert mirrors, else prefill and multi-slot rows; the GPU route is V4-only, the GPU prefill bank needs V41_GPU_MOE=1 a
+    v4_ckpt store prefix=636
+    v4_ckpt disk write prefix=636
+    v4_ckpt store prompt_end=656
+    v41_moe decode=gpu-pipeline (VRAM expert mirrors, act_quant per 32); prefill and multi-slot rows keep the cpu union
+    [v4_wex] V4_WEX_BATCH=1: a layer's WNR2 misses are decoded in one batch call, the prefetcher's same-layer guesses too
+A1 ready 18 s  ttft 115.2 s  decode 3.60 tok/s  prompt 657  gen 75 (stop)  avail_min 3.20 GB  vram_max 30887 MiB  V4_WEX_SUBREADS= 
+B1 ready 18 s  ttft 116.2 s  decode 3.90 tok/s  prompt 657  gen 75 (stop)  avail_min 3.94 GB  vram_max 30846 MiB  V4_WEX_SUBREADS=4 
+B2 ready 18 s  ttft 118.7 s  decode 3.87 tok/s  prompt 657  gen 75 (stop)  avail_min 3.09 GB  vram_max 30484 MiB  V4_WEX_SUBREADS=4 
+A2 ready 18 s  ttft 115.5 s  decode 3.61 tok/s  prompt 657  gen 75 (stop)  avail_min 3.80 GB  vram_max 30729 MiB  V4_WEX_SUBREADS= 
+VERDICT r9subreads: TTFT B/A +1.8 % (A 115.19/115.50, B 116.15/118.71 s)
+VERDICT r9subreads: decode B/A +7.7 % (A 3.60/3.61, B 3.90/3.87 tok/s)
+VERDICT r9subreads: text identical: yes (A1 B1 B2 A2)
+VERDICT r9subreads: avail_min A/B 3.20/3.09 GB

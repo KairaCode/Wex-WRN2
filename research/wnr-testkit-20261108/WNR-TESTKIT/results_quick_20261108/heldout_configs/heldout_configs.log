@@ -1,0 +1,101 @@
+[     0.2s] == heldout_configs (quick) root=<KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT out=<KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\results\heldout_configs jobs=15
+[     0.2s] environment {"os": "Windows-11-10.0.26300-SP0", "system": "Windows", "machine": "AMD64", "cpu": "AMD Ryzen 9 7950X3D 16-Core Processor", "logical_cpus": 32, "ram_gb": 31.2, "gpu": ["NVIDIA GeForce RTX 5090, 621.01, 32607 MiB, 12.0"], "python": "3.14.8", "python_impl": "CPython", "numpy": "2.5.4", "cupy": {"cupy-cuda12x": "14.2.0"}, "nvrtc": {"nvidia-cuda-nvrtc-cu12": "12.9.86"}}
+[     0.2s] sample dir <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\data\v41-sample: 160/160 experts present, manifest = kit
+[     0.2s] sample <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\data\v41-sample experts 160
+[     0.3s] check test_set_matches_reference: ok {'n_test_run': 4, 'test_run': [1, 55, 105, 159]}
+[     0.3s] models: shipped reference models (team 4 ceil-ref even.npz)
+[     0.3s] encode/decode: 4 experts x 7 payload configs = 28 jobs on 15 workers
+[     5.5s] record 1/28 done (5s)
+[     5.5s] L00_E113.bin wnr2    total 16887808 used 16885201 ok True err None enc 2.421s dec 2.083s
+[     6.3s] record 2/28 done (6s)
+[     6.3s] L00_E113.bin f       total 16572416 used 16570526 ok True err None enc 2.865s dec 2.391s
+[     8.2s] record 3/28 done (8s)
+[     8.2s] L13_E167.bin wnr2    total 16904192 used 16901334 ok True err None enc 2.984s dec 2.264s
+[     9.0s] record 4/28 done (9s)
+[     9.0s] L00_E113.bin fg0     total 16572416 used 16569576 ok True err None enc 2.965s dec 2.471s
+[     9.0s] L00_E113.bin fg0d    total 16547840 used 16544052 ok True err None enc 2.998s dec 2.141s
+[     9.1s] record 5/28 done (9s)
+[     9.1s] L13_E167.bin f       total 16588800 used 16588767 ok True err None enc 3.349s dec 2.448s
+[     9.9s] record 6/28 done (10s)
+[     9.9s] L00_E113.bin fg0e    total 16572416 used 16570932 ok True err None enc 3.226s dec 2.62s
+[     9.9s] L00_E113.bin fg0de   total 16547840 used 16545412 ok True err None enc 3.253s dec 2.332s
+[    10.1s] record 7/28 done (10s)
+[    10.1s] L00_E113.bin fg0t    total 16531456 used 16529309 ok True err None enc 3.265s dec 2.44s
+[    10.1s] L00_E113.bin fg0dt   total 16506880 used 16503849 ok True err None enc 3.299s dec 2.37s
+[    10.4s] record 8/28 done (10s)
+[    10.4s] L00_E113.bin fg0c    total 16052224 used 16051069 ok True err None enc 3.149s dec 2.493s
+[    10.4s] L00_E113.bin fg0cd   total 16027648 used 16025921 ok True err None enc 3.187s dec 2.477s
+[    10.7s] record 9/28 done (10s)
+[    10.7s] L26_E077.bin wnr2    total 16838656 used 16834983 ok True err None enc 2.827s dec 2.336s
+[    11.4s] record 10/28 done (11s)
+[    11.4s] L26_E077.bin f       total 16535552 used 16533927 ok True err None enc 3.195s dec 2.45s
+[    11.9s] record 11/28 done (12s)
+[    11.9s] L00_E113.bin fg0ce   total 16056320 used 16052393 ok True err None enc 3.57s dec 2.603s
+[    11.9s] L00_E113.bin fg0cde  total 16027648 used 16027257 ok True err None enc 3.603s dec 3.078s
+[    12.0s] record 12/28 done (12s)
+[    12.0s] L13_E167.bin fg0     total 16588800 used 16588476 ok True err None enc 3.399s dec 2.308s
+[    12.0s] L13_E167.bin fg0d    total 16564224 used 16563608 ok True err None enc 3.425s dec 2.503s
+[    13.1s] record 13/28 done (13s)
+[    13.1s] L13_E167.bin fg0t    total 16551936 used 16548384 ok True err None enc 3.566s dec 2.518s
+[    13.1s] L13_E167.bin fg0dt   total 16527360 used 16523512 ok True err None enc 3.59s dec 2.495s
+[    13.3s] record 14/28 done (13s)
+[    13.3s] L13_E167.bin fg0e    total 16592896 used 16589857 ok True err None enc 3.533s dec 2.676s
+[    13.3s] L13_E167.bin fg0de   total 16568320 used 16564997 ok True err None enc 3.556s dec 2.936s
+[    13.8s] record 15/28 done (13s)
+[    13.8s] L13_E167.bin fg0c    total 16076800 used 16075576 ok True err None enc 3.328s dec 2.702s
+[    13.8s] L13_E167.bin fg0cd   total 16052224 used 16051012 ok True err None enc 3.364s dec 2.773s
+[    14.2s] record 16/28 done (14s)
+[    14.2s] L13_E167.bin fg0ce   total 16080896 used 16076904 ok True err None enc 3.474s dec 2.78s
+[    14.2s] L13_E167.bin fg0cde  total 16056320 used 16052364 ok True err None enc 3.502s dec 2.574s
+[    14.6s] record 17/28 done (14s)
+[    14.6s] L26_E077.bin fg0     total 16535552 used 16533097 ok True err None enc 2.998s dec 2.733s
+[    14.6s] L26_E077.bin fg0d    total 16506880 used 16505865 ok True err None enc 3.03s dec 2.236s
+[    14.9s] record 18/28 done (15s)
+[    14.9s] L39_E156.bin wnr2    total 17563648 used 17561612 ok True err None enc 2.829s dec 1.706s
+[    16.3s] record 19/28 done (16s)
+[    16.3s] L39_E156.bin f       total 16752640 used 16750329 ok True err None enc 3.37s dec 2.228s
+[    16.8s] record 20/28 done (16s)
+[    16.8s] L26_E077.bin fg0e    total 16535552 used 16534443 ok True err None enc 3.279s dec 2.731s
+[    16.8s] L26_E077.bin fg0de   total 16510976 used 16507215 ok True err None enc 3.317s dec 2.237s
+[    17.0s] record 21/28 done (17s)
+[    17.0s] L26_E077.bin fg0t    total 16494592 used 16493083 ok True err None enc 3.333s dec 2.242s
+[    17.0s] L26_E077.bin fg0dt   total 16465920 used 16465867 ok True err None enc 3.356s dec 2.133s
+[    17.5s] record 22/28 done (17s)
+[    17.5s] L26_E077.bin fg0c    total 16019456 used 16016200 ok True err None enc 3.318s dec 2.499s
+[    17.5s] L26_E077.bin fg0cd   total 15990784 used 15989064 ok True err None enc 3.35s dec 2.302s
+[    18.1s] record 23/28 done (18s)
+[    18.1s] L26_E077.bin fg0ce   total 16019456 used 16017574 ok True err None enc 3.499s dec 2.202s
+[    18.1s] L26_E077.bin fg0cde  total 15990784 used 15990446 ok True err None enc 3.526s dec 2.207s
+[    18.8s] record 24/28 done (18s)
+[    18.8s] L39_E156.bin fg0     total 16756736 used 16753078 ok True err None enc 3.391s dec 2.315s
+[    18.8s] L39_E156.bin fg0d    total 16732160 used 16731566 ok True err None enc 3.417s dec 2.052s
+[    19.6s] record 25/28 done (19s)
+[    19.6s] L39_E156.bin fg0e    total 16756736 used 16754474 ok True err None enc 3.347s dec 2.439s
+[    19.6s] L39_E156.bin fg0de   total 16736256 used 16732950 ok True err None enc 3.372s dec 2.137s
+[    19.8s] record 26/28 done (20s)
+[    19.8s] L39_E156.bin fg0t    total 16715776 used 16712315 ok True err None enc 3.189s dec 2.315s
+[    19.8s] L39_E156.bin fg0dt   total 16691200 used 16690771 ok True err None enc 3.217s dec 2.104s
+[    19.9s] record 27/28 done (20s)
+[    19.9s] L39_E156.bin fg0c    total 16240640 used 16240436 ok True err None enc 3.14s dec 2.343s
+[    19.9s] L39_E156.bin fg0cd   total 16220160 used 16219220 ok True err None enc 3.165s dec 2.161s
+[    20.8s] record 28/28 done (21s)
+[    20.8s] L39_E156.bin fg0ce   total 16244736 used 16241757 ok True err None enc 3.12s dec 2.312s
+[    20.8s] L39_E156.bin fg0cde  total 16224256 used 16220545 ok True err None enc 3.146s dec 1.948s
+[    20.9s] wnr2    total   17048576.0 ratio 0.90681 bpw 3.8095 4/4 equal to reference (byte-exact)
+[    20.9s] f       total   16612352.0 ratio 0.88361 bpw 3.7153 4/4 equal to reference (byte-exact) d%raw -2.320 CI -3.655..-1.629
+[    20.9s] fg0     total   16613376.0 ratio 0.88366 bpw 3.7154 4/4 equal to reference (byte-exact) d%raw -2.315 CI -3.638..-1.629
+[    20.9s] fg0d    total   16587776.0 ratio 0.88230 bpw 3.7154 4/4 equal to reference (byte-exact) d%raw -2.451 CI -3.769..-1.776
+[    20.9s] fg0de   total   16590848.0 ratio 0.88246 bpw 3.7156 4/4 equal to reference (byte-exact) d%raw -2.435 CI -3.747..-1.759
+[    20.9s] fg0dt   total   16547840.0 ratio 0.88017 bpw 3.7064 4/4 equal to reference (byte-exact) d%raw -2.663 CI -3.981..-1.993
+[    20.9s] fg0c    total   16097280.0 ratio 0.85621 bpw 3.5989 4/4 equal to reference (value-exact (8->0)) d%raw -5.060 CI -6.378..-4.379
+[    20.9s] fg0cde  total   16074752.0 ratio 0.85501 bpw 3.5992 4/4 equal to reference (value-exact (8->0)) d%raw -5.180 CI -6.471..-4.510
+[    20.9s] fg0cd   total   16072704.0 ratio 0.85490 bpw 3.5989 4/4 equal to reference (value-exact (8->0)) d%raw -5.191 CI -6.492..-4.521
+[    20.9s] fg0ce   total   16100352.0 ratio 0.85637 bpw 3.5992 4/4 equal to reference (value-exact (8->0)) d%raw -5.044 CI -6.356..-4.368
+[    20.9s] fg0e    total   16614400.0 ratio 0.88371 bpw 3.7156 4/4 equal to reference (byte-exact) d%raw -2.309 CI -3.633..-1.629
+[    20.9s] fg0t    total   16573440.0 ratio 0.88154 bpw 3.7064 4/4 equal to reference (byte-exact) d%raw -2.527 CI -3.851..-1.846
+[    20.9s] check sources_sha256: ok 48/48
+[    20.9s] check all_records_decode_exact: ok {'decoded': 48, 'records': 48, 'bad': []}
+[    20.9s] check no_ceil_fallback: ok []
+[    20.9s] check record_sizes_equal_reference: ok {'compared': 48, 'mismatch': 0, 'first': []}
+[    20.9s] summary <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\results\heldout_configs\summary.json
+RESULT heldout_configs PASS 4 experts, 48 records decoded; d%raw vs WNR2: f -2.320, fg0 -2.315, fg0de -2.435, fg0dt -2.663, fg0cde -5.180

@@ -1,0 +1,825 @@
+[     0.1s] == chunk_sweep (full) root=<KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT out=<KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\results\chunk_sweep jobs=15
+[     0.2s] environment {"os": "Windows-11-10.0.26300-SP0", "system": "Windows", "machine": "AMD64", "cpu": "AMD Ryzen 9 7950X3D 16-Core Processor", "logical_cpus": 32, "ram_gb": 31.2, "gpu": ["NVIDIA GeForce RTX 5090, 621.01, 32607 MiB, 12.0"], "python": "3.14.8", "python_impl": "CPython", "numpy": "2.5.4", "cupy": {"cupy-cuda12x": "14.2.0"}, "nvrtc": {"nvidia-cuda-nvrtc-cu12": "12.9.86"}}
+[     0.2s] sample dir <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\data\v41-sample: 160/160 experts present, manifest = kit
+[     0.2s] counts: 80 experts (cache <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\results\_cache\cpu_counts)
+[     0.5s] count 1/80 done (0s)
+[     0.5s] count 2/80 done (0s)
+[     0.5s] count 3/80 done (0s)
+[     0.5s] count 4/80 done (0s)
+[     0.5s] count 5/80 done (0s)
+[     0.5s] count 6/80 done (0s)
+[     0.5s] count 7/80 done (0s)
+[     0.5s] count 8/80 done (0s)
+[     0.5s] count 9/80 done (0s)
+[     0.5s] count 10/80 done (0s)
+[     0.5s] count 11/80 done (0s)
+[     0.5s] count 12/80 done (0s)
+[     0.5s] count 13/80 done (0s)
+[     0.5s] count 14/80 done (0s)
+[     0.5s] count 15/80 done (0s)
+[     0.5s] count 16/80 done (0s)
+[     0.5s] count 17/80 done (0s)
+[     0.5s] count 18/80 done (0s)
+[     0.5s] count 19/80 done (0s)
+[     0.5s] count 20/80 done (0s)
+[     0.5s] count 21/80 done (0s)
+[     0.5s] count 22/80 done (0s)
+[     0.5s] count 23/80 done (0s)
+[     0.5s] count 24/80 done (0s)
+[     0.6s] count 25/80 done (0s)
+[     0.6s] count 26/80 done (0s)
+[     0.6s] count 27/80 done (0s)
+[     0.6s] count 28/80 done (0s)
+[     0.6s] count 29/80 done (0s)
+[     0.6s] count 30/80 done (0s)
+[     0.6s] count 31/80 done (0s)
+[     0.6s] count 32/80 done (0s)
+[     0.6s] count 33/80 done (0s)
+[     0.6s] count 34/80 done (0s)
+[     0.6s] count 35/80 done (0s)
+[     0.6s] count 36/80 done (0s)
+[     0.6s] count 37/80 done (0s)
+[     0.6s] count 38/80 done (0s)
+[     0.6s] count 39/80 done (0s)
+[     0.6s] count 40/80 done (0s)
+[     0.6s] count 41/80 done (0s)
+[     0.6s] count 42/80 done (0s)
+[     0.6s] count 43/80 done (0s)
+[     0.6s] count 44/80 done (0s)
+[     0.6s] count 45/80 done (0s)
+[     0.6s] count 46/80 done (0s)
+[     0.6s] count 47/80 done (0s)
+[     0.6s] count 48/80 done (0s)
+[     0.6s] count 49/80 done (0s)
+[     0.6s] count 50/80 done (0s)
+[     0.6s] count 51/80 done (0s)
+[     0.6s] count 52/80 done (0s)
+[     0.6s] count 53/80 done (0s)
+[     0.6s] count 54/80 done (0s)
+[     0.6s] count 55/80 done (0s)
+[     0.6s] count 56/80 done (0s)
+[     0.6s] count 57/80 done (0s)
+[     0.6s] count 58/80 done (0s)
+[     0.6s] count 59/80 done (0s)
+[     0.6s] count 60/80 done (0s)
+[     0.6s] count 61/80 done (0s)
+[     0.6s] count 62/80 done (0s)
+[     0.6s] count 63/80 done (0s)
+[     0.6s] count 64/80 done (0s)
+[     0.6s] count 65/80 done (0s)
+[     0.6s] count 66/80 done (0s)
+[     0.6s] count 67/80 done (0s)
+[     0.6s] count 68/80 done (0s)
+[     0.6s] count 69/80 done (0s)
+[     0.6s] count 70/80 done (0s)
+[     0.6s] count 71/80 done (0s)
+[     0.6s] count 72/80 done (0s)
+[     0.6s] count 73/80 done (0s)
+[     0.6s] count 74/80 done (0s)
+[     0.6s] count 75/80 done (0s)
+[     0.6s] count 76/80 done (0s)
+[     0.6s] count 77/80 done (0s)
+[     0.6s] count 78/80 done (0s)
+[     0.6s] count 79/80 done (0s)
+[     0.7s] count 80/80 done (0s)
+[     0.7s] check train_sources_sha256: ok
+[     0.8s] check model_equal_ceilref_fg: ok {'wf': True, 'scf': True, 'etab': True}
+[     0.8s] 40 experts, plan [(1024, 256, ['fg0e']), (2048, 512, ['fg0e', 'fg0t']), (4096, 1024, ['fg0e', 'fg0t']), (8192, 2048, ['fg0e'])]: 240 payload jobs on 15 workers
+[     5.8s] payload 1/240 done (5s)
+[     5.8s] L00_E113.bin 1024:256 fg0e   used 16679101 total 16683008 lt 77760 dec False ok None
+[     5.9s] L00_E113.bin 1024:256 fg0de  used 16624257 total 16625664 lt 22916 dec True ok True
+[     6.2s] payload 2/240 done (5s)
+[     6.2s] L00_E113.bin 2048:512 fg0t   used 16529309 total 16531456 lt 38880 dec False ok None
+[     6.3s] L00_E113.bin 2048:512 fg0dt  used 16503849 total 16506880 lt 13420 dec True ok True
+[     6.3s] payload 3/240 done (5s)
+[     6.3s] L00_E113.bin 2048:512 fg0e   used 16570932 total 16572416 lt 38880 dec False ok None
+[     6.3s] L00_E113.bin 2048:512 fg0de  used 16545412 total 16547840 lt 13360 dec True ok True
+[     6.8s] payload 4/240 done (6s)
+[     6.8s] L00_E113.bin 4096:1024 fg0e   used 16516815 total 16519168 lt 19440 dec False ok None
+[     6.8s] L00_E113.bin 4096:1024 fg0de  used 16505095 total 16506880 lt 7720 dec True ok True
+[     7.0s] payload 5/240 done (6s)
+[     7.0s] L00_E113.bin 4096:1024 fg0t   used 16495914 total 16498688 lt 19440 dec False ok None
+[     7.0s] L00_E113.bin 4096:1024 fg0dt  used 16484198 total 16486400 lt 7724 dec True ok True
+[     7.6s] payload 6/240 done (7s)
+[     7.6s] L00_E113.bin 8192:2048 fg0e   used 16489757 total 16490496 lt 9720 dec False ok None
+[     7.6s] L00_E113.bin 8192:2048 fg0de  used 16484301 total 16486400 lt 4264 dec True ok True
+[     7.8s] payload 7/240 done (7s)
+[     7.8s] L01_E187.bin 1024:256 fg0e   used 16680753 total 16683008 lt 77760 dec False ok None
+[     7.8s] L01_E187.bin 1024:256 fg0de  used 16625445 total 16625664 lt 22452 dec True ok True
+[     8.1s] payload 8/240 done (7s)
+[     8.1s] L01_E187.bin 2048:512 fg0e   used 16572479 total 16576512 lt 38880 dec False ok None
+[     8.1s] L01_E187.bin 2048:512 fg0de  used 16546691 total 16547840 lt 13092 dec True ok True
+[     8.3s] payload 9/240 done (8s)
+[     8.4s] L01_E187.bin 2048:512 fg0t   used 16530983 total 16531456 lt 38880 dec False ok None
+[     8.4s] L01_E187.bin 2048:512 fg0dt  used 16505219 total 16506880 lt 13116 dec True ok True
+[     8.9s] payload 10/240 done (8s)
+[     8.9s] L01_E187.bin 4096:1024 fg0e   used 16518467 total 16519168 lt 19440 dec False ok None
+[     8.9s] L01_E187.bin 4096:1024 fg0de  used 16506595 total 16506880 lt 7568 dec True ok True
+[     8.9s] payload 11/240 done (8s)
+[     8.9s] L01_E187.bin 4096:1024 fg0t   used 16497575 total 16498688 lt 19440 dec False ok None
+[     8.9s] L01_E187.bin 4096:1024 fg0dt  used 16485727 total 16486400 lt 7592 dec True ok True
+[     9.6s] payload 12/240 done (9s)
+[     9.7s] L01_E187.bin 8192:2048 fg0e   used 16491330 total 16494592 lt 9720 dec False ok None
+[     9.7s] L01_E187.bin 8192:2048 fg0de  used 16485754 total 16486400 lt 4144 dec True ok True
+[     9.8s] payload 13/240 done (9s)
+[     9.8s] L02_E062.bin 1024:256 fg0e   used 16662632 total 16666624 lt 77760 dec False ok None
+[     9.8s] L02_E062.bin 1024:256 fg0de  used 16607288 total 16609280 lt 22416 dec True ok True
+[    10.3s] payload 14/240 done (9s)
+[    10.3s] L02_E062.bin 2048:512 fg0e   used 16554390 total 16556032 lt 38880 dec False ok None
+[    10.4s] L02_E062.bin 2048:512 fg0de  used 16528578 total 16531456 lt 13068 dec True ok True
+[    10.4s] payload 15/240 done (10s)
+[    10.4s] L02_E062.bin 2048:512 fg0t   used 16512836 total 16515072 lt 38880 dec False ok None
+[    10.4s] L02_E062.bin 2048:512 fg0dt  used 16487012 total 16490496 lt 13056 dec True ok True
+[    12.0s] payload 16/240 done (11s)
+[    12.0s] L02_E062.bin 4096:1024 fg0e   used 16500163 total 16502784 lt 19440 dec False ok None
+[    12.0s] L02_E062.bin 4096:1024 fg0de  used 16488283 total 16490496 lt 7560 dec True ok True
+[    12.3s] payload 17/240 done (11s)
+[    12.3s] L02_E062.bin 4096:1024 fg0t   used 16479450 total 16482304 lt 19440 dec False ok None
+[    12.3s] L02_E062.bin 4096:1024 fg0dt  used 16467570 total 16470016 lt 7560 dec True ok True
+[    12.5s] payload 18/240 done (12s)
+[    12.5s] L02_E062.bin 8192:2048 fg0e   used 16473110 total 16474112 lt 9720 dec False ok None
+[    12.5s] L02_E062.bin 8192:2048 fg0de  used 16467586 total 16470016 lt 4196 dec True ok True
+[    12.7s] payload 19/240 done (12s)
+[    12.7s] L03_E142.bin 1024:256 fg0e   used 16645227 total 16646144 lt 77760 dec False ok None
+[    12.7s] L03_E142.bin 1024:256 fg0de  used 16589543 total 16592896 lt 22076 dec True ok True
+[    13.0s] payload 20/240 done (12s)
+[    13.0s] L03_E142.bin 2048:512 fg0e   used 16536998 total 16539648 lt 38880 dec False ok None
+[    13.0s] L03_E142.bin 2048:512 fg0de  used 16510870 total 16510976 lt 12752 dec True ok True
+[    13.5s] payload 21/240 done (13s)
+[    13.5s] L03_E142.bin 2048:512 fg0t   used 16495404 total 16498688 lt 38880 dec False ok None
+[    13.5s] L03_E142.bin 2048:512 fg0dt  used 16469284 total 16470016 lt 12760 dec True ok True
+[    13.9s] payload 22/240 done (13s)
+[    13.9s] L03_E142.bin 4096:1024 fg0e   used 16482836 total 16486400 lt 19440 dec False ok None
+[    13.9s] L03_E142.bin 4096:1024 fg0de  used 16470672 total 16474112 lt 7276 dec True ok True
+[    14.0s] payload 23/240 done (13s)
+[    14.0s] L03_E142.bin 4096:1024 fg0t   used 16462054 total 16465920 lt 19440 dec False ok None
+[    14.0s] L03_E142.bin 4096:1024 fg0dt  used 16449906 total 16453632 lt 7292 dec True ok True
+[    14.7s] payload 24/240 done (14s)
+[    14.7s] L03_E142.bin 8192:2048 fg0e   used 16455803 total 16457728 lt 9720 dec False ok None
+[    14.7s] L03_E142.bin 8192:2048 fg0de  used 16450051 total 16453632 lt 3968 dec True ok True
+[    15.0s] payload 25/240 done (14s)
+[    15.0s] L04_E038.bin 1024:256 fg0e   used 16657859 total 16658432 lt 77760 dec False ok None
+[    15.0s] L04_E038.bin 1024:256 fg0de  used 16600835 total 16601088 lt 20736 dec True ok True
+[    15.1s] payload 26/240 done (14s)
+[    15.1s] L04_E038.bin 2048:512 fg0e   used 16549595 total 16551936 lt 38880 dec False ok None
+[    15.1s] L04_E038.bin 2048:512 fg0de  used 16522579 total 16523264 lt 11864 dec True ok True
+[    15.3s] payload 27/240 done (14s)
+[    15.3s] L04_E038.bin 2048:512 fg0t   used 16508112 total 16510976 lt 38880 dec False ok None
+[    15.3s] L04_E038.bin 2048:512 fg0dt  used 16481096 total 16482304 lt 11864 dec True ok True
+[    15.6s] payload 28/240 done (15s)
+[    15.6s] L04_E038.bin 4096:1024 fg0e   used 16495451 total 16498688 lt 19440 dec False ok None
+[    15.6s] L04_E038.bin 4096:1024 fg0de  used 16482799 total 16486400 lt 6788 dec True ok True
+[    16.0s] payload 29/240 done (15s)
+[    16.0s] L04_E038.bin 4096:1024 fg0t   used 16474777 total 16478208 lt 19440 dec False ok None
+[    16.0s] L04_E038.bin 4096:1024 fg0dt  used 16462145 total 16465920 lt 6808 dec True ok True
+[    16.5s] payload 30/240 done (16s)
+[    16.5s] L04_E038.bin 8192:2048 fg0e   used 16468386 total 16470016 lt 9720 dec False ok None
+[    16.5s] L04_E038.bin 8192:2048 fg0de  used 16462490 total 16465920 lt 3824 dec True ok True
+[    18.0s] payload 31/240 done (17s)
+[    18.0s] L05_E084.bin 1024:256 fg0e   used 16648372 total 16650240 lt 77760 dec False ok None
+[    18.0s] L05_E084.bin 1024:256 fg0de  used 16592572 total 16592896 lt 21960 dec True ok True
+[    18.2s] payload 32/240 done (17s)
+[    18.2s] L05_E084.bin 2048:512 fg0e   used 16540127 total 16543744 lt 38880 dec False ok None
+[    18.2s] L05_E084.bin 2048:512 fg0de  used 16513887 total 16515072 lt 12640 dec True ok True
+[    18.2s] payload 33/240 done (17s)
+[    18.2s] L05_E084.bin 2048:512 fg0t   used 16498678 total 16498688 lt 38880 dec False ok None
+[    18.2s] L05_E084.bin 2048:512 fg0dt  used 16472426 total 16474112 lt 12628 dec True ok True
+[    18.5s] payload 34/240 done (18s)
+[    18.5s] L05_E084.bin 4096:1024 fg0e   used 16486013 total 16486400 lt 19440 dec False ok None
+[    18.5s] L05_E084.bin 4096:1024 fg0de  used 16473809 total 16474112 lt 7236 dec True ok True
+[    18.6s] payload 35/240 done (18s)
+[    18.6s] L05_E084.bin 4096:1024 fg0t   used 16465261 total 16465920 lt 19440 dec False ok None
+[    18.6s] L05_E084.bin 4096:1024 fg0dt  used 16453061 total 16453632 lt 7240 dec True ok True
+[    19.2s] payload 36/240 done (18s)
+[    19.2s] L05_E084.bin 8192:2048 fg0e   used 16458907 total 16461824 lt 9720 dec False ok None
+[    19.2s] L05_E084.bin 8192:2048 fg0de  used 16453183 total 16453632 lt 3996 dec True ok True
+[    19.5s] payload 37/240 done (19s)
+[    19.5s] L06_E073.bin 1024:256 fg0e   used 16658397 total 16658432 lt 77760 dec False ok None
+[    19.5s] L06_E073.bin 1024:256 fg0de  used 16603297 total 16605184 lt 22660 dec True ok True
+[    19.8s] payload 38/240 done (19s)
+[    19.8s] L06_E073.bin 2048:512 fg0e   used 16550139 total 16551936 lt 38880 dec False ok None
+[    19.8s] L06_E073.bin 2048:512 fg0de  used 16524311 total 16527360 lt 13052 dec True ok True
+[    20.4s] payload 39/240 done (20s)
+[    20.4s] L06_E073.bin 2048:512 fg0t   used 16508724 total 16510976 lt 38880 dec False ok None
+[    20.4s] L06_E073.bin 2048:512 fg0dt  used 16482936 total 16486400 lt 13092 dec True ok True
+[    20.5s] payload 40/240 done (20s)
+[    20.5s] L06_E073.bin 4096:1024 fg0t   used 16475311 total 16478208 lt 19440 dec False ok None
+[    20.5s] L06_E073.bin 4096:1024 fg0dt  used 16463347 total 16465920 lt 7476 dec True ok True
+[    20.6s] payload 41/240 done (20s)
+[    20.6s] L06_E073.bin 4096:1024 fg0e   used 16496039 total 16498688 lt 19440 dec False ok None
+[    20.6s] L06_E073.bin 4096:1024 fg0de  used 16484087 total 16486400 lt 7488 dec True ok True
+[    21.0s] payload 42/240 done (20s)
+[    21.0s] L07_E167.bin 1024:256 fg0e   used 16659105 total 16662528 lt 77760 dec False ok None
+[    21.0s] L07_E167.bin 1024:256 fg0de  used 16603157 total 16605184 lt 21812 dec True ok True
+[    21.0s] payload 43/240 done (20s)
+[    21.0s] L06_E073.bin 8192:2048 fg0e   used 16468997 total 16470016 lt 9720 dec False ok None
+[    21.0s] L06_E073.bin 8192:2048 fg0de  used 16463413 total 16465920 lt 4136 dec True ok True
+[    21.3s] payload 44/240 done (20s)
+[    21.3s] L07_E167.bin 2048:512 fg0e   used 16550756 total 16551936 lt 38880 dec False ok None
+[    21.3s] L07_E167.bin 2048:512 fg0de  used 16524472 total 16527360 lt 12596 dec True ok True
+[    21.6s] payload 45/240 done (21s)
+[    21.6s] L07_E167.bin 2048:512 fg0t   used 16509342 total 16510976 lt 38880 dec False ok None
+[    21.6s] L07_E167.bin 2048:512 fg0dt  used 16483082 total 16486400 lt 12620 dec True ok True
+[    23.6s] payload 46/240 done (23s)
+[    23.6s] L07_E167.bin 4096:1024 fg0t   used 16475864 total 16478208 lt 19440 dec False ok None
+[    23.6s] L07_E167.bin 4096:1024 fg0dt  used 16463636 total 16465920 lt 7212 dec True ok True
+[    23.7s] payload 47/240 done (23s)
+[    23.7s] L07_E167.bin 4096:1024 fg0e   used 16496636 total 16498688 lt 19440 dec False ok None
+[    23.7s] L07_E167.bin 4096:1024 fg0de  used 16484412 total 16486400 lt 7216 dec True ok True
+[    23.9s] payload 48/240 done (23s)
+[    23.9s] L08_E019.bin 2048:512 fg0e   used 16534652 total 16535552 lt 38880 dec False ok None
+[    23.9s] L08_E019.bin 2048:512 fg0de  used 16508152 total 16510976 lt 12380 dec True ok True
+[    23.9s] payload 49/240 done (23s)
+[    23.9s] L07_E167.bin 8192:2048 fg0e   used 16469568 total 16470016 lt 9720 dec False ok None
+[    23.9s] L07_E167.bin 8192:2048 fg0de  used 16463824 total 16465920 lt 3976 dec True ok True
+[    24.0s] payload 50/240 done (23s)
+[    24.0s] L08_E019.bin 1024:256 fg0e   used 16642946 total 16646144 lt 77760 dec False ok None
+[    24.0s] L08_E019.bin 1024:256 fg0de  used 16586898 total 16588800 lt 21712 dec True ok True
+[    24.4s] payload 51/240 done (24s)
+[    24.4s] L08_E019.bin 2048:512 fg0t   used 16493082 total 16494592 lt 38880 dec False ok None
+[    24.4s] L08_E019.bin 2048:512 fg0dt  used 16466558 total 16470016 lt 12356 dec True ok True
+[    24.8s] payload 52/240 done (24s)
+[    24.8s] L08_E019.bin 4096:1024 fg0e   used 16480453 total 16482304 lt 19440 dec False ok None
+[    24.8s] L08_E019.bin 4096:1024 fg0de  used 16468049 total 16470016 lt 7036 dec True ok True
+[    25.0s] payload 53/240 done (24s)
+[    25.0s] L08_E019.bin 4096:1024 fg0t   used 16459684 total 16461824 lt 19440 dec False ok None
+[    25.0s] L08_E019.bin 4096:1024 fg0dt  used 16447264 total 16449536 lt 7020 dec True ok True
+[    26.0s] payload 54/240 done (25s)
+[    26.0s] L09_E160.bin 1024:256 fg0e   used 16683008 total 16683008 lt 77760 dec False ok None
+[    26.0s] L09_E160.bin 1024:256 fg0de  used 16627648 total 16629760 lt 22400 dec True ok True
+[    26.0s] payload 55/240 done (25s)
+[    26.0s] L08_E019.bin 8192:2048 fg0e   used 16453349 total 16453632 lt 9720 dec False ok None
+[    26.0s] L08_E019.bin 8192:2048 fg0de  used 16447489 total 16449536 lt 3860 dec True ok True
+[    26.1s] payload 56/240 done (25s)
+[    26.1s] L09_E160.bin 2048:512 fg0e   used 16574695 total 16576512 lt 38880 dec False ok None
+[    26.1s] L09_E160.bin 2048:512 fg0de  used 16548771 total 16551936 lt 12956 dec True ok True
+[    26.2s] payload 57/240 done (25s)
+[    26.2s] L09_E160.bin 2048:512 fg0t   used 16533247 total 16535552 lt 38880 dec False ok None
+[    26.2s] L09_E160.bin 2048:512 fg0dt  used 16507287 total 16510976 lt 12920 dec True ok True
+[    26.5s] payload 58/240 done (26s)
+[    26.5s] L09_E160.bin 4096:1024 fg0e   used 16520631 total 16523264 lt 19440 dec False ok None
+[    26.5s] L09_E160.bin 4096:1024 fg0de  used 16508583 total 16510976 lt 7392 dec True ok True
+[    26.5s] payload 59/240 done (26s)
+[    26.5s] L09_E160.bin 4096:1024 fg0t   used 16499784 total 16502784 lt 19440 dec False ok None
+[    26.5s] L09_E160.bin 4096:1024 fg0dt  used 16487728 total 16490496 lt 7384 dec True ok True
+[    26.9s] payload 60/240 done (26s)
+[    26.9s] L09_E160.bin 8192:2048 fg0e   used 16493485 total 16494592 lt 9720 dec False ok None
+[    26.9s] L09_E160.bin 8192:2048 fg0de  used 16487837 total 16490496 lt 4072 dec True ok True
+[    28.8s] payload 61/240 done (28s)
+[    28.8s] L10_E060.bin 2048:512 fg0t   used 16543768 total 16547840 lt 38880 dec False ok None
+[    28.8s] L10_E060.bin 2048:512 fg0dt  used 16517840 total 16519168 lt 12952 dec True ok True
+[    29.0s] payload 62/240 done (28s)
+[    29.0s] L10_E060.bin 1024:256 fg0e   used 16693557 total 16695296 lt 77760 dec False ok None
+[    29.0s] L10_E060.bin 1024:256 fg0de  used 16638157 total 16642048 lt 22360 dec True ok True
+[    29.0s] payload 63/240 done (28s)
+[    29.0s] L10_E060.bin 2048:512 fg0e   used 16585317 total 16588800 lt 38880 dec False ok None
+[    29.0s] L10_E060.bin 2048:512 fg0de  used 16559393 total 16560128 lt 12956 dec True ok True
+[    29.1s] payload 64/240 done (28s)
+[    29.1s] L10_E060.bin 4096:1024 fg0t   used 16510307 total 16510976 lt 19440 dec False ok None
+[    29.1s] L10_E060.bin 4096:1024 fg0dt  used 16498263 total 16498688 lt 7396 dec True ok True
+[    29.2s] payload 65/240 done (28s)
+[    29.2s] L10_E060.bin 4096:1024 fg0e   used 16531153 total 16531456 lt 19440 dec False ok None
+[    29.2s] L10_E060.bin 4096:1024 fg0de  used 16519105 total 16519168 lt 7392 dec True ok True
+[    29.7s] payload 66/240 done (29s)
+[    29.7s] L10_E060.bin 8192:2048 fg0e   used 16504045 total 16506880 lt 9720 dec False ok None
+[    29.7s] L10_E060.bin 8192:2048 fg0de  used 16498385 total 16498688 lt 4060 dec True ok True
+[    29.9s] payload 67/240 done (29s)
+[    29.9s] L11_E132.bin 1024:256 fg0e   used 16675591 total 16678912 lt 77760 dec False ok None
+[    29.9s] L11_E132.bin 1024:256 fg0de  used 16620647 total 16621568 lt 22816 dec True ok True
+[    30.3s] payload 68/240 done (29s)
+[    30.3s] L11_E132.bin 2048:512 fg0e   used 16567263 total 16568320 lt 38880 dec False ok None
+[    30.3s] L11_E132.bin 2048:512 fg0de  used 16541567 total 16543744 lt 13184 dec True ok True
+[    31.3s] payload 69/240 done (31s)
+[    31.3s] L11_E132.bin 2048:512 fg0t   used 16525771 total 16527360 lt 38880 dec False ok None
+[    31.3s] L11_E132.bin 2048:512 fg0dt  used 16500039 total 16502784 lt 13148 dec True ok True
+[    31.5s] payload 70/240 done (31s)
+[    31.5s] L11_E132.bin 4096:1024 fg0e   used 16513145 total 16515072 lt 19440 dec False ok None
+[    31.5s] L11_E132.bin 4096:1024 fg0de  used 16501149 total 16502784 lt 7444 dec True ok True
+[    31.5s] payload 71/240 done (31s)
+[    31.5s] L11_E132.bin 4096:1024 fg0t   used 16492376 total 16494592 lt 19440 dec False ok None
+[    31.5s] L11_E132.bin 4096:1024 fg0dt  used 16480364 total 16482304 lt 7428 dec True ok True
+[    31.7s] payload 72/240 done (31s)
+[    31.7s] L11_E132.bin 8192:2048 fg0e   used 16486095 total 16486400 lt 9720 dec False ok None
+[    31.7s] L11_E132.bin 8192:2048 fg0de  used 16480491 total 16482304 lt 4116 dec True ok True
+[    31.9s] payload 73/240 done (31s)
+[    31.9s] L12_E034.bin 2048:512 fg0e   used 16581752 total 16584704 lt 38880 dec False ok None
+[    31.9s] L12_E034.bin 2048:512 fg0de  used 16556624 total 16560128 lt 13752 dec True ok True
+[    32.1s] payload 74/240 done (31s)
+[    32.1s] L12_E034.bin 2048:512 fg0t   used 16540184 total 16543744 lt 38880 dec False ok None
+[    32.1s] L12_E034.bin 2048:512 fg0dt  used 16515036 total 16515072 lt 13732 dec True ok True
+[    32.3s] payload 75/240 done (31s)
+[    32.3s] L12_E034.bin 1024:256 fg0e   used 16690094 total 16691200 lt 77760 dec False ok None
+[    32.3s] L12_E034.bin 1024:256 fg0de  used 16635778 total 16637952 lt 23444 dec True ok True
+[    34.5s] payload 76/240 done (34s)
+[    34.5s] L12_E034.bin 4096:1024 fg0e   used 16527754 total 16531456 lt 19440 dec False ok None
+[    34.5s] L12_E034.bin 4096:1024 fg0de  used 16516170 total 16519168 lt 7856 dec True ok True
+[    34.7s] payload 77/240 done (34s)
+[    34.7s] L12_E034.bin 4096:1024 fg0t   used 16506826 total 16506880 lt 19440 dec False ok None
+[    34.7s] L12_E034.bin 4096:1024 fg0dt  used 16495250 total 16498688 lt 7864 dec True ok True
+[    34.9s] payload 78/240 done (34s)
+[    34.9s] L12_E034.bin 8192:2048 fg0e   used 16500637 total 16502784 lt 9720 dec False ok None
+[    34.9s] L12_E034.bin 8192:2048 fg0de  used 16495241 total 16498688 lt 4324 dec True ok True
+[    34.9s] payload 79/240 done (34s)
+[    34.9s] L13_E167.bin 2048:512 fg0e   used 16589857 total 16592896 lt 38880 dec False ok None
+[    34.9s] L13_E167.bin 2048:512 fg0de  used 16564997 total 16568320 lt 14020 dec True ok True
+[    35.1s] payload 80/240 done (34s)
+[    35.1s] L13_E167.bin 1024:256 fg0e   used 16698234 total 16699392 lt 77760 dec False ok None
+[    35.1s] L13_E167.bin 1024:256 fg0de  used 16644438 total 16646144 lt 23964 dec True ok True
+[    35.1s] payload 81/240 done (34s)
+[    35.1s] L13_E167.bin 2048:512 fg0t   used 16548384 total 16551936 lt 38880 dec False ok None
+[    35.1s] L13_E167.bin 2048:512 fg0dt  used 16523512 total 16527360 lt 14008 dec True ok True
+[    35.6s] payload 82/240 done (35s)
+[    35.6s] L13_E167.bin 4096:1024 fg0e   used 16535811 total 16539648 lt 19440 dec False ok None
+[    35.6s] L13_E167.bin 4096:1024 fg0de  used 16524431 total 16527360 lt 8060 dec True ok True
+[    36.0s] payload 83/240 done (35s)
+[    36.0s] L13_E167.bin 4096:1024 fg0t   used 16515012 total 16515072 lt 19440 dec False ok None
+[    36.0s] L13_E167.bin 4096:1024 fg0dt  used 16503624 total 16506880 lt 8052 dec True ok True
+[    37.3s] payload 84/240 done (36s)
+[    37.3s] L13_E167.bin 8192:2048 fg0e   used 16508690 total 16510976 lt 9720 dec False ok None
+[    37.3s] L13_E167.bin 8192:2048 fg0de  used 16503370 total 16506880 lt 4400 dec True ok True
+[    37.3s] payload 85/240 done (36s)
+[    37.3s] L14_E135.bin 1024:256 fg0e   used 16686754 total 16687104 lt 77760 dec False ok None
+[    37.3s] L14_E135.bin 1024:256 fg0de  used 16631526 total 16633856 lt 22532 dec True ok True
+[    37.4s] payload 86/240 done (37s)
+[    37.4s] L14_E135.bin 2048:512 fg0e   used 16578245 total 16580608 lt 38880 dec False ok None
+[    37.4s] L14_E135.bin 2048:512 fg0de  used 16552553 total 16556032 lt 13188 dec True ok True
+[    37.4s] payload 87/240 done (37s)
+[    37.4s] L14_E135.bin 2048:512 fg0t   used 16536777 total 16539648 lt 38880 dec False ok None
+[    37.4s] L14_E135.bin 2048:512 fg0dt  used 16511073 total 16515072 lt 13176 dec True ok True
+[    37.5s] payload 88/240 done (37s)
+[    37.5s] L14_E135.bin 4096:1024 fg0t   used 16503405 total 16506880 lt 19440 dec False ok None
+[    37.5s] L14_E135.bin 4096:1024 fg0dt  used 16491649 total 16494592 lt 7684 dec True ok True
+[    37.8s] payload 89/240 done (37s)
+[    37.8s] L14_E135.bin 4096:1024 fg0e   used 16524192 total 16527360 lt 19440 dec False ok None
+[    37.8s] L14_E135.bin 4096:1024 fg0de  used 16512440 total 16515072 lt 7688 dec True ok True
+[    37.9s] payload 90/240 done (37s)
+[    38.0s] L14_E135.bin 8192:2048 fg0e   used 16497109 total 16498688 lt 9720 dec False ok None
+[    38.0s] L14_E135.bin 8192:2048 fg0de  used 16491625 total 16494592 lt 4236 dec True ok True
+[    40.4s] payload 91/240 done (40s)
+[    40.4s] L15_E156.bin 1024:256 fg0e   used 16686791 total 16687104 lt 77760 dec False ok None
+[    40.4s] L15_E156.bin 1024:256 fg0de  used 16633883 total 16637952 lt 24852 dec True ok True
+[    40.6s] payload 92/240 done (40s)
+[    40.6s] L15_E156.bin 2048:512 fg0t   used 16536935 total 16539648 lt 38880 dec False ok None
+[    40.6s] L15_E156.bin 2048:512 fg0dt  used 16512775 total 16515072 lt 14720 dec True ok True
+[    40.7s] payload 93/240 done (40s)
+[    40.7s] L15_E156.bin 2048:512 fg0e   used 16578472 total 16580608 lt 38880 dec False ok None
+[    40.7s] L15_E156.bin 2048:512 fg0de  used 16554344 total 16556032 lt 14752 dec True ok True
+[    41.0s] payload 94/240 done (40s)
+[    41.0s] L15_E156.bin 4096:1024 fg0t   used 16503632 total 16506880 lt 19440 dec False ok None
+[    41.0s] L15_E156.bin 4096:1024 fg0dt  used 16492664 total 16494592 lt 8472 dec True ok True
+[    41.0s] payload 95/240 done (40s)
+[    41.0s] L16_E034.bin 1024:256 fg0e   used 16719931 total 16723968 lt 77760 dec False ok None
+[    41.0s] L16_E034.bin 1024:256 fg0de  used 16665203 total 16666624 lt 23032 dec True ok True
+[    41.2s] payload 96/240 done (40s)
+[    41.2s] L15_E156.bin 4096:1024 fg0e   used 16524371 total 16527360 lt 19440 dec False ok None
+[    41.2s] L15_E156.bin 4096:1024 fg0de  used 16513427 total 16515072 lt 8496 dec True ok True
+[    41.7s] payload 97/240 done (41s)
+[    41.7s] L15_E156.bin 8192:2048 fg0e   used 16497287 total 16498688 lt 9720 dec False ok None
+[    41.7s] L15_E156.bin 8192:2048 fg0de  used 16492279 total 16494592 lt 4712 dec True ok True
+[    42.0s] payload 98/240 done (41s)
+[    42.0s] L16_E034.bin 2048:512 fg0e   used 16611616 total 16613376 lt 38880 dec False ok None
+[    42.0s] L16_E034.bin 2048:512 fg0de  used 16586152 total 16588800 lt 13416 dec True ok True
+[    44.1s] payload 99/240 done (43s)
+[    44.1s] L16_E034.bin 2048:512 fg0t   used 16569953 total 16572416 lt 38880 dec False ok None
+[    44.1s] L16_E034.bin 2048:512 fg0dt  used 16544465 total 16547840 lt 13392 dec True ok True
+[    44.2s] payload 100/240 done (43s)
+[    44.2s] L16_E034.bin 4096:1024 fg0t   used 16536651 total 16539648 lt 19440 dec False ok None
+[    44.2s] L16_E034.bin 4096:1024 fg0dt  used 16524991 total 16527360 lt 7780 dec True ok True
+[    44.3s] payload 101/240 done (43s)
+[    44.3s] L17_E123.bin 1024:256 fg0e   used 16723939 total 16723968 lt 77760 dec False ok None
+[    44.3s] L17_E123.bin 1024:256 fg0de  used 16670303 total 16670720 lt 24124 dec True ok True
+[    44.4s] payload 102/240 done (44s)
+[    44.4s] L16_E034.bin 4096:1024 fg0e   used 16557564 total 16560128 lt 19440 dec False ok None
+[    44.4s] L16_E034.bin 4096:1024 fg0de  used 16545924 total 16547840 lt 7800 dec True ok True
+[    44.7s] payload 103/240 done (44s)
+[    44.7s] L16_E034.bin 8192:2048 fg0e   used 16530421 total 16531456 lt 9720 dec False ok None
+[    44.7s] L16_E034.bin 8192:2048 fg0de  used 16524941 total 16527360 lt 4240 dec True ok True
+[    44.8s] payload 104/240 done (44s)
+[    44.8s] L17_E123.bin 2048:512 fg0t   used 16573914 total 16576512 lt 38880 dec False ok None
+[    44.8s] L17_E123.bin 2048:512 fg0dt  used 16549262 total 16551936 lt 14228 dec True ok True
+[    44.9s] payload 105/240 done (44s)
+[    44.9s] L17_E123.bin 2048:512 fg0e   used 16615635 total 16617472 lt 38880 dec False ok None
+[    44.9s] L17_E123.bin 2048:512 fg0de  used 16590979 total 16592896 lt 14224 dec True ok True
+[    47.2s] payload 106/240 done (46s)
+[    47.2s] L17_E123.bin 4096:1024 fg0t   used 16540543 total 16543744 lt 19440 dec False ok None
+[    47.2s] L17_E123.bin 4096:1024 fg0dt  used 16529287 total 16531456 lt 8184 dec True ok True
+[    47.3s] payload 107/240 done (46s)
+[    47.3s] L17_E123.bin 4096:1024 fg0e   used 16561426 total 16564224 lt 19440 dec False ok None
+[    47.3s] L17_E123.bin 4096:1024 fg0de  used 16550186 total 16551936 lt 8200 dec True ok True
+[    47.5s] payload 108/240 done (47s)
+[    47.5s] L18_E081.bin 2048:512 fg0e   used 16609789 total 16613376 lt 38880 dec False ok None
+[    47.5s] L18_E081.bin 2048:512 fg0de  used 16584917 total 16588800 lt 14008 dec True ok True
+[    47.5s] payload 109/240 done (47s)
+[    47.5s] L18_E081.bin 1024:256 fg0e   used 16718067 total 16719872 lt 77760 dec False ok None
+[    47.6s] L18_E081.bin 1024:256 fg0de  used 16664315 total 16666624 lt 24008 dec True ok True
+[    47.7s] payload 110/240 done (47s)
+[    47.7s] L18_E081.bin 2048:512 fg0t   used 16568223 total 16568320 lt 38880 dec False ok None
+[    47.7s] L18_E081.bin 2048:512 fg0dt  used 16543371 total 16543744 lt 14028 dec True ok True
+[    47.7s] payload 111/240 done (47s)
+[    47.7s] L17_E123.bin 8192:2048 fg0e   used 16534395 total 16535552 lt 9720 dec False ok None
+[    47.7s] L17_E123.bin 8192:2048 fg0de  used 16529187 total 16531456 lt 4512 dec True ok True
+[    48.2s] payload 112/240 done (47s)
+[    48.2s] L18_E081.bin 4096:1024 fg0e   used 16555644 total 16556032 lt 19440 dec False ok None
+[    48.2s] L18_E081.bin 4096:1024 fg0de  used 16544264 total 16547840 lt 8060 dec True ok True
+[    48.4s] payload 113/240 done (48s)
+[    48.4s] L18_E081.bin 4096:1024 fg0t   used 16534790 total 16535552 lt 19440 dec False ok None
+[    48.4s] L18_E081.bin 4096:1024 fg0dt  used 16523406 total 16527360 lt 8056 dec True ok True
+[    50.3s] payload 114/240 done (49s)
+[    50.3s] L18_E081.bin 8192:2048 fg0e   used 16528588 total 16531456 lt 9720 dec False ok None
+[    50.3s] L18_E081.bin 8192:2048 fg0de  used 16523264 total 16523264 lt 4396 dec True ok True
+[    50.4s] payload 115/240 done (50s)
+[    50.4s] L19_E180.bin 2048:512 fg0t   used 16547789 total 16547840 lt 38880 dec False ok None
+[    50.4s] L19_E180.bin 2048:512 fg0dt  used 16521841 total 16523264 lt 12932 dec True ok True
+[    50.4s] payload 116/240 done (50s)
+[    50.4s] L19_E180.bin 2048:512 fg0e   used 16589316 total 16592896 lt 38880 dec False ok None
+[    50.4s] L19_E180.bin 2048:512 fg0de  used 16563308 total 16564224 lt 12872 dec True ok True
+[    50.4s] payload 117/240 done (50s)
+[    50.4s] L19_E180.bin 1024:256 fg0e   used 16697727 total 16699392 lt 77760 dec False ok None
+[    50.4s] L19_E180.bin 1024:256 fg0de  used 16642131 total 16646144 lt 22164 dec True ok True
+[    50.6s] payload 118/240 done (50s)
+[    50.6s] L19_E180.bin 4096:1024 fg0t   used 16514476 total 16515072 lt 19440 dec False ok None
+[    50.6s] L19_E180.bin 4096:1024 fg0dt  used 16502540 total 16502784 lt 7504 dec True ok True
+[    50.7s] payload 119/240 done (50s)
+[    50.7s] L19_E180.bin 4096:1024 fg0e   used 16535183 total 16535552 lt 19440 dec False ok None
+[    50.7s] L19_E180.bin 4096:1024 fg0de  used 16523227 total 16523264 lt 7484 dec True ok True
+[    50.8s] payload 120/240 done (50s)
+[    50.8s] L19_E180.bin 8192:2048 fg0e   used 16508143 total 16510976 lt 9720 dec False ok None
+[    50.8s] L19_E180.bin 8192:2048 fg0de  used 16502591 total 16502784 lt 4168 dec True ok True
+[    53.1s] payload 121/240 done (52s)
+[    53.1s] L20_E074.bin 2048:512 fg0e   used 16590894 total 16592896 lt 38880 dec False ok None
+[    53.1s] L20_E074.bin 2048:512 fg0de  used 16564858 total 16568320 lt 12844 dec True ok True
+[    53.2s] payload 122/240 done (52s)
+[    53.2s] L20_E074.bin 1024:256 fg0e   used 16699285 total 16699392 lt 77760 dec False ok None
+[    53.2s] L20_E074.bin 1024:256 fg0de  used 16643577 total 16646144 lt 22052 dec True ok True
+[    53.3s] payload 123/240 done (53s)
+[    53.3s] L20_E074.bin 2048:512 fg0t   used 16549270 total 16551936 lt 38880 dec False ok None
+[    53.3s] L20_E074.bin 2048:512 fg0dt  used 16523226 total 16523264 lt 12836 dec True ok True
+[    53.5s] payload 124/240 done (53s)
+[    53.5s] L20_E074.bin 4096:1024 fg0e   used 16536784 total 16539648 lt 19440 dec False ok None
+[    53.5s] L20_E074.bin 4096:1024 fg0de  used 16524776 total 16527360 lt 7432 dec True ok True
+[    53.6s] payload 125/240 done (53s)
+[    53.6s] L20_E074.bin 4096:1024 fg0t   used 16516001 total 16519168 lt 19440 dec False ok None
+[    53.6s] L20_E074.bin 4096:1024 fg0dt  used 16503981 total 16506880 lt 7420 dec True ok True
+[    53.7s] payload 126/240 done (53s)
+[    53.7s] L20_E074.bin 8192:2048 fg0e   used 16509748 total 16510976 lt 9720 dec False ok None
+[    53.7s] L20_E074.bin 8192:2048 fg0de  used 16504096 total 16506880 lt 4068 dec True ok True
+[    53.9s] payload 127/240 done (53s)
+[    53.9s] L21_E072.bin 1024:256 fg0e   used 16692147 total 16695296 lt 77760 dec False ok None
+[    53.9s] L21_E072.bin 1024:256 fg0de  used 16637335 total 16637952 lt 22948 dec True ok True
+[    54.6s] payload 128/240 done (54s)
+[    54.6s] L21_E072.bin 2048:512 fg0e   used 16583941 total 16584704 lt 38880 dec False ok None
+[    54.6s] L21_E072.bin 2048:512 fg0de  used 16558501 total 16560128 lt 13440 dec True ok True
+[    56.1s] payload 129/240 done (55s)
+[    56.1s] L21_E072.bin 4096:1024 fg0t   used 16509084 total 16510976 lt 19440 dec False ok None
+[    56.1s] L21_E072.bin 4096:1024 fg0dt  used 16497408 total 16498688 lt 7764 dec True ok True
+[    56.1s] payload 130/240 done (55s)
+[    56.1s] L21_E072.bin 2048:512 fg0t   used 16542325 total 16543744 lt 38880 dec False ok None
+[    56.1s] L21_E072.bin 2048:512 fg0dt  used 16516869 total 16519168 lt 13424 dec True ok True
+[    56.2s] payload 131/240 done (55s)
+[    56.2s] L22_E059.bin 1024:256 fg0e   used 16685461 total 16687104 lt 77760 dec False ok None
+[    56.2s] L22_E059.bin 1024:256 fg0de  used 16632413 total 16633856 lt 24712 dec True ok True
+[    56.3s] payload 132/240 done (56s)
+[    56.3s] L21_E072.bin 4096:1024 fg0e   used 16529817 total 16531456 lt 19440 dec False ok None
+[    56.3s] L21_E072.bin 4096:1024 fg0de  used 16518133 total 16519168 lt 7756 dec True ok True
+[    56.4s] payload 133/240 done (56s)
+[    56.4s] L21_E072.bin 8192:2048 fg0e   used 16502689 total 16502784 lt 9720 dec False ok None
+[    56.4s] L21_E072.bin 8192:2048 fg0de  used 16497221 total 16498688 lt 4252 dec True ok True
+[    56.5s] payload 134/240 done (56s)
+[    56.5s] L22_E059.bin 2048:512 fg0e   used 16577302 total 16580608 lt 38880 dec False ok None
+[    56.5s] L22_E059.bin 2048:512 fg0de  used 16552982 total 16556032 lt 14560 dec True ok True
+[    56.5s] payload 135/240 done (56s)
+[    56.5s] L22_E059.bin 2048:512 fg0t   used 16535723 total 16539648 lt 38880 dec False ok None
+[    56.5s] L22_E059.bin 2048:512 fg0dt  used 16511383 total 16515072 lt 14540 dec True ok True
+[    58.9s] payload 136/240 done (58s)
+[    58.9s] L22_E059.bin 4096:1024 fg0t   used 16502406 total 16502784 lt 19440 dec False ok None
+[    58.9s] L22_E059.bin 4096:1024 fg0dt  used 16491270 total 16494592 lt 8304 dec True ok True
+[    58.9s] payload 137/240 done (58s)
+[    58.9s] L22_E059.bin 4096:1024 fg0e   used 16523178 total 16523264 lt 19440 dec False ok None
+[    58.9s] L22_E059.bin 4096:1024 fg0de  used 16512054 total 16515072 lt 8316 dec True ok True
+[    59.2s] payload 138/240 done (58s)
+[    59.2s] L23_E178.bin 2048:512 fg0t   used 16494051 total 16494592 lt 38880 dec False ok None
+[    59.2s] L23_E178.bin 2048:512 fg0dt  used 16467467 total 16470016 lt 12296 dec True ok True
+[    59.2s] payload 139/240 done (58s)
+[    59.2s] L22_E059.bin 8192:2048 fg0e   used 16496117 total 16498688 lt 9720 dec False ok None
+[    59.2s] L22_E059.bin 8192:2048 fg0de  used 16490925 total 16494592 lt 4528 dec True ok True
+[    59.3s] payload 140/240 done (59s)
+[    59.3s] L23_E178.bin 2048:512 fg0e   used 16535439 total 16535552 lt 38880 dec False ok None
+[    59.3s] L23_E178.bin 2048:512 fg0de  used 16508735 total 16510976 lt 12176 dec True ok True
+[    59.3s] payload 141/240 done (59s)
+[    59.3s] L23_E178.bin 1024:256 fg0e   used 16643663 total 16646144 lt 77760 dec False ok None
+[    59.3s] L23_E178.bin 1024:256 fg0de  used 16587179 total 16588800 lt 21276 dec True ok True
+[    59.7s] payload 142/240 done (59s)
+[    59.7s] L23_E178.bin 4096:1024 fg0e   used 16481328 total 16482304 lt 19440 dec False ok None
+[    59.7s] L23_E178.bin 4096:1024 fg0de  used 16468856 total 16470016 lt 6968 dec True ok True
+[    60.2s] payload 143/240 done (59s)
+[    60.2s] L23_E178.bin 4096:1024 fg0t   used 16460547 total 16461824 lt 19440 dec False ok None
+[    60.2s] L23_E178.bin 4096:1024 fg0dt  used 16448071 total 16449536 lt 6964 dec True ok True
+[    62.1s] payload 144/240 done (61s)
+[    62.1s] L23_E178.bin 8192:2048 fg0e   used 16454238 total 16457728 lt 9720 dec False ok None
+[    62.1s] L23_E178.bin 8192:2048 fg0de  used 16448354 total 16449536 lt 3836 dec True ok True
+[    62.2s] payload 145/240 done (61s)
+[    62.2s] L24_E058.bin 2048:512 fg0t   used 16696848 total 16699392 lt 38880 dec False ok None
+[    62.2s] L24_E058.bin 2048:512 fg0dt  used 16672508 total 16674816 lt 14540 dec True ok True
+[    62.2s] payload 146/240 done (61s)
+[    62.2s] L24_E058.bin 1024:256 fg0e   used 16847154 total 16850944 lt 77760 dec False ok None
+[    62.2s] L24_E058.bin 1024:256 fg0de  used 16794554 total 16797696 lt 25160 dec True ok True
+[    62.3s] payload 147/240 done (61s)
+[    62.3s] L24_E058.bin 4096:1024 fg0t   used 16663648 total 16666624 lt 19440 dec False ok None
+[    62.3s] L24_E058.bin 4096:1024 fg0dt  used 16652468 total 16654336 lt 8260 dec True ok True
+[    62.6s] payload 148/240 done (62s)
+[    62.6s] L24_E058.bin 2048:512 fg0e   used 16738753 total 16740352 lt 38880 dec False ok None
+[    62.6s] L24_E058.bin 2048:512 fg0de  used 16714397 total 16715776 lt 14524 dec True ok True
+[    62.7s] payload 149/240 done (62s)
+[    62.7s] L24_E058.bin 4096:1024 fg0e   used 16684649 total 16687104 lt 19440 dec False ok None
+[    62.7s] L24_E058.bin 4096:1024 fg0de  used 16673477 total 16674816 lt 8268 dec True ok True
+[    62.9s] payload 150/240 done (62s)
+[    62.9s] L24_E058.bin 8192:2048 fg0e   used 16657574 total 16658432 lt 9720 dec False ok None
+[    62.9s] L24_E058.bin 8192:2048 fg0de  used 16652482 total 16654336 lt 4628 dec True ok True
+[    64.7s] payload 151/240 done (64s)
+[    64.7s] L25_E166.bin 2048:512 fg0e   used 16562852 total 16564224 lt 38880 dec False ok None
+[    64.7s] L25_E166.bin 2048:512 fg0de  used 16536952 total 16539648 lt 12980 dec True ok True
+[    64.8s] payload 152/240 done (64s)
+[    64.8s] L25_E166.bin 1024:256 fg0e   used 16671119 total 16674816 lt 77760 dec False ok None
+[    64.8s] L25_E166.bin 1024:256 fg0de  used 16615731 total 16617472 lt 22372 dec True ok True
+[    65.0s] payload 153/240 done (64s)
+[    65.0s] L25_E166.bin 2048:512 fg0t   used 16521271 total 16523264 lt 38880 dec False ok None
+[    65.0s] L25_E166.bin 2048:512 fg0dt  used 16495411 total 16498688 lt 13020 dec True ok True
+[    65.0s] payload 154/240 done (64s)
+[    65.0s] L25_E166.bin 4096:1024 fg0t   used 16487920 total 16490496 lt 19440 dec False ok None
+[    65.0s] L25_E166.bin 4096:1024 fg0dt  used 16475984 total 16478208 lt 7504 dec True ok True
+[    65.1s] payload 155/240 done (64s)
+[    65.1s] L25_E166.bin 4096:1024 fg0e   used 16508659 total 16510976 lt 19440 dec False ok None
+[    65.1s] L25_E166.bin 4096:1024 fg0de  used 16496743 total 16498688 lt 7524 dec True ok True
+[    65.4s] payload 156/240 done (65s)
+[    65.4s] L25_E166.bin 8192:2048 fg0e   used 16481626 total 16482304 lt 9720 dec False ok None
+[    65.4s] L25_E166.bin 8192:2048 fg0de  used 16475970 total 16478208 lt 4064 dec True ok True
+[    65.7s] payload 157/240 done (65s)
+[    65.7s] L26_E077.bin 1024:256 fg0e   used 16642711 total 16646144 lt 77760 dec False ok None
+[    65.7s] L26_E077.bin 1024:256 fg0de  used 16585435 total 16588800 lt 20484 dec True ok True
+[    66.0s] payload 158/240 done (65s)
+[    66.0s] L26_E077.bin 2048:512 fg0e   used 16534443 total 16535552 lt 38880 dec False ok None
+[    66.0s] L26_E077.bin 2048:512 fg0de  used 16507215 total 16510976 lt 11652 dec True ok True
+[    67.7s] payload 159/240 done (67s)
+[    67.7s] L26_E077.bin 2048:512 fg0t   used 16493083 total 16494592 lt 38880 dec False ok None
+[    67.7s] L26_E077.bin 2048:512 fg0dt  used 16465867 total 16465920 lt 11664 dec True ok True
+[    68.0s] payload 160/240 done (67s)
+[    68.0s] L26_E077.bin 4096:1024 fg0t   used 16459562 total 16461824 lt 19440 dec False ok None
+[    68.0s] L26_E077.bin 4096:1024 fg0dt  used 16446694 total 16449536 lt 6572 dec True ok True
+[    68.1s] payload 161/240 done (67s)
+[    68.1s] L26_E077.bin 4096:1024 fg0e   used 16480278 total 16482304 lt 19440 dec False ok None
+[    68.1s] L26_E077.bin 4096:1024 fg0de  used 16467378 total 16470016 lt 6540 dec True ok True
+[    68.1s] payload 162/240 done (67s)
+[    68.1s] L26_E077.bin 8192:2048 fg0e   used 16453223 total 16453632 lt 9720 dec False ok None
+[    68.1s] L26_E077.bin 8192:2048 fg0de  used 16447099 total 16449536 lt 3596 dec True ok True
+[    68.4s] payload 163/240 done (68s)
+[    68.4s] L27_E152.bin 2048:512 fg0t   used 16533221 total 16535552 lt 38880 dec False ok None
+[    68.4s] L27_E152.bin 2048:512 fg0dt  used 16507581 total 16510976 lt 13240 dec True ok True
+[    68.5s] payload 164/240 done (68s)
+[    68.5s] L27_E152.bin 1024:256 fg0e   used 16682911 total 16683008 lt 77760 dec False ok None
+[    68.5s] L27_E152.bin 1024:256 fg0de  used 16627943 total 16629760 lt 22792 dec True ok True
+[    68.7s] payload 165/240 done (68s)
+[    68.7s] L27_E152.bin 2048:512 fg0e   used 16574670 total 16576512 lt 38880 dec False ok None
+[    68.7s] L27_E152.bin 2048:512 fg0de  used 16549034 total 16551936 lt 13244 dec True ok True
+[    70.4s] payload 166/240 done (70s)
+[    70.4s] L27_E152.bin 4096:1024 fg0t   used 16499818 total 16502784 lt 19440 dec False ok None
+[    70.4s] L27_E152.bin 4096:1024 fg0dt  used 16487970 total 16490496 lt 7592 dec True ok True
+[    70.5s] payload 167/240 done (70s)
+[    70.5s] L27_E152.bin 4096:1024 fg0e   used 16520527 total 16523264 lt 19440 dec False ok None
+[    70.5s] L27_E152.bin 4096:1024 fg0de  used 16508703 total 16510976 lt 7616 dec True ok True
+[    70.9s] payload 168/240 done (70s)
+[    70.9s] L28_E089.bin 2048:512 fg0e   used 16553683 total 16556032 lt 38880 dec False ok None
+[    70.9s] L28_E089.bin 2048:512 fg0de  used 16528075 total 16531456 lt 13272 dec True ok True
+[    71.0s] payload 169/240 done (70s)
+[    71.0s] L28_E089.bin 2048:512 fg0t   used 16512187 total 16515072 lt 38880 dec False ok None
+[    71.0s] L28_E089.bin 2048:512 fg0dt  used 16486571 total 16490496 lt 13264 dec True ok True
+[    71.0s] payload 170/240 done (70s)
+[    71.0s] L28_E089.bin 1024:256 fg0e   used 16661995 total 16662528 lt 77760 dec False ok None
+[    71.0s] L28_E089.bin 1024:256 fg0de  used 16606879 total 16609280 lt 22644 dec True ok True
+[    71.0s] payload 171/240 done (70s)
+[    71.0s] L27_E152.bin 8192:2048 fg0e   used 16493458 total 16494592 lt 9720 dec False ok None
+[    71.0s] L27_E152.bin 8192:2048 fg0de  used 16487870 total 16490496 lt 4132 dec True ok True
+[    71.5s] payload 172/240 done (71s)
+[    71.5s] L28_E089.bin 4096:1024 fg0t   used 16478791 total 16482304 lt 19440 dec False ok None
+[    71.5s] L28_E089.bin 4096:1024 fg0dt  used 16466995 total 16470016 lt 7644 dec True ok True
+[    71.7s] payload 173/240 done (71s)
+[    71.7s] L28_E089.bin 4096:1024 fg0e   used 16499487 total 16502784 lt 19440 dec False ok None
+[    71.7s] L28_E089.bin 4096:1024 fg0de  used 16487683 total 16490496 lt 7636 dec True ok True
+[    74.1s] payload 174/240 done (73s)
+[    74.1s] L28_E089.bin 8192:2048 fg0e   used 16472513 total 16474112 lt 9720 dec False ok None
+[    74.1s] L28_E089.bin 8192:2048 fg0de  used 16466989 total 16470016 lt 4196 dec True ok True
+[    74.2s] payload 175/240 done (73s)
+[    74.2s] L29_E190.bin 2048:512 fg0t   used 16492406 total 16494592 lt 38880 dec False ok None
+[    74.2s] L29_E190.bin 2048:512 fg0dt  used 16465758 total 16465920 lt 12232 dec True ok True
+[    74.2s] payload 176/240 done (73s)
+[    74.2s] L29_E190.bin 1024:256 fg0e   used 16642102 total 16646144 lt 77760 dec False ok None
+[    74.2s] L29_E190.bin 1024:256 fg0de  used 16585538 total 16588800 lt 21196 dec True ok True
+[    74.4s] payload 177/240 done (74s)
+[    74.4s] L29_E190.bin 2048:512 fg0e   used 16533828 total 16535552 lt 38880 dec False ok None
+[    74.4s] L29_E190.bin 2048:512 fg0de  used 16507216 total 16510976 lt 12268 dec True ok True
+[    74.7s] payload 178/240 done (74s)
+[    74.7s] L29_E190.bin 4096:1024 fg0e   used 16479734 total 16482304 lt 19440 dec False ok None
+[    74.7s] L29_E190.bin 4096:1024 fg0de  used 16467298 total 16470016 lt 7004 dec True ok True
+[    74.8s] payload 179/240 done (74s)
+[    74.8s] L29_E190.bin 4096:1024 fg0t   used 16458945 total 16461824 lt 19440 dec False ok None
+[    74.8s] L29_E190.bin 4096:1024 fg0dt  used 16446541 total 16449536 lt 7036 dec True ok True
+[    75.2s] payload 180/240 done (74s)
+[    75.2s] L29_E190.bin 8192:2048 fg0e   used 16452616 total 16453632 lt 9720 dec False ok None
+[    75.2s] L29_E190.bin 8192:2048 fg0de  used 16446772 total 16449536 lt 3876 dec True ok True
+[    76.8s] payload 181/240 done (76s)
+[    76.8s] L30_E054.bin 1024:256 fg0e   used 16646339 total 16650240 lt 77760 dec False ok None
+[    76.8s] L30_E054.bin 1024:256 fg0de  used 16589003 total 16592896 lt 20424 dec True ok True
+[    77.0s] payload 182/240 done (76s)
+[    77.0s] L30_E054.bin 2048:512 fg0e   used 16538069 total 16539648 lt 38880 dec False ok None
+[    77.0s] L30_E054.bin 2048:512 fg0de  used 16510653 total 16510976 lt 11464 dec True ok True
+[    77.1s] payload 183/240 done (76s)
+[    77.1s] L30_E054.bin 4096:1024 fg0t   used 16463096 total 16465920 lt 19440 dec False ok None
+[    77.1s] L30_E054.bin 4096:1024 fg0dt  used 16450164 total 16453632 lt 6508 dec True ok True
+[    77.2s] payload 184/240 done (76s)
+[    77.2s] L30_E054.bin 2048:512 fg0t   used 16496599 total 16498688 lt 38880 dec False ok None
+[    77.2s] L30_E054.bin 2048:512 fg0dt  used 16469255 total 16470016 lt 11536 dec True ok True
+[    77.3s] payload 185/240 done (77s)
+[    77.3s] L30_E054.bin 4096:1024 fg0e   used 16483839 total 16486400 lt 19440 dec False ok None
+[    77.3s] L30_E054.bin 4096:1024 fg0de  used 16470879 total 16474112 lt 6480 dec True ok True
+[    77.5s] payload 186/240 done (77s)
+[    77.5s] L30_E054.bin 8192:2048 fg0e   used 16456791 total 16457728 lt 9720 dec False ok None
+[    77.5s] L30_E054.bin 8192:2048 fg0de  used 16450611 total 16453632 lt 3540 dec True ok True
+[    77.7s] payload 187/240 done (77s)
+[    77.7s] L31_E171.bin 1024:256 fg0e   used 16648942 total 16650240 lt 77760 dec False ok None
+[    77.7s] L31_E171.bin 1024:256 fg0de  used 16591790 total 16592896 lt 20608 dec True ok True
+[    77.7s] payload 188/240 done (77s)
+[    77.7s] L31_E171.bin 2048:512 fg0e   used 16540725 total 16543744 lt 38880 dec False ok None
+[    77.7s] L31_E171.bin 2048:512 fg0de  used 16513493 total 16515072 lt 11648 dec True ok True
+[    79.8s] payload 189/240 done (79s)
+[    79.8s] L31_E171.bin 2048:512 fg0t   used 16499216 total 16502784 lt 38880 dec False ok None
+[    79.8s] L31_E171.bin 2048:512 fg0dt  used 16471960 total 16474112 lt 11624 dec True ok True
+[    80.0s] payload 190/240 done (79s)
+[    80.0s] L31_E171.bin 4096:1024 fg0e   used 16486528 total 16490496 lt 19440 dec False ok None
+[    80.0s] L31_E171.bin 4096:1024 fg0de  used 16473740 total 16474112 lt 6652 dec True ok True
+[    80.1s] payload 191/240 done (79s)
+[    80.1s] L31_E171.bin 4096:1024 fg0t   used 16465754 total 16465920 lt 19440 dec False ok None
+[    80.1s] L31_E171.bin 4096:1024 fg0dt  used 16452950 total 16453632 lt 6636 dec True ok True
+[    80.4s] payload 192/240 done (80s)
+[    80.4s] L31_E171.bin 8192:2048 fg0e   used 16459474 total 16461824 lt 9720 dec False ok None
+[    80.4s] L31_E171.bin 8192:2048 fg0de  used 16453398 total 16453632 lt 3644 dec True ok True
+[    80.4s] payload 193/240 done (80s)
+[    80.4s] L32_E148.bin 1024:256 fg0e   used 16651455 total 16654336 lt 77760 dec False ok None
+[    80.4s] L32_E148.bin 1024:256 fg0de  used 16594911 total 16596992 lt 21216 dec True ok True
+[    80.6s] payload 194/240 done (80s)
+[    80.6s] L32_E148.bin 2048:512 fg0e   used 16543107 total 16543744 lt 38880 dec False ok None
+[    80.6s] L32_E148.bin 2048:512 fg0de  used 16516431 total 16519168 lt 12204 dec True ok True
+[    80.7s] payload 195/240 done (80s)
+[    80.7s] L32_E148.bin 2048:512 fg0t   used 16501639 total 16502784 lt 38880 dec False ok None
+[    80.7s] L32_E148.bin 2048:512 fg0dt  used 16474927 total 16478208 lt 12168 dec True ok True
+[    82.7s] payload 196/240 done (82s)
+[    82.7s] L32_E148.bin 4096:1024 fg0e   used 16488950 total 16490496 lt 19440 dec False ok None
+[    82.7s] L32_E148.bin 4096:1024 fg0de  used 16476454 total 16478208 lt 6944 dec True ok True
+[    82.7s] payload 197/240 done (82s)
+[    82.7s] L32_E148.bin 4096:1024 fg0t   used 16468198 total 16470016 lt 19440 dec False ok None
+[    82.7s] L32_E148.bin 4096:1024 fg0dt  used 16455714 total 16457728 lt 6956 dec True ok True
+[    83.0s] payload 198/240 done (82s)
+[    83.0s] L33_E188.bin 1024:256 fg0e   used 16633717 total 16633856 lt 77760 dec False ok None
+[    83.0s] L33_E188.bin 1024:256 fg0de  used 16576309 total 16576512 lt 20352 dec True ok True
+[    83.0s] payload 199/240 done (82s)
+[    83.0s] L32_E148.bin 8192:2048 fg0e   used 16461914 total 16465920 lt 9720 dec False ok None
+[    83.0s] L32_E148.bin 8192:2048 fg0de  used 16455978 total 16457728 lt 3784 dec True ok True
+[    83.2s] payload 200/240 done (82s)
+[    83.2s] L33_E188.bin 2048:512 fg0t   used 16484007 total 16486400 lt 38880 dec False ok None
+[    83.2s] L33_E188.bin 2048:512 fg0dt  used 16456351 total 16457728 lt 11224 dec True ok True
+[    83.3s] payload 201/240 done (82s)
+[    83.3s] L33_E188.bin 2048:512 fg0e   used 16525461 total 16527360 lt 38880 dec False ok None
+[    83.3s] L33_E188.bin 2048:512 fg0de  used 16497761 total 16498688 lt 11180 dec True ok True
+[    83.5s] payload 202/240 done (83s)
+[    83.5s] L33_E188.bin 4096:1024 fg0t   used 16450514 total 16453632 lt 19440 dec False ok None
+[    83.5s] L33_E188.bin 4096:1024 fg0dt  used 16437306 total 16441344 lt 6232 dec True ok True
+[    83.7s] payload 203/240 done (83s)
+[    83.7s] L33_E188.bin 4096:1024 fg0e   used 16471306 total 16474112 lt 19440 dec False ok None
+[    83.7s] L33_E188.bin 4096:1024 fg0de  used 16458102 total 16461824 lt 6236 dec True ok True
+[    86.0s] payload 204/240 done (85s)
+[    86.0s] L33_E188.bin 8192:2048 fg0e   used 16444234 total 16445440 lt 9720 dec False ok None
+[    86.0s] L33_E188.bin 8192:2048 fg0de  used 16437818 total 16441344 lt 3304 dec True ok True
+[    86.0s] payload 205/240 done (85s)
+[    86.0s] L34_E078.bin 1024:256 fg0e   used 16661696 total 16662528 lt 77760 dec False ok None
+[    86.0s] L34_E078.bin 1024:256 fg0de  used 16607604 total 16609280 lt 23668 dec True ok True
+[    86.2s] payload 206/240 done (85s)
+[    86.2s] L34_E078.bin 2048:512 fg0t   used 16511906 total 16515072 lt 38880 dec False ok None
+[    86.2s] L34_E078.bin 2048:512 fg0dt  used 16486958 total 16490496 lt 13932 dec True ok True
+[    86.2s] payload 207/240 done (85s)
+[    86.2s] L34_E078.bin 2048:512 fg0e   used 16553429 total 16556032 lt 38880 dec False ok None
+[    86.2s] L34_E078.bin 2048:512 fg0de  used 16528501 total 16531456 lt 13952 dec True ok True
+[    86.6s] payload 208/240 done (86s)
+[    86.6s] L34_E078.bin 4096:1024 fg0e   used 16499270 total 16502784 lt 19440 dec False ok None
+[    86.6s] L34_E078.bin 4096:1024 fg0de  used 16487802 total 16490496 lt 7972 dec True ok True
+[    86.6s] payload 209/240 done (86s)
+[    86.6s] L34_E078.bin 4096:1024 fg0t   used 16478526 total 16482304 lt 19440 dec False ok None
+[    86.6s] L34_E078.bin 4096:1024 fg0dt  used 16467046 total 16470016 lt 7960 dec True ok True
+[    87.0s] payload 210/240 done (86s)
+[    87.0s] L34_E078.bin 8192:2048 fg0e   used 16472211 total 16474112 lt 9720 dec False ok None
+[    87.0s] L34_E078.bin 8192:2048 fg0de  used 16466907 total 16470016 lt 4416 dec True ok True
+[    88.5s] payload 211/240 done (88s)
+[    88.5s] L35_E173.bin 1024:256 fg0e   used 16661823 total 16662528 lt 77760 dec False ok None
+[    88.5s] L35_E173.bin 1024:256 fg0de  used 16606351 total 16609280 lt 22288 dec True ok True
+[    88.6s] payload 212/240 done (88s)
+[    88.6s] L35_E173.bin 2048:512 fg0e   used 16553610 total 16556032 lt 38880 dec False ok None
+[    88.6s] L35_E173.bin 2048:512 fg0de  used 16527742 total 16531456 lt 13012 dec True ok True
+[    88.9s] payload 213/240 done (88s)
+[    88.9s] L35_E173.bin 2048:512 fg0t   used 16512063 total 16515072 lt 38880 dec False ok None
+[    88.9s] L35_E173.bin 2048:512 fg0dt  used 16486239 total 16486400 lt 13056 dec True ok True
+[    89.2s] payload 214/240 done (88s)
+[    89.2s] L35_E173.bin 4096:1024 fg0e   used 16499454 total 16502784 lt 19440 dec False ok None
+[    89.2s] L35_E173.bin 4096:1024 fg0de  used 16487470 total 16490496 lt 7456 dec True ok True
+[    89.2s] payload 215/240 done (88s)
+[    89.2s] L35_E173.bin 4096:1024 fg0t   used 16478722 total 16482304 lt 19440 dec False ok None
+[    89.2s] L35_E173.bin 4096:1024 fg0dt  used 16466754 total 16470016 lt 7472 dec True ok True
+[    89.3s] payload 216/240 done (88s)
+[    89.3s] L36_E107.bin 1024:256 fg0e   used 16643344 total 16646144 lt 77760 dec False ok None
+[    89.3s] L36_E107.bin 1024:256 fg0de  used 16587180 total 16588800 lt 21596 dec True ok True
+[    89.5s] payload 217/240 done (89s)
+[    89.5s] L35_E173.bin 8192:2048 fg0e   used 16472457 total 16474112 lt 9720 dec False ok None
+[    89.5s] L35_E173.bin 8192:2048 fg0de  used 16466865 total 16470016 lt 4128 dec True ok True
+[    89.5s] payload 218/240 done (89s)
+[    89.5s] L36_E107.bin 2048:512 fg0e   used 16535121 total 16535552 lt 38880 dec False ok None
+[    89.5s] L36_E107.bin 2048:512 fg0de  used 16508829 total 16510976 lt 12588 dec True ok True
+[    91.9s] payload 219/240 done (91s)
+[    91.9s] L36_E107.bin 2048:512 fg0t   used 16493750 total 16494592 lt 38880 dec False ok None
+[    91.9s] L36_E107.bin 2048:512 fg0dt  used 16467450 total 16470016 lt 12580 dec True ok True
+[    92.1s] payload 220/240 done (91s)
+[    92.1s] L36_E107.bin 4096:1024 fg0t   used 16460223 total 16461824 lt 19440 dec False ok None
+[    92.1s] L36_E107.bin 4096:1024 fg0dt  used 16448019 total 16449536 lt 7236 dec True ok True
+[    92.2s] payload 221/240 done (91s)
+[    92.2s] L36_E107.bin 4096:1024 fg0e   used 16480978 total 16482304 lt 19440 dec False ok None
+[    92.2s] L36_E107.bin 4096:1024 fg0de  used 16468762 total 16470016 lt 7224 dec True ok True
+[    92.4s] payload 222/240 done (92s)
+[    92.4s] L36_E107.bin 8192:2048 fg0e   used 16453935 total 16457728 lt 9720 dec False ok None
+[    92.4s] L36_E107.bin 8192:2048 fg0de  used 16448219 total 16449536 lt 4004 dec True ok True
+[    92.4s] payload 223/240 done (92s)
+[    92.5s] L37_E177.bin 1024:256 fg0e   used 16675110 total 16678912 lt 77760 dec False ok None
+[    92.5s] L37_E177.bin 1024:256 fg0de  used 16620578 total 16621568 lt 23228 dec True ok True
+[    92.5s] payload 224/240 done (92s)
+[    92.5s] L37_E177.bin 2048:512 fg0t   used 16525263 total 16527360 lt 38880 dec False ok None
+[    92.5s] L37_E177.bin 2048:512 fg0dt  used 16499955 total 16502784 lt 13572 dec True ok True
+[    92.7s] payload 225/240 done (92s)
+[    92.7s] L37_E177.bin 2048:512 fg0e   used 16566783 total 16568320 lt 38880 dec False ok None
+[    92.7s] L37_E177.bin 2048:512 fg0de  used 16541495 total 16543744 lt 13592 dec True ok True
+[    94.3s] payload 226/240 done (94s)
+[    94.3s] L37_E177.bin 4096:1024 fg0t   used 16491892 total 16494592 lt 19440 dec False ok None
+[    94.3s] L37_E177.bin 4096:1024 fg0dt  used 16480148 total 16482304 lt 7696 dec True ok True
+[    94.5s] payload 227/240 done (94s)
+[    94.5s] L37_E177.bin 4096:1024 fg0e   used 16512675 total 16515072 lt 19440 dec False ok None
+[    94.5s] L37_E177.bin 4096:1024 fg0de  used 16500947 total 16502784 lt 7712 dec True ok True
+[    94.7s] payload 228/240 done (94s)
+[    94.7s] L37_E177.bin 8192:2048 fg0e   used 16485598 total 16486400 lt 9720 dec False ok None
+[    94.7s] L37_E177.bin 8192:2048 fg0de  used 16480118 total 16482304 lt 4240 dec True ok True
+[    94.8s] payload 229/240 done (94s)
+[    94.8s] L38_E005.bin 2048:512 fg0t   used 16499659 total 16502784 lt 38880 dec False ok None
+[    94.8s] L38_E005.bin 2048:512 fg0dt  used 16473395 total 16474112 lt 12616 dec True ok True
+[    94.8s] payload 230/240 done (94s)
+[    94.8s] L38_E005.bin 1024:256 fg0e   used 16649461 total 16650240 lt 77760 dec False ok None
+[    94.8s] L38_E005.bin 1024:256 fg0de  used 16593393 total 16596992 lt 21692 dec True ok True
+[    94.9s] payload 231/240 done (94s)
+[    94.9s] L38_E005.bin 2048:512 fg0e   used 16541209 total 16543744 lt 38880 dec False ok None
+[    94.9s] L38_E005.bin 2048:512 fg0de  used 16514985 total 16515072 lt 12656 dec True ok True
+[    95.0s] payload 232/240 done (94s)
+[    95.0s] L38_E005.bin 4096:1024 fg0t   used 16466316 total 16470016 lt 19440 dec False ok None
+[    95.0s] L38_E005.bin 4096:1024 fg0dt  used 16453956 total 16457728 lt 7080 dec True ok True
+[    95.0s] payload 233/240 done (94s)
+[    95.0s] L38_E005.bin 4096:1024 fg0e   used 16487046 total 16490496 lt 19440 dec False ok None
+[    95.0s] L38_E005.bin 4096:1024 fg0de  used 16474698 total 16478208 lt 7092 dec True ok True
+[    96.5s] payload 234/240 done (96s)
+[    96.5s] L39_E156.bin 1024:256 fg0e   used 16862645 total 16863232 lt 77760 dec False ok None
+[    96.5s] L39_E156.bin 1024:256 fg0de  used 16814329 total 16818176 lt 29444 dec True ok True
+[    96.6s] payload 235/240 done (96s)
+[    96.6s] L39_E156.bin 2048:512 fg0e   used 16754474 total 16756736 lt 38880 dec False ok None
+[    96.6s] L39_E156.bin 2048:512 fg0de  used 16732950 total 16736256 lt 17356 dec True ok True
+[    96.6s] payload 236/240 done (96s)
+[    96.6s] L38_E005.bin 8192:2048 fg0e   used 16459974 total 16461824 lt 9720 dec False ok None
+[    96.6s] L38_E005.bin 8192:2048 fg0de  used 16454230 total 16457728 lt 3976 dec True ok True
+[    96.7s] payload 237/240 done (96s)
+[    96.7s] L39_E156.bin 2048:512 fg0t   used 16712315 total 16715776 lt 38880 dec False ok None
+[    96.7s] L39_E156.bin 2048:512 fg0dt  used 16690771 total 16691200 lt 17336 dec True ok True
+[    96.9s] payload 238/240 done (96s)
+[    96.9s] L39_E156.bin 4096:1024 fg0t   used 16679229 total 16683008 lt 19440 dec False ok None
+[    96.9s] L39_E156.bin 4096:1024 fg0dt  used 16669697 total 16670720 lt 9908 dec True ok True
+[    96.9s] payload 239/240 done (96s)
+[    96.9s] L39_E156.bin 4096:1024 fg0e   used 16700308 total 16703488 lt 19440 dec False ok None
+[    96.9s] L39_E156.bin 4096:1024 fg0de  used 16690788 total 16691200 lt 9920 dec True ok True
+[    97.2s] payload 240/240 done (96s)
+[    97.2s] L39_E156.bin 8192:2048 fg0e   used 16673194 total 16674816 lt 9720 dec False ok None
+[    97.2s] L39_E156.bin 8192:2048 fg0de  used 16668830 total 16670720 lt 5356 dec True ok True
+[    97.3s] fg0de@1024:256     total   16627200.0 ratio 0.88440 lt  22614.7 40/40 equal to reference (byte-exact) vs 2048 +0.4183% CI +0.4156..+0.4210
+[    97.3s] fg0e@1024:256      total   16682188.8 ratio 0.88732 lt  77760.0 not decoded vs 2048 +0.5752% CI +0.5719..+0.5784
+[    97.3s] fg0de@2048:512     total   16548556.8 ratio 0.88021 lt  13118.6 40/40 equal to reference (byte-exact)
+[    97.3s] fg0dt@2048:512     total   16506880.0 ratio 0.87800 lt  13121.2 40/40 equal to reference (byte-exact)
+[    97.3s] fg0e@2048:512      total   16574054.4 ratio 0.88157 lt  38880.0 not decoded
+[    97.3s] fg0t@2048:512      total   16532684.8 ratio 0.87937 lt  38880.0 not decoded
+[    97.3s] fg0de@4096:1024    total   16508006.4 ratio 0.87806 lt   7512.7 40/40 equal to reference (byte-exact) vs 2048 -0.2157% CI -0.2179..-0.2130
+[    97.3s] fg0dt@4096:1024    total   16487526.4 ratio 0.87697 lt   7511.8 40/40 equal to reference (byte-exact) vs 2048 -0.1029% CI -0.1057..-0.0997
+[    97.3s] fg0e@4096:1024     total   16520192.0 ratio 0.87870 lt  19440.0 not decoded vs 2048 -0.2865% CI -0.2892..-0.2843
+[    97.3s] fg0t@4096:1024     total   16499404.8 ratio 0.87760 lt  19440.0 not decoded vs 2048 -0.1770% CI -0.1792..-0.1748
+[    97.3s] fg0de@8192:2048    total   16487424.0 ratio 0.87696 lt   4129.2 40/40 equal to reference (byte-exact) vs 2048 -0.3252% CI -0.3279..-0.3224
+[    97.3s] fg0e@8192:2048     total   16492441.6 ratio 0.87723 lt   9720.0 not decoded vs 2048 -0.4341% CI -0.4357..-0.4319
+[    97.3s] check sources_sha256: ok
+[    97.3s] check records_decode_byte_exact: ok {'decoded': 240, 'bad': []}
+[    97.3s] check 2048_equals_ceilref_heldout: ok {'compared': 160, 'mismatch': []}
+[    97.3s] check equals_team6_partial_rows: ok {'compared': 121, 'mismatch': []}
+[    97.3s] summary <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\results\chunk_sweep\summary.json
+RESULT chunk_sweep PASS 40 experts; total vs same config @2048:512: fg0de@1024:256 +0.418%, fg0de@4096:1024 -0.216%, fg0dt@4096:1024 -0.103%, fg0de@8192:2048 -0.325%

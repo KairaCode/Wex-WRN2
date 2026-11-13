@@ -1,0 +1,164 @@
+﻿
+{"compile_s": 89.27841901779175, "nvsmi_start": "210 MHz, 0 %, 17.78 W"}
+A/wdec/nt32/lb                 regs  72 occW  5 exact True | m1   302.1 (A   302.1 r 1.000) m3   880.6 (A   881.7 r 
+0.999) m24   5795.8 (A   5797.9 r 1.000)  22.7 GiB/s | 8str   5836.1 r 0.988
+A/wdec/nt64/lb                 regs  64 occW 10 exact True | m1   316.4 (A   300.0 r 1.055) m3   797.7 (A   880.6 r 
+0.905) m24   4711.4 (A   5854.2 r 0.805)  28.0 GiB/s | 8str   4756.8 r 0.798
+A/wdec/nt128/lb                regs  40 occW 20 exact True | m1   420.9 (A   302.1 r 1.398) m3   790.5 (A   884.7 r 
+0.891) m24   7993.3 (A   5826.6 r 1.372)  16.5 GiB/s | 8str   8018.9 r 1.350
+A/wdec/nt256/lb                regs  40 occW 40 exact True | m1   447.5 (A   302.1 r 1.481) m3   784.4 (A   884.7 r 
+0.887) m24   9488.4 (A   5827.6 r 1.629)  13.9 GiB/s | 8str   9468.9 r 1.596
+A/wdec/nt32/out4               regs  76 occW  4 exact True | m1   308.2 (A   302.1 r 1.020) m3   905.2 (A   885.8 r 
+1.022) m24   7072.8 (A   5826.6 r 1.214)  18.6 GiB/s | 8str   7104.5 r 1.198
+A/wdec/nt64/out4               regs  64 occW  6 exact True | m1   337.9 (A   301.1 r 1.122) m3   720.9 (A   884.7 r 
+0.815) m24   5574.9 (A   5825.5 r 0.957)  23.6 GiB/s | 8str   5628.9 r 0.943
+A/wdec/nt128/out4              regs  40 occW  8 exact True | m1   433.2 (A   302.1 r 1.434) m3   920.6 (A   885.8 r 
+1.039) m24   5604.4 (A   5855.2 r 0.956)  23.5 GiB/s | 8str   5630.4 r 0.941
+A/wdec/nt256/out4              regs  40 occW  8 exact True | m1   447.5 (A   303.1 r 1.476) m3   900.1 (A   887.8 r 
+1.014) m24   5440.5 (A   5845.0 r 0.931)  24.2 GiB/s | 8str   5474.7 r 0.921
+A259/wdec/nt32/lb              regs  74 occW 10 exact True | m1   299.0 (A   302.1 r 0.990) m3   769.0 (A   887.8 r 
+0.865) m24   4642.8 (A   5913.6 r 0.785)  28.4 GiB/s | 8str   4699.1 r 0.778
+A259/wdec/nt64/lb              regs  64 occW 20 exact True | m1   319.5 (A   302.1 r 1.058) m3   694.3 (A   885.8 r 
+0.783) m24   8037.4 (A   5869.6 r 1.371)  16.4 GiB/s | 8str   8103.9 r 1.356
+A259/wdec/nt128/lb             regs  40 occW 40 exact True | m1   417.8 (A   303.1 r 1.380) m3   786.4 (A   886.8 r 
+0.887) m24   9149.4 (A   5844.0 r 1.566)  14.4 GiB/s | 8str   9090.2 r 1.516
+A259/wdec/nt256/lb             regs  40 occW 48 exact True | m1   433.2 (A   303.1 r 1.429) m3   657.4 (A   886.8 r 
+0.741) m24   9456.6 (A   5844.0 r 1.618)  13.9 GiB/s | 8str   9463.8 r 1.591
+A259/wdec/nt32/out4            regs  73 occW  7 exact True | m1   304.1 (A   303.1 r 1.003) m3   663.6 (A   886.8 r 
+0.748) m24   4609.0 (A   5910.5 r 0.779)  28.6 GiB/s | 8str   4665.3 r 0.775
+A259/wdec/nt64/out4            regs  64 occW 10 exact True | m1   340.0 (A   302.1 r 1.125) m3   726.0 (A   887.8 r 
+0.818) m24   4046.8 (A   5940.2 r 0.681)  32.6 GiB/s | 8str   4089.9 r 0.675
+A259/wdec/nt128/out4           regs  40 occW 12 exact True | m1   437.2 (A   302.1 r 1.446) m3   580.6 (A   890.9 r 
+0.653) m24   4327.4 (A   5916.7 r 0.731)  30.5 GiB/s | 8str   4413.5 r 0.727
+A259/wdec/nt256/out4           regs  40 occW 16 exact True | m1   469.0 (A   302.1 r 1.553) m3   611.3 (A   886.8 r 
+0.689) m24   4168.7 (A   5947.4 r 0.701)  31.6 GiB/s | 8str   4261.9 r 0.696
+B1/wdec/nt32/lb                regs  80 occW  5 exact True | m1   304.1 (A   303.1 r 1.003) m3   897.0 (A   889.9 r 
+1.008) m24   5907.5 (A   5856.3 r 1.009)  22.3 GiB/s | 8str   5942.7 r 0.994
+B1/wdec/nt64/lb                regs  64 occW 10 exact True | m1   321.5 (A   303.1 r 1.061) m3   813.1 (A   889.9 r 
+0.914) m24   4774.9 (A   5942.3 r 0.803)  27.6 GiB/s | 8str   4824.8 r 0.795
+B1/wdec/nt128/lb               regs  40 occW 20 exact True | m1   440.3 (A   303.1 r 1.450) m3   785.4 (A   888.8 r 
+0.883) m24   7932.9 (A   5856.3 r 1.355)  16.6 GiB/s | 8str   8006.7 r 1.330
+B1/wdec/nt256/lb               regs  40 occW 40 exact True | m1   466.9 (A   303.1 r 1.541) m3   789.5 (A   888.8 r 
+0.888) m24   9520.1 (A   5857.3 r 1.625)  13.8 GiB/s | 8str   9494.5 r 1.586
+B1/wdec/nt32/out4              regs  82 occW  4 exact True | m1   310.3 (A   303.1 r 1.024) m3   914.4 (A   889.9 r 
+1.028) m24   7161.9 (A   5857.3 r 1.223)  18.4 GiB/s | 8str   7222.2 r 1.206
+B1/wdec/nt64/out4              regs  64 occW  6 exact True | m1   334.8 (A   303.1 r 1.105) m3   721.9 (A   889.9 r 
+0.811) m24   5589.0 (A   5883.9 r 0.950)  23.6 GiB/s | 8str   5636.1 r 0.939
+B1/wdec/nt128/out4             regs  40 occW  8 exact True | m1   438.3 (A   303.1 r 1.446) m3   928.8 (A   889.9 r 
+1.044) m24   5639.2 (A   5884.9 r 0.959)  23.4 GiB/s | 8str   5696.9 r 0.948
+B1/wdec/nt256/out4             regs  40 occW  8 exact True | m1   451.6 (A   303.3 r 1.486) m3   901.1 (A   889.9 r 
+1.013) m24   5445.6 (A   5859.3 r 0.930)  24.2 GiB/s | 8str   5504.0 r 0.920
+B1c/wdec/nt32/lb               regs  78 occW 10 exact True | m1   304.1 (A   303.1 r 1.000) m3   776.2 (A   890.9 r 
+0.870) m24   4676.6 (A   5946.4 r 0.787)  28.2 GiB/s | 8str   4725.5 r 0.778
+B1c/wdec/nt64/lb               regs  64 occW 20 exact True | m1   331.8 (A   303.2 r 1.091) m3   693.2 (A   888.8 r 
+0.780) m24   7889.9 (A   5883.9 r 1.340)  16.7 GiB/s | 8str   7908.4 r 1.311
+B1c/wdec/nt128/lb              regs  40 occW 40 exact True | m1   378.9 (A   304.1 r 1.249) m3   711.7 (A   888.8 r 
+0.800) m24   9097.3 (A   5886.0 r 1.545)  14.5 GiB/s | 8str   9122.0 r 1.516
+B1c/wdec/nt256/lb              regs  40 occW 48 exact True | m1   400.4 (A   304.1 r 1.318) m3   609.3 (A   888.8 r 
+0.684) m24   9446.4 (A   5858.3 r 1.611)  14.0 GiB/s | 8str   9456.8 r 1.581
+B1c/wdec/nt32/out4             regs  82 occW  7 exact True | m1   308.2 (A   303.1 r 1.017) m3   671.7 (A   889.9 r 
+0.755) m24   4671.5 (A   5939.2 r 0.786)  28.2 GiB/s | 8str   4704.4 r 0.776
+B1c/wdec/nt64/out4             regs  64 occW 10 exact True | m1   345.1 (A   303.1 r 1.139) m3   737.3 (A   889.9 r 
+0.828) m24   4107.3 (A   5948.4 r 0.691)  32.1 GiB/s | 8str   4156.4 r 0.683
+B1c/wdec/nt128/out4            regs  40 occW 12 exact True | m1   378.9 (A   303.1 r 1.247) m3   499.7 (A   894.0 r 
+0.558) m24   3893.2 (A   5976.1 r 0.651)  33.9 GiB/s | 8str   3969.4 r 0.646
+B1c/wdec/nt256/out4            regs  40 occW 16 exact True | m1   410.6 (A   303.1 r 1.351) m3   572.4 (A   894.0 r 
+0.640) m24   3744.8 (A   6004.7 r 0.623)  35.2 GiB/s | 8str   3805.2 r 0.617
+B2/wdec/nt32/lb                regs 113 occW  5 exact True | m1   298.0 (A   304.1 r 0.980) m3   875.5 (A   890.9 r 
+0.984) m24   5781.5 (A   5882.9 r 0.983)  22.8 GiB/s | 8str   5835.8 r 0.971
+B2/wdec/nt64/lb                regs  64 occW 10 exact True | m1   366.6 (A   303.1 r 1.206) m3   788.5 (A   889.9 r 
+0.885) m24   4346.9 (A   5945.3 r 0.731)  30.3 GiB/s | 8str   4413.9 r 0.723
+B2/wdec/nt128/lb               regs  48 occW 20 exact True | m1   408.6 (A   304.1 r 1.345) m3   579.6 (A   894.0 r 
+0.649) m24   5769.2 (A   5940.2 r 0.971)  22.9 GiB/s | 8str   5773.4 r 0.935
+B2/wdec/nt256/lb               regs  48 occW 40 exact True | m1   434.2 (A   304.1 r 1.428) m3   610.3 (A   888.8 r 
+0.685) m24   8210.4 (A   5884.9 r 1.394)  16.1 GiB/s | 8str   8216.6 r 1.359
+B2/wdec/nt32/out4              regs 115 occW  4 exact True | m1   307.2 (A   304.1 r 1.010) m3   900.1 (A   890.9 r 
+1.012) m24   7042.0 (A   5856.3 r 1.202)  18.7 GiB/s | 8str   7088.2 r 1.182
+B2/wdec/nt64/out4              regs  64 occW  6 exact True | m1   366.6 (A   303.1 r 1.209) m3   776.2 (A   889.9 r 
+0.872) m24   6041.6 (A   5880.8 r 1.027)  21.8 GiB/s | 8str   6097.6 r 1.010
+B2/wdec/nt128/out4             regs  48 occW  8 exact True | m1   418.8 (A   304.1 r 1.377) m3   886.8 (A   890.9 r 
+0.995) m24   5409.8 (A   5910.5 r 0.915)  24.4 GiB/s | 8str   5445.4 r 0.901
+B2/wdec/nt256/out4             regs  48 occW  8 exact True | m1   435.2 (A   304.1 r 1.431) m3   871.4 (A   889.9 r 
+0.979) m24   5293.1 (A   5883.9 r 0.899)  24.9 GiB/s | 8str   5334.0 r 0.887
+B2c/wdec/nt32/lb               regs 112 occW 10 exact True | m1   303.1 (A   304.1 r 0.997) m3   684.0 (A   889.9 r 
+0.769) m24   3934.2 (A   5978.1 r 0.658)  33.5 GiB/s | 8str   4003.9 r 0.648
+B2c/wdec/nt64/lb               regs  64 occW 20 exact True | m1   377.9 (A   303.1 r 1.243) m3   546.8 (A   892.9 r 
+0.613) m24   6037.5 (A   5916.7 r 1.017)  21.8 GiB/s | 8str   6073.2 r 0.997
+B2c/wdec/nt128/lb              regs  48 occW 40 exact True | m1   357.4 (A   304.1 r 1.176) m3   524.3 (A   898.0 r 
+0.584) m24   7806.0 (A   5917.7 r 1.317)  16.9 GiB/s | 8str   7846.9 r 1.300
+B2c/wdec/nt256/lb              regs  48 occW 40 exact True | m1   378.9 (A   303.1 r 1.249) m3   556.0 (A   891.9 r 
+0.623) m24   8003.6 (A   5882.9 r 1.360)  16.5 GiB/s | 8str   7826.6 r 1.291
+B2c/wdec/nt32/out4             regs 115 occW  7 exact True | m1   308.2 (A   304.1 r 1.013) m3   672.8 (A   889.9 r 
+0.757) m24   4693.0 (A   5944.3 r 0.789)  28.1 GiB/s | 8str   4739.4 r 0.779
+B2c/wdec/nt64/out4             regs  64 occW 10 exact True | m1   368.6 (A   303.1 r 1.215) m3   774.1 (A   889.9 r 
+0.870) m24   4262.9 (A   5973.0 r 0.714)  30.9 GiB/s | 8str   4304.9 r 0.705
+B2c/wdec/nt128/out4            regs  48 occW 12 exact True | m1   367.6 (A   303.1 r 1.210) m3   485.4 (A   898.0 r 
+0.540) m24   3775.5 (A   6003.7 r 0.629)  34.9 GiB/s | 8str   3852.3 r 0.622
+B2c/wdec/nt256/out4            regs  48 occW 16 exact True | m1   394.2 (A   303.2 r 1.300) m3   563.2 (A   892.9 r 
+0.631) m24   3562.5 (A   6007.8 r 0.593)  37.0 GiB/s | 8str   3617.8 r 0.584
+C/wdec/nt32/lb                 regs  74 occW  2 exact True | m1   587.8 (A   304.1 r 1.933) m3  1742.8 (A   890.9 r 
+1.956) m24  13569.0 (A   5856.3 r 2.317)   9.7 GiB/s | 8str  13634.7 r 2.276
+C/wdec/nt64/lb                 regs  64 occW  4 exact True | m1   330.8 (A   303.1 r 1.091) m3   974.8 (A   889.9 r 
+1.094) m24   7633.9 (A   5857.3 r 1.304)  17.3 GiB/s | 8str   7696.3 r 1.281
+C/wdec/nt128/lb                regs  40 occW  8 exact True | m1   421.9 (A   303.1 r 1.389) m3   906.2 (A   889.9 r 
+1.017) m24   5636.1 (A   5886.0 r 0.958)  23.4 GiB/s | 8str   5696.8 r 0.943
+C/wdec/nt256/lb                regs  40 occW 16 exact True | m1   449.5 (A   303.1 r 1.481) m3   762.9 (A   888.8 r 
+0.858) m24   6667.3 (A   5888.0 r 1.131)  19.8 GiB/s | 8str   6726.7 r 1.111
+C/wdec/nt32/out4               regs  74 occW  2 exact True | m1   588.8 (A   304.1 r 1.936) m3  1743.9 (A   890.9 r 
+1.959) m24  13578.2 (A   5857.3 r 2.318)   9.7 GiB/s | 8str  13659.1 r 2.275
+C/wdec/nt64/out4               regs  64 occW  4 exact True | m1   337.9 (A   303.1 r 1.115) m3   993.3 (A   889.9 r 
+1.116) m24   7778.3 (A   5857.3 r 1.328)  16.9 GiB/s | 8str   7824.7 r 1.304
+C/wdec/nt128/out4              regs  40 occW  4 exact True | m1   430.1 (A   304.1 r 1.411) m3  1270.0 (A   889.9 r 
+1.428) m24   9980.9 (A   5858.3 r 1.703)  13.2 GiB/s | 8str  10029.1 r 1.672
+C/wdec/nt256/out4              regs  40 occW  8 exact True | m1   473.1 (A   303.1 r 1.558) m3   933.9 (A   890.0 r 
+1.049) m24   5712.9 (A   5886.0 r 0.971)  23.1 GiB/s | 8str   5750.0 r 0.956
+CB2/wdec/nt32/lb               regs 112 occW  2 exact True | m1   593.1 (A   304.1 r 1.953) m3  1759.2 (A   890.9 r 
+1.975) m24  13682.7 (A   5856.3 r 2.335)   9.6 GiB/s | 8str  13748.2 r 2.299
+CB2/wdec/nt64/lb               regs  64 occW  4 exact True | m1   364.5 (A   303.1 r 1.202) m3  1074.2 (A   889.9 r 
+1.207) m24   8412.2 (A   5856.3 r 1.437)  15.7 GiB/s | 8str   8458.1 r 1.416
+CB2/wdec/nt128/lb              regs  48 occW  8 exact True | m1   376.8 (A   304.1 r 1.239) m3   814.1 (A   889.9 r 
+0.915) m24   5006.3 (A   5914.7 r 0.846)  26.3 GiB/s | 8str   5064.7 r 0.836
+CB2/wdec/nt256/lb              regs  48 occW 16 exact True | m1   405.5 (A   304.1 r 1.334) m3   583.7 (A   891.9 r 
+0.654) m24   4253.7 (A   5977.1 r 0.711)  31.0 GiB/s | 8str   4288.5 r 0.697
+CB2/wdec/nt32/out4             regs 113 occW  2 exact True | m1   623.6 (A   304.1 r 2.054) m3  1847.3 (A   890.9 r 
+2.074) m24  14347.3 (A   5858.3 r 2.449)   9.2 GiB/s | 8str  14412.2 r 2.410
+CB2/wdec/nt64/out4             regs  64 occW  4 exact True | m1   364.5 (A   303.1 r 1.203) m3  1072.1 (A   889.9 r 
+1.206) m24   8402.9 (A   5857.3 r 1.435)  15.7 GiB/s | 8str   8441.2 r 1.415
+CB2/wdec/nt128/out4            regs  48 occW  4 exact True | m1   369.7 (A   304.1 r 1.215) m3  1096.7 (A   889.9 r 
+1.232) m24   8610.8 (A   5857.3 r 1.470)  15.3 GiB/s | 8str   8650.8 r 1.447
+CB2/wdec/nt256/out4            regs  48 occW  8 exact True | m1   402.4 (A   303.1 r 1.325) m3   805.9 (A   889.9 r 
+0.906) m24   4909.1 (A   5917.7 r 0.829)  26.9 GiB/s | 8str   4954.2 r 0.818
+D/wdec/nt32/lb                 regs  76 occW 16 exact True | m1   280.6 (A   303.1 r 0.926) m3   831.5 (A   888.8 r 
+0.935) m24   7663.6 (A   5855.2 r 1.309)  17.2 GiB/s | 8str   7718.9 r 1.285
+D/wdec/nt64/lb                 regs  64 occW 32 exact True | m1   285.7 (A   303.1 r 0.943) m3   835.6 (A   888.8 r 
+0.939) m24   8466.4 (A   5880.8 r 1.439)  15.6 GiB/s | 8str   8501.0 r 1.410
+D/wdec/nt128/lb                regs  40 occW 48 exact True | m1   328.7 (A   304.1 r 1.081) m3   774.1 (A   889.9 r 
+0.871) m24   8704.0 (A   5857.3 r 1.486)  15.1 GiB/s | 8str   8724.6 r 1.457
+D/wdec/nt256/lb                regs  40 occW 48 exact True | m1   356.4 (A   303.1 r 1.176) m3   786.4 (A   888.8 r 
+0.885) m24   8704.0 (A   5857.3 r 1.486)  15.1 GiB/s | 8str   8737.0 r 1.459
+D/wdec/nt32/out4               regs  73 occW 10 exact True | m1   282.6 (A   303.1 r 0.932) m3   657.4 (A   890.9 r 
+0.738) m24   3813.4 (A   5946.4 r 0.641)  34.6 GiB/s | 8str   3857.8 r 0.635
+D/wdec/nt64/out4               regs  66 occW 14 exact True | m1   292.9 (A   303.1 r 0.963) m3   523.3 (A   892.9 r 
+0.586) m24   4765.7 (A   5937.2 r 0.803)  27.7 GiB/s | 8str   4792.3 r 0.785
+D/wdec/nt128/out4              regs  44 occW 16 exact True | m1   362.5 (A   303.1 r 1.193) m3   631.8 (A   889.9 r 
+0.711) m24   5282.8 (A   5912.8 r 0.893)  25.0 GiB/s | 8str   5333.0 r 0.880
+D/wdec/nt256/out4              regs  44 occW 16 exact True | m1   385.0 (A   303.1 r 1.270) m3   630.8 (A   889.9 r 
+0.710) m24   5186.6 (A   5913.6 r 0.876)  25.4 GiB/s | 8str   5177.3 r 0.852
+DB2/wdec/nt32/lb               regs 112 occW 16 exact True | m1   269.5 (A   303.1 r 0.889) m3   513.0 (A   888.8 r 
+0.575) m24   5069.8 (A   5915.6 r 0.857)  26.0 GiB/s | 8str   5109.8 r 0.842
+DB2/wdec/nt64/lb               regs  64 occW 32 exact True | m1   277.5 (A   303.1 r 0.919) m3   511.0 (A   888.8 r 
+0.574) m24   6472.7 (A   5914.6 r 1.095)  20.4 GiB/s | 8str   6489.5 r 1.074
+DB2/wdec/nt128/lb              regs  48 occW 40 exact True | m1   300.0 (A   303.1 r 0.990) m3   492.5 (A   889.9 r 
+0.554) m24   6366.2 (A   5884.9 r 1.082)  20.7 GiB/s | 8str   6366.3 r 1.055
+DB2/wdec/nt256/lb              regs  48 occW 40 exact True | m1   321.5 (A   303.1 r 1.061) m3   498.7 (A   888.8 r 
+0.562) m24   6543.4 (A   5882.9 r 1.113)  20.1 GiB/s | 8str   6438.9 r 1.067
+DB2/wdec/nt32/out4             regs 114 occW 10 exact True | m1   274.4 (A   303.1 r 0.902) m3   596.0 (A   890.9 r 
+0.669) m24   3318.8 (A   5975.0 r 0.556)  39.7 GiB/s | 8str   3364.1 r 0.551
+DB2/wdec/nt64/out4             regs  64 occW 14 exact True | m1   285.7 (A   303.1 r 0.943) m3   419.8 (A   894.0 r 
+0.470) m24   3180.5 (A   5979.1 r 0.531)  41.5 GiB/s | 8str   3236.9 r 0.528
+DB2/wdec/nt128/out4            regs  48 occW 16 exact True | m1   309.2 (A   303.1 r 1.020) m3   447.5 (A   892.9 r 
+0.501) m24   3527.7 (A   5975.0 r 0.590)  37.4 GiB/s | 8str   3572.7 r 0.582
+DB2/wdec/nt256/out4            regs  48 occW 16 exact True | m1   331.8 (A   303.1 r 1.095) m3   463.9 (A   891.9 r 
+0.520) m24   3507.2 (A   5974.0 r 0.587)  37.6 GiB/s | 8str   3561.5 r 0.581
+
+

@@ -1,0 +1,70 @@
+﻿{
+ "model_build_s": 3.1628623008728027,
+ "model_insample_bits_per_w": {
+  "A_567ctx": 3.76651980957582,
+  "D_mag_only_plus_raw_sign": 3.766517912747733,
+  "C_bm7_half_plus_side_bit": 3.758487201160222
+ }
+}
+B2s {"payload_bytes": 134670083, "length_table_bytes": 552960, "sign_plane_bytes": 0, "total_bytes": 135223043, "bits_per_weight_total": 3.8209997954191985, "bits_per_weight_rans_only": 3.8053747954191985, "mean_stream_bytes": 487.0879738136574, "max_stream_bytes": 529, "encode_s": 49.83733630180359}
+DB2s {"payload_bytes": 99280529, "length_table_bytes": 552960, "sign_plane_bytes": 35389440, "total_bytes": 135222929, "bits_per_weight_total": 3.8209965741192855, "bits_per_weight_rans_only": 2.8053715741192855, "mean_stream_bytes": 359.08756148726854, "max_stream_bytes": 402, "encode_s": 44.22583365440369}
+{
+ "model_build_s": 3.1628623008728027,
+ "model_insample_bits_per_w": {
+  "A_567ctx": 3.76651980957582,
+  "D_mag_only_plus_raw_sign": 3.766517912747733,
+  "C_bm7_half_plus_side_bit": 3.758487201160222
+ },
+ "matrices": [
+  "L04_E038.w1",
+  "L04_E038.w2",
+  "L04_E038.w3",
+  "L00_E097.w1",
+  "L00_E097.w2",
+  "L00_E097.w3",
+  "L10_E015.w1",
+  "L10_E015.w2",
+  "L10_E015.w3",
+  "L20_E005.w1",
+  "L20_E005.w2",
+  "L20_E005.w3",
+  "L30_E002.w1",
+  "L30_E002.w2",
+  "L30_E002.w3",
+  "L39_E156.w1",
+  "L39_E156.w2",
+  "L39_E156.w3",
+  "L15_E025.w1",
+  "L15_E025.w2",
+  "L15_E025.w3",
+  "L25_E000.w1",
+  "L25_E000.w2",
+  "L25_E000.w3"
+ ],
+ "streams_per_matrix": 5760,
+ "sizes": {
+  "B2s": {
+   "payload_bytes": 134670083,
+   "length_table_bytes": 552960,
+   "sign_plane_bytes": 0,
+   "total_bytes": 135223043,
+   "bits_per_weight_total": 3.8209997954191985,
+   "bits_per_weight_rans_only": 3.8053747954191985,
+   "mean_stream_bytes": 487.0879738136574,
+   "max_stream_bytes": 529,
+   "encode_s": 49.83733630180359
+  },
+  "DB2s": {
+   "payload_bytes": 99280529,
+   "length_table_bytes": 552960,
+   "sign_plane_bytes": 35389440,
+   "total_bytes": 135222929,
+   "bits_per_weight_total": 3.8209965741192855,
+   "bits_per_weight_rans_only": 2.8053715741192855,
+   "mean_stream_bytes": 359.08756148726854,
+   "max_stream_bytes": 402,
+   "encode_s": 44.22583365440369
+  }
+ },
+ "total_s": 104.4227066040039
+}

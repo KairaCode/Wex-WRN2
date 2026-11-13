@@ -1,0 +1,4147 @@
+{
+ "invariants": {
+  "sample": {
+   "experts": 160,
+   "matrices": 480,
+   "blocks": 176947200,
+   "block_max_hist": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    79342654,
+    97604546
+   ],
+   "blocks_max_lt6": 0,
+   "blocks_stored_max5": 0,
+   "blocks_allzero": 0,
+   "even_blocks": 54228706,
+   "even_pct": 30.646829110604745,
+   "even_pct_per_matrix_type_mean": [
+    30.31357828776041,
+    31.11879645453559,
+    30.508112589518234
+   ],
+   "even_pct_per_expert_min_max": [
+    22.78275101273148,
+    31.881058304398145
+   ],
+   "max6_blocks_without_1_or_3": 292,
+   "scale_min": 118,
+   "scale_max": 126,
+   "scale_n0": 0,
+   "scale_n254": 0,
+   "scale_n255": 0,
+   "even_scale_max": 124,
+   "even_at_254": 0,
+   "even_at_255_overflow": 0,
+   "transformed_scale_max": 126,
+   "roundtrip_fail_matrices": 0,
+   "inverse_selects_exactly_even_fail": 0,
+   "canonical_zero_commute_fail": 0,
+   "canonical_zero_roundtrip_fail": 0,
+   "sign_plane_changed": 0,
+   "neg0_fraction": 0.058263309090225784,
+   "median_changed_matrices": 451,
+   "median_shift_hist": {
+    "-1": 0,
+    "0": 29,
+    "1": 451,
+    "2": 0
+   },
+   "not_counted_matrices": 0
+  },
+  "extra_routed": {
+   "experts": 70,
+   "matrices": 210,
+   "blocks": 77414400,
+   "block_max_hist": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    34789754,
+    42624646
+   ],
+   "blocks_max_lt6": 0,
+   "blocks_stored_max5": 0,
+   "blocks_allzero": 0,
+   "even_blocks": 23724490,
+   "even_pct": 30.646094266699734,
+   "even_pct_per_matrix_type_mean": [
+    30.326435391865083,
+    31.179203093998016,
+    30.432644314236118
+   ],
+   "even_pct_per_expert_min_max": [
+    26.02123119212963,
+    31.65699146412037
+   ],
+   "max6_blocks_without_1_or_3": 126,
+   "scale_min": 118,
+   "scale_max": 125,
+   "scale_n0": 0,
+   "scale_n254": 0,
+   "scale_n255": 0,
+   "even_scale_max": 124,
+   "even_at_254": 0,
+   "even_at_255_overflow": 0,
+   "transformed_scale_max": 125,
+   "roundtrip_fail_matrices": 0,
+   "inverse_selects_exactly_even_fail": 0,
+   "canonical_zero_commute_fail": 0,
+   "canonical_zero_roundtrip_fail": 0,
+   "sign_plane_changed": 0,
+   "neg0_fraction": 0.05825528341626364,
+   "median_changed_matrices": 194,
+   "median_shift_hist": {
+    "-1": 0,
+    "0": 16,
+    "1": 194,
+    "2": 0
+   },
+   "not_counted_matrices": 0,
+   "per_expert": [
+    {
+     "f": "L00_E083.bin",
+     "even_pct": 30.744,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L00_E117.bin",
+     "even_pct": 30.408,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L01_E059.bin",
+     "even_pct": 31.382,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L01_E078.bin",
+     "even_pct": 30.891,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L02_E101.bin",
+     "even_pct": 30.949,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L02_E144.bin",
+     "even_pct": 30.958,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L03_E003.bin",
+     "even_pct": 31.456,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L04_E144.bin",
+     "even_pct": 31.275,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L04_E175.bin",
+     "even_pct": 31.145,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L05_E020.bin",
+     "even_pct": 31.182,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L05_E112.bin",
+     "even_pct": 30.754,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L06_E110.bin",
+     "even_pct": 31.249,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L06_E183.bin",
+     "even_pct": 30.713,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L07_E027.bin",
+     "even_pct": 31.165,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L08_E000.bin",
+     "even_pct": 30.128,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L08_E097.bin",
+     "even_pct": 30.785,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L09_E077.bin",
+     "even_pct": 31.186,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L09_E175.bin",
+     "even_pct": 31.282,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L10_E105.bin",
+     "even_pct": 30.853,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L10_E122.bin",
+     "even_pct": 30.846,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L11_E022.bin",
+     "even_pct": 30.641,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L12_E069.bin",
+     "even_pct": 30.219,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L12_E097.bin",
+     "even_pct": 31.376,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L13_E109.bin",
+     "even_pct": 30.869,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 123
+    },
+    {
+     "f": "L13_E180.bin",
+     "even_pct": 31.058,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L14_E000.bin",
+     "even_pct": 29.765,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L14_E109.bin",
+     "even_pct": 30.784,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L15_E147.bin",
+     "even_pct": 31.078,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L16_E054.bin",
+     "even_pct": 31.224,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L16_E088.bin",
+     "even_pct": 30.759,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L17_E103.bin",
+     "even_pct": 29.739,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 123
+    },
+    {
+     "f": "L17_E113.bin",
+     "even_pct": 29.252,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 123
+    },
+    {
+     "f": "L18_E128.bin",
+     "even_pct": 29.597,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 124
+    },
+    {
+     "f": "L18_E170.bin",
+     "even_pct": 30.386,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L19_E047.bin",
+     "even_pct": 31.243,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L20_E003.bin",
+     "even_pct": 31.203,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L20_E105.bin",
+     "even_pct": 30.431,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L21_E131.bin",
+     "even_pct": 30.959,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L21_E180.bin",
+     "even_pct": 31.657,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L22_E024.bin",
+     "even_pct": 30.681,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L22_E179.bin",
+     "even_pct": 30.304,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L23_E118.bin",
+     "even_pct": 30.861,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L24_E120.bin",
+     "even_pct": 30.74,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L24_E186.bin",
+     "even_pct": 31.401,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L25_E020.bin",
+     "even_pct": 31.473,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L25_E130.bin",
+     "even_pct": 31.362,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L26_E100.bin",
+     "even_pct": 30.897,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L26_E145.bin",
+     "even_pct": 31.343,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L27_E169.bin",
+     "even_pct": 30.977,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L28_E021.bin",
+     "even_pct": 27.234,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L28_E135.bin",
+     "even_pct": 31.526,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L29_E023.bin",
+     "even_pct": 31.293,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L29_E165.bin",
+     "even_pct": 31.432,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L30_E166.bin",
+     "even_pct": 31.205,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 124
+    },
+    {
+     "f": "L30_E179.bin",
+     "even_pct": 30.144,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L31_E092.bin",
+     "even_pct": 31.184,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L32_E013.bin",
+     "even_pct": 30.729,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L32_E071.bin",
+     "even_pct": 31.551,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L33_E038.bin",
+     "even_pct": 29.291,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 123
+    },
+    {
+     "f": "L33_E128.bin",
+     "even_pct": 30.826,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L34_E002.bin",
+     "even_pct": 31.585,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L34_E066.bin",
+     "even_pct": 31.366,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L35_E134.bin",
+     "even_pct": 30.227,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L36_E026.bin",
+     "even_pct": 30.583,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 123
+    },
+    {
+     "f": "L36_E101.bin",
+     "even_pct": 29.47,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L37_E065.bin",
+     "even_pct": 30.816,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L37_E103.bin",
+     "even_pct": 31.236,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L38_E057.bin",
+     "even_pct": 27.056,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 122
+    },
+    {
+     "f": "L38_E167.bin",
+     "even_pct": 28.816,
+     "lt6": 0,
+     "rt": true,
+     "smin": 119,
+     "smax": 123
+    },
+    {
+     "f": "L39_E010.bin",
+     "even_pct": 26.021,
+     "lt6": 0,
+     "rt": true,
+     "smin": 118,
+     "smax": 125
+    }
+   ]
+  },
+  "extra_mtp": {
+   "experts": 6,
+   "matrices": 18,
+   "blocks": 6635520,
+   "block_max_hist": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    3171234,
+    3464286
+   ],
+   "blocks_max_lt6": 0,
+   "blocks_stored_max5": 0,
+   "blocks_allzero": 0,
+   "even_blocks": 1470020,
+   "even_pct": 22.15380256558642,
+   "even_pct_per_matrix_type_mean": [
+    20.696072048611114,
+    23.76591435185185,
+    21.999421296296294
+   ],
+   "even_pct_per_expert_min_max": [
+    19.219382957175927,
+    25.54976851851852
+   ],
+   "max6_blocks_without_1_or_3": 63901,
+   "scale_min": 112,
+   "scale_max": 126,
+   "scale_n0": 0,
+   "scale_n254": 0,
+   "scale_n255": 0,
+   "even_scale_max": 125,
+   "even_at_254": 0,
+   "even_at_255_overflow": 0,
+   "transformed_scale_max": 126,
+   "roundtrip_fail_matrices": 0,
+   "inverse_selects_exactly_even_fail": 0,
+   "canonical_zero_commute_fail": 0,
+   "canonical_zero_roundtrip_fail": 0,
+   "sign_plane_changed": 0,
+   "neg0_fraction": 0.11064609480492862,
+   "median_changed_matrices": 2,
+   "median_shift_hist": {
+    "-1": 0,
+    "0": 16,
+    "1": 2,
+    "2": 0
+   },
+   "not_counted_matrices": 0,
+   "per_expert": [
+    {
+     "f": "M00_E001.bin",
+     "even_pct": 22.359,
+     "lt6": 0,
+     "rt": true,
+     "smin": 112,
+     "smax": 124
+    },
+    {
+     "f": "M00_E094.bin",
+     "even_pct": 22.795,
+     "lt6": 0,
+     "rt": true,
+     "smin": 112,
+     "smax": 124
+    },
+    {
+     "f": "M01_E024.bin",
+     "even_pct": 20.144,
+     "lt6": 0,
+     "rt": true,
+     "smin": 121,
+     "smax": 124
+    },
+    {
+     "f": "M01_E039.bin",
+     "even_pct": 19.219,
+     "lt6": 0,
+     "rt": true,
+     "smin": 120,
+     "smax": 124
+    },
+    {
+     "f": "M02_E079.bin",
+     "even_pct": 22.855,
+     "lt6": 0,
+     "rt": true,
+     "smin": 121,
+     "smax": 126
+    },
+    {
+     "f": "M02_E126.bin",
+     "even_pct": 25.55,
+     "lt6": 0,
+     "rt": true,
+     "smin": 112,
+     "smax": 124
+    }
+   ]
+  },
+  "duplicate_matrices_all_sets": 0,
+  "fallback_estimate": {
+   "records_checked_routed": 230,
+   "blocks_checked_routed": 254361600,
+   "violating_blocks": 0,
+   "records_violating": 0,
+   "upper95_records_violating_fraction_rule_of_3": 0.013043478260869565,
+   "upper95_expected_fallback_records_of_7680": 100.17391304347827,
+   "point_estimate_fallback_records_of_7680": 0
+  }
+ },
+ "group_weights": [
+  1415577600,
+  1415577600,
+  1415577600,
+  1415577600,
+  2477260800,
+  212336640
+ ],
+ "heldout": {
+  "P1_two_way_sample(even<->odd, 160)|byte": {
+   "summary": {
+    "best_non_ceil": "V6b_o_clsh_pm2b(class order-0 first, scale|class)",
+    "best_ceil": "C1_ceil_pm2b(implicit)",
+    "ceil_on_top_of_best_non_ceil_record_pct_of_raw": -0.1336257385962292,
+    "ceil_on_top_of_best_non_ceil_weight_pct": -0.5640340263820183,
+    "ceil_C4_vs_hybrid_H_record_pct_of_raw": -0.08126006957766693
+   },
+   "rows": {
+    "V0_today_o_base": {
+     "bpw_incl_side_flush": 3.7824345546052385,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16871215.5013459,
+     "d_weight_pct_vs_V0": 0.0,
+     "d_record_pct_of_raw_vs_V0": 0.0,
+     "share_of_C0_ceil_gain_captured": 0.0
+    },
+    "V7_o_pm2b": {
+     "bpw_incl_side_flush": 3.7718815288935206,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16824532.292565487,
+     "d_weight_pct_vs_V0": -0.2790008805008733,
+     "d_record_pct_of_raw_vs_V0": -0.24830648733453559,
+     "share_of_C0_ceil_gain_captured": 0.1375026075828899
+    },
+    "V1_o_bm7h(+bm7 side)": {
+     "bpw_incl_side_flush": 3.774367644241388,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16835530.07130754,
+     "d_weight_pct_vs_V0": -0.21327296605908763,
+     "d_record_pct_of_raw_vs_V0": -0.18980965562001623,
+     "share_of_C0_ceil_gain_captured": 0.10510930613343081
+    },
+    "V2_o_ev(+even flag side, all blocks)": {
+     "bpw_incl_side_flush": 3.714961419023376,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16572735.940935127,
+     "d_weight_pct_vs_V0": -1.7838546736971703,
+     "d_record_pct_of_raw_vs_V0": -1.58760319016146,
+     "share_of_C0_ceil_gain_captured": 0.8791537458302777
+    },
+    "V3_o_cls(+3-class side = bm7 + even bit per max-7 block)": {
+     "bpw_incl_side_flush": 3.7154343829544145,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16574828.182017583,
+     "d_weight_pct_vs_V0": -1.7713504538829108,
+     "d_record_pct_of_raw_vs_V0": -1.5764746270782035,
+     "share_of_C0_ceil_gain_captured": 0.8729911744894135
+    },
+    "V4_o_clsh(+3-class side)": {
+     "bpw_incl_side_flush": 3.7135732619964887,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16566595.178458426,
+     "d_weight_pct_vs_V0": -1.8205547674290583,
+     "d_record_pct_of_raw_vs_V0": -1.6202657084411638,
+     "share_of_C0_ceil_gain_captured": 0.8972409955106787
+    },
+    "V5_o_bm7h_pm2b(team2 best non-ceil)": {
+     "bpw_incl_side_flush": 3.7643612136989395,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16791264.824645523,
+     "d_weight_pct_vs_V0": -0.47782296416190695,
+     "d_record_pct_of_raw_vs_V0": -0.42525508014820756,
+     "share_of_C0_ceil_gain_captured": 0.2354899504879613
+    },
+    "V6_o_clsh_pm2b(+3-class side, scale first)": {
+     "bpw_incl_side_flush": 3.71349459472889,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16566247.179640096,
+     "d_weight_pct_vs_V0": -1.8226345725509465,
+     "d_record_pct_of_raw_vs_V0": -1.622116702972895,
+     "share_of_C0_ceil_gain_captured": 0.8982660052777083
+    },
+    "V6b_o_clsh_pm2b(class order-0 first, scale|class)": {
+     "bpw_incl_side_flush": 3.729469550579247,
+     "bit_per_scale": 0.4252769040385648,
+     "record_bytes_payload": 16556770.140720693,
+     "d_weight_pct_vs_V0": -1.4002887098602892,
+     "d_record_pct_of_raw_vs_V0": -1.6725247684398274,
+     "share_of_C0_ceil_gain_captured": 0.926180058266481
+    },
+    "H_o_clsh_pm2b + ceil scales (s+even) + bm3 side": {
+     "bpw_incl_side_flush": 3.7142793483656282,
+     "bit_per_scale": 0.9166811721500293,
+     "record_bytes_payload": 16557505.273016084,
+     "d_weight_pct_vs_V0": -1.8018872568893238,
+     "d_record_pct_of_raw_vs_V0": -1.6686146233841772,
+     "share_of_C0_ceil_gain_captured": 0.9240147699288674
+    },
+    "C0_ceil_base(implicit)": {
+     "bpw_incl_side_flush": 3.7084476474201167,
+     "bit_per_scale": 0.9166811721500293,
+     "record_bytes_payload": 16531707.694177443,
+     "d_weight_pct_vs_V0": -1.956065759156105,
+     "d_record_pct_of_raw_vs_V0": -1.8058311162197447,
+     "share_of_C0_ceil_gain_captured": 1.0
+    },
+    "C1_ceil_pm2b(implicit)": {
+     "bpw_incl_side_flush": 3.7084340733104235,
+     "bit_per_scale": 0.9166811721500293,
+     "record_bytes_payload": 16531647.646659875,
+     "d_weight_pct_vs_V0": -1.9564246314511096,
+     "d_record_pct_of_raw_vs_V0": -1.8061505070360566,
+     "share_of_C0_ceil_gain_captured": 1.0001768663821569
+    },
+    "C2_ceil_bm3(+bm3 side)": {
+     "bpw_incl_side_flush": 3.712607874535935,
+     "bit_per_scale": 0.9166811721500293,
+     "record_bytes_payload": 16550111.207665145,
+     "d_weight_pct_vs_V0": -1.8460776798976521,
+     "d_record_pct_of_raw_vs_V0": -1.7079434193769656,
+     "share_of_C0_ceil_gain_captured": 0.9457935484865865
+    },
+    "C3_ceil_bm3h(+bm3 side)": {
+     "bpw_incl_side_flush": 3.710752563424013,
+     "bit_per_scale": 0.9166811721500293,
+     "record_bytes_payload": 16541903.90500556,
+     "d_weight_pct_vs_V0": -1.8951283927424531,
+     "d_record_pct_of_raw_vs_V0": -1.7515977984810072,
+     "share_of_C0_ceil_gain_captured": 0.9699676690407976
+    },
+    "C4_ceil_bm3h_pm2b(+bm3 side)": {
+     "bpw_incl_side_flush": 3.7108257954085775,
+     "bit_per_scale": 0.9166811721500293,
+     "record_bytes_payload": 16542227.859871037,
+     "d_weight_pct_vs_V0": -1.8931922856265937,
+     "d_record_pct_of_raw_vs_V0": -1.749874692961844,
+     "share_of_C0_ceil_gain_captured": 0.9690134793030716
+    },
+    "C4b_ceil_bm3h_pm2b(bm3 order-0 first, scale|bm3)": {
+     "bpw_incl_side_flush": 3.726015997622196,
+     "bit_per_scale": 0.4252769040385648,
+     "record_bytes_payload": 16541492.727575647,
+     "d_weight_pct_vs_V0": -1.4915937385975708,
+     "d_record_pct_of_raw_vs_V0": -1.7537848380174943,
+     "share_of_C0_ceil_gain_captured": 0.9711787676406851
+    }
+   }
+  },
+  "P1_two_way_sample(even<->odd, 160)|z": {
+   "summary": {
+    "best_non_ceil": "V6b_o_clsh_pm2b(class order-0 first, scale|class)",
+    "best_ceil": "C1_ceil_pm2b(implicit)",
+    "ceil_on_top_of_best_non_ceil_record_pct_of_raw": -0.13352946403988336,
+    "ceil_on_top_of_best_non_ceil_weight_pct": -0.5820978622658607,
+    "ceil_C4_vs_hybrid_H_record_pct_of_raw": -0.08141078766620208
+   },
+   "rows": {
+    "V0_today_o_base": {
+     "bpw_incl_side_flush": 3.666003813685021,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16356163.161351953,
+     "d_weight_pct_vs_V0": 0.0,
+     "d_record_pct_of_raw_vs_V0": 0.0,
+     "share_of_C0_ceil_gain_captured": 0.0
+    },
+    "V7_o_pm2b": {
+     "bpw_incl_side_flush": 3.655449632709444,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16309474.842053913,
+     "d_weight_pct_vs_V0": -0.2878933441416203,
+     "d_record_pct_of_raw_vs_V0": -0.24833367001357465,
+     "share_of_C0_ceil_gain_captured": 0.13751813422584022
+    },
+    "V1_o_bm7h(+bm7 side)": {
+     "bpw_incl_side_flush": 3.6579353014442173,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16320470.645122554,
+     "d_weight_pct_vs_V0": -0.2200901213109588,
+     "d_record_pct_of_raw_vs_V0": -0.1898473468424402,
+     "share_of_C0_ceil_gain_captured": 0.10513054038975554
+    },
+    "V2_o_ev(+even flag side, all blocks)": {
+     "bpw_incl_side_flush": 3.5985302250882873,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16057681.596948354,
+     "d_weight_pct_vs_V0": -1.8405215058658133,
+     "d_record_pct_of_raw_vs_V0": -1.5876138493349117,
+     "share_of_C0_ceil_gain_captured": 0.8791626782614975
+    },
+    "V3_o_cls(+3-class side = bm7 + even bit per max-7 block)": {
+     "bpw_incl_side_flush": 3.5990025621041206,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16059771.064758556,
+     "d_weight_pct_vs_V0": -1.8276372580625224,
+     "d_record_pct_of_raw_vs_V0": -1.5765000371976525,
+     "share_of_C0_ceil_gain_captured": 0.8730082542191644
+    },
+    "V4_o_clsh(+3-class side)": {
+     "bpw_incl_side_flush": 3.5971403982287287,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16051533.447666261,
+     "d_weight_pct_vs_V0": -1.8784327282810909,
+     "d_record_pct_of_raw_vs_V0": -1.620315657795114,
+     "share_of_C0_ceil_gain_captured": 0.8972717477445524
+    },
+    "V5_o_bm7h_pm2b(team2 best non-ceil)": {
+     "bpw_incl_side_flush": 3.6479255372732275,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16276190.651554631,
+     "d_weight_pct_vs_V0": -0.493133049788659,
+     "d_record_pct_of_raw_vs_V0": -0.4253712096892533,
+     "share_of_C0_ceil_gain_captured": 0.23555507034812145
+    },
+    "V6_o_clsh_pm2b(+3-class side, scale first)": {
+     "bpw_incl_side_flush": 3.5970576566234995,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16051167.425282042,
+     "d_weight_pct_vs_V0": -1.8806897255302555,
+     "d_record_pct_of_raw_vs_V0": -1.6222625190946172,
+     "share_of_C0_ceil_gain_captured": 0.8983498485654742
+    },
+    "V6b_o_clsh_pm2b(class order-0 first, scale|class)": {
+     "bpw_incl_side_flush": 3.6130326124738565,
+     "bit_per_scale": 0.4252769040385648,
+     "record_bytes_payload": 16041690.38636264,
+     "d_weight_pct_vs_V0": -1.444930335681198,
+     "d_record_pct_of_raw_vs_V0": -1.6726705845615495,
+     "share_of_C0_ceil_gain_captured": 0.9262639977526047
+    },
+    "H_o_clsh_pm2b + ceil scales (s+even) + bm3 side": {
+     "bpw_incl_side_flush": 3.597842410260238,
+     "bit_per_scale": 0.9166811721500293,
+     "record_bytes_payload": 16042425.51865803,
+     "d_weight_pct_vs_V0": -1.8592834838398011,
+     "d_record_pct_of_raw_vs_V0": -1.6687604395058995,
+     "share_of_C0_ceil_gain_captured": 0.924098701952901
+    },
+    "C0_ceil_base(implicit)": {
+     "bpw_incl_side_flush": 3.5920171709899416,
+     "bit_per_scale": 0.9166811721500293,
+     "record_bytes_payload": 16016656.524202805,
+     "d_weight_pct_vs_V0": -2.018182371193691,
+     "d_record_pct_of_raw_vs_V0": -1.8058248929246434,
+     "share_of_C0_ceil_gain_captured": 1.0
+    },
+    "C1_ceil_pm2b(implicit)": {
+     "bpw_incl_side_flush": 3.592001226873678,
+     "bit_per_scale": 0.9166811721500293,
+     "record_bytes_payload": 16016585.992534572,
+     "d_weight_pct_vs_V0": -2.0186172893518277,
+     "d_record_pct_of_raw_vs_V0": -1.806200048601433,
+     "share_of_C0_ceil_gain_captured": 1.0002077475386786
+    },
+    "C2_ceil_bm3(+bm3 side)": {
+     "bpw_incl_side_flush": 3.596175958697119,
+     "bit_per_scale": 0.9166811721500293,
+     "record_bytes_payload": 16035053.670207294,
+     "d_weight_pct_vs_V0": -1.9047403804447167,
+     "d_record_pct_of_raw_vs_V0": -1.7079710645204578,
+     "share_of_C0_ceil_gain_captured": 0.9458121167851965
+    },
+    "C3_ceil_bm3h(+bm3 side)": {
+     "bpw_incl_side_flush": 3.594318314854461,
+     "bit_per_scale": 0.9166811721500293,
+     "record_bytes_payload": 16026836.048293402,
+     "d_weight_pct_vs_V0": -1.9554125547540717,
+     "d_record_pct_of_raw_vs_V0": -1.7516803314065388,
+     "share_of_C0_ceil_gain_captured": 0.970016715502014
+    },
+    "C4_ceil_bm3h_pm2b(+bm3 side)": {
+     "bpw_incl_side_flush": 3.5943824517844245,
+     "bit_per_scale": 0.9166811721500293,
+     "record_bytes_payload": 16027119.769547744,
+     "d_weight_pct_vs_V0": -1.9536630494828549,
+     "d_record_pct_of_raw_vs_V0": -1.7501712271721015,
+     "share_of_C0_ceil_gain_captured": 0.9691810285866602
+    },
+    "C4b_ceil_bm3h_pm2b(bm3 order-0 first, scale|bm3)": {
+     "bpw_incl_side_flush": 3.609572653998043,
+     "bit_per_scale": 0.4252769040385648,
+     "record_bytes_payload": 16026384.637252353,
+     "d_weight_pct_vs_V0": -1.5393099013242517,
+     "d_record_pct_of_raw_vs_V0": -1.7540813722277517,
+     "share_of_C0_ceil_gain_captured": 0.9713463243863639
+    }
+   }
+  },
+  "P1_two_way_sample(even<->odd, 160)|signbypass": {
+   "summary": {
+    "best_non_ceil": "V6b_o_clsh_pm2b(class order-0 first, scale|class)",
+    "best_ceil": "C1_ceil_pm2b(implicit)",
+    "ceil_on_top_of_best_non_ceil_record_pct_of_raw": -0.13115920602316877,
+    "ceil_on_top_of_best_non_ceil_weight_pct": -0.5612424753782297,
+    "ceil_C4_vs_hybrid_H_record_pct_of_raw": -0.08198388098117786
+   },
+   "rows": {
+    "V0_today_o_base": {
+     "bpw_incl_side_flush": 3.7824295582568634,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16871193.39909952,
+     "d_weight_pct_vs_V0": 0.0,
+     "d_record_pct_of_raw_vs_V0": 0.0,
+     "share_of_C0_ceil_gain_captured": 0.0
+    },
+    "V7_o_pm2b": {
+     "bpw_incl_side_flush": 3.771870046817725,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16824481.499536432,
+     "d_weight_pct_vs_V0": -0.2791727189231442,
+     "d_record_pct_of_raw_vs_V0": -0.24845909268561608,
+     "share_of_C0_ceil_gain_captured": 0.13757963419191138
+    },
+    "V1_o_bm7h(+bm7 side)": {
+     "bpw_incl_side_flush": 3.774317484488979,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16835308.180614006,
+     "d_weight_pct_vs_V0": -0.2144672793753976,
+     "d_record_pct_of_raw_vs_V0": -0.1908723239502249,
+     "share_of_C0_ceil_gain_captured": 0.10569202448010152
+    },
+    "V2_o_ev(+even flag side, all blocks)": {
+     "bpw_incl_side_flush": 3.7149000536961925,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16572464.480364572,
+     "d_weight_pct_vs_V0": -1.785347315014956,
+     "d_record_pct_of_raw_vs_V0": -1.5889295190746118,
+     "share_of_C0_ceil_gain_captured": 0.8798403778589919
+    },
+    "V3_o_cls(+3-class side = bm7 + even bit per max-7 block)": {
+     "bpw_incl_side_flush": 3.715333625632857,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16574382.463869356,
+     "d_weight_pct_vs_V0": -1.773884525556844,
+     "d_record_pct_of_raw_vs_V0": -1.578727826447215,
+     "share_of_C0_ceil_gain_captured": 0.8741913789648702
+    },
+    "V4_o_clsh(+3-class side)": {
+     "bpw_incl_side_flush": 3.71346706932355,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16566125.416055001,
+     "d_weight_pct_vs_V0": -1.8232326041015499,
+     "d_record_pct_of_raw_vs_V0": -1.6226467984309045,
+     "share_of_C0_ceil_gain_captured": 0.8985106986335063
+    },
+    "V5_o_bm7h_pm2b(team2 best non-ceil)": {
+     "bpw_incl_side_flush": 3.764293063420487,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16790963.34962174,
+     "d_weight_pct_vs_V0": -0.47949326106511003,
+     "d_record_pct_of_raw_vs_V0": -0.42674105497356524,
+     "share_of_C0_ceil_gain_captured": 0.2362999784122305
+    },
+    "V6_o_clsh_pm2b(+3-class side, scale first)": {
+     "bpw_incl_side_flush": 3.7133667373923736,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16565681.579697695,
+     "d_weight_pct_vs_V0": -1.8258851830757574,
+     "d_record_pct_of_raw_vs_V0": -1.6250075497527037,
+     "share_of_C0_ceil_gain_captured": 0.8998179210811152
+    },
+    "V6b_o_clsh_pm2b(class order-0 first, scale|class)": {
+     "bpw_incl_side_flush": 3.729341693242731,
+     "bit_per_scale": 0.4252769040385648,
+     "record_bytes_payload": 16556204.540778296,
+     "d_weight_pct_vs_V0": -1.4035387624931217,
+     "d_record_pct_of_raw_vs_V0": -1.6754156152196162,
+     "share_of_C0_ceil_gain_captured": 0.9277304564296808
+    },
+    "H_o_clsh_pm2b + ceil scales (s+even) + bm3 side": {
+     "bpw_incl_side_flush": 3.714151491029112,
+     "bit_per_scale": 0.9166811721500293,
+     "record_bytes_payload": 16556939.673073683,
+     "d_weight_pct_vs_V0": -1.805137840008253,
+     "d_record_pct_of_raw_vs_V0": -1.671505470163986,
+     "share_of_C0_ceil_gain_captured": 0.9255652858151698
+    },
+    "C0_ceil_base(implicit)": {
+     "bpw_incl_side_flush": 3.7084384781946156,
+     "bit_per_scale": 0.9166811721500293,
+     "record_bytes_payload": 16531667.132457977,
+     "d_weight_pct_vs_V0": -1.9561786656602462,
+     "d_record_pct_of_raw_vs_V0": -1.805929301563905,
+     "share_of_C0_ceil_gain_captured": 1.0
+    },
+    "C1_ceil_pm2b(implicit)": {
+     "bpw_incl_side_flush": 3.708411043608263,
+     "bit_per_scale": 0.9166811721500293,
+     "record_bytes_payload": 16531545.770627022,
+     "d_weight_pct_vs_V0": -1.956903982177842,
+     "d_record_pct_of_raw_vs_V0": -1.806574821242785,
+     "share_of_C0_ceil_gain_captured": 1.0003574446011374
+    },
+    "C2_ceil_bm3(+bm3 side)": {
+     "bpw_incl_side_flush": 3.7125017185714766,
+     "bit_per_scale": 0.9166811721500293,
+     "record_bytes_payload": 16549641.60764829,
+     "d_weight_pct_vs_V0": -1.8487545797842477,
+     "d_record_pct_of_raw_vs_V0": -1.7103236456377584,
+     "share_of_C0_ceil_gain_captured": 0.9470601336146692
+    },
+    "C3_ceil_bm3h(+bm3 side)": {
+     "bpw_incl_side_flush": 3.7106376769510394,
+     "bit_per_scale": 0.9166811721500293,
+     "record_bytes_payload": 16541395.684012795,
+     "d_weight_pct_vs_V0": -1.8980361748999603,
+     "d_record_pct_of_raw_vs_V0": -1.754183448471576,
+     "share_of_C0_ceil_gain_captured": 0.9713466894592616
+    },
+    "C4_ceil_bm3h_pm2b(+bm3 side)": {
+     "bpw_incl_side_flush": 3.710667176087412,
+     "bit_per_scale": 0.9166811721500293,
+     "record_bytes_payload": 16541526.178752383,
+     "d_weight_pct_vs_V0": -1.8972562757394236,
+     "d_record_pct_of_raw_vs_V0": -1.7534893511451637,
+     "share_of_C0_ceil_gain_captured": 0.9709623458829041
+    },
+    "C4b_ceil_bm3h_pm2b(bm3 order-0 first, scale|bm3)": {
+     "bpw_incl_side_flush": 3.7258573783010314,
+     "bit_per_scale": 0.4252769040385648,
+     "record_bytes_payload": 16540791.046456998,
+     "d_weight_pct_vs_V0": -1.4956571982242923,
+     "d_record_pct_of_raw_vs_V0": -1.7573994962007842,
+     "share_of_C0_ceil_gain_captured": 0.9731275164974095
+    }
+   }
+  },
+  "P1_two_way_sample(even<->odd, 160)|z_signbypass": {
+   "summary": {
+    "best_non_ceil": "V6b_o_clsh_pm2b(class order-0 first, scale|class)",
+    "best_ceil": "C1_ceil_pm2b(implicit)",
+    "ceil_on_top_of_best_non_ceil_record_pct_of_raw": -0.13115920602315886,
+    "ceil_on_top_of_best_non_ceil_weight_pct": -0.5793432368284428,
+    "ceil_C4_vs_hybrid_H_record_pct_of_raw": -0.08198388098117786
+   },
+   "rows": {
+    "V0_today_o_base": {
+     "bpw_incl_side_flush": 3.665911542571959,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16355754.983474523,
+     "d_weight_pct_vs_V0": 0.0,
+     "d_record_pct_of_raw_vs_V0": 0.0,
+     "share_of_C0_ceil_gain_captured": 0.0
+    },
+    "V7_o_pm2b": {
+     "bpw_incl_side_flush": 3.65535203113282,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16309043.083911432,
+     "d_weight_pct_vs_V0": -0.28804599665081876,
+     "d_record_pct_of_raw_vs_V0": -0.248459092685626,
+     "share_of_C0_ceil_gain_captured": 0.13757963419191613
+    },
+    "V1_o_bm7h(+bm7 side)": {
+     "bpw_incl_side_flush": 3.657799468804074,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16319869.764989005,
+     "d_weight_pct_vs_V0": -0.2212839473533362,
+     "d_record_pct_of_raw_vs_V0": -0.19087232395023482,
+     "share_of_C0_ceil_gain_captured": 0.10569202448010644
+    },
+    "V2_o_ev(+even flag side, all blocks)": {
+     "bpw_incl_side_flush": 3.5983820380112874,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16057026.064739572,
+     "d_weight_pct_vs_V0": -1.842093126810516,
+     "d_record_pct_of_raw_vs_V0": -1.5889295190746215,
+     "share_of_C0_ceil_gain_captured": 0.8798403778589926
+    },
+    "V3_o_cls(+3-class side = bm7 + even bit per max-7 block)": {
+     "bpw_incl_side_flush": 3.5988156099479522,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16058944.048244357,
+     "d_weight_pct_vs_V0": -1.8302660019159356,
+     "d_record_pct_of_raw_vs_V0": -1.578727826447215,
+     "share_of_C0_ceil_gain_captured": 0.8741913789648654
+    },
+    "V4_o_clsh(+3-class side)": {
+     "bpw_incl_side_flush": 3.5969490536386455,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16050687.000430003,
+     "d_weight_pct_vs_V0": -1.881182568986106,
+     "d_record_pct_of_raw_vs_V0": -1.6226467984309045,
+     "share_of_C0_ceil_gain_captured": 0.8985106986335014
+    },
+    "V5_o_bm7h_pm2b(team2 best non-ceil)": {
+     "bpw_incl_side_flush": 3.647775047735582,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16275524.933996739,
+     "d_weight_pct_vs_V0": -0.4947335642379568,
+     "d_record_pct_of_raw_vs_V0": -0.4267410549735752,
+     "share_of_C0_ceil_gain_captured": 0.23629997841223468
+    },
+    "V6_o_clsh_pm2b(+3-class side, scale first)": {
+     "bpw_incl_side_flush": 3.5968487217074685,
+     "bit_per_scale": 1.0050304602850049,
+     "record_bytes_payload": 16050243.164072694,
+     "d_weight_pct_vs_V0": -1.8839194580248029,
+     "d_record_pct_of_raw_vs_V0": -1.6250075497527137,
+     "share_of_C0_ceil_gain_captured": 0.8998179210811158
+    },
+    "V6b_o_clsh_pm2b(class order-0 first, scale|class)": {
+     "bpw_incl_side_flush": 3.612823677557826,
+     "bit_per_scale": 0.4252769040385648,
+     "record_bytes_payload": 16040766.125153294,
+     "d_weight_pct_vs_V0": -1.448149100097682,
+     "d_record_pct_of_raw_vs_V0": -1.6754156152196362,
+     "share_of_C0_ceil_gain_captured": 0.9277304564296867
+    },
+    "H_o_clsh_pm2b + ceil scales (s+even) + bm3 side": {
+     "bpw_incl_side_flush": 3.597633475344207,
+     "bit_per_scale": 0.9166811721500293,
+     "record_bytes_payload": 16041501.257448683,
+     "d_weight_pct_vs_V0": -1.8625126775385472,
+     "d_record_pct_of_raw_vs_V0": -1.6715054701639958,
+     "share_of_C0_ceil_gain_captured": 0.9255652858151703
+    },
+    "C0_ceil_base(implicit)": {
+     "bpw_incl_side_flush": 3.5919204625097105,
+     "bit_per_scale": 0.9166811721500293,
+     "record_bytes_payload": 16016228.716832977,
+     "d_weight_pct_vs_V0": -2.0183542129425485,
+     "d_record_pct_of_raw_vs_V0": -1.805929301563915,
+     "share_of_C0_ceil_gain_captured": 1.0
+    },
+    "C1_ceil_pm2b(implicit)": {
+     "bpw_incl_side_flush": 3.591893027923358,
+     "bit_per_scale": 0.9166811721500293,
+     "record_bytes_payload": 16016107.355002021,
+     "d_weight_pct_vs_V0": -2.019102583055517,
+     "d_record_pct_of_raw_vs_V0": -1.806574821242795,
+     "share_of_C0_ceil_gain_captured": 1.0003574446011374
+    },
+    "C2_ceil_bm3(+bm3 side)": {
+     "bpw_incl_side_flush": 3.5959837028865715,
+     "bit_per_scale": 0.9166811721500293,
+     "record_bytes_payload": 16034203.19202329,
+     "d_weight_pct_vs_V0": -1.9075157399004443,
+     "d_record_pct_of_raw_vs_V0": -1.7103236456377682,
+     "share_of_C0_ceil_gain_captured": 0.9470601336146696
+    },
+    "C3_ceil_bm3h(+bm3 side)": {
+     "bpw_incl_side_flush": 3.5941196612661344,
+     "bit_per_scale": 0.9166811721500293,
+     "record_bytes_payload": 16025957.268387794,
+     "d_weight_pct_vs_V0": -1.9583637104199239,
+     "d_record_pct_of_raw_vs_V0": -1.7541834484715857,
+     "share_of_C0_ceil_gain_captured": 0.9713466894592618
+    },
+    "C4_ceil_bm3h_pm2b(+bm3 side)": {
+     "bpw_incl_side_flush": 3.594149160402507,
+     "bit_per_scale": 0.9166811721500293,
+     "record_bytes_payload": 16026087.763127383,
+     "d_weight_pct_vs_V0": -1.9575590227991189,
+     "d_record_pct_of_raw_vs_V0": -1.7534893511451737,
+     "share_of_C0_ceil_gain_captured": 0.9709623458829042
+    },
+    "C4b_ceil_bm3h_pm2b(bm3 order-0 first, scale|bm3)": {
+     "bpw_incl_side_flush": 3.6093393626161263,
+     "bit_per_scale": 0.4252769040385648,
+     "record_bytes_payload": 16025352.630831996,
+     "d_weight_pct_vs_V0": -1.5431954453582415,
+     "d_record_pct_of_raw_vs_V0": -1.7573994962008042,
+     "share_of_C0_ceil_gain_captured": 0.9731275164974151
+    }
+   }
+  },
+  "P2_one_way_train_even80_test_odd80|byte": {
+   "summary": {
+    "best_non_ceil": "V6b_o_clsh_pm2b(class order-0 first, scale|class)",
+    "best_ceil": "C1_ceil_pm2b(implicit)",
+    "ceil_on_top_of_best_non_ceil_record_pct_of_raw": -0.15189387040348806,
+    "ceil_on_top_of_best_non_ceil_weight_pct": -0.5797656263053886,
+    "ceil_C4_vs_hybrid_H_record_pct_of_raw": -0.09792755703182353
+   },
+   "rows": {
+    "V0_today_o_base": {
+     "bpw_incl_side_flush": 3.784360964769083,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16880284.725489855,
+     "d_weight_pct_vs_V0": 0.0,
+     "d_record_pct_of_raw_vs_V0": 0.0,
+     "share_of_C0_ceil_gain_captured": 0.0
+    },
+    "V7_o_pm2b": {
+     "bpw_incl_side_flush": 3.7737379586574047,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16833291.945813745,
+     "d_weight_pct_vs_V0": -0.28070805640831104,
+     "d_record_pct_of_raw_vs_V0": -0.24995308498066848,
+     "share_of_C0_ceil_gain_captured": 0.13542072345639805
+    },
+    "V1_o_bm7h(+bm7 side)": {
+     "bpw_incl_side_flush": 3.7755909636283413,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16841489.04684358,
+     "d_weight_pct_vs_V0": -0.2317432513015201,
+     "d_record_pct_of_raw_vs_V0": -0.20635296801743935,
+     "share_of_C0_ceil_gain_captured": 0.11179885304659412
+    },
+    "V2_o_ev(+even flag side, all blocks)": {
+     "bpw_incl_side_flush": 3.7166759282746185,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16580867.783250023,
+     "d_weight_pct_vs_V0": -1.7885459956009877,
+     "d_record_pct_of_raw_vs_V0": -1.5925890939873968,
+     "share_of_C0_ceil_gain_captured": 0.8628401897629022
+    },
+    "V3_o_cls(+3-class side = bm7 + even bit per max-7 block)": {
+     "bpw_incl_side_flush": 3.7169173950817935,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16581935.955135588,
+     "d_weight_pct_vs_V0": -1.7821653461485958,
+     "d_record_pct_of_raw_vs_V0": -1.586907522053862,
+     "share_of_C0_ceil_gain_captured": 0.8597620017834725
+    },
+    "V4_o_clsh(+3-class side)": {
+     "bpw_incl_side_flush": 3.7150635628756707,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16573735.194682006,
+     "d_weight_pct_vs_V0": -1.8311520105651573,
+     "d_record_pct_of_raw_vs_V0": -1.630527103374401,
+     "share_of_C0_ceil_gain_captured": 0.8833944176816377
+    },
+    "V5_o_bm7h_pm2b(team2 best non-ceil)": {
+     "bpw_incl_side_flush": 3.7656155830716846,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16797361.155382708,
+     "d_weight_pct_vs_V0": -0.495338099930485,
+     "d_record_pct_of_raw_vs_V0": -0.4410678046446669,
+     "share_of_C0_ceil_gain_captured": 0.23896372874503857
+    },
+    "V6_o_clsh_pm2b(+3-class side, scale first)": {
+     "bpw_incl_side_flush": 3.714981555707538,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16573372.421212481,
+     "d_weight_pct_vs_V0": -1.8333190123098673,
+     "d_record_pct_of_raw_vs_V0": -1.6324566838010486,
+     "share_of_C0_ceil_gain_captured": 0.8844398345740283
+    },
+    "V6b_o_clsh_pm2b(class order-0 first, scale|class)": {
+     "bpw_incl_side_flush": 3.7304329329118837,
+     "bit_per_scale": 0.43057245500752017,
+     "record_bytes_payload": 16561763.892843882,
+     "d_weight_pct_vs_V0": -1.42502346787867,
+     "d_record_pct_of_raw_vs_V0": -1.6942020731526863,
+     "share_of_C0_ceil_gain_captured": 0.9178925334944774
+    },
+    "H_o_clsh_pm2b + ceil scales (s+even) + bm3 side": {
+     "bpw_incl_side_flush": 3.715428683361911,
+     "bit_per_scale": 0.9160853626955597,
+     "record_bytes_payload": 16562507.19855345,
+     "d_weight_pct_vs_V0": -1.8215038694486207,
+     "d_record_pct_of_raw_vs_V0": -1.6902484539696756,
+     "share_of_C0_ceil_gain_captured": 0.9157505236446057
+    },
+    "C0_ceil_base(implicit)": {
+     "bpw_incl_side_flush": 3.7088197783185315,
+     "bit_per_scale": 0.9160853626955597,
+     "record_bytes_payload": 16533271.517491154,
+     "d_weight_pct_vs_V0": -1.996141149161249,
+     "d_record_pct_of_raw_vs_V0": -1.8457521020491878,
+     "share_of_C0_ceil_gain_captured": 1.0
+    },
+    "C1_ceil_pm2b(implicit)": {
+     "bpw_incl_side_flush": 3.7088051650544847,
+     "bit_per_scale": 0.9160853626955597,
+     "record_bytes_payload": 16533206.873087255,
+     "d_weight_pct_vs_V0": -1.996527297950513,
+     "d_record_pct_of_raw_vs_V0": -1.8460959435561743,
+     "share_of_C0_ceil_gain_captured": 1.0001862880213463
+    },
+    "C2_ceil_bm3(+bm3 side)": {
+     "bpw_incl_side_flush": 3.7130037056392675,
+     "bit_per_scale": 0.9160853626955597,
+     "record_bytes_payload": 16551779.873101348,
+     "d_weight_pct_vs_V0": -1.8855827917612349,
+     "d_record_pct_of_raw_vs_V0": -1.7473067533259865,
+     "share_of_C0_ceil_gain_captured": 0.9466638295500758
+    },
+    "C3_ceil_bm3h(+bm3 side)": {
+     "bpw_incl_side_flush": 3.7111597814086177,
+     "bit_per_scale": 0.9160853626955597,
+     "record_bytes_payload": 16543622.942360707,
+     "d_weight_pct_vs_V0": -1.9343076424775392,
+     "d_record_pct_of_raw_vs_V0": -1.790693205811867,
+     "share_of_C0_ceil_gain_captured": 0.9701699398439294
+    },
+    "C4_ceil_bm3h_pm2b(+bm3 side)": {
+     "bpw_incl_side_flush": 3.711266762188058,
+     "bit_per_scale": 0.9160853626955597,
+     "record_bytes_payload": 16544096.191095103,
+     "d_weight_pct_vs_V0": -1.931480724526624,
+     "d_record_pct_of_raw_vs_V0": -1.788176011001499,
+     "share_of_C0_ceil_gain_captured": 0.9688061625481739
+    },
+    "C4b_ceil_bm3h_pm2b(bm3 order-0 first, scale|bm3)": {
+     "bpw_incl_side_flush": 3.726271011738031,
+     "bit_per_scale": 0.43057245500752017,
+     "record_bytes_payload": 16543352.885385534,
+     "d_weight_pct_vs_V0": -1.535000322956673,
+     "d_record_pct_of_raw_vs_V0": -1.7921296301845098,
+     "share_of_C0_ceil_gain_captured": 0.9709481723980455
+    }
+   }
+  },
+  "P2_one_way_train_even80_test_odd80|z": {
+   "summary": {
+    "best_non_ceil": "V6b_o_clsh_pm2b(class order-0 first, scale|class)",
+    "best_ceil": "C1_ceil_pm2b(implicit)",
+    "ceil_on_top_of_best_non_ceil_record_pct_of_raw": -0.15173230053632222,
+    "ceil_on_top_of_best_non_ceil_weight_pct": -0.5982569742034375,
+    "ceil_C4_vs_hybrid_H_record_pct_of_raw": -0.09818685812923532
+   },
+   "rows": {
+    "V0_today_o_base": {
+     "bpw_incl_side_flush": 3.667920482433853,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16365189.292593146,
+     "d_weight_pct_vs_V0": 0.0,
+     "d_record_pct_of_raw_vs_V0": 0.0,
+     "share_of_C0_ceil_gain_captured": 0.0
+    },
+    "V7_o_pm2b": {
+     "bpw_incl_side_flush": 3.6572956557904277,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16318188.459467158,
+     "d_weight_pct_vs_V0": -0.2896689471407275,
+     "d_record_pct_of_raw_vs_V0": -0.24999592102177384,
+     "share_of_C0_ceil_gain_captured": 0.13544440613811634
+    },
+    "V1_o_bm7h(+bm7 side)": {
+     "bpw_incl_side_flush": 3.659147420678637,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16326380.074767834,
+     "d_weight_pct_vs_V0": -0.23918353184675298,
+     "d_record_pct_of_raw_vs_V0": -0.2064249824756613,
+     "share_of_C0_ceil_gain_captured": 0.11183826139728043
+    },
+    "V2_o_ev(+even flag side, all blocks)": {
+     "bpw_incl_side_flush": 3.600234789885231,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16065769.448179659,
+     "d_weight_pct_vs_V0": -1.8453424187568286,
+     "d_record_pct_of_raw_vs_V0": -1.5926045305558068,
+     "share_of_C0_ceil_gain_captured": 0.8628515776272094
+    },
+    "V3_o_cls(+3-class side = bm7 + even bit per max-7 block)": {
+     "bpw_incl_side_flush": 3.6004748392964796,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16066831.34995921,
+     "d_weight_pct_vs_V0": -1.8387978545439922,
+     "d_record_pct_of_raw_vs_V0": -1.5869563091146695,
+     "share_of_C0_ceil_gain_captured": 0.8597914477030704
+    },
+    "V4_o_clsh(+3-class side)": {
+     "bpw_incl_side_flush": 3.5986192229693215,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16058622.697125087,
+     "d_weight_pct_vs_V0": -1.889388273176155,
+     "d_record_pct_of_raw_vs_V0": -1.6306178697536848,
+     "share_of_C0_ceil_gain_captured": 0.883446690267207
+    },
+    "V5_o_bm7h_pm2b(team2 best non-ceil)": {
+     "bpw_incl_side_flush": 3.649167212424619,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16282230.827118699,
+     "d_weight_pct_vs_V0": -0.5112779870514021,
+     "d_record_pct_of_raw_vs_V0": -0.441253411981971,
+     "share_of_C0_ceil_gain_captured": 0.2390651259350359
+    },
+    "V6_o_clsh_pm2b(+3-class side, scale first)": {
+     "bpw_incl_side_flush": 3.5985309197562922,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16058232.071967674,
+     "d_weight_pct_vs_V0": -1.891795719396762,
+     "d_record_pct_of_raw_vs_V0": -1.632695592413191,
+     "share_of_C0_ceil_gain_captured": 0.8845723722806826
+    },
+    "V6b_o_clsh_pm2b(class order-0 first, scale|class)": {
+     "bpw_incl_side_flush": 3.613982296960638,
+     "bit_per_scale": 0.43057245500752017,
+     "record_bytes_payload": 16046623.543599075,
+     "d_weight_pct_vs_V0": -1.4705385716929258,
+     "d_record_pct_of_raw_vs_V0": -1.6944409817648285,
+     "share_of_C0_ceil_gain_captured": 0.9180251884639152
+    },
+    "H_o_clsh_pm2b + ceil scales (s+even) + bm3 side": {
+     "bpw_incl_side_flush": 3.598978047410665,
+     "bit_per_scale": 0.9160853626955597,
+     "record_bytes_payload": 16047366.849308643,
+     "d_weight_pct_vs_V0": -1.8796054972664278,
+     "d_record_pct_of_raw_vs_V0": -1.6904873625818178,
+     "share_of_C0_ceil_gain_captured": 0.91588317110559
+    },
+    "C0_ceil_base(implicit)": {
+     "bpw_incl_side_flush": 3.5923795709561523,
+     "bit_per_scale": 0.9160853626955597,
+     "record_bytes_payload": 16018177.300986346,
+     "d_weight_pct_vs_V0": -2.059502430313738,
+     "d_record_pct_of_raw_vs_V0": -1.8457456320997576,
+     "share_of_C0_ceil_gain_captured": 1.0
+    },
+    "C1_ceil_pm2b(implicit)": {
+     "bpw_incl_side_flush": 3.5923613958225933,
+     "bit_per_scale": 0.9160853626955597,
+     "record_bytes_payload": 16018096.900011523,
+     "d_weight_pct_vs_V0": -2.059997946332859,
+     "d_record_pct_of_raw_vs_V0": -1.8461732823011507,
+     "share_of_C0_ceil_gain_captured": 1.000231695090567
+    },
+    "C2_ceil_bm3(+bm3 side)": {
+     "bpw_incl_side_flush": 3.5965609679850754,
+     "bit_per_scale": 0.9160853626955597,
+     "record_bytes_payload": 16036674.463395251,
+     "d_weight_pct_vs_V0": -1.9455033114956417,
+     "d_record_pct_of_raw_vs_V0": -1.747359819654516,
+     "share_of_C0_ceil_gain_captured": 0.9466958985386756
+    },
+    "C3_ceil_bm3h(+bm3 side)": {
+     "bpw_incl_side_flush": 3.5947127833776165,
+     "bit_per_scale": 0.9160853626955597,
+     "record_bytes_payload": 16028498.686110927,
+     "d_weight_pct_vs_V0": -1.9958911161470823,
+     "d_record_pct_of_raw_vs_V0": -1.7908465163006098,
+     "share_of_C0_ceil_gain_captured": 0.9702564021583551
+    },
+    "C4_ceil_bm3h_pm2b(+bm3 side)": {
+     "bpw_incl_side_flush": 3.594805105940172,
+     "bit_per_scale": 0.9160853626955597,
+     "record_bytes_payload": 16028907.091584455,
+     "d_weight_pct_vs_V0": -1.9933740887742726,
+     "d_record_pct_of_raw_vs_V0": -1.788674220711053,
+     "share_of_C0_ceil_gain_captured": 0.9690794818114893
+    },
+    "C4b_ceil_bm3h_pm2b(bm3 order-0 first, scale|bm3)": {
+     "bpw_incl_side_flush": 3.609809355490145,
+     "bit_per_scale": 0.43057245500752017,
+     "record_bytes_payload": 16028163.785874885,
+     "d_weight_pct_vs_V0": -1.5843071632007706,
+     "d_record_pct_of_raw_vs_V0": -1.7926278398940736,
+     "share_of_C0_ceil_gain_captured": 0.9712214991698199
+    }
+   }
+  },
+  "P2_one_way_train_even80_test_odd80|signbypass": {
+   "summary": {
+    "best_non_ceil": "V6b_o_clsh_pm2b(class order-0 first, scale|class)",
+    "best_ceil": "C1_ceil_pm2b(implicit)",
+    "ceil_on_top_of_best_non_ceil_record_pct_of_raw": -0.1489162537315098,
+    "ceil_on_top_of_best_non_ceil_weight_pct": -0.576395190879233,
+    "ceil_C4_vs_hybrid_H_record_pct_of_raw": -0.09876786553827109
+   },
+   "rows": {
+    "V0_today_o_base": {
+     "bpw_incl_side_flush": 3.784357569012433,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16880269.70374908,
+     "d_weight_pct_vs_V0": 0.0,
+     "d_record_pct_of_raw_vs_V0": 0.0,
+     "share_of_C0_ceil_gain_captured": 0.0
+    },
+    "V7_o_pm2b": {
+     "bpw_incl_side_flush": 3.7737268051047472,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16833242.606065925,
+     "d_weight_pct_vs_V0": -0.2809133046711577,
+     "d_record_pct_of_raw_vs_V0": -0.25013562135732637,
+     "share_of_C0_ceil_gain_captured": 0.13552457203608587
+    },
+    "V1_o_bm7h(+bm7 side)": {
+     "bpw_incl_side_flush": 3.775536366752273,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16841247.527734853,
+     "d_weight_pct_vs_V0": -0.23309642652139514,
+     "d_record_pct_of_raw_vs_V0": -0.20755770023906595,
+     "share_of_C0_ceil_gain_captured": 0.11245566842920879
+    },
+    "V2_o_ev(+even flag side, all blocks)": {
+     "bpw_incl_side_flush": 3.7166149720973234,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16580598.132627647,
+     "d_weight_pct_vs_V0": -1.7900686095259195,
+     "d_record_pct_of_raw_vs_V0": -1.5939434568261075,
+     "share_of_C0_ceil_gain_captured": 0.8636055259298254
+    },
+    "V3_o_cls(+3-class side = bm7 + even bit per max-7 block)": {
+     "bpw_incl_side_flush": 3.7168140986468847,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16581479.004762411,
+     "d_weight_pct_vs_V0": -1.7848067772088085,
+     "d_record_pct_of_raw_vs_V0": -1.5892581262481924,
+     "share_of_C0_ceil_gain_captured": 0.8610669933610777
+    },
+    "V4_o_clsh(+3-class side)": {
+     "bpw_incl_side_flush": 3.7149520857464813,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16573242.055535154,
+     "d_weight_pct_vs_V0": -1.8340096568640032,
+     "d_record_pct_of_raw_vs_V0": -1.633070194492979,
+     "share_of_C0_ceil_gain_captured": 0.8848045632708367
+    },
+    "V5_o_bm7h_pm2b(team2 best non-ceil)": {
+     "bpw_incl_side_flush": 3.765537560910832,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16797016.010310188,
+     "d_weight_pct_vs_V0": -0.49731051462222897,
+     "d_record_pct_of_raw_vs_V0": -0.44282372003767595,
+     "share_of_C0_ceil_gain_captured": 0.23992382540270996
+    },
+    "V6_o_clsh_pm2b(+3-class side, scale first)": {
+     "bpw_incl_side_flush": 3.714839834289321,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16572745.491009144,
+     "d_weight_pct_vs_V0": -1.836975852713974,
+     "d_record_pct_of_raw_vs_V0": -1.635711405249689,
+     "share_of_C0_ceil_gain_captured": 0.8862355827934374
+    },
+    "V6b_o_clsh_pm2b(class order-0 first, scale|class)": {
+     "bpw_incl_side_flush": 3.7302912114936677,
+     "bit_per_scale": 0.43057245500752017,
+     "record_bytes_payload": 16561136.962640548,
+     "d_weight_pct_vs_V0": -1.4286799419134857,
+     "d_record_pct_of_raw_vs_V0": -1.6974567946013068,
+     "share_of_C0_ceil_gain_captured": 0.9196895043967325
+    },
+    "H_o_clsh_pm2b + ceil scales (s+even) + bm3 side": {
+     "bpw_incl_side_flush": 3.715286961943694,
+     "bit_per_scale": 0.9160853626955597,
+     "record_bytes_payload": 16561880.268350113,
+     "d_weight_pct_vs_V0": -1.8251606992508353,
+     "d_record_pct_of_raw_vs_V0": -1.6935031754183159,
+     "share_of_C0_ceil_gain_captured": 0.9175474162572624
+    },
+    "C0_ceil_base(implicit)": {
+     "bpw_incl_side_flush": 3.708819249571104,
+     "bit_per_scale": 0.9160853626955597,
+     "record_bytes_payload": 16533269.178481733,
+     "d_weight_pct_vs_V0": -1.9960671808568493,
+     "d_record_pct_of_raw_vs_V0": -1.8456846430086733,
+     "share_of_C0_ceil_gain_captured": 1.0
+    },
+    "C1_ceil_pm2b(implicit)": {
+     "bpw_incl_side_flush": 3.7087899923448275,
+     "bit_per_scale": 0.9160853626955597,
+     "record_bytes_payload": 16533139.753875,
+     "d_weight_pct_vs_V0": -1.996840290314473,
+     "d_record_pct_of_raw_vs_V0": -1.8463730483328167,
+     "share_of_C0_ceil_gain_captured": 1.0003729810110036
+    },
+    "C2_ceil_bm3(+bm3 side)": {
+     "bpw_incl_side_flush": 3.712898616230105,
+     "bit_per_scale": 0.9160853626955597,
+     "record_bytes_payload": 16551314.991183825,
+     "d_weight_pct_vs_V0": -1.8882716941828488,
+     "d_record_pct_of_raw_vs_V0": -1.7496995451498163,
+     "share_of_C0_ceil_gain_captured": 0.947994854796868
+    },
+    "C3_ceil_bm3h(+bm3 side)": {
+     "bpw_incl_side_flush": 3.71103947602001,
+     "bit_per_scale": 0.9160853626955597,
+     "record_bytes_payload": 16543090.749819232,
+     "d_weight_pct_vs_V0": -1.9373986642482146,
+     "d_record_pct_of_raw_vs_V0": -1.7934440206814615,
+     "share_of_C0_ceil_gain_captured": 0.9716958026794579
+    },
+    "C4_ceil_bm3h_pm2b(+bm3 side)": {
+     "bpw_incl_side_flush": 3.7110893276583172,
+     "bit_per_scale": 0.9160853626955597,
+     "record_bytes_payload": 16543311.277514579,
+     "d_weight_pct_vs_V0": -1.9360813564252073,
+     "d_record_pct_of_raw_vs_V0": -1.792271040956587,
+     "share_of_C0_ceil_gain_captured": 0.9710602771419194
+    },
+    "C4b_ceil_bm3h_pm2b(bm3 order-0 first, scale|bm3)": {
+     "bpw_incl_side_flush": 3.726093577208291,
+     "bit_per_scale": 0.43057245500752017,
+     "record_bytes_payload": 16542567.971805014,
+     "d_weight_pct_vs_V0": -1.5396005990878574,
+     "d_record_pct_of_raw_vs_V0": -1.796224660139578,
+     "share_of_C0_ceil_gain_captured": 0.9732023652813896
+    }
+   }
+  },
+  "P2_one_way_train_even80_test_odd80|z_signbypass": {
+   "summary": {
+    "best_non_ceil": "V6b_o_clsh_pm2b(class order-0 first, scale|class)",
+    "best_ceil": "C1_ceil_pm2b(implicit)",
+    "ceil_on_top_of_best_non_ceil_record_pct_of_raw": -0.1489162537315098,
+    "ceil_on_top_of_best_non_ceil_weight_pct": -0.5949813880329097,
+    "ceil_C4_vs_hybrid_H_record_pct_of_raw": -0.09876786553827109
+   },
+   "rows": {
+    "V0_today_o_base": {
+     "bpw_incl_side_flush": 3.6678296753808866,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16364787.59124908,
+     "d_weight_pct_vs_V0": 0.0,
+     "d_record_pct_of_raw_vs_V0": 0.0,
+     "share_of_C0_ceil_gain_captured": 0.0
+    },
+    "V7_o_pm2b": {
+     "bpw_incl_side_flush": 3.6571989114732006,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16317760.493565928,
+     "d_weight_pct_vs_V0": -0.2898379927247292,
+     "d_record_pct_of_raw_vs_V0": -0.2501356213573165,
+     "share_of_C0_ceil_gain_captured": 0.1355245720360805
+    },
+    "V1_o_bm7h(+bm7 side)": {
+     "bpw_incl_side_flush": 3.6590084731207266,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16325765.415234854,
+     "d_weight_pct_vs_V0": -0.24050196003836743,
+     "d_record_pct_of_raw_vs_V0": -0.20755770023906595,
+     "share_of_C0_ceil_gain_captured": 0.11245566842920879
+    },
+    "V2_o_ev(+even flag side, all blocks)": {
+     "bpw_incl_side_flush": 3.600087078465777,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16065116.020127647,
+     "d_weight_pct_vs_V0": -1.8469395503779769,
+     "d_record_pct_of_raw_vs_V0": -1.5939434568261173,
+     "share_of_C0_ceil_gain_captured": 0.8636055259298309
+    },
+    "V3_o_cls(+3-class side = bm7 + even bit per max-7 block)": {
+     "bpw_incl_side_flush": 3.600286205015338,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16065996.89226241,
+     "d_weight_pct_vs_V0": -1.8415105482926863,
+     "d_record_pct_of_raw_vs_V0": -1.5892581262482022,
+     "share_of_C0_ceil_gain_captured": 0.861066993361083
+    },
+    "V4_o_clsh(+3-class side)": {
+     "bpw_incl_side_flush": 3.5984241921149347,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16057759.943035154,
+     "d_weight_pct_vs_V0": -1.8922766161093463,
+     "d_record_pct_of_raw_vs_V0": -1.633070194492989,
+     "share_of_C0_ceil_gain_captured": 0.884804563270842
+    },
+    "V5_o_bm7h_pm2b(team2 best non-ceil)": {
+     "bpw_incl_side_flush": 3.6490096672792856,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16281533.897810189,
+     "d_weight_pct_vs_V0": -0.5131101977805618,
+     "d_record_pct_of_raw_vs_V0": -0.44282372003767595,
+     "share_of_C0_ceil_gain_captured": 0.23992382540270996
+    },
+    "V6_o_clsh_pm2b(+3-class side, scale first)": {
+     "bpw_incl_side_flush": 3.5983119406577746,
+     "bit_per_scale": 1.0089902550648087,
+     "record_bytes_payload": 16057263.378509143,
+     "d_weight_pct_vs_V0": -1.895337048765572,
+     "d_record_pct_of_raw_vs_V0": -1.635711405249699,
+     "share_of_C0_ceil_gain_captured": 0.8862355827934428
+    },
+    "V6b_o_clsh_pm2b(class order-0 first, scale|class)": {
+     "bpw_incl_side_flush": 3.613763317862121,
+     "bit_per_scale": 0.43057245500752017,
+     "record_bytes_payload": 16045654.850140547,
+     "d_weight_pct_vs_V0": -1.4740694717006153,
+     "d_record_pct_of_raw_vs_V0": -1.6974567946013168,
+     "share_of_C0_ceil_gain_captured": 0.9196895043967378
+    },
+    "H_o_clsh_pm2b + ceil scales (s+even) + bm3 side": {
+     "bpw_incl_side_flush": 3.5987590683121473,
+     "bit_per_scale": 0.9160853626955597,
+     "record_bytes_payload": 16046398.155850112,
+     "d_weight_pct_vs_V0": -1.8831465248332881,
+     "d_record_pct_of_raw_vs_V0": -1.6935031754183258,
+     "share_of_C0_ceil_gain_captured": 0.9175474162572678
+    },
+    "C0_ceil_base(implicit)": {
+     "bpw_incl_side_flush": 3.5922913559395573,
+     "bit_per_scale": 0.9160853626955597,
+     "record_bytes_payload": 16017787.065981735,
+     "d_weight_pct_vs_V0": -2.0594827493859835,
+     "d_record_pct_of_raw_vs_V0": -1.8456846430086733,
+     "share_of_C0_ceil_gain_captured": 1.0
+    },
+    "C1_ceil_pm2b(implicit)": {
+     "bpw_incl_side_flush": 3.592262098713281,
+     "bit_per_scale": 0.9160853626955597,
+     "record_bytes_payload": 16017657.641375,
+     "d_weight_pct_vs_V0": -2.060280420730231,
+     "d_record_pct_of_raw_vs_V0": -1.8463730483328264,
+     "share_of_C0_ceil_gain_captured": 1.0003729810110091
+    },
+    "C2_ceil_bm3(+bm3 side)": {
+     "bpw_incl_side_flush": 3.5963707225985586,
+     "bit_per_scale": 0.9160853626955597,
+     "record_bytes_payload": 16035832.878683826,
+     "d_weight_pct_vs_V0": -1.9482625723318865,
+     "d_record_pct_of_raw_vs_V0": -1.7496995451498163,
+     "share_of_C0_ceil_gain_captured": 0.947994854796868
+    },
+    "C3_ceil_bm3h(+bm3 side)": {
+     "bpw_incl_side_flush": 3.5945115823884635,
+     "bit_per_scale": 0.9160853626955597,
+     "record_bytes_payload": 16027608.637319231,
+     "d_weight_pct_vs_V0": -1.9989503188914943,
+     "d_record_pct_of_raw_vs_V0": -1.7934440206814712,
+     "share_of_C0_ceil_gain_captured": 0.9716958026794632
+    },
+    "C4_ceil_bm3h_pm2b(+bm3 side)": {
+     "bpw_incl_side_flush": 3.5945614340267706,
+     "bit_per_scale": 0.9160853626955597,
+     "record_bytes_payload": 16027829.165014578,
+     "d_weight_pct_vs_V0": -1.9975911598596072,
+     "d_record_pct_of_raw_vs_V0": -1.792271040956597,
+     "share_of_C0_ceil_gain_captured": 0.9710602771419249
+    },
+    "C4b_ceil_bm3h_pm2b(bm3 order-0 first, scale|bm3)": {
+     "bpw_incl_side_flush": 3.6095656835767445,
+     "bit_per_scale": 0.43057245500752017,
+     "record_bytes_payload": 16027085.859305013,
+     "d_weight_pct_vs_V0": -1.5885141067269342,
+     "d_record_pct_of_raw_vs_V0": -1.796224660139588,
+     "share_of_C0_ceil_gain_captured": 0.9732023652813949
+    }
+   }
+  },
+  "P3_team3_train_even80_test_odd40(i%4==1)|byte": {
+   "summary": {
+    "best_non_ceil": "V6b_o_clsh_pm2b(class order-0 first, scale|class)",
+    "best_ceil": "C1_ceil_pm2b(implicit)",
+    "ceil_on_top_of_best_non_ceil_record_pct_of_raw": -0.12615026197662085,
+    "ceil_on_top_of_best_non_ceil_weight_pct": -0.5544420506461483,
+    "ceil_C4_vs_hybrid_H_record_pct_of_raw": -0.07961219824390589
+   },
+   "rows": {
+    "V0_today_o_base": {
+     "bpw_incl_side_flush": 3.7830722031049167,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16874021.622925,
+     "d_weight_pct_vs_V0": 0.0,
+     "d_record_pct_of_raw_vs_V0": 0.0,
+     "share_of_C0_ceil_gain_captured": 0.0
+    },
+    "V7_o_pm2b": {
+     "bpw_incl_side_flush": 3.772495754228167,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16827234.797557898,
+     "d_weight_pct_vs_V0": -0.2795730112702834,
+     "d_record_pct_of_raw_vs_V0": -0.24885762062940697,
+     "share_of_C0_ceil_gain_captured": 0.13803246751146786
+    },
+    "V1_o_bm7h(+bm7 side)": {
+     "bpw_incl_side_flush": 3.7748883514804046,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16837818.882170677,
+     "d_weight_pct_vs_V0": -0.2163281900301893,
+     "d_record_pct_of_raw_vs_V0": -0.19256121469439985,
+     "share_of_C0_ceil_gain_captured": 0.10680685423274786
+    },
+    "V2_o_ev(+even flag side, all blocks)": {
+     "bpw_incl_side_flush": 3.715492854453339,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16575072.209881987,
+     "d_weight_pct_vs_V0": -1.7863615871807212,
+     "d_record_pct_of_raw_vs_V0": -1.5901023212135916,
+     "share_of_C0_ceil_gain_captured": 0.8819731798355407
+    },
+    "V3_o_cls(+3-class side = bm7 + even bit per max-7 block)": {
+     "bpw_incl_side_flush": 3.715930753651147,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16577009.335805347,
+     "d_weight_pct_vs_V0": -1.7747863601086973,
+     "d_record_pct_of_raw_vs_V0": -1.5797988106769303,
+     "share_of_C0_ceil_gain_captured": 0.876258189152078
+    },
+    "V4_o_clsh(+3-class side)": {
+     "bpw_incl_side_flush": 3.7140625491019494,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16568744.996705152,
+     "d_weight_pct_vs_V0": -1.824169624527078,
+     "d_record_pct_of_raw_vs_V0": -1.6237565647757009,
+     "share_of_C0_ceil_gain_captured": 0.9006399912812213
+    },
+    "V5_o_bm7h_pm2b(team2 best non-ceil)": {
+     "bpw_incl_side_flush": 3.7648593604373586,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16793453.835073374,
+     "d_weight_pct_vs_V0": -0.48142995136624867,
+     "d_record_pct_of_raw_vs_V0": -0.42853747453078295,
+     "share_of_C0_ceil_gain_captured": 0.23769448924654274
+    },
+    "V6_o_clsh_pm2b(+3-class side, scale first)": {
+     "bpw_incl_side_flush": 3.713961632715001,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16568298.574902536,
+     "d_weight_pct_vs_V0": -1.8268372021341215,
+     "d_record_pct_of_raw_vs_V0": -1.6261310679980152,
+     "share_of_C0_ceil_gain_captured": 0.9019570437309757
+    },
+    "V6b_o_clsh_pm2b(class order-0 first, scale|class)": {
+     "bpw_incl_side_flush": 3.72980168941636,
+     "bit_per_scale": 0.42805693448442356,
+     "record_bytes_payload": 16558623.728060491,
+     "d_weight_pct_vs_V0": -1.4081283895357666,
+     "d_record_pct_of_raw_vs_V0": -1.6775912674489115,
+     "share_of_C0_ceil_gain_captured": 0.930500185350968
+    },
+    "H_o_clsh_pm2b + ceil scales (s+even) + bm3 side": {
+     "bpw_incl_side_flush": 3.7148120459005702,
+     "bit_per_scale": 0.918239425294942,
+     "record_bytes_payload": 16560077.169362206,
+     "d_weight_pct_vs_V0": -1.8043577690196506,
+     "d_record_pct_of_raw_vs_V0": -1.6698604598715383,
+     "share_of_C0_ceil_gain_captured": 0.9262121814591754
+    },
+    "C0_ceil_base(implicit)": {
+     "bpw_incl_side_flush": 3.7091582087664983,
+     "bit_per_scale": 0.918239425294942,
+     "record_bytes_payload": 16535066.403108954,
+     "d_weight_pct_vs_V0": -1.9538087133984452,
+     "d_record_pct_of_raw_vs_V0": -1.8028919218497028,
+     "share_of_C0_ceil_gain_captured": 1.0
+    },
+    "C1_ceil_pm2b(implicit)": {
+     "bpw_incl_side_flush": 3.7091221004445254,
+     "bit_per_scale": 0.918239425294942,
+     "record_bytes_payload": 16534906.67144721,
+     "d_weight_pct_vs_V0": -1.9547631842632422,
+     "d_record_pct_of_raw_vs_V0": -1.8037415294255323,
+     "share_of_C0_ceil_gain_captured": 1.0004712470922592
+    },
+    "C2_ceil_bm3(+bm3 side)": {
+     "bpw_incl_side_flush": 3.7132463038186776,
+     "bit_per_scale": 0.918239425294942,
+     "record_bytes_payload": 16553150.82742938,
+     "d_weight_pct_vs_V0": -1.8457458789427859,
+     "d_record_pct_of_raw_vs_V0": -1.7067014500337123,
+     "share_of_C0_ceil_gain_captured": 0.9466465678556579
+    },
+    "C3_ceil_bm3h(+bm3 side)": {
+     "bpw_incl_side_flush": 3.711387816182208,
+     "bit_per_scale": 0.918239425294942,
+     "record_bytes_payload": 16544929.47284168,
+     "d_weight_pct_vs_V0": -1.894872290935252,
+     "d_record_pct_of_raw_vs_V0": -1.7504305708918333,
+     "share_of_C0_ceil_gain_captured": 0.9709015552612571
+    },
+    "C4_ceil_bm3h_pm2b(+bm3 side)": {
+     "bpw_incl_side_flush": 3.711428527475204,
+     "bit_per_scale": 0.918239425294942,
+     "record_bytes_payload": 16545109.566574283,
+     "d_weight_pct_vs_V0": -1.8937961472401117,
+     "d_record_pct_of_raw_vs_V0": -1.7494726581154443,
+     "share_of_C0_ceil_gain_captured": 0.9703702351278759
+    },
+    "C4b_ceil_bm3h_pm2b(bm3 order-0 first, scale|bm3)": {
+     "bpw_incl_side_flush": 3.726418170990994,
+     "bit_per_scale": 0.42805693448442356,
+     "record_bytes_payload": 16543656.125272568,
+     "d_weight_pct_vs_V0": -1.4975667677562277,
+     "d_record_pct_of_raw_vs_V0": -1.7572034656928173,
+     "share_of_C0_ceil_gain_captured": 0.9746582390196685
+    }
+   }
+  },
+  "P3_team3_train_even80_test_odd40(i%4==1)|z": {
+   "summary": {
+    "best_non_ceil": "V6b_o_clsh_pm2b(class order-0 first, scale|class)",
+    "best_ceil": "C1_ceil_pm2b(implicit)",
+    "ceil_on_top_of_best_non_ceil_record_pct_of_raw": -0.1261185303257844,
+    "ceil_on_top_of_best_non_ceil_weight_pct": -0.5722737606799552,
+    "ceil_C4_vs_hybrid_H_record_pct_of_raw": -0.07977973792641303
+   },
+   "rows": {
+    "V0_today_o_base": {
+     "bpw_incl_side_flush": 3.666621499582725,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16358880.97476795,
+     "d_weight_pct_vs_V0": 0.0,
+     "d_record_pct_of_raw_vs_V0": 0.0,
+     "share_of_C0_ceil_gain_captured": 0.0
+    },
+    "V7_o_pm2b": {
+     "bpw_incl_side_flush": 3.6560443017936963,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16312090.83645258,
+     "d_weight_pct_vs_V0": -0.28847258410044485,
+     "d_record_pct_of_raw_vs_V0": -0.24887524209479203,
+     "share_of_C0_ceil_gain_captured": 0.13804202949077443
+    },
+    "V1_o_bm7h(+bm7 side)": {
+     "bpw_incl_side_flush": 3.6584373381285857,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16322676.863426503,
+     "d_weight_pct_vs_V0": -0.22320715282640294,
+     "d_record_pct_of_raw_vs_V0": -0.19256850480327606,
+     "share_of_C0_ceil_gain_captured": 0.1068107337447546
+    },
+    "V2_o_ev(+even flag side, all blocks)": {
+     "bpw_incl_side_flush": 3.5990422877340214,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16059932.166897075,
+     "d_weight_pct_vs_V0": -1.8430921178091195,
+     "d_record_pct_of_raw_vs_V0": -1.5900991023224431,
+     "share_of_C0_ceil_gain_captured": 0.8819700398018897
+    },
+    "V3_o_cls(+3-class side = bm7 + even bit per max-7 block)": {
+     "bpw_incl_side_flush": 3.5994800658235193,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16061868.757076027,
+     "d_weight_pct_vs_V0": -1.8311525682933656,
+     "d_record_pct_of_raw_vs_V0": -1.5797984413930726,
+     "share_of_C0_ceil_gain_captured": 0.8762566384694862
+    },
+    "V4_o_clsh(+3-class side)": {
+     "bpw_incl_side_flush": 3.5976114460966,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16053602.581362449,
+     "d_weight_pct_vs_V0": -1.8821155522591704,
+     "d_record_pct_of_raw_vs_V0": -1.6237659643794085,
+     "share_of_C0_ceil_gain_captured": 0.9006438215963813
+    },
+    "V5_o_bm7h_pm2b(team2 best non-ceil)": {
+     "bpw_incl_side_flush": 3.648405836479672,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16278300.710212236,
+     "d_weight_pct_vs_V0": -0.4967969315929122,
+     "d_record_pct_of_raw_vs_V0": -0.4286038377188923,
+     "share_of_C0_ceil_gain_captured": 0.23773093341167073
+    },
+    "V6_o_clsh_pm2b(+3-class side, scale first)": {
+     "bpw_incl_side_flush": 3.5975075747023895,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16053143.087553307,
+     "d_weight_pct_vs_V0": -1.8849484433613082,
+     "d_record_pct_of_raw_vs_V0": -1.626209997184362,
+     "share_of_C0_ceil_gain_captured": 0.9019994375495717
+    },
+    "V6b_o_clsh_pm2b(class order-0 first, scale|class)": {
+     "bpw_incl_side_flush": 3.6133476314037485,
+     "bit_per_scale": 0.42805693448442356,
+     "record_bytes_payload": 16043468.24071126,
+     "d_weight_pct_vs_V0": -1.4529415753722978,
+     "d_record_pct_of_raw_vs_V0": -1.677670196635268,
+     "share_of_C0_ceil_gain_captured": 0.9305425353298541
+    },
+    "H_o_clsh_pm2b + ceil scales (s+even) + bm3 side": {
+     "bpw_incl_side_flush": 3.5983579878879586,
+     "bit_per_scale": 0.918239425294942,
+     "record_bytes_payload": 16044921.682012977,
+     "d_weight_pct_vs_V0": -1.8617550707793307,
+     "d_record_pct_of_raw_vs_V0": -1.669939389057885,
+     "share_of_C0_ceil_gain_captured": 0.9262545380240469
+    },
+    "C0_ceil_base(implicit)": {
+     "bpw_incl_side_flush": 3.5927073875581867,
+     "bit_per_scale": 0.918239425294942,
+     "record_bytes_payload": 16019925.234346172,
+     "d_weight_pct_vs_V0": -2.0158642508628186,
+     "d_record_pct_of_raw_vs_V0": -1.8028946909348702,
+     "share_of_C0_ceil_gain_captured": 1.0
+    },
+    "C1_ceil_pm2b(implicit)": {
+     "bpw_incl_side_flush": 3.592669391027074,
+     "bit_per_scale": 0.918239425294942,
+     "record_bytes_payload": 16019757.149851419,
+     "d_weight_pct_vs_V0": -2.0169005326583873,
+     "d_record_pct_of_raw_vs_V0": -1.8037887269610524,
+     "share_of_C0_ceil_gain_captured": 1.00049588921121
+    },
+    "C2_ceil_bm3(+bm3 side)": {
+     "bpw_incl_side_flush": 3.5967946868939253,
+     "bit_per_scale": 0.918239425294942,
+     "record_bytes_payload": 16038006.138671692,
+     "d_weight_pct_vs_V0": -1.904391077637719,
+     "d_record_pct_of_raw_vs_V0": -1.7067229418586654,
+     "share_of_C0_ceil_gain_captured": 0.9466570346233943
+    },
+    "C3_ceil_bm3h(+bm3 side)": {
+     "bpw_incl_side_flush": 3.5949344966397034,
+     "bit_per_scale": 0.918239425294942,
+     "record_bytes_payload": 16029777.252247896,
+     "d_weight_pct_vs_V0": -1.9551241640616546,
+     "d_record_pct_of_raw_vs_V0": -1.7504921243109457,
+     "share_of_C0_ceil_gain_captured": 0.9709342054822117
+    },
+    "C4_ceil_bm3h_pm2b(+bm3 side)": {
+     "bpw_incl_side_flush": 3.5949673490260863,
+     "bit_per_scale": 0.918239425294942,
+     "record_bytes_payload": 16029922.580692489,
+     "d_weight_pct_vs_V0": -1.9542281788505664,
+     "d_record_pct_of_raw_vs_V0": -1.749719126984298,
+     "share_of_C0_ceil_gain_captured": 0.9705054520278172
+    },
+    "C4b_ceil_bm3h_pm2b(bm3 order-0 first, scale|bm3)": {
+     "bpw_incl_side_flush": 3.609956992541876,
+     "bit_per_scale": 0.42805693448442356,
+     "record_bytes_payload": 16028469.139390774,
+     "d_weight_pct_vs_V0": -1.5454146834435334,
+     "d_record_pct_of_raw_vs_V0": -1.7574499345616712,
+     "share_of_C0_ceil_gain_captured": 0.974793449333619
+    }
+   }
+  },
+  "P3_team3_train_even80_test_odd40(i%4==1)|signbypass": {
+   "summary": {
+    "best_non_ceil": "V6b_o_clsh_pm2b(class order-0 first, scale|class)",
+    "best_ceil": "C1_ceil_pm2b(implicit)",
+    "ceil_on_top_of_best_non_ceil_record_pct_of_raw": -0.12354501176690784,
+    "ceil_on_top_of_best_non_ceil_weight_pct": -0.5514908428701283,
+    "ceil_C4_vs_hybrid_H_record_pct_of_raw": -0.08014426994787698
+   },
+   "rows": {
+    "V0_today_o_base": {
+     "bpw_incl_side_flush": 3.7830694576611386,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16874009.477960266,
+     "d_weight_pct_vs_V0": 0.0,
+     "d_record_pct_of_raw_vs_V0": 0.0,
+     "share_of_C0_ceil_gain_captured": 0.0
+    },
+    "V7_o_pm2b": {
+     "bpw_incl_side_flush": 3.7724872478205818,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16827197.16793279,
+     "d_weight_pct_vs_V0": -0.2797254969539785,
+     "d_record_pct_of_raw_vs_V0": -0.24899317271899468,
+     "share_of_C0_ceil_gain_captured": 0.13811624644606632
+    },
+    "V1_o_bm7h(+bm7 side)": {
+     "bpw_incl_side_flush": 3.7748439997846157,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16837622.68446105,
+     "d_weight_pct_vs_V0": -0.2174281484540384,
+     "d_record_pct_of_raw_vs_V0": -0.19354018532994854,
+     "share_of_C0_ceil_gain_captured": 0.10735653368462547
+    },
+    "V2_o_ev(+even flag side, all blocks)": {
+     "bpw_incl_side_flush": 3.71543431405389,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16574813.245887753,
+     "d_weight_pct_vs_V0": -1.7878377429808934,
+     "d_record_pct_of_raw_vs_V0": -1.5914151436999675,
+     "share_of_C0_ceil_gain_captured": 0.8827562771503216
+    },
+    "V3_o_cls(+3-class side = bm7 + even bit per max-7 block)": {
+     "bpw_incl_side_flush": 3.715833902577626,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16576580.897648433,
+     "d_weight_pct_vs_V0": -1.777275195076134,
+     "d_record_pct_of_raw_vs_V0": -1.5820130607885314,
+     "share_of_C0_ceil_gain_captured": 0.8775409518210292
+    },
+    "V4_o_clsh(+3-class side)": {
+     "bpw_incl_side_flush": 3.713962706004444,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16568303.322791578,
+     "d_weight_pct_vs_V0": -1.8267375851835308,
+     "d_record_pct_of_raw_vs_V0": -1.6260412154516437,
+     "share_of_C0_ceil_gain_captured": 0.9019633220957305
+    },
+    "V5_o_bm7h_pm2b(team2 best non-ceil)": {
+     "bpw_incl_side_flush": 3.7647988324885646,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16793186.078796852,
+     "d_weight_pct_vs_V0": -0.48295769816157835,
+     "d_record_pct_of_raw_vs_V0": -0.42989706288410284,
+     "share_of_C0_ceil_gain_captured": 0.23846344072554276
+    },
+    "V6_o_clsh_pm2b(+3-class side, scale first)": {
+     "bpw_incl_side_flush": 3.7138439632318545,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16567778.04276333,
+     "d_weight_pct_vs_V0": -1.8298763795915691,
+     "d_record_pct_of_raw_vs_V0": -1.6288351630419822,
+     "share_of_C0_ceil_gain_captured": 0.9035131218341357
+    },
+    "V6b_o_clsh_pm2b(class order-0 first, scale|class)": {
+     "bpw_incl_side_flush": 3.7296840199332144,
+     "bit_per_scale": 0.42805693448442356,
+     "record_bytes_payload": 16558103.195921289,
+     "d_weight_pct_vs_V0": -1.4111672631284278,
+     "d_record_pct_of_raw_vs_V0": -1.6802953624928585,
+     "share_of_C0_ceil_gain_captured": 0.9320580393991736
+    },
+    "H_o_clsh_pm2b + ceil scales (s+even) + bm3 side": {
+     "bpw_incl_side_flush": 3.7146943764174245,
+     "bit_per_scale": 0.918239425294942,
+     "record_bytes_payload": 16559556.637223003,
+     "d_weight_pct_vs_V0": -1.8073969301633326,
+     "d_record_pct_of_raw_vs_V0": -1.6725645549154855,
+     "share_of_C0_ceil_gain_captured": 0.9277697687091633
+    },
+    "C0_ceil_base(implicit)": {
+     "bpw_incl_side_flush": 3.7091602304786258,
+     "bit_per_scale": 0.918239425294942,
+     "record_bytes_payload": 16535075.346516458,
+     "d_weight_pct_vs_V0": -1.9536841184038627,
+     "d_record_pct_of_raw_vs_V0": -1.8027797534754555,
+     "share_of_C0_ceil_gain_captured": 1.0
+    },
+    "C1_ceil_pm2b(implicit)": {
+     "bpw_incl_side_flush": 3.7091151540952922,
+     "bit_per_scale": 0.918239425294942,
+     "record_bytes_payload": 16534875.943021035,
+     "d_weight_pct_vs_V0": -1.9548756477648217,
+     "d_record_pct_of_raw_vs_V0": -1.8038403742597664,
+     "share_of_C0_ceil_gain_captured": 1.0005883252140293
+    },
+    "C2_ceil_bm3(+bm3 side)": {
+     "bpw_incl_side_flush": 3.7131489157063085,
+     "bit_per_scale": 0.918239425294942,
+     "record_bytes_payload": 16552720.013584454,
+     "d_weight_pct_vs_V0": -1.8482489612563997,
+     "d_record_pct_of_raw_vs_V0": -1.7089283363535102,
+     "share_of_C0_ceil_gain_captured": 0.9479407193579718
+    },
+    "C3_ceil_bm3h(+bm3 side)": {
+     "bpw_incl_side_flush": 3.7112837175921647,
+     "bit_per_scale": 0.918239425294942,
+     "record_bytes_payload": 16544468.973990878,
+     "d_weight_pct_vs_V0": -1.897552790726581,
+     "d_record_pct_of_raw_vs_V0": -1.752815350803952,
+     "share_of_C0_ceil_gain_captured": 0.9722847993077465
+    },
+    "C4_ceil_bm3h_pm2b(+bm3 side)": {
+     "bpw_incl_side_flush": 3.7112882449446394,
+     "bit_per_scale": 0.918239425294942,
+     "record_bytes_payload": 16544489.001549475,
+     "d_weight_pct_vs_V0": -1.8974331166755132,
+     "d_record_pct_of_raw_vs_V0": -1.7527088248633624,
+     "share_of_C0_ceil_gain_captured": 0.9722257094825008
+    },
+    "C4b_ceil_bm3h_pm2b(bm3 order-0 first, scale|bm3)": {
+     "bpw_incl_side_flush": 3.7262778884604293,
+     "bit_per_scale": 0.42805693448442356,
+     "record_bytes_payload": 16543035.560247758,
+     "d_weight_pct_vs_V0": -1.5012034496406084,
+     "d_record_pct_of_raw_vs_V0": -1.7604396324407454,
+     "share_of_C0_ceil_gain_captured": 0.9765139801725168
+    }
+   }
+  },
+  "P3_team3_train_even80_test_odd40(i%4==1)|z_signbypass": {
+   "summary": {
+    "best_non_ceil": "V6b_o_clsh_pm2b(class order-0 first, scale|class)",
+    "best_ceil": "C1_ceil_pm2b(implicit)",
+    "ceil_on_top_of_best_non_ceil_record_pct_of_raw": -0.12354501176690784,
+    "ceil_on_top_of_best_non_ceil_weight_pct": -0.5692786642476885,
+    "ceil_C4_vs_hybrid_H_record_pct_of_raw": -0.08014426994786707
+   },
+   "rows": {
+    "V0_today_o_base": {
+     "bpw_incl_side_flush": 3.6665308320146184,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16358479.890460268,
+     "d_weight_pct_vs_V0": 0.0,
+     "d_record_pct_of_raw_vs_V0": 0.0,
+     "share_of_C0_ceil_gain_captured": 0.0
+    },
+    "V7_o_pm2b": {
+     "bpw_incl_side_flush": 3.6559486221740616,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16311667.580432793,
+     "d_weight_pct_vs_V0": -0.28861641495435836,
+     "d_record_pct_of_raw_vs_V0": -0.24899317271898477,
+     "share_of_C0_ceil_gain_captured": 0.13811624644606005
+    },
+    "V1_o_bm7h(+bm7 side)": {
+     "bpw_incl_side_flush": 3.6583053741380955,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16322093.096961051,
+     "d_weight_pct_vs_V0": -0.22433898017989043,
+     "d_record_pct_of_raw_vs_V0": -0.19354018532994854,
+     "share_of_C0_ceil_gain_captured": 0.10735653368462489
+    },
+    "V2_o_ev(+even flag side, all blocks)": {
+     "bpw_incl_side_flush": 3.5988956884073695,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16059283.658387752,
+     "d_weight_pct_vs_V0": -1.8446631627010197,
+     "d_record_pct_of_raw_vs_V0": -1.5914151436999773,
+     "share_of_C0_ceil_gain_captured": 0.8827562771503221
+    },
+    "V3_o_cls(+3-class side = bm7 + even bit per max-7 block)": {
+     "bpw_incl_side_flush": 3.5992952769311053,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16061051.310148433,
+     "d_weight_pct_vs_V0": -1.8337648901364816,
+     "d_record_pct_of_raw_vs_V0": -1.5820130607885412,
+     "share_of_C0_ceil_gain_captured": 0.8775409518210299
+    },
+    "V4_o_clsh(+3-class side)": {
+     "bpw_incl_side_flush": 3.597424080357923,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16052773.735291578,
+     "d_weight_pct_vs_V0": -1.8847994145660492,
+     "d_record_pct_of_raw_vs_V0": -1.6260412154516537,
+     "share_of_C0_ceil_gain_captured": 0.901963322095731
+    },
+    "V5_o_bm7h_pm2b(team2 best non-ceil)": {
+     "bpw_incl_side_flush": 3.648260206842044,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16277656.491296854,
+     "d_weight_pct_vs_V0": -0.49830823766823135,
+     "d_record_pct_of_raw_vs_V0": -0.42989706288410284,
+     "share_of_C0_ceil_gain_captured": 0.23846344072554146
+    },
+    "V6_o_clsh_pm2b(+3-class side, scale first)": {
+     "bpw_incl_side_flush": 3.597305337585334,
+     "bit_per_scale": 1.004924620181132,
+     "record_bytes_payload": 16052248.45526333,
+     "d_weight_pct_vs_V0": -1.8880379737935473,
+     "d_record_pct_of_raw_vs_V0": -1.6288351630419922,
+     "share_of_C0_ceil_gain_captured": 0.9035131218341362
+    },
+    "V6b_o_clsh_pm2b(class order-0 first, scale|class)": {
+     "bpw_incl_side_flush": 3.613145394286694,
+     "bit_per_scale": 0.42805693448442356,
+     "record_bytes_payload": 16042573.608421288,
+     "d_weight_pct_vs_V0": -1.4560204229509053,
+     "d_record_pct_of_raw_vs_V0": -1.6802953624928685,
+     "share_of_C0_ceil_gain_captured": 0.9320580393991741
+    },
+    "H_o_clsh_pm2b + ceil scales (s+even) + bm3 side": {
+     "bpw_incl_side_flush": 3.598155750770904,
+     "bit_per_scale": 0.918239425294942,
+     "record_bytes_payload": 16044027.049723003,
+     "d_weight_pct_vs_V0": -1.8648440276757472,
+     "d_record_pct_of_raw_vs_V0": -1.6725645549154955,
+     "share_of_C0_ceil_gain_captured": 0.9277697687091636
+    },
+    "C0_ceil_base(implicit)": {
+     "bpw_incl_side_flush": 3.592621604832105,
+     "bit_per_scale": 0.918239425294942,
+     "record_bytes_payload": 16019545.759016458,
+     "d_weight_pct_vs_V0": -2.015780872130372,
+     "d_record_pct_of_raw_vs_V0": -1.8027797534754653,
+     "share_of_C0_ceil_gain_captured": 1.0
+    },
+    "C1_ceil_pm2b(implicit)": {
+     "bpw_incl_side_flush": 3.5925765284487716,
+     "bit_per_scale": 0.918239425294942,
+     "record_bytes_payload": 16019346.355521034,
+     "d_weight_pct_vs_V0": -2.017010273583645,
+     "d_record_pct_of_raw_vs_V0": -1.8038403742597764,
+     "share_of_C0_ceil_gain_captured": 1.0005883252140293
+    },
+    "C2_ceil_bm3(+bm3 side)": {
+     "bpw_incl_side_flush": 3.596610290059788,
+     "bit_per_scale": 0.918239425294942,
+     "record_bytes_payload": 16037190.426084453,
+     "d_weight_pct_vs_V0": -1.9069945176599508,
+     "d_record_pct_of_raw_vs_V0": -1.70892833635352,
+     "share_of_C0_ceil_gain_captured": 0.947940719357972
+    },
+    "C3_ceil_bm3h(+bm3 side)": {
+     "bpw_incl_side_flush": 3.5947450919456445,
+     "bit_per_scale": 0.918239425294942,
+     "record_bytes_payload": 16028939.386490881,
+     "d_weight_pct_vs_V0": -1.9578654416913863,
+     "d_record_pct_of_raw_vs_V0": -1.752815350803942,
+     "share_of_C0_ceil_gain_captured": 0.9722847993077356
+    },
+    "C4_ceil_bm3h_pm2b(+bm3 side)": {
+     "bpw_incl_side_flush": 3.594749619298119,
+     "bit_per_scale": 0.918239425294942,
+     "record_bytes_payload": 16028959.414049476,
+     "d_weight_pct_vs_V0": -1.95774196386774,
+     "d_record_pct_of_raw_vs_V0": -1.7527088248633624,
+     "share_of_C0_ceil_gain_captured": 0.9722257094824954
+    },
+    "C4b_ceil_bm3h_pm2b(bm3 order-0 first, scale|bm3)": {
+     "bpw_incl_side_flush": 3.609739262813909,
+     "bit_per_scale": 0.42805693448442356,
+     "record_bytes_payload": 16027505.97274776,
+     "d_weight_pct_vs_V0": -1.5489183591428979,
+     "d_record_pct_of_raw_vs_V0": -1.7604396324407454,
+     "share_of_C0_ceil_gain_captured": 0.9765139801725113
+    }
+   }
+  },
+  "P4_train_sample160_test_extra70_routed|byte": {
+   "summary": {
+    "best_non_ceil": "V6b_o_clsh_pm2b(class order-0 first, scale|class)",
+    "best_ceil": "C1_ceil_pm2b(implicit)",
+    "ceil_on_top_of_best_non_ceil_record_pct_of_raw": -0.16899735428553575,
+    "ceil_on_top_of_best_non_ceil_weight_pct": -0.6056939880842102,
+    "ceil_C4_vs_hybrid_H_record_pct_of_raw": -0.11367150682381894
+   },
+   "rows": {
+    "V0_today_o_base": {
+     "bpw_incl_side_flush": 3.784450209007757,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16880001.856894735,
+     "d_weight_pct_vs_V0": 0.0,
+     "d_record_pct_of_raw_vs_V0": 0.0,
+     "share_of_C0_ceil_gain_captured": 0.0
+    },
+    "V7_o_pm2b": {
+     "bpw_incl_side_flush": 3.773762543268671,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16832723.04371806,
+     "d_weight_pct_vs_V0": -0.28240999745873696,
+     "d_record_pct_of_raw_vs_V0": -0.25147448797847644,
+     "share_of_C0_ceil_gain_captured": 0.13382063689984347
+    },
+    "V1_o_bm7h(+bm7 side)": {
+     "bpw_incl_side_flush": 3.7754107732816276,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16840014.28586177,
+     "d_weight_pct_vs_V0": -0.238857303621375,
+     "d_record_pct_of_raw_vs_V0": -0.21269260532068957,
+     "share_of_C0_ceil_gain_captured": 0.11318309120222893
+    },
+    "V2_o_ev(+even flag side, all blocks)": {
+     "bpw_incl_side_flush": 3.7165710457169454,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16579726.159828441,
+     "d_weight_pct_vs_V0": -1.7936334088699442,
+     "d_record_pct_of_raw_vs_V0": -1.5971567833131959,
+     "share_of_C0_ceil_gain_captured": 0.8499173800491859
+    },
+    "V3_o_cls(+3-class side = bm7 + even bit per max-7 block)": {
+     "bpw_incl_side_flush": 3.7166650642387746,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16580142.067683086,
+     "d_weight_pct_vs_V0": -1.7911490712082825,
+     "d_record_pct_of_raw_vs_V0": -1.594944582799572,
+     "share_of_C0_ceil_gain_captured": 0.8487401708457273
+    },
+    "V4_o_clsh(+3-class side)": {
+     "bpw_incl_side_flush": 3.7147930649318424,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16571860.941788996,
+     "d_weight_pct_vs_V0": -1.8406146264024434,
+     "d_record_pct_of_raw_vs_V0": -1.6389916253156254,
+     "share_of_C0_ceil_gain_captured": 0.8721795397074993
+    },
+    "V5_o_bm7h_pm2b(team2 best non-ceil)": {
+     "bpw_incl_side_flush": 3.7653685599167663,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16795590.747443903,
+     "d_weight_pct_vs_V0": -0.5042119208114418,
+     "d_record_pct_of_raw_vs_V0": -0.44897997861153666,
+     "share_of_C0_ceil_gain_captured": 0.23892199632678604
+    },
+    "V6_o_clsh_pm2b(+3-class side, scale first)": {
+     "bpw_incl_side_flush": 3.7146376883264223,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16571173.605407132,
+     "d_weight_pct_vs_V0": -1.844720285001155,
+     "d_record_pct_of_raw_vs_V0": -1.642647545443152,
+     "share_of_C0_ceil_gain_captured": 0.8741250156237776
+    },
+    "V6b_o_clsh_pm2b(class order-0 first, scale|class)": {
+     "bpw_incl_side_flush": 3.7300749786141685,
+     "bit_per_scale": 0.41764197983211343,
+     "record_bytes_payload": 16558392.908687916,
+     "d_weight_pct_vs_V0": -1.436806600445276,
+     "d_record_pct_of_raw_vs_V0": -1.7106276605839992,
+     "share_of_C0_ceil_gain_captured": 0.9103002251959371
+    },
+    "H_o_clsh_pm2b + ceil scales (s+even) + bm3 side": {
+     "bpw_incl_side_flush": 3.7146727995934707,
+     "bit_per_scale": 0.9107764546917669,
+     "record_bytes_payload": 16558429.507202234,
+     "d_weight_pct_vs_V0": -1.8437925077783262,
+     "d_record_pct_of_raw_vs_V0": -1.7104329942624354,
+     "share_of_C0_ceil_gain_captured": 0.9101966346832611
+    },
+    "C0_ceil_base(implicit)": {
+     "bpw_incl_side_flush": 3.7075005997520623,
+     "bit_per_scale": 0.9107764546917669,
+     "record_bytes_payload": 16526701.990207791,
+     "d_weight_pct_vs_V0": -2.0333101244809373,
+     "d_record_pct_of_raw_vs_V0": -1.8791906375896987,
+     "share_of_C0_ceil_gain_captured": 1.0
+    },
+    "C1_ceil_pm2b(implicit)": {
+     "bpw_incl_side_flush": 3.707482138717669,
+     "bit_per_scale": 0.9107764546917669,
+     "record_bytes_payload": 16526620.324499168,
+     "d_weight_pct_vs_V0": -2.033797937330192,
+     "d_record_pct_of_raw_vs_V0": -1.879625014869535,
+     "share_of_C0_ceil_gain_captured": 1.0002311512579658
+    },
+    "C2_ceil_bm3(+bm3 side)": {
+     "bpw_incl_side_flush": 3.711719227389442,
+     "bit_per_scale": 0.9107764546917669,
+     "record_bytes_payload": 16545363.848914716,
+     "d_weight_pct_vs_V0": -1.9218374559453997,
+     "d_record_pct_of_raw_vs_V0": -1.7799288108278168,
+     "share_of_C0_ceil_gain_captured": 0.9471784156560094
+    },
+    "C3_ceil_bm3h(+bm3 side)": {
+     "bpw_incl_side_flush": 3.7098451739567344,
+     "bit_per_scale": 0.9107764546917669,
+     "record_bytes_payload": 16537073.636225516,
+     "d_weight_pct_vs_V0": -1.9713572891895232,
+     "d_record_pct_of_raw_vs_V0": -1.824024185715057,
+     "share_of_C0_ceil_gain_captured": 0.9706435042985315
+    },
+    "C4_ceil_bm3h_pm2b(+bm3 side)": {
+     "bpw_incl_side_flush": 3.7098417605534584,
+     "bit_per_scale": 0.9107764546917669,
+     "record_bytes_payload": 16537058.536421712,
+     "d_weight_pct_vs_V0": -1.971447484675988,
+     "d_record_pct_of_raw_vs_V0": -1.8241045010862542,
+     "share_of_C0_ceil_gain_captured": 0.970686243640454
+    },
+    "C4b_ceil_bm3h_pm2b(bm3 order-0 first, scale|bm3)": {
+     "bpw_incl_side_flush": 3.725243939574156,
+     "bit_per_scale": 0.41764197983211343,
+     "record_bytes_payload": 16537021.937907394,
+     "d_weight_pct_vs_V0": -1.5644615773429376,
+     "d_record_pct_of_raw_vs_V0": -1.8242991674078182,
+     "share_of_C0_ceil_gain_captured": 0.97078983415313
+    }
+   }
+  },
+  "P4_train_sample160_test_extra70_routed|z": {
+   "summary": {
+    "best_non_ceil": "V6b_o_clsh_pm2b(class order-0 first, scale|class)",
+    "best_ceil": "C1_ceil_pm2b(implicit)",
+    "ceil_on_top_of_best_non_ceil_record_pct_of_raw": -0.16898103156470465,
+    "ceil_on_top_of_best_non_ceil_weight_pct": -0.6251869341675235,
+    "ceil_C4_vs_hybrid_H_record_pct_of_raw": -0.1136739605805353
+   },
+   "rows": {
+    "V0_today_o_base": {
+     "bpw_incl_side_flush": 3.6680393057386285,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16365037.272321159,
+     "d_weight_pct_vs_V0": 0.0,
+     "d_record_pct_of_raw_vs_V0": 0.0,
+     "share_of_C0_ceil_gain_captured": 0.0
+    },
+    "V7_o_pm2b": {
+     "bpw_incl_side_flush": 3.657351204993482,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16317756.53481687,
+     "d_weight_pct_vs_V0": -0.2913845750896126,
+     "d_record_pct_of_raw_vs_V0": -0.25148472341520584,
+     "share_of_C0_ceil_gain_captured": 0.13382593895709397
+    },
+    "V1_o_bm7h(+bm7 side)": {
+     "bpw_incl_side_flush": 3.65899964718049,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16325048.715550695,
+     "d_weight_pct_vs_V0": -0.2464438847205308,
+     "d_record_pct_of_raw_vs_V0": -0.2126978484267791,
+     "share_of_C0_ceil_gain_captured": 0.11318575893324534
+    },
+    "V2_o_ev(+even flag side, all blocks)": {
+     "bpw_incl_side_flush": 3.6001597295469687,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16064759.748713639,
+     "d_weight_pct_vs_V0": -1.8505683972759641,
+     "d_record_pct_of_raw_vs_V0": -1.5971664986272829,
+     "share_of_C0_ceil_gain_captured": 0.8499216312106475
+    },
+    "V3_o_cls(+3-class side = bm7 + even bit per max-7 block)": {
+     "bpw_incl_side_flush": 3.6002540456236845,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16065176.972855885,
+     "d_weight_pct_vs_V0": -1.8479971032179052,
+     "d_record_pct_of_raw_vs_V0": -1.5949472968222063,
+     "share_of_C0_ceil_gain_captured": 0.8487406975886505
+    },
+    "V4_o_clsh(+3-class side)": {
+     "bpw_incl_side_flush": 3.598381827007335,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16056894.87680711,
+     "d_weight_pct_vs_V0": -1.8990385032765273,
+     "d_record_pct_of_raw_vs_V0": -1.6389994995598482,
+     "share_of_C0_ceil_gain_captured": 0.8721827870898878
+    },
+    "V5_o_bm7h_pm2b(team2 best non-ceil)": {
+     "bpw_incl_side_flush": 3.648956329580536,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16280620.292350128,
+     "d_weight_pct_vs_V0": -0.5202500455280674,
+     "d_record_pct_of_raw_vs_V0": -0.44901120371982406,
+     "share_of_C0_ceil_gain_captured": 0.23893835428266494
+    },
+    "V6_o_clsh_pm2b(+3-class side, scale first)": {
+     "bpw_incl_side_flush": 3.598225271446232,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16056202.325102571,
+     "d_weight_pct_vs_V0": -1.9033066026084515,
+     "d_record_pct_of_raw_vs_V0": -1.6426831598210891,
+     "share_of_C0_ceil_gain_captured": 0.8741430226324882
+    },
+    "V6b_o_clsh_pm2b(class order-0 first, scale|class)": {
+     "bpw_incl_side_flush": 3.613662561733978,
+     "bit_per_scale": 0.41764197983211343,
+     "record_bytes_payload": 16043421.628383355,
+     "d_weight_pct_vs_V0": -1.4824471460700592,
+     "d_record_pct_of_raw_vs_V0": -1.7106632749619364,
+     "share_of_C0_ceil_gain_captured": 0.9103181930984696
+    },
+    "H_o_clsh_pm2b + ceil scales (s+even) + bm3 side": {
+     "bpw_incl_side_flush": 3.59826038271328,
+     "bit_per_scale": 0.9107764546917669,
+     "record_bytes_payload": 16043458.226897672,
+     "d_weight_pct_vs_V0": -1.9023493809398315,
+     "d_record_pct_of_raw_vs_V0": -1.7104686086403824,
+     "share_of_C0_ceil_gain_captured": 0.9102146026977824
+    },
+    "C0_ceil_base(implicit)": {
+     "bpw_incl_side_flush": 3.5910896101464105,
+     "bit_per_scale": 0.9107764546917669,
+     "record_bytes_payload": 16011737.023709062,
+     "d_weight_pct_vs_V0": -2.0978427213642608,
+     "d_record_pct_of_raw_vs_V0": -1.8791926690373122,
+     "share_of_C0_ceil_gain_captured": 1.0
+    },
+    "C1_ceil_pm2b(implicit)": {
+     "bpw_incl_side_flush": 3.591070415553114,
+     "bit_per_scale": 0.9107764546917669,
+     "record_bytes_payload": 16011652.112970589,
+     "d_weight_pct_vs_V0": -2.098366014374413,
+     "d_record_pct_of_raw_vs_V0": -1.879644306526641,
+     "share_of_C0_ceil_gain_captured": 1.0002403359148693
+    },
+    "C2_ceil_bm3(+bm3 side)": {
+     "bpw_incl_side_flush": 3.5953080071016283,
+     "bit_per_scale": 0.9107764546917669,
+     "record_bytes_payload": 16030397.861951921,
+     "d_weight_pct_vs_V0": -1.9828385841779934,
+     "d_record_pct_of_raw_vs_V0": -1.7799362700910069,
+     "share_of_C0_ceil_gain_captured": 0.9471813611335802
+    },
+    "C3_ceil_bm3h(+bm3 side)": {
+     "bpw_incl_side_flush": 3.5934337219048147,
+     "bit_per_scale": 0.9107764546917669,
+     "record_bytes_payload": 16022106.62401248,
+     "d_weight_pct_vs_V0": -2.033936324430704,
+     "d_record_pct_of_raw_vs_V0": -1.8240370982513332,
+     "share_of_C0_ceil_gain_captured": 0.9706493263331883
+    },
+    "C4_ceil_bm3h_pm2b(+bm3 side)": {
+     "bpw_incl_side_flush": 3.593429239388607,
+     "bit_per_scale": 0.9107764546917669,
+     "record_bytes_payload": 16022086.794795183,
+     "d_weight_pct_vs_V0": -2.0340585291246542,
+     "d_record_pct_of_raw_vs_V0": -1.8241425692209177,
+     "share_of_C0_ceil_gain_captured": 0.9707054520148826
+    },
+    "C4b_ceil_bm3h_pm2b(bm3 order-0 first, scale|bm3)": {
+     "bpw_incl_side_flush": 3.6088314184093053,
+     "bit_per_scale": 0.41764197983211343,
+     "record_bytes_payload": 16022050.196280867,
+     "d_weight_pct_vs_V0": -1.6141562942548817,
+     "d_record_pct_of_raw_vs_V0": -1.8243372355424718,
+     "share_of_C0_ceil_gain_captured": 0.9708090424155698
+    }
+   }
+  },
+  "P4_train_sample160_test_extra70_routed|signbypass": {
+   "summary": {
+    "best_non_ceil": "V6b_o_clsh_pm2b(class order-0 first, scale|class)",
+    "best_ceil": "C1_ceil_pm2b(implicit)",
+    "ceil_on_top_of_best_non_ceil_record_pct_of_raw": -0.16684490366745933,
+    "ceil_on_top_of_best_non_ceil_weight_pct": -0.60325848333769,
+    "ceil_C4_vs_hybrid_H_record_pct_of_raw": -0.11364995229914335
+   },
+   "rows": {
+    "V0_today_o_base": {
+     "bpw_incl_side_flush": 3.784446194487517,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16879984.097941842,
+     "d_weight_pct_vs_V0": 0.0,
+     "d_record_pct_of_raw_vs_V0": 0.0,
+     "share_of_C0_ceil_gain_captured": 0.0
+    },
+    "V7_o_pm2b": {
+     "bpw_incl_side_flush": 3.7737559342668,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16832693.80760866,
+     "d_weight_pct_vs_V0": -0.2824788534789815,
+     "d_record_pct_of_raw_vs_V0": -0.2515355346051072,
+     "share_of_C0_ceil_gain_captured": 0.13384038700231005
+    },
+    "V1_o_bm7h(+bm7 side)": {
+     "bpw_incl_side_flush": 3.775368508718079,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16839827.320957296,
+     "d_weight_pct_vs_V0": -0.2398682740597772,
+     "d_record_pct_of_raw_vs_V0": -0.2135926063397115,
+     "share_of_C0_ceil_gain_captured": 0.11365120692875103
+    },
+    "V2_o_ev(+even flag side, all blocks)": {
+     "bpw_incl_side_flush": 3.716510198760384,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16579456.99236364,
+     "d_weight_pct_vs_V0": -1.7951370487467802,
+     "d_record_pct_of_raw_vs_V0": -1.5984940171090067,
+     "share_of_C0_ceil_gain_captured": 0.8505480476411494
+    },
+    "V3_o_cls(+3-class side = bm7 + even bit per max-7 block)": {
+     "bpw_incl_side_flush": 3.7165683454851264,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16579714.214866947,
+     "d_weight_pct_vs_V0": -1.7936005828610464,
+     "d_record_pct_of_raw_vs_V0": -1.597125858879775,
+     "share_of_C0_ceil_gain_captured": 0.8498200597361075
+    },
+    "V4_o_clsh(+3-class side)": {
+     "bpw_incl_side_flush": 3.7146954715786893,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16571429.22002452,
+     "d_weight_pct_vs_V0": -1.843089300897655,
+     "d_record_pct_of_raw_vs_V0": -1.6411934802077024,
+     "share_of_C0_ceil_gain_captured": 0.8732681483016478
+    },
+    "V5_o_bm7h_pm2b(team2 best non-ceil)": {
+     "bpw_incl_side_flush": 3.7653194394569227,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16795373.4542481,
+     "d_weight_pct_vs_V0": -0.5054043325666724,
+     "d_record_pct_of_raw_vs_V0": -0.4500412948375237,
+     "share_of_C0_ceil_gain_captured": 0.23946398333991856
+    },
+    "V6_o_clsh_pm2b(+3-class side, scale first)": {
+     "bpw_incl_side_flush": 3.7145327584939705,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16570709.42940591,
+     "d_weight_pct_vs_V0": -1.8473888225807968,
+     "d_record_pct_of_raw_vs_V0": -1.6450220233775608,
+     "share_of_C0_ceil_gain_captured": 0.8753052906891571
+    },
+    "V6b_o_clsh_pm2b(class order-0 first, scale|class)": {
+     "bpw_incl_side_flush": 3.7299700487817167,
+     "bit_per_scale": 0.41764197983211343,
+     "record_bytes_payload": 16557928.732686697,
+     "d_weight_pct_vs_V0": -1.4394747053122674,
+     "d_record_pct_of_raw_vs_V0": -1.713002138518398,
+     "share_of_C0_ceil_gain_captured": 0.911477058360851
+    },
+    "H_o_clsh_pm2b + ceil scales (s+even) + bm3 side": {
+     "bpw_incl_side_flush": 3.7145678697610185,
+     "bit_per_scale": 0.9107764546917669,
+     "record_bytes_payload": 16557965.331201011,
+     "d_weight_pct_vs_V0": -1.8464610443737985,
+     "d_record_pct_of_raw_vs_V0": -1.712807472196854,
+     "share_of_C0_ceil_gain_captured": 0.911373477704334
+    },
+    "C0_ceil_base(implicit)": {
+     "bpw_incl_side_flush": 3.7074889856736504,
+     "bit_per_scale": 0.9107764546917669,
+     "record_bytes_payload": 16526650.613241402,
+     "d_weight_pct_vs_V0": -2.0335130917164013,
+     "d_record_pct_of_raw_vs_V0": -1.8793694507231642,
+     "share_of_C0_ceil_gain_captured": 1.0
+    },
+    "C1_ceil_pm2b(implicit)": {
+     "bpw_incl_side_flush": 3.707468688036486,
+     "bit_per_scale": 0.9107764546917669,
+     "record_bytes_payload": 16526560.82298983,
+     "d_weight_pct_vs_V0": -2.0340494353746608,
+     "d_record_pct_of_raw_vs_V0": -1.8798470421858575,
+     "share_of_C0_ceil_gain_captured": 1.000254123244639
+    },
+    "C2_ceil_bm3(+bm3 side)": {
+     "bpw_incl_side_flush": 3.7116235056948366,
+     "bit_per_scale": 0.9107764546917669,
+     "record_bytes_payload": 16544940.406768724,
+     "d_weight_pct_vs_V0": -1.9242627599978899,
+     "d_record_pct_of_raw_vs_V0": -1.7820866266952486,
+     "share_of_C0_ceil_gain_captured": 0.9482364555886114
+    },
+    "C3_ceil_bm3h(+bm3 side)": {
+     "bpw_incl_side_flush": 3.709748406561477,
+     "bit_per_scale": 0.9107764546917669,
+     "record_bytes_payload": 16536645.568234464,
+     "d_weight_pct_vs_V0": -1.9738102773094233,
+     "d_record_pct_of_raw_vs_V0": -1.8262066063037097,
+     "share_of_C0_ceil_gain_captured": 0.9717124036474053
+    },
+    "C4_ceil_bm3h_pm2b(+bm3 side)": {
+     "bpw_incl_side_flush": 3.709737746788305,
+     "bit_per_scale": 0.9107764546917669,
+     "record_bytes_payload": 16536598.412809078,
+     "d_weight_pct_vs_V0": -1.9740919505747927,
+     "d_record_pct_of_raw_vs_V0": -1.8264574244959975,
+     "share_of_C0_ceil_gain_captured": 0.9718458623413259
+    },
+    "C4b_ceil_bm3h_pm2b(bm3 order-0 first, scale|bm3)": {
+     "bpw_incl_side_flush": 3.7251399258090023,
+     "bit_per_scale": 0.41764197983211343,
+     "record_bytes_payload": 16536561.81429476,
+     "d_weight_pct_vs_V0": -1.567105611513285,
+     "d_record_pct_of_raw_vs_V0": -1.8266520908175612,
+     "share_of_C0_ceil_gain_captured": 0.9719494429978535
+    }
+   }
+  },
+  "P4_train_sample160_test_extra70_routed|z_signbypass": {
+   "summary": {
+    "best_non_ceil": "V6b_o_clsh_pm2b(class order-0 first, scale|class)",
+    "best_ceil": "C1_ceil_pm2b(implicit)",
+    "ceil_on_top_of_best_non_ceil_record_pct_of_raw": -0.16684490366744942,
+    "ceil_on_top_of_best_non_ceil_weight_pct": -0.6227076741687109,
+    "ceil_C4_vs_hybrid_H_record_pct_of_raw": -0.11364995229914335
+   },
+   "rows": {
+    "V0_today_o_base": {
+     "bpw_incl_side_flush": 3.667947069324757,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16364629.247941844,
+     "d_weight_pct_vs_V0": 0.0,
+     "d_record_pct_of_raw_vs_V0": 0.0,
+     "share_of_C0_ceil_gain_captured": 0.0
+    },
+    "V7_o_pm2b": {
+     "bpw_incl_side_flush": 3.6572568091040396,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16317338.95760866,
+     "d_weight_pct_vs_V0": -0.29145077665161856,
+     "d_record_pct_of_raw_vs_V0": -0.2515355346051171,
+     "share_of_C0_ceil_gain_captured": 0.13384038700231463
+    },
+    "V1_o_bm7h(+bm7 side)": {
+     "bpw_incl_side_flush": 3.6588693835553188,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16324472.470957296,
+     "d_weight_pct_vs_V0": -0.24748682567846497,
+     "d_record_pct_of_raw_vs_V0": -0.21359260633972138,
+     "share_of_C0_ceil_gain_captured": 0.1136512069287557
+    },
+    "V2_o_ev(+even flag side, all blocks)": {
+     "bpw_incl_side_flush": 3.600011073597624,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16064102.14236364,
+     "d_weight_pct_vs_V0": -1.8521531102584745,
+     "d_record_pct_of_raw_vs_V0": -1.5984940171090165,
+     "share_of_C0_ceil_gain_captured": 0.8505480476411502
+    },
+    "V3_o_cls(+3-class side = bm7 + even bit per max-7 block)": {
+     "bpw_incl_side_flush": 3.600069220322366,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16064359.364866948,
+     "d_weight_pct_vs_V0": -1.8505678440688795,
+     "d_record_pct_of_raw_vs_V0": -1.597125858879785,
+     "share_of_C0_ceil_gain_captured": 0.8498200597361084
+    },
+    "V4_o_clsh(+3-class side)": {
+     "bpw_incl_side_flush": 3.598196346415929,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16056074.37002452,
+     "d_weight_pct_vs_V0": -1.9016283929546591,
+     "d_record_pct_of_raw_vs_V0": -1.6411934802077124,
+     "share_of_C0_ceil_gain_captured": 0.8732681483016485
+    },
+    "V5_o_bm7h_pm2b(team2 best non-ceil)": {
+     "bpw_incl_side_flush": 3.6488203142941624,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16280018.604248105,
+     "d_weight_pct_vs_V0": -0.5214566805108114,
+     "d_record_pct_of_raw_vs_V0": -0.45004129483751376,
+     "share_of_C0_ceil_gain_captured": 0.239463983339912
+    },
+    "V6_o_clsh_pm2b(+3-class side, scale first)": {
+     "bpw_incl_side_flush": 3.5980336333312097,
+     "bit_per_scale": 1.0040882256315296,
+     "record_bytes_payload": 16055354.57940591,
+     "d_weight_pct_vs_V0": -1.906064473455385,
+     "d_record_pct_of_raw_vs_V0": -1.6450220233775805,
+     "share_of_C0_ceil_gain_captured": 0.8753052906891631
+    },
+    "V6b_o_clsh_pm2b(class order-0 first, scale|class)": {
+     "bpw_incl_side_flush": 3.613470923618956,
+     "bit_per_scale": 0.41764197983211343,
+     "record_bytes_payload": 16042573.882686695,
+     "d_weight_pct_vs_V0": -1.485194433730736,
+     "d_record_pct_of_raw_vs_V0": -1.713002138518418,
+     "share_of_C0_ceil_gain_captured": 0.9114770583608568
+    },
+    "H_o_clsh_pm2b + ceil scales (s+even) + bm3 side": {
+     "bpw_incl_side_flush": 3.598068744598258,
+     "bit_per_scale": 0.9107764546917669,
+     "record_bytes_payload": 16042610.481201012,
+     "d_weight_pct_vs_V0": -1.9051072277158785,
+     "d_record_pct_of_raw_vs_V0": -1.712807472196864,
+     "share_of_C0_ceil_gain_captured": 0.9113734777043344
+    },
+    "C0_ceil_base(implicit)": {
+     "bpw_incl_side_flush": 3.59098986051089,
+     "bit_per_scale": 0.9107764546917669,
+     "record_bytes_payload": 16011295.763241403,
+     "d_weight_pct_vs_V0": -2.0981003095018513,
+     "d_record_pct_of_raw_vs_V0": -1.8793694507231742,
+     "share_of_C0_ceil_gain_captured": 1.0
+    },
+    "C1_ceil_pm2b(implicit)": {
+     "bpw_incl_side_flush": 3.5909695628737257,
+     "bit_per_scale": 0.9107764546917669,
+     "record_bytes_payload": 16011205.972989831,
+     "d_weight_pct_vs_V0": -2.098653688184279,
+     "d_record_pct_of_raw_vs_V0": -1.8798470421858673,
+     "share_of_C0_ceil_gain_captured": 1.000254123244639
+    },
+    "C2_ceil_bm3(+bm3 side)": {
+     "bpw_incl_side_flush": 3.5951243805320763,
+     "bit_per_scale": 0.9107764546917669,
+     "record_bytes_payload": 16029585.556768725,
+     "d_weight_pct_vs_V0": -1.9853800345621333,
+     "d_record_pct_of_raw_vs_V0": -1.7820866266952586,
+     "share_of_C0_ceil_gain_captured": 0.9482364555886117
+    },
+    "C3_ceil_bm3h(+bm3 side)": {
+     "bpw_incl_side_flush": 3.593249281398717,
+     "bit_per_scale": 0.9107764546917669,
+     "record_bytes_payload": 16021290.718234465,
+     "d_weight_pct_vs_V0": -2.036501250269986,
+     "d_record_pct_of_raw_vs_V0": -1.8262066063037197,
+     "share_of_C0_ceil_gain_captured": 0.9717124036474055
+    },
+    "C4_ceil_bm3h_pm2b(+bm3 side)": {
+     "bpw_incl_side_flush": 3.5932386216255447,
+     "bit_per_scale": 0.9107764546917669,
+     "record_bytes_payload": 16021243.562809078,
+     "d_weight_pct_vs_V0": -2.036791869871924,
+     "d_record_pct_of_raw_vs_V0": -1.8264574244960072,
+     "share_of_C0_ceil_gain_captured": 0.971845862341326
+    },
+    "C4b_ceil_bm3h_pm2b(bm3 order-0 first, scale|bm3)": {
+     "bpw_incl_side_flush": 3.608640800646242,
+     "bit_per_scale": 0.41764197983211343,
+     "record_bytes_payload": 16021206.96429476,
+     "d_weight_pct_vs_V0": -1.6168790758867935,
+     "d_record_pct_of_raw_vs_V0": -1.8266520908175712,
+     "share_of_C0_ceil_gain_captured": 0.9719494429978536
+    }
+   }
+  },
+  "P5_train_sample160_test_mtp6|byte": {
+   "summary": {
+    "best_non_ceil": "V6_o_clsh_pm2b(+3-class side, scale first)",
+    "best_ceil": "C3_ceil_bm3h(+bm3 side)",
+    "ceil_on_top_of_best_non_ceil_record_pct_of_raw": -1.9215608033439966,
+    "ceil_on_top_of_best_non_ceil_weight_pct": -1.3989385527003422,
+    "ceil_C4_vs_hybrid_H_record_pct_of_raw": -0.3424527598942121
+   },
+   "rows": {
+    "V0_today_o_base": {
+     "bpw_incl_side_flush": 4.37610508902992,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 20867722.2996918,
+     "d_weight_pct_vs_V0": 0.0,
+     "d_record_pct_of_raw_vs_V0": 0.0,
+     "share_of_C0_ceil_gain_captured": 0.0
+    },
+    "V7_o_pm2b": {
+     "bpw_incl_side_flush": 4.404146521087052,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 20991768.62185429,
+     "d_weight_pct_vs_V0": 0.6407851613853157,
+     "d_record_pct_of_raw_vs_V0": 0.6597984013442646,
+     "share_of_C0_ceil_gain_captured": -0.21293418289002614
+    },
+    "V1_o_bm7h(+bm7 side)": {
+     "bpw_incl_side_flush": 4.347061608679379,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 20739243.23653472,
+     "d_weight_pct_vs_V0": -0.6636833384862686,
+     "d_record_pct_of_raw_vs_V0": -0.6833760082480256,
+     "share_of_C0_ceil_gain_captured": 0.22054329265798853
+    },
+    "V2_o_ev(+even flag side, all blocks)": {
+     "bpw_incl_side_flush": 4.326514739290845,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 20648350.461358048,
+     "d_weight_pct_vs_V0": -1.1332074694318708,
+     "d_record_pct_of_raw_vs_V0": -1.1668317585664745,
+     "share_of_C0_ceil_gain_captured": 0.376567094697833
+    },
+    "V3_o_cls(+3-class side = bm7 + even bit per max-7 block)": {
+     "bpw_incl_side_flush": 4.303768225272446,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 20547727.162225135,
+     "d_weight_pct_vs_V0": -1.6529964954180243,
+     "d_record_pct_of_raw_vs_V0": -1.70204385311705,
+     "share_of_C0_ceil_gain_captured": 0.5492940212769146
+    },
+    "V4_o_clsh(+3-class side)": {
+     "bpw_incl_side_flush": 4.3196070014360535,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 20617792.83956456,
+     "d_weight_pct_vs_V0": -1.291058748463261,
+     "d_record_pct_of_raw_vs_V0": -1.3293667669145208,
+     "share_of_C0_ceil_gain_captured": 0.42902138849894317
+    },
+    "V5_o_bm7h_pm2b(team2 best non-ceil)": {
+     "bpw_incl_side_flush": 4.310136145649385,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 20575896.804238193,
+     "d_weight_pct_vs_V0": -1.5074807857312915,
+     "d_record_pct_of_raw_vs_V0": -1.5522104324831882,
+     "share_of_C0_ceil_gain_captured": 0.5009388616898547
+    },
+    "V6_o_clsh_pm2b(+3-class side, scale first)": {
+     "bpw_incl_side_flush": 4.2901041238636255,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 20487281.550104965,
+     "d_weight_pct_vs_V0": -1.9652399432061887,
+     "d_record_pct_of_raw_vs_V0": -2.0235521215598804,
+     "share_of_C0_ceil_gain_captured": 0.6530531396588046
+    },
+    "V6b_o_clsh_pm2b(class order-0 first, scale|class)": {
+     "bpw_incl_side_flush": 4.276453860320673,
+     "bit_per_scale": 11.386808706663636,
+     "record_bytes_payload": 20491775.848432537,
+     "d_weight_pct_vs_V0": -2.277167176790472,
+     "d_record_pct_of_raw_vs_V0": -1.9996470931801409,
+     "share_of_C0_ceil_gain_captured": 0.6453383624258923
+    },
+    "H_o_clsh_pm2b + ceil scales (s+even) + bm3 side": {
+     "bpw_incl_side_flush": 4.3038931942100485,
+     "bit_per_scale": 10.224676199415782,
+     "record_bytes_payload": 20452505.483170345,
+     "d_weight_pct_vs_V0": -1.6501407838877897,
+     "d_record_pct_of_raw_vs_V0": -2.2085249040535566,
+     "share_of_C0_ceil_gain_captured": 0.7127486894160318
+    },
+    "C0_ceil_base(implicit)": {
+     "bpw_incl_side_flush": 4.26606489440521,
+     "bit_per_scale": 10.224676199415782,
+     "record_bytes_payload": 20285165.189889677,
+     "d_weight_pct_vs_V0": -2.5145692890365012,
+     "d_record_pct_of_raw_vs_V0": -3.098602546520348,
+     "share_of_C0_ceil_gain_captured": 1.0
+    },
+    "C1_ceil_pm2b(implicit)": {
+     "bpw_incl_side_flush": 4.33116942301697,
+     "bit_per_scale": 10.224676199415782,
+     "record_bytes_payload": 20573166.791018948,
+     "d_weight_pct_vs_V0": -1.0268415657017842,
+     "d_record_pct_of_raw_vs_V0": -1.5667312850671682,
+     "share_of_C0_ceil_gain_captured": 0.5056251202099371
+    },
+    "C2_ceil_bm3(+bm3 side)": {
+     "bpw_incl_side_flush": 4.235851948342595,
+     "bit_per_scale": 10.224676199415782,
+     "record_bytes_payload": 20151512.784651406,
+     "d_weight_pct_vs_V0": -3.2049765221341184,
+     "d_record_pct_of_raw_vs_V0": -3.8094953950524766,
+     "share_of_C0_ceil_gain_captured": 1.2294236959594715
+    },
+    "C3_ceil_bm3h(+bm3 side)": {
+     "bpw_incl_side_flush": 4.23008820332391,
+     "bit_per_scale": 10.224676199415782,
+     "record_bytes_payload": 20126015.82108715,
+     "d_weight_pct_vs_V0": -3.336685996687953,
+     "d_record_pct_of_raw_vs_V0": -3.945112924903877,
+     "share_of_C0_ceil_gain_captured": 1.2731910161676394
+    },
+    "C4_ceil_bm3h_pm2b(+bm3 side)": {
+     "bpw_incl_side_flush": 4.289338951914544,
+     "bit_per_scale": 10.224676199415782,
+     "record_bytes_payload": 20388122.17261257,
+     "d_weight_pct_vs_V0": -1.9827251711317988,
+     "d_record_pct_of_raw_vs_V0": -2.550977663947769,
+     "share_of_C0_ceil_gain_captured": 0.8232671424131023
+    },
+    "C4b_ceil_bm3h_pm2b(bm3 order-0 first, scale|bm3)": {
+     "bpw_incl_side_flush": 4.2618996180251685,
+     "bit_per_scale": 11.386808706663636,
+     "record_bytes_payload": 20427392.53787476,
+     "d_weight_pct_vs_V0": -2.6097515640345015,
+     "d_record_pct_of_raw_vs_V0": -2.342099853074373,
+     "share_of_C0_ceil_gain_captured": 0.7558568154229691
+    }
+   }
+  },
+  "P5_train_sample160_test_mtp6|z": {
+   "summary": {
+    "best_non_ceil": "V6_o_clsh_pm2b(+3-class side, scale first)",
+    "best_ceil": "C3_ceil_bm3h(+bm3 side)",
+    "ceil_on_top_of_best_non_ceil_record_pct_of_raw": -1.8588174886509659,
+    "ceil_on_top_of_best_non_ceil_weight_pct": -1.4111554852639423,
+    "ceil_C4_vs_hybrid_H_record_pct_of_raw": -0.2993716902998043
+   },
+   "rows": {
+    "V0_today_o_base": {
+     "bpw_incl_side_flush": 4.144682345648326,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 19843982.138249513,
+     "d_weight_pct_vs_V0": 0.0,
+     "d_record_pct_of_raw_vs_V0": 0.0,
+     "share_of_C0_ceil_gain_captured": 0.0
+    },
+    "V7_o_pm2b": {
+     "bpw_incl_side_flush": 4.1721291741893465,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 19965398.12472985,
+     "d_weight_pct_vs_V0": 0.662217903619023,
+     "d_record_pct_of_raw_vs_V0": 0.6458077303769267,
+     "share_of_C0_ceil_gain_captured": -0.2102870113742703
+    },
+    "V1_o_bm7h(+bm7 side)": {
+     "bpw_incl_side_flush": 4.119489790381852,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 19732538.335368313,
+     "d_weight_pct_vs_V0": -0.6078283729735029,
+     "d_record_pct_of_raw_vs_V0": -0.5927660062699986,
+     "share_of_C0_ceil_gain_captured": 0.19301563923681625
+    },
+    "V2_o_ev(+even flag side, all blocks)": {
+     "bpw_incl_side_flush": 4.097739756688027,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 19636323.146317612,
+     "d_weight_pct_vs_V0": -1.1325979905211951,
+     "d_record_pct_of_raw_vs_V0": -1.1045315049482378,
+     "share_of_C0_ceil_gain_captured": 0.35965600629885003
+    },
+    "V3_o_cls(+3-class side = bm7 + even bit per max-7 block)": {
+     "bpw_incl_side_flush": 4.076060296622486,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 19540420.15241488,
+     "d_weight_pct_vs_V0": -1.6556648568711136,
+     "d_record_pct_of_raw_vs_V0": -1.6146364476668458,
+     "share_of_C0_ceil_gain_captured": 0.5257556654480708
+    },
+    "V4_o_clsh(+3-class side)": {
+     "bpw_incl_side_flush": 4.092464753762393,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 19612988.221375544,
+     "d_weight_pct_vs_V0": -1.2598695757893048,
+     "d_record_pct_of_raw_vs_V0": -1.228649220845509,
+     "share_of_C0_ceil_gain_captured": 0.40007104363419504
+    },
+    "V5_o_bm7h_pm2b(team2 best non-ceil)": {
+     "bpw_incl_side_flush": 4.085055486726453,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 19580211.994973995,
+     "d_weight_pct_vs_V0": -1.4386351944312092,
+     "d_record_pct_of_raw_vs_V0": -1.4029849158088128,
+     "share_of_C0_ceil_gain_captured": 0.4568379891897903
+    },
+    "V6_o_clsh_pm2b(+3-class side, scale first)": {
+     "bpw_incl_side_flush": 4.0639979268148565,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 19487060.08834427,
+     "d_weight_pct_vs_V0": -1.9466972883503073,
+     "d_record_pct_of_raw_vs_V0": -1.8984569137287042,
+     "share_of_C0_ceil_gain_captured": 0.6181728892867607
+    },
+    "V6b_o_clsh_pm2b(class order-0 first, scale|class)": {
+     "bpw_incl_side_flush": 4.050347663271904,
+     "bit_per_scale": 11.386808706663636,
+     "record_bytes_payload": 19491554.386671837,
+     "d_weight_pct_vs_V0": -2.2760413105112347,
+     "d_record_pct_of_raw_vs_V0": -1.8745518853489846,
+     "share_of_C0_ceil_gain_captured": 0.6103889673261883
+    },
+    "H_o_clsh_pm2b + ceil scales (s+even) + bm3 side": {
+     "bpw_incl_side_flush": 4.07778699716128,
+     "bit_per_scale": 10.224676199415782,
+     "record_bytes_payload": 19452284.02140965,
+     "d_weight_pct_vs_V0": -1.6140042326110282,
+     "d_record_pct_of_raw_vs_V0": -2.0834296962223804,
+     "share_of_C0_ceil_gain_captured": 0.6784034684306115
+    },
+    "C0_ceil_base(implicit)": {
+     "bpw_incl_side_flush": 4.035811961215472,
+     "bit_per_scale": 10.224676199415782,
+     "record_bytes_payload": 19266599.894396897,
+     "d_weight_pct_vs_V0": -2.626748574523728,
+     "d_record_pct_of_raw_vs_V0": -3.071077600829628,
+     "share_of_C0_ceil_gain_captured": 1.0
+    },
+    "C1_ceil_pm2b(implicit)": {
+     "bpw_incl_side_flush": 4.10525457118031,
+     "bit_per_scale": 10.224676199415782,
+     "record_bytes_payload": 19573791.779246148,
+     "d_weight_pct_vs_V0": -0.9512857965921938,
+     "d_record_pct_of_raw_vs_V0": -1.4371338369511093,
+     "share_of_C0_ceil_gain_captured": 0.4679575132073767
+    },
+    "C2_ceil_bm3(+bm3 side)": {
+     "bpw_incl_side_flush": 4.013027013663901,
+     "bit_per_scale": 10.224676199415782,
+     "record_bytes_payload": 19165806.577611964,
+     "d_weight_pct_vs_V0": -3.1764878706001562,
+     "d_record_pct_of_raw_vs_V0": -3.607194013807767,
+     "share_of_C0_ceil_gain_captured": 1.1745694777733104
+    },
+    "C3_ceil_bm3h(+bm3 side)": {
+     "bpw_incl_side_flush": 4.006648597149596,
+     "bit_per_scale": 10.224676199415782,
+     "record_bytes_payload": 19137590.50404596,
+     "d_weight_pct_vs_V0": -3.33038184804821,
+     "d_record_pct_of_raw_vs_V0": -3.7572744023796703,
+     "share_of_C0_ceil_gain_captured": 1.2234384443312898
+    },
+    "C4_ceil_bm3h_pm2b(+bm3 side)": {
+     "bpw_incl_side_flush": 4.065063700323539,
+     "bit_per_scale": 10.224676199415782,
+     "record_bytes_payload": 19396000.22765447,
+     "d_weight_pct_vs_V0": -1.9209830497235154,
+     "d_record_pct_of_raw_vs_V0": -2.3828013865221847,
+     "share_of_C0_ceil_gain_captured": 0.7758844601902893
+    },
+    "C4b_ceil_bm3h_pm2b(bm3 order-0 first, scale|bm3)": {
+     "bpw_incl_side_flush": 4.037624366434164,
+     "bit_per_scale": 11.386808706663636,
+     "record_bytes_payload": 19435270.592916664,
+     "d_weight_pct_vs_V0": -2.5830201276237004,
+     "d_record_pct_of_raw_vs_V0": -2.1739235756487494,
+     "share_of_C0_ceil_gain_captured": 0.7078699590858534
+    }
+   }
+  },
+  "P5_train_sample160_test_mtp6|signbypass": {
+   "summary": {
+    "best_non_ceil": "V6_o_clsh_pm2b(+3-class side, scale first)",
+    "best_ceil": "C3_ceil_bm3h(+bm3 side)",
+    "ceil_on_top_of_best_non_ceil_record_pct_of_raw": -1.640894373069965,
+    "ceil_on_top_of_best_non_ceil_weight_pct": -1.1347386708721596,
+    "ceil_C4_vs_hybrid_H_record_pct_of_raw": -0.37306470992246993
+   },
+   "rows": {
+    "V0_today_o_base": {
+     "bpw_incl_side_flush": 4.333865358331532,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 20680867.247795954,
+     "d_weight_pct_vs_V0": 0.0,
+     "d_record_pct_of_raw_vs_V0": 0.0,
+     "share_of_C0_ceil_gain_captured": 0.0
+    },
+    "V7_o_pm2b": {
+     "bpw_incl_side_flush": 4.352808138657077,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 20764664.046266463,
+     "d_weight_pct_vs_V0": 0.43708742102773107,
+     "d_record_pct_of_raw_vs_V0": 0.4457124782481251,
+     "share_of_C0_ceil_gain_captured": -0.14822083645631282
+    },
+    "V1_o_bm7h(+bm7 side)": {
+     "bpw_incl_side_flush": 4.303822147262743,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 20547965.69585517,
+     "d_weight_pct_vs_V0": -0.6932197607623719,
+     "d_record_pct_of_raw_vs_V0": -0.7068990839715236,
+     "share_of_C0_ceil_gain_captured": 0.2350779451548848
+    },
+    "V2_o_ev(+even flag side, all blocks)": {
+     "bpw_incl_side_flush": 4.273774800170406,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 20415045.847469743,
+     "d_weight_pct_vs_V0": -1.3865349565049676,
+     "d_record_pct_of_raw_vs_V0": -1.4138954861441473,
+     "share_of_C0_ceil_gain_captured": 0.47018825329235014
+    },
+    "V3_o_cls(+3-class side = bm7 + even bit per max-7 block)": {
+     "bpw_incl_side_flush": 4.252240618467305,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 20319785.518553372,
+     "d_weight_pct_vs_V0": -1.8834166065475249,
+     "d_record_pct_of_raw_vs_V0": -1.9205821144523902,
+     "share_of_C0_ceil_gain_captured": 0.6386859273181336
+    },
+    "V4_o_clsh(+3-class side)": {
+     "bpw_incl_side_flush": 4.268837083260425,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 20393202.967929397,
+     "d_weight_pct_vs_V0": -1.5004682816482773,
+     "d_record_pct_of_raw_vs_V0": -1.530077060496651,
+     "share_of_C0_ceil_gain_captured": 0.5088242147512367
+    },
+    "V5_o_bm7h_pm2b(team2 best non-ceil)": {
+     "bpw_incl_side_flush": 4.2644044650134925,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 20373594.48324281,
+     "d_weight_pct_vs_V0": -1.602746914702969,
+     "d_record_pct_of_raw_vs_V0": -1.6343739604244567,
+     "share_of_C0_ceil_gain_captured": 0.5435079503465723
+    },
+    "V6_o_clsh_pm2b(+3-class side, scale first)": {
+     "bpw_incl_side_flush": 4.237768438446615,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 20255765.225239445,
+     "d_weight_pct_vs_V0": -2.217348993091761,
+     "d_record_pct_of_raw_vs_V0": -2.2611039972921656,
+     "share_of_C0_ceil_gain_captured": 0.7519258314477468
+    },
+    "V6b_o_clsh_pm2b(class order-0 first, scale|class)": {
+     "bpw_incl_side_flush": 4.224118174903663,
+     "bit_per_scale": 11.386808706663636,
+     "record_bytes_payload": 20260259.523567017,
+     "d_weight_pct_vs_V0": -2.532316404728361,
+     "d_record_pct_of_raw_vs_V0": -2.237198968912426,
+     "share_of_C0_ceil_gain_captured": 0.7439762597510254
+    },
+    "H_o_clsh_pm2b + ceil scales (s+even) + bm3 side": {
+     "bpw_incl_side_flush": 4.251557508793038,
+     "bit_per_scale": 10.224676199415782,
+     "record_bytes_payload": 20220989.15830482,
+     "d_weight_pct_vs_V0": -1.8991787407576755,
+     "d_record_pct_of_raw_vs_V0": -2.446076779785862,
+     "share_of_C0_ceil_gain_captured": 0.8134381782652046
+    },
+    "C0_ceil_base(implicit)": {
+     "bpw_incl_side_flush": 4.227714709826663,
+     "bit_per_scale": 10.224676199415782,
+     "record_bytes_payload": 20115516.24537325,
+     "d_weight_pct_vs_V0": -2.4493296336676034,
+     "d_record_pct_of_raw_vs_V0": -3.007083814288797,
+     "share_of_C0_ceil_gain_captured": 1.0
+    },
+    "C1_ceil_pm2b(implicit)": {
+     "bpw_incl_side_flush": 4.288465374315565,
+     "bit_per_scale": 10.224676199415782,
+     "record_bytes_payload": 20384257.744859513,
+     "d_weight_pct_vs_V0": -1.047563324243312,
+     "d_record_pct_of_raw_vs_V0": -1.5776564145499379,
+     "share_of_C0_ceil_gain_captured": 0.5246466383987598
+    },
+    "C2_ceil_bm3(+bm3 side)": {
+     "bpw_incl_side_flush": 4.200483782690679,
+     "bit_per_scale": 10.224676199415782,
+     "record_bytes_payload": 19995055.337620337,
+     "d_weight_pct_vs_V0": -3.077658501421533,
+     "d_record_pct_of_raw_vs_V0": -3.6478115116060823,
+     "share_of_C0_ceil_gain_captured": 1.2130727764463138
+    },
+    "C3_ceil_bm3h(+bm3 side)": {
+     "bpw_incl_side_flush": 4.189680841193546,
+     "bit_per_scale": 10.224676199415782,
+     "record_bytes_payload": 19947266.581378303,
+     "d_weight_pct_vs_V0": -3.326926547471114,
+     "d_record_pct_of_raw_vs_V0": -3.9019983703621306,
+     "share_of_C0_ceil_gain_captured": 1.2976021326113216
+    },
+    "C4_ceil_bm3h_pm2b(+bm3 side)": {
+     "bpw_incl_side_flush": 4.235702258621333,
+     "bit_per_scale": 10.224676199415782,
+     "record_bytes_payload": 20150850.605225254,
+     "d_weight_pct_vs_V0": -2.2650242126578193,
+     "d_record_pct_of_raw_vs_V0": -2.819141489708332,
+     "share_of_C0_ceil_gain_captured": 0.9375001376125875
+    },
+    "C4b_ceil_bm3h_pm2b(bm3 order-0 first, scale|bm3)": {
+     "bpw_incl_side_flush": 4.208262924731958,
+     "bit_per_scale": 11.386808706663636,
+     "record_bytes_payload": 20190120.97048745,
+     "d_weight_pct_vs_V0": -2.898161876628505,
+     "d_record_pct_of_raw_vs_V0": -2.610263678834896,
+     "share_of_C0_ceil_gain_captured": 0.8680382190984083
+    }
+   }
+  },
+  "P5_train_sample160_test_mtp6|z_signbypass": {
+   "summary": {
+    "best_non_ceil": "V6_o_clsh_pm2b(+3-class side, scale first)",
+    "best_ceil": "C3_ceil_bm3h(+bm3 side)",
+    "ceil_on_top_of_best_non_ceil_record_pct_of_raw": -1.6408943730699848,
+    "ceil_on_top_of_best_non_ceil_weight_pct": -1.19726121916045,
+    "ceil_C4_vs_hybrid_H_record_pct_of_raw": -0.37306470992246993
+   },
+   "rows": {
+    "V0_today_o_base": {
+     "bpw_incl_side_flush": 4.112563542497957,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 19701898.831129286,
+     "d_weight_pct_vs_V0": 0.0,
+     "d_record_pct_of_raw_vs_V0": 0.0,
+     "share_of_C0_ceil_gain_captured": 0.0
+    },
+    "V7_o_pm2b": {
+     "bpw_incl_side_flush": 4.131506322823503,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 19785695.629599795,
+     "d_weight_pct_vs_V0": 0.46060760228496667,
+     "d_record_pct_of_raw_vs_V0": 0.4457124782481251,
+     "share_of_C0_ceil_gain_captured": -0.14822083645631282
+    },
+    "V1_o_bm7h(+bm7 side)": {
+     "bpw_incl_side_flush": 4.082520331429168,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 19568997.279188506,
+     "d_weight_pct_vs_V0": -0.7305227203988928,
+     "d_record_pct_of_raw_vs_V0": -0.7068990839715038,
+     "share_of_C0_ceil_gain_captured": 0.2350779451548782
+    },
+    "V2_o_ev(+even flag side, all blocks)": {
+     "bpw_incl_side_flush": 4.0524729843368315,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 19436077.430803075,
+     "d_weight_pct_vs_V0": -1.461146011245024,
+     "d_record_pct_of_raw_vs_V0": -1.4138954861441473,
+     "share_of_C0_ceil_gain_captured": 0.47018825329235014
+    },
+    "V3_o_cls(+3-class side = bm7 + even bit per max-7 block)": {
+     "bpw_incl_side_flush": 4.030938802633731,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 19340817.101886705,
+     "d_weight_pct_vs_V0": -1.9847654393845031,
+     "d_record_pct_of_raw_vs_V0": -1.9205821144523902,
+     "share_of_C0_ceil_gain_captured": 0.6386859273181336
+    },
+    "V4_o_clsh(+3-class side)": {
+     "bpw_incl_side_flush": 4.04753526742685,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 19414234.551262733,
+     "d_weight_pct_vs_V0": -1.5812102208057102,
+     "d_record_pct_of_raw_vs_V0": -1.5300770604966312,
+     "share_of_C0_ceil_gain_captured": 0.5088242147512302
+    },
+    "V5_o_bm7h_pm2b(team2 best non-ceil)": {
+     "bpw_incl_side_flush": 4.043102649179918,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 19394626.066576142,
+     "d_weight_pct_vs_V0": -1.6889925857741053,
+     "d_record_pct_of_raw_vs_V0": -1.6343739604244567,
+     "share_of_C0_ceil_gain_captured": 0.5435079503465723
+    },
+    "V6_o_clsh_pm2b(+3-class side, scale first)": {
+     "bpw_incl_side_flush": 4.0164666226130405,
+     "bit_per_scale": 10.917489434692731,
+     "record_bytes_payload": 19276796.808572777,
+     "d_weight_pct_vs_V0": -2.336667115094541,
+     "d_record_pct_of_raw_vs_V0": -2.2611039972921656,
+     "share_of_C0_ceil_gain_captured": 0.7519258314477468
+    },
+    "V6b_o_clsh_pm2b(class order-0 first, scale|class)": {
+     "bpw_incl_side_flush": 4.0028163590700885,
+     "bit_per_scale": 11.386808706663636,
+     "record_bytes_payload": 19281291.10690035,
+     "d_weight_pct_vs_V0": -2.668583288593004,
+     "d_record_pct_of_raw_vs_V0": -2.237198968912426,
+     "share_of_C0_ceil_gain_captured": 0.7439762597510254
+    },
+    "H_o_clsh_pm2b + ceil scales (s+even) + bm3 side": {
+     "bpw_incl_side_flush": 4.0302556929594635,
+     "bit_per_scale": 10.224676199415782,
+     "record_bytes_payload": 19242020.741638158,
+     "d_weight_pct_vs_V0": -2.001375752324556,
+     "d_record_pct_of_raw_vs_V0": -2.446076779785842,
+     "share_of_C0_ceil_gain_captured": 0.8134381782651979
+    },
+    "C0_ceil_base(implicit)": {
+     "bpw_incl_side_flush": 4.0064128939930885,
+     "bit_per_scale": 10.224676199415782,
+     "record_bytes_payload": 19136547.82870658,
+     "d_weight_pct_vs_V0": -2.5811309030958665,
+     "d_record_pct_of_raw_vs_V0": -3.007083814288797,
+     "share_of_C0_ceil_gain_captured": 1.0
+    },
+    "C1_ceil_pm2b(implicit)": {
+     "bpw_incl_side_flush": 4.06716355848199,
+     "bit_per_scale": 10.224676199415782,
+     "record_bytes_payload": 19405289.32819285,
+     "d_weight_pct_vs_V0": -1.1039339221587157,
+     "d_record_pct_of_raw_vs_V0": -1.5776564145499181,
+     "share_of_C0_ceil_gain_captured": 0.5246466383987533
+    },
+    "C2_ceil_bm3(+bm3 side)": {
+     "bpw_incl_side_flush": 3.9791819668571042,
+     "bit_per_scale": 10.224676199415782,
+     "record_bytes_payload": 19016086.920953672,
+     "d_weight_pct_vs_V0": -3.2432708762437175,
+     "d_record_pct_of_raw_vs_V0": -3.6478115116060628,
+     "share_of_C0_ceil_gain_captured": 1.2130727764463072
+    },
+    "C3_ceil_bm3h(+bm3 side)": {
+     "bpw_incl_side_flush": 3.968379025359971,
+     "bit_per_scale": 10.224676199415782,
+     "record_bytes_payload": 18968298.16471163,
+     "d_weight_pct_vs_V0": -3.5059523250650884,
+     "d_record_pct_of_raw_vs_V0": -3.9019983703621506,
+     "share_of_C0_ceil_gain_captured": 1.2976021326113283
+    },
+    "C4_ceil_bm3h_pm2b(+bm3 side)": {
+     "bpw_incl_side_flush": 4.014400442787759,
+     "bit_per_scale": 10.224676199415782,
+     "record_bytes_payload": 19171882.18855859,
+     "d_weight_pct_vs_V0": -2.386907793540737,
+     "d_record_pct_of_raw_vs_V0": -2.819141489708312,
+     "share_of_C0_ceil_gain_captured": 0.9375001376125809
+    },
+    "C4b_ceil_bm3h_pm2b(bm3 order-0 first, scale|bm3)": {
+     "bpw_incl_side_flush": 3.986961108898383,
+     "bit_per_scale": 11.386808706663636,
+     "record_bytes_payload": 19211152.55382078,
+     "d_weight_pct_vs_V0": -3.054115329809196,
+     "d_record_pct_of_raw_vs_V0": -2.610263678834896,
+     "share_of_C0_ceil_gain_captured": 0.8680382190984083
+    }
+   }
+  },
+  "P0_insample_all_routed230|byte": {
+   "summary": {
+    "best_non_ceil": "V6b_o_clsh_pm2b(class order-0 first, scale|class)",
+    "best_ceil": "C1_ceil_pm2b(implicit)",
+    "ceil_on_top_of_best_non_ceil_record_pct_of_raw": -0.14145512558532133,
+    "ceil_on_top_of_best_non_ceil_weight_pct": -0.5735006239591425,
+    "ceil_C4_vs_hybrid_H_record_pct_of_raw": -0.09034220202768968
+   },
+   "rows": {
+    "V0_today_o_base": {
+     "bpw_incl_side_flush": 3.7828292994676254,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16872885.496414248,
+     "d_weight_pct_vs_V0": 0.0,
+     "d_record_pct_of_raw_vs_V0": 0.0,
+     "share_of_C0_ceil_gain_captured": 0.0
+    },
+    "V7_o_pm2b": {
+     "bpw_incl_side_flush": 3.7722253565067145,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16825977.046016928,
+     "d_weight_pct_vs_V0": -0.2803177759674001,
+     "d_record_pct_of_raw_vs_V0": -0.24950454025671515,
+     "share_of_C0_ceil_gain_captured": 0.13674889107476984
+    },
+    "V1_o_bm7h(+bm7 side)": {
+     "bpw_incl_side_flush": 3.7744924864063814,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16836006.103211485,
+     "d_weight_pct_vs_V0": -0.2203856532045283,
+     "d_record_pct_of_raw_vs_V0": -0.19616030732338394,
+     "share_of_C0_ceil_gain_captured": 0.10751188924962597
+    },
+    "V2_o_ev(+even flag side, all blocks)": {
+     "bpw_incl_side_flush": 3.715271016488437,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16574029.271164872,
+     "d_weight_pct_vs_V0": -1.785919417212305,
+     "d_record_pct_of_raw_vs_V0": -1.5896066583338448,
+     "share_of_C0_ceil_gain_captured": 0.8712344374517783
+    },
+    "V3_o_cls(+3-class side = bm7 + even bit per max-7 block)": {
+     "bpw_incl_side_flush": 3.7156253232688536,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16575596.610983266,
+     "d_weight_pct_vs_V0": -1.7765532324768034,
+     "d_record_pct_of_raw_vs_V0": -1.5812700282063927,
+     "share_of_C0_ceil_gain_captured": 0.8666652824213463
+    },
+    "V4_o_clsh(+3-class side)": {
+     "bpw_incl_side_flush": 3.7137487930421775,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16567295.441750124,
+     "d_weight_pct_vs_V0": -1.8261597591826266,
+     "d_record_pct_of_raw_vs_V0": -1.6254236805987659,
+     "share_of_C0_ceil_gain_captured": 0.8908650945584138
+    },
+    "V5_o_bm7h_pm2b(team2 best non-ceil)": {
+     "bpw_incl_side_flush": 3.7644327042486188,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16791504.846075833,
+     "d_weight_pct_vs_V0": -0.4863184078011567,
+     "d_record_pct_of_raw_vs_V0": -0.43286106397662555,
+     "share_of_C0_ceil_gain_captured": 0.23724325989156192
+    },
+    "V6_o_clsh_pm2b(+3-class side, scale first)": {
+     "bpw_incl_side_flush": 3.713598326178064,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16566629.82449268,
+     "d_weight_pct_vs_V0": -1.8301373868311928,
+     "d_record_pct_of_raw_vs_V0": -1.6289640774014502,
+     "share_of_C0_ceil_gain_captured": 0.892805521519116
+    },
+    "V6b_o_clsh_pm2b(class order-0 first, scale|class)": {
+     "bpw_incl_side_flush": 3.7294449611111395,
+     "bit_per_scale": 0.42257686999975597,
+     "record_bytes_payload": 16556288.112076893,
+     "d_weight_pct_vs_V0": -1.411227790902403,
+     "d_record_pct_of_raw_vs_V0": -1.6839713134093013,
+     "share_of_C0_ceil_gain_captured": 0.9229539850197088
+    },
+    "H_o_clsh_pm2b + ceil scales (s+even) + bm3 side": {
+     "bpw_incl_side_flush": 3.714182936981329,
+     "bit_per_scale": 0.9146263831136534,
+     "record_bytes_payload": 16556794.725867197,
+     "d_weight_pct_vs_V0": -1.8146830600037176,
+     "d_record_pct_of_raw_vs_V0": -1.6812766509387498,
+     "share_of_C0_ceil_gain_captured": 0.9214770896321959
+    },
+    "C0_ceil_base(implicit)": {
+     "bpw_incl_side_flush": 3.7080940213336726,
+     "bit_per_scale": 0.9146263831136534,
+     "record_bytes_payload": 16529859.31149497,
+     "d_weight_pct_vs_V0": -1.9756450058285895,
+     "d_record_pct_of_raw_vs_V0": -1.8245452544130265,
+     "share_of_C0_ceil_gain_captured": 1.0
+    },
+    "C1_ceil_pm2b(implicit)": {
+     "bpw_incl_side_flush": 3.7080565709889544,
+     "bit_per_scale": 0.9146263831136534,
+     "record_bytes_payload": 16529693.64315405,
+     "d_weight_pct_vs_V0": -1.9766350146752354,
+     "d_record_pct_of_raw_vs_V0": -1.8254264389946226,
+     "share_of_C0_ceil_gain_captured": 1.000482961208808
+    },
+    "C2_ceil_bm3(+bm3 side)": {
+     "bpw_incl_side_flush": 3.712257594236942,
+     "bit_per_scale": 0.9146263831136534,
+     "record_bytes_payload": 16548277.625675706,
+     "d_weight_pct_vs_V0": -1.8655799573249372,
+     "d_record_pct_of_raw_vs_V0": -1.726578833159625,
+     "share_of_C0_ceil_gain_captured": 0.9463063900352977
+    },
+    "C3_ceil_bm3h(+bm3 side)": {
+     "bpw_incl_side_flush": 3.710379904295198,
+     "bit_per_scale": 0.9146263831136534,
+     "record_bytes_payload": 16539971.326234212,
+     "d_weight_pct_vs_V0": -1.915217141376788,
+     "d_record_pct_of_raw_vs_V0": -1.770759772965366,
+     "share_of_C0_ceil_gain_captured": 0.9705211579062949
+    },
+    "C4_ceil_bm3h_pm2b(+bm3 side)": {
+     "bpw_incl_side_flush": 3.7103433933951524,
+     "bit_per_scale": 0.9146263831136534,
+     "record_bytes_payload": 16539809.813695898,
+     "d_weight_pct_vs_V0": -1.916182315778146,
+     "d_record_pct_of_raw_vs_V0": -1.7716188529664396,
+     "share_of_C0_ceil_gain_captured": 0.9709920039973939
+    },
+    "C4b_ceil_bm3h_pm2b(bm3 order-0 first, scale|bm3)": {
+     "bpw_incl_side_flush": 3.725605417524963,
+     "bit_per_scale": 0.42257686999975597,
+     "record_bytes_payload": 16539303.199905595,
+     "d_weight_pct_vs_V0": -1.5127270466768314,
+     "d_record_pct_of_raw_vs_V0": -1.774313515436991,
+     "share_of_C0_ceil_gain_captured": 0.972468899384907
+    }
+   }
+  },
+  "P0_insample_all_routed230|z": {
+   "summary": {
+    "best_non_ceil": "V6b_o_clsh_pm2b(class order-0 first, scale|class)",
+    "best_ceil": "C1_ceil_pm2b(implicit)",
+    "ceil_on_top_of_best_non_ceil_record_pct_of_raw": -0.14147493956419435,
+    "ceil_on_top_of_best_non_ceil_weight_pct": -0.5920039893093064,
+    "ceil_C4_vs_hybrid_H_record_pct_of_raw": -0.09034137912840577
+   },
+   "rows": {
+    "V0_today_o_base": {
+     "bpw_incl_side_flush": 3.6664051579365844,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16357862.350006213,
+     "d_weight_pct_vs_V0": 0.0,
+     "d_record_pct_of_raw_vs_V0": 0.0,
+     "share_of_C0_ceil_gain_captured": 0.0
+    },
+    "V7_o_pm2b": {
+     "bpw_incl_side_flush": 3.6558013409609855,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16310954.456927596,
+     "d_weight_pct_vs_V0": -0.2892156354472998,
+     "d_record_pct_of_raw_vs_V0": -0.2495015758964469,
+     "share_of_C0_ceil_gain_captured": 0.13674697578948797
+    },
+    "V1_o_bm7h(+bm7 side)": {
+     "bpw_incl_side_flush": 3.6580684739102316,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16320983.527612517,
+     "d_weight_pct_vs_V0": -0.22738032670248023,
+     "d_record_pct_of_raw_vs_V0": -0.1961572712083033,
+     "share_of_C0_ceil_gain_captured": 0.1075099967624528
+    },
+    "V2_o_ev(+even flag side, all blocks)": {
+     "bpw_incl_side_flush": 3.5988470211693744,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16059006.771551842,
+     "d_weight_pct_vs_V0": -1.8426260562329952,
+     "d_record_pct_of_raw_vs_V0": -1.589603218052,
+     "share_of_C0_ceil_gain_captured": 0.8712307006191724
+    },
+    "V3_o_cls(+3-class side = bm7 + even bit per max-7 block)": {
+     "bpw_incl_side_flush": 3.599201240616335,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16060573.725034973,
+     "d_weight_pct_vs_V0": -1.8329648368177318,
+     "d_record_pct_of_raw_vs_V0": -1.5812686428293972,
+     "share_of_C0_ceil_gain_captured": 0.8666626815512127
+    },
+    "V4_o_clsh(+3-class side)": {
+     "bpw_incl_side_flush": 3.597324836565273,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16052273.11396237,
+     "d_weight_pct_vs_V0": -1.8841431428213753,
+     "d_record_pct_of_raw_vs_V0": -1.625419326383796,
+     "share_of_C0_ceil_gain_captured": 0.890860815103718
+    },
+    "V5_o_bm7h_pm2b(team2 best non-ceil)": {
+     "bpw_incl_side_flush": 3.6480092367241714,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16276484.681257285,
+     "d_weight_pct_vs_V0": -0.501742726730343,
+     "d_record_pct_of_raw_vs_V0": -0.43284520499795875,
+     "share_of_C0_ceil_gain_captured": 0.23723406377608675
+    },
+    "V6_o_clsh_pm2b(+3-class side, scale first)": {
+     "bpw_incl_side_flush": 3.597175000485648,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16051610.287093654,
+     "d_weight_pct_vs_V0": -1.8882298728244873,
+     "d_record_pct_of_raw_vs_V0": -1.6289448811985079,
+     "share_of_C0_ceil_gain_captured": 0.8927931033354043
+    },
+    "V6b_o_clsh_pm2b(class order-0 first, scale|class)": {
+     "bpw_incl_side_flush": 3.6130216354187237,
+     "bit_per_scale": 0.42257686999975597,
+     "record_bytes_payload": 16041268.574677866,
+     "d_weight_pct_vs_V0": -1.4560180945169852,
+     "d_record_pct_of_raw_vs_V0": -1.6839521172063687,
+     "share_of_C0_ceil_gain_captured": 0.9229415027737131
+    },
+    "H_o_clsh_pm2b + ceil scales (s+even) + bm3 side": {
+     "bpw_incl_side_flush": 3.5977596112889128,
+     "bit_per_scale": 0.9146263831136534,
+     "record_bytes_payload": 16041775.188468168,
+     "d_weight_pct_vs_V0": -1.8722848046151195,
+     "d_record_pct_of_raw_vs_V0": -1.6812574547358274,
+     "share_of_C0_ceil_gain_captured": 0.9214646105244517
+    },
+    "C0_ceil_base(implicit)": {
+     "bpw_incl_side_flush": 3.5916697150312573,
+     "bit_per_scale": 0.9146263831136534,
+     "record_bytes_payload": 16014835.436191102,
+     "d_weight_pct_vs_V0": -2.03838473070956,
+     "d_record_pct_of_raw_vs_V0": -1.8245491313865427,
+     "share_of_C0_ceil_gain_captured": 1.0
+    },
+    "C1_ceil_pm2b(implicit)": {
+     "bpw_incl_side_flush": 3.5916324032024365,
+     "bit_per_scale": 0.9146263831136534,
+     "record_bytes_payload": 16014670.380600184,
+     "d_weight_pct_vs_V0": -2.039402398621686,
+     "d_record_pct_of_raw_vs_V0": -1.8254270567705633,
+     "share_of_C0_ceil_gain_captured": 1.0004811738795727
+    },
+    "C2_ceil_bm3(+bm3 side)": {
+     "bpw_incl_side_flush": 3.5958335141961806,
+     "bit_per_scale": 0.9146263831136534,
+     "record_bytes_payload": 16033254.751280991,
+     "d_weight_pct_vs_V0": -1.924818472056722,
+     "d_record_pct_of_raw_vs_V0": -1.7265773863295188,
+     "share_of_C0_ceil_gain_captured": 0.9463035862549936
+    },
+    "C3_ceil_bm3h(+bm3 side)": {
+     "bpw_incl_side_flush": 3.5939559236631387,
+     "bit_per_scale": 0.9146263831136534,
+     "record_bytes_payload": 16024948.891591784,
+     "d_weight_pct_vs_V0": -1.9760291389678122,
+     "d_record_pct_of_raw_vs_V0": -1.7707559871069805,
+     "share_of_C0_ceil_gain_captured": 0.9705170206961306
+    },
+    "C4_ceil_bm3h_pm2b(+bm3 side)": {
+     "bpw_incl_side_flush": 3.5939201026759555,
+     "bit_per_scale": 0.9146263831136534,
+     "record_bytes_payload": 16024790.4310072,
+     "d_weight_pct_vs_V0": -1.9770061446624936,
+     "d_record_pct_of_raw_vs_V0": -1.7715988338642332,
+     "share_of_C0_ceil_gain_captured": 0.970978968660564
+    },
+    "C4b_ceil_bm3h_pm2b(bm3 order-0 first, scale|bm3)": {
+     "bpw_incl_side_flush": 3.609182126805766,
+     "bit_per_scale": 0.42257686999975597,
+     "record_bytes_payload": 16024283.817216897,
+     "d_weight_pct_vs_V0": -1.5607394345643713,
+     "d_record_pct_of_raw_vs_V0": -1.7742934963347845,
+     "share_of_C0_ceil_gain_captured": 0.9724558609098308
+    }
+   }
+  },
+  "P0_insample_all_routed230|signbypass": {
+   "summary": {
+    "best_non_ceil": "V6b_o_clsh_pm2b(class order-0 first, scale|class)",
+    "best_ceil": "C1_ceil_pm2b(implicit)",
+    "ceil_on_top_of_best_non_ceil_record_pct_of_raw": -0.1394919844316918,
+    "ceil_on_top_of_best_non_ceil_weight_pct": -0.5712768393987697,
+    "ceil_C4_vs_hybrid_H_record_pct_of_raw": -0.09033527375884338
+   },
+   "rows": {
+    "V0_today_o_base": {
+     "bpw_incl_side_flush": 3.782827723417254,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16872878.52447174,
+     "d_weight_pct_vs_V0": 0.0,
+     "d_record_pct_of_raw_vs_V0": 0.0,
+     "share_of_C0_ceil_gain_captured": 0.0
+    },
+    "V7_o_pm2b": {
+     "bpw_incl_side_flush": 3.7722247575373284,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16825974.396368034,
+     "d_weight_pct_vs_V0": -0.2802920633759944,
+     "d_record_pct_of_raw_vs_V0": -0.24948155011588427,
+     "share_of_C0_ceil_gain_captured": 0.13672945062051442
+    },
+    "V1_o_bm7h(+bm7 side)": {
+     "bpw_incl_side_flush": 3.7744542876502067,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16835837.12413777,
+     "d_weight_pct_vs_V0": -0.22135387544117005,
+     "d_record_pct_of_raw_vs_V0": -0.19702201804816635,
+     "share_of_C0_ceil_gain_captured": 0.10797877548603424
+    },
+    "V2_o_ev(+even flag side, all blocks)": {
+     "bpw_incl_side_flush": 3.715215522927873,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16573783.785410877,
+     "d_weight_pct_vs_V0": -1.7873454841951546,
+     "d_record_pct_of_raw_vs_V0": -1.5908753056324882,
+     "share_of_C0_ceil_gain_captured": 0.8718861432592319
+    },
+    "V3_o_cls(+3-class side = bm7 + even bit per max-7 block)": {
+     "bpw_incl_side_flush": 3.715532829709825,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16575187.449076062,
+     "d_weight_pct_vs_V0": -1.7789573998003119,
+     "d_record_pct_of_raw_vs_V0": -1.5834092637042096,
+     "share_of_C0_ceil_gain_captured": 0.8677943464482488
+    },
+    "V4_o_clsh(+3-class side)": {
+     "bpw_incl_side_flush": 3.713657031711033,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16566889.518984765,
+     "d_weight_pct_vs_V0": -1.8285445905460085,
+     "d_record_pct_of_raw_vs_V0": -1.6275456872052034,
+     "share_of_C0_ceil_gain_captured": 0.891983505666003
+    },
+    "V5_o_bm7h_pm2b(team2 best non-ceil)": {
+     "bpw_incl_side_flush": 3.7643984675066973,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16791353.39368533,
+     "d_weight_pct_vs_V0": -0.4871820039932537,
+     "d_record_pct_of_raw_vs_V0": -0.43362955083662824,
+     "share_of_C0_ceil_gain_captured": 0.23765256481360011
+    },
+    "V6_o_clsh_pm2b(+3-class side, scale first)": {
+     "bpw_incl_side_flush": 3.7135110343850153,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16566243.673533607,
+     "d_weight_pct_vs_V0": -1.8324040664907846,
+     "d_record_pct_of_raw_vs_V0": -1.6309809184056177,
+     "share_of_C0_ceil_gain_captured": 0.8938661990939094
+    },
+    "V6b_o_clsh_pm2b(class order-0 first, scale|class)": {
+     "bpw_incl_side_flush": 3.729357669318091,
+     "bit_per_scale": 0.42257686999975597,
+     "record_bytes_payload": 16555901.961117819,
+     "d_weight_pct_vs_V0": -1.4134942960304877,
+     "d_record_pct_of_raw_vs_V0": -1.6859881544134785,
+     "share_of_C0_ceil_gain_captured": 0.9240131544740338
+    },
+    "H_o_clsh_pm2b + ceil scales (s+even) + bm3 side": {
+     "bpw_incl_side_flush": 3.7140956451882805,
+     "bit_per_scale": 0.9146263831136534,
+     "record_bytes_payload": 16556408.574908124,
+     "d_weight_pct_vs_V0": -1.816949733224529,
+     "d_record_pct_of_raw_vs_V0": -1.6832934919429172,
+     "share_of_C0_ceil_gain_captured": 0.9225363329654436
+    },
+    "C0_ceil_base(implicit)": {
+     "bpw_incl_side_flush": 3.708088566137105,
+     "bit_per_scale": 0.9146263831136534,
+     "record_bytes_payload": 16529835.179451019,
+     "d_weight_pct_vs_V0": -1.975748375150235,
+     "d_record_pct_of_raw_vs_V0": -1.8246365284411732,
+     "share_of_C0_ceil_gain_captured": 1.0
+    },
+    "C1_ceil_pm2b(implicit)": {
+     "bpw_incl_side_flush": 3.708052712694935,
+     "bit_per_scale": 0.9146263831136534,
+     "record_bytes_payload": 16529676.57529596,
+     "d_weight_pct_vs_V0": -1.9766961698898124,
+     "d_record_pct_of_raw_vs_V0": -1.8254801388451705,
+     "share_of_C0_ceil_gain_captured": 1.00046234435782
+    },
+    "C2_ceil_bm3(+bm3 side)": {
+     "bpw_incl_side_flush": 3.7121650596834077,
+     "bit_per_scale": 0.9146263831136534,
+     "record_bytes_payload": 16547868.282421928,
+     "d_weight_pct_vs_V0": -1.867985245439946,
+     "d_record_pct_of_raw_vs_V0": -1.7287190332340456,
+     "share_of_C0_ceil_gain_captured": 0.9474319988052239
+    },
+    "C3_ceil_bm3h(+bm3 side)": {
+     "bpw_incl_side_flush": 3.7102881112229036,
+     "bit_per_scale": 0.9146263831136534,
+     "record_bytes_payload": 16539565.263056165,
+     "d_weight_pct_vs_V0": -1.9176028489296593,
+     "d_record_pct_of_raw_vs_V0": -1.7728825264223802,
+     "share_of_C0_ceil_gain_captured": 0.9716359936830774
+    },
+    "C4_ceil_bm3h_pm2b(+bm3 side)": {
+     "bpw_incl_side_flush": 3.7102563960535297,
+     "bit_per_scale": 0.9146263831136534,
+     "record_bytes_payload": 16539424.96529571,
+     "d_weight_pct_vs_V0": -1.9184412473895602,
+     "d_record_pct_of_raw_vs_V0": -1.7736287657017606,
+     "share_of_C0_ceil_gain_captured": 0.9720449733717709
+    },
+    "C4b_ceil_bm3h_pm2b(bm3 order-0 first, scale|bm3)": {
+     "bpw_incl_side_flush": 3.7255184201833402,
+     "bit_per_scale": 0.42257686999975597,
+     "record_bytes_payload": 16538918.351505406,
+     "d_weight_pct_vs_V0": -1.514985810195519,
+     "d_record_pct_of_raw_vs_V0": -1.7763234281723121,
+     "share_of_C0_ceil_gain_captured": 0.9735217948803556
+    }
+   }
+  },
+  "P0_insample_all_routed230|z_signbypass": {
+   "summary": {
+    "best_non_ceil": "V6b_o_clsh_pm2b(class order-0 first, scale|class)",
+    "best_ceil": "C1_ceil_pm2b(implicit)",
+    "ceil_on_top_of_best_non_ceil_record_pct_of_raw": -0.1394919844316918,
+    "ceil_on_top_of_best_non_ceil_weight_pct": -0.589700201561955,
+    "ceil_C4_vs_hybrid_H_record_pct_of_raw": -0.09033527375883348
+   },
+   "rows": {
+    "V0_today_o_base": {
+     "bpw_incl_side_flush": 3.6663154570216974,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16357465.541863045,
+     "d_weight_pct_vs_V0": 0.0,
+     "d_record_pct_of_raw_vs_V0": 0.0,
+     "share_of_C0_ceil_gain_captured": 0.0
+    },
+    "V7_o_pm2b": {
+     "bpw_incl_side_flush": 3.655712491141772,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16310561.413759338,
+     "d_weight_pct_vs_V0": -0.2891994975396528,
+     "d_record_pct_of_raw_vs_V0": -0.24948155011588427,
+     "share_of_C0_ceil_gain_captured": 0.13672945062051517
+    },
+    "V1_o_bm7h(+bm7 side)": {
+     "bpw_incl_side_flush": 3.6579420212546503,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16320424.141529074,
+     "d_weight_pct_vs_V0": -0.2283883060583437,
+     "d_record_pct_of_raw_vs_V0": -0.19702201804816635,
+     "share_of_C0_ceil_gain_captured": 0.10797877548603482
+    },
+    "V2_o_ev(+even flag side, all blocks)": {
+     "bpw_incl_side_flush": 3.5987032565323167,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16058370.802802183,
+     "d_weight_pct_vs_V0": -1.8441457447391856,
+     "d_record_pct_of_raw_vs_V0": -1.5908753056324785,
+     "share_of_C0_ceil_gain_captured": 0.8718861432592312
+    },
+    "V3_o_cls(+3-class side = bm7 + even bit per max-7 block)": {
+     "bpw_incl_side_flush": 3.5990205633142685,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16059774.466467366,
+     "d_weight_pct_vs_V0": -1.8354910944323213,
+     "d_record_pct_of_raw_vs_V0": -1.5834092637042096,
+     "share_of_C0_ceil_gain_captured": 0.8677943464482536
+    },
+    "V4_o_clsh(+3-class side)": {
+     "bpw_incl_side_flush": 3.5971447653154764,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16051476.53637607,
+     "d_weight_pct_vs_V0": -1.8866541222945172,
+     "d_record_pct_of_raw_vs_V0": -1.6275456872051934,
+     "share_of_C0_ceil_gain_captured": 0.8919835056660025
+    },
+    "V5_o_bm7h_pm2b(team2 best non-ceil)": {
+     "bpw_incl_side_flush": 3.647886201111141,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16275940.411076635,
+     "d_weight_pct_vs_V0": -0.5026642177028436,
+     "d_record_pct_of_raw_vs_V0": -0.43362955083661836,
+     "share_of_C0_ceil_gain_captured": 0.23765256481359598
+    },
+    "V6_o_clsh_pm2b(+3-class side, scale first)": {
+     "bpw_incl_side_flush": 3.596998767989459,
+     "bit_per_scale": 1.0044790288288756,
+     "record_bytes_payload": 16050830.690924913,
+     "d_weight_pct_vs_V0": -1.8906362489753514,
+     "d_record_pct_of_raw_vs_V0": -1.6309809184056077,
+     "share_of_C0_ceil_gain_captured": 0.8938661990939089
+    },
+    "V6b_o_clsh_pm2b(class order-0 first, scale|class)": {
+     "bpw_incl_side_flush": 3.6128454029225345,
+     "bit_per_scale": 0.42257686999975597,
+     "record_bytes_payload": 16040488.978509124,
+     "d_weight_pct_vs_V0": -1.4584138960753479,
+     "d_record_pct_of_raw_vs_V0": -1.6859881544134687,
+     "share_of_C0_ceil_gain_captured": 0.9240131544740334
+    },
+    "H_o_clsh_pm2b + ceil scales (s+even) + bm3 side": {
+     "bpw_incl_side_flush": 3.5975833787927236,
+     "bit_per_scale": 0.9146263831136534,
+     "record_bytes_payload": 16040995.592299426,
+     "d_weight_pct_vs_V0": -1.8746907906502874,
+     "d_record_pct_of_raw_vs_V0": -1.6832934919429272,
+     "share_of_C0_ceil_gain_captured": 0.922536332965454
+    },
+    "C0_ceil_base(implicit)": {
+     "bpw_incl_side_flush": 3.5915762997415484,
+     "bit_per_scale": 0.9146263831136534,
+     "record_bytes_payload": 16014422.196842324,
+     "d_weight_pct_vs_V0": -2.038535913133421,
+     "d_record_pct_of_raw_vs_V0": -1.8246365284411634,
+     "share_of_C0_ceil_gain_captured": 1.0
+    },
+    "C1_ceil_pm2b(implicit)": {
+     "bpw_incl_side_flush": 3.5915404462993785,
+     "bit_per_scale": 0.9146263831136534,
+     "record_bytes_payload": 16014263.592687266,
+     "d_weight_pct_vs_V0": -2.039513827952539,
+     "d_record_pct_of_raw_vs_V0": -1.8254801388451605,
+     "share_of_C0_ceil_gain_captured": 1.00046234435782
+    },
+    "C2_ceil_bm3(+bm3 side)": {
+     "bpw_incl_side_flush": 3.5956527932878513,
+     "bit_per_scale": 0.9146263831136534,
+     "record_bytes_payload": 16032455.299813233,
+     "d_weight_pct_vs_V0": -1.92734816635905,
+     "d_record_pct_of_raw_vs_V0": -1.7287190332340356,
+     "share_of_C0_ceil_gain_captured": 0.9474319988052237
+    },
+    "C3_ceil_bm3h(+bm3 side)": {
+     "bpw_incl_side_flush": 3.593775844827347,
+     "bit_per_scale": 0.9146263831136534,
+     "record_bytes_payload": 16024152.28044747,
+     "d_weight_pct_vs_V0": -1.978542573455401,
+     "d_record_pct_of_raw_vs_V0": -1.7728825264223702,
+     "share_of_C0_ceil_gain_captured": 0.9716359936830773
+    },
+    "C4_ceil_bm3h_pm2b(+bm3 side)": {
+     "bpw_incl_side_flush": 3.5937441296579733,
+     "bit_per_scale": 0.9146263831136534,
+     "record_bytes_payload": 16024011.982687013,
+     "d_weight_pct_vs_V0": -1.979407615477715,
+     "d_record_pct_of_raw_vs_V0": -1.7736287657017606,
+     "share_of_C0_ceil_gain_captured": 0.9720449733717761
+    },
+    "C4b_ceil_bm3h_pm2b(bm3 order-0 first, scale|bm3)": {
+     "bpw_incl_side_flush": 3.6090061537877838,
+     "bit_per_scale": 0.42257686999975597,
+     "record_bytes_payload": 16023505.36889671,
+     "d_weight_pct_vs_V0": -1.5631307209027876,
+     "d_record_pct_of_raw_vs_V0": -1.7763234281723121,
+     "share_of_C0_ceil_gain_captured": 0.973521794880361
+    }
+   }
+  }
+ },
+ "fallback_record_coded_with_ceil_model": {
+  "P2": {
+   "orig_form_with_orig_model_bpw": 3.784360964769083,
+   "orig_form_with_ceil_model_bpw": 4.313477633630006,
+   "orig_scales_with_orig_model_bps": 1.0089902550648087,
+   "orig_scales_with_ceil_model_bps": 1.281290854071184,
+   "penalty_record_pct_of_raw": 12.650025001879351
+  },
+  "P4": {
+   "orig_form_with_orig_model_bpw": 3.784450209007757,
+   "orig_form_with_ceil_model_bpw": 4.273961753036347,
+   "orig_scales_with_orig_model_bps": 1.0040882256315296,
+   "orig_scales_with_ceil_model_bps": 1.288181400039045,
+   "penalty_record_pct_of_raw": 11.726810723031173
+  }
+ }
+}

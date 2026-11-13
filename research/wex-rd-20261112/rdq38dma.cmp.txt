@@ -1,0 +1,11 @@
+request                      A1                    B1                    B2                    A2   B/A tok/s
+p1-258      16.40 t/s   10.4s ttft   18.76 t/s   10.4s ttft   19.24 t/s   10.8s ttft   16.41 t/s   10.5s ttft   +15.8%
+   TEXT MISMATCH: {'A1': 'This is a classic resource management failure in high-performance computing: **s', 'B1': 'This is a classic resource management failure in high-performance computing: **s', 'B2': 'This is a classic resource management failure in high-performance computing: **s', 'A2': 'This is a classic resource management failure in high-performance computing: **s'}
+p2-2k       11.22 t/s   46.6s ttft   14.21 t/s   47.0s ttft   13.35 t/s   48.9s ttft   10.02 t/s   47.8s ttft   +29.7%
+p3-turn1     8.99 t/s    2.0s ttft   11.31 t/s    2.0s ttft   11.27 t/s    2.2s ttft    8.84 t/s    2.1s ttft   +26.6%
+p3-turn2     9.54 t/s    1.4s ttft   11.83 t/s    1.3s ttft   11.75 t/s    1.4s ttft    8.24 t/s    1.5s ttft   +32.6%
+p3-turn3     9.26 t/s    1.5s ttft   12.06 t/s    1.5s ttft   11.71 t/s    1.5s ttft    8.14 t/s    1.7s ttft   +36.5%
+A1 error None kill None ram_gb 13 ready 18s
+B1 error None kill None ram_gb 13 ready 15s
+B2 error None kill None ram_gb 13 ready 15s
+A2 error None kill None ram_gb 13 ready 15s

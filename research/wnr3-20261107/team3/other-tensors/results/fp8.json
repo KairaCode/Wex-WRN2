@@ -1,0 +1,2194 @@
+{
+ "attn.wkv": {
+  "layers": [
+   0,
+   26
+  ],
+  "bytes_per_layer": 2621440,
+  "shape": [
+   512,
+   5120
+  ],
+  "decompose_order0": {
+   "0": {
+    "H_byte": 6.49678205360442,
+    "H_sign": 0.9999999511759892,
+    "H_exp": 2.562672364080997,
+    "H_mant_given_exp": 2.934144559729183,
+    "H_sign_given_exp_mant": 0.9999651297942396,
+    "neg_zero_frac": 2.288818359375e-06,
+    "pos_zero_frac": 6.103515625e-06
+   },
+   "26": {
+    "H_byte": 6.511054196346073,
+    "H_sign": 0.9999998920703869,
+    "H_exp": 2.577832885652657,
+    "H_mant_given_exp": 2.9332523604091705,
+    "H_sign_given_exp_mant": 0.9999689502842461,
+    "neg_zero_frac": 3.4332275390625e-06,
+    "pos_zero_frac": 4.57763671875e-06
+   }
+  },
+  "generic_8MB_slice": {
+   "0": {
+    "zlib9": 0.834536361694336,
+    "lzma6": 0.8248855590820312,
+    "zstd19": 0.8216011047363281,
+    "zstd3": 0.8210941314697265,
+    "slice_bytes": 2621440
+   },
+   "26": {
+    "zlib9": 0.8355388641357422,
+    "lzma6": 0.826153564453125,
+    "zstd19": 0.8236003875732422,
+    "zstd3": 0.8228832244873047,
+    "slice_bytes": 2621440
+   }
+  },
+  "extras": {
+   "0": {
+    "median_scale": 115,
+    "block32x32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     66,
+     2494
+    ],
+    "rowseg32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     18,
+     2003,
+     55607,
+     24292
+    ],
+    "scale_shape": [
+     16,
+     160
+    ],
+    "scale_hist_top": [
+     [
+      115,
+      2487
+     ],
+     [
+      116,
+      63
+     ],
+     [
+      114,
+      9
+     ],
+     [
+      117,
+      1
+     ]
+    ]
+   },
+   "26": {
+    "median_scale": 115,
+    "block32x32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     123,
+     2437
+    ],
+    "rowseg32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     86,
+     3029,
+     41860,
+     36945
+    ],
+    "scale_shape": [
+     16,
+     160
+    ],
+    "scale_hist_top": [
+     [
+      115,
+      2394
+     ],
+     [
+      116,
+      166
+     ]
+    ]
+   }
+  },
+  "models": {
+   "order0": {
+    "insample_bits_per_byte": 6.505981828234669,
+    "heldout_leave_one_layer_bits_per_byte": 6.5122418535411795
+   },
+   "srel": {
+    "insample_bits_per_byte": 6.487154101161865,
+    "heldout_leave_one_layer_bits_per_byte": 6.49963497153488
+   },
+   "prev_exp": {
+    "insample_bits_per_byte": 6.504704358819531,
+    "heldout_leave_one_layer_bits_per_byte": 6.512442681958879
+   },
+   "srel_prevexp": {
+    "insample_bits_per_byte": 6.48567079562811,
+    "heldout_leave_one_layer_bits_per_byte": 6.501430348886887
+   },
+   "srel_prevexp_runmax": {
+    "insample_bits_per_byte": 6.481928312644842,
+    "heldout_leave_one_layer_bits_per_byte": 6.505590170030222
+   },
+   "srel_prevexp_upexp": {
+    "insample_bits_per_byte": 6.476597166218302,
+    "heldout_leave_one_layer_bits_per_byte": 6.514776096693732
+   }
+  },
+  "scales_order0_bits_per_scale_insample": 0.28473867865205904
+ },
+ "attn.wo_a": {
+  "layers": [
+   0,
+   26
+  ],
+  "bytes_per_layer": 33554432,
+  "shape": [
+   8192,
+   4096
+  ],
+  "decompose_order0": {
+   "0": {
+    "H_byte": 6.544593313547105,
+    "H_sign": 0.9999999985776146,
+    "H_exp": 2.605405559507243,
+    "H_mant_given_exp": 2.939190244593542,
+    "H_sign_given_exp_mant": 0.9999975094463204,
+    "neg_zero_frac": 4.1425228118896484e-06,
+    "pos_zero_frac": 4.351139068603516e-06
+   },
+   "26": {
+    "H_byte": 6.546351927344359,
+    "H_sign": 0.9999999881206464,
+    "H_exp": 2.6086096496849693,
+    "H_mant_given_exp": 2.937744619472925,
+    "H_sign_given_exp_mant": 0.9999976581864662,
+    "neg_zero_frac": 4.172325134277344e-06,
+    "pos_zero_frac": 4.0531158447265625e-06
+   }
+  },
+  "generic_8MB_slice": {
+   "0": {
+    "zlib9": 0.8393846750259399,
+    "lzma6": 0.8297519683837891,
+    "zstd19": 0.826248288154602,
+    "zstd3": 0.8258345127105713,
+    "slice_bytes": 8388608
+   },
+   "26": {
+    "zlib9": 0.8396604061126709,
+    "lzma6": 0.8312621116638184,
+    "zstd19": 0.8277429342269897,
+    "zstd3": 0.8273252248764038,
+    "slice_bytes": 8388608
+   }
+  },
+  "extras": {
+   "0": {
+    "median_scale": 115,
+    "block32x32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     5074,
+     27694
+    ],
+    "rowseg32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     73,
+     39569,
+     740315,
+     268619
+    ],
+    "scale_shape": [
+     256,
+     128
+    ],
+    "scale_hist_top": [
+     [
+      115,
+      26623
+     ],
+     [
+      114,
+      3573
+     ],
+     [
+      116,
+      2571
+     ],
+     [
+      117,
+      1
+     ]
+    ]
+   },
+   "26": {
+    "median_scale": 115,
+    "block32x32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     4186,
+     28582
+    ],
+    "rowseg32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     28,
+     47350,
+     514637,
+     486561
+    ],
+    "scale_shape": [
+     256,
+     128
+    ],
+    "scale_hist_top": [
+     [
+      115,
+      25501
+     ],
+     [
+      116,
+      7253
+     ],
+     [
+      117,
+      14
+     ]
+    ]
+   }
+  },
+  "models": {
+   "order0": {
+    "insample_bits_per_byte": 6.54987899883154,
+    "heldout_leave_one_layer_bits_per_byte": 6.563206400025244
+   },
+   "srel": {
+    "insample_bits_per_byte": 6.5197803656597655,
+    "heldout_leave_one_layer_bits_per_byte": 6.648137625937931
+   },
+   "prev_exp": {
+    "insample_bits_per_byte": 6.545268893793965,
+    "heldout_leave_one_layer_bits_per_byte": 6.5579119048186385
+   },
+   "srel_prevexp": {
+    "insample_bits_per_byte": 6.517827937017713,
+    "heldout_leave_one_layer_bits_per_byte": 6.645492187221825
+   },
+   "srel_prevexp_runmax": {
+    "insample_bits_per_byte": 6.511808042621827,
+    "heldout_leave_one_layer_bits_per_byte": 6.636980610445035
+   },
+   "srel_prevexp_upexp": {
+    "insample_bits_per_byte": 6.514603965989015,
+    "heldout_leave_one_layer_bits_per_byte": 6.64464848442867
+   }
+  },
+  "scales_order0_bits_per_scale_insample": 0.9047451137672391
+ },
+ "attn.wo_b": {
+  "layers": [
+   0,
+   26
+  ],
+  "bytes_per_layer": 41943040,
+  "shape": [
+   5120,
+   8192
+  ],
+  "decompose_order0": {
+   "0": {
+    "H_byte": 6.520655343679186,
+    "H_sign": 0.999999998831659,
+    "H_exp": 2.5846653295044755,
+    "H_mant_given_exp": 2.935992007264997,
+    "H_sign_given_exp_mant": 0.9999980069097137,
+    "neg_zero_frac": 5.7220458984375e-06,
+    "pos_zero_frac": 4.124641418457031e-06
+   },
+   "26": {
+    "H_byte": 6.5001928747925035,
+    "H_sign": 0.9999999980691692,
+    "H_exp": 2.566771051646801,
+    "H_mant_given_exp": 2.933423938494414,
+    "H_sign_given_exp_mant": 0.9999978846512872,
+    "neg_zero_frac": 4.1961669921875e-06,
+    "pos_zero_frac": 3.910064697265625e-06
+   }
+  },
+  "generic_8MB_slice": {
+   "0": {
+    "zlib9": 0.8384546041488647,
+    "lzma6": 0.8281025886535645,
+    "zstd19": 0.8247730731964111,
+    "zstd3": 0.8242717981338501,
+    "slice_bytes": 8388608
+   },
+   "26": {
+    "zlib9": 0.835532546043396,
+    "lzma6": 0.8261661529541016,
+    "zstd19": 0.8230080604553223,
+    "zstd3": 0.8226383924484253,
+    "slice_bytes": 8388608
+   }
+  },
+  "extras": {
+   "0": {
+    "median_scale": 115,
+    "block32x32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     9566,
+     31394
+    ],
+    "rowseg32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     10,
+     44243,
+     1117332,
+     149135
+    ],
+    "scale_shape": [
+     160,
+     256
+    ],
+    "scale_hist_top": [
+     [
+      115,
+      37887
+     ],
+     [
+      114,
+      3070
+     ],
+     [
+      116,
+      3
+     ]
+    ]
+   },
+   "26": {
+    "median_scale": 115,
+    "block32x32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     2078,
+     38882
+    ],
+    "rowseg32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     7,
+     30962,
+     595202,
+     684549
+    ],
+    "scale_shape": [
+     160,
+     256
+    ],
+    "scale_hist_top": [
+     [
+      115,
+      38514
+     ],
+     [
+      116,
+      2446
+     ]
+    ]
+   }
+  },
+  "models": {
+   "order0": {
+    "insample_bits_per_byte": 6.5337107634457094,
+    "heldout_leave_one_layer_bits_per_byte": 6.606459823777828
+   },
+   "srel": {
+    "insample_bits_per_byte": 6.517459584864438,
+    "heldout_leave_one_layer_bits_per_byte": 6.719517769837546
+   },
+   "prev_exp": {
+    "insample_bits_per_byte": 6.530440228459348,
+    "heldout_leave_one_layer_bits_per_byte": 6.601851919616458
+   },
+   "srel_prevexp": {
+    "insample_bits_per_byte": 6.515492090390772,
+    "heldout_leave_one_layer_bits_per_byte": 6.724581227858502
+   },
+   "srel_prevexp_runmax": {
+    "insample_bits_per_byte": 6.50924691888243,
+    "heldout_leave_one_layer_bits_per_byte": 6.725295689552162
+   },
+   "srel_prevexp_upexp": {
+    "insample_bits_per_byte": 6.512744351978704,
+    "heldout_leave_one_layer_bits_per_byte": 6.73874981719238
+   }
+  },
+  "scales_order0_bits_per_scale_insample": 0.4227877678215129
+ },
+ "attn.wq_a": {
+  "layers": [
+   0,
+   26
+  ],
+  "bytes_per_layer": 6553600,
+  "shape": [
+   1280,
+   5120
+  ],
+  "decompose_order0": {
+   "0": {
+    "H_byte": 6.477917250705438,
+    "H_sign": 0.9999998795502676,
+    "H_exp": 2.547805993005822,
+    "H_mant_given_exp": 2.9301250951528406,
+    "H_sign_given_exp_mant": 0.9999861625467749,
+    "neg_zero_frac": 6.103515625e-06,
+    "pos_zero_frac": 3.96728515625e-06
+   },
+   "26": {
+    "H_byte": 6.4757953326994615,
+    "H_sign": 0.9999999999757477,
+    "H_exp": 2.5450400733887157,
+    "H_mant_given_exp": 2.9307696667937324,
+    "H_sign_given_exp_mant": 0.9999855925170134,
+    "neg_zero_frac": 4.425048828125e-06,
+    "pos_zero_frac": 3.96728515625e-06
+   }
+  },
+  "generic_8MB_slice": {
+   "0": {
+    "zlib9": 0.8339100646972656,
+    "lzma6": 0.8234124755859376,
+    "zstd19": 0.81940673828125,
+    "zstd3": 0.8189994812011718,
+    "slice_bytes": 6553600
+   },
+   "26": {
+    "zlib9": 0.8331419372558594,
+    "lzma6": 0.8231597900390625,
+    "zstd19": 0.8193551635742188,
+    "zstd3": 0.8189071655273438,
+    "slice_bytes": 6553600
+   }
+  },
+  "extras": {
+   "0": {
+    "median_scale": 115,
+    "block32x32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     436,
+     5964
+    ],
+    "rowseg32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     2562,
+     185571,
+     16667
+    ],
+    "scale_shape": [
+     40,
+     160
+    ],
+    "scale_hist_top": [
+     [
+      115,
+      6389
+     ],
+     [
+      114,
+      11
+     ]
+    ]
+   },
+   "26": {
+    "median_scale": 115,
+    "block32x32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     19,
+     6381
+    ],
+    "rowseg32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     724,
+     150425,
+     53650
+    ],
+    "scale_shape": [
+     40,
+     160
+    ],
+    "scale_hist_top": [
+     [
+      115,
+      6379
+     ],
+     [
+      116,
+      21
+     ]
+    ]
+   }
+  },
+  "models": {
+   "order0": {
+    "insample_bits_per_byte": 6.484535148994313,
+    "heldout_leave_one_layer_bits_per_byte": 6.508207799921413
+   },
+   "srel": {
+    "insample_bits_per_byte": 6.483259599834224,
+    "heldout_leave_one_layer_bits_per_byte": 6.512058791987572
+   },
+   "prev_exp": {
+    "insample_bits_per_byte": 6.484201027216727,
+    "heldout_leave_one_layer_bits_per_byte": 6.50848822436235
+   },
+   "srel_prevexp": {
+    "insample_bits_per_byte": 6.482762953860249,
+    "heldout_leave_one_layer_bits_per_byte": 6.512404201353254
+   },
+   "srel_prevexp_runmax": {
+    "insample_bits_per_byte": 6.481422835525369,
+    "heldout_leave_one_layer_bits_per_byte": 6.513754814209055
+   },
+   "srel_prevexp_upexp": {
+    "insample_bits_per_byte": 6.4795428791941445,
+    "heldout_leave_one_layer_bits_per_byte": 6.516569379547104
+   }
+  },
+  "scales_order0_bits_per_scale_insample": 0.02753277107392187
+ },
+ "attn.wq_b": {
+  "layers": [
+   0,
+   26
+  ],
+  "bytes_per_layer": 41943040,
+  "shape": [
+   32768,
+   1280
+  ],
+  "decompose_order0": {
+   "0": {
+    "H_byte": 6.553539918315755,
+    "H_sign": 0.9999999301694015,
+    "H_exp": 2.6133393524496524,
+    "H_mant_given_exp": 2.9402025628795014,
+    "H_sign_given_exp_mant": 0.9999980029866012,
+    "neg_zero_frac": 4.220008850097656e-06,
+    "pos_zero_frac": 4.243850708007813e-06
+   },
+   "26": {
+    "H_byte": 6.535451136382912,
+    "H_sign": 0.9999999979167923,
+    "H_exp": 2.59771243722085,
+    "H_mant_given_exp": 2.9377405713448743,
+    "H_sign_given_exp_mant": 0.9999981278171866,
+    "neg_zero_frac": 4.649162292480469e-06,
+    "pos_zero_frac": 4.076957702636719e-06
+   }
+  },
+  "generic_8MB_slice": {
+   "0": {
+    "zlib9": 0.8409171104431152,
+    "lzma6": 0.8317098617553711,
+    "zstd19": 0.8294156789779663,
+    "zstd3": 0.8290584087371826,
+    "slice_bytes": 8388608
+   },
+   "26": {
+    "zlib9": 0.8357670307159424,
+    "lzma6": 0.825559139251709,
+    "zstd19": 0.8228795528411865,
+    "zstd3": 0.8225134611129761,
+    "slice_bytes": 8388608
+   }
+  },
+  "extras": {
+   "0": {
+    "median_scale": 115,
+    "block32x32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     6499,
+     34461
+    ],
+    "rowseg32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     12,
+     1218,
+     70352,
+     862977,
+     376161
+    ],
+    "scale_shape": [
+     1024,
+     40
+    ],
+    "scale_hist_top": [
+     [
+      115,
+      21570
+     ],
+     [
+      114,
+      11565
+     ],
+     [
+      116,
+      7689
+     ],
+     [
+      117,
+      136
+     ]
+    ]
+   },
+   "26": {
+    "median_scale": 115,
+    "block32x32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     3876,
+     37084
+    ],
+    "rowseg32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     9,
+     774,
+     53070,
+     810746,
+     446121
+    ],
+    "scale_shape": [
+     1024,
+     40
+    ],
+    "scale_hist_top": [
+     [
+      115,
+      33177
+     ],
+     [
+      116,
+      7684
+     ],
+     [
+      117,
+      88
+     ],
+     [
+      114,
+      11
+     ]
+    ]
+   }
+  },
+  "models": {
+   "order0": {
+    "insample_bits_per_byte": 6.545169249355635,
+    "heldout_leave_one_layer_bits_per_byte": 6.54719164616817
+   },
+   "srel": {
+    "insample_bits_per_byte": 6.5258649319143185,
+    "heldout_leave_one_layer_bits_per_byte": 6.569519361496018
+   },
+   "prev_exp": {
+    "insample_bits_per_byte": 6.541044441752523,
+    "heldout_leave_one_layer_bits_per_byte": 6.543281485687419
+   },
+   "srel_prevexp": {
+    "insample_bits_per_byte": 6.523276724917845,
+    "heldout_leave_one_layer_bits_per_byte": 6.5811324541656
+   },
+   "srel_prevexp_runmax": {
+    "insample_bits_per_byte": 6.514942641438823,
+    "heldout_leave_one_layer_bits_per_byte": 6.598243034749129
+   },
+   "srel_prevexp_upexp": {
+    "insample_bits_per_byte": 6.519762955557214,
+    "heldout_leave_one_layer_bits_per_byte": 6.627349990155227
+   }
+  },
+  "scales_order0_bits_per_scale_insample": 1.263753663350809
+ },
+ "engram.wkv": {
+  "layers": [
+   1
+  ],
+  "bytes_per_layer": 157286400,
+  "shape": [
+   25600,
+   6144
+  ],
+  "decompose_order0": {
+   "1": {
+    "H_byte": 6.799742979024374,
+    "H_sign": 0.999999983430789,
+    "H_exp": 2.846281585080998,
+    "H_mant_given_exp": 2.9534619905922317,
+    "H_sign_given_exp_mant": 0.9999994033511447,
+    "neg_zero_frac": 1.0115305582682292e-05,
+    "pos_zero_frac": 1.003265380859375e-05
+   }
+  },
+  "generic_8MB_slice": {
+   "1": {
+    "zlib9": 0.848819375038147,
+    "lzma6": 0.833704948425293,
+    "zstd19": 0.8427917957305908,
+    "zstd3": 0.8388919830322266,
+    "slice_bytes": 8388608
+   }
+  },
+  "extras": {
+   "1": {
+    "median_scale": 113,
+    "block32x32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     25192,
+     128408
+    ],
+    "rowseg32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     389,
+     7814,
+     20472,
+     34395,
+     135165,
+     469468,
+     1321427,
+     2188120,
+     737949
+    ],
+    "scale_shape": [
+     800,
+     192
+    ],
+    "scale_hist_top": [
+     [
+      114,
+      43825
+     ],
+     [
+      110,
+      32930
+     ],
+     [
+      115,
+      28439
+     ],
+     [
+      113,
+      19535
+     ],
+     [
+      111,
+      11512
+     ],
+     [
+      112,
+      9891
+     ]
+    ]
+   }
+  },
+  "models": {
+   "order0": {
+    "insample_bits_per_byte": 6.799742979024374,
+    "heldout_leave_one_layer_bits_per_byte": null
+   },
+   "srel": {
+    "insample_bits_per_byte": 6.744053062674129,
+    "heldout_leave_one_layer_bits_per_byte": null
+   },
+   "prev_exp": {
+    "insample_bits_per_byte": 6.735009392206155,
+    "heldout_leave_one_layer_bits_per_byte": null
+   },
+   "srel_prevexp": {
+    "insample_bits_per_byte": 6.67627246774617,
+    "heldout_leave_one_layer_bits_per_byte": null
+   },
+   "srel_prevexp_runmax": {
+    "insample_bits_per_byte": 6.571286510308734,
+    "heldout_leave_one_layer_bits_per_byte": null
+   },
+   "srel_prevexp_upexp": {
+    "insample_bits_per_byte": 6.638304185829222,
+    "heldout_leave_one_layer_bits_per_byte": null
+   }
+  },
+  "scales_order0_bits_per_scale_insample": 2.6116276122380917
+ },
+ "ffn.shared_experts.w1": {
+  "layers": [
+   0,
+   13,
+   26,
+   39
+  ],
+  "bytes_per_layer": 11796480,
+  "shape": [
+   2304,
+   5120
+  ],
+  "decompose_order0": {
+   "0": {
+    "H_byte": 6.532999066132366,
+    "H_sign": 0.9999998909795967,
+    "H_exp": 2.5957451482619494,
+    "H_mant_given_exp": 2.937262559475553,
+    "H_sign_given_exp_mant": 0.9999913583948632,
+    "neg_zero_frac": 5.086263020833333e-06,
+    "pos_zero_frac": 4.408094618055555e-06
+   },
+   "13": {
+    "H_byte": 6.613234991303261,
+    "H_sign": 0.9999999256979325,
+    "H_exp": 2.6678830297325486,
+    "H_mant_given_exp": 2.945359090860576,
+    "H_sign_given_exp_mant": 0.9999928707101369,
+    "neg_zero_frac": 6.103515625e-06,
+    "pos_zero_frac": 5.679660373263889e-06
+   },
+   "26": {
+    "H_byte": 6.629176109771,
+    "H_sign": 0.9999985883956791,
+    "H_exp": 2.681899683880248,
+    "H_mant_given_exp": 2.947284751049975,
+    "H_sign_given_exp_mant": 0.9999916748407783,
+    "neg_zero_frac": 5.4253472222222224e-06,
+    "pos_zero_frac": 6.527370876736111e-06
+   },
+   "39": {
+    "H_byte": 6.589803368176798,
+    "H_sign": 0.9999989874754609,
+    "H_exp": 2.648621536879588,
+    "H_mant_given_exp": 2.9411895150530527,
+    "H_sign_given_exp_mant": 0.9999923162441586,
+    "neg_zero_frac": 7.120768229166667e-06,
+    "pos_zero_frac": 5.4253472222222224e-06
+   }
+  },
+  "generic_8MB_slice": {
+   "0": {
+    "zlib9": 0.83806312084198,
+    "lzma6": 0.8256278038024902,
+    "zstd19": 0.8269200325012207,
+    "zstd3": 0.8263841867446899,
+    "slice_bytes": 8388608
+   },
+   "13": {
+    "zlib9": 0.8457976579666138,
+    "lzma6": 0.8338494300842285,
+    "zstd19": 0.8366670608520508,
+    "zstd3": 0.8362710475921631,
+    "slice_bytes": 8388608
+   },
+   "26": {
+    "zlib9": 0.8462636470794678,
+    "lzma6": 0.8346657752990723,
+    "zstd19": 0.8375451564788818,
+    "zstd3": 0.837185263633728,
+    "slice_bytes": 8388608
+   },
+   "39": {
+    "zlib9": 0.842513918876648,
+    "lzma6": 0.8265547752380371,
+    "zstd19": 0.8345866203308105,
+    "zstd3": 0.8339511156082153,
+    "slice_bytes": 8388608
+   }
+  },
+  "extras": {
+   "0": {
+    "median_scale": 115,
+    "block32x32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     439,
+     11081
+    ],
+    "rowseg32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     2,
+     33,
+     102,
+     867,
+     33360,
+     295144,
+     39132
+    ],
+    "scale_shape": [
+     72,
+     160
+    ],
+    "scale_hist_top": [
+     [
+      115,
+      11181
+     ],
+     [
+      116,
+      322
+     ],
+     [
+      114,
+      6
+     ],
+     [
+      117,
+      6
+     ],
+     [
+      118,
+      4
+     ],
+     [
+      119,
+      1
+     ]
+    ]
+   },
+   "13": {
+    "median_scale": 115,
+    "block32x32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     3137,
+     8383
+    ],
+    "rowseg32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     30,
+     268,
+     3922,
+     85994,
+     230506,
+     47920
+    ],
+    "scale_shape": [
+     72,
+     160
+    ],
+    "scale_hist_top": [
+     [
+      115,
+      9504
+     ],
+     [
+      114,
+      1644
+     ],
+     [
+      116,
+      346
+     ],
+     [
+      117,
+      22
+     ],
+     [
+      118,
+      4
+     ]
+    ]
+   },
+   "26": {
+    "median_scale": 115,
+    "block32x32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     2716,
+     8804
+    ],
+    "rowseg32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     3,
+     1930,
+     106364,
+     192323,
+     68020
+    ],
+    "scale_shape": [
+     72,
+     160
+    ],
+    "scale_hist_top": [
+     [
+      115,
+      8192
+     ],
+     [
+      114,
+      3302
+     ],
+     [
+      116,
+      26
+     ]
+    ]
+   },
+   "39": {
+    "median_scale": 115,
+    "block32x32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     351,
+     11169
+    ],
+    "rowseg32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     6,
+     119,
+     5943,
+     75724,
+     244860,
+     41988
+    ],
+    "scale_shape": [
+     72,
+     160
+    ],
+    "scale_hist_top": [
+     [
+      115,
+      11338
+     ],
+     [
+      116,
+      154
+     ],
+     [
+      117,
+      17
+     ],
+     [
+      114,
+      11
+     ]
+    ]
+   }
+  },
+  "models": {
+   "order0": {
+    "insample_bits_per_byte": 6.594366016014813,
+    "heldout_leave_one_layer_bits_per_byte": 6.596750480999253
+   },
+   "srel": {
+    "insample_bits_per_byte": 6.553338243581909,
+    "heldout_leave_one_layer_bits_per_byte": 6.563276146036521
+   },
+   "prev_exp": {
+    "insample_bits_per_byte": 6.582370575555421,
+    "heldout_leave_one_layer_bits_per_byte": 6.585713033490817
+   },
+   "srel_prevexp": {
+    "insample_bits_per_byte": 6.547761735926851,
+    "heldout_leave_one_layer_bits_per_byte": 6.5575371973967576
+   },
+   "srel_prevexp_runmax": {
+    "insample_bits_per_byte": 6.531220071073147,
+    "heldout_leave_one_layer_bits_per_byte": 6.540639360447296
+   },
+   "srel_prevexp_upexp": {
+    "insample_bits_per_byte": 6.545464733940339,
+    "heldout_leave_one_layer_bits_per_byte": 6.560183822529209
+   }
+  },
+  "scales_order0_bits_per_scale_insample": 0.6360043626710092
+ },
+ "ffn.shared_experts.w2": {
+  "layers": [
+   0,
+   13,
+   26,
+   39
+  ],
+  "bytes_per_layer": 11796480,
+  "shape": [
+   5120,
+   2304
+  ],
+  "decompose_order0": {
+   "0": {
+    "H_byte": 6.518172407707559,
+    "H_sign": 0.9999999981955547,
+    "H_exp": 2.5830831608161273,
+    "H_mant_given_exp": 2.935098357586753,
+    "H_sign_given_exp_mant": 0.9999908893046773,
+    "neg_zero_frac": 5.001491970486111e-06,
+    "pos_zero_frac": 4.492865668402778e-06
+   },
+   "13": {
+    "H_byte": 6.593173485637219,
+    "H_sign": 0.9999998799696918,
+    "H_exp": 2.6504571468476867,
+    "H_mant_given_exp": 2.942723642521514,
+    "H_sign_given_exp_mant": 0.999992696268017,
+    "neg_zero_frac": 6.6121419270833336e-06,
+    "pos_zero_frac": 6.951226128472222e-06
+   },
+   "26": {
+    "H_byte": 6.626446835884422,
+    "H_sign": 0.9999999897818121,
+    "H_exp": 2.681215336548176,
+    "H_mant_given_exp": 2.9452394892256963,
+    "H_sign_given_exp_mant": 0.9999920101105508,
+    "neg_zero_frac": 5.340576171875e-06,
+    "pos_zero_frac": 5.340576171875e-06
+   },
+   "39": {
+    "H_byte": 6.63618960653228,
+    "H_sign": 0.9999999742682071,
+    "H_exp": 2.6930839864545515,
+    "H_mant_given_exp": 2.943113791507688,
+    "H_sign_given_exp_mant": 0.9999918285700409,
+    "neg_zero_frac": 7.120768229166667e-06,
+    "pos_zero_frac": 5.849202473958334e-06
+   }
+  },
+  "generic_8MB_slice": {
+   "0": {
+    "zlib9": 0.8374234437942505,
+    "lzma6": 0.827672004699707,
+    "zstd19": 0.824149489402771,
+    "zstd3": 0.8238413333892822,
+    "slice_bytes": 8388608
+   },
+   "13": {
+    "zlib9": 0.8456612825393677,
+    "lzma6": 0.8361153602600098,
+    "zstd19": 0.8350321054458618,
+    "zstd3": 0.8344404697418213,
+    "slice_bytes": 8388608
+   },
+   "26": {
+    "zlib9": 0.8484443426132202,
+    "lzma6": 0.8406639099121094,
+    "zstd19": 0.8380025625228882,
+    "zstd3": 0.837570071220398,
+    "slice_bytes": 8388608
+   },
+   "39": {
+    "zlib9": 0.8486261367797852,
+    "lzma6": 0.8406338691711426,
+    "zstd19": 0.8400980234146118,
+    "zstd3": 0.837899923324585,
+    "slice_bytes": 8388608
+   }
+  },
+  "extras": {
+   "0": {
+    "median_scale": 115,
+    "block32x32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     266,
+     11254
+    ],
+    "rowseg32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     172,
+     1664,
+     12486,
+     305081,
+     49236
+    ],
+    "scale_shape": [
+     160,
+     72
+    ],
+    "scale_hist_top": [
+     [
+      115,
+      11111
+     ],
+     [
+      116,
+      341
+     ],
+     [
+      117,
+      59
+     ],
+     [
+      118,
+      6
+     ],
+     [
+      114,
+      3
+     ]
+    ]
+   },
+   "13": {
+    "median_scale": 115,
+    "block32x32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     2805,
+     8715
+    ],
+    "rowseg32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     11,
+     168,
+     875,
+     3313,
+     34187,
+     284194,
+     45892
+    ],
+    "scale_shape": [
+     160,
+     72
+    ],
+    "scale_hist_top": [
+     [
+      115,
+      10061
+     ],
+     [
+      114,
+      1125
+     ],
+     [
+      116,
+      208
+     ],
+     [
+      117,
+      101
+     ],
+     [
+      118,
+      21
+     ],
+     [
+      119,
+      4
+     ]
+    ]
+   },
+   "26": {
+    "median_scale": 114,
+    "block32x32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     2587,
+     8933
+    ],
+    "rowseg32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     8,
+     41,
+     118,
+     1141,
+     49514,
+     181623,
+     136195
+    ],
+    "scale_shape": [
+     160,
+     72
+    ],
+    "scale_hist_top": [
+     [
+      114,
+      6157
+     ],
+     [
+      115,
+      5186
+     ],
+     [
+      116,
+      164
+     ],
+     [
+      117,
+      10
+     ],
+     [
+      118,
+      2
+     ],
+     [
+      119,
+      1
+     ]
+    ]
+   },
+   "39": {
+    "median_scale": 115,
+    "block32x32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     468,
+     11052
+    ],
+    "rowseg32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     66,
+     268,
+     621,
+     1493,
+     2874,
+     24471,
+     278630,
+     60216
+    ],
+    "scale_shape": [
+     160,
+     72
+    ],
+    "scale_hist_top": [
+     [
+      115,
+      10703
+     ],
+     [
+      116,
+      633
+     ],
+     [
+      117,
+      90
+     ],
+     [
+      118,
+      54
+     ],
+     [
+      119,
+      21
+     ],
+     [
+      120,
+      9
+     ]
+    ]
+   }
+  },
+  "models": {
+   "order0": {
+    "insample_bits_per_byte": 6.6037097061531185,
+    "heldout_leave_one_layer_bits_per_byte": 6.612542961702951
+   },
+   "srel": {
+    "insample_bits_per_byte": 6.562641359684388,
+    "heldout_leave_one_layer_bits_per_byte": 6.609661976005051
+   },
+   "prev_exp": {
+    "insample_bits_per_byte": 6.598425736789237,
+    "heldout_leave_one_layer_bits_per_byte": 6.608447486871716
+   },
+   "srel_prevexp": {
+    "insample_bits_per_byte": 6.5605355183111715,
+    "heldout_leave_one_layer_bits_per_byte": 6.610930857632171
+   },
+   "srel_prevexp_runmax": {
+    "insample_bits_per_byte": 6.5545590852775275,
+    "heldout_leave_one_layer_bits_per_byte": 6.6108017723187595
+   },
+   "srel_prevexp_upexp": {
+    "insample_bits_per_byte": 6.551925584293778,
+    "heldout_leave_one_layer_bits_per_byte": 6.613409822382255
+   }
+  },
+  "scales_order0_bits_per_scale_insample": 0.8904943597649846
+ },
+ "ffn.shared_experts.w3": {
+  "layers": [
+   0,
+   13,
+   26,
+   39
+  ],
+  "bytes_per_layer": 11796480,
+  "shape": [
+   2304,
+   5120
+  ],
+  "decompose_order0": {
+   "0": {
+    "H_byte": 6.56252750984163,
+    "H_sign": 0.9999999858873827,
+    "H_exp": 2.622192630308288,
+    "H_mant_given_exp": 2.940342838554114,
+    "H_sign_given_exp_mant": 0.9999920409792281,
+    "neg_zero_frac": 6.188286675347222e-06,
+    "pos_zero_frac": 5.849202473958334e-06
+   },
+   "13": {
+    "H_byte": 6.557814517210308,
+    "H_sign": 0.9999999201011975,
+    "H_exp": 2.618230000368742,
+    "H_mant_given_exp": 2.939592573438567,
+    "H_sign_given_exp_mant": 0.9999919434029992,
+    "neg_zero_frac": 5.764431423611111e-06,
+    "pos_zero_frac": 5.510118272569444e-06
+   },
+   "26": {
+    "H_byte": 6.619295869032255,
+    "H_sign": 0.9999999958012048,
+    "H_exp": 2.674213741358572,
+    "H_mant_given_exp": 2.9450898613526775,
+    "H_sign_given_exp_mant": 0.9999922663210059,
+    "neg_zero_frac": 4.8319498697916664e-06,
+    "pos_zero_frac": 6.6969129774305555e-06
+   },
+   "39": {
+    "H_byte": 6.58126531698037,
+    "H_sign": 0.9999999885225467,
+    "H_exp": 2.6403998683891876,
+    "H_mant_given_exp": 2.9408727761762665,
+    "H_sign_given_exp_mant": 0.999992672414916,
+    "neg_zero_frac": 6.951226128472222e-06,
+    "pos_zero_frac": 4.57763671875e-06
+   }
+  },
+  "generic_8MB_slice": {
+   "0": {
+    "zlib9": 0.8404959440231323,
+    "lzma6": 0.8275799751281738,
+    "zstd19": 0.8299049139022827,
+    "zstd3": 0.8296539783477783,
+    "slice_bytes": 8388608
+   },
+   "13": {
+    "zlib9": 0.8414031267166138,
+    "lzma6": 0.8297219276428223,
+    "zstd19": 0.8301184177398682,
+    "zstd3": 0.8297890424728394,
+    "slice_bytes": 8388608
+   },
+   "26": {
+    "zlib9": 0.8453115224838257,
+    "lzma6": 0.8359436988830566,
+    "zstd19": 0.8351304531097412,
+    "zstd3": 0.8348273038864136,
+    "slice_bytes": 8388608
+   },
+   "39": {
+    "zlib9": 0.8425968885421753,
+    "lzma6": 0.8292136192321777,
+    "zstd19": 0.83375084400177,
+    "zstd3": 0.8332921266555786,
+    "slice_bytes": 8388608
+   }
+  },
+  "extras": {
+   "0": {
+    "median_scale": 115,
+    "block32x32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     493,
+     11027
+    ],
+    "rowseg32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     5,
+     96,
+     1551,
+     35078,
+     267372,
+     64538
+    ],
+    "scale_shape": [
+     72,
+     160
+    ],
+    "scale_hist_top": [
+     [
+      115,
+      10837
+     ],
+     [
+      116,
+      664
+     ],
+     [
+      117,
+      16
+     ],
+     [
+      118,
+      3
+     ]
+    ]
+   },
+   "13": {
+    "median_scale": 115,
+    "block32x32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     2686,
+     8834
+    ],
+    "rowseg32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     7,
+     47,
+     258,
+     1925,
+     51479,
+     281780,
+     33144
+    ],
+    "scale_shape": [
+     72,
+     160
+    ],
+    "scale_hist_top": [
+     [
+      115,
+      10522
+     ],
+     [
+      114,
+      709
+     ],
+     [
+      116,
+      248
+     ],
+     [
+      117,
+      35
+     ],
+     [
+      118,
+      5
+     ],
+     [
+      119,
+      1
+     ]
+    ]
+   },
+   "26": {
+    "median_scale": 115,
+    "block32x32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     2895,
+     8625
+    ],
+    "rowseg32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     4,
+     85,
+     484,
+     58090,
+     187236,
+     122741
+    ],
+    "scale_shape": [
+     72,
+     160
+    ],
+    "scale_hist_top": [
+     [
+      115,
+      6162
+     ],
+     [
+      114,
+      5310
+     ],
+     [
+      116,
+      41
+     ],
+     [
+      117,
+      6
+     ],
+     [
+      118,
+      1
+     ]
+    ]
+   },
+   "39": {
+    "median_scale": 115,
+    "block32x32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     680,
+     10840
+    ],
+    "rowseg32_max_exp_hist": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     8,
+     148,
+     4126,
+     62727,
+     260716,
+     40915
+    ],
+    "scale_shape": [
+     72,
+     160
+    ],
+    "scale_hist_top": [
+     [
+      115,
+      10573
+     ],
+     [
+      116,
+      898
+     ],
+     [
+      114,
+      28
+     ],
+     [
+      117,
+      19
+     ],
+     [
+      118,
+      2
+     ]
+    ]
+   }
+  },
+  "models": {
+   "order0": {
+    "insample_bits_per_byte": 6.587896829234518,
+    "heldout_leave_one_layer_bits_per_byte": 6.594611428999547
+   },
+   "srel": {
+    "insample_bits_per_byte": 6.534204127184702,
+    "heldout_leave_one_layer_bits_per_byte": 6.544888648999009
+   },
+   "prev_exp": {
+    "insample_bits_per_byte": 6.5768202067274375,
+    "heldout_leave_one_layer_bits_per_byte": 6.58309184125602
+   },
+   "srel_prevexp": {
+    "insample_bits_per_byte": 6.5298147282218215,
+    "heldout_leave_one_layer_bits_per_byte": 6.540369324464522
+   },
+   "srel_prevexp_runmax": {
+    "insample_bits_per_byte": 6.517443688105121,
+    "heldout_leave_one_layer_bits_per_byte": 6.527895906192705
+   },
+   "srel_prevexp_upexp": {
+    "insample_bits_per_byte": 6.527403253607387,
+    "heldout_leave_one_layer_bits_per_byte": 6.5448970310976655
+   }
+  },
+  "scales_order0_bits_per_scale_insample": 0.8162200486019031
+ }
+}

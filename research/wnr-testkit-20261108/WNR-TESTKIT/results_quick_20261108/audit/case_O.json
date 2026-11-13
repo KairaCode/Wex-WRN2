@@ -1,0 +1,388 @@
+{
+ "case": "O",
+ "seed": 20261550,
+ "by_kind": {
+  "R0": {
+   "trials": 4,
+   "accepted_spec": 4,
+   "silent": 4,
+   "silent_rate": 1.0,
+   "silent_ci95": [
+    0.39763536438352276,
+    1.0
+   ],
+   "silent_with_block_flip": 4,
+   "stages": {
+    "None": 4
+   },
+   "rows": [
+    {
+     "rec": "L00_E113.bin",
+     "status": "accepted",
+     "stage": null,
+     "msg": null,
+     "ceilref_reject": false,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "slot": "L39_E156.bin",
+     "damage": {
+      "coded_sym_diff": 32598227,
+      "coded_scale_diff": 423536,
+      "nib_diff": 32869003,
+      "val_diff": 32440689,
+      "scale_diff": 613221,
+      "block_flips": 437401,
+      "err_units": 34.0,
+      "err_abs": 1.96875,
+      "sign_only": false,
+      "nan_scale": false
+     }
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "accepted",
+     "stage": null,
+     "msg": null,
+     "ceilref_reject": false,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "slot": "L39_E156.bin",
+     "damage": {
+      "coded_sym_diff": 32598227,
+      "coded_scale_diff": 423536,
+      "nib_diff": 32869003,
+      "val_diff": 32440689,
+      "scale_diff": 613221,
+      "block_flips": 437401,
+      "err_units": 34.0,
+      "err_abs": 1.96875,
+      "sign_only": false,
+      "nan_scale": false
+     }
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "accepted",
+     "stage": null,
+     "msg": null,
+     "ceilref_reject": false,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "slot": "L00_E113.bin",
+     "damage": {
+      "coded_sym_diff": 32598227,
+      "coded_scale_diff": 423536,
+      "nib_diff": 32869003,
+      "val_diff": 32440689,
+      "scale_diff": 613221,
+      "block_flips": 437401,
+      "err_units": 252.0,
+      "err_abs": 1.96875,
+      "sign_only": false,
+      "nan_scale": false
+     }
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "accepted",
+     "stage": null,
+     "msg": null,
+     "ceilref_reject": false,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "slot": "L00_E113.bin",
+     "damage": {
+      "coded_sym_diff": 32598227,
+      "coded_scale_diff": 423536,
+      "nib_diff": 32869003,
+      "val_diff": 32440689,
+      "scale_diff": 613221,
+      "block_flips": 437401,
+      "err_units": 252.0,
+      "err_abs": 1.96875,
+      "sign_only": false,
+      "nan_scale": false
+     }
+    }
+   ],
+   "seconds": 3.8
+  },
+  "HASH": {
+   "trials": 4,
+   "accepted_spec": 0,
+   "silent": 0,
+   "silent_rate": 0.0,
+   "silent_ci95": [
+    0.0,
+    0.6023646356164747
+   ],
+   "silent_with_block_flip": 0,
+   "stages": {
+    "scales": 4
+   },
+   "rows": [
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "scales",
+     "msg": "scale streams failed: 2160",
+     "ceilref_reject": null,
+     "n_dec_s": 2160,
+     "n_dec_w": 0,
+     "slot": "L39_E156.bin"
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "scales",
+     "msg": "scale streams failed: 2160",
+     "ceilref_reject": null,
+     "n_dec_s": 2160,
+     "n_dec_w": 0,
+     "slot": "L39_E156.bin"
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "scales",
+     "msg": "scale streams failed: 2160",
+     "ceilref_reject": null,
+     "n_dec_s": 2160,
+     "n_dec_w": 0,
+     "slot": "L00_E113.bin"
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "scales",
+     "msg": "scale streams failed: 2160",
+     "ceilref_reject": null,
+     "n_dec_s": 2160,
+     "n_dec_w": 0,
+     "slot": "L00_E113.bin"
+    }
+   ],
+   "seconds": 0.2
+  },
+  "HASH32": {
+   "trials": 4,
+   "accepted_spec": 0,
+   "silent": 0,
+   "silent_rate": 0.0,
+   "silent_ci95": [
+    0.0,
+    0.6023646356164747
+   ],
+   "silent_with_block_flip": 0,
+   "stages": {
+    "scales": 4
+   },
+   "rows": [
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "scales",
+     "msg": "scale streams failed: 2160",
+     "ceilref_reject": null,
+     "n_dec_s": 2160,
+     "n_dec_w": 0,
+     "slot": "L39_E156.bin"
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "scales",
+     "msg": "scale streams failed: 2160",
+     "ceilref_reject": null,
+     "n_dec_s": 2160,
+     "n_dec_w": 0,
+     "slot": "L39_E156.bin"
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "scales",
+     "msg": "scale streams failed: 2160",
+     "ceilref_reject": null,
+     "n_dec_s": 2160,
+     "n_dec_w": 0,
+     "slot": "L00_E113.bin"
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "scales",
+     "msg": "scale streams failed: 2160",
+     "ceilref_reject": null,
+     "n_dec_s": 2160,
+     "n_dec_w": 0,
+     "slot": "L00_E113.bin"
+    }
+   ],
+   "seconds": 0.2
+  },
+  "TAIL": {
+   "trials": 4,
+   "accepted_spec": 4,
+   "silent": 4,
+   "silent_rate": 1.0,
+   "silent_ci95": [
+    0.39763536438352276,
+    1.0
+   ],
+   "silent_with_block_flip": 4,
+   "stages": {
+    "None": 4
+   },
+   "rows": [
+    {
+     "rec": "L00_E113.bin",
+     "status": "accepted",
+     "stage": null,
+     "msg": null,
+     "ceilref_reject": false,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "slot": "L39_E156.bin",
+     "damage": {
+      "coded_sym_diff": 32598227,
+      "coded_scale_diff": 423536,
+      "nib_diff": 32869003,
+      "val_diff": 32440689,
+      "scale_diff": 613221,
+      "block_flips": 437401,
+      "err_units": 34.0,
+      "err_abs": 1.96875,
+      "sign_only": false,
+      "nan_scale": false
+     }
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "accepted",
+     "stage": null,
+     "msg": null,
+     "ceilref_reject": false,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "slot": "L39_E156.bin",
+     "damage": {
+      "coded_sym_diff": 32598227,
+      "coded_scale_diff": 423536,
+      "nib_diff": 32869003,
+      "val_diff": 32440689,
+      "scale_diff": 613221,
+      "block_flips": 437401,
+      "err_units": 34.0,
+      "err_abs": 1.96875,
+      "sign_only": false,
+      "nan_scale": false
+     }
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "accepted",
+     "stage": null,
+     "msg": null,
+     "ceilref_reject": false,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "slot": "L00_E113.bin",
+     "damage": {
+      "coded_sym_diff": 32598227,
+      "coded_scale_diff": 423536,
+      "nib_diff": 32869003,
+      "val_diff": 32440689,
+      "scale_diff": 613221,
+      "block_flips": 437401,
+      "err_units": 252.0,
+      "err_abs": 1.96875,
+      "sign_only": false,
+      "nan_scale": false
+     }
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "accepted",
+     "stage": null,
+     "msg": null,
+     "ceilref_reject": false,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "slot": "L00_E113.bin",
+     "damage": {
+      "coded_sym_diff": 32598227,
+      "coded_scale_diff": 423536,
+      "nib_diff": 32869003,
+      "val_diff": 32440689,
+      "scale_diff": 613221,
+      "block_flips": 437401,
+      "err_units": 252.0,
+      "err_abs": 1.96875,
+      "sign_only": false,
+      "nan_scale": false
+     }
+    }
+   ],
+   "seconds": 3.1
+  },
+  "TAILD": {
+   "trials": 4,
+   "accepted_spec": 0,
+   "silent": 0,
+   "silent_rate": 0.0,
+   "silent_ci95": [
+    0.0,
+    0.6023646356164747
+   ],
+   "silent_with_block_flip": 0,
+   "stages": {
+    "digest": 4
+   },
+   "rows": [
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "digest",
+     "msg": "record digest mismatch",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "slot": "L39_E156.bin"
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "digest",
+     "msg": "record digest mismatch",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "slot": "L39_E156.bin"
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "digest",
+     "msg": "record digest mismatch",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "slot": "L00_E113.bin"
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "digest",
+     "msg": "record digest mismatch",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "slot": "L00_E113.bin"
+    }
+   ],
+   "seconds": 0.3
+  }
+ },
+ "seconds": 3.8
+}

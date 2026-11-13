@@ -1,0 +1,62 @@
+lock: taken 20:33:53
+RAM: 13.5 GB available at 20:33:54, RAM_GB=13 for every arm
+6493e16edd7b8482bf770e39e481b1ed6edb0fb7647690be8e40e0d25948c9d1 *<KAIRA>/lab/v41-port-20261106/ws-g/g2bin/deepseek_v4-fix3.exe
+3182bcd1cac78e9b1aeb27f29b19a2e5390427fd0ee90cf42fb9812b18f9e8a6 *<KAIRA>/lab/v41-port-20261106/ws-g/new-out3/coli_cuda_dsv4_dg.dll
+99cb288f54550ffe5c1e0367e100fe56d2db3c01683d01c289ba1a702c9a59ab *<KAIRA>/lab/v41-port-20261106/ws-g/new-out3/coli_cuda_dsv4.dll
+cceb4fb573b3b3e7b71843bf85a2b87cf9efdd94155bfc5deec717cce949e782 *<KAIRA>/lab/v41-gpu-20261107/w1/build/kaira_wex_cuda.dll
+d26fd1c2629594759af569a5252f94e4568d4ebeca67dc323834deb141aa278a *<KAIRA>/lab/v41-port-20261106/ws-g/g2bin/cudart64_13.dll
+cad63434448e7141629e240ea093ad596a7ef6a0f67b468ba9bc1df6e1eeee33 *<KAIRA>/lab/v41-port-20261106/ws-g/g2bin/cublasLt64_13.dll
+== ab-smoke-A-wex1 20:33:56 available RAM 13.5 GB, GPU 1686 MiB, 3 %, COLI_WEX_PATH=U:\kaira_wex\v41-reap\v4_flash_experts.wex
+READY after 16.8 s
+w0 ttft 4.53 DONE w0 STAT 16 1.305 36.2 0.00 9 1 0 PROF 16.771 9 16 53.975 5.874 1.734 3.733 5.428 24 TIERS 1009 280 6391 18.97 5.26
+rc=0 20:34:33
+   checks: ready=1 container=1 dense_uploads=40 dense_gpu=1 next_prefetch=1 gpu_direct=1
+[    0.185] [v4_wex] Container v1 active: U:\kaira_wex\v41-reap\v4_flash_experts.wex (40 layers, 192 experts, 18800640 decoded bytes/expert, direct_io=on)
+== ab-smoke-B-wnr2 20:34:43 available RAM 16.1 GB, GPU 1673 MiB, 2 %, COLI_WEX_PATH=U:\kaira_wex\v41-reap\v4_flash_experts.nr2.wex
+READY after 18.3 s
+w0 ttft 4.86 DONE w0 STAT 16 1.370 32.0 0.00 9 1 0 PROF 16.520 9 16 50.560 5.274 2.839 3.636 4.768 24 TIERS 1009 280 6391 18.97 5.26
+rc=0 20:35:21
+   checks: ready=1 container=1 dense_uploads=40 dense_gpu=1 next_prefetch=1 gpu_direct=1
+[    0.218] [v4_wex] Container v3 active: U:\kaira_wex\v41-reap\v4_flash_experts.nr2.wex (40 layers, 192 experts, 18800640 decoded bytes/expert, direct_io=on)
+== ab-A1-wex1 20:35:32 available RAM 16.3 GB, GPU 1736 MiB, 5 %, COLI_WEX_PATH=U:\kaira_wex\v41-reap\v4_flash_experts.wex
+READY after 15.8 s
+w0 ttft 4.52 DONE w0 STAT 16 1.300 36.5 0.00 9 1 0 PROF 16.807 9 16 54.501 5.958 1.741 3.734 5.371 24 TIERS 1003 280 6397 18.86 5.26
+code1 ttft 10.48 DONE code1 STAT 128 1.259 44.9 0.00 29 1 0 PROF 112.138 29 128 347.078 37.619 4.281 28.336 41.890 156 TIERS 1003 280 6397 18.86 5.26
+chat_it1 ttft 9.71 DONE chat_it1 STAT 128 1.077 43.1 0.00 30 1 0 PROF 128.504 30 128 493.789 51.689 3.941 30.234 42.627 157 TIERS 1020 280 6380 19.18 5.26
+reason1 ttft 12.21 DONE reason1 STAT 128 1.199 45.0 0.00 41 1 0 PROF 118.986 41 128 394.157 41.681 4.901 30.872 41.518 168 TIERS 1020 280 6380 19.18 5.26
+ctx2k ttft 527.5 DONE ctx2k STAT 128 1.044 16.3 0.00 2276 1 0 PROF 650.103 2276 128 1393.536 86.525 210.401 311.998 41.065 2403 TIERS 1020 280 6380 19.18 5.26
+rc=0 20:52:58
+   checks: ready=1 container=1 dense_uploads=40 dense_gpu=1 next_prefetch=1 gpu_direct=1
+[    0.207] [v4_wex] Container v1 active: U:\kaira_wex\v41-reap\v4_flash_experts.wex (40 layers, 192 experts, 18800640 decoded bytes/expert, direct_io=on)
+== ab-B1-wnr2 20:53:09 available RAM 17.6 GB, GPU 1602 MiB, 0 %, COLI_WEX_PATH=U:\kaira_wex\v41-reap\v4_flash_experts.nr2.wex
+READY after 17.3 s
+w0 ttft 4.68 DONE w0 STAT 16 1.338 32.0 0.00 9 1 0 PROF 16.591 9 16 52.165 5.347 2.617 3.534 5.089 24 TIERS 1001 280 6399 18.82 5.26
+code1 ttft 9.91 DONE code1 STAT 128 1.281 47.4 0.00 29 1 0 PROF 109.856 29 128 348.594 37.365 5.347 27.152 39.980 156 TIERS 1001 280 6399 18.82 5.26
+chat_it1 ttft 9.43 DONE chat_it1 STAT 128 1.116 47.8 0.00 30 1 0 PROF 124.131 30 128 491.064 51.451 4.848 27.744 40.076 157 TIERS 1001 280 6399 18.82 5.26
+reason1 ttft 11.56 DONE reason1 STAT 128 1.226 47.9 0.00 41 1 0 PROF 115.999 41 128 394.131 42.211 5.601 28.401 39.774 168 TIERS 1001 280 6399 18.82 5.26
+ctx2k ttft 500.35 DONE ctx2k STAT 128 1.066 7.8 0.00 2276 1 0 PROF 620.393 2276 128 1269.979 76.207 219.382 284.611 40.079 2403 TIERS 1001 280 6399 18.82 5.26
+rc=0 21:09:57
+   checks: ready=1 container=1 dense_uploads=40 dense_gpu=1 next_prefetch=1 gpu_direct=1
+[    0.205] [v4_wex] Container v3 active: U:\kaira_wex\v41-reap\v4_flash_experts.nr2.wex (40 layers, 192 experts, 18800640 decoded bytes/expert, direct_io=on)
+== ab-B2-wnr2 21:10:07 available RAM 18.6 GB, GPU 1671 MiB, 1 %, COLI_WEX_PATH=U:\kaira_wex\v41-reap\v4_flash_experts.nr2.wex
+READY after 17.9 s
+w0 ttft 4.7 DONE w0 STAT 16 1.333 31.6 0.00 9 1 0 PROF 16.656 9 16 51.797 5.455 2.512 3.544 5.141 24 TIERS 1008 280 6392 18.95 5.26
+code1 ttft 9.91 DONE code1 STAT 128 1.278 47.5 0.00 29 1 0 PROF 110.037 29 128 345.282 37.358 5.247 27.210 40.210 156 TIERS 1008 280 6392 18.95 5.26
+chat_it1 ttft 8.73 DONE chat_it1 STAT 128 1.118 48.1 0.00 30 1 0 PROF 123.220 30 128 487.173 51.140 4.124 27.733 40.212 157 TIERS 1008 280 6392 18.95 5.26
+reason1 ttft 11.58 DONE reason1 STAT 128 1.211 48.3 0.00 41 1 0 PROF 117.281 41 128 392.319 42.365 5.488 28.583 40.832 168 TIERS 1008 280 6392 18.95 5.26
+ctx2k ttft 502.21 DONE ctx2k STAT 128 1.061 7.7 0.00 2276 1 0 PROF 622.787 2276 128 1273.063 77.171 221.044 284.000 40.460 2403 TIERS 1008 280 6392 18.95 5.26
+rc=0 21:26:59
+   checks: ready=1 container=1 dense_uploads=40 dense_gpu=1 next_prefetch=1 gpu_direct=1
+[    0.191] [v4_wex] Container v3 active: U:\kaira_wex\v41-reap\v4_flash_experts.nr2.wex (40 layers, 192 experts, 18800640 decoded bytes/expert, direct_io=on)
+== ab-A2-wex1 21:27:10 available RAM 18.5 GB, GPU 1557 MiB, 6 %, COLI_WEX_PATH=U:\kaira_wex\v41-reap\v4_flash_experts.wex
+READY after 15.9 s
+w0 ttft 4.73 DONE w0 STAT 16 1.318 36.7 0.00 9 1 0 PROF 16.847 9 16 54.061 5.890 1.745 4.063 5.147 24 TIERS 1027 280 6373 19.31 5.26
+code1 ttft 10.81 DONE code1 STAT 128 1.267 45.0 0.00 29 1 0 PROF 111.809 29 128 341.414 37.074 4.259 29.303 41.161 156 TIERS 1027 280 6373 19.31 5.26
+chat_it1 ttft 9.75 DONE chat_it1 STAT 128 1.092 43.1 0.00 30 1 0 PROF 126.973 30 128 492.059 51.452 3.891 30.442 41.175 157 TIERS 1027 280 6373 19.31 5.26
+reason1 ttft 12.15 DONE reason1 STAT 128 1.203 45.1 0.00 41 1 0 PROF 118.526 41 128 391.323 41.796 4.812 30.871 41.035 168 TIERS 1027 280 6373 19.31 5.26
+ctx2k ttft 521.13 DONE ctx2k STAT 128 1.033 16.1 0.00 2276 1 0 PROF 645.060 2276 128 1414.777 89.271 205.866 307.835 41.984 2403 TIERS 1027 280 6373 19.31 5.26
+rc=0 21:44:28
+   checks: ready=1 container=1 dense_uploads=40 dense_gpu=1 next_prefetch=1 gpu_direct=1
+[    0.202] [v4_wex] Container v1 active: U:\kaira_wex\v41-reap\v4_flash_experts.wex (40 layers, 192 experts, 18800640 decoded bytes/expert, direct_io=on)
+== all runs done 21:44:39
+lock: released 21:44:39

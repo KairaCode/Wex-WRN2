@@ -1,0 +1,157 @@
+{
+ "meta": {
+  "mode": "mma",
+  "dll": "<KAIRA>\\lab\\wnr3-5090-20261107\\zero\\build\\zt_dg.dll",
+  "flavour": "deepgemm sm_120a",
+  "process_env": {
+   "DSV4_CUDA_PIN_HOST": "0"
+  },
+  "act_sets_T16": [
+   "gauss",
+   "gauss*0.01",
+   "laplace",
+   "gauss_25%+0_25%-0",
+   "all-0",
+   "all+0",
+   "one_nonzero_rest-0",
+   "denormals_10%",
+   "inf_at_100",
+   "nan_at_200",
+   "gauss*1e30",
+   "-row0",
+   "row0*1e-30",
+   "adv_all_products-0(row r0)",
+   "adv_exact_cancel_then-0(row r0)",
+   "adv_all_products-0(row r1)"
+  ],
+  "started": "2026-11-08T01:39:27",
+  "mma": "20000 m16n8k32 tiles (1 warp each) per case; per-tile uniform ue8m0 scales in [118,135]"
+ },
+ "results": {
+  "mxf8f6f4 e4m3 x e2m1 (DeepGEMM fp8_fp4_mixed_mma_block_scaled)": {
+   "random A, random B codes (orig vs canon), C=+0: differing D / bits": [
+    0,
+    0
+   ],
+   "random A, random B codes, C=+0: rerun differing D": 0,
+   "random A, random B codes (orig vs canon), C=-0: differing D / bits": [
+    0,
+    0
+   ],
+   "random A, random B codes, C=-0: rerun differing D": 0,
+   "random A, random B codes (orig vs canon), C=random: differing D / bits": [
+    0,
+    0
+   ],
+   "random A, random B codes, C=random: rerun differing D": 0,
+   "positive control (one B code sign-flipped per lane), C=+0: differing D": 2559622,
+   "B all zero (codes 0/8 random) vs all code 0, C=+0: differing D": 0,
+   "B all zero (codes 0/8 random), C=+0: D==-0 / D==+0": [
+    0,
+    2560000
+   ],
+   "B all code 0, C=+0: D==-0 / D==+0": [
+    0,
+    2560000
+   ],
+   "B all zero (codes 0/8 random) vs all code 0, C=-0: differing D": 0,
+   "B all zero (codes 0/8 random), C=-0: D==-0 / D==+0": [
+    0,
+    2560000
+   ],
+   "B all code 0, C=-0: D==-0 / D==+0": [
+    0,
+    2560000
+   ],
+   "A>0, B all code 8 (every product -0) vs B all code 0 (every product +0), C=+0: differing D": 0,
+   "A>0, B all code 8, C=+0: D==-0 / D==+0": [
+    0,
+    2560000
+   ],
+   "A>0, B all code 0, C=+0: D==-0 / D==+0": [
+    0,
+    2560000
+   ],
+   "A>0, B all code 8 (every product -0) vs B all code 0 (every product +0), C=-0: differing D": 0,
+   "A>0, B all code 8, C=-0: D==-0 / D==+0": [
+    0,
+    2560000
+   ],
+   "A>0, B all code 0, C=-0: D==-0 / D==+0": [
+    0,
+    2560000
+   ],
+   "A all -0, B > 0 (every product -0), C=+0: D==-0 / D==+0": [
+    0,
+    2560000
+   ],
+   "A all -0, B > 0 (every product -0), C=-0: D==-0 / D==+0": [
+    0,
+    2560000
+   ]
+  },
+  "mxf8f6f4 e4m3 x e4m3 (fp8_mma_block_scaled; B = tc_expand bytes)": {
+   "random A, random B codes (orig vs canon), C=+0: differing D / bits": [
+    0,
+    0
+   ],
+   "random A, random B codes, C=+0: rerun differing D": 0,
+   "random A, random B codes (orig vs canon), C=-0: differing D / bits": [
+    0,
+    0
+   ],
+   "random A, random B codes, C=-0: rerun differing D": 0,
+   "random A, random B codes (orig vs canon), C=random: differing D / bits": [
+    0,
+    0
+   ],
+   "random A, random B codes, C=random: rerun differing D": 0,
+   "positive control (one B code sign-flipped per lane), C=+0: differing D": 2559582,
+   "B all zero (codes 0/8 random) vs all code 0, C=+0: differing D": 0,
+   "B all zero (codes 0/8 random), C=+0: D==-0 / D==+0": [
+    0,
+    2560000
+   ],
+   "B all code 0, C=+0: D==-0 / D==+0": [
+    0,
+    2560000
+   ],
+   "B all zero (codes 0/8 random) vs all code 0, C=-0: differing D": 0,
+   "B all zero (codes 0/8 random), C=-0: D==-0 / D==+0": [
+    0,
+    2560000
+   ],
+   "B all code 0, C=-0: D==-0 / D==+0": [
+    0,
+    2560000
+   ],
+   "A>0, B all code 8 (every product -0) vs B all code 0 (every product +0), C=+0: differing D": 0,
+   "A>0, B all code 8, C=+0: D==-0 / D==+0": [
+    0,
+    2560000
+   ],
+   "A>0, B all code 0, C=+0: D==-0 / D==+0": [
+    0,
+    2560000
+   ],
+   "A>0, B all code 8 (every product -0) vs B all code 0 (every product +0), C=-0: differing D": 0,
+   "A>0, B all code 8, C=-0: D==-0 / D==+0": [
+    0,
+    2560000
+   ],
+   "A>0, B all code 0, C=-0: D==-0 / D==+0": [
+    0,
+    2560000
+   ],
+   "A all -0, B > 0 (every product -0), C=+0: D==-0 / D==+0": [
+    0,
+    2560000
+   ],
+   "A all -0, B > 0 (every product -0), C=-0: D==-0 / D==+0": [
+    0,
+    2560000
+   ]
+  }
+ },
+ "seconds": 1.0
+}

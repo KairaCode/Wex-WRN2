@@ -1,0 +1,15 @@
+﻿A {'status': -1, 'reason': 'weight stream final-state/length/hash check failed: 1 streams, first g=2160'}
+B {'status': -1, 'reason': 'LENC weight: group continuity (group 1)'}
+C {'status': -1, 'reason': 'header_check mismatch'}
+D (extra) {'status': -1, 'reason': 'ceil_mask bit 0 != form of set 0'}
+[
+ {
+  "stream_j": 0,
+  "g": 2160,
+  "stream_bytes": 952,
+  "bit_flips_tried": 7616,
+  "structure_ok_final_state_eq_x0": 22,
+  "of_which_exactly_one_sign_flip": 22,
+  "structure_ok_other": 0
+ }
+]

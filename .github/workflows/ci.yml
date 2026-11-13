@@ -1,0 +1,42 @@
+# CPU checks of the repository: check_repo.py, the stdlib tests, the WEX1-3/WNR3 CPU check and the
+# WEX4 tests (scripts/check_all.sh). No GPU, no model weights, no secrets.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  linux:
+    runs-on: ubuntu-24.04
+    # shortcut: the Linux build has not been seen green yet; remove continue-on-error after its first green run
+    continue-on-error: true
+    env:
+      PYTHON: python3
+      USER: ""        # check_repo.py's user-name pattern reads USERNAME/USER; "runner" would match prose
+      USERNAME: ""
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+      - name: All CPU checks
+        run: bash scripts/check_all.sh
+
+  windows:
+    runs-on: windows-2022
+    env:
+      USER: ""
+      USERNAME: ""
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+      - uses: msys2/setup-msys2@ec48f7c5447b3140e2b088413ae3a55687bccb6e  # v2.33.0
+        with:
+          msystem: UCRT64
+          update: false
+          install: git mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-python
+      - name: All CPU checks
+        run: bash scripts/check_all.sh

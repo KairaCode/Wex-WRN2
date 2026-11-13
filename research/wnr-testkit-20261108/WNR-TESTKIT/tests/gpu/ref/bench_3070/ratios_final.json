@@ -1,0 +1,5102 @@
+{
+ "summary_min_median_max": {
+  "CF3/CF0": {
+   "m1": {
+    "n": 8,
+    "min": 0.987,
+    "median": 0.9953,
+    "max": 1.0096
+   },
+   "m3": {
+    "n": 8,
+    "min": 0.991,
+    "median": 0.9972,
+    "max": 1.0067
+   },
+   "m24": {
+    "n": 8,
+    "min": 0.9724,
+    "median": 0.998,
+    "max": 1.0031
+   },
+   "8streams": {
+    "n": 8,
+    "min": 0.9635,
+    "median": 0.9987,
+    "max": 1.0031
+   }
+  },
+  "CF5/CF0": {
+   "m1": {
+    "n": 8,
+    "min": 0.9761,
+    "median": 1.0171,
+    "max": 1.0341
+   },
+   "m3": {
+    "n": 8,
+    "min": 0.9857,
+    "median": 1.0074,
+    "max": 1.0221
+   },
+   "m24": {
+    "n": 8,
+    "min": 0.9859,
+    "median": 1.0026,
+    "max": 1.0154
+   },
+   "8streams": {
+    "n": 8,
+    "min": 0.9831,
+    "median": 1.0026,
+    "max": 1.0178
+   }
+  },
+  "CF6/CF0": {
+   "m1": {
+    "n": 8,
+    "min": 0.9761,
+    "median": 1.0137,
+    "max": 1.0341
+   },
+   "m3": {
+    "n": 8,
+    "min": 0.9858,
+    "median": 1.0074,
+    "max": 1.022
+   },
+   "m24": {
+    "n": 8,
+    "min": 0.987,
+    "median": 1.0027,
+    "max": 1.0169
+   },
+   "8streams": {
+    "n": 8,
+    "min": 0.9847,
+    "median": 1.0014,
+    "max": 1.0157
+   }
+  },
+  "CF/CF0": {
+   "m1": {
+    "n": 8,
+    "min": 1.0033,
+    "median": 1.0186,
+    "max": 1.0479
+   },
+   "m3": {
+    "n": 8,
+    "min": 1.0123,
+    "median": 1.1568,
+    "max": 1.2051
+   },
+   "m24": {
+    "n": 8,
+    "min": 1.0146,
+    "median": 1.0588,
+    "max": 1.2133
+   },
+   "8streams": {
+    "n": 8,
+    "min": 1.0166,
+    "median": 1.0578,
+    "max": 1.2079
+   }
+  },
+  "CFD5/CFD0": {
+   "m1": {
+    "n": 8,
+    "min": 0.9786,
+    "median": 0.9854,
+    "max": 1.0288
+   },
+   "m3": {
+    "n": 8,
+    "min": 0.9818,
+    "median": 0.9922,
+    "max": 1.0292
+   },
+   "m24": {
+    "n": 8,
+    "min": 0.9952,
+    "median": 0.9995,
+    "max": 1.0126
+   },
+   "8streams": {
+    "n": 8,
+    "min": 0.9936,
+    "median": 1.0006,
+    "max": 1.0093
+   }
+  },
+  "CFDB2/CFDB20": {
+   "m1": {
+    "n": 8,
+    "min": 0.9867,
+    "median": 1.0115,
+    "max": 1.0333
+   },
+   "m3": {
+    "n": 8,
+    "min": 0.9815,
+    "median": 1.0041,
+    "max": 1.0343
+   },
+   "m24": {
+    "n": 8,
+    "min": 0.9813,
+    "median": 1.0026,
+    "max": 1.0274
+   },
+   "8streams": {
+    "n": 8,
+    "min": 0.9929,
+    "median": 1.0,
+    "max": 1.0254
+   }
+  },
+  "CF5/A259": {
+   "m1": {
+    "n": 8,
+    "min": 0.9761,
+    "median": 1.0137,
+    "max": 1.0329
+   },
+   "m3": {
+    "n": 8,
+    "min": 0.9581,
+    "median": 1.0031,
+    "max": 1.0094
+   },
+   "m24": {
+    "n": 8,
+    "min": 0.944,
+    "median": 0.9883,
+    "max": 1.0145
+   },
+   "8streams": {
+    "n": 8,
+    "min": 0.9447,
+    "median": 0.99,
+    "max": 1.0129
+   }
+  },
+  "PIPE CF5/A259": {
+   "m1": {
+    "n": 8,
+    "min": 0.9789,
+    "median": 1.0119,
+    "max": 1.0293
+   },
+   "m3": {
+    "n": 8,
+    "min": 0.9627,
+    "median": 1.0014,
+    "max": 1.0097
+   },
+   "m24": {
+    "n": 8,
+    "min": 0.9422,
+    "median": 0.9895,
+    "max": 1.0096
+   },
+   "8streams": {
+    "n": 8,
+    "min": 0.9481,
+    "median": 0.9885,
+    "max": 1.0126
+   }
+  },
+  "CF/A259": {
+   "m1": {
+    "n": 8,
+    "min": 1.0033,
+    "median": 1.014,
+    "max": 1.0479
+   },
+   "m3": {
+    "n": 8,
+    "min": 1.0123,
+    "median": 1.1304,
+    "max": 1.2024
+   },
+   "m24": {
+    "n": 8,
+    "min": 1.0196,
+    "median": 1.0486,
+    "max": 1.2116
+   },
+   "8streams": {
+    "n": 8,
+    "min": 1.019,
+    "median": 1.0506,
+    "max": 1.2025
+   }
+  },
+  "CF0/A259": {
+   "m1": {
+    "n": 8,
+    "min": 0.9966,
+    "median": 1.0,
+    "max": 1.0024
+   },
+   "m3": {
+    "n": 8,
+    "min": 0.969,
+    "median": 0.9933,
+    "max": 1.0
+   },
+   "m24": {
+    "n": 8,
+    "min": 0.9415,
+    "median": 0.9976,
+    "max": 1.003
+   },
+   "8streams": {
+    "n": 8,
+    "min": 0.9452,
+    "median": 0.9961,
+    "max": 1.0017
+   }
+  },
+  "CF5/D": {
+   "m1": {
+    "n": 8,
+    "min": 1.0794,
+    "median": 1.1893,
+    "max": 1.3199
+   },
+   "m3": {
+    "n": 8,
+    "min": 0.8331,
+    "median": 0.9517,
+    "max": 1.4047
+   },
+   "m24": {
+    "n": 8,
+    "min": 0.6165,
+    "median": 0.9024,
+    "max": 1.2399
+   },
+   "8streams": {
+    "n": 8,
+    "min": 0.6213,
+    "median": 0.9053,
+    "max": 1.2322
+   }
+  },
+  "PIPE CF5/D": {
+   "m1": {
+    "n": 8,
+    "min": 1.0683,
+    "median": 1.1629,
+    "max": 1.2814
+   },
+   "m3": {
+    "n": 8,
+    "min": 0.8424,
+    "median": 0.955,
+    "max": 1.3739
+   },
+   "m24": {
+    "n": 8,
+    "min": 0.6229,
+    "median": 0.9041,
+    "max": 1.2232
+   },
+   "8streams": {
+    "n": 8,
+    "min": 0.6194,
+    "median": 0.9357,
+    "max": 1.2304
+   }
+  },
+  "CFD5/D": {
+   "m1": {
+    "n": 8,
+    "min": 0.9735,
+    "median": 0.9854,
+    "max": 1.0324
+   },
+   "m3": {
+    "n": 8,
+    "min": 0.9817,
+    "median": 1.008,
+    "max": 1.0352
+   },
+   "m24": {
+    "n": 8,
+    "min": 0.9905,
+    "median": 0.9926,
+    "max": 1.0187
+   },
+   "8streams": {
+    "n": 8,
+    "min": 0.9903,
+    "median": 0.9934,
+    "max": 1.0204
+   }
+  },
+  "PIPE CFD5/D": {
+   "m1": {
+    "n": 8,
+    "min": 0.9764,
+    "median": 0.9874,
+    "max": 1.0277
+   },
+   "m3": {
+    "n": 8,
+    "min": 0.9889,
+    "median": 1.007,
+    "max": 1.0429
+   },
+   "m24": {
+    "n": 8,
+    "min": 0.9903,
+    "median": 0.9934,
+    "max": 1.0216
+   },
+   "8streams": {
+    "n": 8,
+    "min": 0.9862,
+    "median": 0.993,
+    "max": 1.0153
+   }
+  },
+  "CFD5/A259": {
+   "m1": {
+    "n": 8,
+    "min": 0.7621,
+    "median": 0.8776,
+    "max": 0.9215
+   },
+   "m3": {
+    "n": 8,
+    "min": 0.7319,
+    "median": 1.0776,
+    "max": 1.2171
+   },
+   "m24": {
+    "n": 8,
+    "min": 0.8146,
+    "median": 1.1428,
+    "max": 1.6336
+   },
+   "8streams": {
+    "n": 8,
+    "min": 0.8204,
+    "median": 1.1331,
+    "max": 1.6187
+   }
+  },
+  "PIPE CFD5/A259": {
+   "m1": {
+    "n": 8,
+    "min": 0.7856,
+    "median": 0.8921,
+    "max": 0.9315
+   },
+   "m3": {
+    "n": 8,
+    "min": 0.7539,
+    "median": 1.0714,
+    "max": 1.2072
+   },
+   "m24": {
+    "n": 8,
+    "min": 0.8183,
+    "median": 1.1299,
+    "max": 1.6068
+   },
+   "8streams": {
+    "n": 8,
+    "min": 0.8082,
+    "median": 1.0824,
+    "max": 1.6104
+   }
+  },
+  "CFDB2/DB2": {
+   "m1": {
+    "n": 8,
+    "min": 0.977,
+    "median": 0.9962,
+    "max": 1.0221
+   },
+   "m3": {
+    "n": 8,
+    "min": 0.9734,
+    "median": 1.0022,
+    "max": 1.032
+   },
+   "m24": {
+    "n": 8,
+    "min": 0.9516,
+    "median": 0.9928,
+    "max": 1.0237
+   },
+   "8streams": {
+    "n": 8,
+    "min": 0.9715,
+    "median": 0.989,
+    "max": 1.0221
+   }
+  },
+  "PIPE CFDB2/DB2": {
+   "m1": {
+    "n": 8,
+    "min": 0.9805,
+    "median": 0.9968,
+    "max": 1.019
+   },
+   "m3": {
+    "n": 8,
+    "min": 0.9704,
+    "median": 0.998,
+    "max": 1.024
+   },
+   "m24": {
+    "n": 8,
+    "min": 0.9516,
+    "median": 0.9913,
+    "max": 1.0218
+   },
+   "8streams": {
+    "n": 8,
+    "min": 0.9576,
+    "median": 0.9875,
+    "max": 1.0209
+   }
+  },
+  "CFDB2/A259": {
+   "m1": {
+    "n": 8,
+    "min": 0.6907,
+    "median": 0.8559,
+    "max": 0.9064
+   },
+   "m3": {
+    "n": 8,
+    "min": 0.583,
+    "median": 0.7389,
+    "max": 0.8991
+   },
+   "m24": {
+    "n": 8,
+    "min": 0.6573,
+    "median": 0.7899,
+    "max": 1.076
+   },
+   "8streams": {
+    "n": 8,
+    "min": 0.6586,
+    "median": 0.7938,
+    "max": 1.0677
+   }
+  },
+  "PIPE CFDB2/A259": {
+   "m1": {
+    "n": 8,
+    "min": 0.7179,
+    "median": 0.873,
+    "max": 0.9186
+   },
+   "m3": {
+    "n": 8,
+    "min": 0.6077,
+    "median": 0.7608,
+    "max": 0.9067
+   },
+   "m24": {
+    "n": 8,
+    "min": 0.6632,
+    "median": 0.7978,
+    "max": 1.0726
+   },
+   "8streams": {
+    "n": 8,
+    "min": 0.6708,
+    "median": 0.7969,
+    "max": 1.0723
+   }
+  },
+  "CFDB2/D": {
+   "m1": {
+    "n": 8,
+    "min": 0.8414,
+    "median": 0.967,
+    "max": 1.0
+   },
+   "m3": {
+    "n": 8,
+    "min": 0.6065,
+    "median": 0.7083,
+    "max": 0.9202
+   },
+   "m24": {
+    "n": 8,
+    "min": 0.6543,
+    "median": 0.7226,
+    "max": 0.8844
+   },
+   "8streams": {
+    "n": 8,
+    "min": 0.6543,
+    "median": 0.7232,
+    "max": 0.8845
+   }
+  },
+  "PIPE CFDB2/D": {
+   "m1": {
+    "n": 8,
+    "min": 0.8554,
+    "median": 0.9686,
+    "max": 1.0
+   },
+   "m3": {
+    "n": 8,
+    "min": 0.631,
+    "median": 0.7322,
+    "max": 0.9269
+   },
+   "m24": {
+    "n": 8,
+    "min": 0.6617,
+    "median": 0.7275,
+    "max": 0.8899
+   },
+   "8streams": {
+    "n": 8,
+    "min": 0.6545,
+    "median": 0.7347,
+    "max": 0.9051
+   }
+  },
+  "DB2/A259": {
+   "m1": {
+    "n": 8,
+    "min": 0.7043,
+    "median": 0.8388,
+    "max": 0.9044
+   },
+   "m3": {
+    "n": 8,
+    "min": 0.563,
+    "median": 0.746,
+    "max": 0.8959
+   },
+   "m24": {
+    "n": 8,
+    "min": 0.6908,
+    "median": 0.7955,
+    "max": 1.0985
+   },
+   "8streams": {
+    "n": 8,
+    "min": 0.6776,
+    "median": 0.8027,
+    "max": 1.0899
+   }
+  },
+  "PIPE DB2/A259": {
+   "m1": {
+    "n": 8,
+    "min": 0.7312,
+    "median": 0.8579,
+    "max": 0.9167
+   },
+   "m3": {
+    "n": 8,
+    "min": 0.5932,
+    "median": 0.7697,
+    "max": 0.9011
+   },
+   "m24": {
+    "n": 8,
+    "min": 0.697,
+    "median": 0.8048,
+    "max": 1.0917
+   },
+   "8streams": {
+    "n": 8,
+    "min": 0.6979,
+    "median": 0.8044,
+    "max": 1.0925
+   }
+  },
+  "D/A259": {
+   "m1": {
+    "n": 8,
+    "min": 0.7829,
+    "median": 0.8563,
+    "max": 0.9347
+   },
+   "m3": {
+    "n": 8,
+    "min": 0.7078,
+    "median": 1.0691,
+    "max": 1.2047
+   },
+   "m24": {
+    "n": 8,
+    "min": 0.812,
+    "median": 1.1199,
+    "max": 1.6456
+   },
+   "8streams": {
+    "n": 8,
+    "min": 0.8158,
+    "median": 1.1339,
+    "max": 1.6299
+   }
+  },
+  "PIPE D/A259": {
+   "m1": {
+    "n": 8,
+    "min": 0.8026,
+    "median": 0.8734,
+    "max": 0.9407
+   },
+   "m3": {
+    "n": 8,
+    "min": 0.7227,
+    "median": 1.0628,
+    "max": 1.199
+   },
+   "m24": {
+    "n": 8,
+    "min": 0.8177,
+    "median": 1.106,
+    "max": 1.6203
+   },
+   "8streams": {
+    "n": 8,
+    "min": 0.8108,
+    "median": 1.0641,
+    "max": 1.6371
+   }
+  }
+ },
+ "all": {
+  "CF3/CF0": {
+   "m1": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0096
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9902
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9953
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9966
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.994
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9907
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.987
+    ]
+   ],
+   "m3": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0067
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.003
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.996
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9954
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9985
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.9972
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.991
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.995
+    ]
+   ],
+   "m24": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0007
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0031
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.0016
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9724
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9976
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.998
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9888
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9897
+    ]
+   ],
+   "8streams": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0031
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0028
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9994
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9635
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9987
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.9973
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9893
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.991
+    ]
+   ]
+  },
+  "CF5/CF0": {
+   "m1": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0171
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0256
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.0341
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     1.0304
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.991
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9813
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9761
+    ]
+   ],
+   "m3": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0176
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0074
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.0199
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     1.0221
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0031
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.9972
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9857
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.99
+    ]
+   ],
+   "m24": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0154
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0027
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.0041
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     1.0023
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0026
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.001
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9859
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9901
+    ]
+   ],
+   "8streams": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0178
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0012
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.0026
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     1.0047
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0042
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0024
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9831
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9872
+    ]
+   ]
+  },
+  "CF6/CF0": {
+   "m1": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0137
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0256
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.0341
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     1.0282
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9967
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.991
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9795
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9761
+    ]
+   ],
+   "m3": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0175
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0074
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.0199
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     1.022
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0031
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.9972
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9858
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9917
+    ]
+   ],
+   "m24": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0169
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0016
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.0027
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     1.0034
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0024
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0034
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.987
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9907
+    ]
+   ],
+   "8streams": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0157
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.9998
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.0042
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     1.0011
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0052
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0014
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9847
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.989
+    ]
+   ]
+  },
+  "CF/CF0": {
+   "m1": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0103
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0479
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.0268
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     1.0235
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0033
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.009
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     1.0186
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     1.0065
+    ]
+   ],
+   "m3": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.1568
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.2051
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.1885
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     1.1612
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0123
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0277
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     1.076
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     1.0451
+    ]
+   ],
+   "m24": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.2133
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.112
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.0566
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     1.0517
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0146
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0318
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     1.0588
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     1.1308
+    ]
+   ],
+   "8streams": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.2079
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.1113
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.0569
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     1.0537
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0166
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.03
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     1.0578
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     1.1312
+    ]
+   ]
+  },
+  "CFD5/CFD0": {
+   "m1": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.9854
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0288
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9813
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9798
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9856
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0281
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.983
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9786
+    ]
+   ],
+   "m3": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.9951
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0073
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9871
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9818
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9922
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0292
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9874
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.989
+    ]
+   ],
+   "m24": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0007
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0031
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9995
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9986
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9952
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0126
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9965
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9957
+    ]
+   ],
+   "8streams": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0022
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0006
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9999
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     1.0008
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9953
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0093
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9952
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9936
+    ]
+   ]
+  },
+  "CFDB2/CFDB20": {
+   "m1": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0115
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0333
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9897
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     1.0
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.015
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0289
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9867
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9876
+    ]
+   ],
+   "m3": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0041
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0205
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9835
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9815
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0155
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0343
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9932
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9978
+    ]
+   ],
+   "m24": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.9992
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0049
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.0026
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9813
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0143
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0274
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9963
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9954
+    ]
+   ],
+   "8streams": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0011
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9987
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9995
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0157
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0254
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9929
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9962
+    ]
+   ]
+  },
+  "CF5/A259": {
+   "m1": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0137
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0256
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.0316
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     1.0329
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9967
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.9906
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9768
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9761
+    ]
+   ],
+   "m3": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0094
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0045
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.0066
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9954
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0031
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.9958
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9581
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9659
+    ]
+   ],
+   "m24": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0145
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.944
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9862
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9854
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0085
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0002
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9799
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9883
+    ]
+   ],
+   "8streams": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0129
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.9447
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.99
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9857
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.009
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0041
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.982
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9824
+    ]
+   ]
+  },
+  "PIPE CF5/A259": {
+   "m1": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0119
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0196
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.0285
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     1.0293
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9973
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.9921
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9789
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9802
+    ]
+   ],
+   "m3": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0063
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0097
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.0074
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9942
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0014
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.9948
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9627
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9667
+    ]
+   ],
+   "m24": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0096
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.9422
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9895
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9839
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0002
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.9974
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9758
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9846
+    ]
+   ],
+   "8streams": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0126
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.9481
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9885
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9842
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9991
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.9965
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9747
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9797
+    ]
+   ]
+  },
+  "CF/A259": {
+   "m1": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0068
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0479
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.0244
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     1.0259
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0033
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.006
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     1.014
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     1.0087
+    ]
+   ],
+   "m3": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.1495
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.2024
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.1763
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     1.1304
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0123
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0263
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     1.0448
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     1.0196
+    ]
+   ],
+   "m24": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.2116
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0486
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.039
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     1.0334
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0196
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.031
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     1.053
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     1.1284
+    ]
+   ],
+   "8streams": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.2025
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0506
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.0442
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     1.0333
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.019
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0328
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     1.0576
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     1.1233
+    ]
+   ]
+  },
+  "CF0/A259": {
+   "m1": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.9966
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.0
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     1.0024
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.997
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9977
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     1.0022
+    ]
+   ],
+   "m3": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.9933
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.997
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9881
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9725
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.9986
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.969
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9756
+    ]
+   ],
+   "m24": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.9978
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.9415
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9839
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9822
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.003
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.9985
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9931
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9976
+    ]
+   ],
+   "8streams": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.997
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.9452
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9888
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9806
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0017
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.9961
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9968
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9896
+    ]
+   ]
+  },
+  "CF5/D": {
+   "m1": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0839
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.1547
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.3199
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     1.2622
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0794
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.1573
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     1.1893
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     1.1941
+    ]
+   ],
+   "m3": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.9322
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.8331
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9974
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.8461
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0266
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.4047
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.8972
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9517
+    ]
+   ],
+   "m24": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.6165
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.9024
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.0516
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     1.0818
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.2399
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.8945
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.8275
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.8102
+    ]
+   ],
+   "8streams": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.6213
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.9053
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.0478
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     1.0834
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.2322
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.8847
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.8264
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.8147
+    ]
+   ]
+  },
+  "PIPE CF5/D": {
+   "m1": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0727
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.1335
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.2814
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     1.2316
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0683
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.136
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     1.1629
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     1.1749
+    ]
+   ],
+   "m3": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.9337
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.8424
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.0
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.8533
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0248
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.3739
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9059
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.955
+    ]
+   ],
+   "m24": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.6229
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.9041
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.0502
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     1.0791
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.2232
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.8997
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.8284
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.8182
+    ]
+   ],
+   "8streams": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.6194
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.9003
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.0723
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     1.0797
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.2304
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.9357
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.8345
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.825
+    ]
+   ]
+  },
+  "CFD5/D": {
+   "m1": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.9854
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0324
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9751
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9771
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9856
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.028
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.983
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9735
+    ]
+   ],
+   "m3": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.9938
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0111
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9974
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9817
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0352
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     1.0129
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     1.008
+    ]
+   ],
+   "m24": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.9926
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.9905
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9926
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9913
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0032
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0187
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9911
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     1.0071
+    ]
+   ],
+   "8streams": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.9918
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.9919
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9903
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9934
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0055
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.9989
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9934
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     1.0204
+    ]
+   ]
+  },
+  "PIPE CFD5/D": {
+   "m1": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.9874
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0277
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9782
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9822
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9907
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0242
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9799
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9764
+    ]
+   ],
+   "m3": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.9942
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.007
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9938
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9889
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9985
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0429
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     1.0166
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     1.0164
+    ]
+   ],
+   "m24": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.9917
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.9903
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9927
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9912
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0015
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0216
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9934
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     1.0059
+    ]
+   ],
+   "8streams": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.9862
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.988
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9904
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9901
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9947
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0153
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.993
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     1.0036
+    ]
+   ]
+  },
+  "CFD5/A259": {
+   "m1": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.9215
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.9137
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.7621
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.8
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.913
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.8776
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.807
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.7957
+    ]
+   ],
+   "m3": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0776
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.2171
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.0079
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     1.1511
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9771
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.7319
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     1.0809
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     1.0228
+    ]
+   ],
+   "m24": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.6336
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0354
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9318
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9024
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.8146
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.1428
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     1.1746
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     1.2295
+    ]
+   ],
+   "8streams": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.6187
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0353
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9378
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.903
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.8204
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.1331
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     1.1813
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     1.227
+    ]
+   ]
+  },
+  "PIPE CFD5/A259": {
+   "m1": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.9315
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.9246
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.7856
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.8209
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9271
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.8921
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.8253
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.8146
+    ]
+   ],
+   "m3": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0714
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.2072
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.0
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     1.1519
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9769
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.7539
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     1.0818
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     1.0302
+    ]
+   ],
+   "m24": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.6068
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0327
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9327
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9031
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.8183
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.1299
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     1.1693
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     1.2127
+    ]
+   ],
+   "8streams": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.6104
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0468
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9076
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9045
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.8082
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0824
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     1.1609
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     1.1964
+    ]
+   ]
+  },
+  "CFDB2/DB2": {
+   "m1": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.9962
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0221
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9797
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9937
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0037
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0178
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.977
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9815
+    ]
+   ],
+   "m3": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.994
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0121
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9814
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9734
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0051
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.032
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9977
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     1.0022
+    ]
+   ],
+   "m24": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.9801
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.9744
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9781
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9516
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0095
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0237
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9928
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9957
+    ]
+   ],
+   "8streams": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.9801
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.9715
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9754
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9719
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0106
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0221
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9895
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.989
+    ]
+   ]
+  },
+  "PIPE CFDB2/DB2": {
+   "m1": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.9968
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.019
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9824
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9917
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0032
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0154
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9805
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9837
+    ]
+   ],
+   "m3": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.989
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0037
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9793
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9704
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0048
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.024
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9938
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.998
+    ]
+   ],
+   "m24": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.9831
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.9725
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9764
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9516
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0075
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0218
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9913
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9923
+    ]
+   ],
+   "8streams": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.9755
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.9748
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9663
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9576
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     1.0102
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0209
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.9875
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.9891
+    ]
+   ]
+  },
+  "CFDB2/A259": {
+   "m1": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.9014
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.8878
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.7063
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.7365
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9064
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.8559
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.6907
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.6913
+    ]
+   ],
+   "m3": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.6591
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.7389
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.6222
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.7296
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.8991
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.583
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.7574
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.7472
+    ]
+   ],
+   "m24": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.076
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.7858
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.6797
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.6573
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.7183
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.7926
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.7899
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.8266
+    ]
+   ],
+   "8streams": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0677
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.786
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.6828
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.6586
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.7212
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.7957
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.7938
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.8237
+    ]
+   ]
+  },
+  "PIPE CFDB2/A259": {
+   "m1": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.9137
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.8994
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.7346
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.7601
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9186
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.873
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.7206
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.7179
+    ]
+   ],
+   "m3": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.68
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.7608
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.6439
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.7507
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9067
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.6077
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.7781
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.7678
+    ]
+   ],
+   "m24": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0726
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.7876
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.6847
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.6632
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.7278
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.7998
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.7978
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.8305
+    ]
+   ],
+   "8streams": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0723
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.7969
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.6733
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.6708
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.7333
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.8027
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.7959
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.8256
+    ]
+   ]
+  },
+  "CFDB2/D": {
+   "m1": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.967
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9034
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.8994
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9783
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.8414
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.8457
+    ]
+   ],
+   "m3": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.6065
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.6138
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.6175
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.6219
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9202
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.8223
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.7083
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.7364
+    ]
+   ],
+   "m24": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.6543
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.7513
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.7238
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.7226
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.8844
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.7071
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.6665
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.6781
+    ]
+   ],
+   "8streams": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.6543
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.753
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.7232
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.7236
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.8845
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.7004
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.6682
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.6848
+    ]
+   ]
+  },
+  "PIPE CFDB2/D": {
+   "m1": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.9686
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.9969
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9153
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9107
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9814
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.8554
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.8605
+    ]
+   ],
+   "m3": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.631
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.635
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.6392
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.6444
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9269
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.8405
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.7322
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.7567
+    ]
+   ],
+   "m24": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.6617
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.756
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.7281
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.7275
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.8899
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.7225
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.6779
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.6906
+    ]
+   ],
+   "8streams": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.6545
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.7527
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.7347
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.7337
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9051
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.7511
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.6812
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.6924
+    ]
+   ]
+  },
+  "DB2/A259": {
+   "m1": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.9044
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.8686
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.7209
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.7394
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.903
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.8388
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.7077
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.7043
+    ]
+   ],
+   "m3": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.6622
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.7308
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.6355
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.7489
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.8959
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.563
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.7583
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.746
+    ]
+   ],
+   "m24": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0985
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.8069
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.695
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.6908
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.7115
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.7737
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.7955
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.8299
+    ]
+   ],
+   "8streams": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0899
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.8073
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.7002
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.6776
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.7132
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.7791
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.8027
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.8332
+    ]
+   ]
+  },
+  "PIPE DB2/A259": {
+   "m1": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.9167
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.8849
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.7478
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.7659
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9157
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.8579
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.7347
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.7312
+    ]
+   ],
+   "m3": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.6868
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.7583
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.658
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.774
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9011
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.5932
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.7816
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.7697
+    ]
+   ],
+   "m24": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0917
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.8094
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.7016
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.697
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.723
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.7827
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.8048
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.837
+    ]
+   ],
+   "8streams": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0925
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.8255
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.6981
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.6979
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.7253
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.7865
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.8044
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.834
+    ]
+   ]
+  },
+  "D/A259": {
+   "m1": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.9347
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.8878
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.7829
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.8169
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9262
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.8563
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.8213
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.8174
+    ]
+   ],
+   "m3": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0843
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.2047
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.0079
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     1.1725
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9755
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.7078
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     1.0691
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     1.0146
+    ]
+   ],
+   "m24": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.6456
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0457
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9389
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9101
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.812
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.1199
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     1.1831
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     1.2194
+    ]
+   ],
+   "8streams": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.6299
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0433
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9445
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9098
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.8158
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.1339
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     1.1876
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     1.2038
+    ]
+   ]
+  },
+  "PIPE D/A259": {
+   "m1": [
+    [
+     "bench_final",
+     "nt32/lb",
+     0.9407
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     0.9017
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.8026
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.8362
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9359
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.8734
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     0.8418
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     0.8343
+    ]
+   ],
+   "m3": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.0765
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.199
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     1.0075
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     1.1648
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.9785
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     0.7227
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     1.0628
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     1.0137
+    ]
+   ],
+   "m24": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.6203
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0418
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9418
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9115
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.8177
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.106
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     1.1755
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     1.2028
+    ]
+   ],
+   "8streams": [
+    [
+     "bench_final",
+     "nt32/lb",
+     1.6371
+    ],
+    [
+     "bench_final",
+     "nt64/lb",
+     1.0636
+    ],
+    [
+     "bench_final",
+     "nt128/lb",
+     0.9212
+    ],
+    [
+     "bench_final",
+     "nt256/lb",
+     0.9139
+    ],
+    [
+     "bench_final",
+     "nt32/out4",
+     0.8108
+    ],
+    [
+     "bench_final",
+     "nt64/out4",
+     1.0641
+    ],
+    [
+     "bench_final",
+     "nt128/out4",
+     1.1681
+    ],
+    [
+     "bench_final",
+     "nt256/out4",
+     1.1919
+    ]
+   ]
+  }
+ }
+}

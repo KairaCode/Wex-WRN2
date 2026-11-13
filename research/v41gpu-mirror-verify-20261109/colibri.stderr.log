@@ -1,0 +1,1261 @@
+[OMP] deepseek-v4: 16 compute threads (the physical cores of 32 logical CPUs; the 3 expert-loader workers take the SMT siblings); OMP_NUM_THREADS=<n> overrides, COLI_NO_OMP_TUNE=1 disables
+[SPLIT] +C:\models\DeepSeek-V4.1-Flash-1017-engram -> 1 shard(s)
+[SPLIT] +E:\models\DeepSeek-V4.1-Flash-1017-engram -> 1 shard(s)
+[SPLIT] model across 3 dir(s): 48 shard(s) total (primary U:\models\DeepSeek-V4.1-Flash-1017-REAP192-MXFP4 -> 46 shard(s)), no duplication
+v41_engram tables=2 ngram=4 heads=8 head_dim=256 cache_rows=65536 path=cpu
+ram_tiers available=16.00GiB dense=resident(6.65GiB) target_slots=9 target_cache=6.30GiB head=resident-bf16 projected=15.54GiB
+v4_open index=0.08s plan=0.00s (index built once, reused by plan/inventory/head)
+[SPLIT] +C:\models\DeepSeek-V4.1-Flash-1017-engram -> 1 shard(s)
+[SPLIT] +E:\models\DeepSeek-V4.1-Flash-1017-engram -> 1 shard(s)
+[SPLIT] model across 3 dir(s): 48 shard(s) total (primary U:\models\DeepSeek-V4.1-Flash-1017-REAP192-MXFP4 -> 46 shard(s)), no duplication
+[wex] Neural CUDA reconstruction enabled: <KAIRA>\app\colibri-optimized\kaira_wex_cuda.dll
+[v4_wex] Container v3 active: U:\kaira_wex\v41-reap\v4_flash_experts.nr2.wex (40 layers, 192 experts, 18800640 decoded bytes/expert, direct_io=on)
+[v4_wex] Matching mirror container active: C:\kaira_wex\v41-reap\v4_flash_experts.nr2.wex
+v4_ssd_io mode=wex-direct-aligned fallback=buffered-pread
+v4_autopin history=U:\models\DeepSeek-V4.1-Flash-1017-REAP192-MXFP4/.coli_usage selections=1845
+v4_hot_policy pin_slots_per_layer=3 repin_interval=6 mode=resident-ram rows16=hot-pins
+[DSV4 CUDA] backend=coli_cuda_dsv4_dg.dll (deepgemm-sm120)
+[DSV4 CUDA] inference streams at priority -5 (range 0..-5)
+[DSV4 CUDA] device 0: NVIDIA GeForce RTX 5090 34.2 GB sm_120
+v4_gpu host_pin=on unpin-on-free=on cap=20.0GiB
+v4_gpu fp8_block=32 dense=gpu (activations quantized on the host) routed-experts=gpu (decode pipeline, VRAM mirrors under the reserve guard) reserve=4096 MB
+v4_gpu priority=frequency hot=VRAM next=RAM cold=disk
+v4_gpu head: exact bf16 head resident on device 0 (1.23 GiB)
+v4_gpu tier=dense-matvec device=0
+v4_gpu gate upload: kernel sized for V4 (E=256 top-6, H=4096, I=2048, hc=4); this model's shape stays on the CPU
+v4_gpu gate bias upload: kernel sized for V4 (E=256 top-6, H=4096, I=2048, hc=4); this model's shape stays on the CPU
+v4_gpu layer=0 uploaded=154.651MiB in 0.078s wall=1794201803
+v4_gpu layer=1 uploaded=154.651MiB in 0.077s wall=1794201804
+v4_gpu layer=2 uploaded=154.651MiB in 0.080s wall=1794201804
+v4_gpu layer=3 uploaded=154.651MiB in 0.078s wall=1794201804
+v4_gpu layer=4 uploaded=154.651MiB in 0.077s wall=1794201804
+v4_gpu layer=5 uploaded=154.651MiB in 0.079s wall=1794201804
+v4_gpu layer=6 uploaded=154.651MiB in 0.075s wall=1794201804
+v4_gpu layer=7 uploaded=154.651MiB in 0.079s wall=1794201805
+v4_gpu layer=8 uploaded=154.651MiB in 0.080s wall=1794201805
+v4_gpu layer=9 uploaded=154.651MiB in 0.082s wall=1794201805
+v4_gpu layer=10 uploaded=154.651MiB in 0.080s wall=1794201805
+v4_gpu layer=11 uploaded=154.651MiB in 0.079s wall=1794201805
+v4_gpu layer=12 uploaded=154.651MiB in 0.076s wall=1794201805
+v4_gpu layer=13 uploaded=154.651MiB in 0.082s wall=1794201805
+v4_gpu layer=14 uploaded=154.651MiB in 0.084s wall=1794201806
+v4_gpu layer=15 uploaded=154.651MiB in 0.081s wall=1794201806
+v4_gpu layer=16 uploaded=154.651MiB in 0.096s wall=1794201806
+v4_gpu layer=17 uploaded=154.651MiB in 0.085s wall=1794201806
+v4_gpu layer=18 uploaded=154.651MiB in 0.085s wall=1794201806
+v4_gpu layer=19 uploaded=154.651MiB in 0.082s wall=1794201807
+v4_gpu layer=20 uploaded=154.651MiB in 0.083s wall=1794201807
+v4_gpu layer=21 uploaded=154.651MiB in 0.085s wall=1794201807
+v4_gpu layer=22 uploaded=154.651MiB in 0.085s wall=1794201807
+v4_gpu layer=23 uploaded=154.651MiB in 0.080s wall=1794201807
+v4_gpu layer=24 uploaded=154.651MiB in 0.087s wall=1794201808
+v4_gpu layer=25 uploaded=154.651MiB in 0.084s wall=1794201808
+v4_gpu layer=26 uploaded=154.651MiB in 0.087s wall=1794201808
+v4_gpu layer=27 uploaded=154.651MiB in 0.081s wall=1794201808
+v4_gpu layer=28 uploaded=154.651MiB in 0.083s wall=1794201808
+v4_gpu layer=29 uploaded=154.651MiB in 0.083s wall=1794201808
+v4_gpu layer=30 uploaded=154.651MiB in 0.084s wall=1794201809
+v4_gpu layer=31 uploaded=154.651MiB in 0.078s wall=1794201809
+v4_gpu layer=32 uploaded=154.651MiB in 0.084s wall=1794201809
+v4_gpu layer=33 uploaded=154.651MiB in 0.086s wall=1794201809
+v4_gpu layer=34 uploaded=154.651MiB in 0.084s wall=1794201809
+v4_gpu layer=35 uploaded=154.651MiB in 0.083s wall=1794201809
+v4_gpu layer=36 uploaded=154.651MiB in 0.083s wall=1794201810
+v4_gpu layer=37 uploaded=154.651MiB in 0.088s wall=1794201810
+v4_gpu layer=38 uploaded=154.651MiB in 0.087s wall=1794201810
+v4_gpu layer=39 uploaded=154.651MiB in 0.086s wall=1794201810
+v4_dense_resident layers=40 bytes=6.650GiB
+[v4_wex] read split over 2 drives: 38% 62%
+[v4_wex] GPU-direct Neural-rANS reconstruction enabled: VRAM-first misses outside RAM skip the host slab; the next-layer prefetcher loads them to VRAM too
+v4_tier_prewarm vram_experts=966 frequency_high=4 frequency_low=1 order=VRAM-RAM-disk ram_excludes_vram=on
+[v4] expert cache: reading each layer's most used experts (274 experts, 4.8 GiB) before the first request; COLI_V4_PREWARM=0 starts with it empty
+[v4] expert cache: 0.5 of 4.8 GiB (10%), 2.70 GiB/s, about 2 s left
+[v4] expert cache: 1.0 of 4.8 GiB (20%), 4.01 GiB/s, about 1 s left
+[v4] expert cache: 1.5 of 4.8 GiB (30%), 4.59 GiB/s, about 1 s left
+[v4] expert cache: 1.9 of 4.8 GiB (40%), 4.35 GiB/s, about 1 s left
+[v4] expert cache: 2.4 of 4.8 GiB (50%), 4.02 GiB/s, about 1 s left
+[v4] expert cache: 2.9 of 4.8 GiB (60%), 3.83 GiB/s, about 0 s left
+[v4] expert cache: 3.4 of 4.8 GiB (70%), 3.73 GiB/s, about 0 s left
+[v4] expert cache: 3.9 of 4.8 GiB (80%), 3.62 GiB/s, about 0 s left
+[v4] expert cache: 4.3 of 4.8 GiB (90%), 3.62 GiB/s, about 0 s left
+[v4] expert cache: 274 experts, 4.8 GiB, read in 1.3 s (3.73 GiB/s)
+v4_tier_audit gpu_experts=966 hottest_first=yes min_gpu_frequency=1 max_other_frequency=1 ram_gpu_overlap=0
+[gateway] input modalities: text
+OpenAI-compatible API listening on http://127.0.0.1:18766/v1
+[api] 127.0.0.1 - "GET /health HTTP/1.1" 200 -
+v4_route udp=127.0.0.1:8769 text=1 prefill=1 resid_every=32
+v4_next_prefetch prefetch=1 stats=1 k=8 threads=8
+v4_next_prefetch tokstart=1 keep=1 avx2=1
+[api] 127.0.0.1 - "GET /health HTTP/1.1" 200 -
+[api] 127.0.0.1 - "GET /health HTTP/1.1" 200 -
+v41_prefill chunk=1024 pool=host (chunk-major; the MoE union runs on host slots, the GPU prefill bank is V4-only)
+v41_attn path=cpu projections=gpu (the GPU and Vulkan attention, the fused decode and the device KV are V4-only)
+v41_moe path=cpu-union experts=192 hidden=5120 moe=2304 topk=6 (every row without expert mirrors, else prefill and multi-slot rows; the GPU route and the prefill bank are V4-only)
+v41_moe decode=gpu-pipeline (VRAM expert mirrors, act_quant per 32); prefill and multi-slot rows keep the cpu union
+v4_next_prefetch online=1 eta=0.1 decay=0.01 beta=2 alpha=0.159104
+[v4_wex] V4_WEX_BATCH=1: a layer's WNR2 misses are decoded in one batch call, the prefetcher's same-layer guesses too
+[v4_copy] V4_COPY_WORKER=1: mirror refills are posted to the copy worker
+[v4_promote] V4_PROMOTE_VRAM=2: predicted experts of each layer are copied to transient mirrors ahead of time
+v4_next_prefetch online=0: its state is sized for 256 experts, this model routes 192
+v4_next_prefetch avx2=1 self-check=ok calls=16
+decprof position=41 layers=40 hc=18 attn=97 moe=326 ms
+moeprof wait=156.5 attach=11.3 gpu=107.0 ms vram_hits=224 cpu_layers=0
+copyprof posts=63 gate_calls=14 gate_wait=22.9 issue=49.8 post=1.0 drains=986 ms
+promoteprof posted=5 refused=0 mirrored=0
+decprof position=42 layers=40 hc=22 attn=89 moe=215 ms
+moeprof wait=102.5 attach=2.7 gpu=94.9 ms vram_hits=227 cpu_layers=0
+copyprof posts=108 gate_calls=24 gate_wait=38.0 issue=69.6 post=1.1 drains=999 ms
+promoteprof posted=8 refused=0 mirrored=0
+decprof position=43 layers=40 hc=23 attn=83 moe=208 ms
+moeprof wait=84.3 attach=0.4 gpu=106.1 ms vram_hits=223 cpu_layers=0
+copyprof posts=174 gate_calls=40 gate_wait=64.7 issue=104.1 post=1.2 drains=1019 ms
+promoteprof posted=13 refused=0 mirrored=0
+decprof position=44 layers=40 hc=22 attn=82 moe=314 ms
+moeprof wait=175.2 attach=1.3 gpu=114.9 ms vram_hits=217 cpu_layers=0
+copyprof posts=258 gate_calls=61 gate_wait=98.1 issue=143.2 post=1.4 drains=1044 ms
+promoteprof posted=20 refused=0 mirrored=0
+decprof position=45 layers=40 hc=20 attn=87 moe=268 ms
+moeprof wait=143.3 attach=1.4 gpu=101.0 ms vram_hits=220 cpu_layers=0
+copyprof posts=330 gate_calls=76 gate_wait=120.2 issue=168.7 post=1.5 drains=1065 ms
+promoteprof posted=25 refused=0 mirrored=0
+decprof position=46 layers=40 hc=20 attn=69 moe=222 ms
+moeprof wait=104.8 attach=1.2 gpu=96.1 ms vram_hits=222 cpu_layers=0
+copyprof posts=399 gate_calls=90 gate_wait=137.9 issue=191.7 post=1.6 drains=1084 ms
+promoteprof posted=30 refused=0 mirrored=0
+decprof position=47 layers=40 hc=19 attn=71 moe=198 ms
+moeprof wait=97.5 attach=0.4 gpu=84.9 ms vram_hits=232 cpu_layers=0
+copyprof posts=426 gate_calls=97 gate_wait=146.0 issue=202.9 post=1.7 drains=1092 ms
+promoteprof posted=31 refused=0 mirrored=0
+decprof position=48 layers=40 hc=19 attn=63 moe=175 ms
+moeprof wait=70.7 attach=0.2 gpu=88.5 ms vram_hits=228 cpu_layers=0
+copyprof posts=462 gate_calls=109 gate_wait=158.1 issue=215.2 post=1.7 drains=1104 ms
+promoteprof posted=31 refused=0 mirrored=0
+decprof position=49 layers=40 hc=21 attn=64 moe=180 ms
+moeprof wait=60.7 attach=0.7 gpu=104.3 ms vram_hits=220 cpu_layers=0
+copyprof posts=528 gate_calls=125 gate_wait=182.9 issue=245.3 post=1.8 drains=1123 ms
+promoteprof posted=34 refused=0 mirrored=0
+decprof position=50 layers=40 hc=21 attn=82 moe=263 ms
+moeprof wait=128.2 attach=0.6 gpu=111.4 ms vram_hits=218 cpu_layers=0
+copyprof posts=606 gate_calls=142 gate_wait=205.8 issue=275.6 post=2.0 drains=1146 ms
+promoteprof posted=39 refused=0 mirrored=0
+decprof position=51 layers=40 hc=20 attn=69 moe=185 ms
+moeprof wait=80.5 attach=0.4 gpu=89.2 ms vram_hits=225 cpu_layers=0
+copyprof posts=666 gate_calls=154 gate_wait=217.4 issue=290.6 post=2.1 drains=1163 ms
+promoteprof posted=44 refused=0 mirrored=0
+decprof position=52 layers=40 hc=20 attn=66 moe=188 ms
+moeprof wait=87.5 attach=0.3 gpu=83.5 ms vram_hits=228 cpu_layers=0
+copyprof posts=711 gate_calls=165 gate_wait=223.6 issue=300.4 post=2.1 drains=1177 ms
+promoteprof posted=47 refused=0 mirrored=0
+decprof position=53 layers=40 hc=20 attn=66 moe=195 ms
+moeprof wait=91.4 attach=0.3 gpu=86.7 ms vram_hits=227 cpu_layers=0
+copyprof posts=753 gate_calls=178 gate_wait=234.2 issue=315.4 post=2.2 drains=1191 ms
+promoteprof posted=48 refused=0 mirrored=0
+decprof position=54 layers=40 hc=20 attn=71 moe=183 ms
+moeprof wait=84.5 attach=0.2 gpu=84.5 ms vram_hits=229 cpu_layers=0
+copyprof posts=795 gate_calls=188 gate_wait=241.0 issue=327.0 post=2.3 drains=1205 ms
+promoteprof posted=52 refused=0 mirrored=0
+decprof position=55 layers=40 hc=20 attn=65 moe=217 ms
+moeprof wait=103.3 attach=1.7 gpu=95.1 ms vram_hits=218 cpu_layers=0
+copyprof posts=870 gate_calls=206 gate_wait=258.6 issue=350.6 post=2.4 drains=1226 ms
+promoteprof posted=55 refused=0 mirrored=0
+decprof position=56 layers=40 hc=22 attn=65 moe=195 ms
+moeprof wait=85.9 attach=2.3 gpu=91.9 ms vram_hits=217 cpu_layers=0
+copyprof posts=951 gate_calls=223 gate_wait=274.7 issue=378.8 post=2.5 drains=1249 ms
+promoteprof posted=60 refused=0 mirrored=0
+decprof position=57 layers=40 hc=21 attn=69 moe=209 ms
+moeprof wait=100.0 attach=0.9 gpu=92.1 ms vram_hits=224 cpu_layers=0
+copyprof posts=1011 gate_calls=238 gate_wait=287.5 issue=395.2 post=2.6 drains=1268 ms
+promoteprof posted=64 refused=0 mirrored=0
+decprof position=58 layers=40 hc=20 attn=74 moe=228 ms
+moeprof wait=117.8 attach=1.3 gpu=90.8 ms vram_hits=220 cpu_layers=0
+copyprof posts=1095 gate_calls=254 gate_wait=296.7 issue=419.0 post=2.8 drains=1293 ms
+promoteprof posted=73 refused=0 mirrored=0
+decprof position=59 layers=40 hc=21 attn=68 moe=220 ms
+moeprof wait=110.3 attach=1.8 gpu=90.7 ms vram_hits=222 cpu_layers=0
+copyprof posts=1173 gate_calls=271 gate_wait=307.5 issue=441.6 post=2.9 drains=1318 ms
+promoteprof posted=82 refused=0 mirrored=0
+decprof position=60 layers=40 hc=20 attn=78 moe=198 ms
+moeprof wait=87.2 attach=0.7 gpu=90.5 ms vram_hits=227 cpu_layers=0
+copyprof posts=1233 gate_calls=283 gate_wait=320.5 issue=461.8 post=2.9 drains=1337 ms
+promoteprof posted=89 refused=0 mirrored=0
+decprof position=61 layers=40 hc=22 attn=60 moe=186 ms
+moeprof wait=83.0 attach=0.3 gpu=89.5 ms vram_hits=226 cpu_layers=0
+copyprof posts=1275 gate_calls=295 gate_wait=330.7 issue=472.3 post=3.0 drains=1349 ms
+promoteprof posted=89 refused=0 mirrored=0
+decprof position=62 layers=40 hc=21 attn=75 moe=180 ms
+moeprof wait=75.3 attach=0.3 gpu=90.0 ms vram_hits=227 cpu_layers=0
+copyprof posts=1317 gate_calls=306 gate_wait=343.2 issue=490.0 post=3.1 drains=1363 ms
+promoteprof posted=91 refused=0 mirrored=0
+decprof position=63 layers=40 hc=21 attn=77 moe=173 ms
+moeprof wait=65.8 attach=0.6 gpu=89.3 ms vram_hits=219 cpu_layers=0
+copyprof posts=1395 gate_calls=325 gate_wait=352.3 issue=501.0 post=3.2 drains=1387 ms
+promoteprof posted=96 refused=0 mirrored=0
+decprof position=64 layers=40 hc=21 attn=70 moe=171 ms
+moeprof wait=64.2 attach=0.5 gpu=89.3 ms vram_hits=220 cpu_layers=0
+copyprof posts=1473 gate_calls=340 gate_wait=362.0 issue=517.7 post=3.3 drains=1408 ms
+promoteprof posted=102 refused=0 mirrored=0
+decprof position=65 layers=40 hc=19 attn=74 moe=183 ms
+moeprof wait=80.1 attach=0.3 gpu=88.4 ms vram_hits=224 cpu_layers=0
+copyprof posts=1527 gate_calls=356 gate_wait=372.6 issue=532.5 post=3.3 drains=1426 ms
+promoteprof posted=104 refused=0 mirrored=0
+decprof position=66 layers=40 hc=21 attn=69 moe=205 ms
+moeprof wait=103.6 attach=0.3 gpu=84.1 ms vram_hits=226 cpu_layers=0
+copyprof posts=1578 gate_calls=370 gate_wait=378.2 issue=544.4 post=3.4 drains=1443 ms
+promoteprof posted=107 refused=0 mirrored=0
+decprof position=67 layers=40 hc=21 attn=78 moe=251 ms
+moeprof wait=135.0 attach=2.1 gpu=92.4 ms vram_hits=221 cpu_layers=0
+copyprof posts=1647 gate_calls=382 gate_wait=388.2 issue=563.6 post=3.6 drains=1460 ms
+promoteprof posted=112 refused=0 mirrored=0
+decprof position=68 layers=40 hc=22 attn=78 moe=191 ms
+moeprof wait=88.6 attach=1.7 gpu=83.4 ms vram_hits=227 cpu_layers=0
+copyprof posts=1686 gate_calls=392 gate_wait=395.1 issue=573.3 post=3.7 drains=1470 ms
+promoteprof posted=112 refused=0 mirrored=0
+decprof position=69 layers=40 hc=20 attn=71 moe=196 ms
+moeprof wait=90.1 attach=1.2 gpu=88.7 ms vram_hits=218 cpu_layers=0
+copyprof posts=1773 gate_calls=410 gate_wait=404.2 issue=589.6 post=3.8 drains=1497 ms
+promoteprof posted=121 refused=0 mirrored=0
+decprof position=70 layers=40 hc=21 attn=70 moe=179 ms
+moeprof wait=77.9 attach=0.3 gpu=84.6 ms vram_hits=228 cpu_layers=0
+copyprof posts=1815 gate_calls=421 gate_wait=412.0 issue=598.2 post=3.9 drains=1510 ms
+promoteprof posted=123 refused=0 mirrored=0
+[api] 127.0.0.1 - "POST /v1/completions HTTP/1.1" 200 -
+[api] 127.0.0.1 - "POST /v1/completions HTTP/1.1" 200 -
+decprof position=28 layers=40 hc=22 attn=74 moe=202 ms
+moeprof wait=98.9 attach=0.3 gpu=84.1 ms vram_hits=228 cpu_layers=0
+copyprof posts=1863 gate_calls=432 gate_wait=416.9 issue=605.0 post=3.9 drains=1525 ms
+promoteprof posted=127 refused=0 mirrored=0
+decprof position=29 layers=40 hc=20 attn=66 moe=219 ms
+moeprof wait=105.4 attach=0.3 gpu=92.9 ms vram_hits=223 cpu_layers=0
+copyprof posts=1923 gate_calls=444 gate_wait=431.0 issue=622.7 post=4.0 drains=1540 ms
+promoteprof posted=130 refused=0 mirrored=0
+decprof position=30 layers=40 hc=21 attn=72 moe=211 ms
+moeprof wait=104.9 attach=1.1 gpu=87.4 ms vram_hits=218 cpu_layers=0
+copyprof posts=2001 gate_calls=461 gate_wait=439.5 issue=635.5 post=4.2 drains=1561 ms
+promoteprof posted=134 refused=0 mirrored=0
+decprof position=31 layers=40 hc=23 attn=75 moe=257 ms
+moeprof wait=146.4 attach=0.8 gpu=87.7 ms vram_hits=224 cpu_layers=0
+copyprof posts=2061 gate_calls=475 gate_wait=449.3 issue=647.3 post=4.2 drains=1579 ms
+promoteprof posted=138 refused=0 mirrored=0
+decprof position=32 layers=40 hc=24 attn=76 moe=272 ms
+moeprof wait=167.7 attach=0.9 gpu=81.2 ms vram_hits=224 cpu_layers=0
+copyprof posts=2124 gate_calls=487 gate_wait=453.1 issue=661.6 post=4.3 drains=1598 ms
+promoteprof posted=144 refused=0 mirrored=0
+decprof position=33 layers=40 hc=20 attn=63 moe=235 ms
+moeprof wait=135.2 attach=0.3 gpu=79.0 ms vram_hits=226 cpu_layers=0
+copyprof posts=2187 gate_calls=499 gate_wait=456.0 issue=670.7 post=4.4 drains=1618 ms
+promoteprof posted=152 refused=0 mirrored=0
+decprof position=34 layers=40 hc=20 attn=63 moe=229 ms
+moeprof wait=129.8 attach=0.7 gpu=81.6 ms vram_hits=226 cpu_layers=0
+copyprof posts=2247 gate_calls=512 gate_wait=460.2 issue=679.4 post=4.5 drains=1638 ms
+promoteprof posted=158 refused=0 mirrored=0
+decprof position=35 layers=40 hc=21 attn=72 moe=243 ms
+moeprof wait=133.1 attach=3.0 gpu=88.5 ms vram_hits=214 cpu_layers=0
+copyprof posts=2361 gate_calls=528 gate_wait=470.3 issue=698.3 post=4.6 drains=1670 ms
+promoteprof posted=172 refused=0 mirrored=0
+decprof position=36 layers=40 hc=22 attn=73 moe=240 ms
+moeprof wait=131.0 attach=1.3 gpu=89.5 ms vram_hits=220 cpu_layers=0
+copyprof posts=2442 gate_calls=544 gate_wait=477.8 issue=713.1 post=4.7 drains=1693 ms
+promoteprof posted=179 refused=0 mirrored=0
+decprof position=37 layers=40 hc=22 attn=67 moe=260 ms
+moeprof wait=153.6 attach=0.5 gpu=84.7 ms vram_hits=222 cpu_layers=0
+copyprof posts=2535 gate_calls=558 gate_wait=483.0 issue=727.4 post=4.8 drains=1722 ms
+promoteprof posted=195 refused=0 mirrored=0
+decprof position=38 layers=40 hc=22 attn=63 moe=263 ms
+moeprof wait=151.9 attach=1.5 gpu=90.2 ms vram_hits=216 cpu_layers=0
+copyprof posts=2634 gate_calls=575 gate_wait=492.1 issue=743.0 post=4.9 drains=1751 ms
+promoteprof posted=205 refused=0 mirrored=0
+decprof position=39 layers=40 hc=22 attn=76 moe=217 ms
+moeprof wait=111.3 attach=0.5 gpu=87.1 ms vram_hits=217 cpu_layers=0
+copyprof posts=2730 gate_calls=595 gate_wait=497.9 issue=756.3 post=5.0 drains=1782 ms
+promoteprof posted=215 refused=0 mirrored=0
+decprof position=40 layers=40 hc=18 attn=62 moe=199 ms
+moeprof wait=106.0 attach=0.5 gpu=77.6 ms vram_hits=225 cpu_layers=0
+copyprof posts=2802 gate_calls=608 gate_wait=499.8 issue=763.2 post=5.1 drains=1805 ms
+promoteprof posted=224 refused=0 mirrored=0
+decprof position=41 layers=40 hc=19 attn=59 moe=213 ms
+moeprof wait=107.0 attach=1.3 gpu=89.9 ms vram_hits=206 cpu_layers=0
+copyprof posts=2928 gate_calls=632 gate_wait=509.5 issue=784.3 post=5.2 drains=1839 ms
+promoteprof posted=234 refused=0 mirrored=0
+decprof position=42 layers=40 hc=21 attn=74 moe=230 ms
+moeprof wait=118.5 attach=0.7 gpu=91.5 ms vram_hits=219 cpu_layers=0
+copyprof posts=3027 gate_calls=649 gate_wait=517.1 issue=798.3 post=5.3 drains=1869 ms
+promoteprof posted=247 refused=0 mirrored=0
+decprof position=43 layers=40 hc=21 attn=77 moe=219 ms
+moeprof wait=113.7 attach=0.8 gpu=85.3 ms vram_hits=221 cpu_layers=0
+copyprof posts=3105 gate_calls=666 gate_wait=523.2 issue=807.1 post=5.4 drains=1893 ms
+promoteprof posted=254 refused=0 mirrored=0
+decprof position=44 layers=40 hc=19 attn=64 moe=219 ms
+moeprof wait=118.5 attach=0.2 gpu=83.3 ms vram_hits=228 cpu_layers=0
+copyprof posts=3150 gate_calls=675 gate_wait=527.3 issue=814.1 post=5.4 drains=1905 ms
+promoteprof posted=257 refused=0 mirrored=0
+decprof position=45 layers=40 hc=25 attn=75 moe=240 ms
+moeprof wait=131.2 attach=1.2 gpu=86.8 ms vram_hits=224 cpu_layers=0
+copyprof posts=3207 gate_calls=691 gate_wait=534.4 issue=826.3 post=5.5 drains=1924 ms
+promoteprof posted=260 refused=0 mirrored=0
+decprof position=46 layers=40 hc=21 attn=70 moe=239 ms
+moeprof wait=138.8 attach=0.3 gpu=79.8 ms vram_hits=227 cpu_layers=0
+copyprof posts=3276 gate_calls=702 gate_wait=538.0 issue=836.5 post=5.6 drains=1947 ms
+promoteprof posted=271 refused=0 mirrored=0
+v4_next_predict_fresh recall=78.5% notready=2.5% depth2=52.6% route_ms=0.188 avx2=3850 learned_avx2=0 refined=7.7 queued=23200 dropped=0 kept=0 stale=0 tokstart=0 full=0 layers=2000
+decprof position=47 layers=40 hc=19 attn=67 moe=238 ms
+moeprof wait=134.6 attach=0.3 gpu=85.7 ms vram_hits=221 cpu_layers=0
+copyprof posts=3357 gate_calls=719 gate_wait=541.7 issue=844.9 post=5.7 drains=1972 ms
+promoteprof posted=279 refused=0 mirrored=0
+decprof position=48 layers=40 hc=20 attn=71 moe=242 ms
+moeprof wait=127.3 attach=1.0 gpu=95.2 ms vram_hits=212 cpu_layers=0
+copyprof posts=3477 gate_calls=741 gate_wait=556.7 issue=870.3 post=5.8 drains=2006 ms
+promoteprof posted=291 refused=0 mirrored=0
+v4_next_predict recall=80.4% k=8 layers=2000
+v4_next_predict_conf used/guessed per 0.05 d1 79/283 1372/3782 3125/6132 2340/2999 1204/1261 676/687 389/390 222/222 130/130 114/114 d2 2/3 160/260 1271/2014 2168/2882 1200/1274 637/652 332/334 195/195 90/91 87/87
+decprof position=49 layers=40 hc=22 attn=75 moe=235 ms
+moeprof wait=129.2 attach=0.8 gpu=84.7 ms vram_hits=219 cpu_layers=0
+copyprof posts=3558 gate_calls=760 gate_wait=561.9 issue=879.8 post=5.9 drains=2031 ms
+promoteprof posted=297 refused=0 mirrored=0
+decprof position=50 layers=40 hc=20 attn=67 moe=231 ms
+moeprof wait=126.2 attach=0.3 gpu=83.7 ms vram_hits=223 cpu_layers=0
+copyprof posts=3618 gate_calls=775 gate_wait=566.2 issue=886.8 post=5.9 drains=2049 ms
+promoteprof posted=300 refused=0 mirrored=0
+decprof position=51 layers=40 hc=21 attn=68 moe=256 ms
+moeprof wait=144.6 attach=0.5 gpu=90.0 ms vram_hits=216 cpu_layers=0
+copyprof posts=3726 gate_calls=797 gate_wait=578.2 issue=908.8 post=6.1 drains=2082 ms
+promoteprof posted=312 refused=0 mirrored=0
+decprof position=52 layers=40 hc=20 attn=62 moe=200 ms
+moeprof wait=103.1 attach=0.9 gpu=80.6 ms vram_hits=222 cpu_layers=0
+copyprof posts=3792 gate_calls=813 gate_wait=580.3 issue=914.5 post=6.2 drains=2102 ms
+promoteprof posted=316 refused=0 mirrored=1
+decprof position=53 layers=40 hc=21 attn=71 moe=259 ms
+moeprof wait=152.3 attach=2.2 gpu=83.9 ms vram_hits=217 cpu_layers=0
+copyprof posts=3885 gate_calls=831 gate_wait=585.9 issue=927.6 post=6.2 drains=2128 ms
+promoteprof posted=324 refused=0 mirrored=1
+decprof position=54 layers=40 hc=23 attn=73 moe=250 ms
+moeprof wait=138.6 attach=1.0 gpu=91.3 ms vram_hits=210 cpu_layers=0
+copyprof posts=3993 gate_calls=853 gate_wait=598.7 issue=945.6 post=6.4 drains=2157 ms
+promoteprof posted=331 refused=0 mirrored=2
+decprof position=55 layers=40 hc=21 attn=70 moe=242 ms
+moeprof wait=122.1 attach=1.1 gpu=91.6 ms vram_hits=208 cpu_layers=0
+copyprof posts=4116 gate_calls=879 gate_wait=609.4 issue=966.3 post=6.5 drains=2192 ms
+promoteprof posted=340 refused=0 mirrored=2
+decprof position=56 layers=40 hc=20 attn=66 moe=248 ms
+moeprof wait=137.4 attach=1.8 gpu=88.7 ms vram_hits=207 cpu_layers=0
+copyprof posts=4242 gate_calls=903 gate_wait=618.1 issue=979.8 post=6.6 drains=2228 ms
+promoteprof posted=352 refused=0 mirrored=2
+decprof position=57 layers=40 hc=21 attn=87 moe=254 ms
+moeprof wait=143.7 attach=1.7 gpu=86.7 ms vram_hits=213 cpu_layers=0
+copyprof posts=4350 gate_calls=921 gate_wait=625.6 issue=996.5 post=6.7 drains=2255 ms
+promoteprof posted=361 refused=0 mirrored=2
+decprof position=58 layers=40 hc=19 attn=68 moe=236 ms
+moeprof wait=132.7 attach=0.4 gpu=82.2 ms vram_hits=221 cpu_layers=0
+copyprof posts=4437 gate_calls=938 gate_wait=630.0 issue=1009.2 post=6.8 drains=2282 ms
+promoteprof posted=372 refused=0 mirrored=2
+decprof position=59 layers=40 hc=20 attn=66 moe=248 ms
+moeprof wait=143.4 attach=0.9 gpu=85.6 ms vram_hits=216 cpu_layers=0
+copyprof posts=4530 gate_calls=958 gate_wait=635.2 issue=1017.8 post=6.9 drains=2308 ms
+promoteprof posted=379 refused=0 mirrored=2
+decprof position=60 layers=40 hc=21 attn=71 moe=243 ms
+moeprof wait=133.3 attach=0.5 gpu=87.1 ms vram_hits=220 cpu_layers=0
+copyprof posts=4617 gate_calls=976 gate_wait=641.7 issue=1028.1 post=7.0 drains=2336 ms
+promoteprof posted=389 refused=0 mirrored=2
+decprof position=61 layers=40 hc=19 attn=72 moe=223 ms
+moeprof wait=122.1 attach=0.3 gpu=84.9 ms vram_hits=221 cpu_layers=0
+copyprof posts=4713 gate_calls=991 gate_wait=650.0 issue=1045.1 post=7.1 drains=2366 ms
+promoteprof posted=404 refused=0 mirrored=2
+decprof position=62 layers=40 hc=20 attn=66 moe=225 ms
+moeprof wait=121.7 attach=0.9 gpu=85.6 ms vram_hits=217 cpu_layers=0
+copyprof posts=4812 gate_calls=1011 gate_wait=658.7 issue=1058.1 post=7.2 drains=2395 ms
+promoteprof posted=414 refused=0 mirrored=2
+decprof position=63 layers=40 hc=21 attn=70 moe=237 ms
+moeprof wait=128.9 attach=1.1 gpu=89.5 ms vram_hits=214 cpu_layers=0
+copyprof posts=4914 gate_calls=1034 gate_wait=665.5 issue=1070.3 post=7.3 drains=2425 ms
+promoteprof posted=422 refused=0 mirrored=2
+decprof position=64 layers=40 hc=24 attn=78 moe=212 ms
+moeprof wait=107.0 attach=0.5 gpu=82.8 ms vram_hits=222 cpu_layers=0
+copyprof posts=4983 gate_calls=1049 gate_wait=670.6 issue=1078.9 post=7.4 drains=2445 ms
+promoteprof posted=427 refused=0 mirrored=2
+decprof position=65 layers=40 hc=21 attn=72 moe=236 ms
+moeprof wait=126.3 attach=0.5 gpu=89.2 ms vram_hits=211 cpu_layers=0
+copyprof posts=5085 gate_calls=1072 gate_wait=680.9 issue=1098.6 post=7.5 drains=2475 ms
+promoteprof posted=433 refused=0 mirrored=2
+decprof position=66 layers=40 hc=21 attn=67 moe=231 ms
+moeprof wait=124.6 attach=2.2 gpu=88.4 ms vram_hits=209 cpu_layers=0
+copyprof posts=5205 gate_calls=1094 gate_wait=687.8 issue=1114.2 post=7.7 drains=2506 ms
+promoteprof posted=442 refused=0 mirrored=2
+decprof position=67 layers=40 hc=20 attn=68 moe=212 ms
+moeprof wait=101.9 attach=1.7 gpu=91.1 ms vram_hits=212 cpu_layers=0
+copyprof posts=5319 gate_calls=1117 gate_wait=699.7 issue=1132.6 post=7.8 drains=2540 ms
+promoteprof posted=454 refused=0 mirrored=2
+decprof position=68 layers=40 hc=21 attn=66 moe=242 ms
+moeprof wait=139.4 attach=0.9 gpu=82.7 ms vram_hits=219 cpu_layers=0
+copyprof posts=5421 gate_calls=1134 gate_wait=703.6 issue=1145.9 post=7.9 drains=2570 ms
+promoteprof posted=467 refused=0 mirrored=2
+decprof position=69 layers=40 hc=20 attn=76 moe=238 ms
+moeprof wait=135.1 attach=1.3 gpu=83.2 ms vram_hits=218 cpu_layers=0
+copyprof posts=5523 gate_calls=1152 gate_wait=707.0 issue=1159.7 post=8.0 drains=2602 ms
+promoteprof posted=480 refused=0 mirrored=2
+decprof position=70 layers=40 hc=22 attn=71 moe=222 ms
+moeprof wait=115.0 attach=0.8 gpu=87.0 ms vram_hits=216 cpu_layers=0
+copyprof posts=5622 gate_calls=1169 gate_wait=713.9 issue=1173.9 post=8.1 drains=2629 ms
+promoteprof posted=489 refused=0 mirrored=3
+decprof position=71 layers=40 hc=21 attn=80 moe=224 ms
+moeprof wait=122.4 attach=0.2 gpu=80.7 ms vram_hits=229 cpu_layers=0
+copyprof posts=5673 gate_calls=1179 gate_wait=717.2 issue=1183.6 post=8.2 drains=2645 ms
+promoteprof posted=495 refused=0 mirrored=3
+decprof position=72 layers=40 hc=20 attn=73 moe=227 ms
+moeprof wait=122.4 attach=0.7 gpu=87.0 ms vram_hits=215 cpu_layers=0
+copyprof posts=5793 gate_calls=1198 gate_wait=726.4 issue=1202.3 post=8.3 drains=2680 ms
+promoteprof posted=510 refused=0 mirrored=3
+decprof position=73 layers=40 hc=20 attn=71 moe=241 ms
+moeprof wait=134.8 attach=0.5 gpu=83.6 ms vram_hits=226 cpu_layers=0
+copyprof posts=5856 gate_calls=1210 gate_wait=732.2 issue=1215.4 post=8.4 drains=2700 ms
+promoteprof posted=518 refused=0 mirrored=3
+decprof position=74 layers=40 hc=24 attn=78 moe=218 ms
+moeprof wait=114.3 attach=0.6 gpu=83.4 ms vram_hits=228 cpu_layers=0
+copyprof posts=5913 gate_calls=1221 gate_wait=735.5 issue=1222.1 post=8.5 drains=2718 ms
+promoteprof posted=525 refused=0 mirrored=3
+decprof position=75 layers=40 hc=20 attn=69 moe=198 ms
+moeprof wait=103.9 attach=0.2 gpu=79.0 ms vram_hits=228 cpu_layers=0
+copyprof posts=5973 gate_calls=1233 gate_wait=738.4 issue=1227.6 post=8.5 drains=2738 ms
+promoteprof posted=533 refused=0 mirrored=3
+decprof position=76 layers=40 hc=21 attn=73 moe=214 ms
+moeprof wait=110.5 attach=0.4 gpu=86.9 ms vram_hits=221 cpu_layers=0
+copyprof posts=6042 gate_calls=1250 gate_wait=746.5 issue=1237.8 post=8.6 drains=2759 ms
+promoteprof posted=537 refused=0 mirrored=3
+decprof position=77 layers=40 hc=22 attn=83 moe=199 ms
+moeprof wait=97.4 attach=1.3 gpu=84.0 ms vram_hits=223 cpu_layers=0
+copyprof posts=6108 gate_calls=1264 gate_wait=752.1 issue=1245.7 post=8.7 drains=2778 ms
+promoteprof posted=542 refused=0 mirrored=3
+decprof position=78 layers=40 hc=20 attn=69 moe=169 ms
+moeprof wait=76.7 attach=0.4 gpu=79.4 ms vram_hits=226 cpu_layers=0
+copyprof posts=6168 gate_calls=1277 gate_wait=754.2 issue=1256.5 post=8.7 drains=2797 ms
+promoteprof posted=548 refused=0 mirrored=3
+decprof position=79 layers=40 hc=20 attn=69 moe=190 ms
+moeprof wait=95.5 attach=0.7 gpu=79.4 ms vram_hits=227 cpu_layers=0
+copyprof posts=6216 gate_calls=1290 gate_wait=756.1 issue=1259.7 post=8.8 drains=2813 ms
+promoteprof posted=551 refused=0 mirrored=3
+decprof position=80 layers=40 hc=20 attn=75 moe=195 ms
+moeprof wait=104.3 attach=0.1 gpu=75.8 ms vram_hits=234 cpu_layers=0
+copyprof posts=6243 gate_calls=1296 gate_wait=757.2 issue=1263.7 post=8.8 drains=2822 ms
+promoteprof posted=554 refused=0 mirrored=3
+decprof position=81 layers=40 hc=20 attn=73 moe=182 ms
+moeprof wait=88.6 attach=0.7 gpu=77.6 ms vram_hits=228 cpu_layers=0
+copyprof posts=6291 gate_calls=1308 gate_wait=759.4 issue=1267.1 post=8.9 drains=2836 ms
+promoteprof posted=558 refused=0 mirrored=3
+decprof position=82 layers=40 hc=20 attn=80 moe=188 ms
+moeprof wait=92.6 attach=0.2 gpu=79.7 ms vram_hits=228 cpu_layers=0
+copyprof posts=6330 gate_calls=1320 gate_wait=762.2 issue=1270.7 post=8.9 drains=2849 ms
+promoteprof posted=559 refused=0 mirrored=3
+decprof position=83 layers=40 hc=21 attn=75 moe=212 ms
+moeprof wait=113.4 attach=0.3 gpu=81.8 ms vram_hits=226 cpu_layers=0
+copyprof posts=6384 gate_calls=1333 gate_wait=765.9 issue=1275.9 post=9.0 drains=2866 ms
+promoteprof posted=563 refused=0 mirrored=3
+decprof position=84 layers=40 hc=22 attn=80 moe=218 ms
+moeprof wait=111.9 attach=1.3 gpu=85.6 ms vram_hits=223 cpu_layers=0
+copyprof posts=6441 gate_calls=1349 gate_wait=772.9 issue=1284.1 post=9.0 drains=2884 ms
+promoteprof posted=565 refused=0 mirrored=3
+decprof position=85 layers=40 hc=20 attn=77 moe=215 ms
+moeprof wait=110.0 attach=0.3 gpu=87.5 ms vram_hits=226 cpu_layers=0
+copyprof posts=6507 gate_calls=1361 gate_wait=782.3 issue=1297.7 post=9.2 drains=2904 ms
+promoteprof posted=573 refused=0 mirrored=3
+decprof position=86 layers=40 hc=21 attn=82 moe=186 ms
+moeprof wait=86.3 attach=0.9 gpu=82.1 ms vram_hits=220 cpu_layers=0
+copyprof posts=6588 gate_calls=1378 gate_wait=786.1 issue=1308.4 post=9.3 drains=2928 ms
+promoteprof posted=580 refused=0 mirrored=3
+decprof position=87 layers=40 hc=20 attn=76 moe=207 ms
+moeprof wait=103.1 attach=0.4 gpu=86.4 ms vram_hits=216 cpu_layers=0
+copyprof posts=6675 gate_calls=1399 gate_wait=791.3 issue=1318.3 post=9.3 drains=2956 ms
+promoteprof posted=586 refused=0 mirrored=3
+decprof position=88 layers=40 hc=23 attn=87 moe=199 ms
+moeprof wait=96.9 attach=1.9 gpu=80.8 ms vram_hits=221 cpu_layers=0
+copyprof posts=6738 gate_calls=1416 gate_wait=794.3 issue=1324.8 post=9.4 drains=2975 ms
+promoteprof posted=588 refused=0 mirrored=3
+decprof position=89 layers=40 hc=21 attn=79 moe=202 ms
+moeprof wait=102.5 attach=1.1 gpu=81.1 ms vram_hits=223 cpu_layers=0
+copyprof posts=6795 gate_calls=1430 gate_wait=797.8 issue=1330.3 post=9.5 drains=2991 ms
+promoteprof posted=590 refused=0 mirrored=3
+decprof position=90 layers=40 hc=20 attn=76 moe=179 ms
+moeprof wait=82.9 attach=0.3 gpu=81.1 ms vram_hits=227 cpu_layers=0
+copyprof posts=6846 gate_calls=1442 gate_wait=800.8 issue=1337.2 post=9.5 drains=3008 ms
+promoteprof posted=595 refused=0 mirrored=3
+decprof position=91 layers=40 hc=22 attn=69 moe=195 ms
+moeprof wait=89.9 attach=0.9 gpu=85.5 ms vram_hits=220 cpu_layers=0
+copyprof posts=6930 gate_calls=1459 gate_wait=809.3 issue=1351.8 post=9.6 drains=3033 ms
+promoteprof posted=603 refused=0 mirrored=3
+decprof position=92 layers=40 hc=20 attn=79 moe=172 ms
+moeprof wait=70.7 attach=0.8 gpu=84.7 ms vram_hits=220 cpu_layers=0
+copyprof posts=7011 gate_calls=1474 gate_wait=815.0 issue=1363.8 post=9.7 drains=3057 ms
+promoteprof posted=610 refused=0 mirrored=3
+decprof position=93 layers=40 hc=21 attn=82 moe=176 ms
+moeprof wait=80.6 attach=0.2 gpu=78.7 ms vram_hits=227 cpu_layers=0
+copyprof posts=7062 gate_calls=1486 gate_wait=816.7 issue=1368.6 post=9.8 drains=3075 ms
+promoteprof posted=615 refused=0 mirrored=3
+decprof position=94 layers=40 hc=19 attn=67 moe=206 ms
+moeprof wait=105.4 attach=0.7 gpu=82.3 ms vram_hits=222 cpu_layers=0
+copyprof posts=7134 gate_calls=1502 gate_wait=821.5 issue=1378.7 post=9.9 drains=3095 ms
+promoteprof posted=621 refused=0 mirrored=3
+decprof position=95 layers=40 hc=21 attn=75 moe=219 ms
+moeprof wait=115.8 attach=0.3 gpu=84.4 ms vram_hits=225 cpu_layers=0
+copyprof posts=7188 gate_calls=1517 gate_wait=827.8 issue=1389.1 post=9.9 drains=3113 ms
+promoteprof posted=624 refused=0 mirrored=3
+decprof position=96 layers=40 hc=19 attn=73 moe=207 ms
+moeprof wait=104.7 attach=0.2 gpu=84.6 ms vram_hits=228 cpu_layers=0
+copyprof posts=7245 gate_calls=1527 gate_wait=832.3 issue=1400.4 post=10.0 drains=3131 ms
+promoteprof posted=631 refused=0 mirrored=3
+v4_next_predict_fresh recall=77.6% notready=2.5% depth2=51.5% route_ms=0.187 avx2=7700 learned_avx2=0 refined=7.7 queued=46400 dropped=0 kept=0 stale=0 tokstart=0 full=0 layers=4000
+decprof position=97 layers=40 hc=22 attn=74 moe=204 ms
+moeprof wait=102.5 attach=0.3 gpu=82.8 ms vram_hits=225 cpu_layers=0
+copyprof posts=7317 gate_calls=1545 gate_wait=836.9 issue=1412.2 post=10.0 drains=3155 ms
+promoteprof posted=640 refused=0 mirrored=3
+decprof position=98 layers=40 hc=20 attn=71 moe=187 ms
+moeprof wait=86.7 attach=1.2 gpu=85.0 ms vram_hits=222 cpu_layers=0
+copyprof posts=7395 gate_calls=1559 gate_wait=840.6 issue=1424.2 post=10.1 drains=3176 ms
+promoteprof posted=648 refused=0 mirrored=3
+decprof position=99 layers=40 hc=22 attn=84 moe=222 ms
+moeprof wait=119.5 attach=0.9 gpu=83.5 ms vram_hits=215 cpu_layers=0
+copyprof posts=7491 gate_calls=1580 gate_wait=845.7 issue=1433.5 post=10.2 drains=3204 ms
+promoteprof posted=655 refused=0 mirrored=4
+v4_next_predict recall=79.7% k=8 layers=4000
+v4_next_predict_conf used/guessed per 0.05 d1 99/379 2394/6939 6342/12837 4916/6338 2453/2569 1354/1376 776/778 395/397 199/199 188/188 d2 3/6 260/456 2394/3892 4494/6110 2390/2589 1227/1258 633/638 345/345 147/148 146/146
+decprof position=100 layers=40 hc=20 attn=75 moe=223 ms
+moeprof wait=112.1 attach=0.6 gpu=88.7 ms vram_hits=213 cpu_layers=0
+copyprof posts=7605 gate_calls=1600 gate_wait=853.9 issue=1450.9 post=10.4 drains=3236 ms
+promoteprof posted=667 refused=0 mirrored=4
+decprof position=101 layers=40 hc=23 attn=84 moe=226 ms
+moeprof wait=119.8 attach=1.0 gpu=85.9 ms vram_hits=216 cpu_layers=0
+copyprof posts=7692 gate_calls=1618 gate_wait=861.9 issue=1461.5 post=10.5 drains=3260 ms
+promoteprof posted=673 refused=0 mirrored=4
+decprof position=102 layers=40 hc=21 attn=82 moe=217 ms
+moeprof wait=116.8 attach=0.9 gpu=80.9 ms vram_hits=227 cpu_layers=0
+copyprof posts=7737 gate_calls=1629 gate_wait=866.2 issue=1467.2 post=10.5 drains=3273 ms
+promoteprof posted=675 refused=0 mirrored=4
+decprof position=103 layers=40 hc=19 attn=74 moe=218 ms
+moeprof wait=110.1 attach=1.2 gpu=86.5 ms vram_hits=213 cpu_layers=0
+copyprof posts=7842 gate_calls=1650 gate_wait=873.3 issue=1481.5 post=10.6 drains=3302 ms
+promoteprof posted=683 refused=0 mirrored=4
+decprof position=104 layers=40 hc=22 attn=89 moe=199 ms
+moeprof wait=103.8 attach=0.3 gpu=78.1 ms vram_hits=228 cpu_layers=0
+copyprof posts=7896 gate_calls=1662 gate_wait=876.1 issue=1485.8 post=10.7 drains=3320 ms
+promoteprof posted=689 refused=0 mirrored=4
+decprof position=105 layers=40 hc=20 attn=75 moe=211 ms
+moeprof wait=113.8 attach=1.0 gpu=79.8 ms vram_hits=222 cpu_layers=0
+copyprof posts=7965 gate_calls=1677 gate_wait=879.3 issue=1492.0 post=10.8 drains=3343 ms
+promoteprof posted=696 refused=0 mirrored=4
+decprof position=106 layers=40 hc=20 attn=80 moe=186 ms
+moeprof wait=84.6 attach=0.7 gpu=84.4 ms vram_hits=219 cpu_layers=0
+copyprof posts=8046 gate_calls=1695 gate_wait=885.4 issue=1505.4 post=10.8 drains=3367 ms
+promoteprof posted=702 refused=0 mirrored=4
+decprof position=107 layers=40 hc=21 attn=77 moe=217 ms
+moeprof wait=116.0 attach=1.4 gpu=82.9 ms vram_hits=219 cpu_layers=0
+copyprof posts=8136 gate_calls=1712 gate_wait=889.7 issue=1515.1 post=10.9 drains=3393 ms
+promoteprof posted=711 refused=0 mirrored=4
+decprof position=108 layers=40 hc=19 attn=80 moe=224 ms
+moeprof wait=120.2 attach=0.7 gpu=85.1 ms vram_hits=216 cpu_layers=0
+copyprof posts=8229 gate_calls=1731 gate_wait=896.5 issue=1529.2 post=11.0 drains=3417 ms
+promoteprof posted=718 refused=0 mirrored=4
+decprof position=109 layers=40 hc=20 attn=78 moe=213 ms
+moeprof wait=115.9 attach=0.6 gpu=78.6 ms vram_hits=230 cpu_layers=0
+copyprof posts=8265 gate_calls=1740 gate_wait=899.1 issue=1532.8 post=11.1 drains=3428 ms
+promoteprof posted=720 refused=0 mirrored=4
+decprof position=110 layers=40 hc=20 attn=79 moe=209 ms
+moeprof wait=107.5 attach=0.6 gpu=82.2 ms vram_hits=218 cpu_layers=0
+copyprof posts=8349 gate_calls=1758 gate_wait=904.8 issue=1542.8 post=11.1 drains=3452 ms
+promoteprof posted=726 refused=0 mirrored=4
+decprof position=111 layers=40 hc=22 attn=90 moe=180 ms
+moeprof wait=79.5 attach=0.2 gpu=83.4 ms vram_hits=225 cpu_layers=0
+copyprof posts=8400 gate_calls=1772 gate_wait=910.9 issue=1550.9 post=11.2 drains=3468 ms
+promoteprof posted=728 refused=0 mirrored=4
+decprof position=112 layers=40 hc=22 attn=84 moe=220 ms
+moeprof wait=118.5 attach=1.0 gpu=82.9 ms vram_hits=214 cpu_layers=0
+copyprof posts=8496 gate_calls=1794 gate_wait=916.1 issue=1558.8 post=11.3 drains=3495 ms
+promoteprof posted=734 refused=0 mirrored=4
+decprof position=113 layers=40 hc=22 attn=87 moe=185 ms
+moeprof wait=86.6 attach=0.4 gpu=79.9 ms vram_hits=219 cpu_layers=0
+copyprof posts=8574 gate_calls=1810 gate_wait=920.3 issue=1565.9 post=11.4 drains=3516 ms
+promoteprof posted=739 refused=0 mirrored=4
+decprof position=114 layers=40 hc=22 attn=84 moe=187 ms
+moeprof wait=91.6 attach=0.2 gpu=78.0 ms vram_hits=227 cpu_layers=0
+copyprof posts=8628 gate_calls=1823 gate_wait=922.3 issue=1571.2 post=11.4 drains=3534 ms
+promoteprof posted=744 refused=0 mirrored=4
+decprof position=115 layers=40 hc=20 attn=79 moe=191 ms
+moeprof wait=97.2 attach=0.8 gpu=79.1 ms vram_hits=227 cpu_layers=0
+copyprof posts=8676 gate_calls=1833 gate_wait=924.8 issue=1576.9 post=11.5 drains=3548 ms
+promoteprof posted=748 refused=0 mirrored=4
+decprof position=116 layers=40 hc=19 attn=73 moe=207 ms
+moeprof wait=109.5 attach=0.8 gpu=81.1 ms vram_hits=223 cpu_layers=0
+copyprof posts=8742 gate_calls=1849 gate_wait=928.8 issue=1583.5 post=11.5 drains=3568 ms
+promoteprof posted=753 refused=0 mirrored=4
+decprof position=117 layers=40 hc=21 attn=78 moe=196 ms
+moeprof wait=95.0 attach=0.5 gpu=84.8 ms vram_hits=218 cpu_layers=0
+copyprof posts=8832 gate_calls=1865 gate_wait=934.0 issue=1592.7 post=11.6 drains=3593 ms
+promoteprof posted=762 refused=0 mirrored=4
+decprof position=118 layers=40 hc=20 attn=79 moe=182 ms
+moeprof wait=86.4 attach=1.0 gpu=80.6 ms vram_hits=219 cpu_layers=0
+copyprof posts=8910 gate_calls=1882 gate_wait=937.0 issue=1600.5 post=11.7 drains=3615 ms
+promoteprof posted=767 refused=0 mirrored=4
+decprof position=119 layers=40 hc=20 attn=78 moe=180 ms
+moeprof wait=87.8 attach=0.1 gpu=76.5 ms vram_hits=232 cpu_layers=0
+copyprof posts=8949 gate_calls=1889 gate_wait=938.6 issue=1604.8 post=11.7 drains=3630 ms
+promoteprof posted=774 refused=0 mirrored=4
+decprof position=120 layers=40 hc=21 attn=84 moe=202 ms
+moeprof wait=104.4 attach=0.2 gpu=78.4 ms vram_hits=227 cpu_layers=0
+copyprof posts=8997 gate_calls=1901 gate_wait=940.8 issue=1608.7 post=11.8 drains=3645 ms
+promoteprof posted=777 refused=0 mirrored=4
+decprof position=121 layers=40 hc=20 attn=79 moe=172 ms
+moeprof wait=72.0 attach=1.5 gpu=85.3 ms vram_hits=219 cpu_layers=0
+copyprof posts=9078 gate_calls=1920 gate_wait=948.3 issue=1621.8 post=11.9 drains=3670 ms
+promoteprof posted=783 refused=0 mirrored=4
+decprof position=122 layers=40 hc=21 attn=84 moe=199 ms
+moeprof wait=96.4 attach=1.0 gpu=83.7 ms vram_hits=221 cpu_layers=0
+copyprof posts=9162 gate_calls=1937 gate_wait=952.9 issue=1631.3 post=12.0 drains=3698 ms
+promoteprof posted=793 refused=0 mirrored=4
+decprof position=123 layers=40 hc=21 attn=95 moe=186 ms
+moeprof wait=86.1 attach=1.1 gpu=82.7 ms vram_hits=220 cpu_layers=0
+copyprof posts=9228 gate_calls=1952 gate_wait=958.7 issue=1640.6 post=12.1 drains=3715 ms
+promoteprof posted=795 refused=0 mirrored=4
+decprof position=124 layers=40 hc=20 attn=79 moe=218 ms
+moeprof wait=120.7 attach=0.5 gpu=80.5 ms vram_hits=225 cpu_layers=0
+copyprof posts=9279 gate_calls=1966 gate_wait=962.8 issue=1647.8 post=12.1 drains=3731 ms
+promoteprof posted=797 refused=0 mirrored=4
+decprof position=125 layers=40 hc=19 attn=74 moe=190 ms
+moeprof wait=88.7 attach=0.5 gpu=83.4 ms vram_hits=225 cpu_layers=0
+copyprof posts=9336 gate_calls=1979 gate_wait=967.9 issue=1655.8 post=12.2 drains=3748 ms
+promoteprof posted=801 refused=0 mirrored=4
+decprof position=126 layers=40 hc=21 attn=85 moe=213 ms
+moeprof wait=110.7 attach=0.4 gpu=83.2 ms vram_hits=219 cpu_layers=0
+copyprof posts=9417 gate_calls=1996 gate_wait=972.3 issue=1664.2 post=12.3 drains=3771 ms
+promoteprof posted=807 refused=0 mirrored=4
+decprof position=127 layers=40 hc=20 attn=86 moe=212 ms
+moeprof wait=114.0 attach=0.3 gpu=82.7 ms vram_hits=229 cpu_layers=0
+copyprof posts=9465 gate_calls=2007 gate_wait=974.3 issue=1671.8 post=12.3 drains=3787 ms
+promoteprof posted=812 refused=0 mirrored=4
+decprof position=128 layers=40 hc=20 attn=82 moe=198 ms
+moeprof wait=101.1 attach=0.8 gpu=80.2 ms vram_hits=230 cpu_layers=0
+copyprof posts=9507 gate_calls=2017 gate_wait=979.2 issue=1678.6 post=12.4 drains=3801 ms
+promoteprof posted=816 refused=0 mirrored=4
+decprof position=129 layers=40 hc=20 attn=79 moe=222 ms
+moeprof wait=125.5 attach=0.3 gpu=78.7 ms vram_hits=224 cpu_layers=0
+copyprof posts=9561 gate_calls=2031 gate_wait=982.3 issue=1683.4 post=12.5 drains=3818 ms
+promoteprof posted=819 refused=0 mirrored=4
+decprof position=130 layers=40 hc=20 attn=77 moe=188 ms
+moeprof wait=96.4 attach=0.7 gpu=77.1 ms vram_hits=230 cpu_layers=0
+copyprof posts=9597 gate_calls=2040 gate_wait=984.1 issue=1688.4 post=12.5 drains=3830 ms
+promoteprof posted=822 refused=0 mirrored=4
+decprof position=131 layers=40 hc=22 attn=82 moe=193 ms
+moeprof wait=90.8 attach=0.6 gpu=83.6 ms vram_hits=221 cpu_layers=0
+copyprof posts=9663 gate_calls=2056 gate_wait=989.3 issue=1695.4 post=12.6 drains=3849 ms
+promoteprof posted=825 refused=0 mirrored=4
+decprof position=132 layers=40 hc=24 attn=89 moe=202 ms
+moeprof wait=96.9 attach=1.0 gpu=85.1 ms vram_hits=218 cpu_layers=0
+copyprof posts=9750 gate_calls=2074 gate_wait=995.1 issue=1706.8 post=12.7 drains=3875 ms
+promoteprof posted=833 refused=0 mirrored=4
+decprof position=133 layers=40 hc=21 attn=78 moe=215 ms
+moeprof wait=116.4 attach=0.7 gpu=80.8 ms vram_hits=218 cpu_layers=0
+copyprof posts=9837 gate_calls=2093 gate_wait=998.5 issue=1715.4 post=12.8 drains=3901 ms
+promoteprof posted=840 refused=0 mirrored=4
+decprof position=134 layers=40 hc=20 attn=78 moe=177 ms
+moeprof wait=81.6 attach=0.2 gpu=80.8 ms vram_hits=225 cpu_layers=0
+copyprof posts=9903 gate_calls=2105 gate_wait=1004.3 issue=1725.4 post=12.9 drains=3921 ms
+promoteprof posted=848 refused=0 mirrored=4
+decprof position=135 layers=40 hc=18 attn=70 moe=194 ms
+moeprof wait=96.8 attach=0.3 gpu=81.3 ms vram_hits=222 cpu_layers=0
+copyprof posts=9975 gate_calls=2121 gate_wait=1008.4 issue=1734.8 post=12.9 drains=3943 ms
+promoteprof posted=854 refused=0 mirrored=4
+decprof position=136 layers=40 hc=20 attn=80 moe=235 ms
+moeprof wait=134.9 attach=0.1 gpu=77.4 ms vram_hits=235 cpu_layers=0
+copyprof posts=10005 gate_calls=2126 gate_wait=1009.7 issue=1737.4 post=13.0 drains=3953 ms
+promoteprof posted=859 refused=0 mirrored=4
+decprof position=137 layers=40 hc=19 attn=77 moe=210 ms
+moeprof wait=110.0 attach=0.5 gpu=82.3 ms vram_hits=222 cpu_layers=0
+copyprof posts=10071 gate_calls=2140 gate_wait=1012.9 issue=1745.4 post=13.0 drains=3972 ms
+promoteprof posted=864 refused=0 mirrored=4
+decprof position=138 layers=40 hc=20 attn=83 moe=211 ms
+moeprof wait=112.2 attach=0.4 gpu=80.0 ms vram_hits=224 cpu_layers=0
+copyprof posts=10131 gate_calls=2155 gate_wait=1016.3 issue=1752.6 post=13.1 drains=3991 ms
+promoteprof posted=868 refused=0 mirrored=5
+decprof position=139 layers=40 hc=20 attn=80 moe=193 ms
+moeprof wait=97.1 attach=0.4 gpu=79.5 ms vram_hits=225 cpu_layers=0
+copyprof posts=10197 gate_calls=2167 gate_wait=1019.0 issue=1758.1 post=13.2 drains=4011 ms
+promoteprof posted=876 refused=0 mirrored=6
+decprof position=140 layers=40 hc=22 attn=90 moe=182 ms
+moeprof wait=82.2 attach=0.6 gpu=83.1 ms vram_hits=222 cpu_layers=0
+copyprof posts=10290 gate_calls=2186 gate_wait=1021.7 issue=1766.8 post=13.3 drains=4041 ms
+promoteprof posted=889 refused=0 mirrored=6
+decprof position=141 layers=40 hc=20 attn=93 moe=192 ms
+moeprof wait=95.1 attach=0.4 gpu=80.7 ms vram_hits=224 cpu_layers=0
+copyprof posts=10368 gate_calls=2199 gate_wait=1025.0 issue=1775.8 post=13.3 drains=4064 ms
+promoteprof posted=899 refused=0 mirrored=6
+decprof position=142 layers=40 hc=20 attn=79 moe=223 ms
+moeprof wait=119.6 attach=0.7 gpu=86.5 ms vram_hits=218 cpu_layers=0
+copyprof posts=10449 gate_calls=2215 gate_wait=1032.5 issue=1787.7 post=13.4 drains=4085 ms
+promoteprof posted=904 refused=0 mirrored=6
+decprof position=143 layers=40 hc=20 attn=85 moe=217 ms
+moeprof wait=120.1 attach=0.2 gpu=78.6 ms vram_hits=228 cpu_layers=0
+copyprof posts=10509 gate_calls=2227 gate_wait=1034.8 issue=1792.4 post=13.5 drains=4106 ms
+promoteprof posted=913 refused=0 mirrored=6
+decprof position=144 layers=40 hc=20 attn=84 moe=207 ms
+moeprof wait=113.1 attach=0.2 gpu=77.6 ms vram_hits=229 cpu_layers=0
+copyprof posts=10551 gate_calls=2237 gate_wait=1037.4 issue=1796.5 post=13.5 drains=4119 ms
+promoteprof posted=916 refused=0 mirrored=6
+decprof position=145 layers=40 hc=18 attn=68 moe=231 ms
+moeprof wait=134.7 attach=0.4 gpu=79.4 ms vram_hits=223 cpu_layers=0
+copyprof posts=10608 gate_calls=2252 gate_wait=1040.4 issue=1801.3 post=13.6 drains=4135 ms
+promoteprof posted=918 refused=0 mirrored=6
+decprof position=146 layers=40 hc=19 attn=76 moe=233 ms
+moeprof wait=132.0 attach=1.9 gpu=80.8 ms vram_hits=222 cpu_layers=0
+copyprof posts=10692 gate_calls=2265 gate_wait=1044.3 issue=1813.2 post=13.7 drains=4159 ms
+promoteprof posted=929 refused=0 mirrored=6
+v4_next_predict_fresh recall=77.6% notready=2.5% depth2=51.2% route_ms=0.186 avx2=11550 learned_avx2=0 refined=7.7 queued=69600 dropped=0 kept=0 stale=0 tokstart=0 full=0 layers=6000
+decprof position=147 layers=40 hc=20 attn=81 moe=217 ms
+moeprof wait=117.4 attach=0.6 gpu=81.7 ms vram_hits=219 cpu_layers=0
+copyprof posts=10773 gate_calls=2284 gate_wait=1047.9 issue=1821.1 post=13.7 drains=4182 ms
+promoteprof posted=935 refused=0 mirrored=6
+decprof position=148 layers=40 hc=21 attn=90 moe=190 ms
+moeprof wait=87.9 attach=0.8 gpu=83.1 ms vram_hits=219 cpu_layers=0
+copyprof posts=10866 gate_calls=2302 gate_wait=1052.4 issue=1832.1 post=13.8 drains=4211 ms
+promoteprof posted=946 refused=0 mirrored=8
+decprof position=149 layers=40 hc=19 attn=79 moe=201 ms
+moeprof wait=105.9 attach=1.1 gpu=79.3 ms vram_hits=222 cpu_layers=0
+copyprof posts=10944 gate_calls=2317 gate_wait=1054.8 issue=1838.6 post=13.9 drains=4234 ms
+promoteprof posted=955 refused=0 mirrored=9
+decprof position=150 layers=40 hc=20 attn=81 moe=198 ms
+moeprof wait=99.9 attach=1.0 gpu=80.5 ms vram_hits=222 cpu_layers=0
+copyprof posts=11031 gate_calls=2333 gate_wait=1057.8 issue=1846.3 post=14.0 drains=4260 ms
+promoteprof posted=966 refused=0 mirrored=9
+v4_next_predict recall=79.6% k=8 layers=6000
+v4_next_predict_conf used/guessed per 0.05 d1 109/431 3168/9530 9771/19988 7642/9851 3846/4025 2013/2042 1119/1126 532/536 246/246 225/225 d2 3/6 319/564 3461/5724 6960/9518 3712/4006 1798/1845 881/889 463/463 190/191 178/178
+decprof position=151 layers=40 hc=19 attn=90 moe=193 ms
+moeprof wait=93.9 attach=0.9 gpu=84.0 ms vram_hits=214 cpu_layers=0
+copyprof posts=11133 gate_calls=2352 gate_wait=1062.2 issue=1860.9 post=14.1 drains=4287 ms
+promoteprof posted=975 refused=0 mirrored=9
+decprof position=152 layers=40 hc=21 attn=93 moe=198 ms
+moeprof wait=98.2 attach=0.4 gpu=84.1 ms vram_hits=217 cpu_layers=0
+copyprof posts=11223 gate_calls=2373 gate_wait=1068.0 issue=1869.7 post=14.2 drains=4314 ms
+promoteprof posted=982 refused=0 mirrored=9
+decprof position=153 layers=40 hc=19 attn=83 moe=197 ms
+moeprof wait=102.0 attach=0.4 gpu=79.4 ms vram_hits=224 cpu_layers=0
+copyprof posts=11313 gate_calls=2387 gate_wait=1070.9 issue=1877.4 post=14.3 drains=4342 ms
+promoteprof posted=996 refused=0 mirrored=9
+decprof position=154 layers=40 hc=21 attn=98 moe=204 ms
+moeprof wait=102.9 attach=0.3 gpu=82.5 ms vram_hits=222 cpu_layers=0
+copyprof posts=11376 gate_calls=2403 gate_wait=1076.4 issue=1885.0 post=14.4 drains=4361 ms
+promoteprof posted=999 refused=0 mirrored=9
+[api] 127.0.0.1 - "POST /v1/completions HTTP/1.1" 200 -
+decprof position=29 layers=40 hc=20 attn=88 moe=192 ms
+moeprof wait=96.1 attach=0.3 gpu=78.4 ms vram_hits=231 cpu_layers=0
+copyprof posts=11412 gate_calls=2413 gate_wait=1079.1 issue=1888.7 post=14.4 drains=4373 ms
+promoteprof posted=1002 refused=0 mirrored=9
+decprof position=30 layers=40 hc=19 attn=62 moe=267 ms
+moeprof wait=164.8 attach=0.9 gpu=82.8 ms vram_hits=223 cpu_layers=0
+copyprof posts=11484 gate_calls=2427 gate_wait=1081.8 issue=1896.8 post=14.5 drains=4397 ms
+promoteprof posted=1011 refused=0 mirrored=9
+decprof position=31 layers=40 hc=21 attn=72 moe=276 ms
+moeprof wait=165.1 attach=1.4 gpu=88.7 ms vram_hits=215 cpu_layers=0
+copyprof posts=11589 gate_calls=2445 gate_wait=1092.7 issue=1920.5 post=14.6 drains=4427 ms
+promoteprof posted=1023 refused=0 mirrored=10
+decprof position=32 layers=40 hc=20 attn=69 moe=272 ms
+moeprof wait=168.0 attach=1.3 gpu=82.0 ms vram_hits=219 cpu_layers=0
+copyprof posts=11688 gate_calls=2458 gate_wait=1097.6 issue=1934.7 post=14.7 drains=4454 ms
+promoteprof posted=1036 refused=0 mirrored=10
+decprof position=33 layers=40 hc=21 attn=71 moe=277 ms
+moeprof wait=162.5 attach=0.8 gpu=91.3 ms vram_hits=208 cpu_layers=0
+copyprof posts=11811 gate_calls=2482 gate_wait=1107.7 issue=1952.5 post=14.8 drains=4491 ms
+promoteprof posted=1048 refused=0 mirrored=10
+decprof position=34 layers=40 hc=21 attn=71 moe=248 ms
+moeprof wait=137.6 attach=0.5 gpu=89.0 ms vram_hits=215 cpu_layers=0
+copyprof posts=11919 gate_calls=2503 gate_wait=1115.9 issue=1972.9 post=14.9 drains=4524 ms
+promoteprof posted=1060 refused=0 mirrored=10
+decprof position=35 layers=40 hc=23 attn=72 moe=302 ms
+moeprof wait=190.7 attach=2.3 gpu=87.5 ms vram_hits=220 cpu_layers=0
+copyprof posts=12018 gate_calls=2519 gate_wait=1124.1 issue=1991.0 post=15.0 drains=4552 ms
+promoteprof posted=1073 refused=0 mirrored=10
+decprof position=36 layers=40 hc=22 attn=73 moe=298 ms
+moeprof wait=184.2 attach=1.2 gpu=90.0 ms vram_hits=215 cpu_layers=0
+copyprof posts=12126 gate_calls=2536 gate_wait=1132.7 issue=2010.2 post=15.1 drains=4579 ms
+promoteprof posted=1084 refused=0 mirrored=10
+decprof position=37 layers=40 hc=22 attn=78 moe=293 ms
+moeprof wait=174.1 attach=2.6 gpu=94.5 ms vram_hits=213 cpu_layers=0
+copyprof posts=12258 gate_calls=2557 gate_wait=1142.8 issue=2031.2 post=15.2 drains=4617 ms
+promoteprof posted=1101 refused=0 mirrored=12
+decprof position=38 layers=40 hc=21 attn=71 moe=309 ms
+moeprof wait=191.8 attach=2.6 gpu=88.9 ms vram_hits=212 cpu_layers=0
+copyprof posts=12390 gate_calls=2576 gate_wait=1150.8 issue=2052.6 post=15.3 drains=4657 ms
+promoteprof posted=1120 refused=0 mirrored=12
+decprof position=39 layers=40 hc=21 attn=78 moe=324 ms
+moeprof wait=207.9 attach=1.3 gpu=89.5 ms vram_hits=207 cpu_layers=0
+copyprof posts=12540 gate_calls=2604 gate_wait=1158.0 issue=2072.0 post=15.5 drains=4700 ms
+promoteprof posted=1138 refused=0 mirrored=12
+decprof position=40 layers=40 hc=22 attn=78 moe=294 ms
+moeprof wait=178.0 attach=1.4 gpu=91.4 ms vram_hits=209 cpu_layers=0
+copyprof posts=12675 gate_calls=2625 gate_wait=1169.6 issue=2093.2 post=15.6 drains=4735 ms
+promoteprof posted=1153 refused=0 mirrored=14
+decprof position=41 layers=40 hc=22 attn=77 moe=297 ms
+moeprof wait=179.8 attach=2.0 gpu=92.4 ms vram_hits=200 cpu_layers=0
+copyprof posts=12843 gate_calls=2654 gate_wait=1177.0 issue=2111.2 post=15.8 drains=4782 ms
+promoteprof posted=1172 refused=0 mirrored=14
+decprof position=42 layers=40 hc=20 attn=66 moe=297 ms
+moeprof wait=179.2 attach=1.1 gpu=98.4 ms vram_hits=207 cpu_layers=0
+copyprof posts=12984 gate_calls=2681 gate_wait=1189.1 issue=2136.9 post=15.9 drains=4823 ms
+promoteprof posted=1187 refused=0 mirrored=14
+decprof position=43 layers=40 hc=22 attn=74 moe=307 ms
+moeprof wait=185.2 attach=1.6 gpu=94.6 ms vram_hits=189 cpu_layers=0
+copyprof posts=13197 gate_calls=2711 gate_wait=1200.7 issue=2165.5 post=16.1 drains=4877 ms
+promoteprof posted=1210 refused=0 mirrored=15
+decprof position=44 layers=40 hc=22 attn=73 moe=298 ms
+moeprof wait=179.5 attach=1.3 gpu=92.7 ms vram_hits=210 cpu_layers=0
+copyprof posts=13332 gate_calls=2736 gate_wait=1210.3 issue=2185.1 post=16.3 drains=4916 ms
+promoteprof posted=1225 refused=0 mirrored=15
+decprof position=45 layers=40 hc=19 attn=70 moe=279 ms
+moeprof wait=174.1 attach=0.7 gpu=83.1 ms vram_hits=217 cpu_layers=0
+copyprof posts=13440 gate_calls=2756 gate_wait=1216.3 issue=2196.4 post=16.4 drains=4949 ms
+promoteprof posted=1238 refused=0 mirrored=15
+decprof position=46 layers=40 hc=22 attn=79 moe=292 ms
+moeprof wait=176.0 attach=2.4 gpu=89.2 ms vram_hits=211 cpu_layers=0
+copyprof posts=13551 gate_calls=2781 gate_wait=1223.6 issue=2212.0 post=16.5 drains=4982 ms
+promoteprof posted=1246 refused=0 mirrored=15
+decprof position=47 layers=40 hc=21 attn=76 moe=240 ms
+moeprof wait=129.9 attach=1.9 gpu=88.7 ms vram_hits=207 cpu_layers=0
+copyprof posts=13680 gate_calls=2808 gate_wait=1231.4 issue=2225.0 post=16.6 drains=5021 ms
+promoteprof posted=1257 refused=0 mirrored=15
+decprof position=48 layers=40 hc=20 attn=66 moe=265 ms
+moeprof wait=161.2 attach=0.4 gpu=84.5 ms vram_hits=219 cpu_layers=0
+copyprof posts=13776 gate_calls=2824 gate_wait=1236.0 issue=2234.2 post=16.7 drains=5049 ms
+promoteprof posted=1269 refused=0 mirrored=15
+decprof position=49 layers=40 hc=20 attn=72 moe=273 ms
+moeprof wait=157.1 attach=3.0 gpu=90.6 ms vram_hits=206 cpu_layers=0
+copyprof posts=13902 gate_calls=2850 gate_wait=1243.2 issue=2249.0 post=16.8 drains=5083 ms
+promoteprof posted=1277 refused=0 mirrored=15
+decprof position=50 layers=40 hc=21 attn=71 moe=209 ms
+moeprof wait=105.7 attach=0.9 gpu=86.9 ms vram_hits=214 cpu_layers=0
+copyprof posts=14004 gate_calls=2868 gate_wait=1250.1 issue=2265.2 post=16.9 drains=5109 ms
+promoteprof posted=1285 refused=0 mirrored=15
+decprof position=51 layers=40 hc=20 attn=66 moe=244 ms
+moeprof wait=137.9 attach=1.1 gpu=87.2 ms vram_hits=214 cpu_layers=0
+copyprof posts=14106 gate_calls=2887 gate_wait=1257.3 issue=2279.8 post=17.0 drains=5138 ms
+promoteprof posted=1294 refused=0 mirrored=15
+decprof position=52 layers=40 hc=22 attn=69 moe=230 ms
+moeprof wait=125.7 attach=0.5 gpu=85.3 ms vram_hits=218 cpu_layers=0
+copyprof posts=14211 gate_calls=2904 gate_wait=1263.6 issue=2293.5 post=17.1 drains=5168 ms
+promoteprof posted=1307 refused=0 mirrored=16
+decprof position=53 layers=40 hc=21 attn=69 moe=231 ms
+moeprof wait=122.7 attach=0.7 gpu=90.0 ms vram_hits=207 cpu_layers=0
+copyprof posts=14328 gate_calls=2930 gate_wait=1271.9 issue=2308.8 post=17.2 drains=5201 ms
+promoteprof posted=1314 refused=0 mirrored=16
+decprof position=54 layers=40 hc=21 attn=77 moe=323 ms
+moeprof wait=213.3 attach=0.2 gpu=81.6 ms vram_hits=226 cpu_layers=0
+copyprof posts=14403 gate_calls=2942 gate_wait=1273.9 issue=2316.0 post=17.3 drains=5226 ms
+promoteprof posted=1326 refused=0 mirrored=16
+decprof position=55 layers=40 hc=22 attn=69 moe=261 ms
+moeprof wait=151.8 attach=0.6 gpu=88.6 ms vram_hits=217 cpu_layers=0
+copyprof posts=14496 gate_calls=2963 gate_wait=1281.5 issue=2328.4 post=17.4 drains=5254 ms
+promoteprof posted=1334 refused=0 mirrored=16
+decprof position=56 layers=40 hc=21 attn=70 moe=269 ms
+moeprof wait=161.2 attach=0.5 gpu=85.6 ms vram_hits=223 cpu_layers=0
+copyprof posts=14574 gate_calls=2979 gate_wait=1286.5 issue=2338.8 post=17.5 drains=5279 ms
+promoteprof posted=1344 refused=0 mirrored=16
+decprof position=57 layers=40 hc=21 attn=76 moe=230 ms
+moeprof wait=127.4 attach=1.2 gpu=85.2 ms vram_hits=217 cpu_layers=0
+copyprof posts=14670 gate_calls=2997 gate_wait=1292.4 issue=2348.9 post=17.5 drains=5306 ms
+promoteprof posted=1353 refused=0 mirrored=16
+decprof position=58 layers=40 hc=20 attn=65 moe=218 ms
+moeprof wait=117.8 attach=0.4 gpu=84.0 ms vram_hits=220 cpu_layers=0
+copyprof posts=14739 gate_calls=3013 gate_wait=1298.0 issue=2358.7 post=17.6 drains=5325 ms
+promoteprof posted=1356 refused=0 mirrored=16
+decprof position=59 layers=40 hc=19 attn=64 moe=230 ms
+moeprof wait=129.9 attach=2.6 gpu=82.0 ms vram_hits=221 cpu_layers=0
+copyprof posts=14805 gate_calls=3027 gate_wait=1303.1 issue=2372.1 post=17.7 drains=5342 ms
+promoteprof posted=1359 refused=0 mirrored=16
+decprof position=60 layers=40 hc=19 attn=69 moe=274 ms
+moeprof wait=169.7 attach=0.3 gpu=82.2 ms vram_hits=220 cpu_layers=0
+copyprof posts=14895 gate_calls=3047 gate_wait=1306.7 issue=2378.6 post=17.8 drains=5371 ms
+promoteprof posted=1369 refused=0 mirrored=16
+decprof position=61 layers=40 hc=22 attn=79 moe=222 ms
+moeprof wait=117.9 attach=1.5 gpu=83.0 ms vram_hits=212 cpu_layers=0
+copyprof posts=14994 gate_calls=3068 gate_wait=1312.3 issue=2386.2 post=17.9 drains=5397 ms
+promoteprof posted=1374 refused=0 mirrored=16
+decprof position=62 layers=40 hc=23 attn=79 moe=307 ms
+moeprof wait=189.0 attach=1.1 gpu=94.5 ms vram_hits=219 cpu_layers=0
+copyprof posts=15072 gate_calls=3086 gate_wait=1324.9 issue=2402.3 post=17.9 drains=5420 ms
+promoteprof posted=1379 refused=0 mirrored=16
+decprof position=63 layers=40 hc=24 attn=83 moe=316 ms
+moeprof wait=203.2 attach=1.1 gpu=87.5 ms vram_hits=209 cpu_layers=0
+copyprof posts=15189 gate_calls=3110 gate_wait=1332.8 issue=2417.7 post=18.1 drains=5453 ms
+promoteprof posted=1387 refused=0 mirrored=16
+decprof position=64 layers=40 hc=20 attn=76 moe=275 ms
+moeprof wait=163.7 attach=1.9 gpu=89.2 ms vram_hits=208 cpu_layers=0
+copyprof posts=15303 gate_calls=3135 gate_wait=1341.0 issue=2432.9 post=18.2 drains=5484 ms
+promoteprof posted=1393 refused=0 mirrored=16
+decprof position=65 layers=40 hc=20 attn=71 moe=250 ms
+moeprof wait=145.0 attach=0.5 gpu=85.4 ms vram_hits=213 cpu_layers=0
+copyprof posts=15396 gate_calls=3158 gate_wait=1346.7 issue=2441.1 post=18.3 drains=5512 ms
+promoteprof posted=1397 refused=0 mirrored=16
+decprof position=66 layers=40 hc=23 attn=76 moe=283 ms
+moeprof wait=177.0 attach=1.0 gpu=84.0 ms vram_hits=219 cpu_layers=0
+copyprof posts=15477 gate_calls=3178 gate_wait=1350.3 issue=2448.7 post=18.3 drains=5538 ms
+promoteprof posted=1403 refused=0 mirrored=16
+decprof position=67 layers=40 hc=20 attn=72 moe=288 ms
+moeprof wait=182.1 attach=1.3 gpu=82.9 ms vram_hits=214 cpu_layers=0
+copyprof posts=15582 gate_calls=3197 gate_wait=1354.7 issue=2459.4 post=18.4 drains=5566 ms
+promoteprof posted=1412 refused=0 mirrored=16
+decprof position=68 layers=40 hc=20 attn=82 moe=244 ms
+moeprof wait=136.6 attach=0.9 gpu=88.3 ms vram_hits=202 cpu_layers=0
+copyprof posts=15711 gate_calls=3224 gate_wait=1363.5 issue=2473.3 post=18.5 drains=5598 ms
+promoteprof posted=1417 refused=0 mirrored=16
+decprof position=69 layers=40 hc=23 attn=77 moe=262 ms
+moeprof wait=150.7 attach=2.4 gpu=87.9 ms vram_hits=211 cpu_layers=0
+copyprof posts=15813 gate_calls=3246 gate_wait=1369.7 issue=2485.3 post=18.6 drains=5625 ms
+promoteprof posted=1422 refused=0 mirrored=17
+decprof position=70 layers=40 hc=23 attn=85 moe=291 ms
+moeprof wait=178.0 attach=1.1 gpu=88.5 ms vram_hits=207 cpu_layers=0
+copyprof posts=15936 gate_calls=3271 gate_wait=1375.9 issue=2499.6 post=18.8 drains=5658 ms
+promoteprof posted=1430 refused=0 mirrored=17
+v4_next_predict_fresh recall=77.2% notready=2.5% depth2=51.0% route_ms=0.187 avx2=15400 learned_avx2=0 refined=7.7 queued=92800 dropped=0 kept=0 stale=0 tokstart=0 full=0 layers=8000
+decprof position=71 layers=40 hc=20 attn=85 moe=269 ms
+moeprof wait=160.2 attach=0.4 gpu=83.1 ms vram_hits=219 cpu_layers=0
+copyprof posts=16032 gate_calls=3290 gate_wait=1380.8 issue=2508.0 post=18.9 drains=5688 ms
+promoteprof posted=1441 refused=0 mirrored=17
+decprof position=72 layers=40 hc=22 attn=80 moe=283 ms
+moeprof wait=172.0 attach=1.7 gpu=88.8 ms vram_hits=210 cpu_layers=0
+copyprof posts=16161 gate_calls=3313 gate_wait=1388.4 issue=2527.3 post=19.0 drains=5726 ms
+promoteprof posted=1455 refused=0 mirrored=17
+decprof position=73 layers=40 hc=22 attn=83 moe=268 ms
+moeprof wait=149.7 attach=2.6 gpu=92.6 ms vram_hits=205 cpu_layers=0
+copyprof posts=16317 gate_calls=3335 gate_wait=1397.9 issue=2552.3 post=19.1 drains=5765 ms
+promoteprof posted=1472 refused=0 mirrored=17
+decprof position=74 layers=40 hc=21 attn=84 moe=230 ms
+moeprof wait=118.6 attach=1.1 gpu=90.1 ms vram_hits=206 cpu_layers=0
+copyprof posts=16449 gate_calls=3357 gate_wait=1407.9 issue=2570.9 post=19.2 drains=5801 ms
+promoteprof posted=1485 refused=0 mirrored=17
+decprof position=75 layers=40 hc=22 attn=92 moe=218 ms
+moeprof wait=117.9 attach=0.3 gpu=81.7 ms vram_hits=223 cpu_layers=0
+copyprof posts=16506 gate_calls=3371 gate_wait=1411.1 issue=2577.4 post=19.3 drains=5817 ms
+promoteprof posted=1487 refused=0 mirrored=17
+decprof position=76 layers=40 hc=21 attn=83 moe=228 ms
+moeprof wait=123.1 attach=0.4 gpu=85.5 ms vram_hits=219 cpu_layers=0
+copyprof posts=16578 gate_calls=3390 gate_wait=1418.0 issue=2588.0 post=19.4 drains=5839 ms
+promoteprof posted=1490 refused=0 mirrored=17
+v4_next_predict recall=79.1% k=8 layers=8000
+v4_next_predict_conf used/guessed per 0.05 d1 245/913 4601/13465 12595/25822 9809/12789 4991/5228 2672/2706 1508/1517 767/771 400/401 388/388 d2 11/27 550/977 4628/7677 8878/12246 4845/5219 2421/2481 1237/1248 661/663 327/329 309/309
+decprof position=77 layers=40 hc=20 attn=83 moe=268 ms
+moeprof wait=161.0 attach=0.6 gpu=83.4 ms vram_hits=220 cpu_layers=0
+copyprof posts=16653 gate_calls=3406 gate_wait=1422.5 issue=2595.0 post=19.4 drains=5860 ms
+promoteprof posted=1495 refused=0 mirrored=17
+decprof position=78 layers=40 hc=20 attn=78 moe=285 ms
+moeprof wait=177.8 attach=0.5 gpu=85.7 ms vram_hits=214 cpu_layers=0
+copyprof posts=16743 gate_calls=3427 gate_wait=1430.0 issue=2606.1 post=19.5 drains=5887 ms
+promoteprof posted=1500 refused=0 mirrored=17
+decprof position=79 layers=40 hc=20 attn=79 moe=236 ms
+moeprof wait=129.4 attach=1.2 gpu=85.7 ms vram_hits=209 cpu_layers=0
+copyprof posts=16854 gate_calls=3450 gate_wait=1435.0 issue=2618.6 post=19.6 drains=5916 ms
+promoteprof posted=1506 refused=0 mirrored=17
+decprof position=80 layers=40 hc=20 attn=78 moe=275 ms
+moeprof wait=166.3 attach=1.2 gpu=87.3 ms vram_hits=212 cpu_layers=0
+copyprof posts=16950 gate_calls=3470 gate_wait=1441.2 issue=2628.9 post=19.7 drains=5941 ms
+promoteprof posted=1511 refused=0 mirrored=19
+decprof position=81 layers=40 hc=21 attn=80 moe=230 ms
+moeprof wait=127.4 attach=1.1 gpu=86.4 ms vram_hits=206 cpu_layers=0
+copyprof posts=17070 gate_calls=3493 gate_wait=1447.9 issue=2643.3 post=19.8 drains=5970 ms
+promoteprof posted=1517 refused=0 mirrored=20
+decprof position=82 layers=40 hc=20 attn=77 moe=311 ms
+moeprof wait=195.4 attach=1.7 gpu=87.6 ms vram_hits=209 cpu_layers=0
+copyprof posts=17184 gate_calls=3515 gate_wait=1456.6 issue=2658.8 post=19.9 drains=6000 ms
+promoteprof posted=1525 refused=0 mirrored=20
+decprof position=83 layers=40 hc=22 attn=84 moe=256 ms
+moeprof wait=154.0 attach=0.5 gpu=83.2 ms vram_hits=214 cpu_layers=0
+copyprof posts=17283 gate_calls=3535 gate_wait=1460.5 issue=2671.6 post=20.0 drains=6029 ms
+promoteprof posted=1534 refused=0 mirrored=22
+decprof position=84 layers=40 hc=22 attn=79 moe=271 ms
+moeprof wait=166.4 attach=0.6 gpu=85.7 ms vram_hits=211 cpu_layers=0
+copyprof posts=17379 gate_calls=3556 gate_wait=1467.4 issue=2684.5 post=20.1 drains=6053 ms
+promoteprof posted=1537 refused=0 mirrored=23
+decprof position=85 layers=40 hc=21 attn=88 moe=213 ms
+moeprof wait=111.0 attach=0.4 gpu=82.7 ms vram_hits=216 cpu_layers=0
+copyprof posts=17460 gate_calls=3574 gate_wait=1472.4 issue=2692.9 post=20.2 drains=6075 ms
+promoteprof posted=1541 refused=0 mirrored=24
+decprof position=86 layers=40 hc=21 attn=82 moe=257 ms
+moeprof wait=144.6 attach=1.0 gpu=88.1 ms vram_hits=216 cpu_layers=0
+copyprof posts=17538 gate_calls=3593 gate_wait=1479.0 issue=2701.4 post=20.3 drains=6096 ms
+promoteprof posted=1543 refused=0 mirrored=24
+decprof position=87 layers=40 hc=22 attn=74 moe=281 ms
+moeprof wait=166.6 attach=0.7 gpu=90.9 ms vram_hits=207 cpu_layers=0
+copyprof posts=17667 gate_calls=3617 gate_wait=1490.8 issue=2725.7 post=20.4 drains=6129 ms
+promoteprof posted=1553 refused=0 mirrored=24
+decprof position=88 layers=40 hc=21 attn=75 moe=263 ms
+moeprof wait=149.2 attach=2.1 gpu=91.3 ms vram_hits=210 cpu_layers=0
+copyprof posts=17781 gate_calls=3639 gate_wait=1498.1 issue=2740.1 post=20.5 drains=6159 ms
+promoteprof posted=1561 refused=0 mirrored=24
+decprof position=89 layers=40 hc=21 attn=89 moe=275 ms
+moeprof wait=166.5 attach=1.5 gpu=83.9 ms vram_hits=219 cpu_layers=0
+copyprof posts=17862 gate_calls=3658 gate_wait=1503.0 issue=2748.4 post=20.6 drains=6185 ms
+promoteprof posted=1568 refused=0 mirrored=24
+decprof position=90 layers=40 hc=22 attn=81 moe=279 ms
+moeprof wait=170.7 attach=0.7 gpu=82.0 ms vram_hits=220 cpu_layers=0
+copyprof posts=17943 gate_calls=3672 gate_wait=1506.8 issue=2756.2 post=20.7 drains=6207 ms
+promoteprof posted=1575 refused=0 mirrored=24
+decprof position=91 layers=40 hc=20 attn=73 moe=283 ms
+moeprof wait=167.7 attach=0.8 gpu=90.9 ms vram_hits=210 cpu_layers=0
+copyprof posts=18054 gate_calls=3696 gate_wait=1517.0 issue=2773.8 post=20.8 drains=6238 ms
+promoteprof posted=1582 refused=0 mirrored=24
+decprof position=92 layers=40 hc=20 attn=72 moe=266 ms
+moeprof wait=158.5 attach=0.8 gpu=86.5 ms vram_hits=207 cpu_layers=0
+copyprof posts=18177 gate_calls=3723 gate_wait=1523.3 issue=2788.7 post=20.9 drains=6273 ms
+promoteprof posted=1590 refused=0 mirrored=24
+decprof position=93 layers=40 hc=22 attn=85 moe=220 ms
+moeprof wait=118.8 attach=1.1 gpu=81.3 ms vram_hits=222 cpu_layers=0
+copyprof posts=18234 gate_calls=3740 gate_wait=1527.8 issue=2794.0 post=21.0 drains=6291 ms
+promoteprof posted=1591 refused=0 mirrored=24
+decprof position=94 layers=40 hc=21 attn=83 moe=256 ms
+moeprof wait=147.5 attach=2.1 gpu=85.2 ms vram_hits=213 cpu_layers=0
+copyprof posts=18333 gate_calls=3759 gate_wait=1532.5 issue=2805.2 post=21.1 drains=6316 ms
+promoteprof posted=1597 refused=0 mirrored=24
+decprof position=95 layers=40 hc=20 attn=78 moe=272 ms
+moeprof wait=151.9 attach=1.8 gpu=95.0 ms vram_hits=210 cpu_layers=0
+copyprof posts=18462 gate_calls=3782 gate_wait=1543.5 issue=2826.4 post=21.2 drains=6352 ms
+promoteprof posted=1610 refused=0 mirrored=24
+decprof position=96 layers=40 hc=21 attn=90 moe=240 ms
+moeprof wait=127.4 attach=1.0 gpu=90.8 ms vram_hits=209 cpu_layers=0
+copyprof posts=18591 gate_calls=3803 gate_wait=1553.0 issue=2842.3 post=21.3 drains=6386 ms
+promoteprof posted=1622 refused=0 mirrored=24
+decprof position=97 layers=40 hc=21 attn=89 moe=215 ms
+moeprof wait=104.5 attach=2.5 gpu=89.6 ms vram_hits=210 cpu_layers=0
+copyprof posts=18711 gate_calls=3823 gate_wait=1561.2 issue=2859.9 post=21.4 drains=6418 ms
+promoteprof posted=1633 refused=0 mirrored=24
+decprof position=98 layers=40 hc=21 attn=84 moe=266 ms
+moeprof wait=155.8 attach=0.7 gpu=87.7 ms vram_hits=213 cpu_layers=0
+copyprof posts=18816 gate_calls=3848 gate_wait=1566.9 issue=2871.3 post=21.5 drains=6451 ms
+promoteprof posted=1641 refused=0 mirrored=24
+decprof position=99 layers=40 hc=22 attn=85 moe=264 ms
+moeprof wait=146.9 attach=3.4 gpu=91.7 ms vram_hits=208 cpu_layers=0
+copyprof posts=18945 gate_calls=3872 gate_wait=1577.5 issue=2897.1 post=21.7 drains=6485 ms
+promoteprof posted=1652 refused=0 mirrored=24
+decprof position=100 layers=40 hc=21 attn=91 moe=240 ms
+moeprof wait=128.1 attach=2.3 gpu=88.6 ms vram_hits=207 cpu_layers=0
+copyprof posts=19077 gate_calls=3893 gate_wait=1585.6 issue=2914.3 post=21.8 drains=6518 ms
+promoteprof posted=1663 refused=0 mirrored=25
+decprof position=101 layers=40 hc=21 attn=92 moe=233 ms
+moeprof wait=123.2 attach=0.6 gpu=86.4 ms vram_hits=218 cpu_layers=0
+copyprof posts=19164 gate_calls=3910 gate_wait=1593.0 issue=2928.8 post=21.9 drains=6542 ms
+promoteprof posted=1670 refused=0 mirrored=25
+decprof position=102 layers=40 hc=20 attn=85 moe=269 ms
+moeprof wait=156.4 attach=2.8 gpu=90.4 ms vram_hits=199 cpu_layers=0
+copyprof posts=19335 gate_calls=3938 gate_wait=1602.1 issue=2950.8 post=22.1 drains=6591 ms
+promoteprof posted=1689 refused=0 mirrored=26
+decprof position=103 layers=40 hc=22 attn=81 moe=268 ms
+moeprof wait=158.7 attach=0.7 gpu=86.6 ms vram_hits=212 cpu_layers=0
+copyprof posts=19455 gate_calls=3956 gate_wait=1608.9 issue=2968.8 post=22.2 drains=6624 ms
+promoteprof posted=1703 refused=0 mirrored=26
+decprof position=104 layers=40 hc=22 attn=90 moe=256 ms
+moeprof wait=150.0 attach=0.5 gpu=84.2 ms vram_hits=209 cpu_layers=0
+copyprof posts=19575 gate_calls=3978 gate_wait=1613.3 issue=2978.9 post=22.3 drains=6657 ms
+promoteprof posted=1713 refused=0 mirrored=26
+decprof position=105 layers=40 hc=21 attn=90 moe=224 ms
+moeprof wait=118.8 attach=1.5 gpu=85.7 ms vram_hits=208 cpu_layers=0
+copyprof posts=19701 gate_calls=4002 gate_wait=1619.1 issue=2994.1 post=22.4 drains=6693 ms
+promoteprof posted=1724 refused=0 mirrored=29
+decprof position=106 layers=40 hc=20 attn=79 moe=264 ms
+moeprof wait=154.9 attach=0.9 gpu=85.4 ms vram_hits=212 cpu_layers=0
+copyprof posts=19827 gate_calls=4022 gate_wait=1625.2 issue=3007.7 post=22.5 drains=6730 ms
+promoteprof posted=1740 refused=0 mirrored=29
+decprof position=107 layers=40 hc=22 attn=83 moe=219 ms
+moeprof wait=114.8 attach=2.7 gpu=85.6 ms vram_hits=207 cpu_layers=0
+copyprof posts=19959 gate_calls=4047 gate_wait=1630.6 issue=3020.1 post=22.6 drains=6767 ms
+promoteprof posted=1752 refused=0 mirrored=30
+decprof position=108 layers=40 hc=21 attn=78 moe=222 ms
+moeprof wait=117.3 attach=0.4 gpu=85.5 ms vram_hits=221 cpu_layers=0
+copyprof posts=20031 gate_calls=4061 gate_wait=1636.1 issue=3028.7 post=22.7 drains=6785 ms
+promoteprof posted=1757 refused=0 mirrored=30
+decprof position=109 layers=40 hc=21 attn=81 moe=250 ms
+moeprof wait=141.8 attach=1.4 gpu=88.6 ms vram_hits=218 cpu_layers=0
+copyprof posts=20130 gate_calls=4083 gate_wait=1644.5 issue=3044.2 post=22.9 drains=6817 ms
+promoteprof posted=1768 refused=0 mirrored=30
+decprof position=110 layers=40 hc=22 attn=100 moe=224 ms
+moeprof wait=114.2 attach=0.9 gpu=88.7 ms vram_hits=209 cpu_layers=0
+copyprof posts=20250 gate_calls=4107 gate_wait=1651.4 issue=3059.2 post=23.2 drains=6850 ms
+promoteprof posted=1777 refused=0 mirrored=31
+decprof position=111 layers=40 hc=20 attn=83 moe=243 ms
+moeprof wait=143.0 attach=0.3 gpu=80.9 ms vram_hits=222 cpu_layers=0
+copyprof posts=20331 gate_calls=4121 gate_wait=1655.6 issue=3066.4 post=23.3 drains=6874 ms
+promoteprof posted=1786 refused=0 mirrored=31
+decprof position=112 layers=40 hc=22 attn=94 moe=231 ms
+moeprof wait=124.0 attach=0.7 gpu=84.8 ms vram_hits=214 cpu_layers=0
+copyprof posts=20445 gate_calls=4139 gate_wait=1660.7 issue=3080.6 post=23.4 drains=6904 ms
+promoteprof posted=1798 refused=0 mirrored=32
+decprof position=113 layers=40 hc=22 attn=91 moe=269 ms
+moeprof wait=165.6 attach=0.3 gpu=81.6 ms vram_hits=227 cpu_layers=0
+copyprof posts=20502 gate_calls=4149 gate_wait=1663.9 issue=3088.8 post=23.5 drains=6920 ms
+promoteprof posted=1804 refused=0 mirrored=32
+decprof position=114 layers=40 hc=21 attn=80 moe=245 ms
+moeprof wait=135.9 attach=0.8 gpu=84.9 ms vram_hits=222 cpu_layers=0
+copyprof posts=20577 gate_calls=4163 gate_wait=1667.9 issue=3099.5 post=23.5 drains=6941 ms
+promoteprof posted=1811 refused=0 mirrored=32
+decprof position=115 layers=40 hc=21 attn=92 moe=243 ms
+moeprof wait=131.5 attach=0.7 gpu=89.3 ms vram_hits=214 cpu_layers=0
+copyprof posts=20679 gate_calls=4184 gate_wait=1675.5 issue=3112.2 post=23.8 drains=6970 ms
+promoteprof posted=1819 refused=0 mirrored=32
+decprof position=116 layers=40 hc=21 attn=88 moe=206 ms
+moeprof wait=102.3 attach=0.4 gpu=84.3 ms vram_hits=219 cpu_layers=0
+copyprof posts=20760 gate_calls=4202 gate_wait=1683.4 issue=3124.3 post=23.8 drains=6994 ms
+promoteprof posted=1825 refused=0 mirrored=32
+decprof position=117 layers=40 hc=20 attn=80 moe=199 ms
+moeprof wait=100.1 attach=0.5 gpu=82.6 ms vram_hits=224 cpu_layers=0
+copyprof posts=20817 gate_calls=4217 gate_wait=1688.3 issue=3131.6 post=23.9 drains=7012 ms
+promoteprof posted=1828 refused=0 mirrored=32
+decprof position=118 layers=40 hc=19 attn=87 moe=262 ms
+moeprof wait=161.5 attach=0.3 gpu=80.0 ms vram_hits=225 cpu_layers=0
+copyprof posts=20886 gate_calls=4232 gate_wait=1691.5 issue=3138.7 post=24.0 drains=7036 ms
+promoteprof posted=1837 refused=0 mirrored=32
+decprof position=119 layers=40 hc=19 attn=84 moe=276 ms
+moeprof wait=169.3 attach=0.4 gpu=85.5 ms vram_hits=217 cpu_layers=0
+copyprof posts=20970 gate_calls=4252 gate_wait=1696.4 issue=3146.5 post=24.1 drains=7062 ms
+promoteprof posted=1843 refused=0 mirrored=32
+decprof position=120 layers=40 hc=20 attn=84 moe=235 ms
+moeprof wait=126.1 attach=2.0 gpu=87.5 ms vram_hits=215 cpu_layers=0
+copyprof posts=21063 gate_calls=4270 gate_wait=1703.3 issue=3160.8 post=24.2 drains=7086 ms
+promoteprof posted=1849 refused=0 mirrored=32
+v4_next_predict_fresh recall=76.6% notready=2.5% depth2=50.8% route_ms=0.188 avx2=19250 learned_avx2=0 refined=7.7 queued=116000 dropped=0 kept=0 stale=0 tokstart=0 full=0 layers=10000
+decprof position=121 layers=40 hc=22 attn=89 moe=233 ms
+moeprof wait=130.7 attach=1.2 gpu=82.8 ms vram_hits=212 cpu_layers=0
+copyprof posts=21165 gate_calls=4291 gate_wait=1708.0 issue=3170.9 post=24.2 drains=7114 ms
+promoteprof posted=1856 refused=0 mirrored=32
+decprof position=122 layers=40 hc=21 attn=89 moe=274 ms
+moeprof wait=158.3 attach=0.5 gpu=91.9 ms vram_hits=212 cpu_layers=0
+copyprof posts=21267 gate_calls=4314 gate_wait=1717.7 issue=3188.4 post=24.3 drains=7144 ms
+promoteprof posted=1863 refused=0 mirrored=32
+decprof position=123 layers=40 hc=21 attn=84 moe=237 ms
+moeprof wait=128.7 attach=0.8 gpu=86.8 ms vram_hits=210 cpu_layers=0
+copyprof posts=21381 gate_calls=4336 gate_wait=1725.3 issue=3202.1 post=24.4 drains=7176 ms
+promoteprof posted=1872 refused=0 mirrored=33
+decprof position=124 layers=40 hc=20 attn=96 moe=236 ms
+moeprof wait=132.2 attach=0.8 gpu=83.4 ms vram_hits=217 cpu_layers=0
+copyprof posts=21489 gate_calls=4356 gate_wait=1730.2 issue=3217.6 post=24.5 drains=7208 ms
+promoteprof posted=1886 refused=0 mirrored=33
+decprof position=125 layers=40 hc=21 attn=92 moe=245 ms
+moeprof wait=134.2 attach=0.4 gpu=89.8 ms vram_hits=219 cpu_layers=0
+copyprof posts=21567 gate_calls=4374 gate_wait=1739.3 issue=3230.1 post=24.6 drains=7231 ms
+promoteprof posted=1891 refused=0 mirrored=33
+decprof position=126 layers=40 hc=21 attn=86 moe=238 ms
+moeprof wait=139.0 attach=0.3 gpu=80.0 ms vram_hits=220 cpu_layers=0
+copyprof posts=21654 gate_calls=4390 gate_wait=1742.6 issue=3241.6 post=24.7 drains=7259 ms
+promoteprof posted=1902 refused=0 mirrored=33
+decprof position=127 layers=40 hc=21 attn=82 moe=251 ms
+moeprof wait=147.9 attach=3.4 gpu=79.8 ms vram_hits=227 cpu_layers=0
+copyprof posts=21708 gate_calls=4400 gate_wait=1745.4 issue=3248.9 post=24.7 drains=7276 ms
+promoteprof posted=1908 refused=0 mirrored=33
+v4_next_predict recall=78.5% k=8 layers=10000
+v4_next_predict_conf used/guessed per 0.05 d1 369/1390 5995/17497 15415/31672 11883/15661 6029/6328 3319/3363 1908/1921 1018/1026 567/570 572/572 d2 14/35 782/1457 5803/9681 10745/14916 5852/6338 3051/3121 1614/1626 882/886 443/445 467/467
+decprof position=128 layers=40 hc=21 attn=90 moe=231 ms
+moeprof wait=128.8 attach=1.6 gpu=81.1 ms vram_hits=213 cpu_layers=0
+copyprof posts=21804 gate_calls=4422 gate_wait=1749.1 issue=3258.2 post=24.8 drains=7304 ms
+promoteprof posted=1914 refused=0 mirrored=33
+decprof position=129 layers=40 hc=21 attn=95 moe=264 ms
+moeprof wait=158.0 attach=0.7 gpu=84.7 ms vram_hits=213 cpu_layers=0
+copyprof posts=21891 gate_calls=4442 gate_wait=1754.6 issue=3268.6 post=24.9 drains=7327 ms
+promoteprof posted=1917 refused=0 mirrored=35
+decprof position=130 layers=40 hc=19 attn=89 moe=223 ms
+moeprof wait=118.7 attach=0.4 gpu=86.6 ms vram_hits=217 cpu_layers=0
+copyprof posts=21972 gate_calls=4462 gate_wait=1762.7 issue=3278.3 post=25.0 drains=7351 ms
+promoteprof posted=1921 refused=0 mirrored=35
+decprof position=131 layers=40 hc=21 attn=91 moe=213 ms
+moeprof wait=113.7 attach=0.6 gpu=81.8 ms vram_hits=223 cpu_layers=0
+copyprof posts=22038 gate_calls=4477 gate_wait=1766.2 issue=3285.2 post=25.1 drains=7371 ms
+promoteprof posted=1926 refused=0 mirrored=36
+decprof position=132 layers=40 hc=20 attn=83 moe=208 ms
+moeprof wait=109.9 attach=0.2 gpu=78.7 ms vram_hits=231 cpu_layers=0
+copyprof posts=22071 gate_calls=4486 gate_wait=1768.8 issue=3288.3 post=25.1 drains=7382 ms
+promoteprof posted=1928 refused=0 mirrored=36
+decprof position=133 layers=40 hc=20 attn=78 moe=253 ms
+moeprof wait=153.2 attach=0.4 gpu=79.1 ms vram_hits=224 cpu_layers=0
+copyprof posts=22134 gate_calls=4501 gate_wait=1772.5 issue=3295.5 post=25.2 drains=7402 ms
+promoteprof posted=1933 refused=0 mirrored=36
+decprof position=134 layers=40 hc=20 attn=91 moe=217 ms
+moeprof wait=119.2 attach=0.9 gpu=80.7 ms vram_hits=221 cpu_layers=0
+copyprof posts=22209 gate_calls=4516 gate_wait=1776.1 issue=3301.9 post=25.3 drains=7425 ms
+promoteprof posted=1940 refused=0 mirrored=36
+decprof position=135 layers=40 hc=22 attn=93 moe=253 ms
+moeprof wait=148.9 attach=0.7 gpu=83.5 ms vram_hits=222 cpu_layers=0
+copyprof posts=22293 gate_calls=4529 gate_wait=1781.3 issue=3312.5 post=25.4 drains=7449 ms
+promoteprof posted=1951 refused=0 mirrored=37
+decprof position=136 layers=40 hc=20 attn=88 moe=228 ms
+moeprof wait=123.4 attach=0.3 gpu=84.4 ms vram_hits=224 cpu_layers=0
+copyprof posts=22368 gate_calls=4545 gate_wait=1785.3 issue=3320.6 post=25.4 drains=7474 ms
+promoteprof posted=1960 refused=0 mirrored=38
+decprof position=137 layers=40 hc=20 attn=85 moe=236 ms
+moeprof wait=137.8 attach=0.2 gpu=78.2 ms vram_hits=230 cpu_layers=0
+copyprof posts=22413 gate_calls=4556 gate_wait=1787.2 issue=3328.4 post=25.5 drains=7489 ms
+promoteprof posted=1965 refused=0 mirrored=38
+decprof position=138 layers=40 hc=21 attn=89 moe=235 ms
+moeprof wait=134.7 attach=0.3 gpu=81.0 ms vram_hits=225 cpu_layers=0
+copyprof posts=22461 gate_calls=4569 gate_wait=1790.9 issue=3333.0 post=25.5 drains=7503 ms
+promoteprof posted=1966 refused=0 mirrored=38
+decprof position=139 layers=40 hc=20 attn=92 moe=233 ms
+moeprof wait=133.0 attach=0.3 gpu=80.0 ms vram_hits=226 cpu_layers=0
+copyprof posts=22515 gate_calls=4582 gate_wait=1793.0 issue=3337.0 post=25.6 drains=7520 ms
+promoteprof posted=1970 refused=0 mirrored=39
+decprof position=140 layers=40 hc=23 attn=99 moe=257 ms
+moeprof wait=154.4 attach=0.2 gpu=78.2 ms vram_hits=229 cpu_layers=0
+copyprof posts=22554 gate_calls=4592 gate_wait=1795.0 issue=3340.1 post=25.6 drains=7533 ms
+promoteprof posted=1973 refused=0 mirrored=39
+decprof position=141 layers=40 hc=20 attn=89 moe=225 ms
+moeprof wait=126.5 attach=0.2 gpu=80.8 ms vram_hits=230 cpu_layers=0
+copyprof posts=22587 gate_calls=4601 gate_wait=1799.5 issue=3345.3 post=25.7 drains=7543 ms
+promoteprof posted=1974 refused=0 mirrored=40
+decprof position=142 layers=40 hc=20 attn=98 moe=224 ms
+moeprof wait=127.7 attach=0.5 gpu=76.7 ms vram_hits=227 cpu_layers=0
+copyprof posts=22635 gate_calls=4611 gate_wait=1801.2 issue=3351.8 post=25.7 drains=7556 ms
+promoteprof posted=1977 refused=0 mirrored=40
+decprof position=143 layers=40 hc=21 attn=95 moe=224 ms
+moeprof wait=125.8 attach=0.5 gpu=80.3 ms vram_hits=221 cpu_layers=0
+copyprof posts=22710 gate_calls=4627 gate_wait=1804.7 issue=3359.7 post=25.8 drains=7578 ms
+promoteprof posted=1983 refused=0 mirrored=40
+decprof position=144 layers=40 hc=23 attn=91 moe=221 ms
+moeprof wait=122.0 attach=0.5 gpu=80.3 ms vram_hits=223 cpu_layers=0
+copyprof posts=22767 gate_calls=4642 gate_wait=1807.4 issue=3368.2 post=25.9 drains=7596 ms
+promoteprof posted=1986 refused=0 mirrored=40
+decprof position=145 layers=40 hc=21 attn=99 moe=244 ms
+moeprof wait=138.3 attach=0.9 gpu=84.2 ms vram_hits=221 cpu_layers=0
+copyprof posts=22833 gate_calls=4659 gate_wait=1812.1 issue=3378.2 post=26.0 drains=7617 ms
+promoteprof posted=1990 refused=0 mirrored=40
+decprof position=146 layers=40 hc=21 attn=91 moe=224 ms
+moeprof wait=120.5 attach=1.0 gpu=82.2 ms vram_hits=221 cpu_layers=0
+copyprof posts=22899 gate_calls=4675 gate_wait=1816.6 issue=3385.6 post=26.0 drains=7636 ms
+promoteprof posted=1993 refused=0 mirrored=40
+decprof position=147 layers=40 hc=20 attn=91 moe=224 ms
+moeprof wait=119.2 attach=1.5 gpu=86.3 ms vram_hits=221 cpu_layers=0
+copyprof posts=22971 gate_calls=4690 gate_wait=1824.6 issue=3399.4 post=26.1 drains=7656 ms
+promoteprof posted=1998 refused=0 mirrored=40
+decprof position=148 layers=40 hc=21 attn=88 moe=240 ms
+moeprof wait=129.1 attach=0.6 gpu=90.2 ms vram_hits=214 cpu_layers=0
+copyprof posts=23055 gate_calls=4713 gate_wait=1833.3 issue=3411.9 post=26.2 drains=7682 ms
+promoteprof posted=2001 refused=0 mirrored=40
+decprof position=149 layers=40 hc=22 attn=98 moe=252 ms
+moeprof wait=143.6 attach=0.5 gpu=85.8 ms vram_hits=217 cpu_layers=0
+copyprof posts=23139 gate_calls=4732 gate_wait=1839.7 issue=3421.2 post=26.3 drains=7706 ms
+promoteprof posted=2006 refused=0 mirrored=41
+decprof position=150 layers=40 hc=20 attn=86 moe=250 ms
+moeprof wait=141.5 attach=0.4 gpu=85.5 ms vram_hits=214 cpu_layers=0
+copyprof posts=23241 gate_calls=4754 gate_wait=1847.4 issue=3433.3 post=26.4 drains=7736 ms
+promoteprof posted=2014 refused=0 mirrored=41
+decprof position=151 layers=40 hc=18 attn=81 moe=204 ms
+moeprof wait=99.7 attach=0.4 gpu=86.4 ms vram_hits=218 cpu_layers=0
+copyprof posts=23313 gate_calls=4772 gate_wait=1854.4 issue=3442.7 post=26.5 drains=7756 ms
+promoteprof posted=2016 refused=0 mirrored=41
+decprof position=152 layers=40 hc=20 attn=85 moe=243 ms
+moeprof wait=138.0 attach=1.1 gpu=84.7 ms vram_hits=218 cpu_layers=0
+copyprof posts=23394 gate_calls=4789 gate_wait=1860.8 issue=3451.9 post=26.6 drains=7778 ms
+promoteprof posted=2021 refused=0 mirrored=41
+decprof position=153 layers=40 hc=20 attn=100 moe=256 ms
+moeprof wait=138.6 attach=1.0 gpu=92.8 ms vram_hits=212 cpu_layers=0
+copyprof posts=23511 gate_calls=4810 gate_wait=1871.2 issue=3470.9 post=26.7 drains=7810 ms
+promoteprof posted=2032 refused=0 mirrored=41
+decprof position=154 layers=40 hc=21 attn=86 moe=273 ms
+moeprof wait=163.3 attach=0.5 gpu=85.4 ms vram_hits=215 cpu_layers=0
+copyprof posts=23613 gate_calls=4829 gate_wait=1876.9 issue=3483.8 post=26.8 drains=7838 ms
+promoteprof posted=2041 refused=0 mirrored=41
+decprof position=155 layers=40 hc=20 attn=84 moe=246 ms
+moeprof wait=137.0 attach=1.0 gpu=89.0 ms vram_hits=208 cpu_layers=0
+copyprof posts=23733 gate_calls=4855 gate_wait=1886.1 issue=3499.6 post=26.9 drains=7872 ms
+promoteprof posted=2050 refused=0 mirrored=41
+[api] 127.0.0.1 - "GET /health HTTP/1.1" 200 -
+v4_gpu_mirror_epochs steps=11400 guard_skips=204 direct_refusals=0 pool=32 pool_fills=31586 pool_hits=17899
+v4_rows16 packed_slots=0
+v4_direct reads=19797 flock_reads=19797 fallbacks=0 payload_bytes=334846332928
+v4_wex_gpu_direct reads=41271 payload_bytes=698160816128 ram_skips=16668 failures=0 device_decodes=41271
+wexprof demand batches=5546 reserved=8586 published=8586 per_batch=1.55 read_ms=25263.3 decode_ms=6451.3 decode_ms_per_record=0.751 | per-record loads=2 read_ms=13.4 decode_ms=12.4 read_ms_per_record=6.697 decode_ms_per_record=6.215
+wexprof prefetch batches=17781 reserved=32494 published=32478 per_batch=1.83 read_ms=123811.5 decode_ms=32362.4 decode_ms_per_record=0.996 | per-record loads=205 read_ms=932.1 decode_ms=330.8 read_ms_per_record=4.547 decode_ms_per_record=1.614

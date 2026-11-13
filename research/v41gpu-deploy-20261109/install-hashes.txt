@@ -1,0 +1,7 @@
+﻿deepseek_v4.exe          041dbb2d3cfdbb202aa08f06e6345f74e93ab75af6c621634a4aeede39ec4ab2 -> 7a6f3e3f30e608c900af35f7d2ea13a0d81a6432c295693e465f6351a9b7459f
+coli_cuda_dsv4_dg.dll    c736e424247c7cefaf4c20ae3b8ec7c4482ddd15dbf9ddd2c43b3d8350023aa6 -> b1b7cdb518d2f309371602efbe58c48736574962caa1ef9b7a12af81f12e404b
+coli_cuda_dsv4.dll       21b51095c5e85ec4b74127f2b43de2a50b7211c164af0d3edf0d78cf5995a1aa -> 5483b6a774c2bab892809d7561a434936d1bc3803ac46e9877c03e3b5320fc52
+mcp_server.py            6f0db98206110876db3d092ea907fd7b668c2961dea5fd2b2868e6991e486e8f -> 2d5126b1d490f751b2279a91057897f02af85792376e76b7a5593273a00a4629
+kaira.json               799bb07a24d270dac5d4a686d04cc7e6086ff4098febbd616863c5d9b36e21f7 -> e9e07e1eaf626b03b41aa0a9ac54cb82f9ede5e9c2f951488f6a3c50729c62cd
+not replaced: coli_cuda.dll 239f7416... (kept by rule), kaira_wex_cuda.dll a7977200... (not replaced at install. W3, smoke included, used the W1 build cceb4fb5 through COLI_WEX_CUDA_LIB. The mirror switch put that build in at 06:17.), KAIRA.exe/KAIRA.dll (no host change)
+source: artifacts\native-build-v41-gpu-20261109 (master cfb7ea0 + 6be34da), installed 2026-11-09 06:05

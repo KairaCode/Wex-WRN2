@@ -1,0 +1,873 @@
+[     0.2s] == heldout_configs (full) root=<KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT out=<KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\results\heldout_configs jobs=15
+[     0.2s] environment {"os": "Windows-11-10.0.26300-SP0", "system": "Windows", "machine": "AMD64", "cpu": "AMD Ryzen 9 7950X3D 16-Core Processor", "logical_cpus": 32, "ram_gb": 31.2, "gpu": ["NVIDIA GeForce RTX 5090, 621.01, 32607 MiB, 12.0"], "python": "3.14.8", "python_impl": "CPython", "numpy": "2.5.4", "cupy": {"cupy-cuda12x": "14.2.0"}, "nvrtc": {"nvidia-cuda-nvrtc-cu12": "12.9.86"}}
+[     0.2s] sample dir <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\data\v41-sample: 160/160 experts present, manifest = kit
+[     0.2s] sample <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\data\v41-sample experts 160
+[     0.2s] check test_set_matches_reference: ok {'n_test_run': 40, 'test_run': [1, 7, 9, 15, 17, 23, 25, 31, 33, 39, 41, 47, 49, 55, 57, 63, 65, 71, 73, 79, 81, 87, 89, 95, 97, 103, 105, 111, 113, 119, 121, 127, 129, 135, 137, 143, 145, 151, 153, 159]}
+[     0.2s] counts: 80 experts (cache <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\results\_cache\cpu_counts)
+[     0.6s] count 1/80 done (0s)
+[     5.8s] count 2/80 done (6s)
+[     5.8s] count 3/80 done (6s)
+[     5.8s] count 4/80 done (6s)
+[     5.9s] count 5/80 done (6s)
+[     5.9s] count 6/80 done (6s)
+[     6.0s] count 7/80 done (6s)
+[     6.0s] count 8/80 done (6s)
+[     6.0s] count 9/80 done (6s)
+[     6.1s] count 10/80 done (6s)
+[     6.1s] count 11/80 done (6s)
+[     6.1s] count 12/80 done (6s)
+[     6.1s] count 13/80 done (6s)
+[     6.2s] count 14/80 done (6s)
+[     6.2s] count 15/80 done (6s)
+[     6.2s] count 16/80 done (6s)
+[     6.2s] count 17/80 done (6s)
+[    11.0s] count 18/80 done (11s)
+[    11.0s] count 19/80 done (11s)
+[    11.1s] count 20/80 done (11s)
+[    11.1s] count 21/80 done (11s)
+[    11.2s] count 22/80 done (11s)
+[    11.3s] count 23/80 done (11s)
+[    11.3s] count 24/80 done (11s)
+[    11.4s] count 25/80 done (11s)
+[    11.4s] count 26/80 done (11s)
+[    11.5s] count 27/80 done (11s)
+[    11.5s] count 28/80 done (11s)
+[    11.5s] count 29/80 done (11s)
+[    11.5s] count 30/80 done (11s)
+[    11.6s] count 31/80 done (11s)
+[    11.6s] count 32/80 done (11s)
+[    11.6s] count 33/80 done (11s)
+[    11.7s] count 34/80 done (11s)
+[    11.7s] count 35/80 done (11s)
+[    16.4s] count 36/80 done (16s)
+[    16.5s] count 37/80 done (16s)
+[    16.5s] count 38/80 done (16s)
+[    16.6s] count 39/80 done (16s)
+[    16.7s] count 40/80 done (16s)
+[    16.7s] count 41/80 done (16s)
+[    16.7s] count 42/80 done (17s)
+[    16.8s] count 43/80 done (17s)
+[    16.8s] count 44/80 done (17s)
+[    16.9s] count 45/80 done (17s)
+[    16.9s] count 46/80 done (17s)
+[    16.9s] count 47/80 done (17s)
+[    17.0s] count 48/80 done (17s)
+[    17.0s] count 49/80 done (17s)
+[    17.0s] count 50/80 done (17s)
+[    17.0s] count 51/80 done (17s)
+[    17.1s] count 52/80 done (17s)
+[    17.1s] count 53/80 done (17s)
+[    22.0s] count 54/80 done (22s)
+[    22.1s] count 55/80 done (22s)
+[    22.1s] count 56/80 done (22s)
+[    22.2s] count 57/80 done (22s)
+[    22.2s] count 58/80 done (22s)
+[    22.3s] count 59/80 done (22s)
+[    22.3s] count 60/80 done (22s)
+[    22.4s] count 61/80 done (22s)
+[    22.4s] count 62/80 done (22s)
+[    22.4s] count 63/80 done (22s)
+[    22.4s] count 64/80 done (22s)
+[    22.5s] count 65/80 done (22s)
+[    22.5s] count 66/80 done (22s)
+[    22.5s] count 67/80 done (22s)
+[    22.5s] count 68/80 done (22s)
+[    22.5s] count 69/80 done (22s)
+[    22.6s] count 70/80 done (22s)
+[    22.6s] count 71/80 done (22s)
+[    25.4s] count 72/80 done (25s)
+[    25.5s] count 73/80 done (25s)
+[    25.5s] count 74/80 done (25s)
+[    25.6s] count 75/80 done (25s)
+[    25.6s] count 76/80 done (25s)
+[    25.6s] count 77/80 done (25s)
+[    25.6s] count 78/80 done (25s)
+[    25.7s] count 79/80 done (25s)
+[    25.7s] count 80/80 done (25s)
+[    25.8s] check train_sources_sha256: ok 80/80
+[    25.8s] check train_ceil_applicable: ok
+[    25.8s] model wnr2: trained on 80 experts, anchor census {'w1=120': 79, 'w2=120': 75, 'w3=120': 76, 'w3=121': 4, 'w1=121': 1, 'w2=121': 5}, vs ceil-ref {'wf': True, 'scf': True}
+[    25.9s] model f: trained on 80 experts, anchor census {'w1=121': 79, 'w2=121': 80, 'w3=121': 80, 'w1=120': 1}, vs ceil-ref {'wf': True, 'scf': True, 'etab': True}
+[    26.0s] model fg0: trained on 80 experts, anchor census {'w1=120': 80, 'w2=120': 80, 'w3=120': 80}, vs ceil-ref {'wf': True, 'scf': True, 'etab': True}
+[    26.2s] model fg0c: trained on 80 experts, anchor census {'w1=120': 80, 'w2=120': 80, 'w3=120': 80}, vs ceil-ref {'wf': True, 'scf': True, 'etab': True}
+[    26.2s] check models_equal_ceilref_even80: ok {'wnr2': {'wf': True, 'scf': True}, 'f': {'wf': True, 'scf': True, 'etab': True}, 'fg0': {'wf': True, 'scf': True, 'etab': True}, 'fg0c': {'wf': True, 'scf': True, 'etab': True}}
+[    26.2s] encode/decode: 40 experts x 7 payload configs = 280 jobs on 15 workers
+[    30.9s] record 1/280 done (5s)
+[    30.9s] L00_E113.bin wnr2    total 16887808 used 16885201 ok True err None enc 2.073s dec 1.92s
+[    31.7s] record 2/280 done (5s)
+[    31.7s] L00_E113.bin f       total 16572416 used 16570526 ok True err None enc 2.382s dec 2.436s
+[    33.4s] record 3/280 done (7s)
+[    33.4s] L01_E187.bin wnr2    total 16891904 used 16889419 ok True err None enc 2.471s dec 2.285s
+[    33.8s] record 4/280 done (8s)
+[    33.8s] L00_E113.bin fg0     total 16572416 used 16569576 ok True err None enc 2.487s dec 2.052s
+[    33.8s] L00_E113.bin fg0d    total 16547840 used 16544052 ok True err None enc 2.511s dec 2.072s
+[    34.1s] record 5/280 done (8s)
+[    34.1s] L01_E187.bin f       total 16572416 used 16571975 ok True err None enc 2.846s dec 2.307s
+[    34.5s] record 6/280 done (8s)
+[    34.5s] L00_E113.bin fg0t    total 16531456 used 16529309 ok True err None enc 2.701s dec 2.09s
+[    34.5s] L00_E113.bin fg0dt   total 16506880 used 16503849 ok True err None enc 2.727s dec 1.946s
+[    35.4s] record 7/280 done (9s)
+[    35.4s] L02_E062.bin wnr2    total 16863232 used 16862525 ok True err None enc 2.581s dec 1.91s
+[    35.5s] record 8/280 done (9s)
+[    35.5s] L00_E113.bin fg0e    total 16572416 used 16570932 ok True err None enc 2.746s dec 2.691s
+[    35.5s] L00_E113.bin fg0de   total 16547840 used 16545412 ok True err None enc 2.772s dec 2.632s
+[    35.8s] record 9/280 done (10s)
+[    35.8s] L00_E113.bin fg0c    total 16052224 used 16051069 ok True err None enc 2.717s dec 2.543s
+[    35.8s] L00_E113.bin fg0cd   total 16027648 used 16025921 ok True err None enc 2.742s dec 2.547s
+[    36.0s] record 10/280 done (10s)
+[    36.0s] L02_E062.bin f       total 16556032 used 16553734 ok True err None enc 2.517s dec 2.341s
+[    36.2s] record 11/280 done (10s)
+[    36.2s] L00_E113.bin fg0ce   total 16056320 used 16052393 ok True err None enc 2.981s dec 2.249s
+[    36.2s] L00_E113.bin fg0cde  total 16027648 used 16027257 ok True err None enc 3.005s dec 2.587s
+[    37.2s] record 12/280 done (11s)
+[    37.2s] L01_E187.bin fg0     total 16572416 used 16571240 ok True err None enc 2.755s dec 2.468s
+[    37.2s] L01_E187.bin fg0d    total 16547840 used 16545460 ok True err None enc 2.78s dec 2.641s
+[    37.4s] record 13/280 done (11s)
+[    37.4s] L01_E187.bin fg0e    total 16576512 used 16572479 ok True err None enc 2.96s dec 2.278s
+[    37.4s] L01_E187.bin fg0de   total 16547840 used 16546691 ok True err None enc 2.982s dec 2.474s
+[    37.7s] record 14/280 done (11s)
+[    37.7s] L01_E187.bin fg0c    total 16060416 used 16057003 ok True err None enc 2.805s dec 2.246s
+[    37.7s] L01_E187.bin fg0cd   total 16031744 used 16031455 ok True err None enc 2.828s dec 2.236s
+[    38.0s] record 15/280 done (12s)
+[    38.0s] L01_E187.bin fg0t    total 16531456 used 16530983 ok True err None enc 2.946s dec 2.59s
+[    38.0s] L01_E187.bin fg0dt   total 16506880 used 16505219 ok True err None enc 2.969s dec 2.474s
+[    39.0s] record 16/280 done (13s)
+[    39.0s] L01_E187.bin fg0ce   total 16060416 used 16058307 ok True err None enc 2.96s dec 2.679s
+[    39.0s] L01_E187.bin fg0cde  total 16035840 used 16032795 ok True err None enc 2.977s dec 2.527s
+[    39.8s] record 17/280 done (14s)
+[    39.8s] L02_E062.bin fg0     total 16556032 used 16553031 ok True err None enc 2.679s dec 2.679s
+[    39.8s] L02_E062.bin fg0d    total 16527360 used 16527207 ok True err None enc 2.708s dec 2.436s
+[    40.0s] record 18/280 done (14s)
+[    40.0s] L03_E142.bin wnr2    total 16826368 used 16822869 ok True err None enc 2.621s dec 1.757s
+[    41.1s] record 19/280 done (15s)
+[    41.1s] L03_E142.bin f       total 16539648 used 16536219 ok True err None enc 2.902s dec 2.398s
+[    41.1s] record 20/280 done (15s)
+[    41.1s] L02_E062.bin fg0t    total 16515072 used 16512836 ok True err None enc 2.95s dec 2.158s
+[    41.1s] L02_E062.bin fg0dt   total 16490496 used 16487012 ok True err None enc 2.981s dec 1.933s
+[    41.4s] record 21/280 done (15s)
+[    41.4s] L02_E062.bin fg0c    total 16039936 used 16037263 ok True err None enc 2.907s dec 2.144s
+[    41.4s] L02_E062.bin fg0cd   total 16015360 used 16011803 ok True err None enc 2.937s dec 1.959s
+[    41.7s] record 22/280 done (15s)
+[    41.7s] L02_E062.bin fg0e    total 16556032 used 16554390 ok True err None enc 2.946s dec 2.726s
+[    41.7s] L02_E062.bin fg0de   total 16531456 used 16528578 ok True err None enc 2.972s dec 2.371s
+[    42.3s] record 23/280 done (16s)
+[    42.3s] L02_E062.bin fg0ce   total 16039936 used 16038642 ok True err None enc 3.105s dec 2.302s
+[    42.3s] L02_E062.bin fg0cde  total 16015360 used 16013118 ok True err None enc 3.129s dec 2.115s
+[    42.3s] record 24/280 done (16s)
+[    42.3s] L04_E038.bin wnr2    total 16863232 used 16861625 ok True err None enc 2.62s dec 1.78s
+[    43.6s] record 25/280 done (17s)
+[    43.6s] L04_E038.bin f       total 16551936 used 16549075 ok True err None enc 2.761s dec 2.55s
+[    43.7s] record 26/280 done (17s)
+[    43.7s] L03_E142.bin fg0t    total 16498688 used 16495404 ok True err None enc 3.1s dec 2.019s
+[    43.7s] L03_E142.bin fg0dt   total 16470016 used 16469284 ok True err None enc 3.122s dec 2.166s
+[    43.9s] record 27/280 done (18s)
+[    43.9s] L03_E142.bin fg0e    total 16539648 used 16536998 ok True err None enc 3.2s dec 2.092s
+[    43.9s] L03_E142.bin fg0de   total 16510976 used 16510870 ok True err None enc 3.224s dec 2.278s
+[    43.9s] record 28/280 done (18s)
+[    43.9s] L03_E142.bin fg0     total 16539648 used 16535625 ok True err None enc 2.955s dec 2.383s
+[    43.9s] L03_E142.bin fg0d    total 16510976 used 16509469 ok True err None enc 2.982s dec 2.468s
+[    45.3s] record 29/280 done (19s)
+[    45.3s] L03_E142.bin fg0c    total 16019456 used 16018328 ok True err None enc 2.876s dec 2.453s
+[    45.3s] L03_E142.bin fg0cd   total 15994880 used 15992392 ok True err None enc 2.9s dec 2.492s
+[    45.5s] record 30/280 done (19s)
+[    45.5s] L03_E142.bin fg0ce   total 16023552 used 16019721 ok True err None enc 3.093s dec 2.319s
+[    45.5s] L03_E142.bin fg0cde  total 15994880 used 15993821 ok True err None enc 3.114s dec 2.389s
+[    46.3s] record 31/280 done (20s)
+[    46.3s] L05_E084.bin wnr2    total 16838656 used 16836433 ok True err None enc 2.591s dec 2.09s
+[    47.2s] record 32/280 done (21s)
+[    47.2s] L04_E038.bin fg0     total 16551936 used 16548249 ok True err None enc 2.767s dec 2.615s
+[    47.2s] L04_E038.bin fg0d    total 16523264 used 16521245 ok True err None enc 2.792s dec 2.525s
+[    47.4s] record 33/280 done (21s)
+[    47.4s] L05_E084.bin f       total 16539648 used 16539461 ok True err None enc 2.909s dec 2.602s
+[    47.8s] record 34/280 done (22s)
+[    47.8s] L04_E038.bin fg0t    total 16510976 used 16508112 ok True err None enc 2.951s dec 2.357s
+[    47.8s] L04_E038.bin fg0dt   total 16482304 used 16481096 ok True err None enc 2.975s dec 2.258s
+[    48.3s] record 35/280 done (22s)
+[    48.3s] L04_E038.bin fg0e    total 16551936 used 16549595 ok True err None enc 2.947s dec 2.666s
+[    48.3s] L04_E038.bin fg0de   total 16523264 used 16522579 ok True err None enc 2.977s dec 2.577s
+[    49.1s] record 36/280 done (23s)
+[    49.1s] L06_E073.bin wnr2    total 16850944 used 16849293 ok True err None enc 2.623s dec 2.352s
+[    49.3s] record 37/280 done (23s)
+[    49.3s] L04_E038.bin fg0ce   total 16035840 used 16033504 ok True err None enc 3.125s dec 2.468s
+[    49.3s] L04_E038.bin fg0cde  total 16007168 used 16006628 ok True err None enc 3.152s dec 2.254s
+[    49.4s] record 38/280 done (23s)
+[    49.4s] L04_E038.bin fg0c    total 16035840 used 16032148 ok True err None enc 2.968s dec 2.562s
+[    49.4s] L04_E038.bin fg0cd   total 16007168 used 16005284 ok True err None enc 2.993s dec 2.528s
+[    49.9s] record 39/280 done (24s)
+[    49.9s] L05_E084.bin fg0     total 16539648 used 16538797 ok True err None enc 2.978s dec 2.357s
+[    49.9s] L05_E084.bin fg0d    total 16515072 used 16512569 ok True err None enc 3.011s dec 2.009s
+[    50.5s] record 40/280 done (24s)
+[    50.5s] L05_E084.bin fg0e    total 16543744 used 16540127 ok True err None enc 3.177s dec 2.296s
+[    50.5s] L05_E084.bin fg0de   total 16515072 used 16513887 ok True err None enc 3.202s dec 2.43s
+[    51.0s] record 41/280 done (25s)
+[    51.0s] L06_E073.bin f       total 16551936 used 16549517 ok True err None enc 2.755s dec 2.622s
+[    51.6s] record 42/280 done (25s)
+[    51.6s] L05_E084.bin fg0c    total 16023552 used 16022330 ok True err None enc 3.029s dec 2.224s
+[    51.6s] L05_E084.bin fg0cd   total 15998976 used 15996362 ok True err None enc 3.055s dec 2.359s
+[    51.9s] record 43/280 done (26s)
+[    51.9s] L05_E084.bin fg0t    total 16498688 used 16498678 ok True err None enc 3.052s dec 2.484s
+[    51.9s] L05_E084.bin fg0dt   total 16474112 used 16472426 ok True err None enc 3.085s dec 2.54s
+[    52.0s] record 44/280 done (26s)
+[    52.0s] L05_E084.bin fg0ce   total 16027648 used 16023708 ok True err None enc 3.177s dec 2.291s
+[    52.0s] L05_E084.bin fg0cde  total 15998976 used 15997724 ok True err None enc 3.202s dec 2.357s
+[    53.0s] record 45/280 done (27s)
+[    53.0s] L06_E073.bin fg0     total 16551936 used 16548826 ok True err None enc 2.828s dec 2.139s
+[    53.0s] L06_E073.bin fg0d    total 16523264 used 16522962 ok True err None enc 2.857s dec 2.269s
+[    53.2s] record 46/280 done (27s)
+[    53.2s] L07_E167.bin wnr2    total 16863232 used 16859218 ok True err None enc 2.504s dec 2.224s
+[    54.3s] record 47/280 done (28s)
+[    54.3s] L06_E073.bin fg0e    total 16551936 used 16550139 ok True err None enc 3.042s dec 2.321s
+[    54.3s] L06_E073.bin fg0de   total 16527360 used 16524311 ok True err None enc 3.071s dec 2.381s
+[    54.9s] record 48/280 done (29s)
+[    54.9s] L07_E167.bin f       total 16551936 used 16550223 ok True err None enc 2.878s dec 2.62s
+[    55.3s] record 49/280 done (29s)
+[    55.3s] L06_E073.bin fg0t    total 16510976 used 16508724 ok True err None enc 2.893s dec 2.572s
+[    55.3s] L06_E073.bin fg0dt   total 16486400 used 16482936 ok True err None enc 2.924s dec 2.407s
+[    55.6s] record 50/280 done (29s)
+[    55.6s] L06_E073.bin fg0c    total 16035840 used 16032497 ok True err None enc 2.83s dec 2.615s
+[    55.6s] L06_E073.bin fg0cd   total 16007168 used 16007001 ok True err None enc 2.858s dec 2.44s
+[    55.8s] record 51/280 done (30s)
+[    55.8s] L06_E073.bin fg0ce   total 16035840 used 16033898 ok True err None enc 3.124s dec 2.37s
+[    55.8s] L06_E073.bin fg0cde  total 16011264 used 16008430 ok True err None enc 3.15s dec 2.239s
+[    56.4s] record 52/280 done (30s)
+[    56.4s] L08_E019.bin wnr2    total 16826368 used 16826257 ok True err None enc 2.54s dec 2.024s
+[    56.8s] record 53/280 done (31s)
+[    56.8s] L07_E167.bin fg0     total 16551936 used 16549435 ok True err None enc 2.919s dec 2.184s
+[    56.8s] L07_E167.bin fg0d    total 16523264 used 16523155 ok True err None enc 2.942s dec 2.137s
+[    57.4s] record 54/280 done (31s)
+[    57.4s] L08_E019.bin f       total 16535552 used 16533995 ok True err None enc 2.789s dec 2.475s
+[    57.5s] record 55/280 done (31s)
+[    57.5s] L07_E167.bin fg0t    total 16510976 used 16509342 ok True err None enc 3.025s dec 2.239s
+[    57.5s] L07_E167.bin fg0dt   total 16486400 used 16483082 ok True err None enc 3.047s dec 2.028s
+[    57.9s] record 56/280 done (32s)
+[    57.9s] L07_E167.bin fg0c    total 16035840 used 16033428 ok True err None enc 2.889s dec 2.097s
+[    57.9s] L07_E167.bin fg0cd   total 16011264 used 16007420 ok True err None enc 2.917s dec 2.121s
+[    57.9s] record 57/280 done (32s)
+[    57.9s] L07_E167.bin fg0e    total 16551936 used 16550756 ok True err None enc 3.048s dec 2.573s
+[    57.9s] L07_E167.bin fg0de   total 16527360 used 16524472 ok True err None enc 3.079s dec 2.584s
+[    59.3s] record 58/280 done (33s)
+[    59.3s] L08_E019.bin fg0     total 16535552 used 16533303 ok True err None enc 2.812s dec 2.102s
+[    59.3s] L08_E019.bin fg0d    total 16506880 used 16506827 ok True err None enc 2.837s dec 2.111s
+[    59.4s] record 59/280 done (33s)
+[    59.4s] L07_E167.bin fg0ce   total 16035840 used 16034724 ok True err None enc 2.967s dec 2.693s
+[    59.4s] L07_E167.bin fg0cde  total 16011264 used 16008756 ok True err None enc 2.99s dec 2.552s
+[    60.3s] record 60/280 done (34s)
+[    60.3s] L09_E160.bin wnr2    total 16891904 used 16890354 ok True err None enc 2.544s dec 2.191s
+[    60.6s] record 61/280 done (34s)
+[    60.6s] L08_E019.bin fg0e    total 16535552 used 16534652 ok True err None enc 2.944s dec 2.318s
+[    60.6s] L08_E019.bin fg0de   total 16510976 used 16508152 ok True err None enc 2.971s dec 2.065s
+[    61.1s] record 62/280 done (35s)
+[    61.1s] L09_E160.bin f       total 16576512 used 16574102 ok True err None enc 2.855s dec 2.427s
+[    61.2s] record 63/280 done (35s)
+[    61.2s] L08_E019.bin fg0t    total 16494592 used 16493082 ok True err None enc 2.797s dec 2.478s
+[    61.2s] L08_E019.bin fg0dt   total 16470016 used 16466558 ok True err None enc 2.818s dec 2.421s
+[    61.6s] record 64/280 done (35s)
+[    61.6s] L08_E019.bin fg0c    total 16019456 used 16015917 ok True err None enc 2.839s dec 2.059s
+[    61.6s] L08_E019.bin fg0cd   total 15990784 used 15989657 ok True err None enc 2.862s dec 2.115s
+[    62.5s] record 65/280 done (36s)
+[    62.5s] L10_E060.bin wnr2    total 16908288 used 16905791 ok True err None enc 2.558s dec 1.786s
+[    63.3s] record 66/280 done (37s)
+[    63.3s] L09_E160.bin fg0     total 16576512 used 16573291 ok True err None enc 2.871s dec 2.032s
+[    63.3s] L09_E160.bin fg0d    total 16547840 used 16547331 ok True err None enc 2.897s dec 2.271s
+[    63.4s] record 67/280 done (37s)
+[    63.4s] L08_E019.bin fg0ce   total 16019456 used 16017248 ok True err None enc 3.029s dec 2.605s
+[    63.4s] L08_E019.bin fg0cde  total 15994880 used 15990968 ok True err None enc 3.06s dec 2.619s
+[    63.5s] record 68/280 done (37s)
+[    63.5s] L10_E060.bin f       total 16588800 used 16584740 ok True err None enc 2.802s dec 2.534s
+[    64.2s] record 69/280 done (38s)
+[    64.2s] L09_E160.bin fg0e    total 16576512 used 16574695 ok True err None enc 3.051s dec 2.109s
+[    64.2s] L09_E160.bin fg0de   total 16551936 used 16548771 ok True err None enc 3.071s dec 2.33s
+[    64.5s] record 70/280 done (38s)
+[    64.5s] L09_E160.bin fg0t    total 16535552 used 16533247 ok True err None enc 2.996s dec 2.143s
+[    64.5s] L09_E160.bin fg0dt   total 16510976 used 16507287 ok True err None enc 3.019s dec 2.294s
+[    65.5s] record 71/280 done (39s)
+[    65.5s] L09_E160.bin fg0ce   total 16064512 used 16061361 ok True err None enc 3.1s dec 2.379s
+[    65.5s] L09_E160.bin fg0cde  total 16035840 used 16035797 ok True err None enc 3.129s dec 2.304s
+[    65.8s] record 72/280 done (40s)
+[    65.8s] L09_E160.bin fg0c    total 16060416 used 16060019 ok True err None enc 2.841s dec 2.652s
+[    65.8s] L09_E160.bin fg0cd   total 16035840 used 16034471 ok True err None enc 2.872s dec 2.572s
+[    66.1s] record 73/280 done (40s)
+[    66.1s] L11_E132.bin wnr2    total 16875520 used 16874633 ok True err None enc 2.51s dec 2.243s
+[    66.8s] record 74/280 done (41s)
+[    66.8s] L10_E060.bin fg0     total 16584704 used 16583952 ok True err None enc 2.796s dec 2.189s
+[    66.8s] L10_E060.bin fg0d    total 16560128 used 16558024 ok True err None enc 2.82s dec 2.199s
+[    66.8s] record 75/280 done (41s)
+[    66.8s] L11_E132.bin f       total 16568320 used 16566623 ok True err None enc 2.914s dec 2.136s
+[    67.9s] record 76/280 done (42s)
+[    67.9s] L10_E060.bin fg0e    total 16588800 used 16585317 ok True err None enc 2.955s dec 2.645s
+[    67.9s] L10_E060.bin fg0de   total 16560128 used 16559393 ok True err None enc 2.98s dec 2.572s
+[    68.1s] record 77/280 done (42s)
+[    68.1s] L10_E060.bin fg0c    total 16072704 used 16071096 ok True err None enc 2.921s dec 2.137s
+[    68.1s] L10_E060.bin fg0cd   total 16048128 used 16045480 ok True err None enc 2.951s dec 2.113s
+[    68.4s] record 78/280 done (42s)
+[    68.4s] L10_E060.bin fg0t    total 16547840 used 16543768 ok True err None enc 2.899s dec 2.532s
+[    68.4s] L10_E060.bin fg0dt   total 16519168 used 16517840 ok True err None enc 2.927s dec 2.424s
+[    69.3s] record 79/280 done (43s)
+[    69.3s] L12_E034.bin wnr2    total 16896000 used 16893311 ok True err None enc 2.552s dec 2.062s
+[    69.5s] record 80/280 done (43s)
+[    69.5s] L10_E060.bin fg0ce   total 16072704 used 16072347 ok True err None enc 3.014s dec 2.537s
+[    69.5s] L10_E060.bin fg0cde  total 16048128 used 16046703 ok True err None enc 3.05s dec 2.633s
+[    70.0s] record 81/280 done (44s)
+[    70.0s] L11_E132.bin fg0     total 16568320 used 16565928 ok True err None enc 2.892s dec 2.145s
+[    70.0s] L11_E132.bin fg0d    total 16543744 used 16540212 ok True err None enc 2.92s dec 2.181s
+[    71.1s] record 82/280 done (45s)
+[    71.1s] L12_E034.bin f       total 16584704 used 16580996 ok True err None enc 3.057s dec 2.253s
+[    71.6s] record 83/280 done (45s)
+[    71.6s] L11_E132.bin fg0e    total 16568320 used 16567263 ok True err None enc 3.194s dec 2.345s
+[    71.6s] L11_E132.bin fg0de   total 16543744 used 16541567 ok True err None enc 3.222s dec 2.464s
+[    71.9s] record 84/280 done (46s)
+[    71.9s] L11_E132.bin fg0c    total 16052224 used 16051844 ok True err None enc 3.009s dec 2.515s
+[    71.9s] L11_E132.bin fg0cd   total 16027648 used 16026380 ok True err None enc 3.046s dec 2.55s
+[    71.9s] record 85/280 done (46s)
+[    71.9s] L11_E132.bin fg0t    total 16527360 used 16525771 ok True err None enc 3.059s dec 2.449s
+[    71.9s] L11_E132.bin fg0dt   total 16502784 used 16500039 ok True err None enc 3.097s dec 2.631s
+[    72.3s] record 86/280 done (46s)
+[    72.3s] L11_E132.bin fg0ce   total 16056320 used 16053201 ok True err None enc 3.097s dec 2.229s
+[    72.3s] L11_E132.bin fg0cde  total 16031744 used 16027797 ok True err None enc 3.122s dec 2.471s
+[    73.1s] record 87/280 done (47s)
+[    73.1s] L13_E167.bin wnr2    total 16904192 used 16901334 ok True err None enc 2.577s dec 2.194s
+[    74.3s] record 88/280 done (48s)
+[    74.3s] L13_E167.bin f       total 16588800 used 16588767 ok True err None enc 2.864s dec 2.719s
+[    74.4s] record 89/280 done (48s)
+[    74.4s] L12_E034.bin fg0     total 16580608 used 16580400 ok True err None enc 3.008s dec 2.655s
+[    74.4s] L12_E034.bin fg0d    total 16556032 used 16555320 ok True err None enc 3.03s dec 2.627s
+[    74.6s] record 90/280 done (48s)
+[    74.6s] L12_E034.bin fg0c    total 16068608 used 16066913 ok True err None enc 2.937s dec 2.358s
+[    74.6s] L12_E034.bin fg0cd   total 16044032 used 16042109 ok True err None enc 2.963s dec 2.175s
+[    74.7s] record 91/280 done (48s)
+[    74.7s] L12_E034.bin fg0t    total 16543744 used 16540184 ok True err None enc 3.014s dec 2.285s
+[    74.7s] L12_E034.bin fg0dt   total 16515072 used 16515036 ok True err None enc 3.039s dec 2.266s
+[    75.1s] record 92/280 done (49s)
+[    75.1s] L12_E034.bin fg0e    total 16584704 used 16581752 ok True err None enc 3.126s dec 2.735s
+[    75.1s] L12_E034.bin fg0de   total 16560128 used 16556624 ok True err None enc 3.153s dec 2.741s
+[    76.6s] record 93/280 done (50s)
+[    76.6s] L12_E034.bin fg0ce   total 16068608 used 16068274 ok True err None enc 3.018s dec 2.837s
+[    76.6s] L12_E034.bin fg0cde  total 16044032 used 16043438 ok True err None enc 3.04s dec 2.635s
+[    77.0s] record 94/280 done (51s)
+[    77.0s] L14_E135.bin wnr2    total 16900096 used 16899134 ok True err None enc 2.563s dec 2.297s
+[    77.0s] record 95/280 done (51s)
+[    77.0s] L13_E167.bin fg0     total 16588800 used 16588476 ok True err None enc 2.957s dec 2.277s
+[    77.0s] L13_E167.bin fg0d    total 16564224 used 16563608 ok True err None enc 2.988s dec 2.138s
+[    77.3s] record 96/280 done (51s)
+[    77.3s] L14_E135.bin f       total 16580608 used 16577722 ok True err None enc 2.933s dec 2.281s
+[    77.9s] record 97/280 done (52s)
+[    77.9s] L13_E167.bin fg0t    total 16551936 used 16548384 ok True err None enc 3.05s dec 2.349s
+[    77.9s] L13_E167.bin fg0dt   total 16527360 used 16523512 ok True err None enc 3.08s dec 2.207s
+[    78.2s] record 98/280 done (52s)
+[    78.2s] L13_E167.bin fg0e    total 16592896 used 16589857 ok True err None enc 3.05s dec 2.75s
+[    78.2s] L13_E167.bin fg0de   total 16568320 used 16564997 ok True err None enc 3.075s dec 2.593s
+[    79.0s] record 99/280 done (53s)
+[    79.0s] L13_E167.bin fg0c    total 16076800 used 16075576 ok True err None enc 3.013s dec 2.294s
+[    79.0s] L13_E167.bin fg0cd   total 16052224 used 16051012 ok True err None enc 3.038s dec 2.352s
+[    79.9s] record 100/280 done (54s)
+[    79.9s] L15_E156.bin wnr2    total 16867328 used 16866449 ok True err None enc 2.742s dec 2.152s
+[    79.9s] record 101/280 done (54s)
+[    79.9s] L13_E167.bin fg0ce   total 16080896 used 16076904 ok True err None enc 3.253s dec 2.25s
+[    79.9s] L13_E167.bin fg0cde  total 16056320 used 16052364 ok True err None enc 3.286s dec 2.5s
+[    80.0s] record 102/280 done (54s)
+[    80.0s] L14_E135.bin fg0     total 16580608 used 16576966 ok True err None enc 2.964s dec 2.21s
+[    80.0s] L14_E135.bin fg0d    total 16551936 used 16551278 ok True err None enc 2.994s dec 2.236s
+[    80.8s] record 103/280 done (55s)
+[    80.8s] L15_E156.bin f       total 16580608 used 16576861 ok True err None enc 2.967s dec 2.521s
+[    81.2s] record 104/280 done (55s)
+[    81.2s] L14_E135.bin fg0e    total 16580608 used 16578245 ok True err None enc 3.129s dec 2.374s
+[    81.2s] L14_E135.bin fg0de   total 16556032 used 16552553 ok True err None enc 3.157s dec 2.38s
+[    82.6s] record 105/280 done (56s)
+[    82.6s] L14_E135.bin fg0t    total 16539648 used 16536777 ok True err None enc 3.053s dec 2.546s
+[    82.6s] L14_E135.bin fg0dt   total 16515072 used 16511073 ok True err None enc 3.093s dec 2.366s
+[    82.6s] record 106/280 done (56s)
+[    82.6s] L14_E135.bin fg0c    total 16064512 used 16063078 ok True err None enc 3.07s dec 2.453s
+[    82.6s] L14_E135.bin fg0cd   total 16039936 used 16037734 ok True err None enc 3.101s dec 2.426s
+[    82.9s] record 107/280 done (57s)
+[    82.9s] L14_E135.bin fg0ce   total 16064512 used 16064447 ok True err None enc 3.258s dec 2.282s
+[    82.9s] L14_E135.bin fg0cde  total 16039936 used 16039111 ok True err None enc 3.289s dec 2.375s
+[    83.2s] record 108/280 done (57s)
+[    83.2s] L16_E034.bin wnr2    total 16941056 used 16938799 ok True err None enc 2.629s dec 2.124s
+[    84.3s] record 109/280 done (58s)
+[    84.3s] L16_E034.bin f       total 16613376 used 16611051 ok True err None enc 2.999s dec 2.079s
+[    84.9s] record 110/280 done (59s)
+[    84.9s] L15_E156.bin fg0     total 16580608 used 16577061 ok True err None enc 3.17s dec 2.447s
+[    84.9s] L15_E156.bin fg0d    total 16556032 used 16552925 ok True err None enc 3.198s dec 2.398s
+[    85.0s] record 111/280 done (59s)
+[    85.0s] L15_E156.bin fg0t    total 16539648 used 16536935 ok True err None enc 3.216s dec 2.318s
+[    85.0s] L15_E156.bin fg0dt   total 16515072 used 16512775 ok True err None enc 3.242s dec 2.23s
+[    85.6s] record 112/280 done (59s)
+[    85.6s] L15_E156.bin fg0c    total 16064512 used 16062515 ok True err None enc 3.106s dec 2.432s
+[    85.6s] L15_E156.bin fg0cd   total 16039936 used 16038791 ok True err None enc 3.131s dec 2.361s
+[    85.7s] record 113/280 done (59s)
+[    85.7s] L15_E156.bin fg0e    total 16580608 used 16578472 ok True err None enc 3.286s dec 2.477s
+[    85.7s] L15_E156.bin fg0de   total 16556032 used 16554344 ok True err None enc 3.321s dec 2.653s
+[    86.2s] record 114/280 done (60s)
+[    86.2s] L15_E156.bin fg0ce   total 16064512 used 16063927 ok True err None enc 3.3s dec 2.351s
+[    86.2s] L15_E156.bin fg0cde  total 16044032 used 16040215 ok True err None enc 3.324s dec 2.411s
+[    87.4s] record 115/280 done (61s)
+[    87.4s] L17_E123.bin wnr2    total 16936960 used 16933693 ok True err None enc 2.599s dec 2.061s
+[    87.4s] record 116/280 done (61s)
+[    87.4s] L16_E034.bin fg0     total 16613376 used 16610251 ok True err None enc 2.968s dec 2.127s
+[    87.4s] L16_E034.bin fg0d    total 16588800 used 16584819 ok True err None enc 3.001s dec 2.156s
+[    87.7s] record 117/280 done (61s)
+[    87.7s] L16_E034.bin fg0t    total 16572416 used 16569953 ok True err None enc 3.078s dec 2.254s
+[    87.7s] L16_E034.bin fg0dt   total 16547840 used 16544465 ok True err None enc 3.106s dec 2.059s
+[    87.8s] record 118/280 done (62s)
+[    87.8s] L16_E034.bin fg0e    total 16613376 used 16611616 ok True err None enc 3.123s dec 2.307s
+[    87.8s] L16_E034.bin fg0de   total 16588800 used 16586152 ok True err None enc 3.15s dec 2.182s
+[    88.1s] record 119/280 done (62s)
+[    88.1s] L17_E123.bin f       total 16617472 used 16614825 ok True err None enc 2.83s dec 2.444s
+[    88.8s] record 120/280 done (63s)
+[    88.8s] L16_E034.bin fg0c    total 16101376 used 16099738 ok True err None enc 2.817s dec 2.523s
+[    88.8s] L16_E034.bin fg0cd   total 16076800 used 16074634 ok True err None enc 2.839s dec 2.391s
+[    89.3s] record 121/280 done (63s)
+[    89.3s] L16_E034.bin fg0ce   total 16101376 used 16101027 ok True err None enc 3.057s dec 2.334s
+[    89.3s] L16_E034.bin fg0cde  total 16076800 used 16075931 ok True err None enc 3.08s dec 2.394s
+[    90.4s] record 122/280 done (64s)
+[    90.4s] L17_E123.bin fg0     total 16617472 used 16614252 ok True err None enc 2.879s dec 2.076s
+[    90.4s] L17_E123.bin fg0d    total 16592896 used 16589616 ok True err None enc 2.906s dec 2.261s
+[    90.7s] record 123/280 done (64s)
+[    90.7s] L18_E081.bin wnr2    total 16928768 used 16925094 ok True err None enc 2.58s dec 2.275s
+[    91.3s] record 124/280 done (65s)
+[    91.3s] L18_E081.bin f       total 16609280 used 16609090 ok True err None enc 2.889s dec 2.499s
+[    91.8s] record 125/280 done (66s)
+[    91.8s] L17_E123.bin fg0e    total 16617472 used 16615635 ok True err None enc 2.985s dec 2.683s
+[    91.8s] L17_E123.bin fg0de   total 16592896 used 16590979 ok True err None enc 3.011s dec 2.633s
+[    92.0s] record 126/280 done (66s)
+[    92.0s] L17_E123.bin fg0t    total 16576512 used 16573914 ok True err None enc 2.985s dec 2.266s
+[    92.0s] L17_E123.bin fg0dt   total 16551936 used 16549262 ok True err None enc 3.013s dec 2.182s
+[    93.0s] record 127/280 done (67s)
+[    93.0s] L17_E123.bin fg0ce   total 16105472 used 16104839 ok True err None enc 3.21s dec 2.242s
+[    93.0s] L17_E123.bin fg0cde  total 16080896 used 16080575 ok True err None enc 3.242s dec 2.252s
+[    93.3s] record 128/280 done (67s)
+[    93.3s] L17_E123.bin fg0c    total 16105472 used 16103518 ok True err None enc 2.976s dec 2.56s
+[    93.3s] L17_E123.bin fg0cd   total 16080896 used 16079242 ok True err None enc 3.012s dec 2.518s
+[    93.3s] record 129/280 done (67s)
+[    93.3s] L19_E180.bin wnr2    total 16916480 used 16915142 ok True err None enc 2.721s dec 2.265s
+[    93.7s] record 130/280 done (67s)
+[    93.7s] L18_E081.bin fg0     total 16609280 used 16608404 ok True err None enc 2.924s dec 2.153s
+[    93.7s] L18_E081.bin fg0d    total 16584704 used 16583548 ok True err None enc 2.955s dec 2.104s
+[    94.2s] record 131/280 done (68s)
+[    94.2s] L19_E180.bin f       total 16588800 used 16588728 ok True err None enc 2.766s dec 2.44s
+[    95.2s] record 132/280 done (69s)
+[    95.2s] L18_E081.bin fg0t    total 16568320 used 16568223 ok True err None enc 3.247s dec 2.164s
+[    95.2s] L18_E081.bin fg0dt   total 16543744 used 16543371 ok True err None enc 3.289s dec 2.059s
+[    95.4s] record 133/280 done (69s)
+[    95.4s] L18_E081.bin fg0c    total 16097280 used 16096679 ok True err None enc 3.142s dec 2.172s
+[    95.4s] L18_E081.bin fg0cd   total 16072704 used 16072227 ok True err None enc 3.169s dec 2.148s
+[    95.7s] record 134/280 done (69s)
+[    95.7s] L18_E081.bin fg0ce   total 16101376 used 16097985 ok True err None enc 3.226s dec 2.193s
+[    95.7s] L18_E081.bin fg0cde  total 16076800 used 16073533 ok True err None enc 3.251s dec 2.188s
+[    96.2s] record 135/280 done (70s)
+[    96.2s] L18_E081.bin fg0e    total 16613376 used 16609789 ok True err None enc 3.282s dec 2.602s
+[    96.2s] L18_E081.bin fg0de   total 16588800 used 16584917 ok True err None enc 3.314s dec 2.644s
+[    96.5s] record 136/280 done (70s)
+[    96.5s] L19_E180.bin fg0     total 16588800 used 16587928 ok True err None enc 2.908s dec 1.966s
+[    96.5s] L19_E180.bin fg0d    total 16564224 used 16561924 ok True err None enc 2.935s dec 1.991s
+[    96.6s] record 137/280 done (70s)
+[    96.6s] L20_E074.bin wnr2    total 16920576 used 16917503 ok True err None enc 2.528s dec 1.896s
+[    98.2s] record 138/280 done (72s)
+[    98.2s] L19_E180.bin fg0e    total 16592896 used 16589316 ok True err None enc 3.108s dec 2.112s
+[    98.2s] L19_E180.bin fg0de   total 16564224 used 16563308 ok True err None enc 3.133s dec 2.245s
+[    98.4s] record 139/280 done (72s)
+[    98.4s] L20_E074.bin f       total 16592896 used 16590432 ok True err None enc 2.919s dec 2.188s
+[    98.9s] record 140/280 done (73s)
+[    98.9s] L19_E180.bin fg0t    total 16547840 used 16547789 ok True err None enc 2.927s dec 2.407s
+[    98.9s] L19_E180.bin fg0dt   total 16523264 used 16521841 ok True err None enc 2.953s dec 2.556s
+[    99.3s] record 141/280 done (73s)
+[    99.4s] L19_E180.bin fg0c    total 16076800 used 16075867 ok True err None enc 2.808s dec 2.347s
+[    99.4s] L19_E180.bin fg0cd   total 16052224 used 16050199 ok True err None enc 2.838s dec 2.615s
+[   100.0s] record 142/280 done (74s)
+[   100.0s] L19_E180.bin fg0ce   total 16080896 used 16077184 ok True err None enc 2.986s dec 2.495s
+[   100.0s] L19_E180.bin fg0cde  total 16052224 used 16051504 ok True err None enc 3.013s dec 2.504s
+[   100.4s] record 143/280 done (74s)
+[   100.4s] L21_E072.bin wnr2    total 16904192 used 16901740 ok True err None enc 2.679s dec 2.063s
+[   101.3s] record 144/280 done (75s)
+[   101.3s] L21_E072.bin f       total 16584704 used 16583299 ok True err None enc 2.977s dec 2.342s
+[   101.3s] record 145/280 done (75s)
+[   101.3s] L20_E074.bin fg0     total 16592896 used 16589566 ok True err None enc 2.876s dec 2.524s
+[   101.3s] L20_E074.bin fg0d    total 16564224 used 16563554 ok True err None enc 2.906s dec 2.333s
+[   101.6s] record 146/280 done (75s)
+[   101.6s] L20_E074.bin fg0t    total 16551936 used 16549270 ok True err None enc 3.039s dec 2.198s
+[   101.6s] L20_E074.bin fg0dt   total 16523264 used 16523226 ok True err None enc 3.075s dec 2.336s
+[   101.9s] record 147/280 done (76s)
+[   101.9s] L20_E074.bin fg0e    total 16592896 used 16590894 ok True err None enc 3.074s dec 2.772s
+[   102.0s] L20_E074.bin fg0de   total 16568320 used 16564858 ok True err None enc 3.106s dec 2.472s
+[   102.4s] record 148/280 done (76s)
+[   102.4s] L20_E074.bin fg0c    total 16080896 used 16077272 ok True err None enc 2.884s dec 2.521s
+[   102.4s] L20_E074.bin fg0cd   total 16052224 used 16051496 ok True err None enc 2.913s dec 2.503s
+[   103.6s] record 149/280 done (77s)
+[   103.6s] L20_E074.bin fg0ce   total 16080896 used 16078682 ok True err None enc 3.204s dec 2.379s
+[   103.6s] L20_E074.bin fg0cde  total 16056320 used 16052914 ok True err None enc 3.227s dec 2.624s
+[   103.8s] record 150/280 done (78s)
+[   103.8s] L22_E059.bin wnr2    total 16875520 used 16872905 ok True err None enc 2.537s dec 2.15s
+[   103.9s] record 151/280 done (78s)
+[   103.9s] L21_E072.bin fg0     total 16584704 used 16582625 ok True err None enc 2.847s dec 2.19s
+[   103.9s] L21_E072.bin fg0d    total 16560128 used 16557161 ok True err None enc 2.872s dec 2.362s
+[   104.6s] record 152/280 done (78s)
+[   104.6s] L21_E072.bin fg0t    total 16543744 used 16542325 ok True err None enc 2.985s dec 2.407s
+[   104.6s] L21_E072.bin fg0dt   total 16519168 used 16516869 ok True err None enc 3.013s dec 2.288s
+[   104.7s] record 153/280 done (78s)
+[   104.7s] L21_E072.bin fg0e    total 16584704 used 16583941 ok True err None enc 3.08s dec 2.409s
+[   104.7s] L21_E072.bin fg0de   total 16560128 used 16558501 ok True err None enc 3.105s dec 2.458s
+[   104.8s] record 154/280 done (79s)
+[   104.8s] L22_E059.bin f       total 16576512 used 16576251 ok True err None enc 2.763s dec 2.481s
+[   106.2s] record 155/280 done (80s)
+[   106.2s] L21_E072.bin fg0c    total 16072704 used 16068739 ok True err None enc 2.915s dec 2.399s
+[   106.2s] L21_E072.bin fg0cd   total 16044032 used 16043639 ok True err None enc 2.944s dec 2.422s
+[   106.7s] record 156/280 done (80s)
+[   106.7s] L23_E178.bin wnr2    total 16834560 used 16833149 ok True err None enc 2.563s dec 1.895s
+[   106.9s] record 157/280 done (81s)
+[   106.9s] L21_E072.bin fg0ce   total 16072704 used 16070123 ok True err None enc 3.084s dec 2.507s
+[   106.9s] L21_E072.bin fg0cde  total 16048128 used 16045023 ok True err None enc 3.113s dec 2.635s
+[   107.7s] record 158/280 done (81s)
+[   107.7s] L23_E178.bin f       total 16535552 used 16534848 ok True err None enc 2.802s dec 2.247s
+[   107.7s] record 159/280 done (81s)
+[   107.7s] L22_E059.bin fg0     total 16576512 used 16576030 ok True err None enc 2.802s dec 2.437s
+[   107.7s] L22_E059.bin fg0d    total 16551936 used 16551686 ok True err None enc 2.831s dec 2.201s
+[   108.6s] record 160/280 done (82s)
+[   108.6s] L22_E059.bin fg0e    total 16580608 used 16577302 ok True err None enc 3.139s dec 2.486s
+[   108.6s] L22_E059.bin fg0de   total 16556032 used 16552982 ok True err None enc 3.167s dec 2.383s
+[   109.1s] record 161/280 done (83s)
+[   109.1s] L22_E059.bin fg0c    total 16064512 used 16062052 ok True err None enc 2.932s dec 2.362s
+[   109.1s] L22_E059.bin fg0cd   total 16039936 used 16038000 ok True err None enc 2.969s dec 2.246s
+[   109.3s] record 162/280 done (83s)
+[   109.3s] L22_E059.bin fg0t    total 16539648 used 16535723 ok True err None enc 3.043s dec 2.246s
+[   109.3s] L22_E059.bin fg0dt   total 16515072 used 16511383 ok True err None enc 3.077s dec 2.416s
+[   109.7s] record 163/280 done (83s)
+[   109.7s] L24_E058.bin wnr2    total 17297408 used 17295472 ok True err None enc 2.489s dec 2.122s
+[   110.0s] record 164/280 done (84s)
+[   110.0s] L22_E059.bin fg0ce   total 16064512 used 16063379 ok True err None enc 3.207s dec 2.41s
+[   110.0s] L22_E059.bin fg0cde  total 16039936 used 16039335 ok True err None enc 3.236s dec 2.457s
+[   111.6s] record 165/280 done (85s)
+[   111.6s] L24_E058.bin f       total 16957440 used 16954742 ok True err None enc 2.797s dec 2.349s
+[   111.6s] record 166/280 done (85s)
+[   111.6s] L23_E178.bin fg0     total 16535552 used 16534073 ok True err None enc 2.808s dec 2.287s
+[   111.6s] L23_E178.bin fg0d    total 16510976 used 16507389 ok True err None enc 2.834s dec 2.594s
+[   111.7s] record 167/280 done (85s)
+[   111.7s] L23_E178.bin fg0e    total 16535552 used 16535439 ok True err None enc 3.017s dec 2.318s
+[   111.7s] L23_E178.bin fg0de   total 16510976 used 16508735 ok True err None enc 3.042s dec 2.328s
+[   111.7s] record 168/280 done (85s)
+[   111.7s] L23_E178.bin fg0t    total 16494592 used 16494051 ok True err None enc 2.913s dec 2.268s
+[   111.7s] L23_E178.bin fg0dt   total 16470016 used 16467467 ok True err None enc 2.939s dec 2.329s
+[   112.4s] record 169/280 done (86s)
+[   112.4s] L23_E178.bin fg0c    total 16019456 used 16017672 ok True err None enc 2.849s dec 2.3s
+[   112.4s] L23_E178.bin fg0cd   total 15994880 used 15991196 ok True err None enc 2.876s dec 2.355s
+[   113.0s] record 170/280 done (87s)
+[   113.0s] L23_E178.bin fg0ce   total 16019456 used 16019045 ok True err None enc 2.991s dec 2.551s
+[   113.0s] L23_E178.bin fg0cde  total 15994880 used 15992589 ok True err None enc 3.017s dec 2.463s
+[   114.1s] record 171/280 done (88s)
+[   114.1s] L25_E166.bin wnr2    total 16879616 used 16879155 ok True err None enc 2.534s dec 2.186s
+[   114.7s] record 172/280 done (88s)
+[   114.7s] L24_E058.bin fg0     total 16740352 used 16737392 ok True err None enc 2.827s dec 2.503s
+[   114.7s] L24_E058.bin fg0d    total 16715776 used 16713024 ok True err None enc 2.853s dec 2.471s
+[   114.7s] record 173/280 done (89s)
+[   114.7s] L25_E166.bin f       total 16564224 used 16562282 ok True err None enc 2.845s dec 2.318s
+[   115.1s] record 174/280 done (89s)
+[   115.1s] L24_E058.bin fg0e    total 16740352 used 16738753 ok True err None enc 3.102s dec 2.516s
+[   115.1s] L24_E058.bin fg0de   total 16715776 used 16714397 ok True err None enc 3.128s dec 2.33s
+[   115.7s] record 175/280 done (89s)
+[   115.7s] L24_E058.bin fg0c    total 16228352 used 16225551 ok True err None enc 2.92s dec 2.524s
+[   115.7s] L24_E058.bin fg0cd   total 16203776 used 16201471 ok True err None enc 2.947s dec 2.213s
+[   115.7s] record 176/280 done (89s)
+[   115.7s] L24_E058.bin fg0t    total 16699392 used 16696848 ok True err None enc 2.985s dec 2.391s
+[   115.7s] L24_E058.bin fg0dt   total 16674816 used 16672508 ok True err None enc 3.006s dec 2.289s
+[   116.7s] record 177/280 done (91s)
+[   116.8s] L26_E077.bin wnr2    total 16838656 used 16834983 ok True err None enc 2.57s dec 2.229s
+[   117.1s] record 178/280 done (91s)
+[   117.1s] L24_E058.bin fg0ce   total 16228352 used 16226923 ok True err None enc 3.125s dec 2.533s
+[   117.1s] L24_E058.bin fg0cde  total 16203776 used 16202839 ok True err None enc 3.147s dec 2.587s
+[   117.5s] record 179/280 done (91s)
+[   117.5s] L25_E166.bin fg0     total 16564224 used 16561494 ok True err None enc 2.815s dec 2.313s
+[   117.5s] L25_E166.bin fg0d    total 16539648 used 16535586 ok True err None enc 2.846s dec 2.495s
+[   117.9s] record 180/280 done (92s)
+[   117.9s] L26_E077.bin f       total 16535552 used 16533927 ok True err None enc 2.83s dec 2.426s
+[   118.4s] record 181/280 done (92s)
+[   118.4s] L25_E166.bin fg0e    total 16564224 used 16562852 ok True err None enc 3.121s dec 2.338s
+[   118.4s] L25_E166.bin fg0de   total 16539648 used 16536952 ok True err None enc 3.151s dec 2.624s
+[   119.7s] record 182/280 done (94s)
+[   119.7s] L25_E166.bin fg0c    total 16048128 used 16046874 ok True err None enc 3.029s dec 2.398s
+[   119.7s] L25_E166.bin fg0cd   total 16023552 used 16021274 ok True err None enc 3.063s dec 2.423s
+[   119.8s] record 183/280 done (94s)
+[   119.8s] L25_E166.bin fg0t    total 16523264 used 16521271 ok True err None enc 3.135s dec 2.383s
+[   119.8s] L25_E166.bin fg0dt   total 16498688 used 16495411 ok True err None enc 3.171s dec 2.419s
+[   120.3s] record 184/280 done (94s)
+[   120.3s] L25_E166.bin fg0ce   total 16052224 used 16048212 ok True err None enc 3.142s dec 2.606s
+[   120.3s] L25_E166.bin fg0cde  total 16023552 used 16022620 ok True err None enc 3.163s dec 2.528s
+[   120.6s] record 185/280 done (94s)
+[   120.6s] L27_E152.bin wnr2    total 16891904 used 16888371 ok True err None enc 2.788s dec 1.886s
+[   121.0s] record 186/280 done (95s)
+[   121.0s] L26_E077.bin fg0     total 16535552 used 16533097 ok True err None enc 2.883s dec 2.402s
+[   121.0s] L26_E077.bin fg0d    total 16506880 used 16505865 ok True err None enc 2.919s dec 2.327s
+[   121.1s] record 187/280 done (95s)
+[   121.1s] L27_E152.bin f       total 16576512 used 16574052 ok True err None enc 2.993s dec 2.255s
+[   122.9s] record 188/280 done (97s)
+[   122.9s] L26_E077.bin fg0c    total 16019456 used 16016200 ok True err None enc 3.075s dec 2.352s
+[   122.9s] L26_E077.bin fg0cd   total 15990784 used 15989064 ok True err None enc 3.102s dec 2.381s
+[   122.9s] record 189/280 done (97s)
+[   122.9s] L26_E077.bin fg0e    total 16535552 used 16534443 ok True err None enc 3.247s dec 2.557s
+[   122.9s] L26_E077.bin fg0de   total 16510976 used 16507215 ok True err None enc 3.283s dec 2.678s
+[   123.0s] record 190/280 done (97s)
+[   123.0s] L26_E077.bin fg0t    total 16494592 used 16493083 ok True err None enc 3.076s dec 2.42s
+[   123.0s] L26_E077.bin fg0dt   total 16465920 used 16465867 ok True err None enc 3.104s dec 2.414s
+[   123.7s] record 191/280 done (97s)
+[   123.7s] L26_E077.bin fg0ce   total 16019456 used 16017574 ok True err None enc 3.271s dec 2.595s
+[   123.7s] L26_E077.bin fg0cde  total 15990784 used 15990446 ok True err None enc 3.311s dec 2.451s
+[   124.6s] record 192/280 done (98s)
+[   124.6s] L28_E089.bin wnr2    total 16867328 used 16865499 ok True err None enc 2.689s dec 1.941s
+[   124.7s] record 193/280 done (98s)
+[   124.7s] L27_E152.bin fg0     total 16576512 used 16573312 ok True err None enc 2.998s dec 2.458s
+[   124.7s] L27_E152.bin fg0d    total 16547840 used 16547716 ok True err None enc 3.026s dec 2.248s
+[   125.2s] record 194/280 done (99s)
+[   125.2s] L27_E152.bin fg0t    total 16535552 used 16533221 ok True err None enc 2.968s dec 2.344s
+[   125.2s] L27_E152.bin fg0dt   total 16510976 used 16507581 ok True err None enc 2.997s dec 2.11s
+[   125.3s] record 195/280 done (99s)
+[   125.3s] L28_E089.bin f       total 16556032 used 16553086 ok True err None enc 2.953s dec 2.282s
+[   125.3s] record 196/280 done (99s)
+[   125.3s] L27_E152.bin fg0e    total 16576512 used 16574670 ok True err None enc 3.155s dec 2.398s
+[   125.3s] L27_E152.bin fg0de   total 16551936 used 16549034 ok True err None enc 3.188s dec 2.356s
+[   126.0s] record 197/280 done (100s)
+[   126.0s] L27_E152.bin fg0c    total 16060416 used 16058807 ok True err None enc 2.923s dec 2.475s
+[   126.0s] L27_E152.bin fg0cd   total 16035840 used 16033527 ok True err None enc 2.954s dec 2.336s
+[   126.6s] record 198/280 done (100s)
+[   126.6s] L27_E152.bin fg0ce   total 16060416 used 16060092 ok True err None enc 3.01s dec 2.442s
+[   126.6s] L27_E152.bin fg0cde  total 16035840 used 16034764 ok True err None enc 3.036s dec 2.473s
+[   127.7s] record 199/280 done (101s)
+[   127.7s] L29_E190.bin wnr2    total 16826368 used 16823780 ok True err None enc 2.483s dec 2.106s
+[   127.9s] record 200/280 done (102s)
+[   127.9s] L28_E089.bin fg0     total 16556032 used 16552366 ok True err None enc 2.86s dec 2.053s
+[   127.9s] L28_E089.bin fg0d    total 16527360 used 16526778 ok True err None enc 2.887s dec 2.406s
+[   128.3s] record 201/280 done (102s)
+[   128.3s] L29_E190.bin f       total 16535552 used 16533236 ok True err None enc 2.797s dec 2.317s
+[   128.9s] record 202/280 done (103s)
+[   128.9s] L28_E089.bin fg0e    total 16556032 used 16553683 ok True err None enc 3.08s dec 2.55s
+[   128.9s] L28_E089.bin fg0de   total 16531456 used 16528075 ok True err None enc 3.113s dec 2.395s
+[   128.9s] record 203/280 done (103s)
+[   128.9s] L28_E089.bin fg0c    total 16039936 used 16037353 ok True err None enc 2.825s dec 2.291s
+[   128.9s] L28_E089.bin fg0cd   total 16015360 used 16012041 ok True err None enc 2.848s dec 2.395s
+[   129.1s] record 204/280 done (103s)
+[   129.1s] L28_E089.bin fg0t    total 16515072 used 16512187 ok True err None enc 3.007s dec 2.458s
+[   129.1s] L28_E089.bin fg0dt   total 16490496 used 16486571 ok True err None enc 3.033s dec 2.299s
+[   130.3s] record 205/280 done (104s)
+[   130.3s] L30_E054.bin wnr2    total 16846848 used 16843549 ok True err None enc 2.711s dec 2.005s
+[   131.0s] record 206/280 done (105s)
+[   131.0s] L28_E089.bin fg0ce   total 16039936 used 16038664 ok True err None enc 3.142s dec 2.33s
+[   131.0s] L28_E089.bin fg0cde  total 16015360 used 16013372 ok True err None enc 3.167s dec 2.333s
+[   131.3s] record 207/280 done (105s)
+[   131.3s] L30_E054.bin f       total 16539648 used 16537590 ok True err None enc 2.988s dec 2.09s
+[   131.4s] record 208/280 done (105s)
+[   131.4s] L29_E190.bin fg0     total 16535552 used 16532534 ok True err None enc 2.909s dec 2.28s
+[   131.4s] L29_E190.bin fg0d    total 16506880 used 16505918 ok True err None enc 2.933s dec 2.197s
+[   132.9s] record 209/280 done (107s)
+[   132.9s] L29_E190.bin fg0t    total 16494592 used 16492406 ok True err None enc 3.157s dec 2.363s
+[   132.9s] L29_E190.bin fg0dt   total 16465920 used 16465758 ok True err None enc 3.184s dec 2.43s
+[   133.0s] record 210/280 done (107s)
+[   133.0s] L29_E190.bin fg0e    total 16535552 used 16533828 ok True err None enc 3.281s dec 2.417s
+[   133.0s] L29_E190.bin fg0de   total 16510976 used 16507216 ok True err None enc 3.309s dec 2.487s
+[   133.3s] record 211/280 done (107s)
+[   133.3s] L29_E190.bin fg0c    total 16019456 used 16015417 ok True err None enc 2.98s dec 2.237s
+[   133.3s] L29_E190.bin fg0cd   total 15990784 used 15988965 ok True err None enc 3.011s dec 2.509s
+[   133.5s] record 212/280 done (107s)
+[   133.5s] L29_E190.bin fg0ce   total 16019456 used 16016712 ok True err None enc 3.204s dec 2.243s
+[   133.5s] L29_E190.bin fg0cde  total 15990784 used 15990280 ok True err None enc 3.234s dec 2.461s
+[   133.7s] record 213/280 done (107s)
+[   133.7s] L31_E171.bin wnr2    total 16846848 used 16846570 ok True err None enc 2.558s dec 1.973s
+[   134.2s] record 214/280 done (108s)
+[   134.2s] L30_E054.bin fg0     total 16539648 used 16536702 ok True err None enc 2.924s dec 2.211s
+[   134.2s] L30_E054.bin fg0d    total 16510976 used 16509274 ok True err None enc 2.954s dec 2.167s
+[   134.5s] record 215/280 done (108s)
+[   134.5s] L31_E171.bin f       total 16543744 used 16540237 ok True err None enc 2.801s dec 2.297s
+[   136.0s] record 216/280 done (110s)
+[   136.0s] L30_E054.bin fg0t    total 16498688 used 16496599 ok True err None enc 3.087s dec 2.316s
+[   136.0s] L30_E054.bin fg0dt   total 16470016 used 16469255 ok True err None enc 3.113s dec 2.406s
+[   136.4s] record 217/280 done (110s)
+[   136.4s] L30_E054.bin fg0e    total 16539648 used 16538069 ok True err None enc 3.171s dec 2.597s
+[   136.4s] L30_E054.bin fg0de   total 16510976 used 16510653 ok True err None enc 3.2s dec 2.567s
+[   136.5s] record 218/280 done (110s)
+[   136.5s] L30_E054.bin fg0c    total 16023552 used 16020031 ok True err None enc 2.983s dec 2.405s
+[   136.5s] L30_E054.bin fg0cd   total 15994880 used 15992739 ok True err None enc 3.011s dec 2.517s
+[   137.2s] record 219/280 done (111s)
+[   137.2s] L30_E054.bin fg0ce   total 16023552 used 16021392 ok True err None enc 3.061s dec 2.566s
+[   137.2s] L30_E054.bin fg0cde  total 15994880 used 15994096 ok True err None enc 3.083s dec 2.323s
+[   137.9s] record 220/280 done (112s)
+[   137.9s] L32_E148.bin wnr2    total 16850944 used 16847167 ok True err None enc 2.81s dec 1.877s
+[   138.0s] record 221/280 done (112s)
+[   138.0s] L31_E171.bin fg0     total 16539648 used 16539355 ok True err None enc 2.934s dec 2.222s
+[   138.0s] L31_E171.bin fg0d    total 16515072 used 16512095 ok True err None enc 2.958s dec 2.306s
+[   138.9s] record 222/280 done (113s)
+[   138.9s] L32_E148.bin f       total 16543744 used 16542632 ok True err None enc 3.105s dec 2.326s
+[   139.0s] record 223/280 done (113s)
+[   139.0s] L31_E171.bin fg0c    total 16023552 used 16022965 ok True err None enc 2.997s dec 2.066s
+[   139.0s] L31_E171.bin fg0cd   total 15998976 used 15995861 ok True err None enc 3.034s dec 2.257s
+[   139.1s] record 224/280 done (113s)
+[   139.1s] L31_E171.bin fg0e    total 16543744 used 16540725 ok True err None enc 3.084s dec 2.325s
+[   139.1s] L31_E171.bin fg0de   total 16515072 used 16513493 ok True err None enc 3.117s dec 2.356s
+[   139.1s] record 225/280 done (113s)
+[   139.1s] L31_E171.bin fg0t    total 16502784 used 16499216 ok True err None enc 3.077s dec 2.138s
+[   139.1s] L31_E171.bin fg0dt   total 16474112 used 16471960 ok True err None enc 3.12s dec 2.295s
+[   141.3s] record 226/280 done (115s)
+[   141.3s] L33_E188.bin wnr2    total 16814080 used 16811997 ok True err None enc 2.674s dec 2.061s
+[   141.6s] record 227/280 done (115s)
+[   141.6s] L31_E171.bin fg0ce   total 16027648 used 16024326 ok True err None enc 3.276s dec 2.435s
+[   141.6s] L31_E171.bin fg0cde  total 15998976 used 15997242 ok True err None enc 3.304s dec 2.658s
+[   141.6s] record 228/280 done (115s)
+[   141.6s] L32_E148.bin fg0     total 16543744 used 16541701 ok True err None enc 3.122s dec 2.269s
+[   141.6s] L32_E148.bin fg0d    total 16515072 used 16515009 ok True err None enc 3.145s dec 2.434s
+[   142.1s] record 229/280 done (116s)
+[   142.1s] L32_E148.bin fg0e    total 16543744 used 16543107 ok True err None enc 3.275s dec 2.501s
+[   142.1s] L32_E148.bin fg0de   total 16519168 used 16516431 ok True err None enc 3.299s dec 2.325s
+[   142.2s] record 230/280 done (116s)
+[   142.2s] L33_E188.bin f       total 16527360 used 16524850 ok True err None enc 2.921s dec 2.517s
+[   142.4s] record 231/280 done (116s)
+[   142.4s] L32_E148.bin fg0t    total 16502784 used 16501639 ok True err None enc 3.101s dec 2.381s
+[   142.4s] L32_E148.bin fg0dt   total 16478208 used 16474927 ok True err None enc 3.131s dec 2.379s
+[   142.7s] record 232/280 done (116s)
+[   142.7s] L32_E148.bin fg0c    total 16027648 used 16025353 ok True err None enc 3.01s dec 2.591s
+[   142.7s] L32_E148.bin fg0cd   total 15998976 used 15998937 ok True err None enc 3.032s dec 2.3s
+[   144.1s] record 233/280 done (118s)
+[   144.1s] L34_E078.bin wnr2    total 16842752 used 16839446 ok True err None enc 2.585s dec 2.2s
+[   144.5s] record 234/280 done (118s)
+[   144.6s] L32_E148.bin fg0ce   total 16027648 used 16026768 ok True err None enc 3.196s dec 2.54s
+[   144.6s] L32_E148.bin fg0cde  total 16003072 used 16000344 ok True err None enc 3.227s dec 2.529s
+[   144.7s] record 235/280 done (118s)
+[   144.7s] L34_E078.bin f       total 16556032 used 16552563 ok True err None enc 2.878s dec 2.423s
+[   145.1s] record 236/280 done (119s)
+[   145.1s] L33_E188.bin fg0     total 16527360 used 16524069 ok True err None enc 2.886s dec 2.446s
+[   145.1s] L33_E188.bin fg0d    total 16498688 used 16496377 ok True err None enc 2.91s dec 2.261s
+[   146.3s] record 237/280 done (120s)
+[   146.3s] L33_E188.bin fg0t    total 16486400 used 16484007 ok True err None enc 3.03s dec 2.668s
+[   146.3s] L33_E188.bin fg0dt   total 16457728 used 16456351 ok True err None enc 3.049s dec 2.34s
+[   146.6s] record 238/280 done (120s)
+[   146.6s] L33_E188.bin fg0e    total 16527360 used 16525461 ok True err None enc 3.09s dec 2.811s
+[   146.6s] L33_E188.bin fg0de   total 16498688 used 16497761 ok True err None enc 3.11s dec 2.478s
+[   147.1s] record 239/280 done (121s)
+[   147.1s] L33_E188.bin fg0c    total 16007168 used 16007037 ok True err None enc 2.913s dec 2.515s
+[   147.1s] L33_E188.bin fg0cd   total 15982592 used 15979433 ok True err None enc 2.941s dec 2.375s
+[   147.3s] record 240/280 done (121s)
+[   147.3s] L33_E188.bin fg0ce   total 16011264 used 16008415 ok True err None enc 3.116s dec 2.367s
+[   147.3s] L33_E188.bin fg0cde  total 15982592 used 15980767 ok True err None enc 3.15s dec 2.496s
+[   147.7s] record 241/280 done (121s)
+[   147.7s] L35_E173.bin wnr2    total 16859136 used 16858696 ok True err None enc 3.108s dec 1.937s
+[   148.7s] record 242/280 done (122s)
+[   148.7s] L35_E173.bin f       total 16556032 used 16553038 ok True err None enc 3.525s dec 2.231s
+[   149.4s] record 243/280 done (123s)
+[   149.4s] L34_E078.bin fg0     total 16556032 used 16552053 ok True err None enc 3.13s dec 2.442s
+[   149.4s] L34_E078.bin fg0d    total 16527360 used 16527125 ok True err None enc 3.161s dec 2.217s
+[   150.0s] record 244/280 done (124s)
+[   150.0s] L34_E078.bin fg0t    total 16515072 used 16511906 ok True err None enc 3.54s dec 2.294s
+[   150.0s] L34_E078.bin fg0dt   total 16490496 used 16486958 ok True err None enc 3.571s dec 2.24s
+[   150.1s] record 245/280 done (124s)
+[   150.1s] L34_E078.bin fg0e    total 16556032 used 16553429 ok True err None enc 3.583s dec 2.51s
+[   150.1s] L34_E078.bin fg0de   total 16531456 used 16528501 ok True err None enc 3.612s dec 2.099s
+[   150.2s] record 246/280 done (124s)
+[   150.2s] L34_E078.bin fg0c    total 16035840 used 16035778 ok True err None enc 3.463s dec 2.328s
+[   150.2s] L34_E078.bin fg0cd   total 16011264 used 16011178 ok True err None enc 3.495s dec 2.02s
+[   150.7s] record 247/280 done (124s)
+[   150.7s] L34_E078.bin fg0ce   total 16039936 used 16037181 ok True err None enc 3.636s dec 2.346s
+[   150.7s] L34_E078.bin fg0cde  total 16015360 used 16012589 ok True err None enc 3.663s dec 2.221s
+[   151.2s] record 248/280 done (125s)
+[   151.2s] L36_E107.bin wnr2    total 16830464 used 16829857 ok True err None enc 2.546s dec 1.844s
+[   151.8s] record 249/280 done (126s)
+[   151.9s] L35_E173.bin fg0     total 16556032 used 16552243 ok True err None enc 3.193s dec 2.182s
+[   151.9s] L35_E173.bin fg0d    total 16527360 used 16526363 ok True err None enc 3.215s dec 2.09s
+[   151.9s] record 250/280 done (126s)
+[   151.9s] L36_E107.bin f       total 16535552 used 16534545 ok True err None enc 2.708s dec 1.903s
+[   152.3s] record 251/280 done (126s)
+[   152.3s] L35_E173.bin fg0t    total 16515072 used 16512063 ok True err None enc 3.292s dec 2.121s
+[   152.3s] L35_E173.bin fg0dt   total 16486400 used 16486239 ok True err None enc 3.327s dec 1.916s
+[   152.3s] record 252/280 done (126s)
+[   152.3s] L35_E173.bin fg0e    total 16556032 used 16553610 ok True err None enc 3.416s dec 2.107s
+[   152.3s] L35_E173.bin fg0de   total 16531456 used 16527742 ok True err None enc 3.447s dec 1.932s
+[   152.5s] record 253/280 done (126s)
+[   152.5s] L35_E173.bin fg0c    total 16039936 used 16036401 ok True err None enc 3.161s dec 2.1s
+[   152.5s] L35_E173.bin fg0cd   total 16011264 used 16010781 ok True err None enc 3.186s dec 1.861s
+[   154.3s] record 254/280 done (128s)
+[   154.3s] L35_E173.bin fg0ce   total 16039936 used 16037726 ok True err None enc 3.133s dec 2.134s
+[   154.3s] L35_E173.bin fg0cde  total 16015360 used 16012066 ok True err None enc 3.157s dec 2.438s
+[   154.5s] record 255/280 done (128s)
+[   154.5s] L36_E107.bin fg0     total 16535552 used 16533800 ok True err None enc 2.756s dec 1.926s
+[   154.5s] L36_E107.bin fg0d    total 16510976 used 16507504 ok True err None enc 2.789s dec 2.219s
+[   154.7s] record 256/280 done (128s)
+[   154.7s] L37_E177.bin wnr2    total 16875520 used 16872714 ok True err None enc 2.453s dec 1.957s
+[   155.2s] record 257/280 done (129s)
+[   155.2s] L36_E107.bin fg0e    total 16535552 used 16535121 ok True err None enc 2.857s dec 2.002s
+[   155.2s] L36_E107.bin fg0de   total 16510976 used 16508829 ok True err None enc 2.882s dec 2.346s
+[   155.5s] record 258/280 done (129s)
+[   155.5s] L37_E177.bin f       total 16568320 used 16566249 ok True err None enc 2.752s dec 2.239s
+[   155.8s] record 259/280 done (130s)
+[   155.8s] L36_E107.bin fg0t    total 16494592 used 16493750 ok True err None enc 2.832s dec 2.198s
+[   155.8s] L36_E107.bin fg0dt   total 16470016 used 16467450 ok True err None enc 2.857s dec 1.892s
+[   156.9s] record 260/280 done (131s)
+[   156.9s] L36_E107.bin fg0c    total 16019456 used 16017058 ok True err None enc 2.657s dec 2.235s
+[   156.9s] L36_E107.bin fg0cd   total 15994880 used 15991062 ok True err None enc 2.686s dec 2.362s
+[   157.0s] record 261/280 done (131s)
+[   157.0s] L38_E005.bin wnr2    total 17252352 used 17248834 ok True err None enc 2.614s dec 1.824s
+[   157.5s] record 262/280 done (131s)
+[   157.5s] L36_E107.bin fg0ce   total 16019456 used 16018443 ok True err None enc 3.032s dec 2.282s
+[   157.5s] L36_E107.bin fg0cde  total 15994880 used 15992463 ok True err None enc 3.056s dec 1.95s
+[   157.9s] record 263/280 done (132s)
+[   157.9s] L38_E005.bin f       total 16543744 used 16540470 ok True err None enc 2.878s dec 2.248s
+[   158.2s] record 264/280 done (132s)
+[   158.2s] L37_E177.bin fg0     total 16568320 used 16565462 ok True err None enc 2.736s dec 2.269s
+[   158.2s] L37_E177.bin fg0d    total 16543744 used 16540134 ok True err None enc 2.762s dec 2.191s
+[   158.7s] record 265/280 done (132s)
+[   158.7s] L37_E177.bin fg0e    total 16568320 used 16566783 ok True err None enc 3.119s dec 1.913s
+[   158.7s] L37_E177.bin fg0de   total 16543744 used 16541495 ok True err None enc 3.147s dec 2.194s
+[   159.3s] record 266/280 done (133s)
+[   159.3s] L37_E177.bin fg0t    total 16527360 used 16525263 ok True err None enc 3.115s dec 1.809s
+[   159.3s] L37_E177.bin fg0dt   total 16502784 used 16499955 ok True err None enc 3.138s dec 2.244s
+[   159.7s] record 267/280 done (133s)
+[   159.7s] L37_E177.bin fg0c    total 16052224 used 16050186 ok True err None enc 3.077s dec 2.238s
+[   159.7s] L37_E177.bin fg0cd   total 16027648 used 16025274 ok True err None enc 3.104s dec 2.235s
+[   160.0s] record 268/280 done (134s)
+[   160.0s] L39_E156.bin wnr2    total 17563648 used 17561612 ok True err None enc 2.324s dec 1.647s
+[   160.2s] record 269/280 done (134s)
+[   160.2s] L37_E177.bin fg0ce   total 16052224 used 16051576 ok True err None enc 3.199s dec 2.139s
+[   160.2s] L37_E177.bin fg0cde  total 16027648 used 16026636 ok True err None enc 3.225s dec 2.232s
+[   161.2s] record 270/280 done (135s)
+[   161.2s] L38_E005.bin fg0     total 16543744 used 16539809 ok True err None enc 2.827s dec 2.307s
+[   161.2s] L38_E005.bin fg0d    total 16515072 used 16513533 ok True err None enc 2.85s dec 1.563s
+[   161.4s] record 271/280 done (135s)
+[   161.4s] L39_E156.bin f       total 16752640 used 16750329 ok True err None enc 2.862s dec 1.458s
+[   161.5s] record 272/280 done (135s)
+[   161.5s] L38_E005.bin fg0t    total 16502784 used 16499659 ok True err None enc 3.001s dec 2.139s
+[   161.5s] L38_E005.bin fg0dt   total 16474112 used 16473395 ok True err None enc 3.026s dec 1.431s
+[   161.6s] record 273/280 done (135s)
+[   161.6s] L38_E005.bin fg0e    total 16543744 used 16541209 ok True err None enc 3.06s dec 2.138s
+[   161.6s] L38_E005.bin fg0de   total 16515072 used 16514985 ok True err None enc 3.085s dec 1.554s
+[   161.9s] record 274/280 done (136s)
+[   161.9s] L38_E005.bin fg0c    total 16027648 used 16023932 ok True err None enc 2.842s dec 2.103s
+[   161.9s] L38_E005.bin fg0cd   total 15998976 used 15997872 ok True err None enc 2.874s dec 1.452s
+[   162.2s] record 275/280 done (136s)
+[   162.2s] L38_E005.bin fg0ce   total 16027648 used 16025393 ok True err None enc 3.018s dec 1.884s
+[   162.2s] L38_E005.bin fg0cde  total 16003072 used 15999349 ok True err None enc 3.043s dec 1.522s
+[   163.3s] record 276/280 done (137s)
+[   163.3s] L39_E156.bin fg0     total 16756736 used 16753078 ok True err None enc 2.863s dec 1.419s
+[   163.3s] L39_E156.bin fg0d    total 16732160 used 16731566 ok True err None enc 2.883s dec 1.712s
+[   164.2s] record 277/280 done (138s)
+[   164.2s] L39_E156.bin fg0t    total 16715776 used 16712315 ok True err None enc 2.627s dec 1.463s
+[   164.2s] L39_E156.bin fg0dt   total 16691200 used 16690771 ok True err None enc 2.647s dec 1.916s
+[   164.2s] record 278/280 done (138s)
+[   164.2s] L39_E156.bin fg0e    total 16756736 used 16754474 ok True err None enc 2.813s dec 1.709s
+[   164.2s] L39_E156.bin fg0de   total 16736256 used 16732950 ok True err None enc 2.834s dec 1.933s
+[   164.4s] record 279/280 done (138s)
+[   164.4s] L39_E156.bin fg0c    total 16240640 used 16240436 ok True err None enc 2.494s dec 1.56s
+[   164.4s] L39_E156.bin fg0cd   total 16220160 used 16219220 ok True err None enc 2.511s dec 1.917s
+[   165.1s] record 280/280 done (139s)
+[   165.1s] L39_E156.bin fg0ce   total 16244736 used 16241757 ok True err None enc 2.597s dec 1.829s
+[   165.1s] L39_E156.bin fg0cde  total 16224256 used 16220545 ok True err None enc 2.613s dec 1.769s
+[   165.5s] wnr2    total   16909926.4 ratio 0.89943 bpw 3.7801 40/40 equal to reference (byte-exact)
+[   165.5s] f       total   16578764.8 ratio 0.88182 bpw 3.7080 40/40 equal to reference (byte-exact) d%raw -1.761 CI -1.947..-1.631
+[   165.5s] fg0     total   16573132.8 ratio 0.88152 bpw 3.7066 40/40 equal to reference (byte-exact) d%raw -1.791 CI -1.983..-1.639
+[   165.5s] fg0d    total   16546611.2 ratio 0.88011 bpw 3.7066 40/40 equal to reference (byte-exact) d%raw -1.932 CI -2.124..-1.782
+[   165.5s] fg0de   total   16548556.8 ratio 0.88021 bpw 3.7069 40/40 equal to reference (byte-exact) d%raw -1.922 CI -2.125..-1.771
+[   165.5s] fg0dt   total   16506880.0 ratio 0.87800 bpw 3.6976 40/40 equal to reference (byte-exact) d%raw -2.144 CI -2.342..-1.991
+[   165.5s] fg0c    total   16057856.0 ratio 0.85411 bpw 3.5902 40/40 equal to reference (value-exact (8->0)) d%raw -4.532 CI -4.724..-4.381
+[   165.5s] fg0cde  total   16033587.2 ratio 0.85282 bpw 3.5905 40/40 equal to reference (value-exact (8->0)) d%raw -4.661 CI -4.859..-4.511
+[   165.5s] fg0cd   total   16032153.6 ratio 0.85275 bpw 3.5902 40/40 equal to reference (value-exact (8->0)) d%raw -4.669 CI -4.859..-4.517
+[   165.5s] fg0ce   total   16059187.2 ratio 0.85418 bpw 3.5905 40/40 equal to reference (value-exact (8->0)) d%raw -4.525 CI -4.717..-4.376
+[   165.5s] fg0e    total   16574054.4 ratio 0.88157 bpw 3.7069 40/40 equal to reference (byte-exact) d%raw -1.786 CI -1.981..-1.635
+[   165.5s] fg0t    total   16532684.8 ratio 0.87937 bpw 3.6976 40/40 equal to reference (byte-exact) d%raw -2.007 CI -2.198..-1.855
+[   165.5s] check sources_sha256: ok 480/480
+[   165.5s] check all_records_decode_exact: ok {'decoded': 480, 'records': 480, 'bad': []}
+[   165.5s] check no_ceil_fallback: ok []
+[   165.5s] check record_sizes_equal_reference: ok {'compared': 480, 'mismatch': 0, 'first': []}
+[   165.5s] check mean_totals_equal_reference: ok {'wnr2': {'here': 16909926.4, 'ref': 16909926.4}, 'f': {'here': 16578764.8, 'ref': 16578764.8}, 'fg0': {'here': 16573132.8, 'ref': 16573132.8}, 'fg0d': {'here': 16546611.2, 'ref': 16546611.2}, 'fg0de': {'here': 16548556.8, 'ref': 16548556.8}, 'fg0dt': {'here': 16506880.0, 'ref': 16506880.0}, 'fg0c': {'here': 16057856.0, 'ref': 16057856.0}, 'fg0cde': {'here': 16033587.2, 'ref': 16033587.2}, 'fg0cd': {'here': 16032153.6, 'ref': 16032153.6}, 'fg0ce': {'here': 16059187.2, 'ref': 16059187.2}, 'fg0e': {'here': 16574054.4, 'ref': 16574054.4}, 'fg0t': {'here': 16532684.8, 'ref': 16532684.8}}
+[   165.5s] summary <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\results\heldout_configs\summary.json
+RESULT heldout_configs PASS 40 experts, 480 records decoded; d%raw vs WNR2: f -1.761, fg0 -1.791, fg0de -1.922, fg0dt -2.144, fg0cde -4.661

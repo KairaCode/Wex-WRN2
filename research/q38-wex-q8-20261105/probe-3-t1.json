@@ -1,0 +1,43 @@
+{
+ "model": "U:\\models\\Qwen3.8-Flash-Next-FP8",
+ "threads": 1,
+ "experts_per_side": 200,
+ "buffered": {
+  "seconds": 0.585,
+  "payload_gib_s": 1.566,
+  "ms_per_expert_wall": 2.923,
+  "reads_per_expert": 2.0,
+  "bytes_moved_over_payload": 1.0
+ },
+ "unbuffered": {
+  "seconds": 0.042,
+  "payload_gib_s": 21.786,
+  "ms_per_expert_wall": 0.21,
+  "reads_per_expert": 2.0,
+  "bytes_moved_over_payload": 0.0451
+ },
+ "entropy": {
+  "gate": {
+   "order0_bits_per_byte": 6.5565,
+   "ctx_prev_high_nibble_bits": 6.5534,
+   "sign_exponent_bits": 3.6192,
+   "nan_codes": 0,
+   "neg_zero": 1667
+  },
+  "up": {
+   "order0_bits_per_byte": 6.5349,
+   "ctx_prev_high_nibble_bits": 6.5333,
+   "sign_exponent_bits": 3.5993,
+   "nan_codes": 0,
+   "neg_zero": 1482
+  },
+  "down": {
+   "order0_bits_per_byte": 6.5309,
+   "ctx_prev_high_nibble_bits": 6.529,
+   "sign_exponent_bits": 3.5957,
+   "nan_codes": 0,
+   "neg_zero": 1515
+  }
+ },
+ "estimated_saving_vs_fp8": 0.1827
+}

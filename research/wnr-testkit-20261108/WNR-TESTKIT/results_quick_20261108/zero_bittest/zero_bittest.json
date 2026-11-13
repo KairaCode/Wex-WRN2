@@ -1,0 +1,476 @@
+{
+ "meta": {
+  "device": "NVIDIA GeForce RTX 5090",
+  "cc": "120",
+  "nvrtc_options": [
+   "-arch=compute_120",
+   "-std=c++17",
+   "--ftz=false",
+   "--fmad=true"
+  ],
+  "nvrtc": "12.9",
+  "files": [
+   "L04_E038.bin",
+   "L00_E097.bin",
+   "L10_E015.bin",
+   "L20_E005.bin",
+   "L30_E002.bin",
+   "L39_E156.bin",
+   "L15_E025.bin",
+   "L25_E000.bin"
+  ]
+ },
+ "act_sets": [
+  "gauss",
+  "gauss_25pct+0_25pct-0",
+  "all-0",
+  "all+0",
+  "one_nonzero_rest-0",
+  "denormals_10pct",
+  "inf_at_100",
+  "nan_at_200",
+  "huge_1e30"
+ ],
+ "batch4_rows": [
+  "x",
+  "-x",
+  "x with odd entries -0",
+  "x*1e-30"
+ ],
+ "results": {
+  "real_matrices": {
+   "mv_fp4_grouped<1>": {
+    "compared": 700416,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 164835,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 86725,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   },
+   "mv_fp4_grouped<2>": {
+    "compared": 700416,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 164835,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 86725,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   },
+   "mv_fp4_grouped<4>": {
+    "compared": 700416,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 164835,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 86725,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   },
+   "mv_fp4_grouped<8>": {
+    "compared": 700416,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 164835,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 86725,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   },
+   "mv_fp4_expert_major<4>_T4": {
+    "compared": 2801664,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 727977,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 346900,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   },
+   "mv<4>": {
+    "compared": 700416,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 164835,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 86725,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   },
+   "mv_rows<4,4>": {
+    "compared": 700416,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 164835,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 86725,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   },
+   "mv_rows<4,16>": {
+    "compared": 700416,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 164835,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 86725,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   },
+   "mm_batch<4>_T4": {
+    "compared": 2801664,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 727977,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 346900,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   },
+   "v4f_dot_fp4(warp/row)": {
+    "compared": 700416,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 164835,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 86725,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   },
+   "NEGCTL_seeded": {
+    "compared": 700416,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 164835,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 86725,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   }
+  },
+  "synthetic_zero_rows": {
+   "mv_fp4_grouped<1>": {
+    "compared": 9216,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 4661,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 1591,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   },
+   "mv_fp4_grouped<2>": {
+    "compared": 9216,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 4661,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 1591,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   },
+   "mv_fp4_grouped<4>": {
+    "compared": 9216,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 4661,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 1591,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   },
+   "mv_fp4_grouped<8>": {
+    "compared": 9216,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 4661,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 1591,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   },
+   "mv_fp4_expert_major<4>_T4": {
+    "compared": 36864,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 19103,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 6364,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   },
+   "mv<4>": {
+    "compared": 9216,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 4661,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 1591,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   },
+   "mv_rows<4,4>": {
+    "compared": 9216,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 4661,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 1591,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   },
+   "mv_rows<4,16>": {
+    "compared": 9216,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 4661,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 1591,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   },
+   "mm_batch<4>_T4": {
+    "compared": 36864,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 19103,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 6364,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   },
+   "v4f_dot_fp4(warp/row)": {
+    "compared": 9216,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 4661,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 1591,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   },
+   "NEGCTL_seeded": {
+    "compared": 9216,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 512,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 4661,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 1591,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   }
+  },
+  "positive_control": {
+   "mv_fp4_grouped<1>": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   },
+   "mv_fp4_grouped<2>": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   },
+   "mv_fp4_grouped<4>": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   },
+   "mv_fp4_grouped<8>": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   },
+   "mv_fp4_expert_major<4>_T4": {
+    "compared": 9216,
+    "mismatch_value": 4,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   },
+   "mv<4>": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   },
+   "mv_rows<4,4>": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   },
+   "mv_rows<4,16>": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   },
+   "mm_batch<4>_T4": {
+    "compared": 9216,
+    "mismatch_value": 4,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   },
+   "v4f_dot_fp4(warp/row)": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   },
+   "NEGCTL_seeded": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0,
+    "rerun_nondeterministic": 0,
+    "unwritten": 0
+   }
+  }
+ },
+ "tc_fp16_gemm": {
+  "matrices": 16,
+  "outputs": 65536,
+  "bitdiff": 0,
+  "positive_control_bitdiff": 8,
+  "layout_max_rel_err": 3.1910965390125057e-06
+ },
+ "mma_micro": {
+  "mma_f16": {
+   "random A (20000 tiles), C=+0: differing D": 0,
+   "random A (20000 tiles), C=-0: differing D": 0,
+   "random A (20000 tiles), C=random: differing D": 0,
+   "all-zero A (random signs vs +0), C=+0: differing D": 0,
+   "all-zero A (random signs), C=+0: D==-0 count / D==+0 count": [
+    0,
+    2560000
+   ],
+   "all-zero A (+0), C=+0: D==-0 count / D==+0 count": [
+    0,
+    2560000
+   ],
+   "all-zero A (random signs vs +0), C=-0: differing D": 0,
+   "all-zero A (random signs), C=-0: D==-0 count / D==+0 count": [
+    0,
+    2560000
+   ],
+   "all-zero A (+0), C=-0: D==-0 count / D==+0 count": [
+    0,
+    2560000
+   ]
+  },
+  "mma_bf16": {
+   "random A (20000 tiles), C=+0: differing D": 0,
+   "random A (20000 tiles), C=-0: differing D": 0,
+   "random A (20000 tiles), C=random: differing D": 0,
+   "all-zero A (random signs vs +0), C=+0: differing D": 0,
+   "all-zero A (random signs), C=+0: D==-0 count / D==+0 count": [
+    0,
+    2560000
+   ],
+   "all-zero A (+0), C=+0: D==-0 count / D==+0 count": [
+    0,
+    2560000
+   ],
+   "all-zero A (random signs vs +0), C=-0: differing D": 0,
+   "all-zero A (random signs), C=-0: D==-0 count / D==+0 count": [
+    0,
+    2560000
+   ],
+   "all-zero A (+0), C=-0: D==-0 count / D==+0 count": [
+    0,
+    2560000
+   ]
+  }
+ },
+ "sm120_mxf4_EXPERIMENTAL": {
+  "status": "EXPERIMENTAL, ran",
+  "arch": "sm_120a",
+  "matrices": 32,
+  "outputs": 131072,
+  "bitdiff": 0,
+  "positive_control_bitdiff": 6,
+  "nan_outputs": 0
+ },
+ "seconds": 6.1
+}

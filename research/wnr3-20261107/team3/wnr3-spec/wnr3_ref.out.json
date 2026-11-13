@@ -1,0 +1,40 @@
+﻿{
+ "smhasher_verification_Murmur3A": "0xB0F57EE3 (expected 0xB0F57EE3)",
+ "h32_vectors": {
+  "h32(b\"\", 0)": "0x00000000",
+  "h32(b\"\", WNR3_SEED)": "0xE7F741F1",
+  "h32(bytes(range(16)), WNR3_SEED)": "0x31CE0919"
+ },
+ "stream_vectors": {
+  "weight: model 0xAB4261BD, layer 7, expert 191, stream 2165, flags 0x0F, matrix 1, set 3, median 127, data[i]=(37i+11)&0x77 x1024": {
+   "h23": "0x0C48D3",
+   "x0": "0x008C48D3"
+  },
+  "scale: same record, stream 719, matrix 0, set 0, data 7F 7E 80 7F 7D": {
+   "h23": "0x3C0999",
+   "x0": "0x00BC0999"
+  }
+ },
+ "index_layout0": {
+  "full_contexts": 567,
+  "rows": 259,
+  "max_closed_form_row_any_pm_mx_0_7": 257,
+  "index_sha256": "e0aebac7d1b9b257737b92d1065bde74243f7f8f617a1619b077f6e6639d0738"
+ },
+ "index_layout1": {
+  "full_contexts": 2268,
+  "rows": 910,
+  "max_closed_form_row_any_pm_mx_0_7": 909,
+  "index_sha256": "0634ddaa1af56ab246e8bb4dc9cef736cfa502657c2183e57c7db2f772da7e41"
+ },
+ "length_part_roundtrip": {
+  "streams": 135,
+  "groups": 6,
+  "bytes": 172,
+  "payload_total": 128516
+ },
+ "pred_examples": {
+  "scale n=512 lp_s=256 (1.0 bit/scale)": 68,
+  "weight 64 blocks srel=3 lp=31472 bias=0": 988
+ }
+}

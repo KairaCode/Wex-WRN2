@@ -1,0 +1,118 @@
+﻿== 1. ceil-ref configs: ratio, bit/w, bit/scale, parts
+ceil-ref internal mismatches: 0
+
+== 2. spec section 10 table (capacity = 1/ratio - 1; container = 7680 x mean + 618,496)
+OK  WNR2 ratio: computed 0.899434 vs stated 0.89943 (tol 6e-06)
+OK  WNR2 pp: computed 0 vs stated 0 (tol 0.0006)
+OK  WNR2 capacity%: computed 11.1811 vs stated 11.18 (tol 0.006)
+OK  WNR2 GB(held-out mean): computed 129.869 vs stated 129.9 (tol 0.051)
+     GB anchored on production WNR2: 129.905
+OK  f ratio: computed 0.881819 vs stated 0.88182 (tol 6e-06)
+OK  f pp: computed -1.76144 vs stated -1.761 (tol 0.0006)
+OK  f capacity%: computed 13.4019 vs stated 13.4 (tol 0.006)
+OK  f GB(held-out mean): computed 127.326 vs stated 127.3 (tol 0.051)
+     GB anchored on production WNR2: 127.362
+OK  f g0 ratio: computed 0.88152 vs stated 0.88152 (tol 6e-06)
+OK  f g0 pp: computed -1.79139 vs stated -1.791 (tol 0.0006)
+OK  f g0 capacity%: computed 13.4405 vs stated 13.44 (tol 0.006)
+OK  f g0 GB(held-out mean): computed 127.282 vs stated 127.3 (tol 0.051)
+     GB anchored on production WNR2: 127.319
+OK  f g0 d ratio: computed 0.880109 vs stated 0.88011 (tol 6e-06)
+OK  f g0 d pp: computed -1.93246 vs stated -1.932 (tol 0.0006)
+OK  f g0 d capacity%: computed 13.6223 vs stated 13.62 (tol 0.006)
+OK  f g0 d GB(held-out mean): computed 127.079 vs stated 127.1 (tol 0.051)
+     GB anchored on production WNR2: 127.115
+OK  f g0 d e ratio: computed 0.880212 vs stated 0.88021 (tol 6e-06)
+OK  f g0 d e pp: computed -1.92211 vs stated -1.922 (tol 0.0006)
+OK  f g0 d e capacity%: computed 13.6089 vs stated 13.61 (tol 0.006)
+OK  f g0 d e GB(held-out mean): computed 127.094 vs stated 127.1 (tol 0.051)
+     GB anchored on production WNR2: 127.130
+OK  f g0 d t ratio: computed 0.877996 vs stated 0.878 (tol 6e-06)
+OK  f g0 d t pp: computed -2.14379 vs stated -2.144 (tol 0.0006)
+OK  f g0 d t capacity%: computed 13.8958 vs stated 13.9 (tol 0.006)
+OK  f g0 d t GB(held-out mean): computed 126.773 vs stated 126.8 (tol 0.051)
+     GB anchored on production WNR2: 126.810
+OK  f g0 c ratio: computed 0.854112 vs stated 0.85411 (tol 6e-06)
+OK  f g0 c pp: computed -4.53214 vs stated -4.532 (tol 0.0006)
+OK  f g0 c capacity%: computed 17.0806 vs stated 17.08 (tol 0.006)
+OK  f g0 c GB(held-out mean): computed 123.325 vs stated 123.3 (tol 0.051)
+     GB anchored on production WNR2: 123.361
+OK  f g0 c d ratio: computed 0.852745 vs stated 0.85275 (tol 6e-06)
+OK  f g0 c d pp: computed -4.66885 vs stated -4.669 (tol 0.0006)
+OK  f g0 c d capacity%: computed 17.2683 vs stated 17.27 (tol 0.006)
+OK  f g0 c d GB(held-out mean): computed 123.128 vs stated 123.1 (tol 0.051)
+     GB anchored on production WNR2: 123.164
+OK  f g0 c d e ratio: computed 0.852821 vs stated 0.85282 (tol 6e-06)
+OK  f g0 c d e pp: computed -4.66122 vs stated -4.661 (tol 0.0006)
+OK  f g0 c d e capacity%: computed 17.2579 vs stated 17.26 (tol 0.006)
+OK  f g0 c d e GB(held-out mean): computed 123.139 vs stated 123.1 (tol 0.051)
+     GB anchored on production WNR2: 123.175
+
+== 3. spec v1/v1z estimates
+OK  v1 spec layout ratio: computed 0.878126 vs stated 0.8781 (tol 6e-05)
+OK  v1z bytes: computed 1.59944e+07 vs stated 1.59944e+07 (tol 50)
+OK  v1z ratio: computed 0.850737 vs stated 0.8507 (tol 6e-05)
+  v1z basis note: includes +2,452 B spec layout; the v1 row in the same table (0.87800) does not
+  tail saving in CZ domain unknown; fgdt-fgd measured only without CZ
+
+== 4. spec tok/s claim (section 10: v1 +1.4% U / +2.3% E; v1z +3.2% / +5.3%) vs elasticity definition
+  v1 (spec layout): ratio 0.87813; %fewer bytes vs WNR2 2.426 -> U 1.57 E 2.63; pp-of-raw 2.131 -> U 1.38 E 2.31
+  v1 (ref layout fgdt g0): ratio 0.87800; %fewer bytes vs WNR2 2.442 -> U 1.58 E 2.65; pp-of-raw 2.144 -> U 1.39 E 2.33
+  v1z est: ratio 0.85074; %fewer bytes vs WNR2 5.724 -> U 3.71 E 6.21; pp-of-raw 4.870 -> U 3.15 E 5.29
+  capacity-update simulated: WNR3t_g0 U 1.61 E 2.63; WNR3zt_est U 3.65 E 6.23 (capacity_update_output.txt:36,55,38,57)
+
+== 5. capacity-update ratios and containers
+OK  WNR3 ratio: computed 0.880738 vs stated 0.88074 (tol 6e-06)
+OK  WNR3 container GB: computed 127.169 vs stated 127.169 (tol 1e-06)
+     bytes fewer vs prod WNR2 2.151%  vs WEX1 13.541%
+OK  WNR3t ratio: computed 0.878526 vs stated 0.87853 (tol 6e-06)
+OK  WNR3t container GB: computed 126.85 vs stated 126.85 (tol 1e-06)
+     bytes fewer vs prod WNR2 2.409%  vs WEX1 13.827%
+OK  WNR3z ratio: computed 0.853347 vs stated 0.85335 (tol 6e-06)
+OK  WNR3z container GB: computed 123.214 vs stated 123.214 (tol 1e-06)
+     bytes fewer vs prod WNR2 5.430%  vs WEX1 17.186%
+OK  WNR3_g0 ratio: computed 0.880465 vs stated 0.88047 (tol 6e-06)
+OK  WNR3_g0 container GB: computed 127.13 vs stated 127.13 (tol 1e-06)
+     bytes fewer vs prod WNR2 2.183%  vs WEX1 13.576%
+OK  WNR3t_g0 ratio: computed 0.878248 vs stated 0.87825 (tol 6e-06)
+OK  WNR3t_g0 container GB: computed 126.81 vs stated 126.81 (tol 1e-06)
+     bytes fewer vs prod WNR2 2.441%  vs WEX1 13.863%
+OK  WNR3z_g0 ratio: computed 0.853074 vs stated 0.85307 (tol 6e-06)
+OK  WNR3z_g0 container GB: computed 123.175 vs stated 123.175 (tol 1e-06)
+     bytes fewer vs prod WNR2 5.464%  vs WEX1 17.223%
+OK  F ratio: computed 0.882072 vs stated 0.88207 (tol 6e-06)
+OK  F container GB: computed 127.362 vs stated 127.362 (tol 1e-06)
+     bytes fewer vs prod WNR2 1.997%  vs WEX1 13.369%
+OK  WNR2 prod container GB: computed 129.905 vs stated 129.905 (tol 1e-09)
+BAD WEX1 container GB: computed 144.39 vs stated 144.389 (tol 1e-09)
+  U: margins at 122.6 GB: {'WNR3': -4.57, 'WNR3t': -4.25, 'WNR3z': -0.61}
+
+== 6. ceil-gpu record bytes (encode_report*.json)
+  A259: per record 16,963,218.4 ratio 0.90227 rANS bit/w 3.79171 (no record header, no 4096 padding, u16 lengths, 4 B flush)
+  D: per record 16,963,202.9 ratio 0.90227 rANS bit/w 2.79170 (no record header, no 4096 padding, u16 lengths, 4 B flush)
+  CF: per record 16,573,694.1 ratio 0.88155 rANS bit/w 3.70788 (no record header, no 4096 padding, u16 lengths, 4 B flush)
+  CFD: per record 16,573,814.2 ratio 0.88156 rANS bit/w 2.70791 (no record header, no 4096 padding, u16 lengths, 4 B flush)
+  DB2: per record 17,023,667.1 ratio 0.90548 rANS bit/w 2.80537 (no record header, no 4096 padding, u16 lengths, 4 B flush)
+  CFDB2: per record 16,634,296.0 ratio 0.88477 rANS bit/w 2.72158 (no record header, no 4096 padding, u16 lengths, 4 B flush)
+  CF vs A259 % of record -2.296, % of raw -2.072
+  CFDB2 vs CF % of record 0.366 (spec A.3 says +0.36%)
+  CFD - CF B/record 120.1
+
+== 7. start-state arithmetic
+  HASH expected cost 19,440 x E[log2(1+U)] / 8 = 1354.3 B (measured +1,351.6 used)
+  TAIL start-state cost log2(1+2^20/2^23) = 0.1699 bit/stream; window acceptance 2^20/(2^31-2^23) = 2^-10.99; scales 2^-14.99
+  measured tail saving per stream 2.068 B
+  g0 vs f in bit/w: -0.00136
+
+== 8. MV and brief figures
+  MV -339.5 KB -> -1.8058% of raw; 0.8997-0.01806 = 0.8816; capacity 0.1342
+  ceil-gpu in-sample delta -2.07% vs CR held-out -1.761% on different experts; gpu set includes idx 159 (orig medians 121,121,121)
+
+== 9. statistical check on refuter flip rates (Poisson z for orig vs ceil)
+  w1: orig 63/24000 ceil 82/24000  z = 1.58
+  w2: orig 69/24000 ceil 139/24000  z = 4.85
+  team 2 audit w2 62/12,000 vs refuter orig w2 69/24,000: rates 0.517% vs 0.288%, z = 3.09
+
+== 10. fallback penalty: CR measured vs RF estimate
+  CR test_ceil fg fallback 17,285,120 vs WNR2 16,887,808: 2.113% of raw; vs same expert in ceil form 16,572,416: 3.791% of raw
+  RF estimate +12.65% (P2) / +11.73% (P4) of raw with median anchors (ceil model trained at anchor 121, plain record at 120)

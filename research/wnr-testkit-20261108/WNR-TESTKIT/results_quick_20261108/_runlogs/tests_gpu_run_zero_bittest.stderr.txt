@@ -1,0 +1,4 @@
+<KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\venv\Lib\site-packages\cupy\_environment.py:286: UserWarning: CUDA path could not be detected. Set CUDA_PATH environment variable if CuPy fails to load.
+  warnings.warn(
+<KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\tests\gpu\run_zero_bittest.py:90: RuntimeWarning: overflow encountered in ldexp
+  e8 = np.ldexp(np.float32(1), np.where(v == 0, -127, v - 127)).astype(np.float32)   # dsv4_cuda_init (:1605)

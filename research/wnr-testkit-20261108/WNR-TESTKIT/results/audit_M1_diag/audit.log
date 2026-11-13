@@ -1,0 +1,24 @@
+environment: {"os": "Windows-11-10.0.26300-SP0", "machine": "AMD64", "cpu": "AMD Ryzen 9 7950X3D 16-Core Processor", "cpu_count": 32, "ram_gb": 31.2, "python": "3.14.8", "numpy": "2.5.4", "cupy": ["cupy-cuda12x==14.2.0"], "gpu": ["NVIDIA GeForce RTX 5090, 621.01, 32607 MiB"]}
+config: rules ['R0', 'HASH', 'HASH32', 'TAIL', 'TAILD'] cases ['M1'] experts [1, 25, 47, 71, 95, 113, 137, 159] params {'per_w': 3000, 'per_a': None, 'per_s': None, 'rper': {'M1': 500, 'P1': 1, 'P2': 100, 'P3': 4, 'O': 2}} jobs 1
+H32 self test: {'verification': '0xb0f57ee3', 'expected': '0xb0f57ee3', 'vectors_ok': True, 'ok': True}
+sample dir: <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\data\v41-sample
+record L00_E113.bin reused=False encode 8.7s: fg0d total 16547840 verified True sha=ref True, fg0de total 16547840 verified True sha=ref True, fg0dt total 16506880 verified True sha=ref True, fg0dh total 16547840 verified True sha=ref True, fg0dtD total 16506880 verified True sha=ref True
+record L06_E073.bin reused=False encode 8.6s: fg0d total 16523264 verified True sha=ref True, fg0de total 16527360 verified True sha=ref True, fg0dt total 16486400 verified True sha=ref True, fg0dh total 16527360 verified True sha=ref True, fg0dtD total 16486400 verified True sha=ref True
+record L11_E132.bin reused=False encode 8.3s: fg0d total 16543744 verified True sha=ref True, fg0de total 16543744 verified True sha=ref True, fg0dt total 16502784 verified True sha=ref True, fg0dh total 16543744 verified True sha=ref True, fg0dtD total 16502784 verified True sha=ref True
+record L17_E123.bin reused=False encode 8.5s: fg0d total 16592896 verified True sha=ref True, fg0de total 16592896 verified True sha=ref True, fg0dt total 16551936 verified True sha=ref True, fg0dh total 16592896 verified True sha=ref True, fg0dtD total 16551936 verified True sha=ref True
+record L23_E178.bin reused=False encode 8.9s: fg0d total 16510976 verified True sha=ref True, fg0de total 16510976 verified True sha=ref True, fg0dt total 16470016 verified True sha=ref True, fg0dh total 16510976 verified True sha=ref True, fg0dtD total 16470016 verified True sha=ref True
+record L28_E089.bin reused=False encode 8.2s: fg0d total 16527360 verified True sha=ref True, fg0de total 16531456 verified True sha=ref True, fg0dt total 16490496 verified True sha=ref True, fg0dh total 16531456 verified True sha=ref True, fg0dtD total 16490496 verified True sha=ref True
+record L34_E078.bin reused=False encode 8.4s: fg0d total 16527360 verified True sha=ref True, fg0de total 16531456 verified True sha=ref True, fg0dt total 16490496 verified True sha=ref True, fg0dh total 16531456 verified True sha=ref True, fg0dtD total 16490496 verified True sha=ref True
+record L39_E156.bin reused=False encode 9.3s: fg0d total 16732160 verified True sha=ref True, fg0de total 16736256 verified True sha=ref True, fg0dt total 16691200 verified True sha=ref True, fg0dh total 16736256 verified True sha=ref True, fg0dtD total 16691200 verified True sha=ref True
+[fg0d,fg0de,fg0dh,fg0dt] loaded ['L00_E113.bin', 'L06_E073.bin', 'L11_E132.bin', 'L17_E123.bin', 'L23_E178.bin', 'L28_E089.bin', 'L34_E078.bin', 'L39_E156.bin'] kinds ['fg0d', 'fg0de', 'fg0dh', 'fg0dt', 'fg0dtD'] 3s
+[fg0d,fg0de,fg0dh,fg0dt] M1 R0 trials 4000 accepted 1 silent 0 CI95 [0.00e+00, 9.22e-04] stages {'wlengths': 3463, 'lengths': 536, 'None': 1} 42s
+[fg0d,fg0de,fg0dh,fg0dt] M1 HASH trials 4000 accepted 1 silent 0 CI95 [0.00e+00, 9.22e-04] stages {'wlengths': 3463, 'lengths': 536, 'None': 1} 42s
+[fg0d,fg0de,fg0dh,fg0dt] M1 HASH32 trials 4000 accepted 1 silent 0 CI95 [0.00e+00, 9.22e-04] stages {'wlengths': 3463, 'lengths': 536, 'None': 1} 42s
+[fg0d,fg0de,fg0dh,fg0dt] M1 TAIL trials 4000 accepted 1 silent 0 CI95 [0.00e+00, 9.22e-04] stages {'wlengths': 3460, 'lengths': 539, 'None': 1} 43s
+[fg0d,fg0de,fg0dh,fg0dt] M1 TAILD trials 4000 accepted 1 silent 0 CI95 [0.00e+00, 9.22e-04] stages {'wlengths': 3460, 'lengths': 539, 'None': 1} 44s
+M1  R0     all     4000 silent      0 rate 0.000e+00 CI [0.00e+00,9.22e-04] stages {'wlengths': 3463, 'lengths': 536, 'None': 1}
+M1  HASH   all     4000 silent      0 rate 0.000e+00 CI [0.00e+00,9.22e-04] stages {'wlengths': 3463, 'lengths': 536, 'None': 1}
+M1  HASH32 all     4000 silent      0 rate 0.000e+00 CI [0.00e+00,9.22e-04] stages {'wlengths': 3463, 'lengths': 536, 'None': 1}
+M1  TAIL   all     4000 silent      0 rate 0.000e+00 CI [0.00e+00,9.22e-04] stages {'wlengths': 3460, 'lengths': 539, 'None': 1}
+M1  TAILD  all     4000 silent      0 rate 0.000e+00 CI [0.00e+00,9.22e-04] stages {'wlengths': 3460, 'lengths': 539, 'None': 1}
+RESULT audit DONE R0  all-cases 0/4000; HASH  all-cases 0/4000; HASH32  all-cases 0/4000; TAIL  all-cases 0/4000; TAILD  all-cases 0/4000; random-flip target 24000/matrix not met

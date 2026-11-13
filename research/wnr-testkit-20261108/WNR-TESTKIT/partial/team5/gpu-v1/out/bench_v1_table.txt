@@ -1,0 +1,110 @@
+﻿====================================================================================================
+<orig-pc>/team5\gpu-v1\out\bench_v1.json {'gpu': 'NVIDIA GeForce RTX 3070', 'sms': 46, 'clock_khz_max': 1755000, 'smem_per_sm': 102400, 'regs_per_sm': 65536, 'driver': 13050, 'runtime': 12090, 'cupy': '14.2.0', 'rounds': 41, 'nts': [32, 64, 128, 256], 'opts': ['lb', 'out4']} 210 MHz, 405 MHz, 0 %, 17.80 W, 43.81 -> 2055 MHz, 6801 MHz, 0 %, 108.61 W, 60.00
+
+weight kernels: regs / smem / occupancy (warps per SM)
+nt128/lb    A259 40r/8304B/40w/l0  CF5 40r/8304B/40w/l0  G5 40r/8304B/40w/l0  G5H 40r/8304B/40w/l0  G5L 40r/8416B/40w/l0  G5HL 40r/8416B/40w/l0
+nt128/out4  A259 40r/26736B/12w/l0  CF5 44r/26736B/12w/l0  G5 56r/26736B/12w/l0  G5H 50r/26736B/12w/l0  G5L 47r/26848B/12w/l0  G5HL 53r/26848B/12w/l0
+nt256/lb    A259 40r/8304B/48w/l0  CF5 40r/8304B/48w/l0  G5 40r/8304B/48w/l0  G5H 40r/8304B/48w/l0  G5L 40r/8416B/48w/l0  G5HL 40r/8416B/48w/l0
+nt256/out4  A259 40r/45168B/16w/l0  CF5 44r/45168B/16w/l0  G5 56r/45168B/16w/l0  G5H 58r/45168B/16w/l0  G5L 47r/45280B/16w/l0  G5HL 48r/45280B/16w/l0
+nt32/lb     A259 74r/8304B/10w/l0  CF5 76r/8304B/10w/l0  G5 78r/8304B/10w/l0  G5H 78r/8304B/10w/l0  G5L 80r/8416B/10w/l0  G5HL 81r/8416B/10w/l0
+nt32/out4   A259 73r/12912B/7w/l0  CF5 80r/12912B/7w/l0  G5 80r/12912B/7w/l0  G5H 81r/12912B/7w/l0  G5L 81r/13024B/7w/l0  G5HL 84r/13024B/7w/l0
+nt64/lb     A259 64r/8304B/20w/l0  CF5 64r/8304B/20w/l0  G5 64r/8304B/20w/l0  G5H 64r/8304B/20w/l0  G5L 64r/8416B/20w/l0  G5HL 64r/8416B/20w/l0
+nt64/out4   A259 64r/17520B/10w/l0  CF5 64r/17520B/10w/l0  G5 64r/17520B/10w/l0  G5H 64r/17520B/10w/l0  G5L 64r/17632B/10w/l0  G5HL 64r/17632B/10w/l0
+
+median us per config
+-- m1
+nt128/lb    A259    418.8  CF5    432.1  G5    447.5  G5H    450.6  G5L    437.2  G5HL    447.5
+nt128/out4  A259    439.3  CF5    429.1  G5    450.6  G5H    458.8  G5L    443.4  G5HL    461.8
+nt256/lb    A259    433.2  CF5    448.5  G5    457.7  G5H    463.9  G5L    450.6  G5HL    462.8
+nt256/out4  A259    469.0  CF5    459.8  G5    483.3  G5H    492.5  G5L    474.1  G5HL    474.1
+nt32/lb     A259    300.0  CF5    305.2  G5    301.1  G5H    312.3  G5L    304.1  G5HL    304.1
+nt32/out4   A259    305.2  CF5    305.2  G5    307.2  G5H    306.4  G5L    309.2  G5HL    309.2
+nt64/lb     A259    319.5  CF5    326.7  G5    367.6  G5H    373.8  G5L    366.6  G5HL    372.7
+nt64/out4   A259    341.0  CF5    337.9  G5    373.8  G5H    387.1  G5L    381.2  G5HL    388.1
+-- m3
+nt128/lb    A259    771.1  CF5    778.2  G5    793.6  G5H    810.0  G5L    782.3  G5HL    800.8
+nt128/out4  A259    592.9  CF5    564.2  G5    583.7  G5H    597.0  G5L    576.5  G5HL    610.3
+nt256/lb    A259    658.4  CF5    661.5  G5    672.8  G5H    683.0  G5L    664.6  G5HL    679.9
+nt256/out4  A259    620.5  CF5    606.2  G5    621.6  G5H    627.7  G5L    616.4  G5HL    619.5
+nt32/lb     A259    767.0  CF5    773.1  G5    767.0  G5H    788.5  G5L    774.1  G5HL    779.3
+nt32/out4   A259    666.6  CF5    666.8  G5    668.8  G5H    670.7  G5L    673.8  G5HL    674.8
+nt64/lb     A259    689.2  CF5    690.2  G5    721.9  G5H    726.0  G5L    718.8  G5HL    725.0
+nt64/out4   A259    726.0  CF5    724.0  G5    790.5  G5H    812.0  G5L    803.8  G5HL    819.2
+-- m24
+nt128/lb    A259   9138.2  CF5   9010.2  G5   9047.0  G5H   9048.1  G5L   9035.8  G5HL   9050.1
+nt128/out4  A259   4429.8  CF5   4348.9  G5   4518.9  G5H   4600.8  G5L   4453.4  G5HL   4633.6
+nt256/lb    A259   9450.5  CF5   9327.6  G5   9323.5  G5H   9344.0  G5L   9327.6  G5HL   9308.2
+nt256/out4  A259   4266.0  CF5   4226.0  G5   4382.7  G5H   4430.8  G5L   4325.4  G5HL   4347.9
+nt32/lb     A259   4656.1  CF5   4722.7  G5   4682.8  G5H   4778.0  G5L   4682.8  G5HL   4686.8
+nt32/out4   A259   4661.2  CF5   4663.3  G5   4677.6  G5H   4680.7  G5L   4704.3  G5HL   4702.2
+nt64/lb     A259   8026.1  CF5   7581.7  G5   7625.7  G5H   7661.6  G5L   7582.7  G5HL   7573.5
+nt64/out4   A259   4122.6  CF5   4119.6  G5   4459.5  G5H   4573.2  G5L   4525.1  G5HL   4600.8
+-- 8streams
+nt128/lb    A259   9176.1  CF5   9066.8  G5   9103.1  G5H   9093.6  G5L   9098.6  G5HL   9089.2
+nt128/out4  A259   4453.8  CF5   4387.8  G5   4544.8  G5H   4652.7  G5L   4463.6  G5HL   4686.8
+nt256/lb    A259   9538.6  CF5   9389.1  G5   9398.6  G5H   9411.4  G5L   9360.8  G5HL   9367.6
+nt256/out4  A259   4300.8  CF5   4277.2  G5   4397.8  G5H   4477.0  G5L   4316.7  G5HL   4356.8
+nt32/lb     A259   4708.4  CF5   4788.2  G5   4731.5  G5H   4825.8  G5L   4743.0  G5HL   4734.3
+nt32/out4   A259   4722.7  CF5   4728.9  G5   4724.7  G5H   4745.1  G5L   4753.2  G5HL   4759.6
+nt64/lb     A259   8109.8  CF5   7635.4  G5   7705.6  G5H   7735.4  G5L   7663.5  G5HL   7665.0
+nt64/out4   A259   4161.5  CF5   4135.9  G5   4471.5  G5H   4596.7  G5L   4564.0  G5HL   4647.7
+
+same-config paired ratios: min / median / max over configs (per-round ratio medians)
+HASH cost                m1 [1.0, 1.0175, 1.0353]  m3 [1.003, 1.0172, 1.0285]  m24 [0.9995, 1.0072, 1.0253]  8streams [1.0, 1.0107, 1.0247]
+LENC cost                m1 [0.9771, 0.9919, 1.0192]  m3 [0.9846, 0.9923, 1.0169]  m24 [0.9859, 0.9995, 1.0147]  8streams [0.9835, 0.9973, 1.0146]
+HASH+LENC cost           m1 [0.9809, 1.0107, 1.0384]  m3 [0.9967, 1.0091, 1.0452]  m24 [0.9918, 1.0009, 1.0313]  8streams [0.9884, 1.0007, 1.0332]
+LENC on top of HASH      m1 [0.9626, 0.9964, 1.0067]  m3 [0.9869, 0.9978, 1.0206]  m24 [0.98, 0.9979, 1.0069]  8streams [0.9734, 0.9971, 1.008]
+HASH on top of LENC      m1 [1.0, 1.0178, 1.0417]  m3 [1.0, 1.0146, 1.0584]  m24 [0.9977, 1.0021, 1.0394]  8streams [0.9991, 1.0006, 1.04]
+v1 vs team-4 CF5         m1 [0.9966, 1.0338, 1.1485]  m3 [1.004, 1.0297, 1.1315]  m24 [0.993, 1.007, 1.1165]  8streams [0.9915, 1.006, 1.1184]
+v1 vs A259               m1 [1.0109, 1.0587, 1.1667]  m3 [0.9971, 1.031, 1.1298]  m24 [0.944, 1.008, 1.1159]  8streams [0.9438, 1.0084, 1.1143]
+G5 vs CF5                m1 [0.9899, 1.0428, 1.1223]  m3 [0.9857, 1.0241, 1.0907]  m24 [0.9917, 1.005, 1.082]  8streams [0.9916, 1.0063, 1.0808]
+CF5 vs A259              m1 [0.979, 1.0068, 1.0331]  m3 [0.9516, 1.0023, 1.0094]  m24 [0.9446, 0.9885, 1.0144]  8streams [0.9428, 0.9889, 1.0188]
+G5 vs A259               m1 [1.0034, 1.0425, 1.1506]  m3 [0.9861, 1.014, 1.0889]  m24 [0.9495, 1.0051, 1.0815]  8streams [0.9515, 1.0043, 1.0787]
+
+best config per variant (min over configs of median us) and best-vs-best ratios
+-- m1: A259 300.0 @nt32/lb  CF5 305.2 @nt32/lb  G5 301.1 @nt32/lb  G5H 306.4 @nt32/out4  G5L 304.1 @nt32/lb  G5HL 304.1 @nt32/lb
+   best-vs-best {'HASH cost': 1.0176, 'LENC cost': 1.01, 'HASH+LENC cost': 1.01, 'LENC on top of HASH': 0.9925, 'HASH on top of LENC': 1.0, 'v1 vs team-4 CF5': 0.9964, 'v1 vs A259': 1.0137, 'G5 vs CF5': 0.9866, 'CF5 vs A259': 1.0173, 'G5 vs A259': 1.0037}
+-- m3: A259 592.9 @nt128/out4  CF5 564.2 @nt128/out4  G5 583.7 @nt128/out4  G5H 597.0 @nt128/out4  G5L 576.5 @nt128/out4  G5HL 610.3 @nt128/out4
+   best-vs-best {'HASH cost': 1.0228, 'LENC cost': 0.9877, 'HASH+LENC cost': 1.0456, 'LENC on top of HASH': 1.0223, 'HASH on top of LENC': 1.0586, 'v1 vs team-4 CF5': 1.0817, 'v1 vs A259': 1.0293, 'G5 vs CF5': 1.0346, 'CF5 vs A259': 0.9516, 'G5 vs A259': 0.9845}
+-- m24: A259 4122.6 @nt64/out4  CF5 4119.6 @nt64/out4  G5 4382.7 @nt256/out4  G5H 4430.8 @nt256/out4  G5L 4325.4 @nt256/out4  G5HL 4347.9 @nt256/out4
+   best-vs-best {'HASH cost': 1.011, 'LENC cost': 0.9869, 'HASH+LENC cost': 0.9921, 'LENC on top of HASH': 0.9813, 'HASH on top of LENC': 1.0052, 'v1 vs team-4 CF5': 1.0554, 'v1 vs A259': 1.0546, 'G5 vs CF5': 1.0639, 'CF5 vs A259': 0.9993, 'G5 vs A259': 1.0631}
+-- 8streams: A259 4161.5 @nt64/out4  CF5 4135.9 @nt64/out4  G5 4397.8 @nt256/out4  G5H 4477.0 @nt256/out4  G5L 4316.7 @nt256/out4  G5HL 4356.8 @nt256/out4
+   best-vs-best {'HASH cost': 1.018, 'LENC cost': 0.9816, 'HASH+LENC cost': 0.9907, 'LENC on top of HASH': 0.9732, 'HASH on top of LENC': 1.0093, 'v1 vs team-4 CF5': 1.0534, 'v1 vs A259': 1.0469, 'G5 vs CF5': 1.0633, 'CF5 vs A259': 0.9938, 'G5 vs A259': 1.0568}
+
+scale kernels: median us and paired ratios per nt
+nt128  m1        {'S_t4o': 55.4, 'S_t4c': 55.3, 'SG': 54.3, 'SH': 56.3, 'SL': 56.3, 'SHL': 55.3, 'SHLd': 63.5, 'SGd': 61.4, 'SLd': 62.5} {'scale HASH': 1.0377, 'scale LENC': 1.0377, 'scale HASH+LENC': 1.0189, 'DUAL write': 1.1481, 'SG vs team-4 sdec ceil': 0.9815, 'SHL vs team-4 sdec ceil': 0.9818, 'ceil vs orig scale streams': 1.0}
+nt128  m3        {'S_t4o': 60.4, 'S_t4c': 59.4, 'SG': 55.3, 'SH': 59.4, 'SL': 57.3, 'SHL': 59.4, 'SHLd': 63.5, 'SGd': 62.5, 'SLd': 63.6} {'scale HASH': 1.0741, 'scale LENC': 1.037, 'scale HASH+LENC': 1.0741, 'DUAL write': 1.069, 'SG vs team-4 sdec ceil': 0.931, 'SHL vs team-4 sdec ceil': 1.0, 'ceil vs orig scale streams': 0.9831}
+nt128  m24       {'S_t4o': 134.1, 'S_t4c': 131.1, 'SG': 133.1, 'SH': 131.1, 'SL': 136.2, 'SHL': 134.1, 'SHLd': 652.3, 'SGd': 652.3, 'SLd': 655.4} {'scale HASH': 0.9846, 'scale LENC': 1.0155, 'scale HASH+LENC': 1.0077, 'DUAL write': 4.8626, 'SG vs team-4 sdec ceil': 1.0234, 'SHL vs team-4 sdec ceil': 1.0315, 'ceil vs orig scale streams': 0.9769}
+nt128  8streams  {'S_t4o': 463.1, 'S_t4c': 433.4, 'SG': 500.7, 'SH': 529.6, 'SL': 532.5, 'SHL': 547.8, 'SHLd': 565.5, 'SGd': 533.9, 'SLd': 507.0} {'scale HASH': 0.9792, 'scale LENC': 0.9974, 'scale HASH+LENC': 0.9952, 'DUAL write': 1.0255, 'SG vs team-4 sdec ceil': 1.1771, 'SHL vs team-4 sdec ceil': 1.1724, 'ceil vs orig scale streams': 0.9894}
+nt256  m1        {'S_t4o': 62.5, 'S_t4c': 61.4, 'SG': 61.4, 'SH': 60.4, 'SL': 62.5, 'SHL': 63.5, 'SHLd': 87.0, 'SGd': 82.9, 'SLd': 84.0} {'scale HASH': 1.0, 'scale LENC': 1.0167, 'scale HASH+LENC': 1.0333, 'DUAL write': 1.371, 'SG vs team-4 sdec ceil': 0.9836, 'SHL vs team-4 sdec ceil': 1.0333, 'ceil vs orig scale streams': 1.0}
+nt256  m3        {'S_t4o': 66.6, 'S_t4c': 65.5, 'SG': 61.4, 'SH': 64.5, 'SL': 64.5, 'SHL': 68.6, 'SHLd': 88.1, 'SGd': 84.0, 'SLd': 86.0} {'scale HASH': 1.0333, 'scale LENC': 1.0492, 'scale HASH+LENC': 1.1167, 'DUAL write': 1.2687, 'SG vs team-4 sdec ceil': 0.9375, 'SHL vs team-4 sdec ceil': 1.0469, 'ceil vs orig scale streams': 0.9846}
+nt256  m24       {'S_t4o': 142.3, 'S_t4c': 139.3, 'SG': 141.3, 'SH': 140.3, 'SL': 142.3, 'SHL': 142.3, 'SHLd': 579.6, 'SGd': 583.7, 'SLd': 578.6} {'scale HASH': 0.9927, 'scale LENC': 1.0072, 'scale HASH+LENC': 1.0072, 'DUAL write': 4.0714, 'SG vs team-4 sdec ceil': 1.0147, 'SHL vs team-4 sdec ceil': 1.0221, 'ceil vs orig scale streams': 0.9784}
+nt256  8streams  {'S_t4o': 390.2, 'S_t4c': 398.4, 'SG': 434.2, 'SH': 456.7, 'SL': 461.8, 'SHL': 454.7, 'SHLd': 500.7, 'SGd': 497.5, 'SLd': 477.2} {'scale HASH': 0.9871, 'scale LENC': 1.0087, 'scale HASH+LENC': 1.0245, 'DUAL write': 1.0479, 'SG vs team-4 sdec ceil': 1.1058, 'SHL vs team-4 sdec ceil': 1.1686, 'ceil vs orig scale streams': 1.0337}
+nt32   m1        {'S_t4o': 321.5, 'S_t4c': 290.8, 'SG': 289.8, 'SH': 315.4, 'SL': 303.1, 'SHL': 308.2, 'SHLd': 304.1, 'SGd': 291.8, 'SLd': 314.4} {'scale HASH': 1.1383, 'scale LENC': 1.0459, 'scale HASH+LENC': 1.0632, 'DUAL write': 0.9868, 'SG vs team-4 sdec ceil': 1.0, 'SHL vs team-4 sdec ceil': 1.0636, 'ceil vs orig scale streams': 0.9045}
+nt32   m3        {'S_t4o': 224.3, 'S_t4c': 218.1, 'SG': 202.8, 'SH': 216.1, 'SL': 205.8, 'SHL': 231.4, 'SHLd': 215.0, 'SGd': 227.3, 'SLd': 225.3} {'scale HASH': 1.0707, 'scale LENC': 1.0152, 'scale HASH+LENC': 1.1414, 'DUAL write': 0.9289, 'SG vs team-4 sdec ceil': 0.9296, 'SHL vs team-4 sdec ceil': 1.0566, 'ceil vs orig scale streams': 0.9771}
+nt32   m24       {'S_t4o': 431.1, 'S_t4c': 400.4, 'SG': 402.4, 'SH': 403.5, 'SL': 416.8, 'SHL': 416.8, 'SHLd': 679.9, 'SGd': 663.6, 'SLd': 666.6} {'scale HASH': 1.0025, 'scale LENC': 1.0334, 'scale HASH+LENC': 1.0355, 'DUAL write': 1.6247, 'SG vs team-4 sdec ceil': 1.0051, 'SHL vs team-4 sdec ceil': 1.0385, 'ceil vs orig scale streams': 0.9289}
+nt32   8streams  {'S_t4o': 422.9, 'S_t4c': 435.8, 'SG': 491.9, 'SH': 467.0, 'SL': 497.7, 'SHL': 490.5, 'SHLd': 495.6, 'SGd': 501.2, 'SLd': 493.6} {'scale HASH': 0.9806, 'scale LENC': 0.9647, 'scale HASH+LENC': 0.9834, 'DUAL write': 1.0056, 'SG vs team-4 sdec ceil': 1.1279, 'SHL vs team-4 sdec ceil': 1.1174, 'ceil vs orig scale streams': 1.0291}
+nt64   m1        {'S_t4o': 45.1, 'S_t4c': 44.0, 'SG': 44.0, 'SH': 45.1, 'SL': 46.1, 'SHL': 46.1, 'SHLd': 49.2, 'SGd': 48.1, 'SLd': 50.2} {'scale HASH': 1.0238, 'scale LENC': 1.0465, 'scale HASH+LENC': 1.0465, 'DUAL write': 1.0667, 'SG vs team-4 sdec ceil': 1.0, 'SHL vs team-4 sdec ceil': 1.0465, 'ceil vs orig scale streams': 0.9773}
+nt64   m3        {'S_t4o': 50.2, 'S_t4c': 49.2, 'SG': 46.1, 'SH': 50.2, 'SL': 51.2, 'SHL': 57.3, 'SHLd': 53.2, 'SGd': 54.3, 'SLd': 57.3} {'scale HASH': 1.0909, 'scale LENC': 1.0682, 'scale HASH+LENC': 1.1364, 'DUAL write': 1.0, 'SG vs team-4 sdec ceil': 0.9362, 'SHL vs team-4 sdec ceil': 1.0851, 'ceil vs orig scale streams': 0.9792}
+nt64   m24       {'S_t4o': 157.7, 'S_t4c': 152.6, 'SG': 150.5, 'SH': 152.6, 'SL': 156.7, 'SHL': 156.7, 'SHLd': 518.1, 'SGd': 518.1, 'SLd': 519.2} {'scale HASH': 1.0136, 'scale LENC': 1.0276, 'scale HASH+LENC': 1.0338, 'DUAL write': 3.3203, 'SG vs team-4 sdec ceil': 0.9932, 'SHL vs team-4 sdec ceil': 1.0265, 'ceil vs orig scale streams': 0.9733}
+nt64   8streams  {'S_t4o': 447.5, 'S_t4c': 454.0, 'SG': 511.1, 'SH': 502.1, 'SL': 502.8, 'SHL': 518.1, 'SHLd': 513.0, 'SGd': 520.5, 'SLd': 519.3} {'scale HASH': 0.9942, 'scale LENC': 0.9958, 'scale HASH+LENC': 0.9981, 'DUAL write': 0.9934, 'SG vs team-4 sdec ceil': 1.1261, 'SHL vs team-4 sdec ceil': 1.123, 'ceil vs orig scale streams': 0.9987}
+scale regs/smem/occ {'S_t4o/nt32': (78, 16912, 5), 'S_t4c/nt32': (78, 16912, 5), 'SG/nt32': (78, 16912, 5), 'SH/nt32': (80, 16912, 5), 'SL/nt32': (80, 16912, 5), 'SHL/nt32': (80, 16912, 5), 'SHLd/nt32': (80, 16912, 5), 'SGd/nt32': (78, 16912, 5), 'SLd/nt32': (80, 16912, 5), 'S_t4o/nt64': (75, 16912, 5), 'S_t4c/nt64': (75, 16912, 5), 'SG/nt64': (75, 16912, 5), 'SH/nt64': (79, 16912, 5), 'SL/nt64': (78, 16912, 5), 'SHL/nt64': (78, 16912, 5), 'SHLd/nt64': (78, 16912, 5), 'SGd/nt64': (75, 16912, 5), 'SLd/nt64': (78, 16912, 5), 'S_t4o/nt128': (75, 16912, 5), 'S_t4c/nt128': (75, 16912, 5), 'SG/nt128': (75, 16912, 5), 'SH/nt128': (76, 16912, 5), 'SL/nt128': (76, 16912, 5), 'SHL/nt128': (76, 16912, 5), 'SHLd/nt128': (76, 16912, 5), 'SGd/nt128': (75, 16912, 5), 'SLd/nt128': (76, 16912, 5), 'S_t4o/nt256': (44, 16912, 5), 'S_t4c/nt256': (44, 16912, 5), 'SG/nt256': (44, 16912, 5), 'SH/nt256': (44, 16912, 5), 'SL/nt256': (48, 16912, 5), 'SHL/nt256': (48, 16912, 5), 'SHLd/nt256': (48, 16912, 5), 'SGd/nt256': (44, 16912, 5), 'SLd/nt256': (48, 16912, 5)}
+
+pipelines (scale kernel nt32 + weight kernel), median us; same-config ratios min/med/max
+nt128/lb    P_A259 469.0/825.3/9321.5/9519.4  P_CF5 484.4/835.6/9247.7/9450.5  P_G5 498.7/849.9/9319.4/9492.8  P_G5HL 500.7/863.2/9328.6/9434.6
+nt128/out4  P_A259 485.4/634.9/4610.0/4547.8  P_CF5 477.2/612.4/4574.2/4514.6  P_G5 497.7/627.7/4781.1/4683.8  P_G5HL 510.0/654.3/4894.7/4775.9
+nt256/lb    P_A259 480.3/706.6/9639.9/9603.1  P_CF5 496.6/717.8/9545.7/9493.1  P_G5 504.8/726.0/9582.6/9551.6  P_G5HL 511.0/735.2/9569.3/9568.3
+nt256/out4  P_A259 515.1/665.6/4450.3/4385.8  P_CF5 507.9/660.5/4447.2/4380.5  P_G5 530.4/674.8/4637.7/4519.9  P_G5HL 523.3/672.8/4610.0/4479.6
+nt32/lb     P_A259 347.1/820.2/4873.2/4838.4  P_CF5 353.3/833.5/4986.9/4947.0  P_G5 349.2/828.4/4975.6/4914.0  P_G5HL 353.3/830.5/4986.9/4851.9
+nt32/out4   P_A259 351.2/713.7/4847.6/4918.3  P_CF5 353.3/719.9/4892.7/4991.0  P_G5 354.3/722.9/4937.7/5008.5  P_G5HL 358.4/727.0/4968.4/5070.6
+nt64/lb     P_A259 367.6/750.6/8225.8/8067.0  P_CF5 376.8/747.5/7800.8/7739.7  P_G5 416.8/780.3/7885.8/7799.9  P_G5HL 423.1/784.4/7838.7/7723.8
+nt64/out4   P_A259 387.1/775.2/4308.0/4274.2  P_CF5 385.0/777.2/4347.9/4376.8  P_G5 420.9/842.8/4721.7/4661.5  P_G5HL 437.2/873.5/4870.1/4886.5
+pipeline HASH+LENC             {'m1': [0.9865, 1.0134, 1.0389], 'm3': [0.9985, 1.0098, 1.0421], 'm24': [0.993, 1.0019, 1.0316], '8streams': [0.9863, 0.9979, 1.0389]}
+pipeline v1 vs CF5+copy        {'m1': [1.0, 1.032, 1.1332], 'm3': [0.9976, 1.0275, 1.124], 'm24': [1.0004, 1.012, 1.1196], '8streams': [0.9796, 1.0137, 1.1034]}
+pipeline v1 vs A259            {'m1': [1.0159, 1.0584, 1.1532], 'm3': [1.0089, 1.0357, 1.1281], 'm24': [0.9538, 1.0243, 1.1306], '8streams': [0.961, 1.0151, 1.1223]}
+pipeline G5(dual) vs CF5+copy  {'m1': [0.9884, 1.0363, 1.1057], 'm3': [0.9926, 1.0194, 1.0844], 'm24': [0.9975, 1.0104, 1.0857], '8streams': [0.9925, 1.0078, 1.0827]}
+pipeline CF5 vs A259           {'m1': [0.9831, 1.0118, 1.0341], 'm3': [0.9689, 1.0063, 1.0162], 'm24': [0.9489, 0.9959, 1.0234], '8streams': [0.9598, 0.9968, 1.0237]}
+best m1 {'P_A259': {'us': 347.1, 'cfg': 'nt32/lb'}, 'P_CF5': {'us': 353.3, 'cfg': 'nt32/lb'}, 'P_G5': {'us': 349.2, 'cfg': 'nt32/lb'}, 'P_G5HL': {'us': 353.3, 'cfg': 'nt32/lb'}}
+best m3 {'P_A259': {'us': 634.9, 'cfg': 'nt128/out4'}, 'P_CF5': {'us': 612.4, 'cfg': 'nt128/out4'}, 'P_G5': {'us': 627.7, 'cfg': 'nt128/out4'}, 'P_G5HL': {'us': 654.3, 'cfg': 'nt128/out4'}}
+best m24 {'P_A259': {'us': 4308.0, 'cfg': 'nt64/out4'}, 'P_CF5': {'us': 4347.9, 'cfg': 'nt64/out4'}, 'P_G5': {'us': 4637.7, 'cfg': 'nt256/out4'}, 'P_G5HL': {'us': 4610.0, 'cfg': 'nt256/out4'}}
+best 8streams {'P_A259': {'us': 4274.2, 'cfg': 'nt64/out4'}, 'P_CF5': {'us': 4376.8, 'cfg': 'nt64/out4'}, 'P_G5': {'us': 4519.9, 'cfg': 'nt256/out4'}, 'P_G5HL': {'us': 4479.6, 'cfg': 'nt256/out4'}}

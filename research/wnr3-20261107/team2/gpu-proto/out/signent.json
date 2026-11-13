@@ -1,0 +1,19 @@
+﻿{
+ "weights": 5662310400,
+ "H_sym_given_ctx_bits_per_w": 3.7665159318616794,
+ "H_mag_given_ctx_bits_per_w": 2.766516965791155,
+ "H_sign_given_mag_ctx_bits_per_w": 0.9999989660705244,
+ "check_sum": 3.7665159318616794,
+ "sign_bypass_cost_bits_per_w": 1.0339294756165515e-06,
+ "sign_bypass_cost_pct_of_weight_bits": 2.745055362358471e-05,
+ "P_negative_by_magnitude": [
+  0.500037,
+  0.500009,
+  0.499985,
+  0.500037,
+  0.500018,
+  0.499998,
+  0.499988,
+  0.499939
+ ]
+}

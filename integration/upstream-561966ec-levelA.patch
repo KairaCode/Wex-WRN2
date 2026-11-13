@@ -1,0 +1,483 @@
+WEX level A (mode 0, host slab) for stock colibri: JustVugg/colibri 561966ec, files c/deepseek_v4.c and
+c/Makefile.deepseek-v4. Hooks A1-A11 of docs/COLIBRI-INTEGRATION.md section 5.1, taken from KAIRA 88ddb07, with
+three upstream adaptations: the WEX fields other than wex_entries exist only on Windows; v4_read_expert_record
+derives layer/expert from the record pointer (upstream V4ExpertRecord has no layer/expert fields); a GGUF record
+never matches a container.
+
+Apply from the colibri repo root, after copying the repo's c/*.h c/*.c into c/ (guide section 2):
+    git apply --check integration/upstream-561966ec-levelA.patch   (path to this file)
+    git apply integration/upstream-561966ec-levelA.patch
+Verified 2026-11-08: applies to a clean `git archive 561966ec c`, builds deepseek_v4.exe (MSYS2 UCRT64), and the
+CPU engine A/B in guide section 7.5 gives identical tokens for safetensors, WEX1 and WNR2.
+
+diff --git a/c/Makefile.deepseek-v4 b/c/Makefile.deepseek-v4
+index 6206453..f21cc8b 100644
+--- a/c/Makefile.deepseek-v4
++++ b/c/Makefile.deepseek-v4
+@@ -58,7 +58,7 @@ CFLAGS = -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -O3 -march=$(ARCH) -fopenmp \
+ 	-DCOLI_V4_EXPERIMENTAL_DUAL_EXPERT_LOADER
+ LDFLAGS = -lm -fopenmp -static -pthread
+ V4_BINARY := deepseek_v4.exe
+-V4_WIN_EXTRA_OBJS = backend_loader_dsv4.o
++V4_WIN_EXTRA_OBJS = backend_loader_dsv4.o expert_store_wex.o wex_decode.o
+ else ifeq ($(UNAME_S),Darwin)
+ # Apple clang has no bundled OpenMP runtime: use Homebrew libomp when its
+ # artifacts are actually present, else build single-threaded (pragmas are
+@@ -348,12 +348,12 @@ $(TARGET_OBJS) $(TEST_UNIT_OBJS): %.o: deepseek_v4.c deepseek_v4.h \
+ 	deepseek_v4_internal.h deepseek_v4_dspark.inc st.h json.h compat.h tensor.h quant.h fp8_format.h sse41_kernels.h \
+ 	route_trace.h vk_tier.h deepseek_v4_chain.h vk_chain.h \
+ 	native_quant.h native_quant_batch.h native_quant_dual.h \
+-	native_quant_fp4_rows16.h expert_store_registry.h $(V4_FLAGS_STAMP)
++	native_quant_fp4_rows16.h expert_store_registry.h expert_store_wex.h wex_decode.h wex_format.h wex_palette.h wex_neural_rans.h $(V4_FLAGS_STAMP)
+ 	$(CC) $(CFLAGS) -D$* -c deepseek_v4.c -o $@
+ 
+ $(V4_HOT_TEST_OBJ): deepseek_v4.c deepseek_v4.h deepseek_v4_internal.h \
+ 		st.h json.h compat.h tensor.h quant.h fp8_format.h route_trace.h sse41_kernels.h \
+-		native_quant.h native_quant_fp4_rows16.h expert_store_registry.h $(V4_FLAGS_STAMP)
++		native_quant.h native_quant_fp4_rows16.h expert_store_registry.h expert_store_wex.h wex_decode.h wex_format.h wex_palette.h wex_neural_rans.h $(V4_FLAGS_STAMP)
+ 	$(CC) $(CFLAGS) -DCOLI_V4_TEST_HOOKS \
+ 		-DCOLI_V4_UNIT_EXPERT_STORE_HOT_ROWS16 -c deepseek_v4.c -o $@
+ 
+@@ -368,6 +368,13 @@ $(V4_SERVE_TEST): tests/test_v4_serve_framing.c deepseek_v4.c deepseek_v4.h \
+ 		deepseek_v4_internal.h serve_codec.h $(V4_SERVE_TEST_OBJS)
+ 	$(CC) $(CFLAGS) $< $(V4_SERVE_TEST_OBJS) -o $@ $(LDFLAGS)
+ 
++expert_store_wex.o: expert_store_wex.c expert_store_wex.h wex_decode.h wex_format.h wex_palette.h wex_neural_rans.h expert_store.h $(V4_FLAGS_STAMP)
++	$(CC) $(CFLAGS) -c expert_store_wex.c -o $@
++
++# WEX record reconstruction (CPU codec + optional kaira_wex_cuda.dll); the expert-store unit calls it.
++wex_decode.o: wex_decode.c wex_decode.h wex_format.h wex_palette.h wex_neural_rans.h $(V4_FLAGS_STAMP)
++	$(CC) $(CFLAGS) -c wex_decode.c -o $@
++
+ # The CUDA tier loader object. Compiled only on Windows, where it is appended
+ # to V4_OBJS and resolves the MSVC-built coli_cuda_dsv4.dll at runtime. On
+ # Linux it is empty so the engine links without it.
+diff --git a/c/deepseek_v4.c b/c/deepseek_v4.c
+index 1f27528..5214849 100644
+--- a/c/deepseek_v4.c
++++ b/c/deepseek_v4.c
+@@ -8417,6 +8417,7 @@ failed:
+  * does not emit per-row ROUTE_TRACE lines; if the stream is enabled the
+  * banner says so below at store creation. */
+ #include "route_trace.h"
++#include "expert_store_wex.h"
+ 
+ 
+ #ifdef COLI_V4_EXPERIMENTAL_PREFETCH_BATCH
+@@ -8509,6 +8510,14 @@ typedef struct {
+                         * (#1852): coli_v4_expert_store_add_wait */
+     uint8_t *ehit;     /* layers*experts_per_layer: experts routed in the current turn */
+     uint8_t *eheat;    /* layers*experts_per_layer: cumulative routing selections, capped 63 */
++    /* WEX container (Windows only; wex_entries stays NULL elsewhere) */
++#ifdef _WIN32
++    HANDLE wex_handle;
++    HANDLE wex_mirror;          /* wex_mirrors[0], kept for the single-mirror code */
++    HANDLE wex_mirrors[3];      /* every matching mirror container, in COLI_MODEL_MIRROR order */
++    int wex_nmir;
++#endif
++    WexEntry *wex_entries;
+ } V4ExpertStoreState;
+ 
+ static int set_error(char *error, size_t size, const char *format, ...) {
+@@ -8615,8 +8624,8 @@ static int build_record(V4ExpertStoreState *state, int layer, int expert,
+     int weight_range_contiguous = contiguous_group(record->weight, state->index,
+                                       &weight_shard, &record->weight_offset,
+                                       &record->weight_bytes) == 0;
+-    if (!scale_range_contiguous || !weight_range_contiguous) {
+-        /* REAP-style packed checkpoint: fall back to per-matrix reads. */
++    if (state->wex_entries != NULL || !scale_range_contiguous || !weight_range_contiguous) {
++        /* WEX Direct I/O layout or REAP-style packed checkpoint: per-matrix layout. */
+         record->per_matrix = 1;
+         uint64_t per_matrix_bytes = 0;
+         for (int matrix = 0; matrix < V4_MATRIX_COUNT; matrix++) {
+@@ -9129,6 +9138,15 @@ static void destroy(ColiExpertStore *store) {
+                 compat_aligned_free(state->slots[i].slab);
+             else
+                 free(state->slots[i].slab);
++#ifdef _WIN32
++        if (state->wex_handle && state->wex_handle != INVALID_HANDLE_VALUE)
++            CloseHandle(state->wex_handle);
++        for (int i = 0; i < state->wex_nmir; i++)
++            if (state->wex_mirrors[i] && state->wex_mirrors[i] != INVALID_HANDLE_VALUE)
++                CloseHandle(state->wex_mirrors[i]);
++        if (state->wex_entries)
++            _aligned_free(state->wex_entries);
++#endif
+         pthread_cond_destroy(&state->load_ready);
+         pthread_mutex_destroy(&state->mutex);
+         coli_st_index_close(state->index);
+@@ -9146,6 +9164,104 @@ static void destroy(ColiExpertStore *store) {
+     free(store);
+ }
+ 
++#ifdef _WIN32
++/* WEX v1/v2 share the decoded MXFP4 layout. Read and validate the manifest
++ * before accepting any disk-controlled offsets or allocating cache slabs. */
++static int v4_wex_read_exact(HANDLE file, void *buffer, DWORD bytes,
++                              uint64_t offset) {
++    OVERLAPPED ov = {0};
++    DWORD read_bytes = 0;
++    ov.Offset = (DWORD)offset;
++    ov.OffsetHigh = (DWORD)(offset >> 32);
++    BOOL ok = ReadFile(file, buffer, bytes, &read_bytes, &ov);
++    if (!ok && GetLastError() == ERROR_IO_PENDING)
++        ok = GetOverlappedResult(file, &ov, &read_bytes, TRUE);
++    return ok && read_bytes == bytes ? 0 : -1;
++}
++
++static int v4_wex_load_manifest(HANDLE file, int layers, int experts,
++                                 unsigned char **header_block,
++                                 WexEntry **entries_out, size_t *table_span,
++                                 uint64_t *file_bytes) {
++    LARGE_INTEGER length;
++    size_t table_bytes = 0, aligned_table_bytes = 0;
++    unsigned char *block = NULL;
++    WexEntry *entries = NULL;
++    *header_block = NULL;
++    *entries_out = NULL;
++    if (!GetFileSizeEx(file, &length) || length.QuadPart < WEX_ALIGN)
++        return -1;
++    block = (unsigned char *)_aligned_malloc(WEX_ALIGN, WEX_ALIGN);
++    if (!block || v4_wex_read_exact(file, block, WEX_ALIGN, 0)) goto fail;
++    const WexHeader *header = (const WexHeader *)block;
++    if (wex_validate_header(header, (uint64_t)length.QuadPart,
++                            (uint32_t)layers, (uint32_t)experts,
++                            &table_bytes, &aligned_table_bytes) ||
++        aligned_table_bytes > MAXDWORD)
++        goto fail;
++    entries = (WexEntry *)_aligned_malloc(aligned_table_bytes, WEX_ALIGN);
++    if (!entries || v4_wex_read_exact(file, entries,
++                     (DWORD)aligned_table_bytes, header->table_offset))
++        goto fail;
++    if (wex_validate_table(header, entries, (uint64_t)length.QuadPart)) goto fail;
++    if (header->flags & WEX_HEADER_NEURAL_RANS2) {
++        /* WNR2: the container's model must load and match the id its header
++         * names before any record can be decoded */
++        uint64_t model_offset;
++        uint32_t model_bytes, model_id, registered = 0;
++        uint64_t aligned_model;
++        unsigned char *model;
++        if (wex_nr2_model_location(header, block, &model_offset, &model_bytes, &model_id) ||
++            wex_aligned_size(model_bytes, &aligned_model) || aligned_model > MAXDWORD) goto fail;
++        model = (unsigned char *)_aligned_malloc((size_t)aligned_model, WEX_ALIGN);
++        if (!model) goto fail;
++        int bad = v4_wex_read_exact(file, model, (DWORD)aligned_model, model_offset) ||
++                  coli_wex_register_model(model, model_bytes, &registered) || registered != model_id;
++        _aligned_free(model);
++        if (bad) goto fail;
++        /* without the helper every WNR2 record would go to the CPU decoder (~0.3 s
++         * per expert): refuse the container so the caller keeps the safetensors path */
++        if (!coli_wex_cuda_nr2_available()) {
++            fprintf(stderr, "[v4_wex] WNR2 container needs kaira_wex_cuda.dll with WNR2 support "
++                            "(helper feature 4) next to the engine\n");
++            goto fail;
++        }
++    }
++    *header_block = block;
++    *entries_out = entries;
++    *table_span = aligned_table_bytes;
++    *file_bytes = (uint64_t)length.QuadPart;
++    return 0;
++fail:
++    _aligned_free(block);
++    _aligned_free(entries);
++    return -1;
++}
++
++static int v4_wex_matches_record(const WexEntry *entry,
++                                  const V4ExpertRecord *record) {
++    uint64_t scale_cursor = 0, weight_cursor = 0;
++    if (!entry->total_bytes) return 1; /* absent WEX entry uses safetensors */
++    if (record->gguf) return 0;        /* a container holds safetensors MXFP4 records only */
++    for (int matrix = 0; matrix < V4_MATRIX_COUNT; matrix++) {
++        const ColiSafetensorsTensor *scale = record->scale[matrix];
++        const ColiSafetensorsTensor *weight = record->weight[matrix];
++        if (entry->scale_shapes[matrix][0] != scale->shape[0] ||
++            entry->scale_shapes[matrix][1] != scale->shape[1] ||
++            entry->weight_shapes[matrix][0] != weight->shape[0] ||
++            entry->weight_shapes[matrix][1] != weight->shape[1] ||
++            entry->scale_offsets[matrix] != scale_cursor ||
++            entry->weight_offsets[matrix] != entry->scale_bytes + weight_cursor)
++            return 0;
++        scale_cursor += (uint64_t)scale->nbytes;
++        weight_cursor += (uint64_t)weight->nbytes;
++    }
++    return entry->scale_bytes == scale_cursor &&
++           entry->weight_bytes == weight_cursor &&
++           record->record_bytes == scale_cursor + weight_cursor;
++}
++#endif
++
+ int coli_deepseek_v4_expert_store_open(
+     const ColiDeepSeekV4ExpertStoreOptions *options, ColiExpertStore **output,
+     char *error, size_t error_size) {
+@@ -9174,6 +9290,13 @@ int coli_deepseek_v4_expert_store_open(
+     state->layers = options->layers;
+     state->experts_per_layer = options->experts_per_layer;
+     state->pool_layer = -1;
++#ifdef _WIN32
++    state->wex_handle = INVALID_HANDLE_VALUE;
++    state->wex_mirror = INVALID_HANDLE_VALUE;
++    for (int i = 0; i < 3; i++) state->wex_mirrors[i] = INVALID_HANDLE_VALUE;
++    state->wex_nmir = 0;
++#endif
++    state->wex_entries = NULL;
+     if (coli_st_index_open(&state->index, options->model_dir, error, error_size) != 0)
+         goto fail;
+     /* DUAL-SSD: register COLI_MODEL_MIRROR copies and derive the read split
+@@ -9182,6 +9305,106 @@ int coli_deepseek_v4_expert_store_open(
+     if (!options->skip_mirror_setup)
+         coli_st_mirror_setup(state->index, options->model_dir,
+                              options->experts_per_layer);
++#ifdef _WIN32
++    /* Open WEX Direct I/O container if present */
++    const char *wex_path = getenv("COLI_WEX_PATH");
++    char wex_buf[1024];
++    if (!wex_path || !*wex_path) {
++        snprintf(wex_buf, sizeof(wex_buf), "%s\\v4_flash_experts.wex", options->model_dir);
++        wex_path = wex_buf;
++    }
++    unsigned char *wex_header_block = NULL;
++    size_t wex_table_span = 0;
++    uint64_t wex_file_bytes = 0;
++    HANDLE hWex = CreateFileA(
++        wex_path,
++        GENERIC_READ,
++        FILE_SHARE_READ,
++        NULL,
++        OPEN_EXISTING,
++        FILE_FLAG_NO_BUFFERING | FILE_FLAG_OVERLAPPED | FILE_FLAG_SEQUENTIAL_SCAN,
++        NULL
++    );
++    if (hWex != INVALID_HANDLE_VALUE) {
++        if (!v4_wex_load_manifest(hWex, state->layers, state->experts_per_layer,
++                  &wex_header_block, &state->wex_entries,
++                  &wex_table_span, &wex_file_bytes)) {
++            const WexHeader *hdr = (const WexHeader *)wex_header_block;
++            state->wex_handle = hWex;
++            fprintf(stderr, "[v4_wex] Container v%u active: %s (%u layers, %u experts, %llu decoded bytes/expert, direct_io=on)\n",
++                    hdr->version, wex_path, hdr->num_layers, hdr->num_experts,
++                    (unsigned long long)hdr->aligned_expert_bytes);
++        } else {
++            CloseHandle(hWex);
++            fprintf(stderr, "[v4_wex] Invalid or incompatible container: %s; using safetensors\n", wex_path);
++        }
++    }
++    const char *mirror_list = getenv("COLI_MODEL_MIRROR");
++    char mirror_buf[4096];
++    /* COLI_WEX_EXTRA_MIRRORS: more dirs holding only the container (no shards),
++     * after the COLI_MODEL_MIRROR ones */
++    const char *extra_list = getenv("COLI_WEX_EXTRA_MIRRORS");
++    snprintf(mirror_buf, sizeof(mirror_buf), "%s;%s", mirror_list ? mirror_list : "",
++             extra_list ? extra_list : "");
++    /* COLI_MODEL_MIRROR may list several dirs (';' or ','): every one holding a
++     * matching container becomes a WEX replica, up to three */
++    for (char *mirror_dir = mirror_buf, *next = NULL; mirror_dir && *mirror_dir &&
++         state->wex_handle != INVALID_HANDLE_VALUE && state->wex_nmir < 3; mirror_dir = next) {
++        char *sep = mirror_dir;
++        while (*sep && *sep != ';' && *sep != ',') sep++;
++        next = *sep ? sep + 1 : NULL;
++        *sep = 0;
++        while (*mirror_dir == ' ') mirror_dir++;
++        if (!*mirror_dir) continue;
++        char mirror_wex[1024];
++        const char *basename = strrchr(wex_path, '\\');
++        const char *slash = strrchr(wex_path, '/');
++        if (!basename || (slash && slash > basename)) basename = slash;
++        basename = basename ? basename + 1 : wex_path;
++        size_t dir_bytes = strlen(mirror_dir), name_bytes = strlen(basename);
++        mirror_wex[0] = '\0';
++        if (dir_bytes < sizeof(mirror_wex) - 1 &&
++            name_bytes < sizeof(mirror_wex) - dir_bytes - 1) {
++            memcpy(mirror_wex, mirror_dir, dir_bytes);
++            mirror_wex[dir_bytes] = '\\';
++            memcpy(mirror_wex + dir_bytes + 1, basename, name_bytes + 1);
++        }
++        if (*mirror_wex && _stricmp(wex_path, mirror_wex) != 0) {
++            HANDLE hMirror = CreateFileA(
++                mirror_wex,
++                GENERIC_READ,
++                FILE_SHARE_READ,
++                NULL,
++                OPEN_EXISTING,
++                FILE_FLAG_NO_BUFFERING | FILE_FLAG_OVERLAPPED | FILE_FLAG_SEQUENTIAL_SCAN,
++                NULL
++            );
++            if (hMirror != INVALID_HANDLE_VALUE) {
++                unsigned char *mirror_header = NULL;
++                WexEntry *mirror_entries = NULL;
++                size_t mirror_table_span = 0;
++                uint64_t mirror_bytes = 0;
++                if (!v4_wex_load_manifest(hMirror, state->layers,
++                        state->experts_per_layer, &mirror_header,
++                        &mirror_entries, &mirror_table_span, &mirror_bytes) &&
++                    mirror_bytes == wex_file_bytes &&
++                    mirror_table_span == wex_table_span &&
++                    !memcmp(mirror_header, wex_header_block, WEX_ALIGN) &&
++                    !memcmp(mirror_entries, state->wex_entries, wex_table_span)) {
++                    state->wex_mirrors[state->wex_nmir++] = hMirror;
++                    if (state->wex_nmir == 1) state->wex_mirror = hMirror;
++                    fprintf(stderr, "[v4_wex] Matching mirror container active: %s\n", mirror_wex);
++                } else {
++                    CloseHandle(hMirror);
++                    fprintf(stderr, "[v4_wex] Ignoring mismatched mirror: %s\n", mirror_wex);
++                }
++                _aligned_free(mirror_header);
++                _aligned_free(mirror_entries);
++            }
++        }
++    }
++    _aligned_free(wex_header_block);
++#endif
+     size_t record_count = (size_t)state->layers * state->experts_per_layer;
+     state->records = malloc(record_count * sizeof(*state->records)); /* build_record zeroes each */
+     if (!state->records) {
+@@ -9194,6 +9417,15 @@ int coli_deepseek_v4_expert_store_open(
+                 (size_t)layer * state->experts_per_layer + expert];
+             if (build_record(state, layer, expert, record, error, error_size) != 0)
+                 goto fail;
++#ifdef _WIN32
++            if (state->wex_entries && !v4_wex_matches_record(
++                    &state->wex_entries[(size_t)layer * state->experts_per_layer + expert], record)) {
++                set_error(error, error_size,
++                          "WEX layout does not match native expert: layer=%d expert=%d",
++                          layer, expert);
++                goto fail;
++            }
++#endif
+             if (!state->record_bytes) state->record_bytes = record->record_bytes;
+             if (record->gguf) {   /* a GGUF types its experts per layer: slots of the largest */
+                 if (record->record_bytes > state->record_bytes) state->record_bytes = record->record_bytes;
+@@ -9285,6 +9517,13 @@ fail:
+     coli_st_index_close(state->index);
+     pthread_cond_destroy(&state->load_ready);
+     pthread_mutex_destroy(&state->mutex);
++#ifdef _WIN32
++    if (state->wex_handle && state->wex_handle != INVALID_HANDLE_VALUE) CloseHandle(state->wex_handle);
++    for (int i = 0; i < state->wex_nmir; i++)
++        if (state->wex_mirrors[i] && state->wex_mirrors[i] != INVALID_HANDLE_VALUE)
++            CloseHandle(state->wex_mirrors[i]);
++    if (state->wex_entries) _aligned_free(state->wex_entries);
++#endif
+     free(state);
+     free(store);
+     return -1;
+@@ -9619,9 +9858,96 @@ static int v4_gguf_interleave(const V4ExpertRecord *record, unsigned char *slab)
+     return 0;
+ }
+ 
++#ifdef _WIN32
++/* The WEX file of one expert. With one mirror: the dual-SSD replica split
++ * (coli_st_expert_route, COLI_DISK_WEIGHTS), as before. With more mirrors, or
++ * COLI_WEX_WEIGHTS=<primary>,<mirror1>[,...] set: the same deterministic hash of
++ * (layer, expert) split over primary + mirrors by those weights (equal shares
++ * when unset), so an expert is always read from the same drive. */
++static HANDLE v4_wex_pick(const V4ExpertStoreState *state, int layer, int expert) {
++    if (state->wex_nmir <= 0) return state->wex_handle;
++    static int cut[4], n = -1;
++    if (n < 0) {
++        int want = 1 + state->wex_nmir;
++        double w[4] = {1, 1, 1, 1}, W = 0;
++        const char *e = getenv("COLI_WEX_WEIGHTS");
++        int custom = 0;
++        if (e && *e) {
++            char b[128]; snprintf(b, sizeof(b), "%s", e);
++            int k = 0, bad = 0;
++            for (char *t = strtok(b, ", "); t; t = strtok(NULL, ", ")) {
++                double v = atof(t);
++                if (v <= 0 || k >= 4) { bad = 1; break; }
++                w[k++] = v;
++            }
++            custom = !bad && k == want;
++            if (!custom) fprintf(stderr, "[v4_wex] COLI_WEX_WEIGHTS '%s' ignored (want %d positive weights)\n", e, want);
++        }
++        if (!custom && want == 2) { n = 0; }   /* the dual-SSD split, unchanged */
++        else {
++            for (int r = 0; r < want; r++) W += w[r];
++            double acc = 0;
++            for (int r = 0; r < want; r++) { acc += w[r]; cut[r] = (int)(acc / W * 256.0 + 0.5); }
++            cut[want - 1] = 256;
++            n = want;
++            fprintf(stderr, "[v4_wex] read split over %d drives:", want);
++            for (int r = 0; r < want; r++) fprintf(stderr, " %.0f%%", 100.0 * w[r] / W);
++            fprintf(stderr, "\n");
++        }
++    }
++    if (n == 0) return coli_st_expert_route(layer, expert) == 1 ? state->wex_mirrors[0] : state->wex_handle;
++    uint32_t h = (uint32_t)(layer * state->experts_per_layer + expert) * 2654435761u;
++    int hv = (int)((h >> 16) & 255), r = 0;
++    while (hv >= cut[r]) r++;
++    return r == 0 ? state->wex_handle : state->wex_mirrors[r - 1];
++}
++#endif
++
+ static int v4_read_expert_record(V4ExpertStoreState *state,
+                                  const V4ExpertRecord *record,
+                                  V4ExpertSlot *slot, int rep) {
++#ifdef _WIN32
++    if (state->wex_entries != NULL && state->wex_handle != INVALID_HANDLE_VALUE) {
++        /* upstream records carry no layer/expert; both callers pass &state->records[idx] */
++        size_t idx = (size_t)(record - state->records);
++        int layer = (int)(idx / (size_t)state->experts_per_layer);
++        int expert = (int)(idx % (size_t)state->experts_per_layer);
++        const WexEntry *entry = &state->wex_entries[idx];
++        size_t read_offset = wex_record_read_offset(entry);
++        /* All public callers guarantee only record_bytes of writable memory.
++         * Non-page-sized legacy records fall back to safetensors rather than
++         * relying on the hot cache's extra direct-I/O padding. */
++        if (slot->aligned_slab && entry->total_bytes > 0 &&
++            read_offset <= record->record_bytes &&
++            entry->total_bytes <= record->record_bytes - read_offset &&
++            WEX_IS_ALIGNED(slot->slab + read_offset, WEX_ALIGN)) {
++            HANDLE hFile = v4_wex_pick(state, layer, expert);
++            static __thread HANDLE tl_wex_ev = NULL;
++            if (!tl_wex_ev) tl_wex_ev = CreateEventA(NULL, TRUE, FALSE, NULL);
++            OVERLAPPED ov;
++            memset(&ov, 0, sizeof(ov));
++            ov.Offset = (DWORD)(entry->file_offset & 0xFFFFFFFFULL);
++            ov.OffsetHigh = (DWORD)((entry->file_offset >> 32) & 0xFFFFFFFFULL);
++            ov.hEvent = tl_wex_ev;
++            ResetEvent(tl_wex_ev);
++            DWORD bytes_read = 0;
++            BOOL ok = ReadFile(hFile, slot->slab + read_offset,
++                               entry->total_bytes, &bytes_read, &ov);
++            if (!ok && GetLastError() == ERROR_IO_PENDING) {
++                ok = GetOverlappedResult(hFile, &ov, &bytes_read, TRUE);
++            }
++            if (ok && bytes_read == entry->total_bytes &&
++                !coli_wex_decode_record(entry, slot->slab,
++                                     (size_t)record->record_bytes)) {
++                __atomic_fetch_add(&v4_direct_reads, UINT64_C(1), __ATOMIC_RELAXED);
++                __atomic_fetch_add(&v4_direct_flock_reads, UINT64_C(1), __ATOMIC_RELAXED);
++                __atomic_fetch_add(&v4_direct_payload_bytes, entry->total_bytes, __ATOMIC_RELAXED);
++                return 0;
++            }
++            __atomic_fetch_add(&v4_direct_fallbacks, UINT64_C(1), __ATOMIC_RELAXED);
++        }
++    }
++#endif
+     if (record->gguf) {
+         int used_direct = 0, used_fallback = 0;
+         uint64_t cursor = 0;
+@@ -10538,11 +10864,17 @@ int COLI_V4_ROWS16_STORE_OPEN(
+         options, output, error, error_size);
+     if (result) return result;
+     V4ExpertStoreState *state = (*output)->state;
+-    int direct_io = state->layers > 0 && state->experts_per_layer > 0 &&
+-        coli_st_streaming_direct_available(
+-            state->index, state->records[0].weight_shard);
++    int has_wex = 0;
++#ifdef _WIN32
++    has_wex = state->wex_entries != NULL && state->wex_handle != INVALID_HANDLE_VALUE;
++#endif
++    int direct_io = has_wex ||
++        (state->layers > 0 && state->experts_per_layer > 0 &&
++         coli_st_streaming_direct_available(
++            state->index, state->records[0].weight_shard));
+     fprintf(stderr, "v4_ssd_io mode=%s fallback=buffered-pread\n",
+-            direct_io ? "direct-aligned" : "buffered-pread");
++            has_wex ? "wex-direct-aligned" :
++            (direct_io ? "direct-aligned" : "buffered-pread"));
+     int minimum_slots = state->experts_per_layer < 6
+         ? state->experts_per_layer : 6;
+     int maximum_pins = state->slots_per_layer - minimum_slots;

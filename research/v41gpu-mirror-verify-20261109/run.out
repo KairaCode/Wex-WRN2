@@ -1,0 +1,32 @@
+lock: taken 06:23:21
+== temps before 06:23:21
+disk 3 C:   temp [50] C  warning 87 C  critical 89 C
+disk 4      temp [38] C  warning 83 C  critical 85 C
+disk 5 U:   temp [36, 38, 30] C  warning 86 C  critical 87 C
+990 MiB, 0 %, 42.93
+free 17.51 GiB -> ram 16 GB (automatic), ctx 32768
+cmd: C:\Python314\python.exe -u <KAIRA>\app\colibri-optimized\coli serve --model U:\models\DeepSeek-V4.1-Flash-1017-REAP192-MXFP4 --ram 16 --ctx 32768 --kv-slots 1 --policy quality --host 127.0.0.1 --port 18766 --model-id kaira
+env (profile + host): {'COLI_DIRECT_OVERLAPPED': '1', 'COLI_FAMILY_ENGINE': 'deepseek_v4', 'COLI_MODEL_DIRS': 'C:\\models\\DeepSeek-V4.1-Flash-1017-engram;E:\\models\\DeepSeek-V4.1-Flash-1017-engram', 'COLI_V4_SAVE_USAGE': '0', 'COLI_V4_TIER_PREWARM': '1', 'COLI_WEX_EXTRA_MIRRORS': 'C:\\kaira_wex\\v41-reap', 'COLI_WEX_GPU_DIRECT': '2', 'COLI_WEX_PATH': 'U:\\kaira_wex\\v41-reap\\v4_flash_experts.nr2.wex', 'COLI_WEX_WEIGHTS': '38,62', 'DSV4_CUDA': '1', 'DSV4_CUDA_EXPERT_MIRRORS': '5500', 'DSV4_CUDA_STREAM_PRIORITY': '1', 'DSV4_CUDA_VRAM_RESERVE_MB': '4096', 'DSV4_DECODE_PROF': '1', 'MTP': '0', 'V4_ASYNC_ATTACH': '1', 'V4_COPY_WORKER': '1', 'V4_DRAFT': '0', 'V4_GPU_HEAD': '1', 'V4_GPU_HOT_CACHE': '1', 'V4_LOADER_LANES': '8', 'V4_MTP': '0', 'V4_NEXT_PREFETCH': '1', 'V4_NEXT_PREFETCH_AVX2': '1', 'V4_NEXT_PREFETCH_DEPTH': '2', 'V4_NEXT_PREFETCH_K': '8', 'V4_NEXT_PREFETCH_K2': '4', 'V4_NEXT_PREFETCH_KEEP': '1', 'V4_NEXT_PREFETCH_THREADS': '8', 'V4_NEXT_PREFETCH_TOKSTART': '1', 'V4_NP_ONLINE': '1', 'V4_PREDICT_STATS': '1', 'V4_PREFETCH_NO_CREDIT': '1', 'V4_PROMOTE_VRAM': '2', 'V4_ROUTER_AVX2': '1', 'V4_ROUTE_PREFILL': '1', 'V4_ROUTE_RESID_EVERY': '32', 'V4_ROUTE_TEXT': '1', 'V4_ROUTE_UDP': '127.0.0.1:8769', 'V4_SKIP_COLD': '0', 'V4_VRAM_FIRST': '1', 'V4_WEX_BATCH': '1'}
+  inherited COLI_DSV4_DLL=None
+  inherited COLI_WEX_CUDA_LIB=None
+  inherited COLI_MODEL_MIRROR=None
+  inherited COLI_DISK_WEIGHTS=None
+  inherited RAM_GB=None
+  inherited CTX=None
+  inherited SERVE=None
+  inherited SNAP=None
+coli_proc start rc 0 45752 
+health ready after 19.161491870880127 {"status":"ok","arch":"deepseek_v41","scheduler":{"active":0,"queued":0,"capacity":1,"max_queue":8,"queue_timeout_seconds":300.0,"admitted":0,"completed":0,"failed":0,"rejected":0,"timed_out":0,"cancelled":0},"engine_restarts":0,"kv_slots":1,"input_modalities":["text"],"continue_assistant":true,"context_compaction":true,"context_tokens":32768,"max_tokens":32768,"capabilities":["chat","systemone"]}
+reason1 {"secs": 20.91, "usage": {"prompt_tokens": 41, "completion_tokens": 32, "total_tokens": 73}, "text": "Let's go step-by-step.\n\n**Step 1: Find the total time from departure to arrival.**\n\nDeparture time: 14:40  \nArrival", "finish": "length", "rows": [0, 32]}
+code1 {"usage": {"prompt_tokens": 29, "completion_tokens": 128, "total_tokens": 157}, "finish": "length", "ttft": 7.96867823600769, "t_first": 1794201850.832247, "t_last": 1794201892.9443183, "t_done": 1794201892.9447885, "wall": 50.08121967315674, "rows": [32, 160], "completion_tokens": 128, "tok_s_engine_style": 3.039, "tok_s_between_tokens": 3.016} "Here's a C function that checks if a number is a power of two:\n\n```c\nint is_power_of_two(unsigned long long x) {\n    ret"
+chat_it1 {"usage": {"prompt_tokens": 30, "completion_tokens": 128, "total_tokens": 158}, "finish": "length", "ttft": 7.203808307647705, "t_first": 1794201900.426718, "t_last": 1794201948.5640056, "t_done": 1794201948.564343, "wall": 55.34143328666687, "rows": [160, 288], "completion_tokens": 128, "tok_s_engine_style": 2.659, "tok_s_between_tokens": 2.638} 'Ciao! Ecco tre posti meravigliosi da visitare a Napoli in un weekend, con una breve spiegazione del perché:\n\n1. **Centro'
+coli_proc stop {'rc': 0, 'secs': 3.0, 'err': ''}
+disk deltas GiB: {"before_launch->ready": {"C": 12.296, "U": 14.92, "secs": 19.4}, "ready->after_reason1": {"C": 70.849, "U": 41.754, "secs": 21.1}, "after_reason1->after_code1": {"C": 232.103, "U": 143.348, "secs": 50.3}, "after_code1->after_chat_it1": {"C": 272.668, "U": 181.869, "secs": 55.6}, "after_chat_it1->after_stop": {"C": 0.045, "U": 0.001, "secs": 5.3}}
+engine processes after stop:
+  none
+== temps after 06:25:59
+disk 3 C:   temp [57] C  warning 87 C  critical 89 C
+disk 4      temp [41] C  warning 83 C  critical 85 C
+disk 5 U:   temp [57, 60, 51] C  warning 86 C  critical 87 C
+lock: released 06:25:59
+exit=0

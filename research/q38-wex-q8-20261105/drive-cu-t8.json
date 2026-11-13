@@ -1,0 +1,23 @@
+{
+ "a": "<TMP>\\drive_probe_c.bin",
+ "b": "U:\\kaira_lab\\drive_probe_u.bin",
+ "gib": 8,
+ "records": 600,
+ "threads": 8,
+ "write_gib_s": {
+  "a": 1.089,
+  "b": 1.617
+ },
+ "a_only": {
+  "gib_s": 3.338,
+  "ms_per_record_wall": 1.372
+ },
+ "b_only": {
+  "gib_s": 2.229,
+  "ms_per_record_wall": 2.053
+ },
+ "striped": {
+  "gib_s": 6.6,
+  "ms_per_record_wall": 0.694
+ }
+}

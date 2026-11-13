@@ -1,0 +1,53 @@
+---- 2026-11-08 02:27:21 setup/check_env.py
+probing CuPy / NVRTC in a child process (compile only, no kernel launch) ...
+OS        : Windows-11-10.0.26300-SP0 (AMD64)
+CPU       : AMD Ryzen 9 7950X3D 16-Core Processor  logical=32 physical=16
+CPU ISA   : avx2=True bmi2=None avx512f=True avx512bw=None avx512vbmi2=None (source IsProcessorFeaturePresent (default; --cpuid for the full cpuid probe))
+RAM       : total 33.4 GB, available 12.1 GB
+Python    : 3.14.8  numpy 2.5.4  cupy 14.2.0  nvrtc-wheel 12.9.86
+GPU 0     : NVIDIA GeForce RTX 5090 cc=12.0 mem=32607 MiB driver=621.01 (driver CUDA 13.5)
+CuPy      : 14.2.0 runtime=12090 driver=13050 nvrtc=[12, 9]
+NVRTC sm_120 : ok
+Compilers : nvcc=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.4\bin\nvcc.EXE, msvc_installed=C:\Program Files (x86)\Microsoft Visual Studio\18\BuildTools\VC\Tools\MSVC\14.51.36231\bin\Hostx64\x64\cl.exe
+Data v41-sample: 0/160 experts (0.0 GB)
+Data extra     : 0/76 experts (0.0 GB)
+Disk      : 79.9 GB free at <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT
+Runners   : 9 discovered
+  SKIP tests/cpu/heldout_configs.py  needs=['data'] missing=['data']
+  SKIP tests/cpu/wnr2_g0.py  needs=['data'] missing=['data']
+  SKIP tests/cpu/chunk_sweep.py  needs=['data'] missing=['data']
+  SKIP tests/cpu/train_curve_mtp.py  needs=['data', 'extra'] missing=['data', 'extra']
+  SKIP tests/audit/run_audit.py  needs=['data'] missing=['data']
+  ok   tests/gpu/run_nvrtc_check.py  needs=['nvrtc'] missing=[]
+  SKIP tests/gpu/run_zero_bittest.py  needs=['gpu', 'data'] missing=['data']
+  SKIP tests/gpu/run_gpu_bench.py  needs=['gpu', 'data'] missing=['data']
+  SKIP tests/gpu/run_gpu_v1_profile.py  needs=['gpu', 'data'] missing=['data']
+WARNING: MSVC is installed but cl is not in PATH: run from an "x64 Native Tools" prompt or call vcvars64.bat first if a test needs a C compiler
+WARNING: data set v41-sample incomplete at <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\data: run python -I setup\fetch_data.py (add --extra for the 70+6 extra experts)
+RESULT check_env PASS py3.14.8 np2.5.4 gpu=yes cc=no data=no runnable=1/9 warnings=2
+---- 2026-11-08 02:36:13 <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\setup\check_env.py --root <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT --out <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\results\check_env --quick
+probing CuPy / NVRTC in a child process (compile only, no kernel launch) ...
+OS        : Windows-11-10.0.26300-SP0 (AMD64)
+CPU       : AMD Ryzen 9 7950X3D 16-Core Processor  logical=32 physical=None
+CPU ISA   : avx2=True bmi2=None avx512f=True avx512bw=None avx512vbmi2=None (source IsProcessorFeaturePresent (default; --cpuid for the full cpuid probe))
+RAM       : total 33.4 GB, available 16.0 GB
+Python    : 3.14.8  numpy 2.5.4  cupy 14.2.0  nvrtc-wheel 12.9.86
+GPU 0     : NVIDIA GeForce RTX 5090 cc=12.0 mem=32607 MiB driver=621.01 (driver CUDA 13.5)
+CuPy      : 14.2.0 runtime=12090 driver=13050 nvrtc=[12, 9]
+NVRTC sm_120 : ok
+Compilers : nvcc=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.4\bin\nvcc.EXE, msvc_installed=C:\Program Files (x86)\Microsoft Visual Studio\18\BuildTools\VC\Tools\MSVC\14.51.36231\bin\Hostx64\x64\cl.exe
+Data v41-sample: 160/160 experts (3.0 GB)
+Data extra     : 76/76 experts (1.4 GB)
+Disk      : 75.4 GB free at <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\data
+Runners   : 9 discovered
+  ok   tests/cpu/heldout_configs.py  needs=['data'] missing=[]
+  ok   tests/cpu/wnr2_g0.py  needs=['data'] missing=[]
+  ok   tests/cpu/chunk_sweep.py  needs=['data'] missing=[]
+  ok   tests/cpu/train_curve_mtp.py  needs=['data', 'extra'] missing=[]
+  ok   tests/audit/run_audit.py  needs=['data'] missing=[]
+  ok   tests/gpu/run_nvrtc_check.py  needs=['nvrtc'] missing=[]
+  ok   tests/gpu/run_zero_bittest.py  needs=['gpu', 'data'] missing=[]
+  ok   tests/gpu/run_gpu_bench.py  needs=['gpu', 'data'] missing=[]
+  ok   tests/gpu/run_gpu_v1_profile.py  needs=['gpu', 'data'] missing=[]
+WARNING: MSVC is installed but cl is not in PATH: run from an "x64 Native Tools" prompt or call vcvars64.bat first if a test needs a C compiler
+RESULT check_env PASS py3.14.8 np2.5.4 gpu=yes cc=no data=yes runnable=9/9 warnings=1

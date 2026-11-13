@@ -1,0 +1,19 @@
+KILLED  scale-stream hash not checked
+KILLED  weight-stream hash not checked
+KILLED  CZ nibble 8 accepted
+KILLED  ceil scale 0 accepted
+KILLED  ceil inverse skipped
+KILLED  reserved flag bits accepted
+KILLED  rule g ties take the last pair
+KILLED  even block at scale 255 transformed
+KILLED  ceil gate ignored
+KILLED  canonical zero only on low nibbles
+KILLED  owner not hashed (both sides)
+KILLED  MurmurHash3 c1 wrong
+KILLED  hash length omits the ident
+KILLED  flag 32 allowed with 16
+KILLED  codec 5 accepted without flag 32
+KILLED  codec 5 parsed as WNR2
+KILLED  owner check always passes
+unmutated: PASS
+17/17 mutants killed

@@ -1,0 +1,331 @@
+{
+ "meta": {
+  "mode": "dg",
+  "dll": "<KAIRA>\\lab\\wnr3-5090-20261107\\zero\\build\\zt_dg.dll",
+  "flavour": "deepgemm sm_120a",
+  "process_env": {
+   "DSV4_CUDA_PIN_HOST": "0"
+  },
+  "act_sets_T16": [
+   "gauss",
+   "gauss*0.01",
+   "laplace",
+   "gauss_25%+0_25%-0",
+   "all-0",
+   "all+0",
+   "one_nonzero_rest-0",
+   "denormals_10%",
+   "inf_at_100",
+   "nan_at_200",
+   "gauss*1e30",
+   "-row0",
+   "row0*1e-30",
+   "adv_all_products-0(row r0)",
+   "adv_exact_cancel_then-0(row r0)",
+   "adv_all_products-0(row r1)"
+  ],
+  "started": "2026-11-08T01:39:29",
+  "dg_layout": "per layer: 8 cropped experts (4 picks of L + 4 of L+1) in bank slots; 16 x rows (decode kinds: one call per row, ids = 6 of the 8 slots rotated); batch kinds: T=16 tokens"
+ },
+ "results": {
+  "dg_moe<256> (masked decode) : routed output (fp32 of bf16 sum)": {
+   "canon": {
+    "compared": 2621440,
+    "diff_values": 533757,
+    "diff_bits": 2192253,
+    "diff_signzero_only": 0,
+    "diff_nan_payload": 0
+   },
+   "rerun": {
+    "compared": 2621440,
+    "diff_values": 540575,
+    "diff_bits": 2219229,
+    "diff_signzero_only": 0,
+    "diff_nan_payload": 0
+   },
+   "posctl": {
+    "compared": 2621440,
+    "diff_values": 2049739,
+    "diff_bits": 7617984,
+    "diff_signzero_only": 0,
+    "diff_nan_payload": 0
+   },
+   "obs": {
+    "zero_A": 491699,
+    "neg_zero_A": 0,
+    "zero_B": 491697,
+    "neg_zero_B": 0,
+    "nan_A": 0,
+    "unwritten_A": 0
+   },
+   "canon_by_act": {
+    "gauss": 41237,
+    "gauss*0.01": 41627,
+    "laplace": 36854,
+    "gauss_25%+0_25%-0": 41064,
+    "one_nonzero_rest-0": 41848,
+    "inf_at_100": 48403,
+    "nan_at_200": 32334,
+    "gauss*1e30": 36260,
+    "-row0": 41836,
+    "adv_all_products-0(row r0)": 43438,
+    "adv_exact_cancel_then-0(row r0)": 45112,
+    "denormals_10%": 38080,
+    "adv_all_products-0(row r1)": 45664
+   }
+  },
+  "dg_moe<256> (masked decode) : FC1 GEMM output (bf16, 6 routes x [gate|up] 4096)": {
+   "canon": {
+    "compared": 15728640,
+    "diff_values": 204497,
+    "diff_bits": 1716525,
+    "diff_signzero_only": 0,
+    "diff_nan_payload": 0
+   },
+   "rerun": {
+    "compared": 15728640,
+    "diff_values": 195779,
+    "diff_bits": 1643985,
+    "diff_signzero_only": 0,
+    "diff_nan_payload": 0
+   },
+   "posctl": {
+    "compared": 15728640,
+    "diff_values": 7442905,
+    "diff_bits": 23197760,
+    "diff_signzero_only": 0,
+    "diff_nan_payload": 0
+   },
+   "obs": {
+    "zero_A": 3075924,
+    "neg_zero_A": 8,
+    "zero_B": 3075913,
+    "neg_zero_B": 8,
+    "nan_A": 0,
+    "unwritten_A": 0
+   },
+   "canon_by_act": {
+    "gauss": 18944,
+    "gauss*0.01": 22013,
+    "laplace": 14592,
+    "gauss_25%+0_25%-0": 17600,
+    "one_nonzero_rest-0": 14932,
+    "inf_at_100": 17920,
+    "nan_at_200": 9152,
+    "gauss*1e30": 15232,
+    "-row0": 14400,
+    "adv_exact_cancel_then-0(row r0)": 16448,
+    "denormals_10%": 15424,
+    "adv_all_products-0(row r0)": 14208,
+    "adv_all_products-0(row r1)": 13632
+   }
+  },
+  "dg_moe<256> (masked decode) : FC2 GEMM output (bf16, 6 routes x 4096)": {
+   "canon": {
+    "compared": 15728640,
+    "diff_values": 846380,
+    "diff_bits": 5126900,
+    "diff_signzero_only": 9,
+    "diff_nan_payload": 0
+   },
+   "rerun": {
+    "compared": 15728640,
+    "diff_values": 852405,
+    "diff_bits": 5161247,
+    "diff_signzero_only": 7,
+    "diff_nan_payload": 0
+   },
+   "posctl": {
+    "compared": 15728640,
+    "diff_values": 11552805,
+    "diff_bits": 41991216,
+    "diff_signzero_only": 6,
+    "diff_nan_payload": 0
+   },
+   "obs": {
+    "zero_A": 3209521,
+    "neg_zero_A": 26,
+    "zero_B": 3213551,
+    "neg_zero_B": 22,
+    "nan_A": 0,
+    "unwritten_A": 0
+   },
+   "canon_by_act": {
+    "gauss": 70843,
+    "gauss*0.01": 69734,
+    "laplace": 62526,
+    "gauss_25%+0_25%-0": 61570,
+    "one_nonzero_rest-0": 61681,
+    "inf_at_100": 77725,
+    "nan_at_200": 50523,
+    "gauss*1e30": 58805,
+    "-row0": 65737,
+    "adv_all_products-0(row r0)": 70646,
+    "adv_exact_cancel_then-0(row r0)": 61328,
+    "denormals_10%": 61716,
+    "adv_all_products-0(row r1)": 73546
+   }
+  },
+  "dg_moe_contiguous_fast<256> (decode default) : routed output (fp32 of bf16 sum)": {
+   "canon": {
+    "compared": 2621440,
+    "diff_values": 0,
+    "diff_bits": 0,
+    "diff_signzero_only": 0,
+    "diff_nan_payload": 0
+   },
+   "rerun": {
+    "compared": 2621440,
+    "diff_values": 0,
+    "diff_bits": 0,
+    "diff_signzero_only": 0,
+    "diff_nan_payload": 0
+   },
+   "posctl": {
+    "compared": 2621440,
+    "diff_values": 2032215,
+    "diff_bits": 7121499,
+    "diff_signzero_only": 0,
+    "diff_nan_payload": 0
+   },
+   "obs": {
+    "zero_A": 491694,
+    "neg_zero_A": 0,
+    "zero_B": 491694,
+    "neg_zero_B": 0,
+    "nan_A": 0,
+    "unwritten_A": 0
+   },
+   "canon_by_act": {}
+  },
+  "dg_moe_contiguous_fast<256> (decode default) : FC1 GEMM output (bf16, 6 routes x [gate|up] 4096)": {
+   "canon": {
+    "compared": 15728640,
+    "diff_values": 0,
+    "diff_bits": 0,
+    "diff_signzero_only": 0,
+    "diff_nan_payload": 0
+   },
+   "rerun": {
+    "compared": 15728640,
+    "diff_values": 0,
+    "diff_bits": 0,
+    "diff_signzero_only": 0,
+    "diff_nan_payload": 0
+   },
+   "posctl": {
+    "compared": 15728640,
+    "diff_values": 7357999,
+    "diff_bits": 21758713,
+    "diff_signzero_only": 0,
+    "diff_nan_payload": 0
+   },
+   "obs": {
+    "zero_A": 3075953,
+    "neg_zero_A": 0,
+    "zero_B": 3075953,
+    "neg_zero_B": 0,
+    "nan_A": 0,
+    "unwritten_A": 0
+   },
+   "canon_by_act": {}
+  },
+  "dg_moe_contiguous_fast<256> (decode default) : FC2 GEMM output (bf16, 6 routes x 4096)": {
+   "canon": {
+    "compared": 15728640,
+    "diff_values": 0,
+    "diff_bits": 0,
+    "diff_signzero_only": 0,
+    "diff_nan_payload": 0
+   },
+   "rerun": {
+    "compared": 15728640,
+    "diff_values": 0,
+    "diff_bits": 0,
+    "diff_signzero_only": 0,
+    "diff_nan_payload": 0
+   },
+   "posctl": {
+    "compared": 15728640,
+    "diff_values": 11646241,
+    "diff_bits": 40024410,
+    "diff_signzero_only": 0,
+    "diff_nan_payload": 0
+   },
+   "obs": {
+    "zero_A": 2951295,
+    "neg_zero_A": 0,
+    "zero_B": 2951295,
+    "neg_zero_B": 0,
+    "nan_A": 0,
+    "unwritten_A": 0
+   },
+   "canon_by_act": {}
+  },
+  "dg_moe_batch_contiguous grouped (host ids, prefill default) : routed output (fp32 of bf16 sum)": {
+   "canon": {
+    "compared": 2621440,
+    "diff_values": 0,
+    "diff_bits": 0,
+    "diff_signzero_only": 0,
+    "diff_nan_payload": 0
+   },
+   "rerun": {
+    "compared": 2621440,
+    "diff_values": 0,
+    "diff_bits": 0,
+    "diff_signzero_only": 0,
+    "diff_nan_payload": 0
+   },
+   "posctl": {
+    "compared": 2621440,
+    "diff_values": 2032215,
+    "diff_bits": 7121499,
+    "diff_signzero_only": 0,
+    "diff_nan_payload": 0
+   },
+   "obs": {
+    "zero_A": 491694,
+    "neg_zero_A": 0,
+    "zero_B": 491694,
+    "neg_zero_B": 0,
+    "nan_A": 0,
+    "unwritten_A": 0
+   },
+   "canon_by_act": {}
+  },
+  "dg_moe_batch_contiguous legacy replicated : routed output (fp32 of bf16 sum)": {
+   "canon": {
+    "compared": 2621440,
+    "diff_values": 0,
+    "diff_bits": 0,
+    "diff_signzero_only": 0,
+    "diff_nan_payload": 0
+   },
+   "rerun": {
+    "compared": 2621440,
+    "diff_values": 0,
+    "diff_bits": 0,
+    "diff_signzero_only": 0,
+    "diff_nan_payload": 0
+   },
+   "posctl": {
+    "compared": 2621440,
+    "diff_values": 2032215,
+    "diff_bits": 7121499,
+    "diff_signzero_only": 0,
+    "diff_nan_payload": 0
+   },
+   "obs": {
+    "zero_A": 491694,
+    "neg_zero_A": 0,
+    "zero_B": 491694,
+    "neg_zero_B": 0,
+    "nan_A": 0,
+    "unwritten_A": 0
+   },
+   "canon_by_act": {}
+  }
+ },
+ "seconds": 38.8
+}

@@ -1,0 +1,482 @@
+{
+ "meta": {
+  "full_files": [
+   "L00_E097.bin",
+   "L13_E018.bin",
+   "L26_E002.bin",
+   "L39_E032.bin"
+  ],
+  "quick_files": 160,
+  "code8": 8243931,
+  "code0": 8239132,
+  "nibbles": 141557760,
+  "scale_codes_seen_min": 118,
+  "scale_codes_seen_max": 124
+ },
+ "act_sets_full": [
+  "gauss",
+  "gauss_25pct+0_25pct-0",
+  "all-0",
+  "all+0",
+  "one_nonzero_rest-0",
+  "denormals_10pct",
+  "inf_at_100",
+  "nan_at_200",
+  "huge_1e30"
+ ],
+ "quick_kernels": [
+  "K1_mxfp4_avx2",
+  "K5_rows16order_avx2",
+  "K8_rows16_v10_avx2",
+  "K9a_cuda_grouped_fma_emul",
+  "K10_cuda_v4f_dot_fp4_emul",
+  "K11_vk_chain_moe_gv_acc0_emul"
+ ],
+ "quick_act_sets": [
+  "gauss",
+  "gauss_25pct+0_25pct-0"
+ ],
+ "results": {
+  "real_full_suite": {
+   "K1_mxfp4_avx2": {
+    "compared": 350208,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 82489,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 43512
+   },
+   "K2_mxfp4_scalar": {
+    "compared": 350208,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 82489,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 43512
+   },
+   "K2c_mxfp4_scalar_fma": {
+    "compared": 350208,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 82489,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 43512
+   },
+   "K3_idot_avx2": {
+    "compared": 350208,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 82489,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 38912
+   },
+   "K4_idot_scalar": {
+    "compared": 350208,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 82489,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 4600
+   },
+   "K5_rows16order_avx2": {
+    "compared": 350208,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 82489,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 43512
+   },
+   "K6_rows16order_scalar": {
+    "compared": 350208,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 82489,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 43512
+   },
+   "K7_batch_rows16order_avx2_S4": {
+    "compared": 1400832,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 364203,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 174048
+   },
+   "K8_rows16_v10_avx2": {
+    "compared": 350208,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 82489,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 43512
+   },
+   "K9a_cuda_grouped_fma_emul": {
+    "compared": 350208,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 82489,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 43512
+   },
+   "K9b_cuda_grouped_nofma_emul": {
+    "compared": 350208,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 82489,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 43512
+   },
+   "K10_cuda_v4f_dot_fp4_emul": {
+    "compared": 350208,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 82489,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 43512
+   },
+   "K11_vk_chain_moe_gv_acc0_emul": {
+    "compared": 350208,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 82489,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 43512
+   },
+   "K12_NEGCTRL_vk_firstterm_emul": {
+    "compared": 350208,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 82489,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 43512
+   }
+  },
+  "synthetic_zero_rows": {
+   "K1_mxfp4_avx2": {
+    "compared": 4608,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 2335,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 797
+   },
+   "K2_mxfp4_scalar": {
+    "compared": 4608,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 2335,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 797
+   },
+   "K2c_mxfp4_scalar_fma": {
+    "compared": 4608,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 2335,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 797
+   },
+   "K3_idot_avx2": {
+    "compared": 4608,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 2591,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 512
+   },
+   "K4_idot_scalar": {
+    "compared": 4608,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 2591,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 285
+   },
+   "K5_rows16order_avx2": {
+    "compared": 4608,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 2335,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 797
+   },
+   "K6_rows16order_scalar": {
+    "compared": 4608,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 2335,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 797
+   },
+   "K7_batch_rows16order_avx2_S4": {
+    "compared": 18432,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 9565,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 3188
+   },
+   "K8_rows16_v10_avx2": {
+    "compared": 4608,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 2335,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 797
+   },
+   "K9a_cuda_grouped_fma_emul": {
+    "compared": 4608,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 2335,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 797
+   },
+   "K9b_cuda_grouped_nofma_emul": {
+    "compared": 4608,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 2335,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 797
+   },
+   "K10_cuda_v4f_dot_fp4_emul": {
+    "compared": 4608,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 2335,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 797
+   },
+   "K11_vk_chain_moe_gv_acc0_emul": {
+    "compared": 4608,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 2335,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 797
+   },
+   "K12_NEGCTRL_vk_firstterm_emul": {
+    "compared": 4608,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 256,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 2335,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 797
+   }
+  },
+  "real_quick_all_experts": {
+   "K1_mxfp4_avx2": {
+    "compared": 3112960,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   },
+   "K5_rows16order_avx2": {
+    "compared": 3112960,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   },
+   "K8_rows16_v10_avx2": {
+    "compared": 3112960,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   },
+   "K9a_cuda_grouped_fma_emul": {
+    "compared": 3112960,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   },
+   "K10_cuda_v4f_dot_fp4_emul": {
+    "compared": 3112960,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   },
+   "K11_vk_chain_moe_gv_acc0_emul": {
+    "compared": 3112960,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   }
+  },
+  "positive_control_one_flipped_weight": {
+   "K1_mxfp4_avx2": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   },
+   "K2_mxfp4_scalar": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   },
+   "K2c_mxfp4_scalar_fma": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   },
+   "K3_idot_avx2": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   },
+   "K4_idot_scalar": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   },
+   "K5_rows16order_avx2": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   },
+   "K6_rows16order_scalar": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   },
+   "K7_batch_rows16order_avx2_S4": {
+    "compared": 9216,
+    "mismatch_value": 4,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   },
+   "K8_rows16_v10_avx2": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   },
+   "K9a_cuda_grouped_fma_emul": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   },
+   "K9b_cuda_grouped_nofma_emul": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   },
+   "K10_cuda_v4f_dot_fp4_emul": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   },
+   "K11_vk_chain_moe_gv_acc0_emul": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   },
+   "K12_NEGCTRL_vk_firstterm_emul": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   }
+  }
+ },
+ "seconds": 613.4
+}

@@ -1,0 +1,283 @@
+From 4ba5568177928b3dbf98fdb74fe9638ad403975c Mon Sep 17 00:00:00 2001
+From: KAIRA maintainer <kaira@localhost>
+Date: Wed, 11 Nov 2026 04:32:00 +0100
+Subject: [PATCH] dsv4: WEX4 first-read SHA-256 of every record
+ (COLI_WEX_VERIFY)
+
+With a pinned root (COLI_WEX_ROOT) or COLI_WEX_VERIFY=1 the stored bytes of a WEX4
+record are hashed the first time this process reads them (host path, GPU-direct fill,
+batch) and compared with the index; a mismatch is handled like an owner failure.
+wex4.h hashes with the SHA extensions when the CPU has them (1.8 GB/s against 0.33).
+The record hashes live behind the entry table. Test: a wrong hash in the index is
+served with verification off and falls back to safetensors with it on.
+
+Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>
+---
+ src/colibri/c/deepseek_v4.c           | 62 ++++++++++++++++++++++++---
+ src/colibri/c/deepseek_v4_internal.h  |  2 +
+ src/colibri/c/tests/test_v4_wex_nr3.c | 20 ++++++++-
+ src/colibri/c/wex4.h                  | 49 ++++++++++++++++++++-
+ 4 files changed, 123 insertions(+), 10 deletions(-)
+
+diff --git a/src/colibri/c/deepseek_v4.c b/src/colibri/c/deepseek_v4.c
+index f9a3550..45bfe40 100644
+--- a/src/colibri/c/deepseek_v4.c
++++ b/src/colibri/c/deepseek_v4.c
+@@ -13349,6 +13349,8 @@ typedef struct {
+ #endif
+     WexEntry *wex_entries;
+     uint32_t wex_flags;   /* container header flags (the WNR3 records' canonical-zero check) */
++    const unsigned char *wex_sha;   /* WEX4 with verification on: 32-byte SHA-256 per (layer, expert) slot */
++    unsigned char *wex_seen;        /* 1 = that slot's record passed its first-read SHA-256 */
+ #ifdef _WIN32
+     void *wex_crc;        /* compressed record cache (COLI_WEX_RAM_CACHE_GB) */
+     int wex_crc_tried;
+@@ -13991,16 +13993,19 @@ static int v4_wex4_load_manifest(HANDLE file, uint64_t size, int layers, int exp
+     }
+     span = wex4_align((uint64_t)h.layers * h.experts * sizeof(WexEntry));
+     index = (unsigned char *)_aligned_malloc((size_t)wex4_align(h.index_bytes), WEX_ALIGN);
+-    entries = (WexEntry *)_aligned_malloc((size_t)span, WEX_ALIGN);
++    /* the record hashes sit right behind the table (span bytes), 32 per slot */
++    entries = (WexEntry *)_aligned_malloc((size_t)(span + wex4_align((uint64_t)h.layers * h.experts * 32u)), WEX_ALIGN);
+     if (!index || !entries ||
+         v4_wex_read_exact(file, index, (DWORD)wex4_align(h.index_bytes), h.index_offset) ||
+         wex4_open(&h, index, (size_t)wex4_align(h.index_bytes), &v)) goto fail;
+-    memset(entries, 0, (size_t)span);
++    memset(entries, 0, (size_t)(span + wex4_align((uint64_t)h.layers * h.experts * 32u)));
+     for (r = 0; r < h.records; r++) {
++        size_t slot;
+         wex4_get_record(&v, r, &rec);
+         if (!(rec.flags & WEX4_REC_EXPERT)) continue;
+-        if (wex4_expert_entry(&v, r, &entries[(size_t)(rec.owner >> 16) * h.experts + (rec.owner & 0xffffu)]))
+-            goto fail;
++        slot = (size_t)(rec.owner >> 16) * h.experts + (rec.owner & 0xffffu);
++        if (wex4_expert_entry(&v, r, &entries[slot])) goto fail;
++        memcpy((unsigned char *)entries + span + slot * 32u, rec.sha, 32u);
+         if (wex4_align(rec.decoded) > slab) slab = wex4_align(rec.decoded);
+         if (rec.flags & WEX4_REC_VALUE_EXACT) flags |= WEX_HEADER_CANONICAL_ZERO;
+         if (rec.codec == WEX4_CODEC_WNR3) {
+@@ -14036,7 +14041,9 @@ static int v4_wex4_load_manifest(HANDLE file, uint64_t size, int layers, int exp
+     {
+         WexHeader legacy = {WEX_MAGIC_V3, 3u, h.layers, h.experts, slab, WEX_ALIGN, flags, 0u};
+         memset(block, 0, WEX_ALIGN);
++        uint32_t marker = WEX4_MAGIC;
+         memcpy(block, &legacy, sizeof(legacy));
++        memcpy(block + 56u, &marker, 4u);   /* tells the caller the hashes are behind the table */
+         memcpy(block + WEX4_HEADER_HASHED, h.root, 32u);
+     }
+     _aligned_free(index);
+@@ -14051,6 +14058,25 @@ fail:
+     return -1;
+ }
+ 
++/* WEX4 first-read check (COLI_WEX_VERIFY, on by default when COLI_WEX_ROOT pins the root): the
++ * stored bytes of a record are hashed the first time they are read in this process and compared with
++ * the index, which the pinned root covers. 1 = fine (or nothing to check), 0 = reject the record. */
++static int v4_wex_first_read_ok(V4ExpertStoreState *state, int layer, int expert,
++                                const WexEntry *entry, const unsigned char *record) {
++    unsigned char digest[32];
++    size_t slot = (size_t)layer * (size_t)state->experts_per_layer + (size_t)expert;
++    if (!state->wex_sha || __atomic_load_n(&state->wex_seen[slot], __ATOMIC_RELAXED)) return 1;
++    wex4_sha256(record, entry->total_bytes, digest);
++    if (memcmp(digest, state->wex_sha + slot * 32u, 32u)) {
++        static int said;
++        if (!__atomic_exchange_n(&said, 1, __ATOMIC_RELAXED))
++            fprintf(stderr, "[v4_wex] record of layer %d expert %d does not match its SHA-256; rejected\n", layer, expert);
++        return 0;
++    }
++    __atomic_store_n(&state->wex_seen[slot], 1, __ATOMIC_RELAXED);
++    return 1;
++}
++
+ static int v4_wex_load_manifest(HANDLE file, int layers, int experts,
+                                  unsigned char **header_block,
+                                  WexEntry **entries_out, size_t *table_span,
+@@ -14223,6 +14249,16 @@ int coli_deepseek_v4_expert_store_open(
+             const WexHeader *hdr = (const WexHeader *)wex_header_block;
+             state->wex_handle = hWex;
+             state->wex_flags = hdr->flags;
++            {
++                uint32_t marker;
++                const char *verify = getenv("COLI_WEX_VERIFY"), *pin = getenv("COLI_WEX_ROOT");
++                memcpy(&marker, wex_header_block + 56u, 4u);
++                if (marker == WEX4_MAGIC && (verify ? atoi(verify) != 0 : pin && *pin)) {
++                    state->wex_seen = (unsigned char *)calloc((size_t)hdr->num_layers * hdr->num_experts, 1u);
++                    if (state->wex_seen) state->wex_sha = (const unsigned char *)state->wex_entries + wex_table_span;
++                    fprintf(stderr, "[v4_wex] WEX4 first-read SHA-256 of every record: %s\n", state->wex_sha ? "on" : "off (no memory)");
++                }
++            }
+             fprintf(stderr, "[v4_wex] Container v%u%s active: %s (%u layers, %u experts, %llu decoded bytes/expert, direct_io=on)\n",
+                     hdr->version,
+                     hdr->flags & WEX_HEADER_NEURAL_RANS3
+@@ -14891,6 +14927,7 @@ static int v4_read_expert_record_io(V4ExpertStoreState *state,
+             if (ok && bytes_read == entry->total_bytes &&
+                 wex_nr3_owner_ok(entry, slot->slab + read_offset, (uint32_t)record->layer,
+                                  (uint32_t)record->expert, state->wex_flags) &&
++                v4_wex_first_read_ok(state, record->layer, record->expert, entry, slot->slab + read_offset) &&
+                 !coli_wex_decode_record(entry, slot->slab,
+                                      (size_t)record->record_bytes)) {
+                 __atomic_fetch_add(&v4_direct_reads, UINT64_C(1), __ATOMIC_RELAXED);
+@@ -15025,6 +15062,17 @@ const WexEntry *coli_v4_expert_store_wex_entry(ColiExpertStore *store, ColiExper
+     return entry;
+ }
+ 
++int coli_v4_wex_first_read_ok(ColiExpertStore *store, ColiExpertKey key, const WexEntry *entry,
++                              const unsigned char *record) {
++#ifdef _WIN32
++    return !store || !store->state ||
++           v4_wex_first_read_ok((V4ExpertStoreState *)store->state, key.layer, key.expert, entry, record);
++#else
++    (void)store; (void)key; (void)entry; (void)record;
++    return 1;
++#endif
++}
++
+ uint32_t coli_v4_expert_store_wex_flags(ColiExpertStore *store) {
+     return store && store->state ? ((V4ExpertStoreState *)store->state)->wex_flags : 0u;
+ }
+@@ -19885,7 +19933,8 @@ static int v4_wex_fill_targets(const V4WexDirectFill *f, unsigned char *const sc
+     if (slot < 0) record = f->record;
+     if ((!hit && coli_v4_expert_store_wex_read(f->store, f->key, f->entry, record)) ||
+         !wex_nr3_owner_ok(f->entry, record, (uint32_t)f->key.layer, (uint32_t)f->key.expert,
+-                          coli_v4_expert_store_wex_flags(f->store))) {
++                          coli_v4_expert_store_wex_flags(f->store)) ||
++        (!hit && !coli_v4_wex_first_read_ok(f->store, f->key, f->entry, record))) {
+         if (slot >= 0) coli_v4_wex_crc_done(f->store, slot, 0);
+         return -1;
+     }
+@@ -20253,7 +20302,8 @@ int coli_v4_gpu_expert_wex_complete(void *batch) {
+         keep[i] = ok[i];
+         if (!ok[i]) continue;
+         if (!wex_nr3_owner_ok(entries[i], records[i], (uint32_t)b->keys[i].layer, (uint32_t)b->keys[i].expert,
+-                              wex_flags)) {
++                              wex_flags) ||
++            !coli_v4_wex_first_read_ok(store, b->keys[i], entries[i], records[i])) {
+             ok[i] = keep[i] = 0;
+             continue;
+         }
+diff --git a/src/colibri/c/deepseek_v4_internal.h b/src/colibri/c/deepseek_v4_internal.h
+index a88f0c9..2ad9762 100644
+--- a/src/colibri/c/deepseek_v4_internal.h
++++ b/src/colibri/c/deepseek_v4_internal.h
+@@ -1322,6 +1322,8 @@ const WexEntry *coli_v4_expert_store_wex_entry(ColiExpertStore *store, ColiExper
+                                                size_t capacity);
+ /* the container's header flags (wex_nr3_owner_ok's canonical-zero check) */
+ uint32_t coli_v4_expert_store_wex_flags(ColiExpertStore *store);
++int coli_v4_wex_first_read_ok(ColiExpertStore *store, ColiExpertKey key, const WexEntry *entry,
++                              const unsigned char *record);
+ /* read that record's compressed bytes into dst (4096-aligned); 0 on success */
+ int coli_v4_expert_store_wex_read(ColiExpertStore *store, ColiExpertKey key,
+                                   const WexEntry *entry, unsigned char *dst);
+diff --git a/src/colibri/c/tests/test_v4_wex_nr3.c b/src/colibri/c/tests/test_v4_wex_nr3.c
+index 6e098a3..3a8067b 100644
+--- a/src/colibri/c/tests/test_v4_wex_nr3.c
++++ b/src/colibri/c/tests/test_v4_wex_nr3.c
+@@ -265,12 +265,27 @@ static void run_wex4(const Container *c, int cz) {
+     check_host(two_bad, 1);
+     free(copy); free(w4);
+     w4 = upgrade_wex4(c->data, c->bytes, &bytes, root);
+-    write_file(wex_path, w4, bytes);
++    {   /* a wrong SHA-256 for record 1 in the index (hashes recomputed): only the first-read check sees it */
++        size_t index_offset = c->bytes + WEX_ALIGN, index_bytes;
++        memcpy(&index_bytes, w4 + 40, 8);
++        w4[index_offset + 3 * WEX4_BLOB_BYTES + WEX4_RECORD_BYTES + 36] ^= 1u;
++        wex4_sha256(w4 + index_offset, index_bytes, w4 + 96);
++        wex4_sha256(w4, WEX4_HEADER_HASHED, w4 + WEX4_HEADER_HASHED);
++        write_file(wex_path, w4, bytes);
++        check_host(all, 1);                                /* verification off: level 1 alone accepts it */
++        setenv("COLI_WEX_VERIFY", "1", 1);
++        check_host(one_bad, 1);                            /* on: that record falls back to safetensors */
++        free(w4);
++        w4 = upgrade_wex4(c->data, c->bytes, &bytes, root);
++        write_file(wex_path, w4, bytes);
++        check_host(all, 1);                                /* on, intact container: every record passes */
++        unsetenv("COLI_WEX_VERIFY");
++    }
+     setenv("DSV4_CUDA_MOE_MASKED", "1", 1);                /* canonical zero on the masked path: refused */
+     check_host(cz ? none : all, !cz);
+     unsetenv("DSV4_CUDA_MOE_MASKED");
+     free(w4);
+-    printf("WEX4%s on the engine store: same bytes served; pinned root, damaged header / index, corrupted and "
++    printf("WEX4%s on the engine store: same bytes served; pinned root, first-read SHA-256, damaged header / index, corrupted and "
+            "foreign records and the masked path handled as for WEX3.\n", cz ? " canonical-zero" : "");
+ }
+ 
+@@ -437,6 +452,7 @@ int main(int argc, char **argv) {
+     unsetenv("COLI_MODEL_MIRROR");
+     unsetenv("DSV4_CUDA_MOE_MASKED");
+     unsetenv("COLI_WEX_ROOT");
++    unsetenv("COLI_WEX_VERIFY");
+     assert(mkdtemp(directory));
+     snprintf(st_path, sizeof st_path, "%s/model.safetensors", directory);
+     snprintf(wex_path, sizeof wex_path, "%s\\v4_flash_experts.wex", directory);
+diff --git a/src/colibri/c/wex4.h b/src/colibri/c/wex4.h
+index 0c023ed..250888d 100644
+--- a/src/colibri/c/wex4.h
++++ b/src/colibri/c/wex4.h
+@@ -77,6 +77,51 @@ static inline void wex4_sha_block(uint32_t h[8], const unsigned char *p) {
+     }
+     for (i = 0; i < 8u; i++) h[i] += s[i];
+ }
++#if (defined(__x86_64__) || defined(__i386__)) && defined(__GNUC__)
++#include <immintrin.h>
++#include <cpuid.h>
++/* The same compression function with the SHA extensions (about 6x the portable one): what makes a
++ * SHA-256 of every record at its first read affordable. Chosen at run time. */
++__attribute__((target("sha,sse4.1,ssse3")))
++static void wex4_sha_block_ni(uint32_t h[8], const unsigned char *p) {
++    const __m128i swap = _mm_set_epi64x(0x0c0d0e0f08090a0bLL, 0x0405060700010203LL);
++    __m128i m[4], t = _mm_loadu_si128((const __m128i *)h), s1 = _mm_loadu_si128((const __m128i *)(h + 4)), s0, a, b;
++    unsigned int i;
++    t = _mm_shuffle_epi32(t, 0xb1);
++    s1 = _mm_shuffle_epi32(s1, 0x1b);
++    s0 = _mm_alignr_epi8(t, s1, 8);
++    s1 = _mm_blend_epi16(s1, t, 0xf0);
++    a = s0; b = s1;
++    for (i = 0; i < 16u; i++) {
++        __m128i w;
++        if (i < 4u) m[i] = _mm_shuffle_epi8(_mm_loadu_si128((const __m128i *)(p + i * 16u)), swap);
++        else {
++            w = _mm_sha256msg1_epu32(m[i & 3u], m[(i + 1u) & 3u]);
++            w = _mm_add_epi32(w, _mm_alignr_epi8(m[(i + 3u) & 3u], m[(i + 2u) & 3u], 4));
++            m[i & 3u] = _mm_sha256msg2_epu32(w, m[(i + 3u) & 3u]);
++        }
++        w = _mm_add_epi32(m[i & 3u], _mm_loadu_si128((const __m128i *)(wex4_sha_k + i * 4u)));
++        s1 = _mm_sha256rnds2_epu32(s1, s0, w);
++        s0 = _mm_sha256rnds2_epu32(s0, s1, _mm_shuffle_epi32(w, 0x0e));
++    }
++    s0 = _mm_add_epi32(s0, a); s1 = _mm_add_epi32(s1, b);
++    t = _mm_shuffle_epi32(s0, 0x1b);
++    s1 = _mm_shuffle_epi32(s1, 0xb1);
++    _mm_storeu_si128((__m128i *)h, _mm_blend_epi16(t, s1, 0xf0));
++    _mm_storeu_si128((__m128i *)(h + 4), _mm_alignr_epi8(s1, t, 8));
++}
++static inline int wex4_sha_ni(void) {
++    static int known = -1;
++    if (known < 0) {
++        unsigned int a, b = 0, c, d;
++        known = __get_cpuid_count(7, 0, &a, &b, &c, &d) && (b >> 29 & 1u);
++    }
++    return known;
++}
++#define WEX4_SHA_BLOCK(h, p) (wex4_sha_ni() ? wex4_sha_block_ni(h, p) : wex4_sha_block(h, p))
++#else
++#define WEX4_SHA_BLOCK(h, p) wex4_sha_block(h, p)
++#endif
+ static inline void wex4_sha_init(Wex4Sha *s) {
+     static const uint32_t iv[8] = {0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19};
+     memcpy(s->h, iv, sizeof(iv)); s->n = 0;
+@@ -88,9 +133,9 @@ static inline void wex4_sha_update(Wex4Sha *s, const unsigned char *p, size_t n)
+         size_t take = 64u - fill < n ? 64u - fill : n;
+         memcpy(s->buf + fill, p, take); p += take; n -= take;
+         if (fill + take < 64u) return;
+-        wex4_sha_block(s->h, s->buf);
++        WEX4_SHA_BLOCK(s->h, s->buf);
+     }
+-    for (; n >= 64u; p += 64u, n -= 64u) wex4_sha_block(s->h, p);
++    for (; n >= 64u; p += 64u, n -= 64u) WEX4_SHA_BLOCK(s->h, p);
+     if (n) memcpy(s->buf, p, n);
+ }
+ static inline void wex4_sha_final(Wex4Sha *s, unsigned char out[32]) {
+-- 
+2.55.0.windows.1
+

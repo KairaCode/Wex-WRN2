@@ -1,0 +1,13 @@
+---- 2026-11-08 02:36:02 setup/fetch_data.py --local-shards U:\models\DeepSeek-V4.1-Flash-1017-REAP192-MXFP4 --extra
+fetch_data mode=local data=<KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\data sets=['v41-sample', 'extra'] quick=False
+local shards: U:\models\DeepSeek-V4.1-Flash-1017-REAP192-MXFP4 (46 files)
+[v41-sample] 160 experts, 3,008,102,400 bytes -> <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\data\v41-sample
+[v41-sample] state: {'missing': 160}
+  progress       0.4 / 3008.1 MB    53.8 MB/s
+  progress    3008.1 / 3008.1 MB  1414.6 MB/s
+[extra] 76 experts, 1,428,848,640 bytes -> <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\data\extra
+[extra] state: {'missing': 76}
+  progress       0.4 / 1428.8 MB   122.0 MB/s
+  progress    1428.8 / 1428.8 MB   194.1 MB/s
+total bytes in selected sets: 4,436,951,040; fetched/copied this run: 4,436,951,040; 9.6 s
+RESULT fetch_data PASS mode=local v41-sample=160/160 extra=76/76 bytes=4436951040 failures=0

@@ -1,0 +1,60 @@
+{
+ "test": "fetch_data",
+ "status": "PASS",
+ "mode": "local",
+ "quick": false,
+ "seconds": 9.6,
+ "repo": "patrickbdevaney/DeepSeek-V4.1-Flash-1017-REAP192-MXFP4",
+ "revision": "4ab649b2254afdcf6c2f7c1fbea1c05eda11828c",
+ "data": "<KAIRA>\\lab\\wnr-testkit-20261108\\WNR-TESTKIT\\data",
+ "sets": {
+  "v41-sample": {
+   "dir": "<KAIRA>\\lab\\wnr-testkit-20261108\\WNR-TESTKIT\\data\\v41-sample",
+   "experts": 160,
+   "bytes": 3008102400,
+   "states_before": {
+    "missing": 160
+   },
+   "hashed": 160,
+   "to_fetch": 160,
+   "bytes_to_fetch": 3008102400,
+   "bytes_fetched": 3008102400,
+   "failures": []
+  },
+  "extra": {
+   "dir": "<KAIRA>\\lab\\wnr-testkit-20261108\\WNR-TESTKIT\\data\\extra",
+   "experts": 76,
+   "bytes": 1428848640,
+   "states_before": {
+    "missing": 76
+   },
+   "hashed": 76,
+   "to_fetch": 76,
+   "bytes_to_fetch": 1428848640,
+   "bytes_fetched": 1428848640,
+   "failures": []
+  }
+ },
+ "total_bytes": 4436951040,
+ "fetched_bytes": 4436951040,
+ "failures": [],
+ "environment": {
+  "time": "2026-11-08T02:36:12",
+  "os": "Windows-11-10.0.26300-SP0",
+  "os_system": "Windows",
+  "machine": "AMD64",
+  "hostname_hash": "<redacted>",
+  "cpu": "AMD Ryzen 9 7950X3D 16-Core Processor",
+  "logical_cpus": 32,
+  "ram": {
+   "total": 33447325696,
+   "available": 15874527232
+  },
+  "python": "3.14.8",
+  "python_impl": "CPython",
+  "numpy": "2.5.4",
+  "cupy": "14.2.0",
+  "nvrtc_wheel": "12.9.86",
+  "cuda_runtime_wheel": "12.9.79"
+ }
+}

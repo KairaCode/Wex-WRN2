@@ -1,0 +1,28 @@
+A259    8streams  best    793.2 us @ bench_5090:nt128/lb      regs  48 smem   8304 occW 40 | same-config ratios D=1.100 CF0=1.017 DB2=1.238
+A259    m1        best    167.1 us @ bench_5090:nt32/lb       regs  76 smem   8304 occW 10 | same-config ratios D=1.038 CF0=1.000 DB2=1.025
+A259    m24       best    757.9 us @ bench_5090:nt128/lb      regs  48 smem   8304 occW 40 | same-config ratios D=1.130 CF0=1.010 DB2=1.262
+A259    m3        best    261.2 us @ bench_5090:nt32/lb       regs  76 smem   8304 occW 10 | same-config ratios D=1.109 CF0=1.008 DB2=1.076
+CF0     8streams  best    784.6 us @ bench_5090:nt128/lb      regs  48 smem   8304 occW 40 | same-config ratios A259=0.983 D=1.096 DB2=1.222
+CF0     m1        best    167.0 us @ bench_5090:nt32/lb       regs  76 smem   8304 occW 10 | same-config ratios A259=1.000 D=1.038 DB2=1.025
+CF0     m24       best    752.7 us @ bench_5090:nt128/lb      regs  48 smem   8304 occW 40 | same-config ratios A259=0.990 D=1.122 DB2=1.251
+CF0     m3        best    259.1 us @ bench_5090:nt32/lb       regs  76 smem   8304 occW 10 | same-config ratios A259=0.992 D=1.101 DB2=1.067
+CF5     8streams  best    788.1 us @ bench_5090:nt128/lb      regs  48 smem   8304 occW 40 | same-config ratios A259=0.996 D=1.103 CF0=1.006 DB2=1.233
+CF5     m1        best    166.9 us @ bench_5090:nt32/lb       regs  78 smem   8304 occW 10 | same-config ratios A259=0.994 D=1.038 CF0=0.999 DB2=1.024
+CF5     m24       best    752.8 us @ bench_5090:nt128/lb      regs  48 smem   8304 occW 40 | same-config ratios A259=0.994 D=1.127 CF0=1.001 DB2=1.256
+CF5     m3        best    175.3 us @ bench_5090:nt32/lb       regs  78 smem   8304 occW 10 | same-config ratios A259=0.676 D=0.751 CF0=0.681 DB2=0.723
+CFD5    8streams  best    702.8 us @ bench_5090:nt32/lb       regs  78 smem   4160 occW 19 | same-config ratios A259=0.737 D=0.997 CF0=0.742 DB2=1.023
+CFD5    m1        best    163.0 us @ bench_5090:nt32/lb       regs  78 smem   4160 occW 19 | same-config ratios A259=0.976 D=1.013 CF0=0.976 DB2=1.000
+CFD5    m24       best    658.5 us @ bench_5090:nt32/lb       regs  78 smem   4160 occW 19 | same-config ratios A259=0.729 D=0.997 CF0=0.732 DB2=1.030
+CFD5    m3        best    236.6 us @ bench_5090:nt32/lb       regs  78 smem   4160 occW 19 | same-config ratios A259=0.906 D=1.009 CF0=0.913 DB2=0.975
+CFDB2   8streams  best    656.3 us @ bench_5090:nt256/lb      regs  64 smem   4160 occW 32 | same-config ratios A259=0.774 D=0.860 CF0=0.776 DB2=0.999
+CFDB2   m1        best    165.0 us @ bench_5090:nt32/lb       regs  80 smem   4160 occW 19 | same-config ratios A259=0.988 D=1.026 CF0=0.988 DB2=1.013
+CFDB2   m24       best    611.5 us @ bench_5090:nt256/lb      regs  64 smem   4160 occW 32 | same-config ratios A259=0.758 D=0.906 CF0=0.762 DB2=1.010
+CFDB2   m3        best    246.9 us @ bench_5090:nt32/lb       regs  80 smem   4160 occW 19 | same-config ratios A259=0.945 D=1.052 CF0=0.953 DB2=1.017
+D       8streams  best    703.7 us @ bench_5090:nt64/lb       regs  50 smem   4160 occW 36 | same-config ratios A259=0.797 CF0=0.798 DB2=1.111
+D       m1        best    160.9 us @ bench_5090:nt32/lb       regs  77 smem   4160 occW 19 | same-config ratios A259=0.963 CF0=0.963 DB2=0.987
+D       m24       best    651.5 us @ bench_5090:nt64/lb       regs  50 smem   4160 occW 36 | same-config ratios A259=0.775 CF0=0.781 DB2=1.101
+D       m3        best    234.7 us @ bench_5090:nt32/lb       regs  77 smem   4160 occW 19 | same-config ratios A259=0.901 CF0=0.908 DB2=0.966
+DB2     8streams  best    635.1 us @ bench_5090:nt64/lb       regs  56 smem   4160 occW 36 | same-config ratios A259=0.715 D=0.900 CF0=0.723
+DB2     m1        best    162.9 us @ bench_5090:nt32/lb       regs  80 smem   4160 occW 19 | same-config ratios A259=0.975 D=1.013 CF0=0.975
+DB2     m24       best    591.0 us @ bench_5090:nt64/lb       regs  56 smem   4160 occW 36 | same-config ratios A259=0.705 D=0.908 CF0=0.710
+DB2     m3        best    242.8 us @ bench_5090:nt32/lb       regs  80 smem   4160 occW 19 | same-config ratios A259=0.930 D=1.035 CF0=0.937

@@ -1,0 +1,465 @@
+W0  R0     w1      2000 pass   2000 acc   2000 silent      0 rate 0.000e+00 CI [0.00e+00,1.84e-03] blockflip 0
+W0  R0     w2      2000 pass   2000 acc   2000 silent      0 rate 0.000e+00 CI [0.00e+00,1.84e-03] blockflip 0
+W0  R0     w3      2000 pass   2000 acc   2000 silent      0 rate 0.000e+00 CI [0.00e+00,1.84e-03] blockflip 0
+W0  R0     all     6000 pass   6000 acc   6000 silent      0 rate 0.000e+00 CI [0.00e+00,6.15e-04] blockflip 0
+W0  HASH   w1      2000 pass   2000 acc   2000 silent      0 rate 0.000e+00 CI [0.00e+00,1.84e-03] blockflip 0
+W0  HASH   w2      2000 pass   2000 acc   2000 silent      0 rate 0.000e+00 CI [0.00e+00,1.84e-03] blockflip 0
+W0  HASH   w3      2000 pass   2000 acc   2000 silent      0 rate 0.000e+00 CI [0.00e+00,1.84e-03] blockflip 0
+W0  HASH   all     6000 pass   6000 acc   6000 silent      0 rate 0.000e+00 CI [0.00e+00,6.15e-04] blockflip 0
+W0  HASH32 w1      2000 pass   2000 acc   2000 silent      0 rate 0.000e+00 CI [0.00e+00,1.84e-03] blockflip 0
+W0  HASH32 w2      2000 pass   2000 acc   2000 silent      0 rate 0.000e+00 CI [0.00e+00,1.84e-03] blockflip 0
+W0  HASH32 w3      2000 pass   2000 acc   2000 silent      0 rate 0.000e+00 CI [0.00e+00,1.84e-03] blockflip 0
+W0  HASH32 all     6000 pass   6000 acc   6000 silent      0 rate 0.000e+00 CI [0.00e+00,6.15e-04] blockflip 0
+W0  TAIL   w1      2000 pass   2000 acc   2000 silent      0 rate 0.000e+00 CI [0.00e+00,1.84e-03] blockflip 0
+W0  TAIL   w2      2000 pass   2000 acc   2000 silent      0 rate 0.000e+00 CI [0.00e+00,1.84e-03] blockflip 0
+W0  TAIL   w3      2000 pass   2000 acc   2000 silent      0 rate 0.000e+00 CI [0.00e+00,1.84e-03] blockflip 0
+W0  TAIL   all     6000 pass   6000 acc   6000 silent      0 rate 0.000e+00 CI [0.00e+00,6.15e-04] blockflip 0
+W0  TAILD  w1      2000 pass   2000 acc   2000 silent      0 rate 0.000e+00 CI [0.00e+00,1.84e-03] blockflip 0
+W0  TAILD  w2      2000 pass   2000 acc   2000 silent      0 rate 0.000e+00 CI [0.00e+00,1.84e-03] blockflip 0
+W0  TAILD  w3      2000 pass   2000 acc   2000 silent      0 rate 0.000e+00 CI [0.00e+00,1.84e-03] blockflip 0
+W0  TAILD  all     6000 pass   6000 acc   6000 silent      0 rate 0.000e+00 CI [0.00e+00,6.15e-04] blockflip 0
+A   R0     w1      2000 pass      6 acc      6 silent      6 rate 3.000e-03 CI [1.10e-03,6.52e-03] blockflip 0
+A   R0     w2      2000 pass      9 acc      9 silent      9 rate 4.500e-03 CI [2.06e-03,8.53e-03] blockflip 0
+A   R0     w3      2000 pass     12 acc     12 silent     12 rate 6.000e-03 CI [3.10e-03,1.05e-02] blockflip 0
+A   R0     all     6000 pass     27 acc     27 silent     27 rate 4.500e-03 CI [2.97e-03,6.54e-03] blockflip 0
+A   HASH   w1      2000 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.84e-03] blockflip 0
+A   HASH   w2      2000 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.84e-03] blockflip 0
+A   HASH   w3      2000 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.84e-03] blockflip 0
+A   HASH   all     6000 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.15e-04] blockflip 0
+A   HASH32 w1      2000 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.84e-03] blockflip 0
+A   HASH32 w2      2000 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.84e-03] blockflip 0
+A   HASH32 w3      2000 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.84e-03] blockflip 0
+A   HASH32 all     6000 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.15e-04] blockflip 0
+A   TAIL   w1      2000 pass     16 acc     16 silent     16 rate 8.000e-03 CI [4.58e-03,1.30e-02] blockflip 5
+A   TAIL   w2      2000 pass     14 acc     14 silent     14 rate 7.000e-03 CI [3.83e-03,1.17e-02] blockflip 4
+A   TAIL   w3      2000 pass     17 acc     17 silent     17 rate 8.500e-03 CI [4.96e-03,1.36e-02] blockflip 6
+A   TAIL   all     6000 pass     47 acc     47 silent     47 rate 7.833e-03 CI [5.76e-03,1.04e-02] blockflip 15
+A   TAILD  w1      2000 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.84e-03] blockflip 0
+A   TAILD  w2      2000 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.84e-03] blockflip 0
+A   TAILD  w3      2000 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.84e-03] blockflip 0
+A   TAILD  all     6000 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.15e-04] blockflip 0
+B   R0     w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+B   R0     w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+B   R0     w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+B   R0     all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+B   HASH   w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+B   HASH   w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+B   HASH   w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+B   HASH   all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+B   HASH32 w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+B   HASH32 w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+B   HASH32 w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+B   HASH32 all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+B   TAIL   w1       600 pass    573 acc    573 silent    573 rate 9.550e-01 CI [9.35e-01,9.70e-01] blockflip 31
+B   TAIL   w2       600 pass    566 acc    566 silent    566 rate 9.433e-01 CI [9.22e-01,9.60e-01] blockflip 40
+B   TAIL   w3       600 pass    580 acc    580 silent    580 rate 9.667e-01 CI [9.49e-01,9.80e-01] blockflip 29
+B   TAIL   all     1800 pass   1719 acc   1719 silent   1719 rate 9.550e-01 CI [9.44e-01,9.64e-01] blockflip 100
+B   TAILD  w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+B   TAILD  w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+B   TAILD  w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+B   TAILD  all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+C   R0     w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+C   R0     w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+C   R0     w3       600 pass      3 acc      3 silent      3 rate 5.000e-03 CI [1.03e-03,1.45e-02] blockflip 0
+C   R0     all     1800 pass      3 acc      3 silent      3 rate 1.667e-03 CI [3.44e-04,4.86e-03] blockflip 0
+C   HASH   w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+C   HASH   w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+C   HASH   w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+C   HASH   all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+C   HASH32 w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+C   HASH32 w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+C   HASH32 w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+C   HASH32 all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+C   TAIL   w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+C   TAIL   w2       600 pass      1 acc      1 silent      1 rate 1.667e-03 CI [4.22e-05,9.25e-03] blockflip 0
+C   TAIL   w3       600 pass      3 acc      3 silent      3 rate 5.000e-03 CI [1.03e-03,1.45e-02] blockflip 0
+C   TAIL   all     1800 pass      4 acc      4 silent      4 rate 2.222e-03 CI [6.06e-04,5.68e-03] blockflip 0
+C   TAILD  w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+C   TAILD  w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+C   TAILD  w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+C   TAILD  all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+D   R0     w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+D   R0     w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+D   R0     w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+D   R0     all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+D   HASH   w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+D   HASH   w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+D   HASH   w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+D   HASH   all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+D   HASH32 w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+D   HASH32 w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+D   HASH32 w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+D   HASH32 all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+D   TAIL   w1       600 pass      3 acc      3 silent      3 rate 5.000e-03 CI [1.03e-03,1.45e-02] blockflip 0
+D   TAIL   w2       600 pass      2 acc      2 silent      2 rate 3.333e-03 CI [4.04e-04,1.20e-02] blockflip 2
+D   TAIL   w3       600 pass      1 acc      1 silent      1 rate 1.667e-03 CI [4.22e-05,9.25e-03] blockflip 0
+D   TAIL   all     1800 pass      6 acc      6 silent      6 rate 3.333e-03 CI [1.22e-03,7.24e-03] blockflip 2
+D   TAILD  w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+D   TAILD  w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+D   TAILD  w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+D   TAILD  all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+E   R0     w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+E   R0     w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+E   R0     w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+E   R0     all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+E   HASH   w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+E   HASH   w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+E   HASH   w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+E   HASH   all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+E   HASH32 w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+E   HASH32 w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+E   HASH32 w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+E   HASH32 all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+E   TAIL   w1       600 pass      3 acc      3 silent      3 rate 5.000e-03 CI [1.03e-03,1.45e-02] blockflip 1
+E   TAIL   w2       600 pass      3 acc      3 silent      3 rate 5.000e-03 CI [1.03e-03,1.45e-02] blockflip 2
+E   TAIL   w3       600 pass      1 acc      1 silent      1 rate 1.667e-03 CI [4.22e-05,9.25e-03] blockflip 1
+E   TAIL   all     1800 pass      7 acc      7 silent      7 rate 3.889e-03 CI [1.56e-03,8.00e-03] blockflip 4
+E   TAILD  w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+E   TAILD  w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+E   TAILD  w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+E   TAILD  all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+F   R0     w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+F   R0     w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+F   R0     w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+F   R0     all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+F   HASH   w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+F   HASH   w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+F   HASH   w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+F   HASH   all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+F   HASH32 w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+F   HASH32 w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+F   HASH32 w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+F   HASH32 all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+F   TAIL   w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+F   TAIL   w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+F   TAIL   w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+F   TAIL   all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+F   TAILD  w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+F   TAILD  w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+F   TAILD  w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+F   TAILD  all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+G   R0     w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+G   R0     w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+G   R0     w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+G   R0     all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+G   HASH   w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+G   HASH   w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+G   HASH   w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+G   HASH   all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+G   HASH32 w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+G   HASH32 w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+G   HASH32 w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+G   HASH32 all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+G   TAIL   w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+G   TAIL   w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+G   TAIL   w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+G   TAIL   all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+G   TAILD  w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+G   TAILD  w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+G   TAILD  w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+G   TAILD  all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+H   R0     w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+H   R0     w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+H   R0     w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+H   R0     all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+H   HASH   w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+H   HASH   w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+H   HASH   w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+H   HASH   all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+H   HASH32 w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+H   HASH32 w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+H   HASH32 w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+H   HASH32 all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+H   TAIL   w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+H   TAIL   w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+H   TAIL   w3       600 pass      1 acc      1 silent      1 rate 1.667e-03 CI [4.22e-05,9.25e-03] blockflip 1
+H   TAIL   all     1800 pass      1 acc      1 silent      1 rate 5.556e-04 CI [1.41e-05,3.09e-03] blockflip 1
+H   TAILD  w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+H   TAILD  w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+H   TAILD  w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+H   TAILD  all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+I   R0     w1       600 pass    600 acc    600 silent    600 rate 1.000e+00 CI [9.94e-01,1.00e+00] blockflip 600
+I   R0     w2       600 pass    600 acc    600 silent    600 rate 1.000e+00 CI [9.94e-01,1.00e+00] blockflip 600
+I   R0     w3       600 pass    600 acc    600 silent    600 rate 1.000e+00 CI [9.94e-01,1.00e+00] blockflip 600
+I   R0     all     1800 pass   1800 acc   1800 silent   1800 rate 1.000e+00 CI [9.98e-01,1.00e+00] blockflip 1800
+I   HASH   w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+I   HASH   w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+I   HASH   w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+I   HASH   all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+I   HASH32 w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+I   HASH32 w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+I   HASH32 w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+I   HASH32 all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+I   TAIL   w1       600 pass    600 acc    600 silent    600 rate 1.000e+00 CI [9.94e-01,1.00e+00] blockflip 600
+I   TAIL   w2       600 pass    600 acc    600 silent    600 rate 1.000e+00 CI [9.94e-01,1.00e+00] blockflip 600
+I   TAIL   w3       600 pass    600 acc    600 silent    600 rate 1.000e+00 CI [9.94e-01,1.00e+00] blockflip 600
+I   TAIL   all     1800 pass   1800 acc   1800 silent   1800 rate 1.000e+00 CI [9.98e-01,1.00e+00] blockflip 1800
+I   TAILD  w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+I   TAILD  w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+I   TAILD  w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+I   TAILD  all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+J   R0     w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+J   R0     w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+J   R0     w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+J   R0     all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+J   HASH   w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+J   HASH   w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+J   HASH   w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+J   HASH   all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+J   HASH32 w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+J   HASH32 w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+J   HASH32 w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+J   HASH32 all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+J   TAIL   w1       600 pass      1 acc      1 silent      1 rate 1.667e-03 CI [4.22e-05,9.25e-03] blockflip 1
+J   TAIL   w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+J   TAIL   w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+J   TAIL   all     1800 pass      1 acc      1 silent      1 rate 5.556e-04 CI [1.41e-05,3.09e-03] blockflip 1
+J   TAILD  w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+J   TAILD  w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+J   TAILD  w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+J   TAILD  all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+T   R0     w1       600 pass    600 acc    600 silent    600 rate 1.000e+00 CI [9.94e-01,1.00e+00] blockflip 43
+T   R0     w2       600 pass    600 acc    600 silent    600 rate 1.000e+00 CI [9.94e-01,1.00e+00] blockflip 53
+T   R0     w3       600 pass    600 acc    600 silent    600 rate 1.000e+00 CI [9.94e-01,1.00e+00] blockflip 45
+T   R0     all     1800 pass   1800 acc   1800 silent   1800 rate 1.000e+00 CI [9.98e-01,1.00e+00] blockflip 141
+T   HASH   w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+T   HASH   w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+T   HASH   w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+T   HASH   all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+T   HASH32 w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+T   HASH32 w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+T   HASH32 w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+T   HASH32 all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+T   TAIL   w1       600 pass    600 acc    600 silent    600 rate 1.000e+00 CI [9.94e-01,1.00e+00] blockflip 43
+T   TAIL   w2       600 pass    600 acc    600 silent    600 rate 1.000e+00 CI [9.94e-01,1.00e+00] blockflip 53
+T   TAIL   w3       600 pass    600 acc    600 silent    600 rate 1.000e+00 CI [9.94e-01,1.00e+00] blockflip 45
+T   TAIL   all     1800 pass   1800 acc   1800 silent   1800 rate 1.000e+00 CI [9.98e-01,1.00e+00] blockflip 141
+T   TAILD  w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+T   TAILD  w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+T   TAILD  w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+T   TAILD  all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+M2  R0     w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+M2  R0     w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+M2  R0     w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+M2  R0     all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+M2  HASH   w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+M2  HASH   w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+M2  HASH   w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+M2  HASH   all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+M2  HASH32 w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+M2  HASH32 w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+M2  HASH32 w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+M2  HASH32 all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+M2  TAIL   w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+M2  TAIL   w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+M2  TAIL   w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+M2  TAIL   all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+M2  TAILD  w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+M2  TAILD  w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+M2  TAILD  w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+M2  TAILD  all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+N1  R0     w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N1  R0     w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N1  R0     w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N1  R0     all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+N1  HASH   w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N1  HASH   w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N1  HASH   w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N1  HASH   all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+N1  HASH32 w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N1  HASH32 w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N1  HASH32 w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N1  HASH32 all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+N1  TAIL   w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N1  TAIL   w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N1  TAIL   w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N1  TAIL   all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+N1  TAILD  w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N1  TAILD  w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N1  TAILD  w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N1  TAILD  all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+N2  R0     w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N2  R0     w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N2  R0     w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N2  R0     all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+N2  HASH   w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N2  HASH   w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N2  HASH   w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N2  HASH   all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+N2  HASH32 w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N2  HASH32 w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N2  HASH32 w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N2  HASH32 all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+N2  TAIL   w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N2  TAIL   w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N2  TAIL   w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N2  TAIL   all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+N2  TAILD  w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N2  TAILD  w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N2  TAILD  w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N2  TAILD  all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+N3  R0     w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N3  R0     w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N3  R0     w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N3  R0     all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+N3  HASH   w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N3  HASH   w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N3  HASH   w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N3  HASH   all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+N3  HASH32 w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N3  HASH32 w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N3  HASH32 w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N3  HASH32 all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+N3  TAIL   w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N3  TAIL   w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N3  TAIL   w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N3  TAIL   all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+N3  TAILD  w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N3  TAILD  w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N3  TAILD  w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0
+N3  TAILD  all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0
+S0  R0     w1       120 pass    120 acc    120 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+S0  R0     w2       120 pass    120 acc    120 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+S0  R0     w3       120 pass    120 acc    120 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+S0  R0     all      360 pass    360 acc    360 silent      0 rate 0.000e+00 CI [0.00e+00,1.02e-02] blockflip 0 lenrej 0
+S0  HASH   w1       120 pass    120 acc    120 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+S0  HASH   w2       120 pass    120 acc    120 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+S0  HASH   w3       120 pass    120 acc    120 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+S0  HASH   all      360 pass    360 acc    360 silent      0 rate 0.000e+00 CI [0.00e+00,1.02e-02] blockflip 0 lenrej 0
+S0  HASH32 w1       120 pass    120 acc    120 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+S0  HASH32 w2       120 pass    120 acc    120 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+S0  HASH32 w3       120 pass    120 acc    120 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+S0  HASH32 all      360 pass    360 acc    360 silent      0 rate 0.000e+00 CI [0.00e+00,1.02e-02] blockflip 0 lenrej 0
+S0  TAIL   w1       120 pass    120 acc    120 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+S0  TAIL   w2       120 pass    120 acc    120 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+S0  TAIL   w3       120 pass    120 acc    120 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+S0  TAIL   all      360 pass    360 acc    360 silent      0 rate 0.000e+00 CI [0.00e+00,1.02e-02] blockflip 0 lenrej 0
+S0  TAILD  w1       120 pass    120 acc    120 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+S0  TAILD  w2       120 pass    120 acc    120 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+S0  TAILD  w3       120 pass    120 acc    120 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+S0  TAILD  all      360 pass    360 acc    360 silent      0 rate 0.000e+00 CI [0.00e+00,1.02e-02] blockflip 0 lenrej 0
+K   R0     w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0 lenrej 1
+K   R0     w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0 lenrej 0
+K   R0     w3       600 pass      2 acc      2 silent      2 rate 3.333e-03 CI [4.04e-04,1.20e-02] blockflip 0 lenrej 0
+K   R0     all     1800 pass      2 acc      2 silent      2 rate 1.111e-03 CI [1.35e-04,4.01e-03] blockflip 0 lenrej 1
+K   HASH   w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0 lenrej 0
+K   HASH   w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0 lenrej 0
+K   HASH   w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0 lenrej 0
+K   HASH   all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0 lenrej 0
+K   HASH32 w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0 lenrej 0
+K   HASH32 w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0 lenrej 0
+K   HASH32 w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0 lenrej 0
+K   HASH32 all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0 lenrej 0
+K   TAIL   w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0 lenrej 15
+K   TAIL   w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0 lenrej 18
+K   TAIL   w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0 lenrej 16
+K   TAIL   all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0 lenrej 49
+K   TAILD  w1       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0 lenrej 15
+K   TAILD  w2       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0 lenrej 18
+K   TAILD  w3       600 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,6.13e-03] blockflip 0 lenrej 16
+K   TAILD  all     1800 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,2.05e-03] blockflip 0 lenrej 49
+L   R0     w1       240 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.53e-02] blockflip 0 lenrej 0
+L   R0     w2       240 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.53e-02] blockflip 0 lenrej 0
+L   R0     w3       240 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.53e-02] blockflip 0 lenrej 0
+L   R0     all      720 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,5.11e-03] blockflip 0 lenrej 0
+L   HASH   w1       240 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.53e-02] blockflip 0 lenrej 0
+L   HASH   w2       240 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.53e-02] blockflip 0 lenrej 0
+L   HASH   w3       240 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.53e-02] blockflip 0 lenrej 0
+L   HASH   all      720 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,5.11e-03] blockflip 0 lenrej 0
+L   HASH32 w1       240 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.53e-02] blockflip 0 lenrej 0
+L   HASH32 w2       240 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.53e-02] blockflip 0 lenrej 0
+L   HASH32 w3       240 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.53e-02] blockflip 0 lenrej 0
+L   HASH32 all      720 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,5.11e-03] blockflip 0 lenrej 0
+L   TAIL   w1       240 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.53e-02] blockflip 0 lenrej 212
+L   TAIL   w2       240 pass      1 acc      1 silent      1 rate 4.167e-03 CI [1.05e-04,2.30e-02] blockflip 0 lenrej 198
+L   TAIL   w3       240 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.53e-02] blockflip 0 lenrej 208
+L   TAIL   all      720 pass      1 acc      1 silent      1 rate 1.389e-03 CI [3.52e-05,7.71e-03] blockflip 0 lenrej 618
+L   TAILD  w1       240 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.53e-02] blockflip 0 lenrej 212
+L   TAILD  w2       240 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.53e-02] blockflip 0 lenrej 198
+L   TAILD  w3       240 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.53e-02] blockflip 0 lenrej 208
+L   TAILD  all      720 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,5.11e-03] blockflip 0 lenrej 618
+M3  R0     w1       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+M3  R0     w2       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+M3  R0     w3       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+M3  R0     all      360 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.02e-02] blockflip 0 lenrej 0
+M3  HASH   w1       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+M3  HASH   w2       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+M3  HASH   w3       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+M3  HASH   all      360 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.02e-02] blockflip 0 lenrej 0
+M3  HASH32 w1       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+M3  HASH32 w2       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+M3  HASH32 w3       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+M3  HASH32 all      360 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.02e-02] blockflip 0 lenrej 0
+M3  TAIL   w1       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+M3  TAIL   w2       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+M3  TAIL   w3       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+M3  TAIL   all      360 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.02e-02] blockflip 0 lenrej 0
+M3  TAILD  w1       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+M3  TAILD  w2       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+M3  TAILD  w3       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+M3  TAILD  all      360 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.02e-02] blockflip 0 lenrej 0
+N4  R0     w1       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+N4  R0     w2       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+N4  R0     w3       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+N4  R0     all      360 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.02e-02] blockflip 0 lenrej 0
+N4  HASH   w1       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+N4  HASH   w2       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+N4  HASH   w3       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+N4  HASH   all      360 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.02e-02] blockflip 0 lenrej 0
+N4  HASH32 w1       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+N4  HASH32 w2       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+N4  HASH32 w3       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+N4  HASH32 all      360 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.02e-02] blockflip 0 lenrej 0
+N4  TAIL   w1       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+N4  TAIL   w2       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+N4  TAIL   w3       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+N4  TAIL   all      360 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.02e-02] blockflip 0 lenrej 0
+N4  TAILD  w1       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+N4  TAILD  w2       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+N4  TAILD  w3       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+N4  TAILD  all      360 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.02e-02] blockflip 0 lenrej 0
+N5  R0     w1       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 120
+N5  R0     w2       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 120
+N5  R0     w3       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 120
+N5  R0     all      360 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.02e-02] blockflip 0 lenrej 360
+N5  HASH   w1       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+N5  HASH   w2       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+N5  HASH   w3       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+N5  HASH   all      360 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.02e-02] blockflip 0 lenrej 0
+N5  HASH32 w1       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+N5  HASH32 w2       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+N5  HASH32 w3       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 0
+N5  HASH32 all      360 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.02e-02] blockflip 0 lenrej 0
+N5  TAIL   w1       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 120
+N5  TAIL   w2       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 120
+N5  TAIL   w3       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 120
+N5  TAIL   all      360 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.02e-02] blockflip 0 lenrej 360
+N5  TAILD  w1       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 120
+N5  TAILD  w2       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 120
+N5  TAILD  w3       120 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,3.03e-02] blockflip 0 lenrej 120
+N5  TAILD  all      360 pass      0 acc      0 silent      0 rate 0.000e+00 CI [0.00e+00,1.02e-02] blockflip 0 lenrej 360
+M1  R0     all      100 silent      0 rate 0.000e+00 CI [0.00e+00,3.62e-02] stages {'wlengths': 91, 'lengths': 9}
+M1  HASH   all      100 silent      0 rate 0.000e+00 CI [0.00e+00,3.62e-02] stages {'wlengths': 91, 'lengths': 9}
+M1  HASH32 all      100 silent      0 rate 0.000e+00 CI [0.00e+00,3.62e-02] stages {'wlengths': 91, 'lengths': 9}
+M1  TAIL   all      100 silent      0 rate 0.000e+00 CI [0.00e+00,3.62e-02] stages {'wlengths': 91, 'lengths': 9}
+M1  TAILD  all      100 silent      0 rate 0.000e+00 CI [0.00e+00,3.62e-02] stages {'wlengths': 91, 'lengths': 9}
+P1  R0     all        2 silent      0 rate 0.000e+00 CI [0.00e+00,8.42e-01] stages {'size': 2}
+P1  HASH   all        2 silent      0 rate 0.000e+00 CI [0.00e+00,8.42e-01] stages {'size': 2}
+P1  HASH32 all        2 silent      0 rate 0.000e+00 CI [0.00e+00,8.42e-01] stages {'size': 2}
+P1  TAIL   all        2 silent      0 rate 0.000e+00 CI [0.00e+00,8.42e-01] stages {'size': 2}
+P1  TAILD  all        2 silent      0 rate 0.000e+00 CI [0.00e+00,8.42e-01] stages {'size': 2}
+P2  R0     all       40 silent      0 rate 0.000e+00 CI [0.00e+00,8.81e-02] stages {'weights': 40}
+P2  HASH   all       40 silent      0 rate 0.000e+00 CI [0.00e+00,8.81e-02] stages {'weights': 40}
+P2  HASH32 all       40 silent      0 rate 0.000e+00 CI [0.00e+00,8.81e-02] stages {'weights': 40}
+P2  TAIL   all       40 silent      0 rate 0.000e+00 CI [0.00e+00,8.81e-02] stages {'weights': 40}
+P2  TAILD  all       40 silent      0 rate 0.000e+00 CI [0.00e+00,8.81e-02] stages {'weights': 40}
+P3  R0     all        8 silent      0 rate 0.000e+00 CI [0.00e+00,3.69e-01] stages {'weights': 8}
+P3  HASH   all        8 silent      0 rate 0.000e+00 CI [0.00e+00,3.69e-01] stages {'weights': 8}
+P3  HASH32 all        8 silent      0 rate 0.000e+00 CI [0.00e+00,3.69e-01] stages {'weights': 8}
+P3  TAIL   all        8 silent      1 rate 1.250e-01 CI [3.16e-03,5.27e-01] stages {'weights': 7, 'None': 1}
+P3  TAILD  all        8 silent      0 rate 0.000e+00 CI [0.00e+00,3.69e-01] stages {'weights': 7, 'digest': 1}
+O   R0     all        4 silent      4 rate 1.000e+00 CI [3.98e-01,1.00e+00] stages {'None': 4}
+O   HASH   all        4 silent      0 rate 0.000e+00 CI [0.00e+00,6.02e-01] stages {'scales': 4}
+O   HASH32 all        4 silent      0 rate 0.000e+00 CI [0.00e+00,6.02e-01] stages {'scales': 4}
+O   TAIL   all        4 silent      4 rate 1.000e+00 CI [3.98e-01,1.00e+00] stages {'None': 4}
+O   TAILD  all        4 silent      0 rate 0.000e+00 CI [0.00e+00,6.02e-01] stages {'digest': 4}

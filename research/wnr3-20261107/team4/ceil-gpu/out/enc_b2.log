@@ -1,0 +1,197 @@
+{
+ "pick": [
+  17,
+  0,
+  40,
+  80,
+  120,
+  159,
+  60,
+  100
+ ],
+ "repo": "patrickbdevaney/DeepSeek-V4.1-Flash-1017-REAP192-MXFP4",
+ "revision": "4ab649b2254afdcf6c2f7c1fbea1c05eda11828c",
+ "counts_consistency_w_base_eq_mxceil_w_orig": true,
+ "model_insample": {
+  "A259_bits_per_w": 3.766519809575819,
+  "D_bits_per_w_incl_raw_sign": 3.766517912747733,
+  "CF_bits_per_w": 3.692744147284164,
+  "CFD_bits_per_w_incl_raw_sign": 3.6927385481403583,
+  "scale_orig_bits_per_scale": 1.0046651991022775,
+  "scale_ceil_bits_per_scale": 0.9163541875989307,
+  "n_weights": 5662310400,
+  "n_scales": 176947200
+ },
+ "model_table_bytes": {
+  "A259_or_CF_u16": 24864,
+  "D_or_CFD_u16": 12432,
+  "scale_cum_u16": 1542,
+  "scale_lut_u8": 49152
+ }
+}
+L04_E038.bin even% 31.693 elapsed 14.9
+L00_E097.bin even% 31.238 elapsed 29.7
+L10_E015.bin even% 31.383 elapsed 45.2
+L20_E005.bin even% 31.252 elapsed 60.1
+L30_E002.bin even% 31.184 elapsed 75.1
+L39_E156.bin even% 29.784 elapsed 89.7
+L15_E025.bin even% 29.725 elapsed 104.2
+L25_E000.bin even% 29.931 elapsed 118.8
+{
+ "pick": [
+  17,
+  0,
+  40,
+  80,
+  120,
+  159,
+  60,
+  100
+ ],
+ "repo": "patrickbdevaney/DeepSeek-V4.1-Flash-1017-REAP192-MXFP4",
+ "revision": "4ab649b2254afdcf6c2f7c1fbea1c05eda11828c",
+ "counts_consistency_w_base_eq_mxceil_w_orig": true,
+ "model_insample": {
+  "A259_bits_per_w": 3.766519809575819,
+  "D_bits_per_w_incl_raw_sign": 3.766517912747733,
+  "CF_bits_per_w": 3.692744147284164,
+  "CFD_bits_per_w_incl_raw_sign": 3.6927385481403583,
+  "scale_orig_bits_per_scale": 1.0046651991022775,
+  "scale_ceil_bits_per_scale": 0.9163541875989307,
+  "n_weights": 5662310400,
+  "n_scales": 176947200
+ },
+ "model_table_bytes": {
+  "A259_or_CF_u16": 24864,
+  "D_or_CFD_u16": 12432,
+  "scale_cum_u16": 1542,
+  "scale_lut_u8": 49152
+ },
+ "transform": {
+  "blocks": 8847360,
+  "even": 2648067,
+  "max_below_6": 0,
+  "scale_overflow": 0,
+  "max_hist": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   4137557,
+   4709803
+  ],
+  "cpu_roundtrip_fail_matrices": 0,
+  "own_counts_eq_mxceil_counts_experts": 8,
+  "sha256_ok": 8,
+  "even_pct": 29.930589463975693
+ },
+ "medians": {
+  "orig": [
+   120,
+   120,
+   120,
+   120,
+   120,
+   120,
+   120,
+   120,
+   120,
+   120,
+   120,
+   120,
+   120,
+   120,
+   120,
+   121,
+   121,
+   121,
+   120,
+   120,
+   121,
+   120,
+   120,
+   120
+  ],
+  "ceil": [
+   121,
+   121,
+   121,
+   121,
+   121,
+   121,
+   121,
+   121,
+   121,
+   121,
+   121,
+   121,
+   121,
+   121,
+   121,
+   121,
+   121,
+   121,
+   121,
+   121,
+   121,
+   121,
+   121,
+   121
+  ]
+ },
+ "sizes": {
+  "scales_orig": {
+   "payload_bytes": 1208328,
+   "length_table_bytes": 34560,
+   "bits_per_scale_payload": 1.092599826388889,
+   "bits_per_scale_incl_lengths": 1.123849826388889,
+   "streams": 17280,
+   "mean_stream_bytes": 69.9263888888889,
+   "max_stream_bytes": 242
+  },
+  "scales_ceil": {
+   "payload_bytes": 1058668,
+   "length_table_bytes": 34560,
+   "bits_per_scale_payload": 0.957273582175926,
+   "bits_per_scale_incl_lengths": 0.988523582175926,
+   "streams": 17280,
+   "mean_stream_bytes": 61.26550925925926,
+   "max_stream_bytes": 209
+  },
+  "DB2": {
+   "weight_payload_bytes": 99280529,
+   "weight_length_table_bytes": 276480,
+   "sign_plane_bytes": 35389440,
+   "weight_total_bytes": 134946449,
+   "scale_streams_bytes": 1242888,
+   "record_total_bytes_all8": 136189337,
+   "per_record_bytes": 17023667.125,
+   "ratio_of_raw_record_18800640": 0.9054833838103383,
+   "weight_bits_per_w_rans_only": 2.8053715741192855,
+   "weight_bits_per_w_total": 3.8131840741192855,
+   "mean_stream_bytes": 718.1751229745371,
+   "max_stream_bytes": 791,
+   "encode_s": 40.79731607437134,
+   "delta_vs_same_alphabet_baseline_pct": 0.0
+  },
+  "CFDB2": {
+   "weight_payload_bytes": 96315220,
+   "weight_length_table_bytes": 276480,
+   "sign_plane_bytes": 35389440,
+   "weight_total_bytes": 131981140,
+   "scale_streams_bytes": 1093228,
+   "record_total_bytes_all8": 133074368,
+   "per_record_bytes": 16634296.0,
+   "ratio_of_raw_record_18800640": 0.8847728587962963,
+   "weight_bits_per_w_rans_only": 2.7215807879412615,
+   "weight_bits_per_w_total": 3.7293932879412615,
+   "mean_stream_bytes": 696.7246817129629,
+   "max_stream_bytes": 844,
+   "encode_s": 40.11298060417175,
+   "delta_vs_same_alphabet_baseline_pct": -2.287234131993754
+  }
+ },
+ "total_s": 119.34917330741882
+}

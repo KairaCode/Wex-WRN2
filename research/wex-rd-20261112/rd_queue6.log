@@ -1,0 +1,66 @@
+== r4asyncmiss try 1 20:18:39
+request                      A1                    B1                    B2                    A2   B/A tok/s
+p1-258      20.03 t/s    9.3s ttft   19.53 t/s   10.5s ttft   18.92 t/s   11.0s ttft   18.15 t/s    9.6s ttft   +0.7%
+   TEXT MISMATCH: {'A1': 'This is a classic resource management failure in high-performance computing: **s', 'B1': 'This is a classic resource management failure in high-performance computing: **s', 'B2': 'This is a classic resource management failure in high-performance computing: **s', 'A2': 'This is a classic resource management failure in high-performance computing: **s'}
+p2-2k       13.66 t/s   52.1s ttft   15.29 t/s   50.8s ttft   14.46 t/s   48.7s ttft   14.38 t/s   46.5s ttft   +6.1%
+p3-turn1    11.12 t/s    2.4s ttft   12.03 t/s    2.2s ttft   11.44 t/s    2.0s ttft   10.94 t/s    1.9s ttft   +6.3%
+p3-turn2    11.62 t/s    1.6s ttft   12.42 t/s    1.6s ttft   12.08 t/s    1.4s ttft   11.98 t/s    1.4s ttft   +3.8%
+p3-turn3    11.78 t/s    1.7s ttft   12.84 t/s    1.7s ttft   12.11 t/s    1.5s ttft   12.00 t/s    1.5s ttft   +4.9%
+A1 error None kill None ram_gb 13 ready 12s
+B1 error None kill None ram_gb 13 ready 15s
+B2 error None kill None ram_gb 13 ready 15s
+A2 error None kill None ram_gb 13 ready 12s
+   compilers active in 0 of 33 samples (20:18:39-20:27:11)
+== r4subreads try 1 20:28:37
+A1  ready    20 s  prompt  2329  ttft  431.2 s
+B1  ready    18 s  prompt  None  ttft  429.8 s  ERROR ConnectionResetError(10054, "Connessione in corso interrotta forzatamente dall'host remoto", None, 10054, None)
+B2  ready    18 s  prompt  2329  ttft  413.7 s
+A2  ready    18 s  prompt  2329  ttft  414.4 s
+A1 ready 20 s  ttft 431.2 s  decode 3.80 tok/s  prompt 2329  gen 98 (stop)  avail_min 2.63 GB  vram_max 31459 MiB  V4_WEX_SUBREADS= 
+B1 ready 18 s  ttft 429.8 s  decode - tok/s  prompt None  gen None (None)  avail_min 1.44 GB  vram_max 31044 MiB  V4_WEX_SUBREADS=4 ConnectionResetError(10054, "Connessione in corso interrotta forzatamente dall'host remo
+B2 ready 18 s  ttft 413.7 s  decode 4.08 tok/s  prompt 2329  gen 98 (stop)  avail_min 2.58 GB  vram_max 31199 MiB  V4_WEX_SUBREADS=4 
+A2 ready 18 s  ttft 414.4 s  decode 3.73 tok/s  prompt 2329  gen 98 (stop)  avail_min 2.03 GB  vram_max 31463 MiB  V4_WEX_SUBREADS= 
+VERDICT r4subreads: incomplete: B1 (ConnectionResetError(10054, "Connessione in corso interrotta forzatamente dall'host remoto", None, 10054, None))
+VERDICT r4subreads: text identical: no (B1 differ from A1)
+VERDICT r4subreads: avail_min A/B 2.03/1.44 GB
+   compilers active in 0 of 123 samples (20:28:37-21:00:32)
+== r4npf2 try 1 21:01:58
+request                      A1                    B1                    B2                    A2   B/A tok/s
+p1-258      19.56 t/s   11.4s ttft   18.38 t/s   11.2s ttft   17.53 t/s   10.9s ttft   17.96 t/s   10.7s ttft   -4.3%
+   TEXT MISMATCH: {'A1': 'This is a classic resource management failure in high-performance computing: **s', 'B1': 'This is a classic resource management failure in high-performance computing: **s', 'B2': 'This is a classic resource management failure in high-performance computing: **s', 'A2': 'This is a classic resource management failure in high-performance computing: **s'}
+p2-2k       14.71 t/s   48.4s ttft   13.29 t/s   48.4s ttft   13.33 t/s   48.5s ttft   13.40 t/s   47.8s ttft   -5.3%
+p3-turn1    11.24 t/s    2.2s ttft   10.62 t/s    2.3s ttft   10.93 t/s    2.2s ttft   11.20 t/s    2.2s ttft   -4.0%
+p3-turn2    12.38 t/s    1.5s ttft   11.13 t/s    1.6s ttft   12.00 t/s    1.5s ttft   11.87 t/s    1.5s ttft   -4.6%
+p3-turn3    12.69 t/s    1.6s ttft   11.57 t/s    1.8s ttft   11.48 t/s    1.6s ttft   12.26 t/s    1.8s ttft   -7.6%
+A1 error None kill None ram_gb 13 ready 15s
+B1 error None kill None ram_gb 13 ready 15s
+B2 error None kill None ram_gb 13 ready 15s
+A2 error None kill None ram_gb 13 ready 15s
+   compilers active in 0 of 34 samples (21:01:58-21:10:37)
+== r5moe2r16 try 1 21:12:02
+A1  ready    20 s  prompt  None  ttft      - s  ERROR ConnectionResetError(10054, "Connessione in corso interrotta forzatamente dall'host remoto", None, 10054, None)
+B1  ready    18 s  prompt  2329  ttft  295.2 s
+B2  ready    18 s  prompt  2329  ttft  293.9 s
+A2  ready    18 s  prompt  2329  ttft  412.3 s
+A1 ready 20 s  ttft - s  decode - tok/s  prompt None  gen None (None)  avail_min 1.54 GB  vram_max 29365 MiB  V41_GPU_MOE= ConnectionResetError(10054, "Connessione in corso interrotta forzatamente dall'host remoto", None
+B1 ready 18 s  ttft 295.2 s  decode 3.61 tok/s  prompt 2329  gen 64 (length)  avail_min 5.23 GB  vram_max 30752 MiB  V41_GPU_MOE=2 
+B2 ready 18 s  ttft 293.9 s  decode 3.67 tok/s  prompt 2329  gen 64 (length)  avail_min 6.01 GB  vram_max 30828 MiB  V41_GPU_MOE=2 
+A2 ready 18 s  ttft 412.3 s  decode 3.63 tok/s  prompt 2329  gen 64 (length)  avail_min 3.33 GB  vram_max 31471 MiB  V41_GPU_MOE= 
+VERDICT r5moe2r16: incomplete: A1 (ConnectionResetError(10054, "Connessione in corso interrotta forzatamente dall'host remoto", None, 10054, None))
+VERDICT r5moe2r16: text identical: no (A2 differ from B1); no text: A1
+VERDICT r5moe2r16: avail_min A/B 1.54/5.23 GB
+   compilers active in 0 of 85 samples (21:12:02-21:33:51)
+== r4shadec try 1 21:35:16
+A1  ready    20 s  prompt  2329  ttft  424.2 s
+B1  ready    16 s  prompt  2329  ttft  429.1 s
+B2  ready    18 s  prompt  None  ttft      - s  ERROR ConnectionResetError(10054, "Connessione in corso interrotta forzatamente dall'host remoto", None, 10054, None)
+A2  ready    18 s  prompt  None  ttft      - s  ERROR ConnectionResetError(10054, "Connessione in corso interrotta forzatamente dall'host remoto", None, 10054, None)
+A1 ready 20 s  ttft 424.2 s  decode 3.68 tok/s  prompt 2329  gen 98 (stop)  avail_min 2.84 GB  vram_max 30678 MiB  V4_WEX_SHA_ASYNC= 
+B1 ready 16 s  ttft 429.1 s  decode 3.60 tok/s  prompt 2329  gen 98 (stop)  avail_min 2.12 GB  vram_max 30840 MiB  V4_WEX_SHA_ASYNC=1 
+B2 ready 18 s  ttft - s  decode - tok/s  prompt None  gen None (None)  avail_min 1.45 GB  vram_max 28776 MiB  V4_WEX_SHA_ASYNC=1 ConnectionResetError(10054, "Connessione in corso interrotta forzatamente dall'host remoto"
+A2 ready 18 s  ttft - s  decode - tok/s  prompt None  gen None (None)  avail_min 1.42 GB  vram_max 29020 MiB  V4_WEX_SHA_ASYNC= ConnectionResetError(10054, "Connessione in corso interrotta forzatamente dall'host remoto",
+VERDICT r4shadec: incomplete: B2 (ConnectionResetError(10054, "Connessione in corso interrotta forzatamente dall'host remoto", None, 10054, None)), A2 (ConnectionResetError(10054, "Connessione in corso interrotta forzata
+VERDICT r4shadec: text identical: yes (A1 B1); no text: B2 A2
+VERDICT r4shadec: avail_min A/B 1.42/1.45 GB
+   compilers active in 0 of 96 samples (21:35:16-22:00:11)
+   waiting for a quiet CPU and a free card (compilers 0, load 10%, VRAM 2072 MiB) 22:00:34

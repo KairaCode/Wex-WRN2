@@ -1,0 +1,385 @@
+{
+ "source": {
+  "repo": "deepseek-ai/DeepSeek-V4.1-Flash-1017",
+  "revision": "1bae0e1088993b9b82de08f59de5be5a34e42170",
+  "chunks_per_table": 96,
+  "rows_per_chunk": 128,
+  "run_rows": 16384,
+  "run_start": 69739378
+ },
+ "table_L1": {
+  "rows": 12288,
+  "decompose_order0": {
+   "H_byte": 6.546302248756741,
+   "H_sign": 0.999999962210843,
+   "H_exp": 2.608877664760131,
+   "H_mant_given_exp": 2.9374511633854135,
+   "H_sign_given_exp_mant": 0.9999734206111969
+  },
+  "zero_codes_frac": 8.58306884765625e-06,
+  "neg_zero_frac": 4.132588704427083e-06,
+  "nan_codes": 0,
+  "all_zero_rows": 0,
+  "duplicate_rows": 0,
+  "exp_hist": [
+   275,
+   308,
+   616,
+   1149,
+   2326,
+   4824,
+   9436,
+   18706,
+   37447,
+   75375,
+   150196,
+   297175,
+   558841,
+   883767,
+   829380,
+   275907
+  ],
+  "group_max_exp_hist": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   18803,
+   79501
+  ],
+  "group_max_abs_code_top": [
+   [
+    120,
+    17144
+   ],
+   [
+    121,
+    16661
+   ],
+   [
+    119,
+    12629
+   ],
+   [
+    125,
+    10962
+   ],
+   [
+    122,
+    10687
+   ],
+   [
+    124,
+    9321
+   ]
+  ],
+  "scale_hist_top": [
+   [
+    120,
+    67782
+   ],
+   [
+    119,
+    30106
+   ],
+   [
+    121,
+    371
+   ],
+   [
+    118,
+    45
+   ]
+  ],
+  "scale_H_order0_bits": 0.9281137471484588,
+  "scale_H_given_left_bits": 0.9206301313948154,
+  "scale_H_given_group_index_bits": 0.927995620263145,
+  "models": {
+   "order0": {
+    "insample_bits_per_byte": 6.546302248756741,
+    "heldout_bits_per_byte": 6.5465001180610285,
+    "contexts": 1
+   },
+   "scale": {
+    "insample_bits_per_byte": 6.4641270861058,
+    "heldout_bits_per_byte": 6.464773282774677,
+    "contexts": 4
+   },
+   "column": {
+    "insample_bits_per_byte": 6.531612505529186,
+    "heldout_bits_per_byte": 6.570795532970397,
+    "contexts": 256
+   },
+   "prev_exp": {
+    "insample_bits_per_byte": 6.537182306505595,
+    "heldout_bits_per_byte": 6.539772095985437,
+    "contexts": 17
+   },
+   "scale_prevexp": {
+    "insample_bits_per_byte": 6.461965424749771,
+    "heldout_bits_per_byte": 6.468511994222626,
+    "contexts": 68
+   },
+   "scale_prevexp_runmax": {
+    "insample_bits_per_byte": 6.456784015314935,
+    "heldout_bits_per_byte": 6.474500194815096,
+    "contexts": 1156
+   },
+   "column_prevexp": {
+    "insample_bits_per_byte": 6.435233441004086,
+    "heldout_bits_per_byte": 6.711110130743208,
+    "contexts": 4352
+   }
+  },
+  "generic_on_random_chunks": {
+   "zlib9": 0.8401130040486654,
+   "lzma6": 0.8313649495442709,
+   "zstd19": 0.8298791249593099,
+   "zstd3": 0.8294703165690104
+  },
+  "generic_on_scales": {
+   "zlib9": 0.14643351236979166,
+   "lzma6": 0.13460286458333334,
+   "zstd19": 0.13995361328125,
+   "zstd3": 0.18694051106770834
+  }
+ },
+ "table_L14": {
+  "rows": 12288,
+  "decompose_order0": {
+   "H_byte": 6.54128733737435,
+   "H_sign": 0.9999994717343509,
+   "H_exp": 2.6040580935388875,
+   "H_mant_given_exp": 2.9372563380279577,
+   "H_sign_given_exp_mant": 0.9999729058075051
+  },
+  "zero_codes_frac": 6.993611653645833e-06,
+  "neg_zero_frac": 3.4968058268229165e-06,
+  "nan_codes": 0,
+  "all_zero_rows": 0,
+  "duplicate_rows": 0,
+  "exp_hist": [
+   286,
+   326,
+   597,
+   1159,
+   2321,
+   4755,
+   9403,
+   18969,
+   37864,
+   75603,
+   150914,
+   296703,
+   557611,
+   887305,
+   837546,
+   264366
+  ],
+  "group_max_exp_hist": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   18078,
+   80226
+  ],
+  "group_max_abs_code_top": [
+   [
+    121,
+    17715
+   ],
+   [
+    120,
+    16974
+   ],
+   [
+    119,
+    12093
+   ],
+   [
+    122,
+    11883
+   ],
+   [
+    125,
+    10130
+   ],
+   [
+    123,
+    9092
+   ]
+  ],
+  "scale_hist_top": [
+   [
+    120,
+    72762
+   ],
+   [
+    119,
+    24287
+   ],
+   [
+    121,
+    1198
+   ],
+   [
+    118,
+    57
+   ]
+  ],
+  "scale_H_order0_bits": 0.9033439229872648,
+  "scale_H_given_left_bits": 0.8866749677483284,
+  "scale_H_given_group_index_bits": 0.9032087300894344,
+  "models": {
+   "order0": {
+    "insample_bits_per_byte": 6.54128733737435,
+    "heldout_bits_per_byte": 6.541500499319248,
+    "contexts": 1
+   },
+   "scale": {
+    "insample_bits_per_byte": 6.472390522547634,
+    "heldout_bits_per_byte": 6.473086951286817,
+    "contexts": 4
+   },
+   "column": {
+    "insample_bits_per_byte": 6.526768369684885,
+    "heldout_bits_per_byte": 6.565421139923494,
+    "contexts": 256
+   },
+   "prev_exp": {
+    "insample_bits_per_byte": 6.533096156772795,
+    "heldout_bits_per_byte": 6.535608358565342,
+    "contexts": 17
+   },
+   "scale_prevexp": {
+    "insample_bits_per_byte": 6.4699589275730505,
+    "heldout_bits_per_byte": 6.476754156281753,
+    "contexts": 68
+   },
+   "scale_prevexp_runmax": {
+    "insample_bits_per_byte": 6.464709715165043,
+    "heldout_bits_per_byte": 6.4832648943603814,
+    "contexts": 1156
+   },
+   "column_prevexp": {
+    "insample_bits_per_byte": 6.431492192679901,
+    "heldout_bits_per_byte": 6.706786876421982,
+    "contexts": 4352
+   }
+  },
+  "generic_on_random_chunks": {
+   "zlib9": 0.8397150039672852,
+   "lzma6": 0.830834706624349,
+   "zstd19": 0.8292764027913412,
+   "zstd3": 0.8288113276163737
+  },
+  "generic_on_scales": {
+   "zlib9": 0.14112345377604166,
+   "lzma6": 0.12931315104166666,
+   "zstd19": 0.135772705078125,
+   "zstd3": 0.18438720703125
+  }
+ },
+ "cross_table": {
+  "order0": {
+   "insample_bits_per_byte": 6.543868340003527,
+   "heldout_bits_per_byte": 6.5440892785879266,
+   "contexts": 1
+  },
+  "scale": {
+   "insample_bits_per_byte": 6.468818929855721,
+   "heldout_bits_per_byte": 6.470620167802539,
+   "contexts": 4
+  },
+  "column": {
+   "insample_bits_per_byte": 6.536185859567688,
+   "heldout_bits_per_byte": 6.557970241573391,
+   "contexts": 256
+  },
+  "prev_exp": {
+   "insample_bits_per_byte": 6.535608075776138,
+   "heldout_bits_per_byte": 6.5370576851980005,
+   "contexts": 17
+  },
+  "scale_prevexp": {
+   "insample_bits_per_byte": 6.467519684302803,
+   "heldout_bits_per_byte": 6.473007747354902,
+   "contexts": 68
+  },
+  "scale_prevexp_runmax": {
+   "insample_bits_per_byte": 6.46420224081497,
+   "heldout_bits_per_byte": 6.477060629492506,
+   "contexts": 1156
+  },
+  "column_prevexp": {
+   "insample_bits_per_byte": 6.477401919819617,
+   "heldout_bits_per_byte": 6.637463805424994,
+   "contexts": 4352
+  }
+ },
+ "run16k": {
+  "decompose_order0": {
+   "H_byte": 6.5284552050938665,
+   "H_sign": 0.9999999332384994,
+   "H_exp": 2.592814722650203,
+   "H_mant_given_exp": 2.935662231554989,
+   "H_sign_given_exp_mant": 0.9999782508886746
+  },
+  "generic_weights": {
+   "zlib9": 0.838660478591919,
+   "lzma6": 0.8293724060058594,
+   "zstd19": 0.8279016017913818,
+   "zstd3": 0.8272902965545654
+  },
+  "generic_scales": {
+   "zlib9": 0.132598876953125,
+   "lzma6": 0.12396240234375,
+   "zstd19": 0.12343597412109375,
+   "zstd3": 0.1781158447265625
+  },
+  "all_zero_rows": 0,
+  "duplicate_rows": 0,
+  "H_byte_order0": 6.528458988746801,
+  "H_byte_given_byte_above_insample": 6.520062017997671
+ },
+ "per_row_bytes_L14_under_L1_model": {
+  "raw_bytes": 264,
+  "percentiles_0_1_10_50_90_99_100": [
+   198.74414608251166,
+   202.47070302544273,
+   204.82529153657978,
+   208.06415630026066,
+   212.04739151889382,
+   218.6450675142176,
+   247.17962938589346
+  ],
+  "mean": 208.37179537956254,
+  "frac_rows_fit_in_256B": 1.0,
+  "frac_rows_fit_in_240B": 0.999755859375,
+  "frac_rows_fit_in_224B": 0.9976399739583334,
+  "frac_rows_ideal_le_220B": 0.9932454427083334,
+  "frac_rows_ideal_le_216B": 0.9779459635416666,
+  "frac_rows_ideal_le_212B": 0.8984375
+ }
+}

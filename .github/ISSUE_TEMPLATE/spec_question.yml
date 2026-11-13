@@ -1,0 +1,22 @@
+name: Specification question
+description: A sentence of a specification is unclear, contradicts another one, or contradicts the code.
+body:
+  - type: input
+    id: where
+    attributes:
+      label: File and section
+      description: For example "docs/WEX4-SPEC.md, section 6, rule 4".
+    validations:
+      required: true
+  - type: textarea
+    id: ambiguity
+    attributes:
+      label: What is ambiguous
+      description: Quote the sentence, and say which readings are possible. If the code decides it, name the file and line.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed wording
+      description: Optional. A format change also needs conformance vectors and a CHANGELOG entry (CONTRIBUTING.md).

@@ -1,0 +1,3383 @@
+--- a/deepseek_v4.c
++++ b/deepseek_v4.c
+@@ -5148,6 +5148,19 @@
+             job->result = 0;
+             if (tap) {
+                 job->tap_tier = V4TAP_T_VRAM;
++                job->tap_lookup_us = v4tap_us16(v4tap_now() - tap_t0);
++            }
++            return;
++        }
++        memset(&job->view, 0, sizeof(job->view));
++        job->view.key = job->key;
++        /* COLI_WEX_GPU_DIRECT: a Neural-rANS miss outside RAM goes disk -> VRAM */
++        if (coli_v4_gpu_expert_attach_wex(job->store, &job->view) == 0) {
++            job->gpu_only = 1;
++            job->result = 0;
++            if (tap) {
++                job->tap_tier = V4TAP_T_DISK;
++                job->tap_flags |= V4TAP_EF_UPLOADED;
+                 job->tap_lookup_us = v4tap_us16(v4tap_now() - tap_t0);
+             }
+             return;
+@@ -5828,6 +5841,14 @@
+             coli_v4_gpu_expert_peek(item.store, &view) == 0)
+             continue;
+         memset(&view, 0, sizeof(view));
++        /* COLI_WEX_GPU_DIRECT=2: a predicted Neural-rANS expert outside RAM is
++         * reconstructed straight into its mirror instead of a RAM slab */
++        if (item.store->gpu && v4_vram_first_enabled() && !coli_v4_hybrid_enabled() &&
++            coli_v4_gpu_wex_direct_prefetch(item.rank)) {
++            view.key = item.key;
++            if (coli_v4_gpu_expert_prefetch_wex(item.store, &view) == 0) continue;
++            memset(&view, 0, sizeof(view));
++        }
+ #endif
+         /* tagged as the prefetcher's: a slot it fills reads as tier 2/3 later */
+         coli_v4_expert_lookup_set_prefetch(1);
+@@ -6414,6 +6435,7 @@
+ static int v4_tap_batch_item;
+ 
+ double g_v4_moe_prof[5];
++static unsigned g_v4_moe_cpu_layers;   /* decode layers whose experts fell back to the CPU */
+ static double v4_mp_now(void) {
+     struct timespec ts;
+     clock_gettime(CLOCK_MONOTONIC, &ts);
+@@ -6890,6 +6912,8 @@
+     /* V4_VRAM_FIRST fallback: an upload failed, so this token computes on
+      * the CPU, which needs host weights for the experts that were served by
+      * a VRAM mirror alone. Fetch them now (the old order's disk reads). */
++    if (!result && store->gpu && !gpu_compute && !coli_v4_hybrid_enabled())
++        g_v4_moe_cpu_layers++;
+     if (!result && store->gpu && !gpu_compute && !coli_v4_hybrid_enabled())
+         for (int i = 0; !result && i < selected; i++) {
+             if (views[i].lease || views[i].gate.data) continue;
+@@ -7162,6 +7186,8 @@
+      * copies read from. (The fused kernels sync internally, so this is only
+      * ever a wait on already-finished work — never a correctness gamble.) */
+     if (hybrid_pending_drain || attach_pending) coli_v4_gpu_expert_drain(store);
++    /* this layer's mirrors are no longer read: WEX direct loads may recycle them */
++    if (store->gpu) coli_v4_gpu_mirror_step(store);
+ #endif
+     for (int current = 0; current < selected; current++)
+         coli_expert_release(store, &views[current]);
+@@ -7300,10 +7326,11 @@
+                 g_v4_attn_prof[6] * 1e3, g_v4_attn_prof[7] * 1e3,
+                 g_v4_attn_prof[8] * 1e3);
+         memset(g_v4_attn_prof, 0, sizeof(g_v4_attn_prof));
+-        fprintf(stderr, "moeprof wait=%.1f attach=%.1f gpu=%.1f ms vram_hits=%.0f\n",
++        fprintf(stderr, "moeprof wait=%.1f attach=%.1f gpu=%.1f ms vram_hits=%.0f cpu_layers=%u\n",
+                 g_v4_moe_prof[0] * 1e3, g_v4_moe_prof[1] * 1e3,
+-                g_v4_moe_prof[2] * 1e3, g_v4_moe_prof[4]);
++                g_v4_moe_prof[2] * 1e3, g_v4_moe_prof[4], g_v4_moe_cpu_layers);
+         memset(g_v4_moe_prof, 0, sizeof(g_v4_moe_prof));
++        g_v4_moe_cpu_layers = 0;
+         if (v4_lossy_topk > 0 || v4_lossy_skip_cold)
+             fprintf(stderr, "lossyprof kept=%.0f topk_drop=%.0f cold_drop=%.0f\n",
+                     g_v4_lossy_prof[0], g_v4_lossy_prof[1], g_v4_lossy_prof[2]);
+@@ -9715,7 +9742,14 @@
+     int wex_mirror_fd;
+ #endif
+     WexEntry *wex_entries;
++#ifdef _WIN32
++    void *wex_crc;        /* compressed record cache (COLI_WEX_RAM_CACHE_GB) */
++    int wex_crc_tried;
++#endif
+ } V4ExpertStoreState;
++#ifdef _WIN32
++static void v4_wex_crc_free(V4ExpertStoreState *state);
++#endif
+ 
+ static int set_error(char *error, size_t size, const char *format, ...) {
+     if (error && size) {
+@@ -10291,6 +10325,7 @@
+             CloseHandle(state->wex_mirror);
+         if (state->wex_entries)
+             _aligned_free(state->wex_entries);
++        v4_wex_crc_free(state);
+ #else
+         if (state->wex_fd >= 0) close(state->wex_fd);
+         if (state->wex_mirror_fd >= 0) close(state->wex_mirror_fd);
+@@ -10341,6 +10376,22 @@
+                      (DWORD)aligned_table_bytes, header->table_offset))
+         goto fail;
+     if (wex_validate_table(header, entries, (uint64_t)length.QuadPart)) goto fail;
++    if (header->flags & WEX_HEADER_NEURAL_RANS2) {
++        /* WNR2: the container's model must load and match the id its header
++         * names before any record can be decoded */
++        uint64_t model_offset;
++        uint32_t model_bytes, model_id, registered = 0;
++        uint64_t aligned_model;
++        unsigned char *model;
++        if (wex_nr2_model_location(header, block, &model_offset, &model_bytes, &model_id) ||
++            wex_aligned_size(model_bytes, &aligned_model) || aligned_model > MAXDWORD) goto fail;
++        model = (unsigned char *)_aligned_malloc((size_t)aligned_model, WEX_ALIGN);
++        if (!model) goto fail;
++        int bad = v4_wex_read_exact(file, model, (DWORD)aligned_model, model_offset) ||
++                  coli_wex_register_model(model, model_bytes, &registered) || registered != model_id;
++        _aligned_free(model);
++        if (bad) goto fail;
++    }
+     *header_block = block;
+     *entries_out = entries;
+     *table_span = aligned_table_bytes;
+@@ -11073,6 +11124,315 @@
+                                (size_t)record->scale_bytes, slot->slab);
+ }
+ 
++#ifdef _WIN32
++/* WEX direct-to-VRAM, store side (COLI_WEX_GPU_DIRECT): a GPU-destined
++ * Neural-rANS expert that the RAM cache does not hold is read compressed into
++ * the caller's staging buffer; the GPU tier reconstructs it into its mirror,
++ * so it never takes the disk -> RAM -> GPU -> RAM -> GPU round trip. */
++static uint64_t v4_wex_direct_reads;      /* compressed records read for the GPU */
++static uint64_t v4_wex_direct_bytes;
++static uint64_t v4_wex_direct_ram_skips;  /* RAM held it (or was loading it): host path */
++static uint64_t v4_wex_direct_failures;   /* read or reconstruction failed: host path */
++
++static int v4_wex_read_at(HANDLE file, uint64_t offset, unsigned char *dst, uint32_t bytes) {
++    static __thread HANDLE event = NULL;
++    if (!event) event = CreateEventA(NULL, TRUE, FALSE, NULL);
++    if (!event) return -1;
++    OVERLAPPED ov;
++    memset(&ov, 0, sizeof(ov));
++    ov.Offset = (DWORD)(offset & 0xFFFFFFFFULL);
++    ov.OffsetHigh = (DWORD)((offset >> 32) & 0xFFFFFFFFULL);
++    ov.hEvent = event;
++    ResetEvent(event);
++    DWORD got = 0;
++    BOOL ok = ReadFile(file, dst, bytes, &got, &ov);
++    if (!ok && GetLastError() == ERROR_IO_PENDING)
++        ok = GetOverlappedResult(file, &ov, &got, TRUE);
++    return ok && got == bytes ? 0 : -1;
++}
++
++const WexEntry *coli_v4_expert_store_wex_entry(ColiExpertStore *store, ColiExpertKey key,
++                                               size_t capacity) {
++    if (!store || !store->state) return NULL;
++    V4ExpertStoreState *state = store->state;
++    if (!state->wex_entries || state->wex_handle == INVALID_HANDLE_VALUE || !get_record(state, key))
++        return NULL;
++    const WexEntry *entry =
++        &state->wex_entries[(size_t)key.layer * state->experts_per_layer + key.expert];
++    if (!(entry->flags == WEX_ENTRY_NEURAL_RANS ||
++          (entry->flags == WEX_ENTRY_NEURAL_RANS2 && coli_wex_cuda_nr2_available())) ||
++        !entry->total_bytes || entry->total_bytes > capacity)
++        return NULL;
++    pthread_mutex_lock(&state->mutex);
++    int in_ram = indexed_expert_slot(state, key) != NULL;
++    pthread_mutex_unlock(&state->mutex);
++    if (in_ram) {
++        __atomic_fetch_add(&v4_wex_direct_ram_skips, UINT64_C(1), __ATOMIC_RELAXED);
++        return NULL;
++    }
++    return entry;
++}
++
++int coli_v4_expert_store_wex_read(ColiExpertStore *store, ColiExpertKey key,
++                                  const WexEntry *entry, unsigned char *dst) {
++    if (!store || !store->state || !entry || !dst || !WEX_IS_ALIGNED(dst, WEX_ALIGN)) return -1;
++    V4ExpertStoreState *state = store->state;
++    if (state->wex_handle == INVALID_HANDLE_VALUE) return -1;
++    int rep = coli_st_expert_route(key.layer, key.expert);
++    HANDLE file = state->wex_mirror != INVALID_HANDLE_VALUE && rep == 1 ? state->wex_mirror
++                                                                        : state->wex_handle;
++    struct timespec t0, t1;
++    clock_gettime(CLOCK_MONOTONIC, &t0);
++    if (v4_wex_read_at(file, entry->file_offset, dst, entry->total_bytes)) {
++        __atomic_fetch_add(&v4_wex_direct_failures, UINT64_C(1), __ATOMIC_RELAXED);
++        return -1;
++    }
++    clock_gettime(CLOCK_MONOTONIC, &t1);
++    pthread_mutex_lock(&state->mutex);
++    state->disk_sec += (double)(t1.tv_sec - t0.tv_sec) + (t1.tv_nsec - t0.tv_nsec) * 1e-9;
++    pthread_mutex_unlock(&state->mutex);
++    __atomic_fetch_add(&v4_wex_direct_reads, UINT64_C(1), __ATOMIC_RELAXED);
++    __atomic_fetch_add(&v4_wex_direct_bytes, entry->total_bytes, __ATOMIC_RELAXED);
++    return 0;
++}
++
++const WexEntry *coli_v4_expert_store_wex_compressed(ColiExpertStore *store, ColiExpertKey key,
++                                                    unsigned char *dst, size_t capacity) {
++    const WexEntry *entry = coli_v4_expert_store_wex_entry(store, key, capacity);
++    return entry && !coli_v4_expert_store_wex_read(store, key, entry, dst) ? entry : NULL;
++}
++
++void coli_v4_wex_direct_note(int ok, uint64_t bytes) {
++    (void)bytes;   /* reads are counted where they happen */
++    if (!ok) __atomic_fetch_add(&v4_wex_direct_failures, UINT64_C(1), __ATOMIC_RELAXED);
++}
++
++/* Compressed record cache: the RAM tier of the WEX direct path. Slots hold whole
++ * compressed records; a VRAM miss decodes straight from one, and a record read
++ * from disk stays here, so the direct path no longer rereads the disk for every
++ * expert that falls out of VRAM. */
++typedef struct { int cell; int refs; int ready; uint32_t bytes; uint64_t clock, sum; } V4WexCrcSlot;
++typedef struct {
++    unsigned char *arena;
++    size_t slot_bytes, arena_bytes;
++    int slots, used, pinned, cells;
++    int *index;                 /* cell -> slot, -1 */
++    V4WexCrcSlot *slot;
++    uint64_t clock, hits, misses, evictions, refused, prewarmed;
++    int verify;                 /* COLI_WEX_RAM_CACHE_VERIFY: checksum on fill, check on hit */
++    uint64_t verify_checks, verify_bad;
++    pthread_mutex_t mutex;
++} V4WexCrc;
++
++static uint64_t v4_wex_crc_sum(const unsigned char *p, size_t n) {
++    uint64_t h = UINT64_C(0x9E3779B97F4A7C15) ^ n, w;
++    size_t i = 0;
++    for (; i + 8 <= n; i += 8) {
++        memcpy(&w, p + i, 8);
++        h = (h ^ w) * UINT64_C(0x100000001B3);
++        h ^= h >> 29;
++    }
++    for (; i < n; i++) h = (h ^ p[i]) * UINT64_C(0x100000001B3);
++    return h;
++}
++
++static V4WexCrc *v4_wex_crc(V4ExpertStoreState *state) {
++    if (__atomic_load_n(&state->wex_crc_tried, __ATOMIC_ACQUIRE)) return (V4WexCrc *)state->wex_crc;
++    pthread_mutex_lock(&state->mutex);
++    if (!state->wex_crc_tried) {
++        const char *gb = getenv("COLI_WEX_RAM_CACHE_GB"), *direct = getenv("COLI_WEX_GPU_DIRECT");
++        double budget = gb && *gb ? atof(gb) * 1073741824.0 : 0.0;
++        size_t slot_bytes = 0, cells = (size_t)state->layers * state->experts_per_layer;
++        if (budget > 0 && direct && atoi(direct) >= 1 && state->wex_entries &&
++            state->wex_handle != INVALID_HANDLE_VALUE)
++            for (size_t i = 0; i < cells; i++) {
++                const WexEntry *e = &state->wex_entries[i];
++                if ((e->flags == WEX_ENTRY_NEURAL_RANS || e->flags == WEX_ENTRY_NEURAL_RANS2) &&
++                    e->total_bytes > slot_bytes)
++                    slot_bytes = e->total_bytes;
++            }
++        int slots = slot_bytes ? (int)(budget / (double)slot_bytes) : 0;
++        V4WexCrc *c = slots > 0 ? calloc(1, sizeof(*c)) : NULL;
++        if (c) {
++            c->slot_bytes = slot_bytes; c->slots = slots; c->cells = (int)cells;
++            c->arena_bytes = slot_bytes * (size_t)slots;
++            c->arena = _aligned_malloc(c->arena_bytes, WEX_ALIGN);
++            c->index = malloc(cells * sizeof(int));
++            c->slot = calloc((size_t)slots, sizeof(*c->slot));
++            if (!c->arena || !c->index || !c->slot) {
++                _aligned_free(c->arena); free(c->index); free(c->slot); free(c); c = NULL;
++            } else {
++                for (size_t i = 0; i < cells; i++) c->index[i] = -1;
++                for (int i = 0; i < slots; i++) c->slot[i].cell = -1;
++                pthread_mutex_init(&c->mutex, NULL);
++                const char *verify = getenv("COLI_WEX_RAM_CACHE_VERIFY");
++                c->verify = verify && *verify && atoi(verify);
++                const char *pin = getenv("COLI_WEX_RAM_CACHE_PIN");
++                if (!(pin && *pin && !atoi(pin)))
++                    c->pinned = !coli_wex_cuda_host_register(c->arena, c->arena_bytes);
++                fprintf(stderr, "[v4_wex] RAM cache of compressed records: %d slots x %.2f MiB = %.1f GiB, "
++                                "page-locked=%d\n", slots, slot_bytes / 1048576.0,
++                        c->arena_bytes / 1073741824.0, c->pinned);
++            }
++        }
++        state->wex_crc = c;
++        __atomic_store_n(&state->wex_crc_tried, 1, __ATOMIC_RELEASE);
++    }
++    pthread_mutex_unlock(&state->mutex);
++    return (V4WexCrc *)state->wex_crc;
++}
++
++static void v4_wex_crc_free(V4ExpertStoreState *state) {
++    V4WexCrc *c = state ? (V4WexCrc *)state->wex_crc : NULL;
++    if (!c) return;
++    if (c->pinned) coli_wex_cuda_host_unregister(c->arena);
++    _aligned_free(c->arena); free(c->index); free(c->slot);
++    pthread_mutex_destroy(&c->mutex);
++    free(c);
++    state->wex_crc = NULL;
++}
++
++/* A slot for key: a hit (*hit = 1, bytes valid) or a fresh claim the caller fills
++ * (*hit = 0). Either way the slot is leased until coli_v4_wex_crc_done. -1: no
++ * cache, the record does not fit, it is being filled elsewhere, or every slot is
++ * leased; the caller then reads into its own staging. */
++int coli_v4_wex_crc_get(ColiExpertStore *store, ColiExpertKey key, const WexEntry *entry,
++                        unsigned char **record, int *hit) {
++    if (!store || !store->state || !entry || !record || !hit) return -1;
++    V4ExpertStoreState *state = store->state;
++    V4WexCrc *c = v4_wex_crc(state);
++    if (!c || entry->total_bytes > c->slot_bytes || key.layer < 0 || key.expert < 0 ||
++        key.layer >= state->layers || key.expert >= state->experts_per_layer) return -1;
++    int cell = key.layer * state->experts_per_layer + key.expert, s;
++    pthread_mutex_lock(&c->mutex);
++    s = c->index[cell];
++    if (s >= 0) {
++        if (!c->slot[s].ready) { pthread_mutex_unlock(&c->mutex); return -1; }
++        c->slot[s].refs++;
++        c->slot[s].clock = ++c->clock;
++        c->hits++;
++        uint64_t sum = c->slot[s].sum;
++        uint32_t bytes = c->slot[s].bytes;
++        pthread_mutex_unlock(&c->mutex);
++        *record = c->arena + (size_t)s * c->slot_bytes;
++        *hit = 1;
++        if (c->verify) {
++            int bad = bytes != entry->total_bytes || v4_wex_crc_sum(*record, bytes) != sum;
++            __atomic_fetch_add(&c->verify_checks, UINT64_C(1), __ATOMIC_RELAXED);
++            if (bad && __atomic_fetch_add(&c->verify_bad, UINT64_C(1), __ATOMIC_RELAXED) < 16)
++                fprintf(stderr, "[v4_wex] RAM cache VERIFY FAILED: layer %d expert %d slot %d\n",
++                        key.layer, key.expert, s);
++        }
++        return s;
++    }
++    if (c->used < c->slots) s = c->used++;
++    else {
++        s = -1;
++        for (int i = 0; i < c->slots; i++) {
++            const V4WexCrcSlot *v = &c->slot[i];
++            if (v->refs) continue;
++            if (v->cell < 0) { s = i; break; }
++            if (s < 0 || v->clock < c->slot[s].clock) s = i;
++        }
++        if (s < 0) { c->refused++; pthread_mutex_unlock(&c->mutex); return -1; }
++        if (c->slot[s].cell >= 0) { c->index[c->slot[s].cell] = -1; c->evictions++; }
++    }
++    c->slot[s].cell = cell; c->slot[s].refs = 1; c->slot[s].ready = 0; c->slot[s].clock = ++c->clock;
++    c->slot[s].bytes = entry->total_bytes; c->slot[s].sum = 0;
++    c->index[cell] = s;
++    c->misses++;
++    pthread_mutex_unlock(&c->mutex);
++    *record = c->arena + (size_t)s * c->slot_bytes;
++    *hit = 0;
++    return s;
++}
++
++/* Release a lease; filled says the claimed slot now holds the record (ignored for hits). */
++void coli_v4_wex_crc_done(ColiExpertStore *store, int s, int filled) {
++    V4WexCrc *c = store && store->state ? (V4WexCrc *)((V4ExpertStoreState *)store->state)->wex_crc : NULL;
++    if (!c || s < 0 || s >= c->slots) return;
++    V4WexCrcSlot *v = &c->slot[s];
++    /* only the claimant of a slot that is not ready yet gets here with ready == 0,
++     * and nobody else touches its bytes meanwhile */
++    uint64_t sum = c->verify && filled && !__atomic_load_n(&v->ready, __ATOMIC_ACQUIRE)
++        ? v4_wex_crc_sum(c->arena + (size_t)s * c->slot_bytes, v->bytes) : 0;
++    pthread_mutex_lock(&c->mutex);
++    if (!v->ready) {
++        if (filled) { v->sum = sum; v->ready = 1; }
++        else { if (v->cell >= 0) c->index[v->cell] = -1; v->cell = -1; }
++    }
++    if (v->refs > 0) v->refs--;
++    pthread_mutex_unlock(&c->mutex);
++}
++
++/* Fill the cache with the most used compressed experts that neither VRAM nor
++ * the RAM slabs hold (called by the tier prewarm, before any worker runs). */
++static int v4_wex_crc_rank_compare(const void *a, const void *b) {
++    const uint64_t *x = a, *y = b;   /* {usage, cell} pairs, usage descending */
++    if (x[0] != y[0]) return x[0] > y[0] ? -1 : 1;
++    return (x[1] > y[1]) - (x[1] < y[1]);
++}
++int coli_v4_wex_crc_prewarm(ColiExpertStore *store, const uint64_t *usage, const uint8_t *vram_bits) {
++    if (!store || !store->state || !usage) return 0;
++    V4ExpertStoreState *state = store->state;
++    V4WexCrc *c = v4_wex_crc(state);
++    if (!c) return 0;
++    size_t cells = (size_t)c->cells, n = 0;
++    uint64_t *ranked = malloc(cells * 2 * sizeof(uint64_t));
++    if (!ranked) return -1;
++    for (size_t i = 0; i < cells; i++) {
++        const WexEntry *e = &state->wex_entries[i];
++        if (!(e->flags == WEX_ENTRY_NEURAL_RANS || e->flags == WEX_ENTRY_NEURAL_RANS2) || !usage[i]) continue;
++        if (vram_bits && (vram_bits[i >> 3] & (1u << (i & 7)))) continue;
++        ColiExpertKey key = {(int)(i / state->experts_per_layer), (int)(i % state->experts_per_layer)};
++        pthread_mutex_lock(&state->mutex);
++        int in_ram = indexed_expert_slot(state, key) != NULL;
++        pthread_mutex_unlock(&state->mutex);
++        if (in_ram) continue;
++        ranked[2 * n] = usage[i]; ranked[2 * n + 1] = i; n++;
++    }
++    qsort(ranked, n, 2 * sizeof(uint64_t), v4_wex_crc_rank_compare);
++    size_t want = n < (size_t)c->slots ? n : (size_t)c->slots;
++    double began = hot_now();
++    int filled = 0;
++    #pragma omp parallel for schedule(dynamic, 4) reduction(+:filled) num_threads(8)
++    for (size_t k = 0; k < want; k++) {
++        size_t i = (size_t)ranked[2 * k + 1];
++        ColiExpertKey key = {(int)(i / state->experts_per_layer), (int)(i % state->experts_per_layer)};
++        const WexEntry *e = &state->wex_entries[i];
++        unsigned char *record; int hit = 0;
++        int s = coli_v4_wex_crc_get(store, key, e, &record, &hit);
++        if (s < 0) continue;
++        int ok = hit || !v4_wex_read_at(state->wex_mirror != INVALID_HANDLE_VALUE &&
++                                        coli_st_expert_route(key.layer, key.expert) == 1
++                                        ? state->wex_mirror : state->wex_handle,
++                                        e->file_offset, record, e->total_bytes);
++        coli_v4_wex_crc_done(store, s, ok);
++        filled += ok && !hit;
++    }
++    free(ranked);
++    pthread_mutex_lock(&c->mutex);
++    c->prewarmed = (uint64_t)filled;
++    c->hits = c->misses = c->evictions = c->refused = 0;   /* count only what decoding does */
++    pthread_mutex_unlock(&c->mutex);
++    fprintf(stderr, "[v4_wex] RAM cache prewarm: %d compressed experts (%.1f GiB) in %.1f s\n",
++            filled, filled * (double)c->slot_bytes / 1073741824.0, hot_now() - began);
++    return 0;
++}
++
++static void v4_wex_crc_report(V4ExpertStoreState *state) {
++    V4WexCrc *c = state ? (V4WexCrc *)state->wex_crc : NULL;
++    if (!c) return;
++    fprintf(stderr, "v4_wex_ram_cache slots=%d slot_mib=%.2f hits=%llu misses=%llu evictions=%llu "
++                    "refused=%llu prewarmed=%llu pinned=%d\n", c->slots, c->slot_bytes / 1048576.0,
++            (unsigned long long)c->hits, (unsigned long long)c->misses, (unsigned long long)c->evictions,
++            (unsigned long long)c->refused, (unsigned long long)c->prewarmed, c->pinned);
++    if (c->verify)
++        fprintf(stderr, "v4_wex_ram_cache_verify checks=%llu bad=%llu\n",
++                (unsigned long long)c->verify_checks, (unsigned long long)c->verify_bad);
++}
++#endif
++
+ static void hot_fill_view(ColiTensorView *view,
+                           const V4ExpertRecord *record,
+                           const V4ExpertSlot *slot, int matrix,
+@@ -11808,6 +12168,19 @@
+                     &v4_direct_fallbacks, __ATOMIC_RELAXED),
+                 (unsigned long long)__atomic_load_n(
+                     &v4_direct_payload_bytes, __ATOMIC_RELAXED));
++#ifdef _WIN32
++        if (__atomic_load_n(&v4_wex_direct_reads, __ATOMIC_RELAXED) ||
++            __atomic_load_n(&v4_wex_direct_failures, __ATOMIC_RELAXED))
++            fprintf(stderr,
++                    "v4_wex_gpu_direct reads=%llu payload_bytes=%llu ram_skips=%llu "
++                    "failures=%llu device_decodes=%llu\n",
++                    (unsigned long long)__atomic_load_n(&v4_wex_direct_reads, __ATOMIC_RELAXED),
++                    (unsigned long long)__atomic_load_n(&v4_wex_direct_bytes, __ATOMIC_RELAXED),
++                    (unsigned long long)__atomic_load_n(&v4_wex_direct_ram_skips, __ATOMIC_RELAXED),
++                    (unsigned long long)__atomic_load_n(&v4_wex_direct_failures, __ATOMIC_RELAXED),
++                    (unsigned long long)coli_wex_cuda_device_decode_count());
++        v4_wex_crc_report(store->state);
++#endif
+         free(policy->history_path);
+         free(policy->packed); free(policy->pins);
+         free(policy->layer_requests); free(policy->usage); free(policy);
+@@ -12015,6 +12388,15 @@
+                     "order=VRAM-RAM-disk ram_excludes_vram=on\n", uploaded,
+             (unsigned long long)highest, (unsigned long long)lowest);
+     int result = coli_v4_expert_store_prewarm(store);
++#if defined(COLI_V4_GPU_TIER) && defined(_WIN32)
++    {
++        size_t crc_cells = (size_t)state->layers * state->experts_per_layer;
++        uint8_t *vram = store->gpu ? calloc((crc_cells + 7) / 8, 1) : NULL;
++        if (vram) coli_v4_gpu_mirror_bitmap(store, vram, state->layers, state->experts_per_layer, NULL);
++        coli_v4_wex_crc_prewarm(store, policy->usage, vram);
++        free(vram);
++    }
++#endif
+ #ifdef COLI_V4_GPU_TIER
+     size_t cells = (size_t)state->layers * state->experts_per_layer;
+     uint8_t *bits = calloc((cells + 7) / 8, 1);
+@@ -13885,6 +14267,10 @@
+     Dsv4CudaTensor *down;
+     uint64_t clock;
+     uint64_t frequency;
++    int busy;   /* a WEX direct load writes it outside the mutex: not a victim,
++                 * not a hit; readers of the same key wait for "published" */
++    uint32_t epoch;   /* last step epoch a view of it was handed out in */
++    int pool;   /* COLI_WEX_GPU_DIRECT=2: only prefetch loads rewrite it */
+ } V4GpuExpertMirror;
+ 
+ enum { V4_GPU_STREAM_SLOTS = 16 };
+@@ -13898,7 +14284,27 @@
+     uint64_t clock;
+     int device;
+     pthread_mutex_t mutex;
++    pthread_cond_t published;   /* a busy entry was filled or released */
++    uint32_t epoch;   /* advanced when a decode MoE layer finished computing */
++    uint64_t guard_skips;   /* choices that passed over a mirror of the current epoch */
++    uint64_t refusals;      /* direct loads that found no mirror to take */
++    int pool_count;         /* resident entries flagged pool */
++    uint64_t pool_fills;    /* prefetch loads written into a pool mirror */
++    uint64_t pool_hits;     /* routed uses of a pool mirror */
+ };
++
++#ifdef _WIN32
++static int v4_wex_gpu_direct_enabled(void);
++#endif
++/* COLI_WEX_GPU_DIRECT=2: the prefetcher writes mirrors beside the decode thread,
++ * so the host path keeps off the current epoch's mirrors too. */
++static int v4_gpu_mirror_host_guard(void) {
++#ifdef _WIN32
++    return v4_wex_gpu_direct_enabled() >= 2;
++#else
++    return 0;
++#endif
++}
+ 
+ static int v4_gpu_hot_cache_wanted(void) {
+     const char *setting = getenv("V4_GPU_HOT_CACHE");
+@@ -13910,18 +14316,84 @@
+ static int v4_gpu_mirror_victim_range(const V4GpuExpertMirrorCache *cache,
+                                       int start, int limit) {
+     if (limit <= start) return start >= 0 ? start : 0;
+-    int victim = -1, oldest = start;
++    int victim = -1, oldest = -1;
+     int count = limit - start;
+     uint64_t protect = count > 40 ? 32 : (uint64_t)(count > 1 ? count - 1 : 0);
+     for (int i = start; i < limit; i++) {
+         const V4GpuExpertMirror *entry = &cache->entries[i];
+-        if (entry->clock < cache->entries[oldest].clock) oldest = i;
++        if (entry->busy || entry->pool) continue;
++        if (oldest < 0 || entry->clock < cache->entries[oldest].clock) oldest = i;
+         if (protect && cache->clock - entry->clock < protect) continue;
+         if (victim < 0 || entry->frequency < cache->entries[victim].frequency ||
+             (entry->frequency == cache->entries[victim].frequency &&
+              entry->clock < cache->entries[victim].clock)) victim = i;
+     }
+     return victim >= 0 ? victim : oldest;
++}
++
++/* The producer's victim: as v4_gpu_mirror_victim_range (frequency, then LRU) or
++ * plain LRU, never a busy entry nor one handed out in the current epoch. */
++static int v4_gpu_mirror_victim_safe(const V4GpuExpertMirrorCache *cache, int limit, int by_frequency) {
++    int victim = -1;
++    for (int i = 0; i < limit; i++) {
++        const V4GpuExpertMirror *e = &cache->entries[i];
++        if (e->busy || e->pool || e->epoch == cache->epoch) continue;
++        if (victim < 0) { victim = i; continue; }
++        const V4GpuExpertMirror *v = &cache->entries[victim];
++        if (by_frequency ? (e->frequency < v->frequency ||
++                            (e->frequency == v->frequency && e->clock < v->clock))
++                         : e->clock < v->clock)
++            victim = i;
++    }
++    return victim;
++}
++
++/* COLI_WEX_GPU_DIRECT=2: the mirror a prefetch load colder than every resident
++ * one rewrites. The pool grows, up to COLI_WEX_GPU_DIRECT_POOL entries, by taking
++ * over the coldest resident mirror (VRAM-neutral); once full, its least recently
++ * used entry is reused. Never busy, never handed out in the current epoch.
++ * Called with the mutex held; -1 when no entry qualifies. */
++static int v4_gpu_mirror_pool_slot(V4GpuExpertMirrorCache *cache) {
++    static int capacity = -1;
++    if (capacity < 0) {
++        const char *setting = getenv("COLI_WEX_GPU_DIRECT_POOL");
++        capacity = setting && *setting ? atoi(setting) : 32;
++        if (capacity < 0) capacity = 0;
++        if (capacity > 256) capacity = 256;
++    }
++    int limit = cache->resident_count;
++    if (cache->pool_count < capacity) {
++        int by_frequency = v4_gpu_hot_cache_wanted(), taken = -1;
++        for (int i = 0; i < limit; i++) {
++            const V4GpuExpertMirror *e = &cache->entries[i];
++            if (e->busy || e->pool || e->epoch == cache->epoch ||
++                !e->gate || !e->up || !e->down) continue;
++            const V4GpuExpertMirror *t = taken >= 0 ? &cache->entries[taken] : NULL;
++            if (!t || (by_frequency ? (e->frequency < t->frequency ||
++                                       (e->frequency == t->frequency && e->clock < t->clock))
++                                    : e->clock < t->clock))
++                taken = i;
++        }
++        if (taken >= 0) {
++            V4GpuExpertMirror *e = &cache->entries[taken];
++            v4_cuda_priority_mark(cache, e->layer, e->expert, 0);
++            e->pool = 1;
++            cache->pool_count++;
++            return taken;
++        }
++    }
++    int victim = -1;
++    for (int i = 0; i < limit; i++) {
++        V4GpuExpertMirror *e = &cache->entries[i];
++        if (!e->pool || e->busy || e->epoch == cache->epoch) continue;
++        if (!e->gate || !e->up || !e->down) {   /* emptied by a failed load */
++            e->pool = 0;
++            cache->pool_count--;
++            continue;
++        }
++        if (victim < 0 || e->clock < cache->entries[victim].clock) victim = i;
++    }
++    return victim;
+ }
+ 
+ static int v4_gpu_mirror_victim(const V4GpuExpertMirrorCache *cache) {
+@@ -13954,6 +14426,32 @@
+     free(cache.entries);
+     return victim;
+ }
++
++/* v4_gpu_mirror_pool_slot on a fake resident cache: loaded[i] says whether
++ * entry i holds tensors; pool[] and *pool_count are updated in place. */
++int coli_v4_test_gpu_pool_slot(const uint64_t *frequency, const uint64_t *clock,
++                               const uint32_t *epoch, const int *busy, const int *loaded,
++                               int *pool, int count, uint32_t now_epoch, int *pool_count) {
++    if (count < 1 || !pool_count) return -2;
++    V4GpuExpertMirrorCache cache = {0};
++    cache.count = cache.resident_count = count;
++    cache.epoch = now_epoch;
++    cache.pool_count = *pool_count;
++    cache.entries = calloc((size_t)count, sizeof(*cache.entries));
++    if (!cache.entries) return -2;
++    for (int i = 0; i < count; i++) {
++        V4GpuExpertMirror *e = &cache.entries[i];
++        e->layer = 0; e->expert = i;
++        e->frequency = frequency[i]; e->clock = clock[i]; e->epoch = epoch[i];
++        e->busy = busy[i]; e->pool = pool[i];
++        if (loaded[i]) e->gate = e->up = e->down = (Dsv4CudaTensor *)(uintptr_t)(i + 1);
++    }
++    int slot = v4_gpu_mirror_pool_slot(&cache);
++    for (int i = 0; i < count; i++) pool[i] = cache.entries[i].pool;
++    *pool_count = cache.pool_count;
++    free(cache.entries);
++    return slot;
++}
+ #endif
+ 
+ static int v4_cuda_ram_duplicate(int layer, int expert) {
+@@ -13976,6 +14474,7 @@
+     cache->capacity = capacity;
+     cache->device = device;
+     pthread_mutex_init(&cache->mutex, NULL);
++    pthread_cond_init(&cache->published, NULL);
+     return cache;
+ }
+ 
+@@ -13989,6 +14488,12 @@
+ 
+ static void v4_gpu_expert_mirrors_free(V4GpuExpertMirrorCache *cache) {
+     if (!cache) return;
++    if (v4_gpu_mirror_host_guard())
++        fprintf(stderr, "v4_gpu_mirror_epochs steps=%u guard_skips=%llu direct_refusals=%llu "
++                        "pool=%d pool_fills=%llu pool_hits=%llu\n",
++                cache->epoch, (unsigned long long)cache->guard_skips,
++                (unsigned long long)cache->refusals, cache->pool_count,
++                (unsigned long long)cache->pool_fills, (unsigned long long)cache->pool_hits);
+     for (int i = 0; i < cache->count; i++) {
+         if (cache->entries[i].gate)
+             dsv4_cuda_tensor_free(cache->entries[i].gate);
+@@ -13998,13 +14503,138 @@
+             dsv4_cuda_tensor_free(cache->entries[i].down);
+     }
+     pthread_mutex_destroy(&cache->mutex);
++    pthread_cond_destroy(&cache->published);
+     free(cache->entries);
+     free(cache);
+ }
+ 
+-static int v4_gpu_expert_attach_cached_ex(V4GpuExpertMirrorCache *cache,
+-                                          ColiExpertView *view, int sync,
+-                                          uint64_t frequency, int warm_only) {
++/* A producer that writes an expert's fp4 bytes straight into its mirror's
++ * device buffers (WEX direct-to-VRAM) instead of the upload from host views.
++ * fn returns 0 once gate, down and up hold the expert. */
++typedef struct {
++    int (*fn)(void *context, Dsv4CudaTensor *gate, Dsv4CudaTensor *down, Dsv4CudaTensor *up);
++    void *context;
++    int no_stream;   /* a prefetch guess: never a transient slot (the pool instead) */
++} V4GpuMirrorFill;
++
++/* Recycle entry e for view: refill from the host views, or let the producer
++ * write it. The producer runs on another CUDA runtime's stream, so kernels
++ * already queued on the backend stream that may still read the victim's old
++ * bytes are drained first (the host refill is stream-ordered instead). */
++static int v4_gpu_mirror_refill(V4GpuExpertMirrorCache *cache, V4GpuExpertMirror *e,
++                                const ColiExpertView *view, int sync,
++                                const V4GpuMirrorFill *fill) {
++    if (!e->gate || !e->up || !e->down) return 0;
++    if (fill)
++        return dsv4_cuda_stream_drain(cache->device) &&
++               fill->fn(fill->context, e->gate, e->down, e->up) == 0;
++    return view->gate.data && view->gate.scales &&
++           view->up.data && view->up.scales &&
++           view->down.data && view->down.scales &&
++           dsv4_cuda_tensor_refill_fp4(
++               e->gate, (const uint8_t *)view->gate.data,
++               (const uint8_t *)view->gate.scales, (int)view->gate.rows,
++               (int)view->gate.columns, 0) &&
++           dsv4_cuda_tensor_refill_fp4(
++               e->up, (const uint8_t *)view->up.data,
++               (const uint8_t *)view->up.scales, (int)view->up.rows,
++               (int)view->up.columns, 0) &&
++           dsv4_cuda_tensor_refill_fp4(
++               e->down, (const uint8_t *)view->down.data,
++               (const uint8_t *)view->down.scales, (int)view->down.rows,
++               (int)view->down.columns, sync);
++}
++
++/* A new entry: upload the host views, or allocate and let the producer fill. */
++static int v4_gpu_mirror_create(V4GpuExpertMirrorCache *cache, const ColiExpertView *view,
++                                Dsv4CudaTensor **gate, Dsv4CudaTensor **up,
++                                Dsv4CudaTensor **down, const V4GpuMirrorFill *fill) {
++    if (fill)
++        return view->gate.rows > 0 && view->gate.columns > 0 &&
++               view->up.rows > 0 && view->up.columns > 0 &&
++               view->down.rows > 0 && view->down.columns > 0 &&
++               dsv4_cuda_tensor_alloc_fp4(gate, (int)view->gate.rows, (int)view->gate.columns, cache->device) &&
++               dsv4_cuda_tensor_alloc_fp4(up, (int)view->up.rows, (int)view->up.columns, cache->device) &&
++               dsv4_cuda_tensor_alloc_fp4(down, (int)view->down.rows, (int)view->down.columns, cache->device) &&
++               fill->fn(fill->context, *gate, *down, *up) == 0;
++    int ok = (view->gate.data && view->gate.scales &&
++              view->gate.rows > 0 && view->gate.columns > 0 &&
++              dsv4_cuda_upload_fp4(
++                  gate, (const uint8_t *)view->gate.data,
++                  (const uint8_t *)view->gate.scales,
++                  (int)view->gate.rows, (int)view->gate.columns,
++                  cache->device));
++    if (ok)
++        ok = (view->up.data && view->up.scales && view->up.rows > 0 &&
++              view->up.columns > 0 &&
++              dsv4_cuda_upload_fp4(
++                  up, (const uint8_t *)view->up.data,
++                  (const uint8_t *)view->up.scales, (int)view->up.rows,
++                  (int)view->up.columns, cache->device));
++    if (ok)
++        ok = (view->down.data && view->down.scales &&
++              view->down.rows > 0 && view->down.columns > 0 &&
++              dsv4_cuda_upload_fp4(
++                  down, (const uint8_t *)view->down.data,
++                  (const uint8_t *)view->down.scales,
++                  (int)view->down.rows, (int)view->down.columns,
++                  cache->device));
++    return ok;
++}
++
++/* The producer path, entered with cache->mutex held on the chosen entry: it is
++ * reserved (key set, busy), the mutex is released while the backend stream
++ * drains (a recycled victim) or the buffers are allocated (a new entry) and the
++ * producer writes them, then the entry is published or emptied. Peeks and
++ * attaches of other experts proceed meanwhile; one of the same expert waits.
++ * Returns with the mutex released. */
++static int v4_gpu_mirror_fill_unlocked(V4GpuExpertMirrorCache *cache, int index,
++                                       ColiExpertView *view, uint64_t frequency,
++                                       const V4GpuMirrorFill *fill, int recycle, int mark) {
++    V4GpuExpertMirror *e = &cache->entries[index];
++    if (recycle && mark) v4_cuda_priority_mark(cache, e->layer, e->expert, 0);
++    Dsv4CudaTensor *gate = recycle ? e->gate : NULL;
++    Dsv4CudaTensor *up = recycle ? e->up : NULL;
++    Dsv4CudaTensor *down = recycle ? e->down : NULL;
++    e->layer = view->key.layer;
++    e->expert = view->key.expert;
++    e->clock = ++cache->clock;
++    e->frequency = frequency;
++    e->busy = 1;
++    pthread_mutex_unlock(&cache->mutex);
++    int ok = recycle ? dsv4_cuda_stream_drain(cache->device) &&
++                       fill->fn(fill->context, gate, down, up) == 0
++                     : v4_gpu_mirror_create(cache, view, &gate, &up, &down, fill);
++    pthread_mutex_lock(&cache->mutex);
++    if (!ok) {
++        if (gate) dsv4_cuda_tensor_free(gate);
++        if (up) dsv4_cuda_tensor_free(up);
++        if (down) dsv4_cuda_tensor_free(down);
++        e->gate = e->up = e->down = NULL;
++        e->layer = e->expert = -1;
++        e->busy = 0;
++        pthread_cond_broadcast(&cache->published);
++        pthread_mutex_unlock(&cache->mutex);
++        return -1;
++    }
++    e->gate = gate;
++    e->up = up;
++    e->down = down;
++    e->busy = 0;
++    e->epoch = cache->epoch;
++    if (mark) v4_cuda_priority_mark(cache, view->key.layer, view->key.expert, 1);
++    view->gate.gpu = gate;
++    view->up.gpu = up;
++    view->down.gpu = down;
++    pthread_cond_broadcast(&cache->published);
++    pthread_mutex_unlock(&cache->mutex);
++    return 0;
++}
++
++static int v4_gpu_expert_attach_cached_fill(V4GpuExpertMirrorCache *cache,
++                                            ColiExpertView *view, int sync,
++                                            uint64_t frequency, int warm_only,
++                                            const V4GpuMirrorFill *fill) {
+     if (!cache || !view) return -1;
+     if (view->gate.block_rows != 1 || view->up.block_rows != 1 ||
+         view->down.block_rows != 1)
+@@ -14014,11 +14644,18 @@
+      * view of the same token (measured: DSV4_CUDA_EXPERT_MIRRORS=1 produces
+      * garbage). Below 8 entries, stay on the CPU. */
+     if (cache->capacity < 8) return -1;
++    int guard = fill || v4_gpu_mirror_host_guard();
+     pthread_mutex_lock(&cache->mutex);
+-    int found = -1;
++    int found;
++find_entry:
++    found = -1;
+     for (int i = 0; i < cache->count; i++) {
+         if (cache->entries[i].layer == view->key.layer &&
+             cache->entries[i].expert == view->key.expert) {
++            if (cache->entries[i].busy) {   /* a WEX direct load of this expert */
++                pthread_cond_wait(&cache->published, &cache->mutex);
++                goto find_entry;
++            }
+             found = i;
+             break;
+         }
+@@ -14080,37 +14717,37 @@
+             if (v4_gpu_hot_cache_wanted())
+                 victim = v4_gpu_mirror_victim_range(cache, 0, cache->resident_count);
+             else {
+-                victim = 0;
+-                for (int i = 1; i < cache->resident_count; i++)
+-                    if (cache->entries[i].clock < cache->entries[victim].clock) victim = i;
++                for (int i = 0; i < cache->resident_count; i++)
++                    if (!cache->entries[i].busy && !cache->entries[i].pool &&
++                        (victim < 0 || cache->entries[i].clock < cache->entries[victim].clock))
++                        victim = i;
++            }
++            if (guard && victim >= 0 && cache->entries[victim].epoch == cache->epoch) {
++                int safe = v4_gpu_mirror_victim_safe(cache, cache->resident_count,
++                                                     v4_gpu_hot_cache_wanted());
++                if (safe >= 0 || fill) victim = safe;   /* the host path may keep it */
++                cache->guard_skips++;
++            }
++            if (victim < 0) {   /* every resident mirror is being loaded or in use */
++                if (fill) cache->refusals++;
++                pthread_mutex_unlock(&cache->mutex);
++                return fill ? 2 : -1;
+             }
+             uint64_t victim_freq = (victim >= 0 && victim < cache->count) ? cache->entries[victim].frequency : 0;
+             if (frequency > victim_freq || stream_slots <= 0) {
+                 /* PROMOTION (frequency > victim): promote incoming expert to permanent VRAM mirror,
+                  * demoting the victim expert from VRAM -> RAM. */
+                 found = victim;
+-                if (cache->entries[found].gate && cache->entries[found].up &&
+-                    cache->entries[found].down &&
+-                    view->gate.data && view->gate.scales &&
+-                    view->up.data && view->up.scales &&
+-                    view->down.data && view->down.scales &&
+-                    dsv4_cuda_tensor_refill_fp4(
+-                        cache->entries[found].gate, (const uint8_t *)view->gate.data,
+-                        (const uint8_t *)view->gate.scales, (int)view->gate.rows,
+-                        (int)view->gate.columns, 0) &&
+-                    dsv4_cuda_tensor_refill_fp4(
+-                        cache->entries[found].up, (const uint8_t *)view->up.data,
+-                        (const uint8_t *)view->up.scales, (int)view->up.rows,
+-                        (int)view->up.columns, 0) &&
+-                    dsv4_cuda_tensor_refill_fp4(
+-                        cache->entries[found].down, (const uint8_t *)view->down.data,
+-                        (const uint8_t *)view->down.scales, (int)view->down.rows,
+-                        (int)view->down.columns, sync)) {
++                if (fill && cache->entries[found].gate && cache->entries[found].up &&
++                    cache->entries[found].down)
++                    return v4_gpu_mirror_fill_unlocked(cache, found, view, frequency, fill, 1, 1);
++                if (v4_gpu_mirror_refill(cache, &cache->entries[found], view, sync, fill)) {
+                     v4_cuda_priority_mark(cache, cache->entries[found].layer, cache->entries[found].expert, 0);
+                     cache->entries[found].layer = view->key.layer;
+                     cache->entries[found].expert = view->key.expert;
+                     v4_cuda_priority_mark(cache, view->key.layer, view->key.expert, 1);
+                     cache->entries[found].clock = ++cache->clock;
++                    cache->entries[found].epoch = cache->epoch;
+                     cache->entries[found].frequency = frequency;
+                     view->gate.gpu = cache->entries[found].gate;
+                     view->up.gpu = cache->entries[found].up;
+@@ -14128,29 +14765,44 @@
+             } else {
+                 /* TRANSIENT STREAMING (frequency <= victim): expert is colder than resident mirrors,
+                  * so its persistent residence stays in RAM. It executes on GPU via a transient streaming slot. */
+-                int sidx = cache->resident_count + (cache->stream_cursor++ % stream_slots);
++                int sidx = -1;
++                if (fill && fill->no_stream) {   /* a prefetch guess: the pool or nothing */
++                    int pidx = v4_gpu_mirror_pool_slot(cache);
++                    if (pidx < 0) {
++                        cache->refusals++;
++                        pthread_mutex_unlock(&cache->mutex);
++                        return 2;
++                    }
++                    cache->pool_fills++;
++                    return v4_gpu_mirror_fill_unlocked(cache, pidx, view, frequency, fill, 1, 0);
++                }
++                /* pass 0 keeps off the current epoch's slots; the host path
++                 * falls back to any idle slot (pass 1), a direct load never */
++                for (int pass = guard ? 0 : 1; pass < 2 && sidx < 0; pass++) {
++                    if (pass && fill) break;
++                    for (int tries = 0; tries < stream_slots && sidx < 0; tries++) {
++                        int candidate = cache->resident_count + (cache->stream_cursor++ % stream_slots);
++                        if (candidate >= cache->count) sidx = candidate;
++                        else if (cache->entries[candidate].busy) continue;
++                        else if (pass || cache->entries[candidate].epoch != cache->epoch) sidx = candidate;
++                        else cache->guard_skips++;
++                    }
++                }
++                if (sidx < 0) {
++                    if (fill) cache->refusals++;
++                    pthread_mutex_unlock(&cache->mutex);
++                    return fill ? 2 : -1;
++                }
+                 if (sidx >= cache->count) cache->count = sidx + 1;
+                 found = sidx;
+-                if (cache->entries[found].gate && cache->entries[found].up &&
+-                    cache->entries[found].down &&
+-                    view->gate.data && view->gate.scales &&
+-                    view->up.data && view->up.scales &&
+-                    view->down.data && view->down.scales &&
+-                    dsv4_cuda_tensor_refill_fp4(
+-                        cache->entries[found].gate, (const uint8_t *)view->gate.data,
+-                        (const uint8_t *)view->gate.scales, (int)view->gate.rows,
+-                        (int)view->gate.columns, 0) &&
+-                    dsv4_cuda_tensor_refill_fp4(
+-                        cache->entries[found].up, (const uint8_t *)view->up.data,
+-                        (const uint8_t *)view->up.scales, (int)view->up.rows,
+-                        (int)view->up.columns, 0) &&
+-                    dsv4_cuda_tensor_refill_fp4(
+-                        cache->entries[found].down, (const uint8_t *)view->down.data,
+-                        (const uint8_t *)view->down.scales, (int)view->down.rows,
+-                        (int)view->down.columns, sync)) {
++                if (fill && cache->entries[found].gate && cache->entries[found].up &&
++                    cache->entries[found].down)
++                    return v4_gpu_mirror_fill_unlocked(cache, found, view, frequency, fill, 1, 0);
++                if (v4_gpu_mirror_refill(cache, &cache->entries[found], view, sync, fill)) {
+                     cache->entries[found].layer = view->key.layer;
+                     cache->entries[found].expert = view->key.expert;
+                     cache->entries[found].clock = ++cache->clock;
++                    cache->entries[found].epoch = cache->epoch;
+                     cache->entries[found].frequency = frequency;
+                     view->gate.gpu = cache->entries[found].gate;
+                     view->up.gpu = cache->entries[found].up;
+@@ -14175,29 +14827,11 @@
+         cache->entries[found].gate = NULL;
+         cache->entries[found].up = NULL;
+         cache->entries[found].down = NULL;
++        if (fill)
++            return v4_gpu_mirror_fill_unlocked(cache, found, view, frequency, fill, 0,
++                                               found < resident_cap);
+         Dsv4CudaTensor *gate = NULL, *up = NULL, *down = NULL;
+-        int ok = (view->gate.data && view->gate.scales &&
+-                  view->gate.rows > 0 && view->gate.columns > 0 &&
+-                  dsv4_cuda_upload_fp4(
+-                      &gate, (const uint8_t *)view->gate.data,
+-                      (const uint8_t *)view->gate.scales,
+-                      (int)view->gate.rows, (int)view->gate.columns,
+-                      cache->device));
+-        if (ok)
+-            ok = (view->up.data && view->up.scales && view->up.rows > 0 &&
+-                  view->up.columns > 0 &&
+-                  dsv4_cuda_upload_fp4(
+-                      &up, (const uint8_t *)view->up.data,
+-                      (const uint8_t *)view->up.scales, (int)view->up.rows,
+-                      (int)view->up.columns, cache->device));
+-        if (ok)
+-            ok = (view->down.data && view->down.scales &&
+-                  view->down.rows > 0 && view->down.columns > 0 &&
+-                  dsv4_cuda_upload_fp4(
+-                      &down, (const uint8_t *)view->down.data,
+-                      (const uint8_t *)view->down.scales,
+-                      (int)view->down.rows, (int)view->down.columns,
+-                      cache->device));
++        int ok = v4_gpu_mirror_create(cache, view, &gate, &up, &down, fill);
+         if (!ok) {
+             if (gate) dsv4_cuda_tensor_free(gate);
+             if (up) dsv4_cuda_tensor_free(up);
+@@ -14213,6 +14847,8 @@
+         }
+     }
+     cache->entries[found].clock = ++cache->clock;
++    cache->entries[found].epoch = cache->epoch;
++    if (cache->entries[found].pool && !(fill && fill->no_stream)) cache->pool_hits++;
+     if (frequency > cache->entries[found].frequency)
+         cache->entries[found].frequency = frequency;
+     if (found < (cache->resident_count > 0 ? cache->resident_count : cache->count)) {
+@@ -14223,6 +14859,163 @@
+     view->down.gpu = cache->entries[found].down;
+     pthread_mutex_unlock(&cache->mutex);
+     return 0;
++}
++
++static int v4_gpu_expert_attach_cached_ex(V4GpuExpertMirrorCache *cache,
++                                          ColiExpertView *view, int sync,
++                                          uint64_t frequency, int warm_only) {
++    return v4_gpu_expert_attach_cached_fill(cache, view, sync, frequency, warm_only, NULL);
++}
++
++#ifdef _WIN32
++/* WEX direct-to-VRAM: the producer that reconstructs one Neural-rANS record
++ * (compressed bytes in host staging) into a mirror's three fp4 tensors. */
++typedef struct {
++    ColiExpertStore *store;
++    ColiExpertKey key;
++    const WexEntry *entry;
++    unsigned char *record;   /* page-locked staging of this thread */
++    int device;
++} V4WexDirectFill;
++
++static int v4_wex_fill_mirror(void *context, Dsv4CudaTensor *gate, Dsv4CudaTensor *down,
++                              Dsv4CudaTensor *up) {
++    const V4WexDirectFill *f = context;
++    Dsv4CudaTensor *tensors[3] = {gate, down, up};   /* WEX matrix order: w1, w2, w3 */
++    unsigned char *scale[3], *weight[3];
++    for (int m = 0; m < 3; m++) {
++        void *w = NULL, *sc = NULL;
++        int rows = 0, columns = 0;
++        if (!dsv4_cuda_tensor_fp4_buffers(tensors[m], &w, &sc, &rows, &columns) ||
++            rows != (int)f->entry->weight_shapes[m][0] ||
++            columns != (int)f->entry->weight_shapes[m][1] * 2)
++            return -1;
++        scale[m] = sc;
++        weight[m] = w;
++    }
++    /* the mirror is reserved: nobody else reads this record meanwhile. The RAM
++     * cache of compressed records serves it when it can; otherwise the record
++     * comes from disk into a cache slot (kept) or this thread's staging. */
++    unsigned char *record = f->record;
++    int hit = 0, slot = coli_v4_wex_crc_get(f->store, f->key, f->entry, &record, &hit);
++    if (slot < 0) record = f->record;
++    if (!hit && coli_v4_expert_store_wex_read(f->store, f->key, f->entry, record)) {
++        if (slot >= 0) coli_v4_wex_crc_done(f->store, slot, 0);
++        return -1;
++    }
++    int status = coli_wex_cuda_decode_to_device(f->entry, record, f->device, scale, weight);
++    if (slot >= 0) coli_v4_wex_crc_done(f->store, slot, hit || status == 0);
++    return status;
++}
++
++static int v4_wex_gpu_direct_enabled(void) {
++    static int enabled = -1;
++    if (enabled < 0) {
++        const char *setting = getenv("COLI_WEX_GPU_DIRECT");
++        int wanted = setting && atoi(setting) != 0;
++        enabled = wanted && coli_wex_cuda_device_available() && dsv4_cuda_wex_direct_available()
++            ? atoi(setting) : 0;
++        if (wanted && !enabled)
++            fprintf(stderr, "[v4_wex] COLI_WEX_GPU_DIRECT needs kaira_wex_cuda.dll with "
++                            "wex_cuda_decode_to_device and a CUDA backend with "
++                            "dsv4_cuda_tensor_alloc_fp4; staying on the host slab path\n");
++        else if (enabled)
++            fprintf(stderr, "[v4_wex] GPU-direct Neural-rANS reconstruction enabled: "
++                            "VRAM-first misses outside RAM skip the host slab%s\n",
++                    enabled >= 2 ? "; the next-layer prefetcher loads them to VRAM too" : "");
++    }
++    return enabled;
++}
++#endif
++
++/* COLI_WEX_GPU_DIRECT=2: prefetch guesses below COLI_WEX_GPU_DIRECT_PREFETCH_RANK
++ * (default 6, the experts a token routes per layer) go straight to VRAM; weaker
++ * guesses keep the RAM prefetch, so a miss costs a RAM slot, not a VRAM mirror. */
++int coli_v4_gpu_wex_direct_prefetch(int rank) {
++#ifdef _WIN32
++    static int limit = -1;
++    if (limit < 0) {
++        const char *setting = getenv("COLI_WEX_GPU_DIRECT_PREFETCH_RANK");
++        limit = setting && *setting ? atoi(setting) : 6;
++        if (limit < 0) limit = 0;
++    }
++    return v4_wex_gpu_direct_enabled() >= 2 && rank < limit;
++#else
++    (void)rank;
++    return 0;
++#endif
++}
++
++static int v4_gpu_expert_attach_wex_credit(ColiExpertStore *store, ColiExpertView *view, int credit);
++
++int coli_v4_gpu_expert_attach_wex(ColiExpertStore *store, ColiExpertView *view) {
++    return v4_gpu_expert_attach_wex_credit(store, view, 1);
++}
++
++int coli_v4_gpu_expert_prefetch_wex(ColiExpertStore *store, ColiExpertView *view) {
++    return v4_gpu_expert_attach_wex_credit(store, view, 0);
++}
++
++static int v4_gpu_expert_attach_wex_credit(ColiExpertStore *store, ColiExpertView *view, int credit) {
++#ifdef _WIN32
++    if (!store || !view || !store->gpu || !v4_wex_gpu_direct_enabled()) return -1;
++    V4GpuExpertMirrorCache *cache = (V4GpuExpertMirrorCache *)store->gpu;
++    /* one page-locked staging buffer per loader lane: the whole direct load,
++     * read and reconstruction, runs synchronously on this thread */
++    static __thread unsigned char *staging;
++    static __thread size_t staging_bytes;
++    size_t need = (size_t)coli_v4_expert_store_record_bytes(store);
++    need = (need + WEX_ALIGN - 1u) & ~(size_t)(WEX_ALIGN - 1u);
++    if (!need) return -1;
++    if (staging_bytes < need) {
++        /* the record size is fixed per model: this happens once per thread */
++        staging = _aligned_malloc(need, WEX_ALIGN);
++        staging_bytes = staging ? need : 0;
++        if (!staging) return -1;
++        (void)coli_wex_cuda_host_register(staging, need);   /* pageable still works */
++    }
++    ColiExpertKey key = view->key;
++    const WexEntry *entry = coli_v4_expert_store_wex_entry(store, key, staging_bytes);
++    if (!entry) return -1;
++    memset(view, 0, sizeof(*view));
++    view->key = key;
++    ColiTensorView *tensors[3] = {&view->gate, &view->down, &view->up};
++    for (int m = 0; m < 3; m++) {
++        ColiTensorView *t = tensors[m];
++        t->format = COLI_TENSOR_FP4_NATIVE_BLOCK;
++        t->scale_format = COLI_SCALE_UE8M0;
++        t->rows = entry->weight_shapes[m][0];
++        t->columns = (size_t)entry->weight_shapes[m][1] * 2u;
++        t->data_bytes = (size_t)entry->weight_shapes[m][0] * entry->weight_shapes[m][1];
++        t->scale_bytes = (size_t)entry->scale_shapes[m][0] * entry->scale_shapes[m][1];
++        t->block_rows = 1;
++        t->block_columns = 32;
++    }
++    V4WexDirectFill context = {store, key, entry, staging, cache->device};
++    V4GpuMirrorFill fill = {v4_wex_fill_mirror, &context, !credit};
++    int status = v4_gpu_expert_attach_cached_fill(cache, view, 1,
++        coli_v4_expert_store_frequency(store, key), 0, &fill);
++    if (status != 0 || !view->gate.gpu || !view->up.gpu || !view->down.gpu) {
++        if (status != 2) coli_v4_wex_direct_note(0, 0);   /* 2: no free mirror, nothing read */
++        memset(view, 0, sizeof(*view));
++        view->key = key;
++        return -1;
++    }
++    /* a host-free view, like a VRAM hit: device handles only, no lease */
++    ColiTensorView *clear[3] = {&view->gate, &view->down, &view->up};
++    for (int m = 0; m < 3; m++) {
++        void *gpu = clear[m]->gpu;
++        memset(clear[m], 0, sizeof(*clear[m]));
++        clear[m]->gpu = gpu;
++    }
++    if (credit)   /* a prefetch is a guess, not a routing */
++        coli_v4_expert_store_note_routed(store, key);
++    coli_v4_wex_direct_note(1, entry->total_bytes);
++    return 0;
++#else
++    (void)store; (void)view; (void)credit;
++    return -1;
++#endif
+ }
+ 
+ int coli_v4_gpu_expert_attach(ColiExpertStore *store, ColiExpertView *view) {
+@@ -14249,6 +15042,14 @@
+     return v4_gpu_expert_attach_cached_ex(
+         (V4GpuExpertMirrorCache *)store->gpu, view, 0,
+         coli_v4_expert_store_frequency(store, view->key), 0);
++}
++
++void coli_v4_gpu_mirror_step(ColiExpertStore *store) {
++    if (!store || !store->gpu) return;
++    V4GpuExpertMirrorCache *cache = (V4GpuExpertMirrorCache *)store->gpu;
++    pthread_mutex_lock(&cache->mutex);
++    cache->epoch++;
++    pthread_mutex_unlock(&cache->mutex);
+ }
+ 
+ extern int dsv4_cuda_stream_drain(int device);
+@@ -14272,9 +15073,12 @@
+     for (int i = 0; i < limit; i++) {
+         if (cache->entries[i].layer == view->key.layer &&
+             cache->entries[i].expert == view->key.expert &&
++            !cache->entries[i].busy &&
+             cache->entries[i].gate && cache->entries[i].up &&
+             cache->entries[i].down) {
+             cache->entries[i].clock = ++cache->clock;
++            cache->entries[i].epoch = cache->epoch;
++            if (routed && cache->entries[i].pool) cache->pool_hits++;
+             if (routed && cache->entries[i].frequency != UINT64_MAX)
+                 cache->entries[i].frequency++;
+             view->gate.gpu = cache->entries[i].gate;
+@@ -14312,7 +15116,7 @@
+     if (capacity) *capacity = limit;
+     for (int i = 0; i < limit; i++) {
+         const V4GpuExpertMirror *m = &cache->entries[i];
+-        if (!m->gate || !m->up || !m->down) continue;
++        if (m->busy || !m->gate || !m->up || !m->down) continue;
+         if (bits) {
+             if (m->layer < 0 || m->layer >= rows || m->expert < 0 || m->expert >= cols)
+                 continue;
+--- a/deepseek_v4_internal.h
++++ b/deepseek_v4_internal.h
+@@ -1054,6 +1054,37 @@
+ int coli_v4_gpu_expert_attach_async(ColiExpertStore *store,
+                                     ColiExpertView *view);
+ int coli_v4_gpu_expert_drain(ColiExpertStore *store);
++/* WEX direct-to-VRAM (COLI_WEX_GPU_DIRECT=1, Windows): a VRAM-first routed
++ * expert whose WEX record is Neural-rANS and that the RAM cache does not hold is
++ * read compressed and reconstructed by kaira_wex_cuda.dll straight into its fp4
++ * mirror. 0: the view carries only device handles, like a VRAM hit; non-zero:
++ * not applicable or failed, the caller takes the ordinary host lookup. */
++int coli_v4_gpu_expert_attach_wex(ColiExpertStore *store, ColiExpertView *view);
++/* The prefetcher's twin: same load, no routing credit (it is a guess). */
++int coli_v4_gpu_expert_prefetch_wex(ColiExpertStore *store, ColiExpertView *view);
++/* COLI_WEX_GPU_DIRECT=2: the next-layer prefetcher uses the direct load too. */
++int coli_v4_gpu_wex_direct_prefetch(int rank);
++/* A decode MoE layer finished computing: mirrors handed out before become
++ * recyclable by WEX direct loads (which write outside the backend's stream). */
++void coli_v4_gpu_mirror_step(ColiExpertStore *store);
++#ifdef _WIN32
++#include "wex_format.h"
++#include "wex_decode.h"
++const WexEntry *coli_v4_expert_store_wex_compressed(ColiExpertStore *store, ColiExpertKey key,
++                                                    unsigned char *dst, size_t capacity);
++/* the record when it is Neural-rANS, fits capacity and RAM does not hold it */
++const WexEntry *coli_v4_expert_store_wex_entry(ColiExpertStore *store, ColiExpertKey key,
++                                               size_t capacity);
++/* read that record's compressed bytes into dst (4096-aligned); 0 on success */
++int coli_v4_expert_store_wex_read(ColiExpertStore *store, ColiExpertKey key,
++                                  const WexEntry *entry, unsigned char *dst);
++void coli_v4_wex_direct_note(int ok, uint64_t bytes);
++/* compressed record cache, the RAM tier of the direct path (COLI_WEX_RAM_CACHE_GB) */
++int coli_v4_wex_crc_get(ColiExpertStore *store, ColiExpertKey key, const WexEntry *entry,
++                        unsigned char **record, int *hit);
++void coli_v4_wex_crc_done(ColiExpertStore *store, int slot, int filled);
++int coli_v4_wex_crc_prewarm(ColiExpertStore *store, const uint64_t *usage, const uint8_t *vram_bits);
++#endif
+ extern double g_v4_hyb_fill_bw, g_v4_hyb_host_bw;
+ extern unsigned long long g_v4_hyb_gpu_n, g_v4_hyb_cpu_n;
+ extern unsigned long long g_v4_hyb_upload_n, g_v4_hyb_skip_n;
+--- a/backend_cuda_dsv4.cu
++++ b/backend_cuda_dsv4.cu
+@@ -1550,15 +1550,20 @@
+ }
+ extern "C" int dsv4_cuda_graph_launch(Dsv4CudaGraph*g){Dev*c=g?ctx(g->device):nullptr;return c&&ok(cudaSetDevice(g->device),"select graph device")&&ok(cudaGraphLaunch(g->exec,c->stream),"launch graph");}
+ extern "C" void dsv4_cuda_graph_free(Dsv4CudaGraph*g){if(!g)return;cudaSetDevice(g->device);if(g->exec)cudaGraphExecDestroy(g->exec);if(g->graph)cudaGraphDestroy(g->graph);free(g);}
++/* The copies go on the backend stream and are drained before returning. A
++ * pageable cudaMemcpy runs on the legacy stream and may return before its DMA
++ * lands, and the compute streams are non-blocking, so kernels queued right after
++ * could read a half-written tensor (seen as a rare token divergence). */
+ static int upload(Dsv4CudaTensor **pt,const void *w,size_t wb,const uint8_t *sc,size_t sb,int O,int I,int d,int fmt){if(*pt)return 1;Dev *c=ctx(d);if(!c||!ok(cudaSetDevice(d),"select upload device"))return 0;Dsv4CudaTensor *t=(Dsv4CudaTensor*)calloc(1,sizeof(*t));t->O=O;t->I=I;t->device=d;t->fmt=fmt;t->bytes=wb+sb;
+-    if(!ok(cudaMalloc(&t->w,wb),"weight allocation")){dsv4_cuda_tensor_free(t);return 0;}t->own_w=1;if(!ok(cudaMemcpy(t->w,w,wb,cudaMemcpyHostToDevice),"weight upload")){dsv4_cuda_tensor_free(t);return 0;}
+-    if(sb){if(!ok(cudaMalloc(&t->scale,sb),"scale allocation")){dsv4_cuda_tensor_free(t);return 0;}t->own_scale=1;if(!ok(cudaMemcpy(t->scale,sc,sb,cudaMemcpyHostToDevice),"scale upload")){dsv4_cuda_tensor_free(t);return 0;}}
++    if(!ok(cudaMalloc(&t->w,wb),"weight allocation")){dsv4_cuda_tensor_free(t);return 0;}t->own_w=1;if(!ok(cudaMemcpyAsync(t->w,w,wb,cudaMemcpyHostToDevice,c->stream),"weight upload")){cudaStreamSynchronize(c->stream);dsv4_cuda_tensor_free(t);return 0;}
++    if(sb){if(!ok(cudaMalloc(&t->scale,sb),"scale allocation")){cudaStreamSynchronize(c->stream);dsv4_cuda_tensor_free(t);return 0;}t->own_scale=1;if(!ok(cudaMemcpyAsync(t->scale,sc,sb,cudaMemcpyHostToDevice,c->stream),"scale upload")){cudaStreamSynchronize(c->stream);dsv4_cuda_tensor_free(t);return 0;}}
+ #ifdef COLI_DSV4_DEEPGEMM
+-    if((fmt==8||fmt==9)&&O%128==0&&I%128==0){size_t db=(size_t)O*(I/128/4)*sizeof(int);if(!ok(cudaMalloc(&t->dg_scale,db),"dense DeepGEMM scale allocation")){dsv4_cuda_tensor_free(t);return 0;}t->own_dg_scale=1;
++    if((fmt==8||fmt==9)&&O%128==0&&I%128==0){size_t db=(size_t)O*(I/128/4)*sizeof(int);if(!ok(cudaMalloc(&t->dg_scale,db),"dense DeepGEMM scale allocation")){cudaStreamSynchronize(c->stream);dsv4_cuda_tensor_free(t);return 0;}t->own_dg_scale=1;
+         if(fmt==9){int groups=O/1024;dg_pack_batched_scale<<<(O*(I/128/4)+255)/256,256,0,c->stream>>>(t->dg_scale,t->scale,O/groups,I/128,groups);}
+         else dg_pack_dense_scale<<<(O*(I/128/4)+255)/256,256,0,c->stream>>>(t->dg_scale,t->scale,O,I/128);
+-        if(!ok(cudaGetLastError(),"dense DeepGEMM scale packing")){dsv4_cuda_tensor_free(t);return 0;}t->bytes+=db;}
+-#endif
++        if(!ok(cudaGetLastError(),"dense DeepGEMM scale packing")){cudaStreamSynchronize(c->stream);dsv4_cuda_tensor_free(t);return 0;}t->bytes+=db;}
++#endif
++    if(!ok(cudaStreamSynchronize(c->stream),"upload drain")){dsv4_cuda_tensor_free(t);return 0;}
+     *pt=t;return 1;}
+ extern "C" int dsv4_cuda_upload_fp8(Dsv4CudaTensor **t,const uint8_t*w,const uint8_t*s,int O,int I,int d){return upload(t,w,(size_t)O*I,s,(size_t)((O+127)/128)*((I+127)/128),O,I,d,8);}
+ extern "C" int dsv4_cuda_upload_fp8_bf16(Dsv4CudaTensor **t,const uint8_t*w,const uint8_t*s,int O,int I,int d){return upload(t,w,(size_t)O*I,s,(size_t)((O+127)/128)*((I+127)/128),O,I,d,9);}
+@@ -1611,11 +1616,31 @@
+            !ok(cudaMemcpyAsync(t->scale,s,sb,cudaMemcpyHostToDevice,c->stream),"refill scale upload"))return 0;
+         if(sync&&!ok(cudaStreamSynchronize(c->stream),"refill drain"))return 0;
+     }else{
+-        if(!ok(cudaMemcpy(t->w,w,wb,cudaMemcpyHostToDevice),"refill weight upload")||
+-           !ok(cudaMemcpy(t->scale,s,sb,cudaMemcpyHostToDevice),"refill scale upload"))return 0;
++        /* pageable: still stream-ordered (a legacy-stream cudaMemcpy could overwrite
++         * bytes that queued kernels still read, or land after the next one starts),
++         * and always drained, as the old synchronous copy was for the caller */
++        if(!ok(cudaMemcpyAsync(t->w,w,wb,cudaMemcpyHostToDevice,c->stream),"refill weight upload")||
++           !ok(cudaMemcpyAsync(t->scale,s,sb,cudaMemcpyHostToDevice,c->stream),"refill scale upload")||
++           !ok(cudaStreamSynchronize(c->stream),"refill drain")){cudaStreamSynchronize(c->stream);return 0;}
+     }
+     return 1;
+ }
++/* WEX direct: an fp4 mirror whose bytes another producer writes on the device
++ * (kaira_wex_cuda.dll reconstructs a compressed expert straight into it), so a
++ * GPU-destined expert never goes through a host slab. Owned buffers, like a
++ * refillable upload; fp4 keeps no derived data, so writing w and scale is all. */
++extern "C" int dsv4_cuda_tensor_alloc_fp4(Dsv4CudaTensor **pt,int O,int I,int d){
++    if(!pt||*pt||O<1||I<32||I%32)return 0;Dev*c=ctx(d);if(!c||!ok(cudaSetDevice(d),"select fp4 alloc device"))return 0;
++    Dsv4CudaTensor*t=(Dsv4CudaTensor*)calloc(1,sizeof(*t));if(!t)return 0;
++    size_t wb=(size_t)O*I/2,sb=(size_t)O*I/32;t->O=O;t->I=I;t->device=d;t->fmt=4;t->bytes=wb+sb;
++    if(!ok(cudaMalloc(&t->w,wb),"fp4 weight allocation")){dsv4_cuda_tensor_free(t);return 0;}t->own_w=1;
++    if(!ok(cudaMalloc(&t->scale,sb),"fp4 scale allocation")){dsv4_cuda_tensor_free(t);return 0;}t->own_scale=1;
++    *pt=t;return 1;}
++/* Linked directly (no Windows loader): the exports above are always present. */
++extern "C" int dsv4_cuda_wex_direct_available(void){return 1;}
++extern "C" int dsv4_cuda_tensor_fp4_buffers(const Dsv4CudaTensor *t,void **w,void **scale,int *O,int *I){
++    if(!t||t->fmt!=4||!t->w||!t->scale)return 0;
++    if(w)*w=t->w;if(scale)*scale=t->scale;if(O)*O=t->O;if(I)*I=t->I;return 1;}
+ extern "C" int dsv4_cuda_upload_bf16(Dsv4CudaTensor **t,const uint16_t*w,int O,int I,int d){return upload(t,w,(size_t)O*I*2,nullptr,0,O,I,d,16);}
+ extern "C" int dsv4_cuda_upload_f32(Dsv4CudaTensor **t,const float*w,int O,int I,int d){return upload(t,w,(size_t)O*I*4,nullptr,0,O,I,d,32);}
+ extern "C" int dsv4_cuda_mhc_pre(const Dsv4CudaActivation*r,Dsv4CudaTensor*fn,Dsv4CudaTensor*scale,Dsv4CudaTensor*base,int M,int H,float rms_eps,float pre_eps,float sink_eps,float post_mult,int sink_iters,Dsv4CudaActivation*state,Dsv4CudaActivation*input){
+--- a/backend_cuda_dsv4.h
++++ b/backend_cuda_dsv4.h
+@@ -21,6 +21,12 @@
+ int dsv4_cuda_upload_bf16(Dsv4CudaTensor **t,const uint16_t *w,int O,int I,int device);
+ /* Same-shape in-place refill of an fp4 mirror (no realloc); sync=1 drains. */
+ int dsv4_cuda_tensor_refill_fp4(Dsv4CudaTensor *t,const uint8_t *w,const uint8_t *scale,int O,int I,int sync);
++/* WEX direct (optional, newer DLLs): allocate an fp4 mirror without copying, and
++ * expose its device buffers to another producer (kaira_wex_cuda.dll). Return 1
++ * on success, 0 when unavailable; dsv4_cuda_wex_direct_available reports both. */
++int dsv4_cuda_tensor_alloc_fp4(Dsv4CudaTensor **t,int O,int I,int device);
++int dsv4_cuda_tensor_fp4_buffers(const Dsv4CudaTensor *t,void **w,void **scale,int *O,int *I);
++int dsv4_cuda_wex_direct_available(void);
+ int dsv4_cuda_upload_f32(Dsv4CudaTensor **t,const float *w,int O,int I,int device);
+ int dsv4_cuda_matvec(Dsv4CudaTensor *t,float *y,const float *x);
+ /* optional export (0 when the DLL predates it): two matvecs, one input */
+--- a/backend_loader_dsv4.c
++++ b/backend_loader_dsv4.c
+@@ -179,6 +179,8 @@
+ typedef long long       (*fn_mem_free_mb)(int device);
+ typedef int             (*fn_device_unified)(int device);
+ typedef int             (*fn_stream_drain)(int device);
++typedef int             (*fn_tensor_alloc_fp4)(Dsv4CudaTensor **t,int O,int I,int device);
++typedef int             (*fn_tensor_fp4_buffers)(const Dsv4CudaTensor *t,void **w,void **scale,int *O,int *I);
+ typedef int             (*fn_host_unpin)(const void *p, size_t len);
+ typedef void            (*fn_host_pin_set)(int enabled, unsigned long long cap_bytes);
+ typedef int             (*fn_kv_ring_append)(int device, int layer, const float *rows,
+@@ -323,6 +325,8 @@
+     fn_mem_free_mb mem_free_mb;
+     fn_device_unified device_unified;     /* optional: older DLLs answer 0 (discrete) */
+     fn_stream_drain stream_drain;                /* optional (older DLLs) */
++    fn_tensor_alloc_fp4 tensor_alloc_fp4;        /* optional: WEX direct-to-VRAM */
++    fn_tensor_fp4_buffers tensor_fp4_buffers;    /* optional: WEX direct-to-VRAM */
+     fn_host_unpin host_unpin;                    /* optional (older DLLs) */
+     fn_host_pin_set host_pin_set;                /* optional (older DLLs) */
+     fn_kv_ring_append kv_ring_append;
+@@ -540,6 +544,9 @@
+     /* optional: an older DLL without the export keeps the whole tier alive;
+      * the engine probes this and simply stays on synchronous attaches. */
+     g_dsv4.stream_drain = (fn_stream_drain)GetProcAddress(g_dsv4.dll, "dsv4_cuda_stream_drain");
++    /* optional: WEX3 experts decoded straight into a mirror; absent = host slab path */
++    g_dsv4.tensor_alloc_fp4 = (fn_tensor_alloc_fp4)GetProcAddress(g_dsv4.dll, "dsv4_cuda_tensor_alloc_fp4");
++    g_dsv4.tensor_fp4_buffers = (fn_tensor_fp4_buffers)GetProcAddress(g_dsv4.dll, "dsv4_cuda_tensor_fp4_buffers");
+     /* optional: without them an elastic RAM cache keeps pageable uploads */
+     g_dsv4.host_unpin = (fn_host_unpin)GetProcAddress(g_dsv4.dll, "dsv4_cuda_host_unpin");
+     g_dsv4.host_pin_set = (fn_host_pin_set)GetProcAddress(g_dsv4.dll, "dsv4_cuda_host_pin_set");
+@@ -921,6 +928,20 @@
+     return g_dsv4.device_unified(device);
+ }
+ 
++int dsv4_cuda_tensor_alloc_fp4(Dsv4CudaTensor **t,int O,int I,int device){
++    if(!g_dsv4.available || !g_dsv4.tensor_alloc_fp4) return 0;
++    return g_dsv4.tensor_alloc_fp4(t,O,I,device);
++}
++
++int dsv4_cuda_tensor_fp4_buffers(const Dsv4CudaTensor *t,void **w,void **scale,int *O,int *I){
++    if(!g_dsv4.available || !g_dsv4.tensor_fp4_buffers) return 0;
++    return g_dsv4.tensor_fp4_buffers(t,w,scale,O,I);
++}
++
++int dsv4_cuda_wex_direct_available(void){
++    return g_dsv4.available && g_dsv4.tensor_alloc_fp4 && g_dsv4.tensor_fp4_buffers && g_dsv4.stream_drain;
++}
++
+ int dsv4_cuda_stream_drain(int device){
+     /* Without the DLL there is never in-flight DMA to wait for, so a drain
+      * trivially succeeds. With an older DLL that lacks the export, report
+--- a/dsv4.def
++++ b/dsv4.def
+@@ -52,6 +52,8 @@
+     dsv4_cuda_fp8_ref_matmul_tensor
+     dsv4_cuda_indexer_score_heads
+     dsv4_cuda_tensor_refill_fp4
++    dsv4_cuda_tensor_alloc_fp4
++    dsv4_cuda_tensor_fp4_buffers
+     dsv4_cuda_backend_arch_ok
+     dsv4_cuda_backend_name
+     dsv4_cuda_kv_ring_append
+--- a/wex_decode.c
++++ b/wex_decode.c
+@@ -16,7 +16,16 @@
+ #ifdef _WIN32
+ typedef int (*WexCudaDecodeFn)(const WexEntry *, unsigned char *, size_t);
+ typedef unsigned int (*WexCudaAbiFn)(void);
++typedef int (*WexCudaDeviceFn)(const WexEntry *, const unsigned char *, int, unsigned char *const *, unsigned char *const *);
++typedef int (*WexCudaRegisterFn)(void *, size_t);
++typedef int (*WexCudaUnregisterFn)(void *);
++typedef int (*WexCudaModelFn)(const unsigned char *, size_t);
++static WexCudaUnregisterFn wex_cuda_unregister_fn;
+ static WexCudaDecodeFn wex_cuda_decode_fn;
++static WexCudaModelFn wex_cuda_model_fn;     /* optional feature: WNR2 records */
++static WexCudaDeviceFn wex_cuda_device_fn;   /* optional feature: direct to VRAM */
++static WexCudaRegisterFn wex_cuda_register_fn;
++static volatile LONG64 wex_cuda_device_successes;
+ static pthread_once_t wex_cuda_once = PTHREAD_ONCE_INIT;
+ static volatile LONG64 wex_cuda_successes;
+ static volatile LONG wex_cuda_failure_reported;
+@@ -54,11 +63,150 @@
+     symbol = GetProcAddress(library, "wex_cuda_decode_to_host");
+     if (symbol) memcpy(&wex_cuda_decode_fn, &symbol, sizeof(wex_cuda_decode_fn));
+     if (!wex_cuda_decode_fn) { FreeLibrary(library); return; }
++    {
++        WexCudaAbiFn features = NULL;
++        symbol = GetProcAddress(library, "wex_cuda_helper_features");
++        if (symbol) memcpy(&features, &symbol, sizeof(features));
++        if (features && (features() & 1u)) {
++            symbol = GetProcAddress(library, "wex_cuda_decode_to_device");
++            if (symbol) memcpy(&wex_cuda_device_fn, &symbol, sizeof(wex_cuda_device_fn));
++        }
++        if (features && (features() & 2u)) {
++            symbol = GetProcAddress(library, "wex_cuda_host_register");
++            if (symbol) memcpy(&wex_cuda_register_fn, &symbol, sizeof(wex_cuda_register_fn));
++            symbol = GetProcAddress(library, "wex_cuda_host_unregister");
++            if (symbol) memcpy(&wex_cuda_unregister_fn, &symbol, sizeof(wex_cuda_unregister_fn));
++        }
++        if (features && (features() & 4u)) {
++            symbol = GetProcAddress(library, "wex_cuda_register_model");
++            if (symbol) memcpy(&wex_cuda_model_fn, &symbol, sizeof(wex_cuda_model_fn));
++        }
++    }
+     /* The helper owns thread-local CUDA buffers; retain it until process exit. */
+     fprintf(stderr, "[wex] Neural CUDA reconstruction enabled: %s\n", path);
+ }
+ #endif
+ 
++/* WNR2 model registry: a few containers per process at most, never freed, so
++ * a found pointer stays valid without holding the lock. */
++#define WEX_NR2_MAX_MODELS 16
++static pthread_mutex_t wex_nr2_mutex = PTHREAD_MUTEX_INITIALIZER;
++static WexNr2Model wex_nr2_models[WEX_NR2_MAX_MODELS];
++static int wex_nr2_model_count;
++#ifdef _WIN32
++static int wex_nr2_helper_ids[WEX_NR2_MAX_MODELS];   /* registered with the helper too */
++#endif
++
++int coli_wex_register_model(const unsigned char *blob, size_t bytes, uint32_t *id) {
++    WexNr2Model probe;
++    int i, index = -1, result = 0;
++    if (wex_nr2_model_open(blob, bytes, &probe)) return -1;
++    pthread_mutex_lock(&wex_nr2_mutex);
++    for (i = 0; i < wex_nr2_model_count; i++)
++        if (wex_nr2_models[i].id == probe.id) {
++            if (memcmp(wex_nr2_models[i].blob, blob, bytes)) result = -1;   /* hash collision */
++            index = i;
++            break;
++        }
++    if (index < 0 && !result) {
++        unsigned char *copy = wex_nr2_model_count < WEX_NR2_MAX_MODELS ? malloc(bytes) : NULL;
++        if (!copy) result = -1;
++        else {
++            memcpy(copy, blob, bytes);
++            index = wex_nr2_model_count;
++            if (wex_nr2_model_open(copy, bytes, &wex_nr2_models[index])) { free(copy); result = -1; }
++            else wex_nr2_model_count++;
++        }
++    }
++#ifdef _WIN32
++    if (!result) {
++        pthread_once(&wex_cuda_once, wex_cuda_initialize);
++        if (wex_cuda_model_fn && !wex_nr2_helper_ids[index])
++            wex_nr2_helper_ids[index] = !wex_cuda_model_fn(wex_nr2_models[index].blob, bytes);
++    }
++#endif
++    pthread_mutex_unlock(&wex_nr2_mutex);
++    if (!result && id) *id = probe.id;
++    return result;
++}
++
++static const WexNr2Model *wex_nr2_find(uint32_t id, int *in_helper) {
++    const WexNr2Model *found = NULL;
++    int i;
++    pthread_mutex_lock(&wex_nr2_mutex);
++    for (i = 0; i < wex_nr2_model_count; i++)
++        if (wex_nr2_models[i].id == id) {
++            found = &wex_nr2_models[i];
++#ifdef _WIN32
++            if (in_helper) *in_helper = wex_nr2_helper_ids[i];
++#endif
++            break;
++        }
++    pthread_mutex_unlock(&wex_nr2_mutex);
++    return found;
++}
++
++int coli_wex_cuda_nr2_available(void) {
++#ifdef _WIN32
++    pthread_once(&wex_cuda_once, wex_cuda_initialize);
++    return wex_cuda_model_fn != NULL;
++#else
++    return 0;
++#endif
++}
++
++int coli_wex_cuda_device_available(void) {
++#ifdef _WIN32
++    pthread_once(&wex_cuda_once, wex_cuda_initialize);
++    return wex_cuda_device_fn != NULL;
++#else
++    return 0;
++#endif
++}
++
++int coli_wex_cuda_decode_to_device(const WexEntry *entry, const unsigned char *record, int device,
++                                   unsigned char *const dst_scale[3], unsigned char *const dst_weight[3]) {
++#ifdef _WIN32
++    if (!entry || (entry->flags != WEX_ENTRY_NEURAL_RANS && entry->flags != WEX_ENTRY_NEURAL_RANS2)) return -1;
++    pthread_once(&wex_cuda_once, wex_cuda_initialize);
++    if (!wex_cuda_device_fn || (entry->flags == WEX_ENTRY_NEURAL_RANS2 && !wex_cuda_model_fn)) return 1;
++    int status = wex_cuda_device_fn(entry, record, device, dst_scale, dst_weight);
++    if (!status) InterlockedIncrement64(&wex_cuda_device_successes);
++    return status;
++#else
++    (void)entry; (void)record; (void)device; (void)dst_scale; (void)dst_weight;
++    return 1;
++#endif
++}
++
++int coli_wex_cuda_host_register(void *pointer, size_t bytes) {
++#ifdef _WIN32
++    pthread_once(&wex_cuda_once, wex_cuda_initialize);
++    return wex_cuda_register_fn ? wex_cuda_register_fn(pointer, bytes) : 1;
++#else
++    (void)pointer; (void)bytes;
++    return 1;
++#endif
++}
++
++int coli_wex_cuda_host_unregister(void *pointer) {
++#ifdef _WIN32
++    pthread_once(&wex_cuda_once, wex_cuda_initialize);
++    return wex_cuda_unregister_fn ? wex_cuda_unregister_fn(pointer) : 1;
++#else
++    (void)pointer;
++    return 1;
++#endif
++}
++
++uint64_t coli_wex_cuda_device_decode_count(void) {
++#ifdef _WIN32
++    return (uint64_t)InterlockedCompareExchange64(&wex_cuda_device_successes, 0, 0);
++#else
++    return 0;
++#endif
++}
++
+ uint64_t coli_wex_cuda_decode_count(void) {
+ #ifdef _WIN32
+     return (uint64_t)InterlockedCompareExchange64(&wex_cuda_successes, 0, 0);
+@@ -68,8 +216,19 @@
+ }
+ 
+ int coli_wex_decode_record(const WexEntry *entry, unsigned char *slab, size_t capacity) {
+-#ifdef _WIN32
+-    if (entry && entry->flags == WEX_ENTRY_NEURAL_RANS) {
++    const WexNr2Model *model = NULL;
++    int in_helper = 0;
++    if (entry && entry->flags == WEX_ENTRY_NEURAL_RANS2) {
++        /* the record names its model at bytes 4..7 */
++        size_t at = wex_record_read_offset(entry);
++        if (!slab || !at || at > capacity || entry->total_bytes < WEX_NR2_HEADER_BYTES ||
++            entry->total_bytes > capacity - at) return -1;
++        model = wex_nr2_find(wex_read_u32_le(slab + at + 4u), &in_helper);
++        if (!model) return -1;
++    }
++#ifdef _WIN32
++    if (entry && (entry->flags == WEX_ENTRY_NEURAL_RANS ||
++                  (entry->flags == WEX_ENTRY_NEURAL_RANS2 && in_helper))) {
+         pthread_once(&wex_cuda_once, wex_cuda_initialize);
+         if (wex_cuda_decode_fn) {
+             int status = wex_cuda_decode_fn(entry, slab, capacity);
+@@ -82,5 +241,6 @@
+         }
+     }
+ #endif
++    if (model) return wex_decode_nr2_record(entry, slab, capacity, model);
+     return wex_decode_record(entry, slab, capacity);
+ }
+--- a/wex_decode.h
++++ b/wex_decode.h
+@@ -24,6 +24,27 @@
+ int coli_wex_decode_record(const WexEntry *entry, unsigned char *slab, size_t capacity);
+ uint64_t coli_wex_cuda_decode_count(void);
+ 
++/* Direct to VRAM (helper feature, optional): reconstruct a Neural-rANS record
++ * held in host memory (entry->total_bytes) into caller-owned device buffers,
++ * matrix m's scales to dst_scale[m] and weights to dst_weight[m]. Returns 0,
++ * 1 when the helper/feature/CUDA is unavailable, -1 for invalid input; the
++ * destination is untouched unless it returns 0. */
++int coli_wex_cuda_device_available(void);
++int coli_wex_cuda_decode_to_device(const WexEntry *entry, const unsigned char *record, int device,
++                                   unsigned char *const dst_scale[3], unsigned char *const dst_weight[3]);
++/* Page-lock a staging buffer through the helper's runtime (0 = registered). */
++int coli_wex_cuda_host_register(void *pointer, size_t bytes);
++int coli_wex_cuda_host_unregister(void *pointer);
++uint64_t coli_wex_cuda_device_decode_count(void);
++
++/* WNR2 records name a container-level model by id. A container registers its
++ * model blob at open (process-wide, kept until exit; registering the same
++ * model again is a no-op); the CPU decoder and the CUDA helper both use it.
++ * Returns 0 and the model id, or -1 for an invalid blob or a full registry. */
++int coli_wex_register_model(const unsigned char *blob, size_t bytes, uint32_t *id);
++/* 1 when the CUDA helper decodes WNR2 records (direct to VRAM included). */
++int coli_wex_cuda_nr2_available(void);
++
+ #ifdef __cplusplus
+ }
+ #endif
+--- a/wex_neural_rans.h
++++ b/wex_neural_rans.h
+@@ -7,6 +7,7 @@
+  */
+ #include <stdint.h>
+ #include <stddef.h>
++#include <string.h>
+ #define WEX_NR_MAGIC UINT32_C(0x31524e57)
+ #define WEX_NR_CHUNK_SYMBOLS 1024u
+ #define WEX_NR_L (1u << 23)
+@@ -111,4 +112,407 @@
+     }
+     return 0;
+ }
++
++/* ---------------------------------------------------------------------------
++ * WNR2: the same exact rANS, with the probability model moved out of the
++ * records into one container-level model blob ("WNM2", trained on the experts
++ * of that container), richer contexts and long streams.
++ *
++ * Weights: matrix m (gate w1, down w2, up w3), symbol i in row-major order,
++ * 32-weight block b = i / 32 whose UE8M0 scale is s. At each block start
++ * srel = clamp(s - median_m, -3, 3) + 3, previous magnitude pm = 8 (none) and
++ * block maximum so far mx = 8 (none); after symbol x, pm = x & 7 and mx =
++ * max(mx, x & 7). Context = (srel * 9 + pm) * 9 + mx, one of 567, each with a
++ * 16-symbol CDF. Scales: one 256-symbol CDF per matrix. All CDFs are integer,
++ * total 1 << 14, every symbol encodable (frequency >= 1).
++ *
++ * Record: 32-byte header {magic, model_id, scale_payload_bytes,
++ * weight_payload_bytes, weight_chunk, scale_chunk, median[3], 0, 0}, then
++ * u16 lengths of every scale stream and every weight stream, the scale
++ * payload and the weight payload, zero-padded to 4096. Streams never cross a
++ * matrix: matrix m has ceil(count_m / chunk) of them. Each stream is a 4-byte
++ * big-endian initial state plus renormalization bytes; it must end exactly at
++ * its length with the state back at WEX_NR_L.
++ * ------------------------------------------------------------------------- */
++#define WEX_NR2_MAGIC UINT32_C(0x32524e57)        /* "WNR2" record */
++#define WEX_NR2_MODEL_MAGIC UINT32_C(0x324d4e57)  /* "WNM2" model */
++#define WEX_NR2_PRECISION 14u
++#define WEX_NR2_TOTAL (1u << WEX_NR2_PRECISION)
++#define WEX_NR2_CONTEXTS 567u
++#define WEX_NR2_HEADER_BYTES 32u
++#define WEX_NR2_MODEL_HEADER_BYTES 32u
++#define WEX_NR2_WCDF_BYTES (3u * WEX_NR2_CONTEXTS * 17u * 2u)
++#define WEX_NR2_SCDF_BYTES (3u * 257u * 2u)
++#define WEX_NR2_MODEL_BYTES (WEX_NR2_MODEL_HEADER_BYTES + WEX_NR2_WCDF_BYTES + WEX_NR2_SCDF_BYTES)
++#define WEX_NR2_MIN_WEIGHT_CHUNK 512u
++#define WEX_NR2_MIN_SCALE_CHUNK 256u
++#define WEX_NR2_MAX_CHUNK 16384u
++
++typedef struct {
++    uint32_t scale_count[3];    /* UE8M0 scales of each matrix */
++    uint32_t symbol_count[3];   /* 4-bit weights of each matrix (two per byte) */
++} WexNr2Layout;
++
++typedef struct {
++    const unsigned char *blob;  /* WEX_NR2_MODEL_BYTES, validated */
++    uint32_t id;
++} WexNr2Model;
++
++typedef struct {
++    const unsigned char *lengths, *scale_payload, *weight_payload;
++    uint32_t model_id, scale_payload_bytes, weight_payload_bytes;
++    uint32_t weight_chunk, scale_chunk, scale_streams, weight_streams, metadata_bytes;
++    unsigned char median[3];
++} WexNr2Record;
++
++static inline uint32_t wex_nr2_fnv1a(const unsigned char *p, size_t n) {
++    uint32_t h = UINT32_C(2166136261);
++    size_t i;
++    for (i = 0; i < n; i++) { h ^= p[i]; h *= UINT32_C(16777619); }
++    return h ? h : 1u;   /* 0 never names a model */
++}
++
++static inline const unsigned char *wex_nr2_weight_cdf(const WexNr2Model *m, uint32_t matrix, uint32_t context) {
++    return m->blob + WEX_NR2_MODEL_HEADER_BYTES + ((size_t)matrix * WEX_NR2_CONTEXTS + context) * 34u;
++}
++static inline const unsigned char *wex_nr2_scale_cdf(const WexNr2Model *m, uint32_t matrix) {
++    return m->blob + WEX_NR2_MODEL_HEADER_BYTES + WEX_NR2_WCDF_BYTES + (size_t)matrix * 514u;
++}
++
++static inline int wex_nr2_cdf_ok(const unsigned char *cdf, uint32_t symbols) {
++    uint32_t s;
++    if (wex_nr_u16(cdf) || wex_nr_u16(cdf + symbols * 2u) != WEX_NR2_TOTAL) return 0;
++    for (s = 0; s < symbols; s++)
++        if (wex_nr_u16(cdf + s * 2u) >= wex_nr_u16(cdf + s * 2u + 2u)) return 0;
++    return 1;
++}
++
++/* Validate a model blob; model->id is its FNV-1a hash. */
++static inline int wex_nr2_model_open(const unsigned char *blob, size_t bytes, WexNr2Model *model) {
++    uint32_t i;
++    WexNr2Model m;
++    if (!blob || !model || bytes != WEX_NR2_MODEL_BYTES ||
++        wex_nr_u32(blob) != WEX_NR2_MODEL_MAGIC || wex_nr_u32(blob + 4u) != 1u ||
++        wex_nr_u32(blob + 8u) != WEX_NR2_PRECISION || wex_nr_u32(blob + 12u) != WEX_NR2_CONTEXTS ||
++        wex_nr_u32(blob + 16u) != 3u || wex_nr_u32(blob + 20u) || wex_nr_u32(blob + 24u) ||
++        wex_nr_u32(blob + 28u)) return -1;
++    m.blob = blob; m.id = 0;
++    for (i = 0; i < 3u * WEX_NR2_CONTEXTS; i++)
++        if (!wex_nr2_cdf_ok(wex_nr2_weight_cdf(&m, i / WEX_NR2_CONTEXTS, i % WEX_NR2_CONTEXTS), 16u)) return -1;
++    for (i = 0; i < 3u; i++)
++        if (!wex_nr2_cdf_ok(wex_nr2_scale_cdf(&m, i), 256u)) return -1;
++    m.id = wex_nr2_fnv1a(blob, bytes);
++    *model = m;
++    return 0;
++}
++
++static inline uint32_t wex_nr2_streams(uint32_t count, uint32_t chunk) {
++    return (uint32_t)(((uint64_t)count + chunk - 1u) / chunk);
++}
++static inline int wex_nr2_pow2_in(uint32_t v, uint32_t lo, uint32_t hi) {
++    return v >= lo && v <= hi && !(v & (v - 1u));
++}
++
++/* Parse and validate a record against its layout; expected_model 0 skips the
++ * model check (the caller then compares view->model_id itself). */
++static inline int wex_nr2_parse(const unsigned char *record, size_t total, const WexNr2Layout *layout,
++                                uint32_t expected_model, WexNr2Record *view) {
++    uint64_t meta, disk, sum = 0;
++    uint32_t m, s, scale_streams = 0, weight_streams = 0;
++    WexNr2Record v;
++    if (!record || !layout || !view || total < WEX_NR2_HEADER_BYTES || (total & 4095u) ||
++        wex_nr_u32(record) != WEX_NR2_MAGIC || record[27] || wex_nr_u32(record + 28u)) return -1;
++    v.model_id = wex_nr_u32(record + 4u);
++    if (!v.model_id || (expected_model && v.model_id != expected_model)) return -1;
++    v.scale_payload_bytes = wex_nr_u32(record + 8u);
++    v.weight_payload_bytes = wex_nr_u32(record + 12u);
++    v.weight_chunk = wex_nr_u32(record + 16u);
++    v.scale_chunk = wex_nr_u32(record + 20u);
++    if (!wex_nr2_pow2_in(v.weight_chunk, WEX_NR2_MIN_WEIGHT_CHUNK, WEX_NR2_MAX_CHUNK) ||
++        !wex_nr2_pow2_in(v.scale_chunk, WEX_NR2_MIN_SCALE_CHUNK, WEX_NR2_MAX_CHUNK)) return -1;
++    for (m = 0; m < 3u; m++) {
++        v.median[m] = record[24u + m];
++        if (!layout->scale_count[m] || !layout->symbol_count[m] || layout->symbol_count[m] % 32u ||
++            (uint64_t)layout->scale_count[m] * 32u != layout->symbol_count[m]) return -1;
++        scale_streams += wex_nr2_streams(layout->scale_count[m], v.scale_chunk);
++        weight_streams += wex_nr2_streams(layout->symbol_count[m], v.weight_chunk);
++    }
++    v.scale_streams = scale_streams; v.weight_streams = weight_streams;
++    meta = WEX_NR2_HEADER_BYTES + 2u * ((uint64_t)scale_streams + weight_streams);
++    disk = meta + v.scale_payload_bytes + v.weight_payload_bytes;
++    if (disk > total || ((disk + 4095u) & ~UINT64_C(4095)) != total) return -1;
++    v.metadata_bytes = (uint32_t)meta;
++    v.lengths = record + WEX_NR2_HEADER_BYTES;
++    v.scale_payload = record + meta;
++    v.weight_payload = v.scale_payload + v.scale_payload_bytes;
++    for (s = 0; s < scale_streams + weight_streams; s++) {
++        uint32_t n = wex_nr_u16(v.lengths + (size_t)s * 2u);
++        if (n < 4u) return -1;
++        sum += n;
++        if (s + 1u == scale_streams) {
++            if (sum != v.scale_payload_bytes) return -1;
++            sum = 0;
++        }
++    }
++    if (sum != v.weight_payload_bytes) return -1;
++    for (disk = meta + v.scale_payload_bytes + v.weight_payload_bytes; disk < total; disk++)
++        if (record[disk]) return -1;   /* canonical zero padding */
++    *view = v;
++    return 0;
++}
++
++static inline uint32_t wex_nr2_context(uint32_t srel, uint32_t previous, uint32_t maximum) {
++    return (srel * 9u + previous) * 9u + maximum;
++}
++static inline uint32_t wex_nr2_srel(uint32_t scale, uint32_t median) {
++    int d = (int)scale - (int)median;
++    return (uint32_t)((d < -3 ? -3 : d > 3 ? 3 : d) + 3);
++}
++
++/* Decode one symbol with a validated CDF (binary search). */
++static inline int wex_nr2_decode_symbol(const unsigned char *cdf, uint32_t symbols, uint32_t *state,
++                                        const unsigned char **ptr, const unsigned char *end, uint32_t *symbol) {
++    uint32_t slot = *state & (WEX_NR2_TOTAL - 1u), lo = 0, hi = symbols, start, frequency;
++    while (lo + 1u < hi) {
++        uint32_t mid = (lo + hi) / 2u;
++        if (wex_nr_u16(cdf + mid * 2u) <= slot) lo = mid; else hi = mid;
++    }
++    start = wex_nr_u16(cdf + lo * 2u);
++    frequency = wex_nr_u16(cdf + lo * 2u + 2u) - start;
++    *state = frequency * (*state >> WEX_NR2_PRECISION) + slot - start;
++    while (*state < WEX_NR_L) {
++        if (*ptr == end) return -1;
++        *state = (*state << 8) | *(*ptr)++;
++    }
++    *symbol = lo;
++    return 0;
++}
++
++static inline int wex_nr2_stream_open(const unsigned char *begin, uint32_t length,
++                                      const unsigned char **ptr, const unsigned char **end, uint32_t *state) {
++    if (length < 4u) return -1;
++    *state = (uint32_t)begin[0] << 24 | (uint32_t)begin[1] << 16 | (uint32_t)begin[2] << 8 | begin[3];
++    *ptr = begin + 4; *end = begin + length;
++    return *state >= WEX_NR_L && *state < (WEX_NR_L << 8) ? 0 : -1;
++}
++
++/* CPU reference: scales of matrix m to scales_out[m], packed weights to
++ * weights_out[m] (symbol 2k in the low nibble). Outputs may be partially
++ * written when it fails; callers decode into scratch. */
++static inline int wex_nr2_decode(const WexNr2Record *v, const WexNr2Layout *layout, const WexNr2Model *model,
++                                 unsigned char *const scales_out[3], unsigned char *const weights_out[3]) {
++    const unsigned char *payload = v->scale_payload;
++    uint32_t stream = 0, m;
++    if (v->model_id != model->id) return -1;
++    for (m = 0; m < 3u; m++) {
++        const unsigned char *cdf = wex_nr2_scale_cdf(model, m);
++        uint32_t first;
++        for (first = 0; first < layout->scale_count[m]; first += v->scale_chunk, stream++) {
++            uint32_t length = wex_nr_u16(v->lengths + (size_t)stream * 2u), state, j, symbol;
++            uint32_t count = layout->scale_count[m] - first < v->scale_chunk ? layout->scale_count[m] - first : v->scale_chunk;
++            const unsigned char *ptr, *end;
++            if (wex_nr2_stream_open(payload, length, &ptr, &end, &state)) return -1;
++            for (j = 0; j < count; j++) {
++                if (wex_nr2_decode_symbol(cdf, 256u, &state, &ptr, end, &symbol)) return -1;
++                scales_out[m][first + j] = (unsigned char)symbol;
++            }
++            if (ptr != end || state != WEX_NR_L) return -1;
++            payload += length;
++        }
++    }
++    payload = v->weight_payload;
++    for (m = 0; m < 3u; m++) {
++        uint32_t first;
++        for (first = 0; first < layout->symbol_count[m]; first += v->weight_chunk, stream++) {
++            uint32_t length = wex_nr_u16(v->lengths + (size_t)stream * 2u), state, j, symbol;
++            uint32_t count = layout->symbol_count[m] - first < v->weight_chunk ? layout->symbol_count[m] - first : v->weight_chunk;
++            uint32_t srel = 0, previous = 8u, maximum = 8u;
++            const unsigned char *ptr, *end;
++            if (wex_nr2_stream_open(payload, length, &ptr, &end, &state)) return -1;
++            for (j = 0; j < count; j++) {
++                uint32_t i = first + j;
++                if (!(i % 32u)) {
++                    srel = wex_nr2_srel(scales_out[m][i / 32u], v->median[m]);
++                    previous = 8u; maximum = 8u;
++                }
++                if (wex_nr2_decode_symbol(wex_nr2_weight_cdf(model, m, wex_nr2_context(srel, previous, maximum)),
++                                          16u, &state, &ptr, end, &symbol)) return -1;
++                if (!(i & 1u)) weights_out[m][i / 2u] = (unsigned char)symbol;
++                else weights_out[m][i / 2u] |= (unsigned char)(symbol << 4);
++                previous = symbol & 7u;
++                if (maximum == 8u || previous > maximum) maximum = previous;
++            }
++            if (ptr != end || state != WEX_NR_L) return -1;
++            payload += length;
++        }
++    }
++    return 0;
++}
++
++/* ---- Reference encoder and model builder (tools and tests) ------------- */
++
++/* Lower median of n UE8M0 values. */
++static inline unsigned char wex_nr2_median(const unsigned char *scales, uint32_t n) {
++    uint32_t histogram[256] = {0}, i, seen = 0;
++    for (i = 0; i < n; i++) histogram[scales[i]]++;
++    for (i = 0; i < 256u; i++) {
++        seen += histogram[i];
++        if (seen * 2u >= n) return (unsigned char)i;
++    }
++    return 255u;
++}
++
++/* Integer CDF (symbols + 1 u16 entries) from counts: every symbol gets at
++ * least 1, the rest in proportion, remainders largest first (ties: lower
++ * symbol). Deterministic; empty counts give a near-uniform CDF. */
++static inline void wex_nr2_quantize(const uint64_t *counts, uint32_t symbols, unsigned char *cdf) {
++    uint64_t total = 0, remainder[256];
++    uint32_t frequency[256], spare = WEX_NR2_TOTAL - symbols, used = 0, s, extra;
++    unsigned char taken[256] = {0};
++    for (s = 0; s < symbols; s++) total += counts[s];
++    for (s = 0; s < symbols; s++) {
++        uint64_t scaled = total ? counts[s] * spare : spare;
++        uint64_t divisor = total ? total : symbols;
++        frequency[s] = 1u + (uint32_t)(scaled / divisor);
++        remainder[s] = scaled % divisor;
++        used += frequency[s];
++    }
++    for (extra = WEX_NR2_TOTAL - used; extra; extra--) {
++        uint32_t best = symbols;
++        for (s = 0; s < symbols; s++)
++            if (!taken[s] && (best == symbols || remainder[s] > remainder[best])) best = s;
++        taken[best] = 1; frequency[best]++;
++    }
++    used = 0;
++    for (s = 0; s <= symbols; s++) {
++        cdf[s * 2u] = (unsigned char)used; cdf[s * 2u + 1u] = (unsigned char)(used >> 8);
++        if (s < symbols) used += frequency[s];
++    }
++}
++
++/* Model blob from counts[3][567][16] (weights) and counts[3][256] (scales). */
++static inline void wex_nr2_model_build(const uint64_t *weight_counts, const uint64_t *scale_counts,
++                                       unsigned char *blob) {
++    uint32_t i;
++    static const uint32_t header[8] = {WEX_NR2_MODEL_MAGIC, 1u, WEX_NR2_PRECISION, WEX_NR2_CONTEXTS, 3u, 0, 0, 0};
++    for (i = 0; i < 32u; i++) blob[i] = (unsigned char)(header[i / 4u] >> ((i % 4u) * 8u));
++    for (i = 0; i < 3u * WEX_NR2_CONTEXTS; i++)
++        wex_nr2_quantize(weight_counts + (size_t)i * 16u, 16u, blob + WEX_NR2_MODEL_HEADER_BYTES + (size_t)i * 34u);
++    for (i = 0; i < 3u; i++)
++        wex_nr2_quantize(scale_counts + (size_t)i * 256u, 256u,
++                         blob + WEX_NR2_MODEL_HEADER_BYTES + WEX_NR2_WCDF_BYTES + (size_t)i * 514u);
++}
++
++/* Accumulate the training counts of one expert (same contexts as decode). */
++static inline void wex_nr2_count(const WexNr2Layout *layout, const unsigned char *const scales[3],
++                                 const unsigned char *const weights[3], uint64_t *weight_counts,
++                                 uint64_t *scale_counts) {
++    uint32_t m, i;
++    for (m = 0; m < 3u; m++) {
++        unsigned char median = wex_nr2_median(scales[m], layout->scale_count[m]);
++        uint32_t srel = 0, previous = 8u, maximum = 8u;
++        for (i = 0; i < layout->scale_count[m]; i++) scale_counts[m * 256u + scales[m][i]]++;
++        for (i = 0; i < layout->symbol_count[m]; i++) {
++            uint32_t x = (weights[m][i / 2u] >> ((i & 1u) * 4u)) & 15u;
++            if (!(i % 32u)) { srel = wex_nr2_srel(scales[m][i / 32u], median); previous = 8u; maximum = 8u; }
++            weight_counts[((size_t)m * WEX_NR2_CONTEXTS + wex_nr2_context(srel, previous, maximum)) * 16u + x]++;
++            previous = x & 7u;
++            if (maximum == 8u || previous > maximum) maximum = previous;
++        }
++    }
++}
++
++/* Encode `count` symbols backwards into the stream ending at *cursor (bytes
++ * grow downwards from there), CDF chosen per symbol by cdf_of(index). The
++ * stream is then [state 4 B big-endian][renormalization bytes]. */
++static inline int wex_nr2_put(uint32_t *state, unsigned char **cursor, const unsigned char *floor,
++                              const unsigned char *cdf, uint32_t symbol) {
++    uint32_t start = wex_nr_u16(cdf + symbol * 2u), frequency = wex_nr_u16(cdf + symbol * 2u + 2u) - start;
++    uint32_t maximum = ((WEX_NR_L >> WEX_NR2_PRECISION) << 8) * frequency;
++    while (*state >= maximum) {
++        if (*cursor == floor) return -1;
++        *--*cursor = (unsigned char)*state; *state >>= 8;
++    }
++    *state = ((*state / frequency) << WEX_NR2_PRECISION) + *state % frequency + start;
++    return 0;
++}
++static inline int wex_nr2_flush(uint32_t state, unsigned char **cursor, const unsigned char *floor) {
++    int b;
++    for (b = 0; b < 4; b++) {
++        if (*cursor == floor) return -1;
++        *--*cursor = (unsigned char)state; state >>= 8;
++    }
++    return 0;
++}
++
++/* Reference encoder: writes the unpadded record to out and its size to
++ * *written. Scratch: 2 * WEX_NR2_MAX_CHUNK + 8 bytes per stream at most. */
++static inline int wex_nr2_encode(const WexNr2Model *model, const WexNr2Layout *layout,
++                                 const unsigned char *const scales[3], const unsigned char *const weights[3],
++                                 uint32_t weight_chunk, uint32_t scale_chunk,
++                                 unsigned char *out, size_t capacity, size_t *written) {
++    uint32_t m, streams = 0, scale_streams = 0, stream = 0;
++    unsigned char median[3], tmp[2u * WEX_NR2_MAX_CHUNK + 8u];
++    size_t meta, cursor;
++    uint64_t scale_bytes = 0, weight_bytes = 0;
++    if (!model || !layout || !out || !written ||
++        !wex_nr2_pow2_in(weight_chunk, WEX_NR2_MIN_WEIGHT_CHUNK, WEX_NR2_MAX_CHUNK) ||
++        !wex_nr2_pow2_in(scale_chunk, WEX_NR2_MIN_SCALE_CHUNK, WEX_NR2_MAX_CHUNK)) return -1;
++    for (m = 0; m < 3u; m++) {
++        if (!layout->scale_count[m] || (uint64_t)layout->scale_count[m] * 32u != layout->symbol_count[m]) return -1;
++        median[m] = wex_nr2_median(scales[m], layout->scale_count[m]);
++        scale_streams += wex_nr2_streams(layout->scale_count[m], scale_chunk);
++        streams += wex_nr2_streams(layout->symbol_count[m], weight_chunk);
++    }
++    streams += scale_streams;
++    meta = WEX_NR2_HEADER_BYTES + 2u * (size_t)streams;
++    if (capacity < meta) return -1;
++    cursor = meta;
++    for (m = 0; m < 6u; m++) {
++        uint32_t matrix = m % 3u, scale_pass = m < 3u, first;
++        uint32_t count_all = scale_pass ? layout->scale_count[matrix] : layout->symbol_count[matrix];
++        uint32_t chunk = scale_pass ? scale_chunk : weight_chunk;
++        for (first = 0; first < count_all; first += chunk, stream++) {
++            uint32_t count = count_all - first < chunk ? count_all - first : chunk, j, state = WEX_NR_L, length;
++            unsigned char *end = tmp + sizeof(tmp), *p = end;
++            uint16_t contexts[WEX_NR2_MAX_CHUNK];
++            if (!scale_pass) {   /* forward contexts, backward coding */
++                uint32_t srel = 0, previous = 8u, maximum = 8u;
++                for (j = 0; j < count; j++) {
++                    uint32_t i = first + j, x = (weights[matrix][i / 2u] >> ((i & 1u) * 4u)) & 15u;
++                    if (!(i % 32u)) { srel = wex_nr2_srel(scales[matrix][i / 32u], median[matrix]); previous = 8u; maximum = 8u; }
++                    contexts[j] = (uint16_t)wex_nr2_context(srel, previous, maximum);
++                    previous = x & 7u;
++                    if (maximum == 8u || previous > maximum) maximum = previous;
++                }
++            }
++            for (j = count; j-- > 0;) {
++                uint32_t i = first + j;
++                if (scale_pass) {
++                    if (wex_nr2_put(&state, &p, tmp, wex_nr2_scale_cdf(model, matrix), scales[matrix][i])) return -1;
++                } else {
++                    uint32_t x = (weights[matrix][i / 2u] >> ((i & 1u) * 4u)) & 15u;
++                    if (wex_nr2_put(&state, &p, tmp, wex_nr2_weight_cdf(model, matrix, contexts[j]), x)) return -1;
++                }
++            }
++            if (wex_nr2_flush(state, &p, tmp)) return -1;
++            length = (uint32_t)(end - p);
++            if (length > 65535u || capacity - cursor < length) return -1;
++            memcpy(out + cursor, p, length);
++            cursor += length;
++            out[WEX_NR2_HEADER_BYTES + (size_t)stream * 2u] = (unsigned char)length;
++            out[WEX_NR2_HEADER_BYTES + (size_t)stream * 2u + 1u] = (unsigned char)(length >> 8);
++            if (scale_pass) scale_bytes += length; else weight_bytes += length;
++        }
++    }
++    {
++        uint32_t fields[8] = {WEX_NR2_MAGIC, model->id, (uint32_t)scale_bytes, (uint32_t)weight_bytes,
++                              weight_chunk, scale_chunk, 0, 0};
++        uint32_t i;
++        for (i = 0; i < 32u; i++) out[i] = (unsigned char)(fields[i / 4u] >> ((i % 4u) * 8u));
++        out[24] = median[0]; out[25] = median[1]; out[26] = median[2]; out[27] = 0;
++    }
++    *written = cursor;
++    return 0;
++}
+ #endif
+--- a/wex_format.h
++++ b/wex_format.h
+@@ -26,9 +26,11 @@
+ #define WEX_HEADER_PALETTE3 UINT32_C(2)
+ #define WEX_HEADER_DEDUP UINT32_C(4)
+ #define WEX_HEADER_NEURAL_RANS UINT32_C(8)
++#define WEX_HEADER_NEURAL_RANS2 UINT32_C(16)  /* WNR2 records + a WNM2 model before the table */
+ #define WEX_ENTRY_SCALE_TILES UINT32_C(1)
+ #define WEX_ENTRY_PALETTE3 UINT32_C(2)
+ #define WEX_ENTRY_NEURAL_RANS UINT32_C(3)
++#define WEX_ENTRY_NEURAL_RANS2 UINT32_C(4)
+ #define WEX_ENTRY_CODEC_MASK UINT32_C(0xff)
+ #define WEX_ENTRY_SCALE_PAGES_SHIFT 8u
+ #define WEX_SCALE_STREAM_MAGIC UINT32_C(0x31534357)
+@@ -88,7 +90,8 @@
+     } else if (hdr->magic == WEX_MAGIC_V2 && hdr->version == 2u) {
+         if (hdr->flags & ~WEX_HEADER_SCALE_TILES) return -1;
+     } else if (hdr->magic == WEX_MAGIC_V3 && hdr->version == 3u) {
+-        if (hdr->flags & ~(WEX_HEADER_SCALE_TILES | WEX_HEADER_PALETTE3 | WEX_HEADER_DEDUP | WEX_HEADER_NEURAL_RANS)) return -1;
++        if (hdr->flags & ~(WEX_HEADER_SCALE_TILES | WEX_HEADER_PALETTE3 | WEX_HEADER_DEDUP |
++                           WEX_HEADER_NEURAL_RANS | WEX_HEADER_NEURAL_RANS2)) return -1;
+     } else return -1;
+     if (hdr->reserved || !hdr->num_layers || !hdr->num_experts ||
+         hdr->num_layers > INT_MAX || hdr->num_experts > INT_MAX ||
+@@ -148,7 +151,8 @@
+ static inline size_t wex_record_read_offset(const WexEntry *entry) {
+     uint64_t prefix;
+     if (!entry || !entry->flags) return 0;
+-    if (entry->flags == WEX_ENTRY_PALETTE3 || entry->flags == WEX_ENTRY_NEURAL_RANS) {
++    if (entry->flags == WEX_ENTRY_PALETTE3 || entry->flags == WEX_ENTRY_NEURAL_RANS ||
++        entry->flags == WEX_ENTRY_NEURAL_RANS2) {
+         uint64_t raw, aligned;
+         if (wex_entry_raw_sizes(entry, &raw, &aligned) || entry->total_bytes >= aligned) return 0;
+         return (size_t)(aligned - entry->total_bytes);
+@@ -159,6 +163,39 @@
+     if (!prefix || prefix >= entry->scale_bytes ||
+         (entry->scale_bytes & (WEX_ALIGN - 1u))) return 0;
+     return (size_t)(entry->scale_bytes - prefix);
++}
++
++/* WNR2: per-matrix counts of an entry (the caller has validated its sizes). */
++static inline void wex_nr2_layout(const WexEntry *entry, WexNr2Layout *layout) {
++    unsigned int m;
++    for (m = 0; m < 3u; m++) {
++        layout->scale_count[m] = (uint32_t)entry->scale_shapes[m][0] * entry->scale_shapes[m][1];
++        layout->symbol_count[m] = (uint32_t)entry->weight_shapes[m][0] * entry->weight_shapes[m][1] * 2u;
++    }
++}
++
++/* WNR2 containers name their model in the header page, at byte 64:
++ * {u32 "WNMD", u32 bytes, u64 offset, u32 model id, u32 0}. The model lies in
++ * [offset, offset + bytes), 4096-aligned, between the header page and the
++ * entry table; the id is the FNV-1a hash every record repeats. */
++#define WEX_NR2_DESCRIPTOR_MAGIC UINT32_C(0x444d4e57)
++#define WEX_NR2_DESCRIPTOR_OFFSET 64u
++static inline int wex_nr2_model_location(const WexHeader *hdr, const unsigned char *header_page,
++                                         uint64_t *offset, uint32_t *bytes, uint32_t *id) {
++    const unsigned char *d;
++    uint64_t at, aligned;
++    if (!hdr || !header_page || hdr->magic != WEX_MAGIC_V3 || hdr->version != 3u ||
++        !(hdr->flags & WEX_HEADER_NEURAL_RANS2)) return -1;
++    d = header_page + WEX_NR2_DESCRIPTOR_OFFSET;
++    at = (uint64_t)wex_read_u32_le(d + 8u) | (uint64_t)wex_read_u32_le(d + 12u) << 32;
++    if (wex_read_u32_le(d) != WEX_NR2_DESCRIPTOR_MAGIC || wex_read_u32_le(d + 4u) != WEX_NR2_MODEL_BYTES ||
++        !wex_read_u32_le(d + 16u) || wex_read_u32_le(d + 20u) || at < WEX_ALIGN || (at & (WEX_ALIGN - 1u)) ||
++        wex_aligned_size(WEX_NR2_MODEL_BYTES, &aligned) || at > hdr->table_offset ||
++        aligned > hdr->table_offset - at) return -1;
++    *offset = at;
++    *bytes = WEX_NR2_MODEL_BYTES;
++    *id = wex_read_u32_le(d + 16u);
++    return 0;
+ }
+ 
+ static inline int wex_validate_entry(const WexHeader *hdr,
+@@ -189,6 +226,18 @@
+         uint64_t minimum = 32u + 512u + WEX_NR_CDF_BYTES + (streams + 1u) * 4u + streams * 4u +
+                            ((uint64_t)entry->scale_bytes + 255u) / 256u * 2u;
+         return hdr->version == 3u && (hdr->flags & WEX_HEADER_NEURAL_RANS) &&
++               !wex_aligned_size(minimum, &aligned_disk) && entry->total_bytes >= aligned_disk &&
++               entry->total_bytes < aligned_raw ? 0 : -1;
++    }
++    if (entry->flags == WEX_ENTRY_NEURAL_RANS2) {
++        /* smallest legal record: longest chunks, 4-byte streams */
++        uint64_t streams = 0, minimum;
++        unsigned int m;
++        for (m = 0; m < 3u; m++)
++            streams += wex_nr2_streams((uint32_t)entry->scale_shapes[m][0] * entry->scale_shapes[m][1], WEX_NR2_MAX_CHUNK) +
++                       wex_nr2_streams((uint32_t)entry->weight_shapes[m][0] * entry->weight_shapes[m][1] * 2u, WEX_NR2_MAX_CHUNK);
++        minimum = WEX_NR2_HEADER_BYTES + streams * 6u;
++        return hdr->version == 3u && (hdr->flags & WEX_HEADER_NEURAL_RANS2) &&
+                !wex_aligned_size(minimum, &aligned_disk) && entry->total_bytes >= aligned_disk &&
+                entry->total_bytes < aligned_raw ? 0 : -1;
+     }
+@@ -428,6 +477,35 @@
+     return 0;
+ }
+ 
++/* WNR2 into a slab with the container's model; the slab is untouched unless
++ * it returns 0 (decodes into scratch first, like the WNR1 reference). */
++static inline int wex_decode_nr2_record(const WexEntry *entry, unsigned char *slab, size_t capacity,
++                                        const WexNr2Model *model) {
++    uint64_t raw, aligned_raw;
++    size_t read_offset;
++    WexNr2Layout layout;
++    WexNr2Record view;
++    unsigned char *decoded, *scales[3], *weights[3];
++    unsigned int m;
++    int result;
++    if (!entry || !slab || !model || entry->flags != WEX_ENTRY_NEURAL_RANS2 ||
++        wex_entry_raw_sizes(entry, &raw, &aligned_raw) || aligned_raw > capacity) return -1;
++    read_offset = wex_record_read_offset(entry);
++    if (!read_offset || read_offset > capacity || entry->total_bytes > capacity - read_offset) return -1;
++    wex_nr2_layout(entry, &layout);
++    if (wex_nr2_parse(slab + read_offset, entry->total_bytes, &layout, model->id, &view)) return -1;
++    decoded = (unsigned char *)malloc((size_t)raw);
++    if (!decoded) return -1;
++    for (m = 0; m < 3u; m++) {
++        scales[m] = decoded + entry->scale_offsets[m];
++        weights[m] = decoded + entry->weight_offsets[m];
++    }
++    result = wex_nr2_decode(&view, &layout, model, scales, weights);
++    if (!result) memcpy(slab, decoded, (size_t)raw);
++    free(decoded);
++    return result;
++}
++
+ /* The caller reads total_bytes at slab + wex_record_read_offset(entry).
+  * V2 weights arrive at their final offsets; only scales need heap scratch.
+  * V3 palette3 expands in place with bounded palette/tail stack workspace.
+@@ -443,6 +521,7 @@
+     if (!entry || !slab || wex_entry_raw_sizes(entry, &raw, &aligned_raw) ||
+         aligned_raw > capacity) return -1;
+     if (!entry->flags) return entry->total_bytes == aligned_raw ? 0 : -1;
++    if (entry->flags == WEX_ENTRY_NEURAL_RANS2) return -1;   /* needs its model: wex_decode_nr2_record */
+     read_offset = wex_record_read_offset(entry);
+     if (!read_offset) return -1;
+     if (entry->flags == WEX_ENTRY_PALETTE3) {
+--- a/wex_cuda.cuh
++++ b/wex_cuda.cuh
+@@ -1,8 +1,8 @@
+ #ifndef COLI_WEX_CUDA_CUH
+ #define COLI_WEX_CUDA_CUH
+ 
+-/* Optional CUDA reconstruction for WEX3 palette3 and Neural-rANS. The host
+- * bridge uses the Neural-rANS path; bench_wex_cuda.cu also tests device output.
++/* Optional CUDA reconstruction for WEX3 palette3, Neural-rANS (WNR1) and WNR2.
++ * The host bridge uses the Neural-rANS paths; bench_wex_cuda.cu also tests device output.
+  * Input: complete compressed record on device + validated tile offsets.
+  * Output: canonical raw MXFP4 slab, ready for existing kernels, no D2H copy.
+  */
+@@ -250,4 +250,496 @@
+     return cudaGetLastError();
+ }
+ 
++/* ---------------------------------------------------------------------------
++ * WNR2 (wex_neural_rans.h): bit-identical to wex_nr2_decode.
++ *
++ * Per model and device, wex_cuda_build_nr2_tables lays out once, from a device
++ * copy of the WNM2 blob (validated on the host by wex_nr2_model_open):
++ *   weight rows   [3][567] x 32 B   cdf[0..15] as u16 pairs (cdf[16] = 1 << 14)
++ *   scale direct  [3][1 << 14] u32  slot -> (frequency - 1) | (slot - start) << 14
++ *   scale symbol  [3][1 << 14] B    slot -> symbol
++ *   (optional, lookup 0) weight buckets [3][567][1 << WEX_CUDA_NR2_BUCKET_BITS]
++ *                 u32 symbol | (frequency - 1) << 4 | start << 18 at each
++ *                 bucket's first slot, finished by an exact CDF walk (as WNR1)
++ * Host: wex_cuda_plan_nr2 validates the record with wex_nr2_parse and maps
++ * every stream to its (matrix, first symbol), scales and weights separately;
++ * wex_cuda_nr2_offsets prefix-sums the u16 lengths into absolute record
++ * offsets (streams + 1 u32), uploaded with the record.
++ * Kernel A: one thread per scale stream, the matrix's direct tables in shared
++ * memory. Kernel B: one thread per weight stream, the exact context rule (at
++ * i % 32 == 0: srel from the decoded scale and median[m], previous = maximum
++ * = 8), its matrix's 567 CDF rows in shared memory and a branch-free 16-way
++ * compare per symbol, one uint4 per 32 symbols. Every block serves one matrix.
++ *
++ * Payload bytes: every lane owns a 64-word ring in shared memory, refilled by
++ * cp.async at warp-uniform points (stream open, then every 32 symbols) with
++ * the words up to 40 ahead of its position; each symbol reads its next two
++ * bytes with two shared loads issued before the lookup. (Register prefetch
++ * stalls the warp: lanes refill at different symbols, and a register still
++ * being loaded for one lane blocks every lane that reads it. Measured on an
++ * RTX 5090: scale kernel 193 -> 75 us, weight kernel 300 -> 253 us per expert.)
++ * Any violation (initial state outside [L, 256 L), reading past the end, an
++ * early end, final state != L) sets *error; the host checks it, or the commit
++ * kernel does, before anything reaches the caller's destination.
++ * ------------------------------------------------------------------------- */
++#define WEX_CUDA_NR2_THREADS 32u          /* lanes per block, both kernels */
++#define WEX_CUDA_NR2_RING_WORDS 64u       /* per-lane payload ring, power of two */
++#define WEX_CUDA_NR2_RING_AHEAD 40u       /* words kept requested ahead of the read position */
++#ifndef WEX_CUDA_NR2_BUCKET_BITS
++#define WEX_CUDA_NR2_BUCKET_BITS 10u
+ #endif
++/* Weight symbol lookup used by wex_cuda_launch_nr2:
++ * 0 = global coarse buckets + exact walk, 1 = shared-memory CDF compare.
++ * Measured per expert (chunk 4096): 0 ~ 925 us (the 7 MB bucket table misses
++ * L1), 1 ~ 253 us. */
++#ifndef WEX_CUDA_NR2_LOOKUP
++#define WEX_CUDA_NR2_LOOKUP 1
++#endif
++#define WEX_CUDA_NR2_ROWS (3u * WEX_NR2_CONTEXTS)
++#define WEX_CUDA_NR2_RING_BYTES (WEX_CUDA_NR2_RING_WORDS * WEX_CUDA_NR2_THREADS * 4u)
++#define WEX_CUDA_NR2_SCALE_SMEM (WEX_NR2_TOTAL * 5u + WEX_CUDA_NR2_RING_BYTES)   /* 88 KB, opt-in */
++
++struct WexCudaNr2Tables {
++    const unsigned char *blob;          /* device copy of the validated WNM2 blob */
++    const uint4 *weight_rows;           /* [3 * 567][2] */
++    const uint32_t *weight_buckets;     /* [3 * 567][1 << bits], or NULL */
++    const uint32_t *scale_direct;       /* [3][1 << 14] */
++    const unsigned char *scale_symbol;  /* [3][1 << 14] */
++};
++
++struct WexCudaNr2Plan {
++    uint32_t chunk[2];              /* symbols per stream: [0] scales, [1] weights */
++    uint32_t count[2][3];           /* scales and 4-bit weights of matrix m */
++    uint32_t stream_base[2][4];     /* first stream of matrix m in the offset table; [k][3] ends kind k */
++    uint32_t block_base[2][4];      /* first block of matrix m in kernel A / B; [k][3] = grid size */
++    uint32_t scale_offset[3];       /* decoded scales of matrix m in the device raw buffer */
++    uint32_t weight_offset[3];      /* decoded packed weights of matrix m (16-byte aligned) */
++    uint32_t median[3];
++    uint32_t streams;               /* scale + weight streams; the offset table has one more */
++    uint32_t weight_base;           /* first weight byte in the device raw buffer */
++    uint32_t weight_payload;        /* record offset of the weight payload: kernel A needs only [0, it) */
++    uint32_t model_id;
++};
++
++static inline size_t wex_cuda_nr2_align256(size_t v) { return (v + 255u) & ~(size_t)255u; }
++
++/* One device allocation per model and device: blob, rows, scale tables, buckets. */
++static inline size_t wex_cuda_nr2_table_bytes(int with_buckets) {
++    size_t bytes = wex_cuda_nr2_align256(WEX_NR2_MODEL_BYTES);
++    bytes += wex_cuda_nr2_align256((size_t)WEX_CUDA_NR2_ROWS * 32u);
++    bytes += 3u * WEX_NR2_TOTAL * 4u;
++    bytes += 3u * WEX_NR2_TOTAL;
++    if (with_buckets) bytes += (size_t)WEX_CUDA_NR2_ROWS * (1u << WEX_CUDA_NR2_BUCKET_BITS) * 4u;
++    return bytes;
++}
++
++static inline void wex_cuda_nr2_table_view(unsigned char *base, int with_buckets, WexCudaNr2Tables *t) {
++    size_t at = 0;
++    t->blob = base;
++    at += wex_cuda_nr2_align256(WEX_NR2_MODEL_BYTES);
++    t->weight_rows = (const uint4 *)(base + at);
++    at += wex_cuda_nr2_align256((size_t)WEX_CUDA_NR2_ROWS * 32u);
++    t->scale_direct = (const uint32_t *)(base + at);
++    at += 3u * WEX_NR2_TOTAL * 4u;
++    t->scale_symbol = base + at;
++    at += 3u * WEX_NR2_TOTAL;
++    t->weight_buckets = with_buckets ? (const uint32_t *)(base + at) : NULL;
++}
++
++static __device__ __forceinline__ const uint16_t *wex_cuda_nr2_weight_cdf(const unsigned char *blob, uint32_t row) {
++    return (const uint16_t *)(blob + WEX_NR2_MODEL_HEADER_BYTES) + (size_t)row * 17u;
++}
++static __device__ __forceinline__ const uint16_t *wex_cuda_nr2_scale_cdf(const unsigned char *blob, uint32_t m) {
++    return (const uint16_t *)(blob + WEX_NR2_MODEL_HEADER_BYTES + WEX_NR2_WCDF_BYTES) + (size_t)m * 257u;
++}
++
++static __global__ void wex_cuda_nr2_build_rows(const unsigned char *blob, uint32_t *rows) {
++    uint32_t index = blockIdx.x * blockDim.x + threadIdx.x;
++    if (index >= WEX_CUDA_NR2_ROWS * 8u) return;
++    const uint16_t *cdf = wex_cuda_nr2_weight_cdf(blob, index / 8u) + (index % 8u) * 2u;
++    rows[index] = (uint32_t)cdf[0] | (uint32_t)cdf[1] << 16;
++}
++
++static __global__ void wex_cuda_nr2_build_scales(const unsigned char *blob,
++    uint32_t *direct, unsigned char *symbol_table) {
++    uint32_t index = blockIdx.x * blockDim.x + threadIdx.x;
++    if (index >= 3u * WEX_NR2_TOTAL) return;
++    const uint16_t *cdf = wex_cuda_nr2_scale_cdf(blob, index / WEX_NR2_TOTAL);
++    uint32_t slot = index % WEX_NR2_TOTAL, lo = 0, hi = 256u;
++    while (lo + 1u < hi) {   /* the reference binary search */
++        uint32_t mid = (lo + hi) / 2u;
++        if (cdf[mid] <= slot) lo = mid; else hi = mid;
++    }
++    /* frequency <= 2^14 - 255 and slot - start < frequency: 14 bits each */
++    direct[index] = (uint32_t)(cdf[lo + 1u] - cdf[lo] - 1u) | (slot - cdf[lo]) << 14;
++    symbol_table[index] = (unsigned char)lo;
++}
++
++static __global__ void wex_cuda_nr2_build_buckets(const unsigned char *blob, uint32_t *buckets) {
++    uint32_t index = blockIdx.x * blockDim.x + threadIdx.x;
++    if (index >= WEX_CUDA_NR2_ROWS << WEX_CUDA_NR2_BUCKET_BITS) return;
++    const uint16_t *cdf = wex_cuda_nr2_weight_cdf(blob, index >> WEX_CUDA_NR2_BUCKET_BITS);
++    uint32_t slot = (index & ((1u << WEX_CUDA_NR2_BUCKET_BITS) - 1u)) << (WEX_NR2_PRECISION - WEX_CUDA_NR2_BUCKET_BITS);
++    uint32_t lo = 0, hi = 16u;
++    while (lo + 1u < hi) {
++        uint32_t mid = (lo + hi) / 2u;
++        if (cdf[mid] <= slot) lo = mid; else hi = mid;
++    }
++    buckets[index] = lo | (uint32_t)(cdf[lo + 1u] - cdf[lo] - 1u) << 4 | (uint32_t)cdf[lo] << 18;
++}
++
++/* Host: validate a WNR2 record (any model id; the caller resolves the model)
++ * and plan its decode. record holds entry->total_bytes. */
++static inline int wex_cuda_plan_nr2(const WexEntry *entry, const unsigned char *record, size_t capacity,
++    WexNr2Record *view, WexCudaNr2Plan *plan) {
++    uint64_t raw, aligned;
++    WexNr2Layout layout;
++    uint32_t m, k;
++    if (!entry || !record || !view || !plan || entry->flags != WEX_ENTRY_NEURAL_RANS2 ||
++        wex_entry_raw_sizes(entry, &raw, &aligned) || entry->total_bytes >= aligned ||
++        capacity < entry->total_bytes) return -1;
++    wex_nr2_layout(entry, &layout);
++    if (wex_nr2_parse(record, entry->total_bytes, &layout, 0, view)) return -1;
++    memset(plan, 0, sizeof(*plan));
++    plan->chunk[0] = view->scale_chunk;
++    plan->chunk[1] = view->weight_chunk;
++    plan->weight_base = (entry->scale_bytes + 15u) & ~15u;   /* uint4 stores */
++    for (m = 0; m < 3u; m++) {
++        plan->count[0][m] = layout.scale_count[m];
++        plan->count[1][m] = layout.symbol_count[m];
++        plan->scale_offset[m] = entry->scale_offsets[m];
++        plan->weight_offset[m] = plan->weight_base + (entry->weight_offsets[m] - entry->scale_bytes);
++        plan->median[m] = view->median[m];
++    }
++    for (k = 0; k < 2u; k++) {
++        uint32_t stream = k ? view->scale_streams : 0u, block = 0;
++        for (m = 0; m < 3u; m++) {
++            uint32_t streams = wex_nr2_streams(plan->count[k][m], plan->chunk[k]);
++            plan->stream_base[k][m] = stream;
++            plan->block_base[k][m] = block;
++            stream += streams;
++            block += (streams + WEX_CUDA_NR2_THREADS - 1u) / WEX_CUDA_NR2_THREADS;
++        }
++        plan->stream_base[k][3] = stream;
++        plan->block_base[k][3] = block;
++    }
++    plan->streams = view->scale_streams + view->weight_streams;
++    plan->weight_payload = view->metadata_bytes + view->scale_payload_bytes;
++    plan->model_id = view->model_id;
++    return plan->stream_base[1][3] == plan->streams ? 0 : -1;
++}
++
++/* Absolute record offsets of every stream (scales, then weights) and the end. */
++static inline void wex_cuda_nr2_offsets(const WexNr2Record *view, const WexCudaNr2Plan *plan, uint32_t *offsets) {
++    uint32_t at = view->metadata_bytes, s;
++    for (s = 0; s < plan->streams; s++) {
++        offsets[s] = at;
++        at += wex_nr_u16(view->lengths + (size_t)s * 2u);
++    }
++    offsets[plan->streams] = at;
++}
++
++/* ---- payload reader: per-lane shared-memory ring ------------------------ */
++struct WexCudaNr2Reader {
++    const uint32_t *words;   /* the record, as words */
++    uint32_t *ring;          /* this lane's ring: word w at ring[(w % RING_WORDS) * 32] */
++    uint32_t pos;            /* record offset of the next renormalization byte */
++    uint32_t requested;      /* next word to request */
++    uint32_t last;           /* the stream's last word */
++};
++struct WexCudaNr2Bytes { uint32_t a, b, shift; };
++
++static __device__ __forceinline__ uint32_t wex_cuda_be32(uint32_t x) { return __byte_perm(x, 0u, 0x0123u); }
++
++static __device__ __forceinline__ void wex_cuda_nr2_copy(uint32_t *ring_slot, const uint32_t *word, bool predicate) {
++    unsigned destination = (unsigned)__cvta_generic_to_shared(ring_slot);
++    asm volatile("{\n .reg .pred p;\n setp.ne.b32 p, %2, 0;\n @p cp.async.ca.shared.global [%0], [%1], 4;\n}\n"
++                 :: "r"(destination), "l"(word), "r"((int)predicate) : "memory");
++}
++static __device__ __forceinline__ uint32_t *wex_cuda_nr2_slot(const WexCudaNr2Reader &s, uint32_t w) {
++    return s.ring + (w & (WEX_CUDA_NR2_RING_WORDS - 1u)) * WEX_CUDA_NR2_THREADS;
++}
++
++/* Opens [begin, end) (length >= 4, checked by wex_nr2_parse): its initial
++ * state. Words past the stream's last word are never requested; a ring slot
++ * read past it holds stale bytes, and consuming one is caught by pos != end. */
++static __device__ __forceinline__ uint32_t wex_cuda_nr2_open(const unsigned char *record, uint32_t *ring_lane,
++    uint32_t begin, uint32_t end, WexCudaNr2Reader &s) {
++    uint32_t first = begin >> 2, target, w;
++    s.words = (const uint32_t *)record;
++    s.ring = ring_lane;
++    s.last = (end - 1u) >> 2;
++    target = min(first + WEX_CUDA_NR2_RING_AHEAD, s.last + 1u);
++    for (w = first; w < target; w++) wex_cuda_nr2_copy(wex_cuda_nr2_slot(s, w), s.words + w, true);
++    s.requested = target;
++    asm volatile("cp.async.commit_group;\ncp.async.wait_group 0;\n" ::: "memory");
++    uint32_t e0 = wex_cuda_be32(*wex_cuda_nr2_slot(s, first)), e1 = wex_cuda_be32(*wex_cuda_nr2_slot(s, first + 1u));
++    s.pos = begin + 4u;
++    return __funnelshift_l(e1, e0, (begin & 3u) * 8u);   /* big-endian bytes begin..begin+3 */
++}
++
++/* Warp-uniform, at most every 32 symbols (<= 64 bytes): keeps RING_AHEAD words
++ * requested, then waits for the previous group (needed from here on). */
++static __device__ __forceinline__ void wex_cuda_nr2_topup(WexCudaNr2Reader &s) {
++    uint32_t target = min((s.pos >> 2) + WEX_CUDA_NR2_RING_AHEAD, s.last + 1u);
++#pragma unroll
++    for (uint32_t k = 0; k < 16u; k++) {
++        uint32_t w = s.requested + k;
++        wex_cuda_nr2_copy(wex_cuda_nr2_slot(s, w), s.words + w, w < target);
++    }
++    s.requested = max(s.requested, min(s.requested + 16u, target));
++    asm volatile("cp.async.commit_group;\ncp.async.wait_group 1;\n" ::: "memory");
++}
++
++/* The two bytes at pos, read before the symbol lookup. */
++static __device__ __forceinline__ WexCudaNr2Bytes wex_cuda_nr2_peek(const WexCudaNr2Reader &s) {
++    WexCudaNr2Bytes r;
++    r.a = *wex_cuda_nr2_slot(s, s.pos >> 2);
++    r.b = *wex_cuda_nr2_slot(s, (s.pos >> 2) + 1u);
++    r.shift = (s.pos & 3u) * 8u;
++    return r;
++}
++
++/* while (state < L) state = state << 8 | next byte, branch-free: from a valid
++ * state, decoding leaves at least 2^9, so 0, 1 or 2 bytes. */
++static __device__ __forceinline__ uint32_t wex_cuda_nr2_renorm(uint32_t state, WexCudaNr2Reader &s,
++    const WexCudaNr2Bytes &p) {
++    uint32_t two = __funnelshift_l(wex_cuda_be32(p.b), wex_cuda_be32(p.a), p.shift);
++    uint32_t bits = state < (1u << 15) ? 16u : state < WEX_NR_L ? 8u : 0u;
++    s.pos += bits >> 3;
++    return __funnelshift_l(two, state, bits);
++}
++
++static __device__ __forceinline__ uint32_t wex_cuda_nr2_matrix(const uint32_t base[4], uint32_t block) {
++    return block >= base[2] ? 2u : block >= base[1] ? 1u : 0u;
++}
++
++/* Kernel A: scale streams. Dynamic shared memory WEX_CUDA_NR2_SCALE_SMEM. */
++static __global__ void __launch_bounds__(WEX_CUDA_NR2_THREADS) wex_cuda_nr2_scales(
++    const unsigned char *record, const uint32_t *offsets, WexCudaNr2Plan plan,
++    WexCudaNr2Tables tables, unsigned char *raw, uint32_t *error) {
++    extern __shared__ uint4 wex_cuda_nr2_dynamic[];
++    uint32_t *direct = (uint32_t *)wex_cuda_nr2_dynamic;
++    unsigned char *symbol_table = (unsigned char *)(direct + WEX_NR2_TOTAL);
++    uint32_t *ring = (uint32_t *)(symbol_table + WEX_NR2_TOTAL);
++    uint32_t m = wex_cuda_nr2_matrix(plan.block_base[0], blockIdx.x);
++    const uint4 *source = (const uint4 *)(tables.scale_direct + (size_t)m * WEX_NR2_TOTAL);
++    for (uint32_t i = threadIdx.x; i < WEX_NR2_TOTAL / 4u; i += blockDim.x) wex_cuda_nr2_dynamic[i] = __ldg(source + i);
++    source = (const uint4 *)(tables.scale_symbol + (size_t)m * WEX_NR2_TOTAL);
++    for (uint32_t i = threadIdx.x; i < WEX_NR2_TOTAL / 16u; i += blockDim.x) ((uint4 *)symbol_table)[i] = __ldg(source + i);
++    __syncthreads();
++    uint32_t j = (blockIdx.x - plan.block_base[0][m]) * blockDim.x + threadIdx.x;
++    if (j >= plan.stream_base[0][m + 1u] - plan.stream_base[0][m]) return;
++    uint32_t stream = plan.stream_base[0][m] + j, begin = offsets[stream], end = offsets[stream + 1u];
++    uint32_t first = j * plan.chunk[0], count = min(plan.chunk[0], plan.count[0][m] - first);
++    unsigned char *out = raw + plan.scale_offset[m] + first;
++    WexCudaNr2Reader s;
++    uint32_t state = wex_cuda_nr2_open(record, ring + threadIdx.x, begin, end, s);
++    if (state < WEX_NR_L || state >= (WEX_NR_L << 8)) { atomicOr(error, 1u); return; }
++    bool vector = !((uintptr_t)out & 15u);
++    for (uint32_t i = 0; i < count; i += 32u) {
++        wex_cuda_nr2_topup(s);
++        uint32_t n = min(32u, count - i);
++        if (vector && n == 32u) {
++            uint32_t w[8] = {0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u};
++#pragma unroll
++            for (uint32_t k = 0; k < 32u; k++) {
++                WexCudaNr2Bytes p = wex_cuda_nr2_peek(s);
++                uint32_t slot = state & (WEX_NR2_TOTAL - 1u), e = direct[slot];
++                w[k / 4u] |= (uint32_t)symbol_table[slot] << ((k % 4u) * 8u);
++                state = ((e & 0x3fffu) + 1u) * (state >> WEX_NR2_PRECISION) + (e >> 14);
++                state = wex_cuda_nr2_renorm(state, s, p);
++            }
++            ((uint4 *)(out + i))[0] = make_uint4(w[0], w[1], w[2], w[3]);
++            ((uint4 *)(out + i))[1] = make_uint4(w[4], w[5], w[6], w[7]);
++        } else {
++            for (uint32_t k = 0; k < n; k++) {
++                WexCudaNr2Bytes p = wex_cuda_nr2_peek(s);
++                uint32_t slot = state & (WEX_NR2_TOTAL - 1u), e = direct[slot];
++                out[i + k] = symbol_table[slot];
++                state = ((e & 0x3fffu) + 1u) * (state >> WEX_NR2_PRECISION) + (e >> 14);
++                state = wex_cuda_nr2_renorm(state, s, p);
++            }
++        }
++    }
++    if (s.pos != end || state != WEX_NR_L) atomicOr(error, 1u);
++}
++
++/* Each halfword becomes 0xffff if its bit 15 is set, else 0: PRMT with the
++ * sign-replicate selector bit (__byte_perm drops that bit, hence the PTX). */
++static __device__ __forceinline__ uint32_t wex_cuda_half_sign(uint32_t x) {
++    uint32_t r;
++    asm("prmt.b32 %0, %1, 0, 0xbb99;" : "=r"(r) : "r"(x));
++    return r;
++}
++
++/* Symbol of `slot` in a 16-symbol CDF row a:b (cdf[0..15] as u16 pairs,
++ * cdf[16] = 1 << 14): per halfword, (slot | 0x8000) - cdf has bit 15 set iff
++ * cdf <= slot (all values < 2^15, no borrow between halves). */
++static __device__ __forceinline__ void wex_cuda_nr2_row_find(uint4 a, uint4 b, uint32_t slot,
++    uint32_t &symbol, uint32_t &start, uint32_t &frequency) {
++    const uint32_t g = slot * 0x10001u | 0x80008000u;
++    /* 0xffff in halfwords with cdf <= slot */
++    uint32_t m0 = wex_cuda_half_sign(g - a.x), m1 = wex_cuda_half_sign(g - a.y);
++    uint32_t m2 = wex_cuda_half_sign(g - a.z), m3 = wex_cuda_half_sign(g - a.w);
++    uint32_t m4 = wex_cuda_half_sign(g - b.x), m5 = wex_cuda_half_sign(g - b.y);
++    uint32_t m6 = wex_cuda_half_sign(g - b.z), m7 = wex_cuda_half_sign(g - b.w);
++    uint32_t bits = (m0 & 0x00010001u) | (m1 & 0x00020002u) | (m2 & 0x00040004u) | (m3 & 0x00080008u) |
++                    (m4 & 0x00100010u) | (m5 & 0x00200020u) | (m6 & 0x00400040u) | (m7 & 0x00800080u);
++    symbol = (uint32_t)__popc(bits) - 1u;   /* cdf[0] = 0 always counts */
++    uint32_t lo = __vmaxu2(__vmaxu2(__vmaxu2(a.x & m0, a.y & m1), __vmaxu2(a.z & m2, a.w & m3)),
++                           __vmaxu2(__vmaxu2(b.x & m4, b.y & m5), __vmaxu2(b.z & m6, b.w & m7)));
++    uint32_t hi = __vminu2(__vminu2(__vminu2(a.x | m0, a.y | m1), __vminu2(a.z | m2, a.w | m3)),
++                           __vminu2(__vminu2(b.x | m4, b.y | m5), __vminu2(b.z | m6, b.w | m7)));
++    start = max(lo & 0xffffu, lo >> 16);
++    frequency = min(min(hi & 0xffffu, hi >> 16), WEX_NR2_TOTAL) - start;
++}
++
++/* Kernel B: weight streams. Lookup 1 stages the matrix's 567 CDF rows in
++ * shared memory; lookup 0 reads global coarse buckets. */
++template<int Lookup>
++static __global__ void __launch_bounds__(WEX_CUDA_NR2_THREADS) wex_cuda_nr2_weights(
++    const unsigned char *record, const uint32_t *offsets, WexCudaNr2Plan plan,
++    WexCudaNr2Tables tables, unsigned char *raw, uint32_t *error) {
++    __shared__ uint4 rows[Lookup == 1 ? WEX_NR2_CONTEXTS * 2u : 1u];
++    __shared__ uint32_t ring[WEX_CUDA_NR2_RING_WORDS * WEX_CUDA_NR2_THREADS];
++    uint32_t m = wex_cuda_nr2_matrix(plan.block_base[1], blockIdx.x);
++    if (Lookup == 1) {
++        const uint4 *source = tables.weight_rows + (size_t)m * WEX_NR2_CONTEXTS * 2u;
++        for (uint32_t i = threadIdx.x; i < WEX_NR2_CONTEXTS * 2u; i += blockDim.x) rows[i] = __ldg(source + i);
++        __syncthreads();
++    }
++    uint32_t j = (blockIdx.x - plan.block_base[1][m]) * blockDim.x + threadIdx.x;
++    if (j >= plan.stream_base[1][m + 1u] - plan.stream_base[1][m]) return;
++    uint32_t stream = plan.stream_base[1][m] + j, begin = offsets[stream], end = offsets[stream + 1u];
++    uint32_t first = j * plan.chunk[1], blocks = min(plan.chunk[1], plan.count[1][m] - first) / 32u;
++    const unsigned char *scales = raw + plan.scale_offset[m] + first / 32u;
++    uint4 *out = (uint4 *)(raw + plan.weight_offset[m] + first / 2u);
++    const uint32_t *buckets = Lookup == 1 ? NULL :
++        tables.weight_buckets + ((size_t)m * WEX_NR2_CONTEXTS << WEX_CUDA_NR2_BUCKET_BITS);
++    const uint16_t *cdfs = Lookup == 1 ? NULL : wex_cuda_nr2_weight_cdf(tables.blob, m * WEX_NR2_CONTEXTS);
++    WexCudaNr2Reader s;
++    uint32_t state = wex_cuda_nr2_open(record, ring + threadIdx.x, begin, end, s);
++    if (state < WEX_NR_L || state >= (WEX_NR_L << 8)) { atomicOr(error, 1u); return; }
++    int median = (int)plan.median[m];
++    uint32_t scale = scales[0];
++#pragma unroll 1
++    for (uint32_t block = 0; block < blocks; block++) {
++        wex_cuda_nr2_topup(s);
++        uint32_t next_scale = block + 1u < blocks ? scales[block + 1u] : 0u;
++        int d = (int)scale - median;
++        uint32_t base = (uint32_t)(min(max(d, -3), 3) + 3) * 81u;
++        uint32_t context = base + 80u, maximum = 0, word[4] = {0u, 0u, 0u, 0u};
++#pragma unroll
++        for (uint32_t k = 0; k < 32u; k++) {
++            WexCudaNr2Bytes p = wex_cuda_nr2_peek(s);
++            uint32_t slot = state & (WEX_NR2_TOTAL - 1u), symbol, start, frequency;
++            if (Lookup == 1) {
++                wex_cuda_nr2_row_find(rows[context * 2u], rows[context * 2u + 1u], slot, symbol, start, frequency);
++            } else {
++                uint32_t e = __ldg(buckets + (context << WEX_CUDA_NR2_BUCKET_BITS) +
++                                   (slot >> (WEX_NR2_PRECISION - WEX_CUDA_NR2_BUCKET_BITS)));
++                symbol = e & 15u; frequency = ((e >> 4) & 0x3fffu) + 1u; start = e >> 18;
++                if (slot >= start + frequency) {   /* exact walk inside a mixed bucket */
++                    const uint16_t *cdf = cdfs + (size_t)context * 17u;
++                    do {
++                        start += frequency; ++symbol;
++                        frequency = __ldg(cdf + symbol + 1u) - start;
++                    } while (slot >= start + frequency);
++                }
++            }
++            state = frequency * (state >> WEX_NR2_PRECISION) + slot - start;
++            state = wex_cuda_nr2_renorm(state, s, p);
++            word[k / 8u] |= symbol << ((k % 8u) * 4u);
++            uint32_t previous = symbol & 7u;
++            maximum = max(maximum, previous);   /* = previous after the first symbol */
++            context = base + previous * 9u + maximum;
++        }
++        out[block] = make_uint4(word[0], word[1], word[2], word[3]);
++        scale = next_scale;
++    }
++    if (s.pos != end || state != WEX_NR_L) atomicOr(error, 1u);
++}
++
++/* The WNM2 blob must already be at base (wex_cuda_nr2_table_view layout).
++ * Validate it on the host first (wex_nr2_model_open): the tables rely on it.
++ * Also sets the scale kernel's shared-memory opt-in for the current device;
++ * build the tables on every device (and in every CUDA runtime) that decodes. */
++static inline cudaError_t wex_cuda_build_nr2_tables(unsigned char *base, int with_buckets,
++    cudaStream_t stream, WexCudaNr2Tables *tables) {
++    cudaError_t status = cudaFuncSetAttribute(wex_cuda_nr2_scales,
++        cudaFuncAttributeMaxDynamicSharedMemorySize, (int)WEX_CUDA_NR2_SCALE_SMEM);
++    if (status != cudaSuccess) return status;
++    wex_cuda_nr2_table_view(base, with_buckets, tables);
++    wex_cuda_nr2_build_rows<<<(WEX_CUDA_NR2_ROWS * 8u + 255u) / 256u, 256, 0, stream>>>(
++        base, (uint32_t *)tables->weight_rows);
++    status = cudaGetLastError();
++    if (status != cudaSuccess) return status;
++    wex_cuda_nr2_build_scales<<<3u * WEX_NR2_TOTAL / 256u, 256, 0, stream>>>(
++        base, (uint32_t *)tables->scale_direct, (unsigned char *)tables->scale_symbol);
++    status = cudaGetLastError();
++    if (status != cudaSuccess || !with_buckets) return status;
++    wex_cuda_nr2_build_buckets<<<(WEX_CUDA_NR2_ROWS << WEX_CUDA_NR2_BUCKET_BITS) / 256u, 256, 0, stream>>>(
++        base, (uint32_t *)tables->weight_buckets);
++    return cudaGetLastError();
++}
++
++/* Kernel A (scales), kernel B (weights, after A), or wex_cuda_launch_nr2: clear
++ * *error, A, B on one stream. record and offsets on device; raw receives
++ * scales at plan->scale_offset and weights at plan->weight_offset (the
++ * canonical slab when plan->weight_base == scale_bytes). Launched apart, A
++ * may start once record[0, plan->weight_payload) is on the device. */
++static inline cudaError_t wex_cuda_launch_nr2_scales(const WexCudaNr2Plan *plan, const WexCudaNr2Tables *tables,
++    const unsigned char *record, const uint32_t *offsets, unsigned char *raw, uint32_t *error, cudaStream_t stream) {
++    wex_cuda_nr2_scales<<<plan->block_base[0][3], WEX_CUDA_NR2_THREADS, WEX_CUDA_NR2_SCALE_SMEM, stream>>>(
++        record, offsets, *plan, *tables, raw, error);
++    return cudaGetLastError();
++}
++template<int Lookup>
++static inline cudaError_t wex_cuda_launch_nr2_weights(const WexCudaNr2Plan *plan, const WexCudaNr2Tables *tables,
++    const unsigned char *record, const uint32_t *offsets, unsigned char *raw, uint32_t *error, cudaStream_t stream) {
++    if (Lookup == 0 && !tables->weight_buckets) return cudaErrorInvalidValue;
++    wex_cuda_nr2_weights<Lookup><<<plan->block_base[1][3], WEX_CUDA_NR2_THREADS, 0, stream>>>(
++        record, offsets, *plan, *tables, raw, error);
++    return cudaGetLastError();
++}
++template<int Lookup>
++static inline cudaError_t wex_cuda_launch_nr2_lookup(const WexCudaNr2Plan *plan, const WexCudaNr2Tables *tables,
++    const unsigned char *record, const uint32_t *offsets, unsigned char *raw, uint32_t *error, cudaStream_t stream) {
++    cudaError_t status = cudaMemsetAsync(error, 0, 4u, stream);
++    if (status == cudaSuccess) status = wex_cuda_launch_nr2_scales(plan, tables, record, offsets, raw, error, stream);
++    if (status == cudaSuccess) status = wex_cuda_launch_nr2_weights<Lookup>(plan, tables, record, offsets, raw, error, stream);
++    return status;
++}
++static inline cudaError_t wex_cuda_launch_nr2(const WexCudaNr2Plan *plan, const WexCudaNr2Tables *tables,
++    const unsigned char *record, const uint32_t *offsets, unsigned char *raw, uint32_t *error, cudaStream_t stream) {
++    return wex_cuda_launch_nr2_lookup<WEX_CUDA_NR2_LOOKUP>(plan, tables, record, offsets, raw, error, stream);
++}
++
++/* Commit: copy decoded regions to caller buffers only when *error is clear
++ * (same stream, after the decode), sparing a host round trip. */
++struct WexCudaCommit {
++    unsigned char *destination[6];
++    uint32_t source[6];   /* offsets in raw */
++    uint32_t bytes[6];
++};
++static __global__ void wex_cuda_commit_regions(const unsigned char *raw, WexCudaCommit commit, const uint32_t *error) {
++    if (*(const volatile uint32_t *)error) return;
++    uint32_t region = blockIdx.y;
++    const unsigned char *from = raw + commit.source[region];
++    unsigned char *to = commit.destination[region];
++    size_t bytes = commit.bytes[region], stride = (size_t)gridDim.x * blockDim.x;
++    size_t i = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
++    if (!(((uintptr_t)from | (uintptr_t)to | bytes) & 15u)) {
++        for (; i < bytes / 16u; i += stride) ((uint4 *)to)[i] = ((const uint4 *)from)[i];
++    } else {
++        for (; i < bytes; i += stride) to[i] = from[i];
++    }
++}
++static inline cudaError_t wex_cuda_launch_commit(const unsigned char *raw, const WexCudaCommit *commit,
++    const uint32_t *error, cudaStream_t stream) {
++    wex_cuda_commit_regions<<<dim3(64u, 6u), 256, 0, stream>>>(raw, *commit, error);
++    return cudaGetLastError();
++}
++
++#endif
+--- a/expert_store_wex.c
++++ b/expert_store_wex.c
+@@ -641,6 +641,22 @@
+     if (wex_validate_table(hdr, entries, file_bytes) != 0) {
+         failure = "invalid WEX table/entry"; goto fail;
+     }
++    if (hdr->flags & WEX_HEADER_NEURAL_RANS2) {
++        uint64_t model_offset, aligned_model;
++        uint32_t model_bytes, model_id, registered = 0;
++        unsigned char *model;
++        int bad;
++        if (wex_nr2_model_location(hdr, header_page, &model_offset, &model_bytes, &model_id) ||
++            wex_aligned_size(model_bytes, &aligned_model)) {
++            failure = "invalid WNR2 model descriptor"; goto fail;
++        }
++        model = (unsigned char *)wex_alloc_aligned((size_t)aligned_model);
++        if (!model) { failure = "out of memory for the WNR2 model"; goto fail; }
++        bad = wex_read_exact(primary, model, (size_t)aligned_model, model_offset) != 0 ||
++              coli_wex_register_model(model, model_bytes, &registered) != 0 || registered != model_id;
++        wex_free_aligned(model);
++        if (bad) { failure = "invalid or unreadable WNR2 model"; goto fail; }
++    }
+ 
+     /* A matching layout does not identify a generation: WEX2 stores a build
+      * identifier in the header page. Compare all 4096 bytes before striping. */
+--- a/tools/wex_cuda_bridge.cu
++++ b/tools/wex_cuda_bridge.cu
+@@ -1,17 +1,36 @@
+ /* Optional Windows WEX helper DLL. Thread-local buffers and a private CUDA
+  * stream keep cold-load reconstruction separate from inference streams.
+  * A failed decode never changes the caller's compressed slab.
++ *
++ * ABI 1 (wex_cuda_helper_abi) is unchanged: wex_cuda_decode_to_host.
++ * wex_cuda_helper_features() lists optional additions, resolved by name:
++ *   WEX_CUDA_FEATURE_DEVICE   wex_cuda_decode_to_device: reconstruct straight
++ *                             into caller-owned device buffers (no GPU->RAM trip)
++ *   WEX_CUDA_FEATURE_REGISTER wex_cuda_host_register / _unregister for the
++ *                             caller's staging buffers
++ *   WEX_CUDA_FEATURE_NR2      wex_cuda_register_model; then wex_cuda_decode_to_host
++ *                             and wex_cuda_decode_to_device also accept WNR2
++ *                             records (entry->flags == WEX_ENTRY_NEURAL_RANS2)
+  */
+ #include "../wex_cuda.cuh"
+ #include <cstring>
++#include <mutex>
++#include <new>
+ 
+ struct WexCudaWorkspace {
+     unsigned char *host_raw=nullptr,*device_record=nullptr,*device_raw=nullptr;
+     uint32_t *host_offsets=nullptr,*device_offsets=nullptr,*host_error=nullptr,*device_error=nullptr,*lut=nullptr;
+     cudaStream_t stream=nullptr;
++    cudaStream_t aux=nullptr;              /* WNR2: kernels, while `stream` uploads */
++    cudaEvent_t head=nullptr,data=nullptr; /* WNR2: record head / whole record on the device */
+     size_t capacity=0,tiles=0,lut_bytes=0;
++    int device=-1;
+     ~WexCudaWorkspace() { clear(); }
+     void clear() {
++        if(aux) { cudaStreamSynchronize(aux); cudaStreamDestroy(aux); }
++        if(head) cudaEventDestroy(head);
++        if(data) cudaEventDestroy(data);
++        aux=nullptr; head=data=nullptr;
+         if(stream) cudaStreamSynchronize(stream);
+         if(device_record) cudaFree(device_record);
+         if(device_raw) cudaFree(device_raw);
+@@ -24,11 +43,14 @@
+         if(stream) cudaStreamDestroy(stream);
+         host_raw=device_record=device_raw=nullptr;
+         host_offsets=device_offsets=host_error=device_error=lut=nullptr;
+-        stream=nullptr; capacity=tiles=lut_bytes=0;
++        stream=nullptr; capacity=tiles=lut_bytes=0; device=-1;
+     }
+     bool ensure(size_t bytes,size_t tile_count,size_t lookup_bytes) {
+-        if(capacity>=bytes && tiles>=tile_count && lut_bytes>=lookup_bytes) return true;
+-        clear();
++        int current=-1;
++        if(cudaGetDevice(&current)!=cudaSuccess) return false;
++        if(device==current && capacity>=bytes && tiles>=tile_count && lut_bytes>=lookup_bytes) return true;
++        if(device>=0 && device!=current) { int keep=current; cudaSetDevice(device); clear(); cudaSetDevice(keep); }
++        else clear();
+         size_t free_bytes,total_bytes;
+         if(cudaMemGetInfo(&free_bytes,&total_bytes)!=cudaSuccess ||
+            free_bytes<bytes*2u+tile_count*4u+lookup_bytes+8u*1024u*1024u) return false;
+@@ -43,7 +65,19 @@
+         ALLOC_OK(cudaMalloc((void**)&device_error,4u));
+         ALLOC_OK(cudaMalloc((void**)&lut,lookup_bytes));
+ #undef ALLOC_OK
+-        capacity=bytes; tiles=tile_count; lut_bytes=lookup_bytes;
++        capacity=bytes; tiles=tile_count; lut_bytes=lookup_bytes; device=current;
++        return true;
++    }
++    /* After ensure(): the second stream and two events of the WNR2 path. */
++    bool ensure_nr2() {
++        if(aux) return true;
++        if(cudaStreamCreateWithFlags(&aux,cudaStreamNonBlocking)!=cudaSuccess) { aux=nullptr; return false; }
++        if(cudaEventCreateWithFlags(&head,cudaEventDisableTiming)!=cudaSuccess ||
++           cudaEventCreateWithFlags(&data,cudaEventDisableTiming)!=cudaSuccess) {
++            if(head) cudaEventDestroy(head);
++            cudaStreamDestroy(aux); aux=nullptr; head=data=nullptr;
++            return false;
++        }
+         return true;
+     }
+ };
+@@ -54,10 +88,164 @@
+     ~WexCudaWaitOnExit() { if(!completed) cudaStreamSynchronize(stream); }
+ };
+ 
++/* ---- WNR2 model registry --------------------------------------------------
++ * Process-global: a private host copy of every registered WNM2 blob, keyed by
++ * its id (FNV-1a), and its device tables, built on first use per device and
++ * kept for the process lifetime (never freed, so a found pointer stays valid). */
++#define WEX_CUDA_NR2_MAX_MODELS 16
++#define WEX_CUDA_NR2_MAX_DEVICES 64
++struct WexCudaNr2Model {
++    uint32_t id;
++    unsigned char blob[WEX_NR2_MODEL_BYTES];
++    unsigned char *tables[WEX_CUDA_NR2_MAX_DEVICES];
++};
++static std::mutex wex_cuda_nr2_mutex;
++static WexCudaNr2Model *wex_cuda_nr2_models[WEX_CUDA_NR2_MAX_MODELS];
++static int wex_cuda_nr2_count;
++
++static WexCudaNr2Model *wex_cuda_nr2_find(uint32_t id) {   /* caller holds the mutex */
++    for(int i=0;i<wex_cuda_nr2_count;i++) if(wex_cuda_nr2_models[i]->id==id) return wex_cuda_nr2_models[i];
++    return nullptr;
++}
++
++/* 0 and the device tables of model `id` on the current device `device`,
++ * building them on `stream` the first time; 1 if the model is not registered
++ * or CUDA fails. */
++static int wex_cuda_nr2_tables(uint32_t id,int device,cudaStream_t stream,WexCudaNr2Tables *tables) {
++    std::lock_guard<std::mutex> lock(wex_cuda_nr2_mutex);
++    WexCudaNr2Model *model=wex_cuda_nr2_find(id);
++    if(!model || device<0 || device>=WEX_CUDA_NR2_MAX_DEVICES) return 1;
++    const int buckets=WEX_CUDA_NR2_LOOKUP==0;
++    if(!model->tables[device]) {
++        unsigned char *base=nullptr;
++        if(cudaMalloc((void**)&base,wex_cuda_nr2_table_bytes(buckets))!=cudaSuccess) { (void)cudaGetLastError(); return 1; }
++        WexCudaNr2Tables built;
++        if(cudaMemcpyAsync(base,model->blob,WEX_NR2_MODEL_BYTES,cudaMemcpyHostToDevice,stream)!=cudaSuccess ||
++           wex_cuda_build_nr2_tables(base,buckets,stream,&built)!=cudaSuccess ||
++           cudaStreamSynchronize(stream)!=cudaSuccess) {
++            (void)cudaGetLastError(); cudaStreamSynchronize(stream); cudaFree(base); (void)cudaGetLastError();
++            return 1;
++        }
++        model->tables[device]=base;
++    }
++    wex_cuda_nr2_table_view(model->tables[device],buckets,tables);
++    return 0;
++}
++
++static int wex_cuda_nr2_registered(uint32_t id) {
++    std::lock_guard<std::mutex> lock(wex_cuda_nr2_mutex);
++    return wex_cuda_nr2_find(id)!=nullptr;
++}
++
++/* Register a WNM2 model blob (validated with wex_nr2_model_open; the helper
++ * keeps its own copy). 0 when registered, or already registered with the same
++ * bytes; -1 for an invalid blob or another blob with the same id; 1 when the
++ * table (16 models) is full or memory is short. */
++extern "C" __declspec(dllexport) int wex_cuda_register_model(const unsigned char *blob,size_t bytes) {
++    WexNr2Model probe;
++    if(wex_nr2_model_open(blob,bytes,&probe)) return -1;
++    std::lock_guard<std::mutex> lock(wex_cuda_nr2_mutex);
++    if(WexCudaNr2Model *known=wex_cuda_nr2_find(probe.id))
++        return std::memcmp(known->blob,blob,WEX_NR2_MODEL_BYTES) ? -1 : 0;
++    if(wex_cuda_nr2_count>=WEX_CUDA_NR2_MAX_MODELS) return 1;
++    WexCudaNr2Model *model=new(std::nothrow) WexCudaNr2Model();
++    if(!model) return 1;
++    model->id=probe.id;
++    std::memcpy(model->blob,blob,WEX_NR2_MODEL_BYTES);
++    wex_cuda_nr2_models[wex_cuda_nr2_count++]=model;
++    return 0;
++}
++
++/* Host validation of a WNR2 record (entry->total_bytes at `record`, host
++ * memory): -1 if invalid, 1 if its model is not registered, else 0. */
++static int wex_cuda_nr2_prepare(const WexEntry *entry,const unsigned char *record,WexNr2Record &view,
++                                WexCudaNr2Plan &plan) {
++    if(wex_cuda_plan_nr2(entry,record,entry->total_bytes,&view,&plan)) return -1;
++    return wex_cuda_nr2_registered(plan.model_id) ? 0 : 1;
++}
++
++/* Prepared record (host memory) -> workspace.device_raw on the current device.
++ * `stream` only copies: the stream offsets, then the record in two pieces,
++ * header + lengths + scale payload first (host-to-device copies share one
++ * copy engine in submission order, so the small ones go first). `aux` runs
++ * the kernels: kernel A as soon as the head is on the device, overlapping the
++ * weight payload upload, then kernel B once all of it arrived. Then, with
++ * `commit`, the commit kernel copies to the caller's device buffers only if no
++ * stream failed; without it, device_raw goes back to host_raw (private).
++ * (Measured alternatives were slower on Windows/WDDM: kernel B on `stream`
++ * behind the upload, or the offsets uploaded on `aux`; every switch between
++ * the copy engine and kernels costs ~15-35 us there.)
++ * Returns 0, 1 (CUDA/resources unavailable) or -1 (a stream failed on the
++ * device); every copy and kernel has completed when it returns. */
++static int wex_cuda_nr2_decode(const WexEntry *entry,const unsigned char *record,const WexNr2Record &view,
++                               const WexCudaNr2Plan &plan,WexCudaWorkspace &workspace,const WexCudaCommit *commit) {
++    uint64_t raw,aligned;
++    if(wex_entry_raw_sizes(entry,&raw,&aligned)) return -1;
++    int device=-1;
++    if(cudaGetDevice(&device)!=cudaSuccess) { (void)cudaGetLastError(); return 1; }
++    if(!workspace.ensure((size_t)aligned,(size_t)plan.streams+1u,4u) || !workspace.ensure_nr2()) {
++        (void)cudaGetLastError(); return 1;
++    }
++    WexCudaNr2Tables tables;
++    if(wex_cuda_nr2_tables(plan.model_id,device,workspace.stream,&tables)) return 1;
++    cudaStream_t copy=workspace.stream,work=workspace.aux;
++    WexCudaWaitOnExit copy_guard{copy},work_guard{work};
++#define RUN_OK(call) do { if((call)!=cudaSuccess) { (void)cudaGetLastError(); return 1; } } while(0)
++    wex_cuda_nr2_offsets(&view,&plan,workspace.host_offsets);
++    RUN_OK(cudaMemcpyAsync(workspace.device_offsets,workspace.host_offsets,((size_t)plan.streams+1u)*4u,
++                           cudaMemcpyHostToDevice,copy));
++    RUN_OK(cudaMemcpyAsync(workspace.device_record,record,plan.weight_payload,cudaMemcpyHostToDevice,copy));
++    RUN_OK(cudaEventRecord(workspace.head,copy));
++    RUN_OK(cudaMemcpyAsync(workspace.device_record+plan.weight_payload,record+plan.weight_payload,
++                           entry->total_bytes-plan.weight_payload,cudaMemcpyHostToDevice,copy));
++    RUN_OK(cudaEventRecord(workspace.data,copy));
++    RUN_OK(cudaStreamWaitEvent(work,workspace.head,0));
++    RUN_OK(cudaMemsetAsync(workspace.device_error,0,4u,work));
++    RUN_OK(wex_cuda_launch_nr2_scales(&plan,&tables,workspace.device_record,workspace.device_offsets,
++                                      workspace.device_raw,workspace.device_error,work));
++    RUN_OK(cudaStreamWaitEvent(work,workspace.data,0));
++    RUN_OK(wex_cuda_launch_nr2_weights<WEX_CUDA_NR2_LOOKUP>(&plan,&tables,workspace.device_record,
++           workspace.device_offsets,workspace.device_raw,workspace.device_error,work));
++    if(commit) RUN_OK(wex_cuda_launch_commit(workspace.device_raw,commit,workspace.device_error,work));
++    else if(plan.weight_base==entry->scale_bytes)
++        RUN_OK(cudaMemcpyAsync(workspace.host_raw,workspace.device_raw,(size_t)raw,cudaMemcpyDeviceToHost,work));
++    else {
++        RUN_OK(cudaMemcpyAsync(workspace.host_raw,workspace.device_raw,entry->scale_bytes,cudaMemcpyDeviceToHost,work));
++        RUN_OK(cudaMemcpyAsync(workspace.host_raw+entry->scale_bytes,workspace.device_raw+plan.weight_base,
++                               entry->weight_bytes,cudaMemcpyDeviceToHost,work));
++    }
++    RUN_OK(cudaMemcpyAsync(workspace.host_error,workspace.device_error,4u,cudaMemcpyDeviceToHost,work));
++    RUN_OK(cudaStreamSynchronize(work));
++    RUN_OK(cudaStreamSynchronize(copy));   /* idle already: `work` waited for its last event */
++#undef RUN_OK
++    copy_guard.completed=work_guard.completed=true;
++    return *workspace.host_error ? -1 : 0;
++}
++
++static WexCudaWorkspace &wex_cuda_host_workspace() { thread_local WexCudaWorkspace workspace; return workspace; }
++static WexCudaWorkspace &wex_cuda_device_workspace() { thread_local WexCudaWorkspace workspace; return workspace; }
++
++static int wex_cuda_nr2_to_host(const WexEntry *entry,unsigned char *slab,size_t slab_capacity) {
++    uint64_t raw,aligned;
++    if(wex_entry_raw_sizes(entry,&raw,&aligned) || aligned>slab_capacity) return -1;
++    size_t offset=wex_record_read_offset(entry);
++    if(!offset || offset>slab_capacity || entry->total_bytes>slab_capacity-offset) return -1;
++    WexNr2Record view;
++    WexCudaNr2Plan plan;
++    int status=wex_cuda_nr2_prepare(entry,slab+offset,view,plan);
++    if(status) return status;
++    /* the record is fully uploaded before the decoded slab comes back */
++    status=wex_cuda_nr2_decode(entry,slab+offset,view,plan,wex_cuda_host_workspace(),nullptr);
++    if(status) return status;
++    std::memcpy(slab,wex_cuda_host_workspace().host_raw,(size_t)raw);
++    return 0;
++}
++
+ extern "C" __declspec(dllexport) unsigned int wex_cuda_helper_abi(void) { return 1u; }
+ 
+ extern "C" __declspec(dllexport) int wex_cuda_decode_to_host(const WexEntry *entry,
+     unsigned char *slab,size_t slab_capacity) {
++    if(entry && slab && entry->flags==WEX_ENTRY_NEURAL_RANS2) return wex_cuda_nr2_to_host(entry,slab,slab_capacity);
+     uint64_t raw,aligned;
+     WexNeuralRans view;
+     if(!entry || !slab || entry->flags!=WEX_ENTRY_NEURAL_RANS ||
+@@ -66,7 +254,7 @@
+     size_t offset=(size_t)(aligned-entry->total_bytes);
+     if(wex_nr_parse(slab+offset,entry->total_bytes,entry->weight_bytes,&view) ||
+        wex_unpack_scale_tiles(view.scales,view.scale_encoded,nullptr,entry->scale_bytes)) return -1;
+-    thread_local WexCudaWorkspace workspace;
++    WexCudaWorkspace &workspace=wex_cuda_host_workspace();
+     size_t tiles=((size_t)entry->scale_bytes+255u)/256u;
+     size_t lut_bytes=(size_t)view.classes*(view.scale_only?1u:17u)*WEX_CUDA_NR_LUT_SLOTS*4u;
+     if(!workspace.ensure((size_t)aligned,tiles,lut_bytes)) return 1;
+@@ -89,3 +277,98 @@
+     std::memcpy(slab,workspace.host_raw,(size_t)raw);
+     return 0;
+ }
++
++#define WEX_CUDA_FEATURE_DEVICE   1u
++#define WEX_CUDA_FEATURE_REGISTER 2u
++#define WEX_CUDA_FEATURE_NR2      4u
++extern "C" __declspec(dllexport) unsigned int wex_cuda_helper_features(void) {
++    return WEX_CUDA_FEATURE_DEVICE | WEX_CUDA_FEATURE_REGISTER | WEX_CUDA_FEATURE_NR2;
++}
++
++static int wex_cuda_nr2_to_device(const WexEntry *entry,const unsigned char *record,int device,
++    unsigned char *const *dst_scale,unsigned char *const *dst_weight) {
++    uint64_t raw,aligned;
++    if(wex_entry_raw_sizes(entry,&raw,&aligned) || entry->total_bytes>=aligned) return -1;
++    for(int m=0;m<3;m++) if(!dst_scale[m] || !dst_weight[m]) return -1;
++    WexNr2Record view;
++    WexCudaNr2Plan plan;
++    int status=wex_cuda_nr2_prepare(entry,record,view,plan);
++    if(status) return status;
++    if(cudaSetDevice(device)!=cudaSuccess) { (void)cudaGetLastError(); return 1; }
++    /* the commit kernel writes the destination only when every stream decoded */
++    WexCudaCommit commit;
++    for(int m=0;m<3;m++) {
++        commit.destination[m]=dst_scale[m];
++        commit.source[m]=plan.scale_offset[m];
++        commit.bytes[m]=(uint32_t)entry->scale_shapes[m][0]*entry->scale_shapes[m][1];
++        commit.destination[3+m]=dst_weight[m];
++        commit.source[3+m]=plan.weight_offset[m];
++        commit.bytes[3+m]=(uint32_t)entry->weight_shapes[m][0]*entry->weight_shapes[m][1];
++    }
++    return wex_cuda_nr2_decode(entry,record,view,plan,wex_cuda_device_workspace(),&commit);
++}
++
++/* Reconstruct a Neural-rANS record straight into device memory that the caller
++ * owns (for example the inference backend's expert mirror): matrix m's scales
++ * go to dst_scale[m] and its weights to dst_weight[m], in the canonical WEX
++ * layout of that matrix. The compressed record is read from host memory
++ * (entry->total_bytes, page-locked for full speed). Pointers from another CUDA
++ * runtime of the same process are valid: both use the device's primary context.
++ * The destination is written only after the decode reported no error, and the
++ * call returns after every copy completed, so the caller may use the buffers
++ * on any stream. Returns 0, 1 when CUDA/resources are unavailable, -1 when the
++ * input is invalid (the destination is then untouched). WNR2 records (with
++ * WEX_CUDA_FEATURE_NR2) need their model registered first, else 1; their
++ * destination is written by a device-side commit that runs only if every
++ * stream decoded (so a CUDA failure reported after that commit, returning 1,
++ * leaves correct data there, never partial or corrupt data). */
++extern "C" __declspec(dllexport) int wex_cuda_decode_to_device(const WexEntry *entry,
++    const unsigned char *record,int device,unsigned char *const *dst_scale,unsigned char *const *dst_weight) {
++    if(entry && record && dst_scale && dst_weight && entry->flags==WEX_ENTRY_NEURAL_RANS2)
++        return wex_cuda_nr2_to_device(entry,record,device,dst_scale,dst_weight);
++    uint64_t raw,aligned;
++    WexNeuralRans view;
++    if(!entry || !record || !dst_scale || !dst_weight || entry->flags!=WEX_ENTRY_NEURAL_RANS ||
++       wex_entry_raw_sizes(entry,&raw,&aligned) || entry->scale_bytes%16u || entry->total_bytes>=aligned) return -1;
++    for(int m=0;m<3;m++) if(!dst_scale[m] || !dst_weight[m]) return -1;
++    if(wex_nr_parse(record,entry->total_bytes,entry->weight_bytes,&view) ||
++       wex_unpack_scale_tiles(view.scales,view.scale_encoded,nullptr,entry->scale_bytes)) return -1;
++    if(cudaSetDevice(device)!=cudaSuccess) { (void)cudaGetLastError(); return 1; }
++    WexCudaWorkspace &workspace=wex_cuda_device_workspace();
++    size_t tiles=((size_t)entry->scale_bytes+255u)/256u;
++    size_t lut_bytes=(size_t)view.classes*(view.scale_only?1u:17u)*WEX_CUDA_NR_LUT_SLOTS*4u;
++    if(!workspace.ensure((size_t)aligned,tiles,lut_bytes)) return 1;
++    if(wex_cuda_neural_tile_offsets(&view,entry->scale_bytes,workspace.host_offsets,tiles)) return -1;
++    WexCudaWaitOnExit guard{workspace.stream};
++#define RUN_OK(call) do { if((call)!=cudaSuccess) { (void)cudaGetLastError(); return 1; } } while(0)
++    RUN_OK(cudaMemcpyAsync(workspace.device_record,record,entry->total_bytes,cudaMemcpyHostToDevice,workspace.stream));
++    RUN_OK(cudaMemcpyAsync(workspace.device_offsets,workspace.host_offsets,tiles*4u,cudaMemcpyHostToDevice,workspace.stream));
++    RUN_OK(wex_cuda_launch_neural_rans(entry,&view,workspace.device_record,workspace.device_offsets,
++                                      workspace.device_raw,workspace.lut,workspace.device_error,workspace.stream));
++    RUN_OK(cudaMemcpyAsync(workspace.host_error,workspace.device_error,4u,cudaMemcpyDeviceToHost,workspace.stream));
++    RUN_OK(cudaStreamSynchronize(workspace.stream));
++    if(*workspace.host_error) { guard.completed=true; return -1; }
++    for(int m=0;m<3;m++) {
++        size_t scale_bytes=(size_t)entry->scale_shapes[m][0]*entry->scale_shapes[m][1];
++        size_t weight_bytes=(size_t)entry->weight_shapes[m][0]*entry->weight_shapes[m][1];
++        RUN_OK(cudaMemcpyAsync(dst_scale[m],workspace.device_raw+entry->scale_offsets[m],scale_bytes,
++                               cudaMemcpyDeviceToDevice,workspace.stream));
++        RUN_OK(cudaMemcpyAsync(dst_weight[m],workspace.device_raw+entry->weight_offsets[m],weight_bytes,
++                               cudaMemcpyDeviceToDevice,workspace.stream));
++    }
++    RUN_OK(cudaStreamSynchronize(workspace.stream)); guard.completed=true;
++#undef RUN_OK
++    return 0;
++}
++
++/* Page-lock a caller staging buffer for this helper's uploads (portable). */
++extern "C" __declspec(dllexport) int wex_cuda_host_register(void *pointer,size_t bytes) {
++    if(!pointer || !bytes) return -1;
++    if(cudaHostRegister(pointer,bytes,cudaHostRegisterPortable)!=cudaSuccess) { (void)cudaGetLastError(); return 1; }
++    return 0;
++}
++extern "C" __declspec(dllexport) int wex_cuda_host_unregister(void *pointer) {
++    if(!pointer) return -1;
++    if(cudaHostUnregister(pointer)!=cudaSuccess) { (void)cudaGetLastError(); return 1; }
++    return 0;
++}
+--- a/tests/test_v4_gpu_priority.c
++++ b/tests/test_v4_gpu_priority.c
+@@ -3,7 +3,39 @@
+ #undef main
+ 
+ int coli_v4_test_gpu_frequency_victim(const uint64_t *, const uint64_t *, int, uint64_t);
++int coli_v4_test_gpu_pool_slot(const uint64_t *, const uint64_t *, const uint32_t *, const int *,
++                               const int *, int *, int, uint32_t, int *);
+ void coli_v4_test_gpu_configure_host_pin(void);
++
++/* WEX direct prefetch pool: grows over the coldest idle resident mirror, then
++ * reuses its own least recently used entry; never busy, never one handed out in
++ * the current epoch, never an entry without tensors. */
++static void test_prefetch_pool(void) {
++    setenv("V4_GPU_HOT_CACHE","1",1); setenv("COLI_WEX_GPU_DIRECT_POOL","2",1);
++    uint64_t frequency[8]={9,1,3,2,8,7,6,5}, clock[8]={1,2,3,4,5,6,10,20};
++    uint32_t epoch[8]={4,5,4,4,4,4,4,4};
++    int busy[8]={0,0,0,1,0,0,0,0}, loaded[8]={1,1,0,1,1,1,1,1}, pool[8]={0}, count=0;
++    /* 1 is in use, 3 busy, 2 empty: the coldest idle ones join the pool */
++    assert(coli_v4_test_gpu_pool_slot(frequency,clock,epoch,busy,loaded,pool,8,5,&count)==7);
++    assert(pool[7] && count==1);
++    assert(coli_v4_test_gpu_pool_slot(frequency,clock,epoch,busy,loaded,pool,8,5,&count)==6);
++    assert(pool[6] && count==2);
++    /* full: least recently used pool entry, unless handed out this epoch */
++    assert(coli_v4_test_gpu_pool_slot(frequency,clock,epoch,busy,loaded,pool,8,5,&count)==6);
++    epoch[6]=5;
++    assert(coli_v4_test_gpu_pool_slot(frequency,clock,epoch,busy,loaded,pool,8,5,&count)==7);
++    epoch[7]=5;
++    assert(coli_v4_test_gpu_pool_slot(frequency,clock,epoch,busy,loaded,pool,8,5,&count)==-1);
++    /* an entry emptied by a failed load leaves the pool, which regrows */
++    epoch[7]=4; loaded[7]=0;
++    assert(coli_v4_test_gpu_pool_slot(frequency,clock,epoch,busy,loaded,pool,8,5,&count)==-1);
++    assert(!pool[7] && count==1);
++    assert(coli_v4_test_gpu_pool_slot(frequency,clock,epoch,busy,loaded,pool,8,5,&count)==5);
++    assert(pool[5] && count==2);
++    /* the host path's victim never comes from the pool: 0 is not pooled */
++    assert(!pool[0] && !pool[1] && !pool[4]);
++    unsetenv("COLI_WEX_GPU_DIRECT_POOL"); unsetenv("V4_GPU_HOT_CACHE");
++}
+ 
+ int main(void) {
+     setenv("COLI_V4_ELASTIC_RAM","1",1); setenv("DSV4_CUDA_PIN_HOST","1",1);
+@@ -28,6 +60,7 @@
+     /* A nearly full eight-entry cache must retain the current layer's
+      * newly attached views even if one has a very low frequency. */
+     assert(coli_v4_test_gpu_frequency_victim(frequency,clock,8,10)==0);
++    test_prefetch_pool();
+ 
+     char directory[]="colibri-v4-gpu-priority-XXXXXX", path[512], error[256];
+     assert(mkdtemp(directory)); snprintf(path,sizeof(path),"%s/model.safetensors",directory);
+@@ -49,6 +82,6 @@
+     assert(stats.requests==0 && stats.misses==0 && stats.bytes_read==0);
+     store->ops->destroy(store);
+     assert(!scratch_remove(directory,path));
+-    puts("v4 GPU priority: frequency beats recency, live views protected, CUDA history counted without RAM reads: ok");
++    puts("v4 GPU priority: frequency beats recency, live views protected, prefetch pool bounded, CUDA history counted without RAM reads: ok");
+     return 0;
+ }
+--- a/tests/test_wex_format.c
++++ b/tests/test_wex_format.c
+@@ -420,7 +420,147 @@
+     CHECK(wex_validate_table(&header, entries, file_bytes + WEX_ALIGN));
+ }
+ 
++/* WNR2: train a model on synthetic experts, encode with the reference encoder,
++ * decode into a slab, and reject every malformed field. */
++static uint32_t nr2_rand(uint32_t *s) { *s ^= *s << 13; *s ^= *s >> 17; *s ^= *s << 5; return *s; }
++static void nr2_fill(const WexEntry *entry, unsigned char *raw, uint32_t seed) {
++    /* FP4-like codes: magnitudes skewed small, sign random; scales near 120 */
++    static const unsigned char mag[16] = {0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5, 5, 6, 7};
++    uint32_t s = seed, i;
++    for (i = 0; i < entry->scale_bytes; i++) raw[i] = (unsigned char)(118u + nr2_rand(&s) % 5u);
++    for (i = 0; i < entry->weight_bytes; i++) {
++        uint32_t r = nr2_rand(&s);
++        unsigned char a = (unsigned char)(mag[r & 15u] | ((r >> 4) & 8u)), b = (unsigned char)(mag[(r >> 8) & 15u] | ((r >> 12) & 8u));
++        raw[entry->scale_bytes + i] = (unsigned char)(a | b << 4);
++    }
++}
++static void nr2_views(const WexEntry *entry, unsigned char *raw, const unsigned char *scales[3],
++                      const unsigned char *weights[3]) {
++    unsigned int m;
++    for (m = 0; m < 3u; m++) { scales[m] = raw + entry->scale_offsets[m]; weights[m] = raw + entry->weight_offsets[m]; }
++}
++
++static void test_nr2_codec(void) {
++    WexEntry entry = make_entry(0);
++    WexHeader header = make_header(3);
++    WexNr2Layout layout;
++    WexNr2Model model;
++    WexNr2Record view;
++    uint64_t raw_bytes, aligned_raw;
++    size_t written, capacity, read_offset, total;
++    static uint64_t wcounts[3u * WEX_NR2_CONTEXTS * 16u], scounts[3u * 256u];
++    unsigned char *blob = malloc(WEX_NR2_MODEL_BYTES), *raw = malloc(entry.scale_bytes + entry.weight_bytes);
++    unsigned char *record, *slab, *bad, page[WEX_ALIGN];
++    const unsigned char *scales[3], *weights[3];
++    unsigned int chunk_case, m;
++    uint64_t at; uint32_t bytes, id;
++    CHECK(blob && raw);
++    CHECK(!wex_entry_raw_sizes(&entry, &raw_bytes, &aligned_raw));
++    wex_nr2_layout(&entry, &layout);
++    for (m = 0; m < 3u; m++) CHECK(layout.symbol_count[m] == 64u * 1024u * 2u && layout.scale_count[m] == 4096u);
++    memset(wcounts, 0, sizeof(wcounts)); memset(scounts, 0, sizeof(scounts));
++    for (id = 1; id <= 3u; id++) {   /* train on three experts, encode a fourth */
++        nr2_fill(&entry, raw, id * 7919u);
++        nr2_views(&entry, raw, scales, weights);
++        wex_nr2_count(&layout, scales, weights, wcounts, scounts);
++    }
++    wex_nr2_model_build(wcounts, scounts, blob);
++    CHECK(!wex_nr2_model_open(blob, WEX_NR2_MODEL_BYTES, &model));
++    CHECK(wex_nr2_model_open(blob, WEX_NR2_MODEL_BYTES - 2u, &model));
++    {   /* a zero-width symbol, a wrong total, a wrong magic: all refused */
++        WexNr2Model broken;
++        unsigned char keep[4];
++        memcpy(keep, blob + 34u, 2u); blob[34] = blob[35] = 0;
++        CHECK(wex_nr2_model_open(blob, WEX_NR2_MODEL_BYTES, &broken)); memcpy(blob + 34u, keep, 2u);
++        memcpy(keep, blob + 64u, 2u); blob[64] ^= 1u;
++        CHECK(wex_nr2_model_open(blob, WEX_NR2_MODEL_BYTES, &broken)); memcpy(blob + 64u, keep, 2u);
++        memcpy(keep, blob, 4u); blob[0] ^= 1u;
++        CHECK(wex_nr2_model_open(blob, WEX_NR2_MODEL_BYTES, &broken)); memcpy(blob, keep, 4u);
++    }
++    CHECK(!wex_nr2_model_open(blob, WEX_NR2_MODEL_BYTES, &model));
++    nr2_fill(&entry, raw, 424242u);
++    nr2_views(&entry, raw, scales, weights);
++    capacity = (size_t)aligned_raw + WEX_ALIGN;
++    record = malloc(capacity); slab = malloc(capacity); bad = malloc(capacity);
++    CHECK(record && slab && bad);
++    for (chunk_case = 0; chunk_case < 3u; chunk_case++) {
++        static const uint32_t wchunk[3] = {4096u, 512u, 16384u}, schunk[3] = {2048u, 256u, 16384u};
++        unsigned char *outs[3], *outw[3];
++        memset(record, 0, capacity);
++        CHECK(!wex_nr2_encode(&model, &layout, scales, weights, wchunk[chunk_case], schunk[chunk_case],
++                              record, capacity, &written));
++        total = (written + 4095u) & ~(size_t)4095u;
++        CHECK(total < aligned_raw);   /* the synthetic source compresses */
++        CHECK(!wex_nr2_parse(record, total, &layout, model.id, &view));
++        CHECK(view.weight_chunk == wchunk[chunk_case] && view.scale_chunk == schunk[chunk_case]);
++        /* decode through the slab API: record at the read offset, sentinels around */
++        entry.flags = WEX_ENTRY_NEURAL_RANS2;
++        entry.total_bytes = (uint32_t)total;
++        read_offset = wex_record_read_offset(&entry);
++        CHECK(read_offset == aligned_raw - total);
++        memset(slab, 0xa5, capacity);
++        memcpy(slab + read_offset, record, total);
++        CHECK(wex_decode_record(&entry, slab, capacity));        /* no model: refused */
++        CHECK(!wex_decode_nr2_record(&entry, slab, capacity, &model));
++        CHECK(!memcmp(slab, raw, (size_t)raw_bytes));
++        for (m = 0; m < 3u; m++) { outs[m] = bad + entry.scale_offsets[m]; outw[m] = bad + entry.weight_offsets[m]; }
++        CHECK(!wex_nr2_decode(&view, &layout, &model, outs, outw) && !memcmp(bad, raw, (size_t)raw_bytes));
++        /* malformed records are refused and leave the slab untouched */
++#define NR2_REJECT(mutate) do { \
++            memcpy(bad, record, total); mutate; \
++            memset(slab, 0x5a, capacity); memcpy(slab + read_offset, bad, total); \
++            CHECK(wex_decode_nr2_record(&entry, slab, capacity, &model)); \
++            CHECK(slab[0] == 0x5a && slab[read_offset - 1u] == 0x5a); \
++        } while (0)
++        NR2_REJECT(bad[0] ^= 1u);                                  /* magic */
++        NR2_REJECT(bad[4] ^= 1u);                                  /* model id */
++        NR2_REJECT(put_u32(bad + 16u, wchunk[chunk_case] * 3u));   /* chunk not a power of two */
++        NR2_REJECT(put_u32(bad + 16u, 256u));                      /* weight chunk too small */
++        NR2_REJECT(put_u32(bad + 20u, 32768u));                    /* scale chunk too large */
++        NR2_REJECT(bad[27] = 1u);                                  /* reserved */
++        NR2_REJECT(put_u32(bad + 28u, 1u));                        /* reserved */
++        NR2_REJECT(put_u32(bad + 12u, view.weight_payload_bytes + 1u));   /* payload size */
++        NR2_REJECT(bad[WEX_NR2_HEADER_BYTES] = 3u; bad[WEX_NR2_HEADER_BYTES + 1u] = 0);  /* stream < 4 bytes */
++        NR2_REJECT(bad[WEX_NR2_HEADER_BYTES] ^= 1u);               /* lengths no longer add up */
++        NR2_REJECT(memset(bad + view.metadata_bytes, 0, 4u));     /* initial state below L */
++        NR2_REJECT(bad[view.metadata_bytes] = 0x80u);              /* initial state above 256 L */
++        if (written < total) NR2_REJECT(bad[total - 1u] = 1u);     /* non-zero padding */
++        NR2_REJECT(memset(bad + view.metadata_bytes + view.scale_payload_bytes + 4u, 0, 64u));  /* corrupted payload */
++#undef NR2_REJECT
++        CHECK(wex_nr2_parse(record, total - WEX_ALIGN, &layout, 0, &view));   /* truncated */
++        CHECK(wex_nr2_parse(record, total, &layout, model.id + 1u, &view));    /* other model */
++        entry.flags = 0;
++    }
++    /* container side: flag, entry validation and the model descriptor */
++    header.flags |= WEX_HEADER_NEURAL_RANS2;
++    header.table_offset = 2u * WEX_ALIGN + WEX_ALIGN * 14u;
++    CHECK(!wex_validate_header(&header, 64u * WEX_ALIGN, 0, 0, NULL, NULL));
++    entry.flags = WEX_ENTRY_NEURAL_RANS2;
++    entry.total_bytes = (uint32_t)total;
++    entry.file_offset = header.table_offset + WEX_ALIGN;
++    CHECK(!wex_validate_entry(&header, &entry, 64u * WEX_ALIGN + aligned_raw));
++    header.flags &= ~WEX_HEADER_NEURAL_RANS2;
++    CHECK(wex_validate_entry(&header, &entry, 64u * WEX_ALIGN + aligned_raw));
++    header.flags |= WEX_HEADER_NEURAL_RANS2;
++    entry.total_bytes = (uint32_t)aligned_raw;   /* no smaller than raw: not a WNR2 record */
++    CHECK(wex_validate_entry(&header, &entry, 64u * WEX_ALIGN + aligned_raw));
++    memset(page, 0, sizeof(page));
++    memcpy(page, &header, sizeof(header));
++    put_u32(page + 64u, WEX_NR2_DESCRIPTOR_MAGIC); put_u32(page + 68u, WEX_NR2_MODEL_BYTES);
++    put_u32(page + 72u, WEX_ALIGN); put_u32(page + 76u, 0); put_u32(page + 80u, model.id);
++    CHECK(!wex_nr2_model_location(&header, page, &at, &bytes, &id) && at == WEX_ALIGN &&
++          bytes == WEX_NR2_MODEL_BYTES && id == model.id);
++    put_u32(page + 72u, WEX_ALIGN + 512u); CHECK(wex_nr2_model_location(&header, page, &at, &bytes, &id));
++    put_u32(page + 72u, 12u * WEX_ALIGN); CHECK(wex_nr2_model_location(&header, page, &at, &bytes, &id));  /* runs into the table */
++    put_u32(page + 72u, WEX_ALIGN); put_u32(page + 84u, 1u); CHECK(wex_nr2_model_location(&header, page, &at, &bytes, &id));
++    put_u32(page + 84u, 0); put_u32(page + 80u, 0); CHECK(wex_nr2_model_location(&header, page, &at, &bytes, &id));
++    put_u32(page + 80u, model.id); header.flags &= ~WEX_HEADER_NEURAL_RANS2;
++    CHECK(wex_nr2_model_location(&header, page, &at, &bytes, &id));
++    free(blob); free(raw); free(record); free(slab); free(bad);
++}
++
+ int main(void) {
++    test_nr2_codec();
+     test_bit_vectors();
+     test_tile_boundaries();
+     test_headers_and_entries();
+@@ -428,6 +568,6 @@
+     test_palette_record(0);
+     test_palette_record(1);
+     test_v3_alias_manifest();
+-    puts("WEX format: V1/V2/V3, all bit widths, palette/scale boundaries, overlapping expansion and malformed streams passed.");
++    puts("WEX format: V1/V2/V3, all bit widths, palette/scale boundaries, overlapping expansion, WNR2 round trips and malformed streams passed.");
+     return 0;
+ }
+--- a/tests/test_expert_store_wex.c
++++ b/tests/test_expert_store_wex.c
+@@ -367,6 +367,125 @@
+            (unsigned long long)cuda_loads);
+ }
+ 
++/* WNR2: a container whose records need its model; the standalone store must
++ * register the model at open, decode every record exactly, and refuse a
++ * corrupted model or a descriptor naming another one. */
++static uint32_t nr2_next(uint32_t *s) { *s ^= *s << 13; *s ^= *s >> 17; *s ^= *s << 5; return *s; }
++static void test_nr2_container(void) {
++    const char *path = "test_wex_nr2.wex";
++    enum { EXPERTS = 4 };
++    static const unsigned char mag[16] = {0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5, 5, 6, 7};
++    uint32_t scale_matrix = 4096u, weight_matrix = scale_matrix * 16u;
++    uint32_t raw_scales = 3u * scale_matrix, raw_weights = 3u * weight_matrix;
++    uint32_t raw_record = WEX_ALIGN_UP(raw_scales + raw_weights, WEX_ALIGN);
++    uint64_t *wcounts = calloc(3u * WEX_NR2_CONTEXTS * 16u, sizeof(uint64_t)), *scounts = calloc(3u * 256u, sizeof(uint64_t));
++    unsigned char *raw[EXPERTS], *blob = calloc(1, WEX_NR2_MODEL_BYTES);
++    unsigned char *records[EXPERTS];
++    size_t sizes[EXPERTS];
++    WexEntry entries[EXPERTS];
++    WexNr2Layout layout;
++    WexNr2Model model;
++    uint32_t seed = 977u;
++    assert(wcounts && scounts && blob);
++    memset(entries, 0, sizeof(entries));
++    for (int i = 0; i < EXPERTS; i++) {
++        WexEntry *e = &entries[i];
++        e->scale_bytes = raw_scales; e->weight_bytes = raw_weights;
++        for (int m = 0; m < 3; m++) {
++            e->scale_shapes[m][0] = e->weight_shapes[m][0] = 64;
++            e->scale_shapes[m][1] = 64; e->weight_shapes[m][1] = 1024;
++            e->scale_offsets[m] = (uint32_t)m * scale_matrix;
++            e->weight_offsets[m] = raw_scales + (uint32_t)m * weight_matrix;
++        }
++        raw[i] = malloc(raw_scales + raw_weights);
++        assert(raw[i]);
++        for (uint32_t j = 0; j < raw_scales; j++) raw[i][j] = (unsigned char)(119u + nr2_next(&seed) % 4u);
++        for (uint32_t j = 0; j < raw_weights; j++) {
++            uint32_t r = nr2_next(&seed);
++            raw[i][raw_scales + j] = (unsigned char)((mag[r & 15u] | ((r >> 4) & 8u)) |
++                                                     (mag[(r >> 8) & 15u] | ((r >> 12) & 8u)) << 4);
++        }
++        const unsigned char *scales[3], *weights[3];
++        for (int m = 0; m < 3; m++) { scales[m] = raw[i] + e->scale_offsets[m]; weights[m] = raw[i] + e->weight_offsets[m]; }
++        wex_nr2_layout(e, &layout);
++        wex_nr2_count(&layout, scales, weights, wcounts, scounts);
++    }
++    wex_nr2_model_build(wcounts, scounts, blob);
++    assert(!wex_nr2_model_open(blob, WEX_NR2_MODEL_BYTES, &model));
++    for (int i = 0; i < EXPERTS; i++) {
++        const unsigned char *scales[3], *weights[3];
++        for (int m = 0; m < 3; m++) { scales[m] = raw[i] + entries[i].scale_offsets[m]; weights[m] = raw[i] + entries[i].weight_offsets[m]; }
++        records[i] = calloc(1, raw_record);
++        assert(records[i] && !wex_nr2_encode(&model, &layout, scales, weights, 4096u, 2048u, records[i], raw_record, &sizes[i]));
++        sizes[i] = WEX_ALIGN_UP(sizes[i], WEX_ALIGN);
++        assert(sizes[i] < raw_record);
++    }
++    /* layout: header page, model at 4096 (61440 bytes reserved), table, records */
++    size_t table_offset = WEX_ALIGN + WEX_ALIGN_UP(WEX_NR2_MODEL_BYTES, WEX_ALIGN);
++    size_t offset = table_offset + WEX_ALIGN_UP(EXPERTS * sizeof(WexEntry), WEX_ALIGN), bytes = offset;
++    for (int i = 0; i < EXPERTS; i++) bytes += sizes[i];
++    Fixture fixture = {0};
++    fixture.data = calloc(1, bytes);
++    fixture.bytes = bytes;
++    assert(fixture.data);
++    fixture.header = (WexHeader *)fixture.data;
++    fixture.entries = (WexEntry *)(fixture.data + table_offset);
++    fixture.header->magic = WEX_MAGIC_V3; fixture.header->version = 3;
++    fixture.header->num_layers = 1; fixture.header->num_experts = EXPERTS;
++    fixture.header->aligned_expert_bytes = raw_record;
++    fixture.header->table_offset = table_offset;
++    fixture.header->flags = WEX_HEADER_NEURAL_RANS2;
++    memset(fixture.data + sizeof(WexHeader), 0x77, 16);
++    unsigned char *d = fixture.data + WEX_NR2_DESCRIPTOR_OFFSET;
++    put_u32(d, WEX_NR2_DESCRIPTOR_MAGIC); put_u32(d + 4, WEX_NR2_MODEL_BYTES);
++    put_u32(d + 8, WEX_ALIGN); put_u32(d + 12, 0); put_u32(d + 16, model.id); put_u32(d + 20, 0);
++    memcpy(fixture.data + WEX_ALIGN, blob, WEX_NR2_MODEL_BYTES);
++    for (int i = 0; i < EXPERTS; i++) {
++        entries[i].file_offset = offset;
++        entries[i].total_bytes = (uint32_t)sizes[i];
++        entries[i].flags = WEX_ENTRY_NEURAL_RANS2;
++        memcpy(fixture.data + offset, records[i], sizes[i]);
++        offset += sizes[i];
++    }
++    memcpy(fixture.entries, entries, sizeof(entries));
++    env_set("COLI_WEX_CUDA_LIB", "0");   /* the CPU reference path */
++    file_write(path, fixture.data, fixture.bytes);
++    ColiExpertStore *store = fixture_open(path, &fixture, 1);
++    for (int i = 0; i < EXPERTS; i++) {
++        ColiExpertView view = {0};
++        assert(!coli_expert_lookup(store, (ColiExpertKey){0, i}, &view));
++        const ColiTensorView *matrices[3] = {&view.gate, &view.down, &view.up};
++        for (int m = 0; m < 3; m++) {
++            assert(!memcmp(matrices[m]->scales, raw[i] + entries[i].scale_offsets[m], matrices[m]->scale_bytes));
++            assert(!memcmp(matrices[m]->data, raw[i] + entries[i].weight_offsets[m], matrices[m]->data_bytes));
++        }
++        coli_expert_release(store, &view);
++    }
++    ColiExpertStoreStats stats;
++    store->ops->stats(store, &stats);
++    store->ops->destroy(store);
++    /* a corrupted model is refused before any record is read */
++    fixture.data[WEX_ALIGN] ^= 0xffu;   /* model magic */
++    file_write(path, fixture.data, fixture.bytes);
++    fixture_open(path, &fixture, 0);
++    fixture.data[WEX_ALIGN] ^= 0xffu;
++    /* a descriptor naming another model is refused */
++    put_u32(d + 16, model.id ^ 1u);
++    file_write(path, fixture.data, fixture.bytes);
++    fixture_open(path, &fixture, 0);
++    put_u32(d + 16, model.id);
++    /* without the header flag the WNR2 entries are invalid */
++    fixture.header->flags = 0;
++    file_write(path, fixture.data, fixture.bytes);
++    fixture_open(path, &fixture, 0);
++    printf("WNR2: model registered at open, %d experts decoded exactly (%llu disk bytes of %u raw each), "
++           "corrupted or foreign models refused.\n", EXPERTS, (unsigned long long)stats.bytes_read, raw_record);
++    for (int i = 0; i < EXPERTS; i++) { free(raw[i]); free(records[i]); }
++    free(fixture.data); free(blob); free(wcounts); free(scounts);
++    env_set("COLI_WEX_CUDA_LIB", NULL);
++    assert(remove(path) == 0);
++}
++
+ int main(int argc, char **argv) {
+     setbuf(stdout, NULL);
+     assert(sizeof(WexHeader) == 40 && sizeof(WexEntry) == 72);
+@@ -380,6 +499,7 @@
+     if (argc == 3 || (argc == 4 && !strcmp(argv[3], "--expect-cuda")))
+         test_external_v3(argv[1], argv[2], argc == 4);
+     else assert(argc == 1);
++    test_nr2_container();   /* after: it may pin the CUDA helper off */
+     env_set("COLI_WEX_PATH", NULL);
+     puts("ALL WEX STANDALONE TESTS PASSED");
+     return 0;

@@ -1,0 +1,274 @@
+{
+ "anchor_census": {
+  "pair_eq_med": 453,
+  "pair_eq_med_minus1": 27,
+  "pair_other": 0,
+  "floor_mean_eq_pair": 480,
+  "flipfix_eq_pair": 480,
+  "flipped_units": 27,
+  "units": 480
+ },
+ "anchors": {
+  "median (WNR2)": {
+   "per_type_insample": 3.782144809575819,
+   "per_type_heldout": 3.7824345546052385,
+   "pooled_insample": 3.78238366216435,
+   "pooled_heldout": 3.782638472270624
+  },
+  "densest pair lower": {
+   "per_type_insample": 3.772844982276704,
+   "per_type_heldout": 3.7728995013022675,
+   "pooled_insample": 3.7729801920039057,
+   "pooled_heldout": 3.773013762077259
+  },
+  "floor(mean)": {
+   "per_type_insample": 3.772844982276704,
+   "per_type_heldout": 3.7728995013022675,
+   "pooled_insample": 3.7729801920039057,
+   "pooled_heldout": 3.773013762077259
+  },
+  "flip-fixed median": {
+   "per_type_insample": 3.772844982276704,
+   "per_type_heldout": 3.7728995013022675,
+   "pooled_insample": 3.7729801920039057,
+   "pooled_heldout": 3.773013762077259
+  },
+  "median-1 always": {
+   "per_type_insample": 3.7821454544015802,
+   "per_type_heldout": 3.78243339068895,
+   "pooled_insample": 3.7823842937207397,
+   "pooled_heldout": 3.78263879910345
+  },
+  "encoder-chosen offset around densest pair (in-sample)": {
+   "per_type_insample": 3.772844982276704,
+   "offsets_used": {
+    "-1": 0,
+    "0": 480,
+    "1": 0
+   }
+  }
+ },
+ "clusters_heldout_bit_per_w": {
+  "median (WNR2)": {
+   "K1 pooled": 3.782638472270624,
+   "K3 by matrix type (production)": 3.7824345546052385,
+   "K2 EM (layer-band init, best pick)": 3.7726209353516134,
+   "K4 EM (layer-band init, best pick)": 3.7720803491729558,
+   "K2 by flip flag, assigned": 3.7726209353516134,
+   "K6 by type x flip flag, assigned": 3.7725231471417278,
+   "K2 by skew sign, assigned": 3.773861742636494,
+   "K2 by p_up (share at anchor+1) quantiles, assigned": 3.7815804712559022,
+   "K2 by p_up (share at anchor+1) quantiles, best pick": 3.7802903883770003,
+   "K4 by p_up (share at anchor+1) quantiles, assigned": 3.77945334960773,
+   "K4 by p_up (share at anchor+1) quantiles, best pick": 3.777204131801127,
+   "K2 by s_std quantiles, assigned": 3.7818993329267587,
+   "K2 by s_std quantiles, best pick": 3.780708428270584,
+   "K4 by s_std quantiles, assigned": 3.7804279252364386,
+   "K4 by s_std quantiles, best pick": 3.7776990047174532,
+   "K2 by zero frac quantiles, assigned": 3.7825333611277467,
+   "K2 by zero frac quantiles, best pick": 3.7824000981523165,
+   "K4 by zero frac quantiles, assigned": 3.782578370517937,
+   "K4 by zero frac quantiles, best pick": 3.781283057872571,
+   "K2 by -0 frac quantiles, assigned": 3.782548206999503,
+   "K2 by -0 frac quantiles, best pick": 3.782412827159589,
+   "K4 by -0 frac quantiles, assigned": 3.7824675224862236,
+   "K4 by -0 frac quantiles, best pick": 3.7813249275473813,
+   "K2 by blk_max7 quantiles, assigned": 3.7815811159759716,
+   "K2 by blk_max7 quantiles, best pick": 3.780237791447137,
+   "K4 by blk_max7 quantiles, assigned": 3.7796252289486674,
+   "K4 by blk_max7 quantiles, best pick": 3.777245088597502,
+   "K2 by order-0 entropy quantiles, assigned": 3.7810904415704965,
+   "K2 by order-0 entropy quantiles, best pick": 3.779433168343137,
+   "K4 by order-0 entropy quantiles, assigned": 3.7792405026081743,
+   "K4 by order-0 entropy quantiles, best pick": 3.7772388308691034,
+   "K2 by layer quantiles, assigned": 3.782171468196268,
+   "K2 by layer quantiles, best pick": 3.7799802634213235,
+   "K4 by layer quantiles, assigned": 3.7811104661207113,
+   "K4 by layer quantiles, best pick": 3.77757979541604,
+   "K2 by median scale quantiles, assigned": 3.782638472270624,
+   "K2 by median scale quantiles, best pick": 3.782638472270624,
+   "K4 by median scale quantiles, assigned": 3.782638472270624,
+   "K4 by median scale quantiles, best pick": 3.782638472270624,
+   "K6 by type x p_up quantiles, assigned": 3.7812225363639578,
+   "K12 by type x p_up quantiles, assigned": 3.778893602996676
+  },
+  "densest pair lower": {
+   "K1 pooled": 3.7730137620772575,
+   "K3 by matrix type (production)": 3.7728995013022675,
+   "K2 EM (layer-band init, best pick)": 3.7724074808668364,
+   "K4 EM (layer-band init, best pick)": 3.772031620101637,
+   "K2 by flip flag, assigned": 3.7726202165116054,
+   "K6 by type x flip flag, assigned": 3.7725229652524024,
+   "K2 by skew sign, assigned": 3.772651497924996,
+   "K2 by p_up (share at anchor+1) quantiles, assigned": 3.7724221988548674,
+   "K2 by p_up (share at anchor+1) quantiles, best pick": 3.7724091171664536,
+   "K4 by p_up (share at anchor+1) quantiles, assigned": 3.772171209575565,
+   "K4 by p_up (share at anchor+1) quantiles, best pick": 3.772123559192758,
+   "K2 by s_std quantiles, assigned": 3.772485510537564,
+   "K2 by s_std quantiles, best pick": 3.772413221860331,
+   "K4 by s_std quantiles, assigned": 3.772276292836283,
+   "K4 by s_std quantiles, best pick": 3.772129002252668,
+   "K2 by zero frac quantiles, assigned": 3.772818204798528,
+   "K2 by zero frac quantiles, best pick": 3.772631453376798,
+   "K4 by zero frac quantiles, assigned": 3.7726975455553995,
+   "K4 by zero frac quantiles, best pick": 3.7725170159519674,
+   "K2 by -0 frac quantiles, assigned": 3.7728430536031587,
+   "K2 by -0 frac quantiles, best pick": 3.772654203673747,
+   "K4 by -0 frac quantiles, assigned": 3.7727072022523083,
+   "K4 by -0 frac quantiles, best pick": 3.772541124445828,
+   "K2 by blk_max7 quantiles, assigned": 3.772461735661381,
+   "K2 by blk_max7 quantiles, best pick": 3.7724111404287073,
+   "K4 by blk_max7 quantiles, assigned": 3.772244571037453,
+   "K4 by blk_max7 quantiles, best pick": 3.772161564935877,
+   "K2 by order-0 entropy quantiles, assigned": 3.7728959223577623,
+   "K2 by order-0 entropy quantiles, best pick": 3.7728134566406113,
+   "K4 by order-0 entropy quantiles, assigned": 3.772827938357282,
+   "K4 by order-0 entropy quantiles, best pick": 3.7727156328707863,
+   "K2 by layer quantiles, assigned": 3.772910879760771,
+   "K2 by layer quantiles, best pick": 3.772627535112294,
+   "K4 by layer quantiles, assigned": 3.7729200852885225,
+   "K4 by layer quantiles, best pick": 3.7724129168550484,
+   "K2 by median scale quantiles, assigned": 3.7730137620772575,
+   "K2 by median scale quantiles, best pick": 3.7730137620772575,
+   "K4 by median scale quantiles, assigned": 3.7730137620772575,
+   "K4 by median scale quantiles, best pick": 3.7730137620772575,
+   "K6 by type x p_up quantiles, assigned": 3.7723601228186703,
+   "K12 by type x p_up quantiles, assigned": 3.772113148040741
+  }
+ },
+ "em_composition_original_counts": {
+  "2": [
+   {
+    "cluster": 0,
+    "units": 453,
+    "flipped": 0,
+    "by_type": [
+     157,
+     147,
+     149
+    ],
+    "p_up_mean": 0.3944,
+    "p_up_range": [
+     0.13,
+     0.499
+    ],
+    "layers_37_39": 16
+   },
+   {
+    "cluster": 1,
+    "units": 27,
+    "flipped": 27,
+    "by_type": [
+     3,
+     13,
+     11
+    ],
+    "p_up_mean": 0.5626,
+    "p_up_range": [
+     0.501,
+     0.787
+    ],
+    "layers_37_39": 20
+   }
+  ],
+  "4": [
+   {
+    "cluster": 0,
+    "units": 226,
+    "flipped": 0,
+    "by_type": [
+     64,
+     95,
+     67
+    ],
+    "p_up_mean": 0.3756,
+    "p_up_range": [
+     0.31,
+     0.413
+    ],
+    "layers_37_39": 3
+   },
+   {
+    "cluster": 1,
+    "units": 59,
+    "flipped": 0,
+    "by_type": [
+     48,
+     2,
+     9
+    ],
+    "p_up_mean": 0.3384,
+    "p_up_range": [
+     0.13,
+     0.467
+    ],
+    "layers_37_39": 2
+   },
+   {
+    "cluster": 2,
+    "units": 168,
+    "flipped": 0,
+    "by_type": [
+     45,
+     50,
+     73
+    ],
+    "p_up_mean": 0.4393,
+    "p_up_range": [
+     0.403,
+     0.499
+    ],
+    "layers_37_39": 11
+   },
+   {
+    "cluster": 3,
+    "units": 27,
+    "flipped": 27,
+    "by_type": [
+     3,
+     13,
+     11
+    ],
+    "p_up_mean": 0.5626,
+    "p_up_range": [
+     0.501,
+     0.787
+    ],
+    "layers_37_39": 20
+   }
+  ]
+ },
+ "p_up_vs_flip": {
+  "p_up_flipped": [
+   0.501,
+   0.503,
+   0.507,
+   0.51,
+   0.51,
+   0.521,
+   0.522,
+   0.524,
+   0.53,
+   0.532,
+   0.533,
+   0.534,
+   0.538,
+   0.541,
+   0.544,
+   0.546,
+   0.559,
+   0.561,
+   0.564,
+   0.567,
+   0.567,
+   0.606,
+   0.61,
+   0.647,
+   0.648,
+   0.673,
+   0.787
+  ],
+  "p_up_unflipped_max": 0.49918077256944443,
+  "p_up_unflipped_min": 0.13036024305555555
+ }
+}

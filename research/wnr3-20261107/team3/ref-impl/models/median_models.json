@@ -1,0 +1,21 @@
+{
+ "test_matrices": 240,
+ "test_matrices_median_not_120": 17,
+ "train_matrices_median_not_120": 10,
+ "a_per_type": {
+  "payload_bits_per_w_no_flush": 3.759965963628341,
+  "delta_vs_a_pct": 0.0
+ },
+ "a_per_type_x_median": {
+  "payload_bits_per_w_no_flush": 3.7517443377316306,
+  "delta_vs_a_pct": -0.21866224259052303
+ },
+ "a_pooled_x_median": {
+  "payload_bits_per_w_no_flush": 3.7517258921293393,
+  "delta_vs_a_pct": -0.21915282156038193
+ },
+ "aK4_kmeans_best": {
+  "payload_bits_per_w_no_flush": 3.751221679332208,
+  "delta_vs_a_pct": -0.23256285776838734
+ }
+}

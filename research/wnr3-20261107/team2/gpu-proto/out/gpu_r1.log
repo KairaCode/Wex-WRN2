@@ -1,0 +1,88 @@
+﻿
+{"gpu": "NVIDIA GeForce RTX 3070", "sms": 46, "clock_khz_max": 1755000, "smem_per_sm": 102400, "smem_optin_per_block": 
+101376, "regs_per_sm": 65536, "max_threads_per_sm": 1536, "l2_bytes": 4194304, "driver": 13050, "runtime": 12090, 
+"cupy": "14.2.0", "nvrtc": [12, 9]}
+A/nt32 {"regs": 72, "smem_bytes": 18160, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 5 m1 
+302.1 m3 885.8 m24 5826.6 us; 8str 5952.7 us
+A/nt32/ringpad8192 {"regs": 72, "smem_bytes": 26352, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 
+0} occ 3 m1 559.1 m3 1150.0 m24 9229.3 us; 8str 9400.3 us
+A/nt64 {"regs": 64, "smem_bytes": 18160, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 10 
+m1 315.4 m3 805.9 m24 4726.8 us; 8str 4871.3 us
+A/nt128 {"regs": 40, "smem_bytes": 18160, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 20 
+m1 418.8 m3 776.2 m24 7910.4 us; 8str 8081.4 us
+A/nt256 {"regs": 40, "smem_bytes": 18160, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 40 
+m1 444.4 m3 790.5 m24 9787.4 us; 8str 9766.0 us
+A259/nt32 {"regs": 74, "smem_bytes": 8304, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 10 
+m1 297.0 m3 769.0 m24 4661.2 us; 8str 4780.8 us
+A259/nt64 {"regs": 64, "smem_bytes": 8304, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 20 
+m1 317.4 m3 683.0 m24 8051.7 us; 8str 8413.2 us
+A259/nt128 {"regs": 40, "smem_bytes": 8304, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 
+40 m1 416.8 m3 774.1 m24 9490.4 us; 8str 9558.0 us
+A259/nt256 {"regs": 40, "smem_bytes": 8304, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 
+48 m1 430.1 m3 656.4 m24 9823.3 us; 8str 9641.0 us
+B1/nt32 {"regs": 80, "smem_bytes": 18160, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 5 
+m1 302.1 m3 890.9 m24 5866.5 us; 8str 6051.6 us
+B1/nt64 {"regs": 64, "smem_bytes": 18160, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 10 
+m1 320.5 m3 814.1 m24 4794.4 us; 8str 4946.9 us
+B1/nt128 {"regs": 40, "smem_bytes": 18160, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 20 
+m1 437.2 m3 776.3 m24 7952.4 us; 8str 8311.8 us
+B1/nt256 {"regs": 40, "smem_bytes": 18160, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 40 
+m1 464.0 m3 781.3 m24 9522.2 us; 8str 9751.3 us
+B1c/nt32 {"regs": 78, "smem_bytes": 8304, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 10 
+m1 303.1 m3 778.3 m24 4707.3 us; 8str 4868.1 us
+B1c/nt64 {"regs": 64, "smem_bytes": 8304, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 20 
+m1 329.7 m3 696.3 m24 7879.7 us; 8str 8086.5 us
+B1c/nt128 {"regs": 40, "smem_bytes": 8304, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 40 
+m1 376.8 m3 712.7 m24 9454.6 us; 8str 9570.3 us
+B1c/nt256 {"regs": 40, "smem_bytes": 8304, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 48 
+m1 399.4 m3 615.4 m24 9460.7 us; 8str 9818.8 us
+B2/nt32 {"regs": 113, "smem_bytes": 18160, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 5 
+m1 298.0 m3 876.5 m24 5755.9 us; 8str 5912.6 us
+B2/nt64 {"regs": 64, "smem_bytes": 18160, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 10 
+m1 364.5 m3 786.4 m24 4410.4 us; 8str 4568.1 us
+B2/nt128 {"regs": 48, "smem_bytes": 18160, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 20 
+m1 408.6 m3 583.7 m24 5840.9 us; 8str 6040.3 us
+B2/nt256 {"regs": 48, "smem_bytes": 18160, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 40 
+m1 432.1 m3 607.2 m24 8210.4 us; 8str 8231.9 us
+B2c/nt32 {"regs": 112, "smem_bytes": 8304, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 10 
+m1 303.1 m3 690.2 m24 4029.4 us; 8str 4143.4 us
+B2c/nt64 {"regs": 64, "smem_bytes": 8304, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 20 
+m1 375.8 m3 557.1 m24 6085.6 us; 8str 6258.7 us
+B2c/nt128 {"regs": 48, "smem_bytes": 8304, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 40 
+m1 357.4 m3 532.5 m24 7802.9 us; 8str 7975.9 us
+B2c/nt256 {"regs": 48, "smem_bytes": 8304, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 40 
+m1 377.9 m3 565.4 m24 8087.6 us; 8str 7742.1 us
+C/nt32 {"regs": 74, "smem_bytes": 33184, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 2 m1 
+585.7 m3 1733.6 m24 13715.5 us; 8str 13908.0 us
+C/nt64 {"regs": 64, "smem_bytes": 33184, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 4 m1 
+329.7 m3 969.7 m24 7599.1 us; 8str 7767.1 us
+C/nt128 {"regs": 40, "smem_bytes": 33184, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 8 
+m1 420.9 m3 910.3 m24 5651.5 us; 8str 5808.7 us
+C/nt256 {"regs": 40, "smem_bytes": 33184, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 16 
+m1 447.5 m3 782.3 m24 6699.0 us; 8str 6837.2 us
+CB2/nt32 {"regs": 112, "smem_bytes": 33184, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 2 
+m1 589.8 m3 1751.0 m24 13830.1 us; 8str 14001.3 us
+CB2/nt64 {"regs": 64, "smem_bytes": 33184, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 4 
+m1 361.5 m3 1069.1 m24 8369.2 us; 8str 8732.7 us
+CB2/nt128 {"regs": 48, "smem_bytes": 33184, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 8 
+m1 376.8 m3 814.1 m24 5033.0 us; 8str 5171.0 us
+CB2/nt256 {"regs": 48, "smem_bytes": 33184, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 
+16 m1 403.5 m3 589.8 m24 4305.9 us; 8str 4375.1 us
+D/nt32 {"regs": 76, "smem_bytes": 4160, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 16 m1 
+278.5 m3 834.6 m24 7682.0 us; 8str 7825.4 us
+D/nt64 {"regs": 64, "smem_bytes": 4160, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 32 m1 
+282.6 m3 838.7 m24 8485.9 us; 8str 8629.5 us
+D/nt128 {"regs": 40, "smem_bytes": 4160, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 48 
+m1 328.7 m3 790.5 m24 9005.1 us; 8str 8946.5 us
+D/nt256 {"regs": 40, "smem_bytes": 4160, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 48 
+m1 356.4 m3 779.3 m24 8729.6 us; 8str 9206.8 us
+DB2/nt32 {"regs": 112, "smem_bytes": 4160, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 16 
+m1 269.3 m3 507.9 m24 5077.0 us; 8str 5211.2 us
+DB2/nt64 {"regs": 64, "smem_bytes": 4160, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 32 
+m1 276.5 m3 505.9 m24 6484.0 us; 8str 6599.7 us
+DB2/nt128 {"regs": 48, "smem_bytes": 4160, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 40 
+m1 301.1 m3 493.6 m24 6372.4 us; 8str 6524.9 us
+DB2/nt256 {"regs": 48, "smem_bytes": 4160, "byte_exact": true, "mismatching_streams": 0, "invariant_errors": 0} occ 40 
+m1 320.5 m3 501.8 m24 6548.5 us; 8str 6457.6 us
+
+

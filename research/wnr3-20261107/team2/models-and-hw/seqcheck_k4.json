@@ -1,0 +1,29 @@
+{
+ "train": [
+  "L00_E097.bin",
+  "L05_E072.bin",
+  "L11_E114.bin",
+  "L17_E002.bin",
+  "L22_E166.bin",
+  "L28_E052.bin",
+  "L34_E003.bin",
+  "L39_E137.bin"
+ ],
+ "test": [
+  "L00_E113.bin",
+  "L13_E117.bin",
+  "L26_E160.bin",
+  "L39_E156.bin"
+ ],
+ "K": 4,
+ "bpw_no_flush": {
+  "table80_ideal": 3.797959800974821,
+  "table80_q14": 3.7979456187184497,
+  "tableNtr_ideal": 3.8044625072436853,
+  "latent_seq_float": 3.720748446473529,
+  "latent_seq_q14": 3.7207714702793915,
+  "runctx_ideal": 3.814716526568076,
+  "runctx_q14": 3.814027911646876
+ },
+ "runctx_rows": 2688
+}

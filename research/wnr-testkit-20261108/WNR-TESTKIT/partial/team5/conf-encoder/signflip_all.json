@@ -1,0 +1,137 @@
+{
+ "record": "L00_E113.wnr3",
+ "streams": [
+  {
+   "g": 2160,
+   "m": 0,
+   "bytes": 952,
+   "flips": 7616,
+   "struct_accepted": 22,
+   "struct_accepted_one_sign_flip": 22,
+   "hash_accepted": 0
+  },
+  {
+   "g": 3731,
+   "m": 0,
+   "bytes": 948,
+   "flips": 7584,
+   "struct_accepted": 30,
+   "struct_accepted_one_sign_flip": 30,
+   "hash_accepted": 0
+  },
+  {
+   "g": 5302,
+   "m": 0,
+   "bytes": 954,
+   "flips": 7632,
+   "struct_accepted": 30,
+   "struct_accepted_one_sign_flip": 30,
+   "hash_accepted": 0
+  },
+  {
+   "g": 6872,
+   "m": 0,
+   "bytes": 952,
+   "flips": 7616,
+   "struct_accepted": 34,
+   "struct_accepted_one_sign_flip": 34,
+   "hash_accepted": 0
+  },
+  {
+   "g": 8443,
+   "m": 1,
+   "bytes": 965,
+   "flips": 7720,
+   "struct_accepted": 31,
+   "struct_accepted_one_sign_flip": 31,
+   "hash_accepted": 0
+  },
+  {
+   "g": 10014,
+   "m": 1,
+   "bytes": 945,
+   "flips": 7560,
+   "struct_accepted": 32,
+   "struct_accepted_one_sign_flip": 32,
+   "hash_accepted": 0
+  },
+  {
+   "g": 11585,
+   "m": 1,
+   "bytes": 941,
+   "flips": 7528,
+   "struct_accepted": 33,
+   "struct_accepted_one_sign_flip": 33,
+   "hash_accepted": 0
+  },
+  {
+   "g": 13156,
+   "m": 1,
+   "bytes": 941,
+   "flips": 7528,
+   "struct_accepted": 40,
+   "struct_accepted_one_sign_flip": 40,
+   "hash_accepted": 0
+  },
+  {
+   "g": 14727,
+   "m": 2,
+   "bytes": 949,
+   "flips": 7592,
+   "struct_accepted": 25,
+   "struct_accepted_one_sign_flip": 25,
+   "hash_accepted": 0
+  },
+  {
+   "g": 16297,
+   "m": 2,
+   "bytes": 940,
+   "flips": 7520,
+   "struct_accepted": 34,
+   "struct_accepted_one_sign_flip": 34,
+   "hash_accepted": 0
+  },
+  {
+   "g": 17868,
+   "m": 2,
+   "bytes": 945,
+   "flips": 7560,
+   "struct_accepted": 23,
+   "struct_accepted_one_sign_flip": 23,
+   "hash_accepted": 0
+  },
+  {
+   "g": 19439,
+   "m": 2,
+   "bytes": 954,
+   "flips": 7632,
+   "struct_accepted": 31,
+   "struct_accepted_one_sign_flip": 31,
+   "hash_accepted": 0
+  }
+ ],
+ "total": {
+  "flips": 91088,
+  "struct_accepted": 365,
+  "struct_accepted_one_sign_flip": 365,
+  "hash_accepted": 0,
+  "struct_accept_rate": 0.004007113999648692
+ },
+ "by_matrix": {
+  "w1": {
+   "flips": 30448,
+   "struct_accepted": 116,
+   "hash_accepted": 0
+  },
+  "w2": {
+   "flips": 30336,
+   "struct_accepted": 136,
+   "hash_accepted": 0
+  },
+  "w3": {
+   "flips": 30304,
+   "struct_accepted": 113,
+   "hash_accepted": 0
+  }
+ }
+}

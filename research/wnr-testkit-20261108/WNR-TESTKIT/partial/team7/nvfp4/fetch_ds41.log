@@ -1,0 +1,14 @@
+﻿ds41_1017 nvidia/DeepSeek-V4.1-Flash-1017-NVFP4 items 24 planned bytes 477758016
+  layers.0.ffn.experts.183.w1.weight U8 [2304, 2560] 5898240
+  layers.0.ffn.experts.183.w1.weight_scale F8_E4M3 [2304, 320] 737280
+  layers.0.ffn.experts.183.w1.weight_scale_2 F32 [] 4
+  layers.0.ffn.experts.183.w1.input_scale F32 [] 4
+  layers.0.ffn.experts.183.w2.weight U8 [5120, 1152] 5898240
+  layers.0.ffn.experts.183.w2.weight_scale F8_E4M3 [5120, 144] 737280
+  layers.0.ffn.experts.183.w2.weight_scale_2 F32 [] 4
+  layers.0.ffn.experts.183.w2.input_scale F32 [] 4
+  layers.0.ffn.experts.183.w3.weight U8 [2304, 2560] 5898240
+  layers.0.ffn.experts.183.w3.weight_scale F8_E4M3 [2304, 320] 737280
+  layers.0.ffn.experts.183.w3.weight_scale_2 F32 [] 4
+  layers.0.ffn.experts.183.w3.input_scale F32 [] 4
+ds41_1017 24 items 477758016 bytes 47.9 s

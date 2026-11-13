@@ -1,0 +1,98 @@
+{
+ "embed.weight": {
+  "elements": 16384000,
+  "slices": [
+   [
+    33481,
+    34281
+   ],
+   [
+    46993,
+    47793
+   ],
+   [
+    81644,
+    82444
+   ],
+   [
+    97227,
+    98027
+   ]
+  ],
+  "H_16bit_symbol_order0": 10.493461537482165,
+  "H_sign": 0.9999946090248425,
+  "H_exp": 2.5692925883646787,
+  "H_mant_given_exp": 6.924298403677005,
+  "H_sign_given_exp": 0.9999912532310063,
+  "distinct_exponents": 26,
+  "generic": {
+   "zlib9": 0.8005956411361694,
+   "lzma6": 0.7108263969421387,
+   "zstd19": 0.7835038900375366,
+   "zstd3": 0.7833610773086548
+  },
+  "H_exp_given_prev_exp": 2.568417797393531,
+  "bits_per_element_exp_o0_plus_raw_rest": 10.569292588364679,
+  "bits_per_element_best_simple": 10.492707454301542
+ },
+ "head.weight": {
+  "elements": 16384000,
+  "slices": [
+   [
+    90498,
+    91298
+   ],
+   [
+    104227,
+    105027
+   ],
+   [
+    110298,
+    111098
+   ],
+   [
+    123528,
+    124328
+   ]
+  ],
+  "H_16bit_symbol_order0": 10.482770414745874,
+  "H_sign": 0.9999995394076673,
+  "H_exp": 2.5611025917529036,
+  "H_mant_given_exp": 6.9217863830885,
+  "H_sign_given_exp": 0.9999980970110832,
+  "distinct_exponents": 27,
+  "generic": {
+   "zlib9": 0.7977845668792725,
+   "lzma6": 0.7096376419067383,
+   "zstd19": 0.7677847146987915,
+   "zstd3": 0.7804316282272339
+  },
+  "H_exp_given_prev_exp": 2.56083658802035,
+  "bits_per_element_exp_o0_plus_raw_rest": 10.561102591752903,
+  "bits_per_element_best_simple": 10.482621068119933
+ },
+ "layers.20.ffn.gate.weight": {
+  "elements": 983040,
+  "slices": [
+   [
+    0,
+    192
+   ]
+  ],
+  "H_16bit_symbol_order0": 10.482382743695576,
+  "H_sign": 0.9999909289441747,
+  "H_exp": 2.5636667309617525,
+  "H_mant_given_exp": 6.920489371503394,
+  "H_sign_given_exp": 0.9998029733148898,
+  "distinct_exponents": 23,
+  "generic": {
+   "zlib9": 0.7979960123697917,
+   "lzma6": 0.719171142578125,
+   "zstd19": 0.781194559733073,
+   "zstd3": 0.779943339029948
+  },
+  "H_exp_given_prev_exp": 2.563040253488375,
+  "bits_per_element_exp_o0_plus_raw_rest": 10.563666730961753,
+  "bits_per_element_best_simple": 10.483332598306658
+ }
+}

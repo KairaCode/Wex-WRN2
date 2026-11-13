@@ -1,0 +1,14 @@
+{
+ "container_bytes": 64224956416,
+ "wex_version": 1,
+ "layers": 48,
+ "experts": 512,
+ "records": 24576,
+ "tensors": 147456,
+ "index_bytes": 26086592,
+ "added_bytes": 26091520,
+ "added_fraction": 0.00040625204680559294,
+ "c_validate_ms": 69.9,
+ "legacy_table_identical": true,
+ "first_tensor": "model.language_model.layers.0.mlp.experts.0.gate_proj.weight_scale"
+}

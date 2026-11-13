@@ -1,0 +1,3413 @@
+{
+ "summary": {
+  "model_id": "0x27e8a1e0",
+  "model": "trained on 80",
+  "cz": true,
+  "records": 103,
+  "in_bin": 103,
+  "mean_total": 16269908.504854368,
+  "max_total": 17420288,
+  "gate_failures": 0
+ },
+ "rows": [
+  {
+   "layer": 0,
+   "expert": 113,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    111218,
+    117365,
+    111263
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2077419,
+   "raw": 18800640,
+   "used": 16052351,
+   "total": 16056320,
+   "sha256_expected": "0cea367d8853ebadcec6f74105f733a9d773e4bf491c4cdf65160b09e0292d59",
+   "codec": 5
+  },
+  {
+   "layer": 1,
+   "expert": 187,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    114151,
+    116899,
+    114525
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2058566,
+   "raw": 18800640,
+   "used": 16058291,
+   "total": 16060416,
+   "sha256_expected": "9574e7bafd4f4da2725bba36a4b913513ab527976613e85b88566aa5d495bbc5",
+   "codec": 5
+  },
+  {
+   "layer": 2,
+   "expert": 62,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    114268,
+    116676,
+    114812
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2064030,
+   "raw": 18800640,
+   "used": 16038602,
+   "total": 16039936,
+   "sha256_expected": "deb9bc814b3f2b22b6ff6e5033bbd533547a15bd0a5c86277acecb75d52aa631",
+   "codec": 5
+  },
+  {
+   "layer": 3,
+   "expert": 142,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    111291,
+    114603,
+    112624
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2068925,
+   "raw": 18800640,
+   "used": 16019659,
+   "total": 16023552,
+   "sha256_expected": "361a725657f77ea4686a34069c80ddb254e901410b0cab1af4b48e29f0b2e971",
+   "codec": 5
+  },
+  {
+   "layer": 4,
+   "expert": 38,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    116576,
+    117102,
+    116819
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2066477,
+   "raw": 18800640,
+   "used": 16033524,
+   "total": 16035840,
+   "sha256_expected": "8bc039c12f7d80878d4fd81731ee7e3e8fdd280cc124da401752a7f19057715c",
+   "codec": 5
+  },
+  {
+   "layer": 5,
+   "expert": 84,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    113250,
+    116459,
+    113786
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2067722,
+   "raw": 18800640,
+   "used": 16023674,
+   "total": 16027648,
+   "sha256_expected": "6b789c1cf068feefcd5b36d6d8d1e533cdd1810ce3f34ff271727651c7a0177a",
+   "codec": 5
+  },
+  {
+   "layer": 6,
+   "expert": 73,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    113039,
+    116056,
+    113218
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2067168,
+   "raw": 18800640,
+   "used": 16033816,
+   "total": 16035840,
+   "sha256_expected": "5510b4b0a18132d999d03dacbc91935964e9be3c53c89a23c83f7b09c35bc515",
+   "codec": 5
+  },
+  {
+   "layer": 7,
+   "expert": 167,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    114652,
+    117510,
+    115430
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2064546,
+   "raw": 18800640,
+   "used": 16034713,
+   "total": 16035840,
+   "sha256_expected": "9d620e25283782d5e2c98027bbad347d0fe352de41ea3224f9ab4fd590c9e00e",
+   "codec": 5
+  },
+  {
+   "layer": 8,
+   "expert": 19,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    113306,
+    116304,
+    112996
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2070608,
+   "raw": 18800640,
+   "used": 16017191,
+   "total": 16019456,
+   "sha256_expected": "df34658ab10fdcff21d362ec547bdab7afe12faa4365674b19e241e9fcf20336",
+   "codec": 5
+  },
+  {
+   "layer": 9,
+   "expert": 160,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    111868,
+    117205,
+    114647
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2055783,
+   "raw": 18800640,
+   "used": 16061378,
+   "total": 16064512,
+   "sha256_expected": "6624ed83a7d23b6c104c1c2f51f08e364a17d6dd472e3fc89e3a065028a5e35b",
+   "codec": 5
+  },
+  {
+   "layer": 10,
+   "expert": 60,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    111878,
+    117223,
+    114575
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2051770,
+   "raw": 18800640,
+   "used": 16072386,
+   "total": 16072704,
+   "sha256_expected": "86406e8de5f3239ecbaba3c79e596b9f4d4eb2565f8ff3ebb2dc3f0c262eb902",
+   "codec": 5
+  },
+  {
+   "layer": 11,
+   "expert": 132,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    110992,
+    116957,
+    113335
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2057635,
+   "raw": 18800640,
+   "used": 16053244,
+   "total": 16056320,
+   "sha256_expected": "d37d61d691d2dd3ab715e2fb8190d59c04b01b44e93879b1b5726398bc2ab8c6",
+   "codec": 5
+  },
+  {
+   "layer": 12,
+   "expert": 34,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    109001,
+    116685,
+    113284
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2056134,
+   "raw": 18800640,
+   "used": 16068263,
+   "total": 16068608,
+   "sha256_expected": "03e4293049ef934bdd8f73b4baa1cd1c723c62c67cd435aaf1b00b1c89c8be21",
+   "codec": 5
+  },
+  {
+   "layer": 13,
+   "expert": 167,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    107466,
+    116466,
+    112998
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2054364,
+   "raw": 18800640,
+   "used": 16076839,
+   "total": 16080896,
+   "sha256_expected": "2ae2f19ca93b6d923cc421c7a2526279d1a64500e4b3b2b9169383b6d5d52a1f",
+   "codec": 5
+  },
+  {
+   "layer": 14,
+   "expert": 135,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    113870,
+    116899,
+    115036
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2056601,
+   "raw": 18800640,
+   "used": 16064468,
+   "total": 16064512,
+   "sha256_expected": "e6e5309cebf033cfbb2e84ce1e3ad4f0182683cf8e3199686c08172787720237",
+   "codec": 5
+  },
+  {
+   "layer": 15,
+   "expert": 156,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    110778,
+    110302,
+    105460
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2060684,
+   "raw": 18800640,
+   "used": 16063923,
+   "total": 16064512,
+   "sha256_expected": "6927f129af7271a60d6fb518fb56eb923e6ba516498a853e1542b4c1e2c9cee8",
+   "codec": 5
+  },
+  {
+   "layer": 16,
+   "expert": 34,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    107244,
+    117390,
+    113232
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2044773,
+   "raw": 18800640,
+   "used": 16101100,
+   "total": 16101376,
+   "sha256_expected": "a44a6c3083cc54229767c7b4de6a098ced9d73069009d42448abf962e8362aae",
+   "codec": 5
+  },
+  {
+   "layer": 17,
+   "expert": 123,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    104292,
+    115666,
+    110125
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2045291,
+   "raw": 18800640,
+   "used": 16104832,
+   "total": 16105472,
+   "sha256_expected": "541a097926f7bd13daae57de183416afbba7091f245381a7f1931a6c787ca684",
+   "codec": 5
+  },
+  {
+   "layer": 18,
+   "expert": 81,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    102646,
+    116430,
+    111436
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2051569,
+   "raw": 18800640,
+   "used": 16098007,
+   "total": 16101376,
+   "sha256_expected": "af40e76cd1b9f0de04dce34e41dfde5fd7a55b7c595d47aef71f3aa466affc2b",
+   "codec": 5
+  },
+  {
+   "layer": 19,
+   "expert": 180,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    112297,
+    116941,
+    115390
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2051056,
+   "raw": 18800640,
+   "used": 16077157,
+   "total": 16080896,
+   "sha256_expected": "9a8f124681780d71e040b5ffaf647f2023ebd9659d5f4ca88392fc276ae7aca4",
+   "codec": 5
+  },
+  {
+   "layer": 20,
+   "expert": 74,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    111547,
+    117435,
+    115666
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2051203,
+   "raw": 18800640,
+   "used": 16078699,
+   "total": 16080896,
+   "sha256_expected": "5f8d6728f2f9785aa33cd5d7e95d4fc261a9a76359cca140d5e91369abd288fc",
+   "codec": 5
+  },
+  {
+   "layer": 21,
+   "expert": 72,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    110814,
+    116664,
+    113595
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2056540,
+   "raw": 18800640,
+   "used": 16070126,
+   "total": 16072704,
+   "sha256_expected": "5d6eac1f302f259c904d9fbdc3194e63612f6686652883be5568d6fd0dc0a35c",
+   "codec": 5
+  },
+  {
+   "layer": 22,
+   "expert": 59,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    107584,
+    114595,
+    108534
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2056818,
+   "raw": 18800640,
+   "used": 16063349,
+   "total": 16064512,
+   "sha256_expected": "9170a05e79885340755082976dc40d3b6aeffb32b58435f43a9c753a49d275dc",
+   "codec": 5
+  },
+  {
+   "layer": 23,
+   "expert": 178,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    115470,
+    116172,
+    114277
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2065835,
+   "raw": 18800640,
+   "used": 16018979,
+   "total": 16019456,
+   "sha256_expected": "3242aec4e381453c01ced1d8f6f2ff96f8958f87c75fa1e727d3125e38cdb0a9",
+   "codec": 5
+  },
+  {
+   "layer": 24,
+   "expert": 58,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    86822,
+    98552,
+    100480
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2048904,
+   "raw": 18800640,
+   "used": 16226895,
+   "total": 16228352,
+   "sha256_expected": "056d19aee29991a29c65bbb7abd53237fd4f476ae8a764c599f975c229bdd27e",
+   "codec": 5
+  },
+  {
+   "layer": 25,
+   "expert": 166,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    115236,
+    118166,
+    114811
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2061416,
+   "raw": 18800640,
+   "used": 16048179,
+   "total": 16052224,
+   "sha256_expected": "30ed3362fc51164eb7932efc10c213f2b5caab3d3be6ce98c99316f6f9c7666e",
+   "codec": 5
+  },
+  {
+   "layer": 26,
+   "expert": 77,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    116951,
+    117303,
+    113913
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2071223,
+   "raw": 18800640,
+   "used": 16017541,
+   "total": 16019456,
+   "sha256_expected": "3cbdb177571a1548423d4a0aa1952cb45531d9dfba90bb6968a4bca00d3a1c50",
+   "codec": 5
+  },
+  {
+   "layer": 27,
+   "expert": 152,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    112134,
+    116481,
+    113504
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2059030,
+   "raw": 18800640,
+   "used": 16060134,
+   "total": 16060416,
+   "sha256_expected": "b4383c45905e7ac7fc33f66c5dff3ebaaa2f0d0f6066f36750de1636c1ce15b0",
+   "codec": 5
+  },
+  {
+   "layer": 28,
+   "expert": 89,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    115782,
+    118752,
+    114750
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2060678,
+   "raw": 18800640,
+   "used": 16038650,
+   "total": 16039936,
+   "sha256_expected": "c36e0245303540dad680b4eb2865a4663acbcbe93ca956451dd27a47f1355794",
+   "codec": 5
+  },
+  {
+   "layer": 29,
+   "expert": 190,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    114588,
+    115491,
+    110893
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2069256,
+   "raw": 18800640,
+   "used": 16016721,
+   "total": 16019456,
+   "sha256_expected": "f19337c6132eb76046e19200b9bb4191bc891af80c7108155faa052419e80d65",
+   "codec": 5
+  },
+  {
+   "layer": 30,
+   "expert": 54,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    117682,
+    116557,
+    115755
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2067598,
+   "raw": 18800640,
+   "used": 16021317,
+   "total": 16023552,
+   "sha256_expected": "8c52c6234917cd2b205a1136012d68fffc20e3daa990ef5a18d9313df4180977",
+   "codec": 5
+  },
+  {
+   "layer": 31,
+   "expert": 171,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    116413,
+    117158,
+    115286
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2068347,
+   "raw": 18800640,
+   "used": 16024354,
+   "total": 16027648,
+   "sha256_expected": "3769848f3b63928aca7c622ee8329af76d6c940436f3b4a99d09c1bd25cf8c0e",
+   "codec": 5
+  },
+  {
+   "layer": 32,
+   "expert": 148,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    116224,
+    115607,
+    114947
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2067832,
+   "raw": 18800640,
+   "used": 16026754,
+   "total": 16027648,
+   "sha256_expected": "ceccd8ddabf81f6e7110baa316a9c7d8cb8a04076a9730f1634c0f9670536a6c",
+   "codec": 5
+  },
+  {
+   "layer": 33,
+   "expert": 188,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    115358,
+    114525,
+    112375
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2069812,
+   "raw": 18800640,
+   "used": 16008410,
+   "total": 16011264,
+   "sha256_expected": "18311da891d13f5b0c3d1f7e2c9155f6feebd6a0a4c79ea8f7d049d29d82d83e",
+   "codec": 5
+  },
+  {
+   "layer": 34,
+   "expert": 78,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    111035,
+    113106,
+    107703
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2065238,
+   "raw": 18800640,
+   "used": 16037115,
+   "total": 16039936,
+   "sha256_expected": "5993afeddef688f4b9318465632d72cf4a2bc0a988e5063d387877dc65a9e662",
+   "codec": 5
+  },
+  {
+   "layer": 35,
+   "expert": 173,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    114337,
+    115672,
+    113217
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2065978,
+   "raw": 18800640,
+   "used": 16037745,
+   "total": 16039936,
+   "sha256_expected": "4a3731aa66d461aae4f992404717a03784c40faef7006a97fbc18ac43d5bef92",
+   "codec": 5
+  },
+  {
+   "layer": 36,
+   "expert": 107,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    116061,
+    113845,
+    113608
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2067886,
+   "raw": 18800640,
+   "used": 16018460,
+   "total": 16019456,
+   "sha256_expected": "a480aadf024a73d648ed708d7918b312cf01db6511b7d3668a29f0af40122a7f",
+   "codec": 5
+  },
+  {
+   "layer": 37,
+   "expert": 177,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    112207,
+    112339,
+    114409
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2061039,
+   "raw": 18800640,
+   "used": 16051587,
+   "total": 16052224,
+   "sha256_expected": "ccb3b14a6a7a16f68b1e7637701820ce4815c9104128325d5ec90bc2ada70eef",
+   "codec": 5
+  },
+  {
+   "layer": 38,
+   "expert": 5,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    112367,
+    104740,
+    104916
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2065297,
+   "raw": 18800640,
+   "used": 16025325,
+   "total": 16027648,
+   "sha256_expected": "cfc0c9be99454aeccb10c0c036e674456600b187b0377cd5fdcd801fa4e1a2dd",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 156,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    93805,
+    67862,
+    90292
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    121,
+    120
+   ],
+   "cz_count": 2050131,
+   "raw": 18800640,
+   "used": 16448659,
+   "total": 16449536,
+   "sha256_expected": "93f2dade2855129c316a884481f442eb70f99cf2e156b7e743b4f282c924a4e1",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 120,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    71247,
+    83204,
+    77127
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    121,
+    122,
+    121
+   ],
+   "cz_count": 2511507,
+   "raw": 18800640,
+   "used": 17355764,
+   "total": 17358848,
+   "sha256_expected": "37316b3f34d12b785e916d29f73864eceb6fa141c902986429ba8c9003b2ff17",
+   "codec": 5
+  },
+  {
+   "layer": 37,
+   "expert": 150,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    99969,
+    84096,
+    75107
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    121,
+    122,
+    121
+   ],
+   "cz_count": 2216605,
+   "raw": 18800640,
+   "used": 17418816,
+   "total": 17420288,
+   "sha256_expected": "4184135c459c505b7f0697e0d98dc6a575d6bf2a2015ce07ee8a4b3b72a4f830",
+   "codec": 5
+  },
+  {
+   "layer": 38,
+   "expert": 191,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    79827,
+    79219,
+    61539
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    121,
+    122,
+    121
+   ],
+   "cz_count": 2251604,
+   "raw": 18800640,
+   "used": 17408356,
+   "total": 17412096,
+   "sha256_expected": "57d3e50e3fea24f1f9768d5cc32ba6c67e212582471bcb9ac94cd96d8d31c558",
+   "codec": 5
+  },
+  {
+   "layer": 36,
+   "expert": 184,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    94047,
+    91531,
+    74265
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    121,
+    122,
+    121
+   ],
+   "cz_count": 2152450,
+   "raw": 18800640,
+   "used": 17372413,
+   "total": 17375232,
+   "sha256_expected": "256eacbdd96e7775a82c086c198f7899f6620cad3e6b6e1d49e726320b349f8f",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 105,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    76152,
+    80590,
+    71997
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    121,
+    122,
+    121
+   ],
+   "cz_count": 2848577,
+   "raw": 18800640,
+   "used": 17162715,
+   "total": 17166336,
+   "sha256_expected": "bd265d3cd46537b1e3c40f6c1d3c672dacf68803a6dfbb1e2d0f2d3c1db832f4",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 191,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    80023,
+    80595,
+    84750
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    121,
+    121
+   ],
+   "cz_count": 2512759,
+   "raw": 18800640,
+   "used": 16503897,
+   "total": 16506880,
+   "sha256_expected": "bccba94105829cc3b95d75c82a81c326ae90961f077bf274ee63776c50a3033b",
+   "codec": 5
+  },
+  {
+   "layer": 37,
+   "expert": 59,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    88517,
+    79501,
+    82365
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    121,
+    121
+   ],
+   "cz_count": 2559781,
+   "raw": 18800640,
+   "used": 16417283,
+   "total": 16420864,
+   "sha256_expected": "37689e0f563716693d08b092748333bc6862107d16120338ea05c2ccfdd67820",
+   "codec": 5
+  },
+  {
+   "layer": 15,
+   "expert": 29,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    76722,
+    52741,
+    49888
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    119,
+    121,
+    121
+   ],
+   "cz_count": 1936459,
+   "raw": 18800640,
+   "used": 16758793,
+   "total": 16760832,
+   "sha256_expected": "baa309d8c555e8a5d6709cc0aa8c0cdf7905b453b4322bfda75f5dffaf7bf0ef",
+   "codec": 5
+  },
+  {
+   "layer": 32,
+   "expert": 49,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    84891,
+    59762,
+    69004
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    121,
+    120
+   ],
+   "cz_count": 1983554,
+   "raw": 18800640,
+   "used": 16628631,
+   "total": 16629760,
+   "sha256_expected": "a31fc33034b797d2fb7909848f5884def51e333b38a08cc9d44800fe8fdeff44",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 60,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    71614,
+    59255,
+    82379
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    121,
+    121,
+    121
+   ],
+   "cz_count": 2008220,
+   "raw": 18800640,
+   "used": 16818049,
+   "total": 16818176,
+   "sha256_expected": "1bde18d936c253934b87dfb12206746f44dc9a82245bf67d7835f6ed7b102340",
+   "codec": 5
+  },
+  {
+   "layer": 37,
+   "expert": 149,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    87577,
+    68958,
+    97217
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    121,
+    120
+   ],
+   "cz_count": 2095975,
+   "raw": 18800640,
+   "used": 16644211,
+   "total": 16646144,
+   "sha256_expected": "5170bce4f55c684e38d2ef6ff075e5152eb1c67d68c47059e16f4f9a12bd7200",
+   "codec": 5
+  },
+  {
+   "layer": 36,
+   "expert": 162,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    76605,
+    102023,
+    83650
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    121,
+    121
+   ],
+   "cz_count": 2064532,
+   "raw": 18800640,
+   "used": 16904862,
+   "total": 16908288,
+   "sha256_expected": "41c4291f7f42046d9ded9e237701c8d75ec3881abed11539a8f3fc79679e536c",
+   "codec": 5
+  },
+  {
+   "layer": 19,
+   "expert": 143,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    86813,
+    86551,
+    84183
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2040576,
+   "raw": 18800640,
+   "used": 16257507,
+   "total": 16261120,
+   "sha256_expected": "459f1be83c54e8922b9bc6986560787999b6ede0cf0abf43852d36c3678dc7bc",
+   "codec": 5
+  },
+  {
+   "layer": 35,
+   "expert": 190,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    91662,
+    71744,
+    78894
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2012839,
+   "raw": 18800640,
+   "used": 16299427,
+   "total": 16302080,
+   "sha256_expected": "6a99ee23af92fba4fb3f3c38f0d39ef01569601be3941bd64373440a488af9ce",
+   "codec": 5
+  },
+  {
+   "layer": 15,
+   "expert": 24,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    79012,
+    54866,
+    69307
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    121,
+    121
+   ],
+   "cz_count": 1983045,
+   "raw": 18800640,
+   "used": 16827023,
+   "total": 16830464,
+   "sha256_expected": "d60da098d6d02515a57c11258c5a945bfced43fc6e48d847f105c407a0ec7f4b",
+   "codec": 5
+  },
+  {
+   "layer": 20,
+   "expert": 182,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    93115,
+    74475,
+    77779
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2014356,
+   "raw": 18800640,
+   "used": 16295330,
+   "total": 16297984,
+   "sha256_expected": "f5dc6693103ca51c34c8f1f2bac11956f46ecbb8b76de0facfb23d93a2af63e5",
+   "codec": 5
+  },
+  {
+   "layer": 36,
+   "expert": 166,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    95573,
+    77345,
+    74104
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2038595,
+   "raw": 18800640,
+   "used": 16259892,
+   "total": 16261120,
+   "sha256_expected": "49161c21c3658e7c767263a847545c735a7018578f6d26d36daf57bf16828b5d",
+   "codec": 5
+  },
+  {
+   "layer": 38,
+   "expert": 169,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    90620,
+    71209,
+    73638
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2017840,
+   "raw": 18800640,
+   "used": 16271362,
+   "total": 16273408,
+   "sha256_expected": "0416eb8070b2457cfd66f390725987ce3b0650abf022b177ca943116819f53b7",
+   "codec": 5
+  },
+  {
+   "layer": 19,
+   "expert": 140,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    67399,
+    79830,
+    79455
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2034881,
+   "raw": 18800640,
+   "used": 16358594,
+   "total": 16359424,
+   "sha256_expected": "64a1ac0a7b0e3524fff7c4e9c1a58468c0e50b32ce619ee3ce705c14a41a7f22",
+   "codec": 5
+  },
+  {
+   "layer": 26,
+   "expert": 16,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    96310,
+    75204,
+    83399
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2023231,
+   "raw": 18800640,
+   "used": 16258482,
+   "total": 16261120,
+   "sha256_expected": "3076e3074d5a8325a4d85ed8848838f5f6600a18c713c895c8c873012bc313c4",
+   "codec": 5
+  },
+  {
+   "layer": 36,
+   "expert": 168,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    84201,
+    87238,
+    92933
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2096342,
+   "raw": 18800640,
+   "used": 16186610,
+   "total": 16187392,
+   "sha256_expected": "6435a4dd5be69f813c913bd09be0548cd14407e3dd904f8dd5433ea16d71261e",
+   "codec": 5
+  },
+  {
+   "layer": 19,
+   "expert": 99,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    87851,
+    92211,
+    88926
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2046652,
+   "raw": 18800640,
+   "used": 16201319,
+   "total": 16203776,
+   "sha256_expected": "7cf35f7def2f54fa08b47e1ab46b38daa777c5716e992aecf46b3cf24cb3f336",
+   "codec": 5
+  },
+  {
+   "layer": 38,
+   "expert": 63,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    89410,
+    70802,
+    86847
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    121,
+    121
+   ],
+   "cz_count": 2170884,
+   "raw": 18800640,
+   "used": 16718030,
+   "total": 16719872,
+   "sha256_expected": "653cbb7be9d7011f8c8a645126af50cfea981d23cd835b1300e4b99f93bb9e9e",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 22,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    96519,
+    66048,
+    101120
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    121,
+    120
+   ],
+   "cz_count": 2053406,
+   "raw": 18800640,
+   "used": 16405194,
+   "total": 16408576,
+   "sha256_expected": "099d8140eb0b6dc520b50744b78e091754d27b80747bf3c1544b4dd7c4dbd2de",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 52,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    77010,
+    80703,
+    66863
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    121,
+    120
+   ],
+   "cz_count": 2079844,
+   "raw": 18800640,
+   "used": 16501627,
+   "total": 16502784,
+   "sha256_expected": "c687eb12602e02c7b94b1a266b6d96d881e83e277f696e9d052f86173ef9274e",
+   "codec": 5
+  },
+  {
+   "layer": 17,
+   "expert": 13,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    67896,
+    69596,
+    74898
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2001418,
+   "raw": 18800640,
+   "used": 16451597,
+   "total": 16453632,
+   "sha256_expected": "ae3fe06e7d654414349cdf3089eeb792fd8ad8d3c303b71cfb4f8ea16ba19d95",
+   "codec": 5
+  },
+  {
+   "layer": 23,
+   "expert": 47,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    94097,
+    92500,
+    85770
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2032636,
+   "raw": 18800640,
+   "used": 16187160,
+   "total": 16187392,
+   "sha256_expected": "0a9799e68926c37a5d44e9b3996af0ada74e5a7ee41e31a56c16f32fd80f540e",
+   "codec": 5
+  },
+  {
+   "layer": 24,
+   "expert": 5,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    92042,
+    85212,
+    85997
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2028771,
+   "raw": 18800640,
+   "used": 16205819,
+   "total": 16207872,
+   "sha256_expected": "029bfccb8ebfff6b11cbffa63eae7a21a4065ec6c7f7d914e521cc8710553b4b",
+   "codec": 5
+  },
+  {
+   "layer": 38,
+   "expert": 13,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    93421,
+    77661,
+    83779
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2037520,
+   "raw": 18800640,
+   "used": 16203447,
+   "total": 16203776,
+   "sha256_expected": "885a4f75537d7553dd47c6f6e816b063b5fde29097885e49800569b208a143a5",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 25,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    92307,
+    78387,
+    93734
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2056683,
+   "raw": 18800640,
+   "used": 16213920,
+   "total": 16216064,
+   "sha256_expected": "d348fa164f3adbc36d9a4ae7806b84acae96e79c8a39b6962f27646d3a019132",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 184,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    85362,
+    85229,
+    76094
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2050835,
+   "raw": 18800640,
+   "used": 16241146,
+   "total": 16244736,
+   "sha256_expected": "5470eb4f33c9ae9c425e84cf19aa6314cf6b7755738b0dc1bcedbbece8bb3ff8",
+   "codec": 5
+  },
+  {
+   "layer": 21,
+   "expert": 179,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    95039,
+    95538,
+    92750
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2041520,
+   "raw": 18800640,
+   "used": 16171676,
+   "total": 16175104,
+   "sha256_expected": "e402474117ee1521e348d046be73395bbd6babe83bc8be066f0fc74c0d1788d7",
+   "codec": 5
+  },
+  {
+   "layer": 38,
+   "expert": 51,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    98618,
+    74710,
+    86882
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    121,
+    120
+   ],
+   "cz_count": 2109054,
+   "raw": 18800640,
+   "used": 16359819,
+   "total": 16363520,
+   "sha256_expected": "77fb5959ba9a82ed7f7148839bd9ae593c676ef8c477fcaeabebba46e5d63454",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 19,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    91567,
+    68615,
+    88619
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    121,
+    120
+   ],
+   "cz_count": 2068434,
+   "raw": 18800640,
+   "used": 16412370,
+   "total": 16412672,
+   "sha256_expected": "6ce244b81a06225973e3c0a915b9489c58c481847b953b4fcef5196913d354f0",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 35,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    90196,
+    87408,
+    98399
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2050085,
+   "raw": 18800640,
+   "used": 16154583,
+   "total": 16154624,
+   "sha256_expected": "ff3a76fe96849ece92f5e3c2d1b38d3277853ccf85bc5d61e5fd02567ce0c2b7",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 155,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    90544,
+    86580,
+    99765
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2052285,
+   "raw": 18800640,
+   "used": 16152437,
+   "total": 16154624,
+   "sha256_expected": "156664ece76dff88caf898ecdddd5f82dfcd6f12fc922d0277019a1015106473",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 174,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    74261,
+    75209,
+    68007
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    121,
+    121
+   ],
+   "cz_count": 2214759,
+   "raw": 18800640,
+   "used": 16593723,
+   "total": 16596992,
+   "sha256_expected": "3ca03dffab28488c423fa0b1a6bf31ba74b3cd7c0db03e2ee588524faf0585b1",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 107,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    94735,
+    75343,
+    83252
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    121,
+    120
+   ],
+   "cz_count": 2127279,
+   "raw": 18800640,
+   "used": 16406125,
+   "total": 16408576,
+   "sha256_expected": "8e84b6e968ed797bafac2a113cdc1e530697d065ab74aa744fc1f8ccff021a44",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 162,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    85436,
+    80154,
+    82279
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2053362,
+   "raw": 18800640,
+   "used": 16182494,
+   "total": 16183296,
+   "sha256_expected": "87a2229aee3e8325544dab8ee466ba5680db08b7287c0c2e2c0e639d5eb33019",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 23,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    97914,
+    87513,
+    93014
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2066591,
+   "raw": 18800640,
+   "used": 16147515,
+   "total": 16150528,
+   "sha256_expected": "a439abdd21c47582648541dde176e6a9b196fa17067eeb7799ce5e0e5038b54b",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 38,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    93327,
+    80385,
+    104725
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2057695,
+   "raw": 18800640,
+   "used": 16136806,
+   "total": 16138240,
+   "sha256_expected": "4f64e9e4e1fd522bf8bfe5fe2c3b1779e7b9d7d869303d3304ccb02de53bcdb2",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 98,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    98665,
+    80497,
+    93041
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    121,
+    120
+   ],
+   "cz_count": 2113629,
+   "raw": 18800640,
+   "used": 16455026,
+   "total": 16457728,
+   "sha256_expected": "03c3fc7a3423fa25e9e60aa7670f70f2fb1fbda611af45762ade98652eb6b25f",
+   "codec": 5
+  },
+  {
+   "layer": 38,
+   "expert": 26,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    96689,
+    89196,
+    97544
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2049935,
+   "raw": 18800640,
+   "used": 16118903,
+   "total": 16121856,
+   "sha256_expected": "54bbbb6a7042c324261b8f178761b69145e45f095fe4c9b03a3f28b2f4c19167",
+   "codec": 5
+  },
+  {
+   "layer": 38,
+   "expert": 85,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    98095,
+    94912,
+    96584
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2053801,
+   "raw": 18800640,
+   "used": 16127798,
+   "total": 16130048,
+   "sha256_expected": "9fc2148ffb307ec0000a2a8bdbc84fdbfe6991ac58084bcdc3dabd46c562733c",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 3,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    102058,
+    79691,
+    104213
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2058212,
+   "raw": 18800640,
+   "used": 16118855,
+   "total": 16121856,
+   "sha256_expected": "e06302abfd3335f91362df21aabd2786bb2a5567081f3c3da73d6d72570e3bca",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 9,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    90212,
+    87017,
+    85437
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2056706,
+   "raw": 18800640,
+   "used": 16143938,
+   "total": 16146432,
+   "sha256_expected": "0069b0dd435bed965152cd9ac1ee40fd92855eba99e48a6d47d774679fcae8c1",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 76,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    91151,
+    87481,
+    84299
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2037602,
+   "raw": 18800640,
+   "used": 16143840,
+   "total": 16146432,
+   "sha256_expected": "26071eefcf35e9fc6baa82255dfea84d6ecb188113656f9720a8c3d4ba793900",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 176,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    104487,
+    69835,
+    104733
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    121,
+    120
+   ],
+   "cz_count": 2084883,
+   "raw": 18800640,
+   "used": 16370609,
+   "total": 16371712,
+   "sha256_expected": "d1b83dc230c064c7d1f4d9e8b59cd2637c68d906779906e301dee478a58de6c8",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 189,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    78360,
+    77482,
+    78694
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    121,
+    121
+   ],
+   "cz_count": 2254486,
+   "raw": 18800640,
+   "used": 16605218,
+   "total": 16609280,
+   "sha256_expected": "381838bcb318e1eadca194d48b62d695e3b4a5c70d08eb3282198e1aa0ef5a12",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 2,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    93054,
+    79300,
+    87261
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    121,
+    120
+   ],
+   "cz_count": 2101910,
+   "raw": 18800640,
+   "used": 16400717,
+   "total": 16404480,
+   "sha256_expected": "2dbc52c51b7dc7aa593bfc19a26d1f023bab53a5d4d11b0f7bbe41c1fd1e5302",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 46,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    92275,
+    95086,
+    86885
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2045165,
+   "raw": 18800640,
+   "used": 16117277,
+   "total": 16117760,
+   "sha256_expected": "05bdbf227e46d4f8df879392f68bddb9e0ce47bda52c0fc47be56ce31fab1f7b",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 101,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    94280,
+    85083,
+    94993
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2053386,
+   "raw": 18800640,
+   "used": 16136254,
+   "total": 16138240,
+   "sha256_expected": "fa140a136b0009e510a83d11dd85ebee1875255ea4e8c960d34516eada5df54c",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 124,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    92573,
+    90264,
+    88693
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2042991,
+   "raw": 18800640,
+   "used": 16114313,
+   "total": 16117760,
+   "sha256_expected": "fc2217b2906f0d3b0ecc674b07287ea89afecf4f5b9d50d765e202a8cc516a14",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 128,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    93570,
+    85446,
+    94505
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2046228,
+   "raw": 18800640,
+   "used": 16124121,
+   "total": 16125952,
+   "sha256_expected": "fc4213da6bdac511b73733ec39f13a925b31ea5f5d761b02861ef70460747a89",
+   "codec": 5
+  },
+  {
+   "layer": 21,
+   "expert": 28,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    101429,
+    94358,
+    94438
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2044303,
+   "raw": 18800640,
+   "used": 16121006,
+   "total": 16121856,
+   "sha256_expected": "231a25311c1e942938b2660c84e2617113ce80f0e7efedf090207f3af3305aad",
+   "codec": 5
+  },
+  {
+   "layer": 36,
+   "expert": 2,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    105159,
+    81597,
+    90819
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    121,
+    120
+   ],
+   "cz_count": 2108631,
+   "raw": 18800640,
+   "used": 16444855,
+   "total": 16445440,
+   "sha256_expected": "2f03e8bf9bb39af86326cfa3e091a3af80ef82764e4f5d07b3aec10555fca7b3",
+   "codec": 5
+  },
+  {
+   "layer": 37,
+   "expert": 110,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    103126,
+    84579,
+    88913
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2082312,
+   "raw": 18800640,
+   "used": 16133484,
+   "total": 16134144,
+   "sha256_expected": "6640f85de823cfad29c282873c1541bb891498d039056036d251de2e4557e1da",
+   "codec": 5
+  },
+  {
+   "layer": 38,
+   "expert": 134,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    98289,
+    90554,
+    88997
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2069240,
+   "raw": 18800640,
+   "used": 16105214,
+   "total": 16105472,
+   "sha256_expected": "794ef3c2de1e4ad92d4b2999d435bdad6de748f80f00d99371a565364443fb25",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 11,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    96459,
+    83787,
+    94588
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2087687,
+   "raw": 18800640,
+   "used": 16117853,
+   "total": 16121856,
+   "sha256_expected": "3c5f38df1d7ae878b1b7025342a43ff071431a9e282f5e74cccc9fcfb1c8740f",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 27,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    93911,
+    92843,
+    91227
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2057032,
+   "raw": 18800640,
+   "used": 16105427,
+   "total": 16105472,
+   "sha256_expected": "87f2f006f2f4042af9d392a83f3f12487289f5e79341edd77d81eab802bf19f1",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 58,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    91209,
+    85426,
+    86585
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    121,
+    120
+   ],
+   "cz_count": 2113502,
+   "raw": 18800640,
+   "used": 16417475,
+   "total": 16420864,
+   "sha256_expected": "8085de7943ffd228698d42ebe500254fc6f80217dda6fef84b381573b732e5b0",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 109,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    102008,
+    85007,
+    106623
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2056855,
+   "raw": 18800640,
+   "used": 16100718,
+   "total": 16101376,
+   "sha256_expected": "9fe5d345d38109d8566ce7bd648c015541ba3808fe37582e897fd75a6d8ce7c0",
+   "codec": 5
+  },
+  {
+   "layer": 39,
+   "expert": 175,
+   "ceil_mask": 7,
+   "cz": true,
+   "gate_failed": [],
+   "transformed": [
+    103136,
+    76496,
+    101031
+   ],
+   "max5_blocks": [
+    0,
+    0,
+    0
+   ],
+   "kept_255": [
+    0,
+    0,
+    0
+   ],
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "cz_count": 2057159,
+   "raw": 18800640,
+   "used": 16115487,
+   "total": 16117760,
+   "sha256_expected": "db4c45aaac24628e7828b5e532517a4fccca5cd0a16b78237a41a059911871fa",
+   "codec": 5
+  }
+ ]
+}

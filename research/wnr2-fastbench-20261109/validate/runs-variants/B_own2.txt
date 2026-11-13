@@ -1,0 +1,5 @@
+replay wnr2 U:\kaira_wex\v41-reap\v4_flash_experts.nr2.wex: 396 tokens (skip 0), lanes=8 pf_threads=8 batch=1 split=1 io_only=0 layer_ms=0.0
+  ms/token mean=356.60 p50=346.44 p95=458.12 | layer waits mean=350.46 ms/token
+  reads/token demand=17.81 needed=77.91 wasted=40.27 | 2300.6 MB/token | read 6.45 GB/s wall, 6.54 GB/s while busy
+  read latency ms demand p50=9.49 p95=16.78 | prefetch p50=13.42 p95=24.06
+  decode 53847 records 29947.0 ms (0.556 ms/record) | h2d 0 records 0.0 ms (0.000 ms/record) | overlap: 93% of finish time under reads | failures=0 | drain 24 ms

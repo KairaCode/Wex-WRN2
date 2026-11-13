@@ -1,0 +1,140 @@
+{
+ "label": "ds_v41flash",
+ "data_dir": "<orig-pc>/team4-data\\other\\ds_v41flash",
+ "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+ "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+ "items": [
+  {
+   "tag": "L00_E120",
+   "layer": 0,
+   "expert": 120,
+   "kind": null,
+   "npz": "L00_E120.npz",
+   "raw_bytes": 18800640,
+   "gate_up_diag": {},
+   "shapes": [
+    [
+     2304,
+     5120
+    ],
+    [
+     5120,
+     2304
+    ],
+    [
+     2304,
+     5120
+    ]
+   ],
+   "even_pct": [
+    31.0164,
+    31.7754,
+    31.1738
+   ],
+   "gate_ok": [
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "tag": "L13_E155",
+   "layer": 13,
+   "expert": 155,
+   "kind": null,
+   "npz": "L13_E155.npz",
+   "raw_bytes": 18800640,
+   "gate_up_diag": {},
+   "shapes": [
+    [
+     2304,
+     5120
+    ],
+    [
+     5120,
+     2304
+    ],
+    [
+     2304,
+     5120
+    ]
+   ],
+   "even_pct": [
+    28.5862,
+    31.3713,
+    29.9159
+   ],
+   "gate_ok": [
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "tag": "L26_E052",
+   "layer": 26,
+   "expert": 52,
+   "kind": null,
+   "npz": "L26_E052.npz",
+   "raw_bytes": 18800640,
+   "gate_up_diag": {},
+   "shapes": [
+    [
+     2304,
+     5120
+    ],
+    [
+     5120,
+     2304
+    ],
+    [
+     2304,
+     5120
+    ]
+   ],
+   "even_pct": [
+    30.1454,
+    31.2394,
+    29.8975
+   ],
+   "gate_ok": [
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "tag": "L39_E369",
+   "layer": 39,
+   "expert": 369,
+   "kind": null,
+   "npz": "L39_E369.npz",
+   "raw_bytes": 18800640,
+   "gate_up_diag": {},
+   "shapes": [
+    [
+     2304,
+     5120
+    ],
+    [
+     5120,
+     2304
+    ],
+    [
+     2304,
+     5120
+    ]
+   ],
+   "even_pct": [
+    27.2675,
+    24.9984,
+    27.0923
+   ],
+   "gate_ok": [
+    1,
+    1,
+    1
+   ]
+  }
+ ]
+}

@@ -1,0 +1,15 @@
+== r8moe2 try 1 03:37:51
+A1  ready    18 s  prompt  2329  ttft  438.6 s
+B1  ready    18 s  prompt  2329  ttft  293.5 s
+B2  ready    18 s  prompt  2329  ttft  291.1 s
+A2  ready    18 s  prompt  2329  ttft  422.0 s
+A1 ready 18 s  ttft 438.6 s  decode 3.70 tok/s  prompt 2329  gen 64 (length)  avail_min 3.51 GB  vram_max 30916 MiB  V41_GPU_MOE= 
+B1 ready 18 s  ttft 293.5 s  decode 3.67 tok/s  prompt 2329  gen 64 (length)  avail_min 4.97 GB  vram_max 30214 MiB  V41_GPU_MOE=2 
+B2 ready 18 s  ttft 291.1 s  decode 3.63 tok/s  prompt 2329  gen 64 (length)  avail_min 5.30 GB  vram_max 30471 MiB  V41_GPU_MOE=2 
+A2 ready 18 s  ttft 422.0 s  decode 3.67 tok/s  prompt 2329  gen 64 (length)  avail_min 3.82 GB  vram_max 30470 MiB  V41_GPU_MOE= 
+VERDICT r8moe2: TTFT B/A -32.1 % (A 438.60/421.97, B 293.50/291.13 s)
+VERDICT r8moe2: decode B/A -1.0 % (A 3.70/3.67, B 3.67/3.63 tok/s)
+VERDICT r8moe2: text identical: no (B1 B2 differ from A1)
+VERDICT r8moe2: avail_min A/B 3.51/4.97 GB
+   compilers active in 0 of 107 samples (03:37:51-04:05:25)
+== r8subreads try 1 04:06:50

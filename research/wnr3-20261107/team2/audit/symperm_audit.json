@@ -1,0 +1,28 @@
+{
+ "codes 0..15 (production)": {
+  "experts": [
+   "L12_E157.bin",
+   "L30_E002.bin"
+  ],
+  "bitflip_trials": 69120,
+  "accepted": 392,
+  "accept_rate": 0.005671296296296297,
+  "state_flip_trials": 34560,
+  "state_flip_accepted": 120,
+  "payload_bit_per_w_noflush": 3.7590727260753147,
+  "rows_x_mag_with_f(+x)==f(-x)": 19088
+ },
+ "interleaved 2*mag+sign": {
+  "experts": [
+   "L12_E157.bin",
+   "L30_E002.bin"
+  ],
+  "bitflip_trials": 69120,
+  "accepted": 40,
+  "accept_rate": 0.0005787037037037037,
+  "state_flip_trials": 34560,
+  "state_flip_accepted": 7,
+  "payload_bit_per_w_noflush": 3.759072725996835,
+  "rows_x_mag_with_f(+x)==f(-x)": 19108
+ }
+}

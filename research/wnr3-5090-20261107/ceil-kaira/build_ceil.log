@@ -1,0 +1,63 @@
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_Z20wex_cuda_nr2_weightsILi1EEvPKhPKj14WexCudaNr2Plan16WexCudaNr2TablesPhPj' for 'sm_120'
+ptxas info    : Function properties for _Z20wex_cuda_nr2_weightsILi1EEvPKhPKj14WexCudaNr2Plan16WexCudaNr2TablesPhPj
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 91 registers, used 1 barriers, 26336 bytes smem
+ptxas info    : Compile time = 0.000 ms
+ptxas info    : Compiling entry function '_Z23wex_cuda_commit_regionsPKh13WexCudaCommitPKj' for 'sm_120'
+ptxas info    : Function properties for _Z23wex_cuda_commit_regionsPKh13WexCudaCommitPKj
+    96 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 48 registers, used 0 barriers, 96 bytes cumulative stack size
+ptxas info    : Compile time = 0.000 ms
+ptxas info    : Compiling entry function '_Z19wex_cuda_nr2_scalesPKhPKj14WexCudaNr2Plan16WexCudaNr2TablesPhPj' for 'sm_120'
+ptxas info    : Function properties for _Z19wex_cuda_nr2_scalesPKhPKj14WexCudaNr2Plan16WexCudaNr2TablesPhPj
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 54 registers, used 1 barriers
+ptxas info    : Compile time = 0.000 ms
+ptxas info    : Compiling entry function '_Z26wex_cuda_nr2_build_bucketsPKhPj' for 'sm_120'
+ptxas info    : Function properties for _Z26wex_cuda_nr2_build_bucketsPKhPj
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 14 registers, used 0 barriers
+ptxas info    : Compile time = 0.000 ms
+ptxas info    : Compiling entry function '_Z25wex_cuda_nr2_build_scalesPKhPjPh' for 'sm_120'
+ptxas info    : Function properties for _Z25wex_cuda_nr2_build_scalesPKhPjPh
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 14 registers, used 0 barriers
+ptxas info    : Compile time = 0.000 ms
+ptxas info    : Compiling entry function '_Z23wex_cuda_nr2_build_rowsPKhPj' for 'sm_120'
+ptxas info    : Function properties for _Z23wex_cuda_nr2_build_rowsPKhPj
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 12 registers, used 0 barriers
+ptxas info    : Compile time = 0.000 ms
+ptxas info    : Compiling entry function '_Z28wex_cuda_neural_rans_weightsILb0EEvPKhPhjjjjjjjPKjPj' for 'sm_120'
+ptxas info    : Function properties for _Z28wex_cuda_neural_rans_weightsILb0EEvPKhPhjjjjjjjPKjPj
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 34 registers, used 1 barriers, 32768 bytes smem
+ptxas info    : Compile time = 0.000 ms
+ptxas info    : Compiling entry function '_Z28wex_cuda_neural_rans_weightsILb1EEvPKhPhjjjjjjjPKjPj' for 'sm_120'
+ptxas info    : Function properties for _Z28wex_cuda_neural_rans_weightsILb1EEvPKhPhjjjjjjjPKjPj
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 34 registers, used 1 barriers, 32768 bytes smem
+ptxas info    : Compile time = 0.000 ms
+ptxas info    : Compiling entry function '_Z30wex_cuda_neural_rans_build_lutILb0EEvPKhjPj' for 'sm_120'
+ptxas info    : Function properties for _Z30wex_cuda_neural_rans_build_lutILb0EEvPKhjPj
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 14 registers, used 0 barriers
+ptxas info    : Compile time = 0.000 ms
+ptxas info    : Compiling entry function '_Z30wex_cuda_neural_rans_build_lutILb1EEvPKhjPj' for 'sm_120'
+ptxas info    : Function properties for _Z30wex_cuda_neural_rans_build_lutILb1EEvPKhjPj
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 14 registers, used 0 barriers
+ptxas info    : Compile time = 0.000 ms
+ptxas info    : Compiling entry function '_Z25wex_cuda_palette3_weightsPKhjPhjjj' for 'sm_120'
+ptxas info    : Function properties for _Z25wex_cuda_palette3_weightsPKhjPhjjj
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 26 registers, used 0 barriers
+ptxas info    : Compile time = 0.000 ms
+ptxas info    : Compiling entry function '_Z20wex_cuda_scale_tilesPKhPKjPhjj' for 'sm_120'
+ptxas info    : Function properties for _Z20wex_cuda_scale_tilesPKhPKjPhjj
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 14 registers, used 0 barriers
+ptxas info    : Compile time = 0.000 ms
+wex_cuda_bridge_ceil.cu
+   Creazione della libreria <KAIRA>\lab\wnr3-5090-20261107\ceil-kaira\kaira_wex_cuda_ceil.lib e dell'oggetto <KAIRA>\lab\wnr3-5090-20261107\ceil-kaira\kaira_wex_cuda_ceil.exp

@@ -1,0 +1,428 @@
+{
+ "counts_dir": "<orig-pc>/team7\\nvfp4\\counts\\qwen36_nv",
+ "repo": "nvidia/Qwen3.6-35B-A3B-NVFP4",
+ "revision": "1355db6a052410cfd62085d94b58866fd0f2c3c5",
+ "items": 80,
+ "weights": 251658240,
+ "scales": 15728640,
+ "weight_streams": 122880,
+ "scale_streams": 15360,
+ "raw_bytes_total": 141559680,
+ "weights_payload_bit_per_w (no flush)": {
+  "w_o0": {
+   "insample_bit_per_w": 3.9731295580023955,
+   "heldout_bit_per_w": 3.973163126833315,
+   "ideal_insample_bit_per_w": 3.9731294237958537,
+   "rows": 16
+  },
+  "w_b1": {
+   "insample_bit_per_w": 3.9144624825437675,
+   "heldout_bit_per_w": 3.9146673208358465,
+   "ideal_insample_bit_per_w": 3.914452048540774,
+   "rows": 648
+  },
+  "w_b2": {
+   "insample_bit_per_w": 3.9133331989593994,
+   "heldout_bit_per_w": 3.9135434002261262,
+   "ideal_insample_bit_per_w": 3.913322760833014,
+   "rows": 648
+  },
+  "w_b4": {
+   "insample_bit_per_w": 3.9156245614279244,
+   "heldout_bit_per_w": 3.915945919131204,
+   "ideal_insample_bit_per_w": 3.915614127726144,
+   "rows": 648
+  },
+  "w_b8": {
+   "insample_bit_per_w": 3.920950516013345,
+   "heldout_bit_per_w": 3.921192591092475,
+   "ideal_insample_bit_per_w": 3.9209401023848045,
+   "rows": 648
+  },
+  "w_b1p": {
+   "insample_bit_per_w": 3.9039024173772807,
+   "heldout_bit_per_w": 3.9057311613442156,
+   "ideal_insample_bit_per_w": 3.903889637579069,
+   "rows": 10368
+  },
+  "w_b2p": {
+   "insample_bit_per_w": 3.9027863855278517,
+   "heldout_bit_per_w": 3.904639883678977,
+   "ideal_insample_bit_per_w": 3.902773591683199,
+   "rows": 10368
+  },
+  "w_b4p": {
+   "insample_bit_per_w": 3.9051368106994415,
+   "heldout_bit_per_w": 3.9077002054723757,
+   "ideal_insample_bit_per_w": 3.9051239332038845,
+   "rows": 10368
+  },
+  "w_b8p": {
+   "insample_bit_per_w": 3.9106329827460486,
+   "heldout_bit_per_w": 3.912212640468227,
+   "ideal_insample_bit_per_w": 3.9106201524316635,
+   "rows": 10368
+  },
+  "w_s15": {
+   "insample_bit_per_w": 3.9124122218816084,
+   "heldout_bit_per_w": 3.9127460058788444,
+   "ideal_insample_bit_per_w": 3.912401780623703,
+   "rows": 1296
+  },
+  "w_b2pm2": {
+   "insample_bit_per_w": 3.9117427787257326,
+   "heldout_bit_per_w": 3.9124879388142677,
+   "ideal_insample_bit_per_w": 3.911732335494945,
+   "rows": 5832
+  },
+  "w_b2lm": {
+   "insample_bit_per_w": 3.91328428480451,
+   "heldout_bit_per_w": 3.9136199766852466,
+   "ideal_insample_bit_per_w": 3.913273841113993,
+   "rows": 5832
+  },
+  "w_b2ls": {
+   "insample_bit_per_w": 3.9128304251580195,
+   "heldout_bit_per_w": 3.9132595770117704,
+   "ideal_insample_bit_per_w": 3.9128199857942807,
+   "rows": 1944
+  },
+  "w_b2par": {
+   "insample_bit_per_w": 3.913290718509593,
+   "heldout_bit_per_w": 3.913628569663275,
+   "ideal_insample_bit_per_w": 3.913280280309636,
+   "rows": 1296
+  },
+  "v_o0": {
+   "insample_bit_per_w": 3.897218619308738,
+   "heldout_bit_per_w": 3.8972748083453284,
+   "ideal_insample_bit_per_w": 3.8971304838560714,
+   "rows": 16
+  },
+  "v_b2": {
+   "insample_bit_per_w": 3.832278583973174,
+   "heldout_bit_per_w": 3.8324818560430205,
+   "ideal_insample_bit_per_w": 3.8321801290779693,
+   "rows": 648
+  },
+  "v_b2p": {
+   "insample_bit_per_w": 3.821757267766654,
+   "heldout_bit_per_w": 3.823504373478661,
+   "ideal_insample_bit_per_w": 3.821656626719337,
+   "rows": 10368
+  }
+ },
+ "w_b2_heldout_per_matrix_bit_per_w": {
+  "w1": 3.8978811118896273,
+  "w2": 3.945398235168232,
+  "w3": 3.8973508536205204
+ },
+ "w_b2_by_srel_bin_insample": {
+  "srel-3": {
+   "weights_share": 0.0722463607788086,
+   "bit_per_w_in_bin": 3.9188874041229833
+  },
+  "srel-2": {
+   "weights_share": 0.12078653971354167,
+   "bit_per_w_in_bin": 3.9354826506094005
+  },
+  "srel-1": {
+   "weights_share": 0.22833016713460286,
+   "bit_per_w_in_bin": 3.949842477933411
+  },
+  "srel0": {
+   "weights_share": 0.27582982381184895,
+   "bit_per_w_in_bin": 3.955783251423767
+  },
+  "srel1": {
+   "weights_share": 0.1841552734375,
+   "bit_per_w_in_bin": 3.9407381884817507
+  },
+  "srel2": {
+   "weights_share": 0.08018487294514974,
+   "bit_per_w_in_bin": 3.9000384894546984
+  },
+  "srel3": {
+   "weights_share": 0.030133628845214845,
+   "bit_per_w_in_bin": 3.819252560254158
+  },
+  "srelfar": {
+   "weights_share": 0.008333333333333333,
+   "bit_per_w_in_bin": 1.0012290359322797
+  }
+ },
+ "scales_payload_bit_per_scale (no flush)": {
+  "s_o0": {
+   "insample_bit_per_scale": 4.3072283333777985,
+   "heldout_bit_per_scale": 4.341658596914347,
+   "ideal_insample": 4.287938817999124
+  },
+  "s_left": {
+   "insample_bit_per_scale": 3.8323558490706735,
+   "heldout_bit_per_scale": 3.854759119657646,
+   "ideal_insample": 3.8123774613348305
+  },
+  "s_up": {
+   "insample_bit_per_scale": 3.9411633599922236,
+   "heldout_bit_per_scale": 3.9938738639219507,
+   "ideal_insample": 3.921346857926493
+  },
+  "s_lu": {
+   "insample_bit_per_scale": 4.239969540244371,
+   "heldout_bit_per_scale": 4.2894220829528305,
+   "ideal_insample": 4.22048115541873
+  },
+  "s_par": {
+   "insample_bit_per_scale": 3.832182053265887,
+   "heldout_bit_per_scale": 3.8566891593575168,
+   "ideal_insample": 3.8121761920131947
+  }
+ },
+ "scale_bytes": {
+  "distinct": 50,
+  "min": 0,
+  "max": 126,
+  "pow2_share": 0.14004573822021485,
+  "top10": [
+   [
+    113,
+    0.1124,
+    144.0
+   ],
+   [
+    114,
+    0.09417,
+    160.0
+   ],
+   [
+    112,
+    0.09286,
+    128.0
+   ],
+   [
+    115,
+    0.07041,
+    176.0
+   ],
+   [
+    111,
+    0.06331,
+    120.0
+   ],
+   [
+    110,
+    0.06251,
+    112.0
+   ],
+   [
+    109,
+    0.06029,
+    104.0
+   ],
+   [
+    108,
+    0.05693,
+    96.0
+   ],
+   [
+    107,
+    0.05151,
+    88.0
+   ],
+   [
+    116,
+    0.05093,
+    192.0
+   ]
+  ],
+  "order0_entropy_bits": 4.300220855499007
+ },
+ "blockmax16_hist_per_matrix": {
+  "w1": [
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ],
+  "w2": [
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ],
+  "w3": [
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ]
+ },
+ "blockmax16_hist_all": [
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  1.0
+ ],
+ "blockmax16_hist_live": [
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  1.0
+ ],
+ "doubled16": {
+  "max7_blocks": 15728640,
+  "no_1_or_3": 331183,
+  "share_of_max7_blocks": 0.02105604807535807,
+  "share_of_all_blocks": 0.02105604807535807,
+  "q13_nonmax": 0.2672561984592014,
+  "iid_expected_share_of_max7": 0.009425020420656407,
+  "n13_hist": [
+   331183,
+   915228,
+   2090912,
+   3105256,
+   3326327,
+   2719740,
+   1756536,
+   913273,
+   387406,
+   134595,
+   37911,
+   8536,
+   1516,
+   203,
+   17,
+   1,
+   0
+  ]
+ },
+ "zero_sign": {
+  "live_plus0": 9162220,
+  "live_minus0": 9161391,
+  "dead_plus0": 0,
+  "dead_minus0": 0,
+  "minus0_share_of_weights": 0.036404097080230714,
+  "minus0_share_of_zeros_live": 0.49997737891292277
+ },
+ "dead": {
+  "zero_value_scale_blocks_share": 0.008333333333333333,
+  "max0_blocks_share": 0.0,
+  "per_matrix_zero_scale_share": [
+   0.0125,
+   0.0,
+   0.0125
+  ],
+  "per_matrix_max0_share": [
+   0.0,
+   0.0,
+   0.0
+  ]
+ },
+ "anchor_bytes_by_matrix": {
+  "w1": [
+   99,
+   100,
+   101,
+   102,
+   103,
+   104,
+   105,
+   106,
+   107,
+   108,
+   109,
+   110,
+   111,
+   112,
+   113,
+   114,
+   115,
+   116
+  ],
+  "w2": [
+   93,
+   103,
+   104,
+   105,
+   106,
+   107,
+   108,
+   109,
+   110,
+   111,
+   112,
+   113,
+   114,
+   115,
+   116
+  ],
+  "w3": [
+   98,
+   100,
+   102,
+   103,
+   105,
+   106,
+   107,
+   108,
+   109,
+   110,
+   111,
+   112,
+   113,
+   114,
+   115
+  ]
+ },
+ "record_estimate_heldout": {
+  "raw_bytes_per_item": 1769496.0,
+  "overhead_bytes_per_item": 7466.56,
+  "variants": {
+   "order0 both": {
+    "record_bytes": 1676478.4737586558,
+    "ratio_vs_raw": 0.9474327569876709,
+    "bit_per_w_total": 4.2635052331508785
+   },
+   "WNR-style b2 + scale o0": {
+    "record_bytes": 1653035.0433410835,
+    "ratio_vs_raw": 0.9341841085490351,
+    "bit_per_w_total": 4.203885506543689
+   },
+   "b2 + best scale ctx": {
+    "record_bytes": 1641069.001788023,
+    "ratio_vs_raw": 0.9274217075302927,
+    "bit_per_w_total": 4.1734542892151465
+   },
+   "best byte-exact (w_b2p, s_left)": {
+    "record_bytes": 1637567.996625419,
+    "ratio_vs_raw": 0.925443175133156,
+    "bit_per_w_total": 4.1645507726679964
+   },
+   "value-exact (v_b2p, s_left)": {
+    "record_bytes": 1605664.2158464915,
+    "ratio_vs_raw": 0.907413306301055,
+    "bit_per_w_total": 4.083415262467681
+   }
+  }
+ }
+}

@@ -1,0 +1,57 @@
+{
+ "container": "E:\\kaira_wex\\v41-reap\\v4_flash_experts.nr2.wex",
+ "records": 7680,
+ "aligned_expert_bytes": 18800640,
+ "raw_record_bytes": 18800640,
+ "codecs": {
+  "4": 7680
+ },
+ "on_disk_aligned": {
+  "max": 18321408,
+  "p99": 17453056,
+  "p999": 17653760,
+  "mean": 16914680.0,
+  "min": 16809984,
+  "argmax": 7608
+ },
+ "used_unpadded": {
+  "max": 18319818,
+  "p99": 17450235,
+  "p999": 17651622,
+  "mean": 16912626.10716146,
+  "min": 16809294,
+  "argmax": 7608
+ },
+ "ratio_mean_on_disk": 0.8996863936546841,
+ "ratio_mean_used": 0.899577147754622,
+ "ratio_max_on_disk": 0.9745098039215686,
+ "median_bytes": {
+  "m0": {
+   "120": 7411,
+   "121": 269
+  },
+  "m1": {
+   "120": 7068,
+   "121": 605,
+   "122": 6,
+   "123": 1
+  },
+  "m2": {
+   "120": 7034,
+   "121": 643,
+   "122": 3
+  }
+ },
+ "capacity_vs_raw_slots": {
+  "fixed_slot_max_on_disk": 0.026156941649899457,
+  "fixed_slot_p99_on_disk": 0.07721192208401773,
+  "byte_sized_on_disk_mean": 0.11149841439506991,
+  "byte_sized_used_mean": 0.11163339630851787,
+  "byte_sized_used_mean_64B_align": 0.11163131868226794
+ },
+ "byte_sized_gain_over_max_slots": 0.08316610187127393,
+ "argmax_layer_expert": [
+  39,
+  120
+ ]
+}

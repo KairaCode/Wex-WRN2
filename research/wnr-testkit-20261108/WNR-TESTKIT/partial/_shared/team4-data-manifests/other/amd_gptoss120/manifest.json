@@ -1,0 +1,493 @@
+{
+ "family": "amd_gptoss120",
+ "repo": "amd/gpt-oss-120b-w-mxfp4-a-fp8",
+ "revision": "67f173edc7899c7cc8322de699df6b849d8448e9",
+ "experts": [
+  {
+   "tag": "L00_E014",
+   "layer": 0,
+   "expert": 14,
+   "tensors": [
+    {
+     "name": "model.layers.0.mlp.experts.14.gate_up_proj.weight",
+     "role": "gate_up_proj",
+     "part": "weight",
+     "slice0": null,
+     "dtype": "U8",
+     "shape": [
+      5760,
+      1440
+     ],
+     "bytes": 8294400,
+     "shard": "model-00001-of-00014.safetensors",
+     "offset": 1778747232,
+     "full_shape": [
+      5760,
+      1440
+     ]
+    },
+    {
+     "name": "model.layers.0.mlp.experts.14.gate_up_proj.weight_scale",
+     "role": "gate_up_proj",
+     "part": "scale",
+     "slice0": null,
+     "dtype": "U8",
+     "shape": [
+      5760,
+      90
+     ],
+     "bytes": 518400,
+     "shard": "model-00001-of-00014.safetensors",
+     "offset": 1787041632,
+     "full_shape": [
+      5760,
+      90
+     ]
+    },
+    {
+     "name": "model.layers.0.mlp.experts.14.down_proj.weight",
+     "role": "down_proj",
+     "part": "weight",
+     "slice0": null,
+     "dtype": "U8",
+     "shape": [
+      2880,
+      1440
+     ],
+     "bytes": 4147200,
+     "shard": "model-00001-of-00014.safetensors",
+     "offset": 1774340832,
+     "full_shape": [
+      2880,
+      1440
+     ]
+    },
+    {
+     "name": "model.layers.0.mlp.experts.14.down_proj.weight_scale",
+     "role": "down_proj",
+     "part": "scale",
+     "slice0": null,
+     "dtype": "U8",
+     "shape": [
+      2880,
+      90
+     ],
+     "bytes": 259200,
+     "shard": "model-00001-of-00014.safetensors",
+     "offset": 1778488032,
+     "full_shape": [
+      2880,
+      90
+     ]
+    }
+   ],
+   "file": "L00_E014.bin",
+   "sha256": "9e5f8e4ec449da4d17128b8069f8c6ed002a33c818733812d1398475a9fc2e1b"
+  },
+  {
+   "tag": "L03_E023",
+   "layer": 3,
+   "expert": 23,
+   "tensors": [
+    {
+     "name": "model.layers.3.mlp.experts.23.gate_up_proj.weight",
+     "role": "gate_up_proj",
+     "part": "weight",
+     "slice0": null,
+     "dtype": "U8",
+     "shape": [
+      5760,
+      1440
+     ],
+     "bytes": 8294400,
+     "shard": "model-00002-of-00014.safetensors",
+     "offset": 2155500476,
+     "full_shape": [
+      5760,
+      1440
+     ]
+    },
+    {
+     "name": "model.layers.3.mlp.experts.23.gate_up_proj.weight_scale",
+     "role": "gate_up_proj",
+     "part": "scale",
+     "slice0": null,
+     "dtype": "U8",
+     "shape": [
+      5760,
+      90
+     ],
+     "bytes": 518400,
+     "shard": "model-00002-of-00014.safetensors",
+     "offset": 2163794876,
+     "full_shape": [
+      5760,
+      90
+     ]
+    },
+    {
+     "name": "model.layers.3.mlp.experts.23.down_proj.weight",
+     "role": "down_proj",
+     "part": "weight",
+     "slice0": null,
+     "dtype": "U8",
+     "shape": [
+      2880,
+      1440
+     ],
+     "bytes": 4147200,
+     "shard": "model-00002-of-00014.safetensors",
+     "offset": 2151094076,
+     "full_shape": [
+      2880,
+      1440
+     ]
+    },
+    {
+     "name": "model.layers.3.mlp.experts.23.down_proj.weight_scale",
+     "role": "down_proj",
+     "part": "scale",
+     "slice0": null,
+     "dtype": "U8",
+     "shape": [
+      2880,
+      90
+     ],
+     "bytes": 259200,
+     "shard": "model-00002-of-00014.safetensors",
+     "offset": 2155241276,
+     "full_shape": [
+      2880,
+      90
+     ]
+    }
+   ],
+   "file": "L03_E023.bin",
+   "sha256": "2fb0dd95510fc11caf9ad00c5f3b2ff076993fc205e8b1c7c2d01a52100854c9"
+  },
+  {
+   "tag": "L06_E021",
+   "layer": 6,
+   "expert": 21,
+   "tensors": [
+    {
+     "name": "model.layers.6.mlp.experts.21.gate_up_proj.weight",
+     "role": "gate_up_proj",
+     "part": "weight",
+     "slice0": null,
+     "dtype": "U8",
+     "shape": [
+      5760,
+      1440
+     ],
+     "bytes": 8294400,
+     "shard": "model-00003-of-00014.safetensors",
+     "offset": 2326448804,
+     "full_shape": [
+      5760,
+      1440
+     ]
+    },
+    {
+     "name": "model.layers.6.mlp.experts.21.gate_up_proj.weight_scale",
+     "role": "gate_up_proj",
+     "part": "scale",
+     "slice0": null,
+     "dtype": "U8",
+     "shape": [
+      5760,
+      90
+     ],
+     "bytes": 518400,
+     "shard": "model-00003-of-00014.safetensors",
+     "offset": 2334743204,
+     "full_shape": [
+      5760,
+      90
+     ]
+    },
+    {
+     "name": "model.layers.6.mlp.experts.21.down_proj.weight",
+     "role": "down_proj",
+     "part": "weight",
+     "slice0": null,
+     "dtype": "U8",
+     "shape": [
+      2880,
+      1440
+     ],
+     "bytes": 4147200,
+     "shard": "model-00003-of-00014.safetensors",
+     "offset": 2322042404,
+     "full_shape": [
+      2880,
+      1440
+     ]
+    },
+    {
+     "name": "model.layers.6.mlp.experts.21.down_proj.weight_scale",
+     "role": "down_proj",
+     "part": "scale",
+     "slice0": null,
+     "dtype": "U8",
+     "shape": [
+      2880,
+      90
+     ],
+     "bytes": 259200,
+     "shard": "model-00003-of-00014.safetensors",
+     "offset": 2326189604,
+     "full_shape": [
+      2880,
+      90
+     ]
+    }
+   ],
+   "file": "L06_E021.bin",
+   "sha256": "f24fd7c0ddaadd8d08716486ff002f8e785d4ec970db04a62e00ea3a342e3ed9"
+  },
+  {
+   "tag": "L09_E092",
+   "layer": 9,
+   "expert": 92,
+   "tensors": [
+    {
+     "name": "model.layers.9.mlp.experts.92.gate_up_proj.weight",
+     "role": "gate_up_proj",
+     "part": "weight",
+     "slice0": null,
+     "dtype": "U8",
+     "shape": [
+      5760,
+      1440
+     ],
+     "bytes": 8294400,
+     "shard": "model-00004-of-00014.safetensors",
+     "offset": 4891877588,
+     "full_shape": [
+      5760,
+      1440
+     ]
+    },
+    {
+     "name": "model.layers.9.mlp.experts.92.gate_up_proj.weight_scale",
+     "role": "gate_up_proj",
+     "part": "scale",
+     "slice0": null,
+     "dtype": "U8",
+     "shape": [
+      5760,
+      90
+     ],
+     "bytes": 518400,
+     "shard": "model-00004-of-00014.safetensors",
+     "offset": 4900171988,
+     "full_shape": [
+      5760,
+      90
+     ]
+    },
+    {
+     "name": "model.layers.9.mlp.experts.92.down_proj.weight",
+     "role": "down_proj",
+     "part": "weight",
+     "slice0": null,
+     "dtype": "U8",
+     "shape": [
+      2880,
+      1440
+     ],
+     "bytes": 4147200,
+     "shard": "model-00004-of-00014.safetensors",
+     "offset": 4887471188,
+     "full_shape": [
+      2880,
+      1440
+     ]
+    },
+    {
+     "name": "model.layers.9.mlp.experts.92.down_proj.weight_scale",
+     "role": "down_proj",
+     "part": "scale",
+     "slice0": null,
+     "dtype": "U8",
+     "shape": [
+      2880,
+      90
+     ],
+     "bytes": 259200,
+     "shard": "model-00004-of-00014.safetensors",
+     "offset": 4891618388,
+     "full_shape": [
+      2880,
+      90
+     ]
+    }
+   ],
+   "file": "L09_E092.bin",
+   "sha256": "d4954ba91fc141e90edd2ab4dad7168b7375a0f9fe62a10ed7e40c251ebebf87"
+  },
+  {
+   "tag": "L12_E043",
+   "layer": 12,
+   "expert": 43,
+   "tensors": [
+    {
+     "name": "model.layers.12.mlp.experts.43.gate_up_proj.weight",
+     "role": "gate_up_proj",
+     "part": "weight",
+     "slice0": null,
+     "dtype": "U8",
+     "shape": [
+      5760,
+      1440
+     ],
+     "bytes": 8294400,
+     "shard": "model-00005-of-00014.safetensors",
+     "offset": 3146944580,
+     "full_shape": [
+      5760,
+      1440
+     ]
+    },
+    {
+     "name": "model.layers.12.mlp.experts.43.gate_up_proj.weight_scale",
+     "role": "gate_up_proj",
+     "part": "scale",
+     "slice0": null,
+     "dtype": "U8",
+     "shape": [
+      5760,
+      90
+     ],
+     "bytes": 518400,
+     "shard": "model-00005-of-00014.safetensors",
+     "offset": 3155238980,
+     "full_shape": [
+      5760,
+      90
+     ]
+    },
+    {
+     "name": "model.layers.12.mlp.experts.43.down_proj.weight",
+     "role": "down_proj",
+     "part": "weight",
+     "slice0": null,
+     "dtype": "U8",
+     "shape": [
+      2880,
+      1440
+     ],
+     "bytes": 4147200,
+     "shard": "model-00005-of-00014.safetensors",
+     "offset": 3142538180,
+     "full_shape": [
+      2880,
+      1440
+     ]
+    },
+    {
+     "name": "model.layers.12.mlp.experts.43.down_proj.weight_scale",
+     "role": "down_proj",
+     "part": "scale",
+     "slice0": null,
+     "dtype": "U8",
+     "shape": [
+      2880,
+      90
+     ],
+     "bytes": 259200,
+     "shard": "model-00005-of-00014.safetensors",
+     "offset": 3146685380,
+     "full_shape": [
+      2880,
+      90
+     ]
+    }
+   ],
+   "file": "L12_E043.bin",
+   "sha256": "c1000ae7e1cf3c12b1a5a4b12d4dda02eb6ebafeedff57c2b7ce388b401f0ef1"
+  },
+  {
+   "tag": "L15_E078",
+   "layer": 15,
+   "expert": 78,
+   "tensors": [
+    {
+     "name": "model.layers.15.mlp.experts.78.gate_up_proj.weight",
+     "role": "gate_up_proj",
+     "part": "weight",
+     "slice0": null,
+     "dtype": "U8",
+     "shape": [
+      5760,
+      1440
+     ],
+     "bytes": 8294400,
+     "shard": "model-00006-of-00014.safetensors",
+     "offset": 3900438676,
+     "full_shape": [
+      5760,
+      1440
+     ]
+    },
+    {
+     "name": "model.layers.15.mlp.experts.78.gate_up_proj.weight_scale",
+     "role": "gate_up_proj",
+     "part": "scale",
+     "slice0": null,
+     "dtype": "U8",
+     "shape": [
+      5760,
+      90
+     ],
+     "bytes": 518400,
+     "shard": "model-00006-of-00014.safetensors",
+     "offset": 3908733076,
+     "full_shape": [
+      5760,
+      90
+     ]
+    },
+    {
+     "name": "model.layers.15.mlp.experts.78.down_proj.weight",
+     "role": "down_proj",
+     "part": "weight",
+     "slice0": null,
+     "dtype": "U8",
+     "shape": [
+      2880,
+      1440
+     ],
+     "bytes": 4147200,
+     "shard": "model-00006-of-00014.safetensors",
+     "offset": 3896032276,
+     "full_shape": [
+      2880,
+      1440
+     ]
+    },
+    {
+     "name": "model.layers.15.mlp.experts.78.down_proj.weight_scale",
+     "role": "down_proj",
+     "part": "scale",
+     "slice0": null,
+     "dtype": "U8",
+     "shape": [
+      2880,
+      90
+     ],
+     "bytes": 259200,
+     "shard": "model-00006-of-00014.safetensors",
+     "offset": 3900179476,
+     "full_shape": [
+      2880,
+      90
+     ]
+    }
+   ],
+   "file": "L15_E078.bin",
+   "sha256": "53f04ff8aecd99256bd12b79286ab2077309cd53eace60454874399d762c9d7e"
+  }
+ ]
+}

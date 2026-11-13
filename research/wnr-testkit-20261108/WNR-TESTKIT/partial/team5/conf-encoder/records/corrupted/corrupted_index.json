@@ -1,0 +1,86 @@
+{
+ "source_record": "L00_E113.wnr3",
+ "source_record_sha256": "7188f6056d85806fdeab4acfa18e27bf41c595686c4d47b01fb3a725f0fa0499",
+ "bind": [
+  0,
+  113
+ ],
+ "entry_flags": 7173,
+ "cases": [
+  {
+   "case": "A",
+   "file": "L00_E113.A_signflip.wnr3",
+   "what": "single payload bit flip in weight stream; rANS structure intact, decoded = original with exactly one weight sign flipped",
+   "byte_offset_in_record": 155064,
+   "bit": 5,
+   "weight_stream_j": 0,
+   "global_stream_g": 2160,
+   "symbol_position_in_stream": 147,
+   "symbol_before_after": [
+    13,
+    5
+   ],
+   "search": [
+    {
+     "stream_j": 0,
+     "g": 2160,
+     "stream_bytes": 952,
+     "bit_flips_tried": 7616,
+     "structure_ok_final_state_eq_x0": 22,
+     "of_which_exactly_one_sign_flip": 22,
+     "structure_ok_other": 0
+    }
+   ],
+   "expected_without_HASH (x == x0 and exact length only)": "accepted silently (one sign flipped)",
+   "expected_v1": "status -1: weight stream final-state/hash check fails at g=2160",
+   "got": {
+    "status": -1,
+    "reason": "weight stream final-state/length/hash check failed: 1 streams, first g=2160"
+   },
+   "outcome_matches_expected": true
+  },
+  {
+   "case": "B",
+   "file": "L00_E113.B_lenbyte.wnr3",
+   "what": "LENC weight part: byte at record offset 4388 (first word byte of weight group 0, width 6) XOR 0x01 = bit 0 of residual 0 of that group",
+   "byte_offset_in_record": 4388,
+   "byte_before_after": [
+    66,
+    67
+   ],
+   "expected_v1": "status -1: LENC weight group continuity fails at group 1 (stream 0 of the group changes length, base_off of the next group no longer matches)",
+   "got": {
+    "status": -1,
+    "reason": "LENC weight: group continuity (group 1)"
+   },
+   "outcome_matches_expected": true
+  },
+  {
+   "case": "C",
+   "file": "L00_E113.C_hdrbyte.wnr3",
+   "what": "header byte 38 (ceil_mask) XOR 0x01 (7 -> 6), header_check not updated",
+   "byte_offset_in_record": 38,
+   "byte_before_after": [
+    7,
+    6
+   ],
+   "expected_v1": "status -1: header_check mismatch",
+   "got": {
+    "status": -1,
+    "reason": "header_check mismatch"
+   },
+   "outcome_matches_expected": true
+  },
+  {
+   "case": "D (extra)",
+   "file": "L00_E113.D_ceilmask_rehashed.wnr3",
+   "what": "as C, header_check recomputed (T2 case: ceil_mask bit flipped with header_check recomputed)",
+   "expected_v1": "status -1: ceil_mask bit 0 != form of set 0",
+   "got": {
+    "status": -1,
+    "reason": "ceil_mask bit 0 != form of set 0"
+   },
+   "outcome_matches_expected": true
+  }
+ ]
+}

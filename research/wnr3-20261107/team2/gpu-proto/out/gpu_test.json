@@ -1,0 +1,542 @@
+{
+ "info": {
+  "gpu": "NVIDIA GeForce RTX 3070",
+  "sms": 46,
+  "clock_khz_max": 1755000,
+  "smem_per_sm": 102400,
+  "smem_optin_per_block": 101376,
+  "regs_per_sm": 65536,
+  "max_threads_per_sm": 1536,
+  "l2_bytes": 4194304,
+  "driver": 13050,
+  "runtime": 12090,
+  "cupy": "14.2.0",
+  "nvrtc": [
+   12,
+   9
+  ],
+  "compile_s": 31.9593722820282
+ },
+ "results": {
+  "A/nt32": {
+   "alpha": 16,
+   "ctx": 0,
+   "ilv": 0,
+   "nt": 32,
+   "smem_bytes": 18160,
+   "regs": 72,
+   "local_bytes": 0,
+   "verified_streams": 17280,
+   "mismatching_streams": 0,
+   "invariant_errors": 0,
+   "byte_exact": true,
+   "compressed_bytes_all": 16716127,
+   "occ_err": "'cupy._core.raw.RawKernel' object has no attribute 'ptr'",
+   "m1": {
+    "us_median": 4067.3279762268066,
+    "us_min": 2254.848003387451,
+    "us_p90": 13402.112197875977,
+    "us_per_matrix": 4067.3279762268066,
+    "us_per_record_equiv": 12201.98392868042,
+    "decoded_GiB_s": 1.3505584242547162,
+    "runs": 5
+   },
+   "m3": {
+    "us_median": 3865.600109100342,
+    "us_min": 3862.528085708618,
+    "us_p90": 7797.35050201416,
+    "us_per_matrix": 1288.533369700114,
+    "us_per_record_equiv": 3865.600109100342,
+    "decoded_GiB_s": 4.263113545734907,
+    "runs": 5
+   },
+   "1rec_1streams": {
+    "us_median": 7644.15979385376,
+    "us_min": 4040.703773498535,
+    "us_per_record": 7644.15979385376,
+    "decoded_GiB_s": 2.155827799511757
+   },
+   "multistream_verify_bad_streams": 0
+  },
+  "A/nt32/ringpad8192": {
+   "alpha": 16,
+   "ctx": 0,
+   "ilv": 0,
+   "nt": 32,
+   "smem_bytes": 26352,
+   "regs": 72,
+   "local_bytes": 0,
+   "verified_streams": 17280,
+   "mismatching_streams": 0,
+   "invariant_errors": 0,
+   "byte_exact": true,
+   "compressed_bytes_all": 16716127,
+   "occ_err": "'cupy._core.raw.RawKernel' object has no attribute 'ptr'",
+   "m1": {
+    "us_median": 2190.335988998413,
+    "us_min": 2179.0719032287598,
+    "us_p90": 5582.643127441406,
+    "us_per_matrix": 2190.335988998413,
+    "us_per_record_equiv": 6571.007966995239,
+    "decoded_GiB_s": 2.5079093299343036,
+    "runs": 5
+   },
+   "m3": {
+    "us_median": 3841.0239219665527,
+    "us_min": 3835.9038829803467,
+    "us_p90": 5493.55525970459,
+    "us_per_matrix": 1280.3413073221843,
+    "us_per_record_equiv": 3841.0239219665527,
+    "decoded_GiB_s": 4.2903904069055425,
+    "runs": 5
+   },
+   "1rec_1streams": {
+    "us_median": 4004.86421585083,
+    "us_min": 3974.1439819335938,
+    "us_per_record": 4004.86421585083,
+    "decoded_GiB_s": 4.114869143946481
+   },
+   "multistream_verify_bad_streams": 0
+  },
+  "A/nt128": {
+   "alpha": 16,
+   "ctx": 0,
+   "ilv": 0,
+   "nt": 128,
+   "smem_bytes": 18160,
+   "regs": 40,
+   "local_bytes": 0,
+   "verified_streams": 17280,
+   "mismatching_streams": 0,
+   "invariant_errors": 0,
+   "byte_exact": true,
+   "compressed_bytes_all": 16716127,
+   "occ_err": "'cupy._core.raw.RawKernel' object has no attribute 'ptr'",
+   "m1": {
+    "us_median": 614.4000291824341,
+    "us_min": 612.3520135879517,
+    "us_p90": 614.4000291824341,
+    "us_per_matrix": 614.4000291824341,
+    "us_per_record_equiv": 1843.2000875473022,
+    "decoded_GiB_s": 8.940696291648308,
+    "runs": 5
+   },
+   "m3": {
+    "us_median": 958.4640264511108,
+    "us_min": 951.2959718704224,
+    "us_p90": 962.7647995948792,
+    "us_per_matrix": 319.4880088170369,
+    "us_per_record_equiv": 958.4640264511108,
+    "decoded_GiB_s": 17.193647056862787,
+    "runs": 5
+   },
+   "1rec_1streams": {
+    "us_median": 1055.616021156311,
+    "us_min": 1040.38405418396,
+    "us_per_record": 1055.616021156311,
+    "decoded_GiB_s": 15.611256230696966
+   },
+   "multistream_verify_bad_streams": 0
+  },
+  "A259/nt32": {
+   "alpha": 16,
+   "ctx": 1,
+   "ilv": 0,
+   "nt": 32,
+   "smem_bytes": 8304,
+   "regs": 74,
+   "local_bytes": 0,
+   "verified_streams": 17280,
+   "mismatching_streams": 0,
+   "invariant_errors": 0,
+   "byte_exact": true,
+   "compressed_bytes_all": 16716127,
+   "occ_err": "'cupy._core.raw.RawKernel' object has no attribute 'ptr'",
+   "m1": {
+    "us_median": 428.0320107936859,
+    "us_min": 428.0320107936859,
+    "us_p90": 1045.7087755203247,
+    "us_per_matrix": 428.0320107936859,
+    "us_per_record_equiv": 1284.0960323810577,
+    "decoded_GiB_s": 12.833535632800462,
+    "runs": 5
+   },
+   "m3": {
+    "us_median": 1024.0000486373901,
+    "us_min": 1007.6160430908203,
+    "us_p90": 1025.0240564346313,
+    "us_per_matrix": 341.3333495457967,
+    "us_per_record_equiv": 1024.0000486373901,
+    "decoded_GiB_s": 16.093253324966952,
+    "runs": 5
+   },
+   "1rec_1streams": {
+    "us_median": 1135.6480121612549,
+    "us_min": 1126.3359785079956,
+    "us_per_record": 1135.6480121612549,
+    "decoded_GiB_s": 14.511091474670778
+   },
+   "multistream_verify_bad_streams": 0
+  },
+  "A259/nt128": {
+   "alpha": 16,
+   "ctx": 1,
+   "ilv": 0,
+   "nt": 128,
+   "smem_bytes": 8304,
+   "regs": 40,
+   "local_bytes": 0,
+   "verified_streams": 17280,
+   "mismatching_streams": 0,
+   "invariant_errors": 0,
+   "byte_exact": true,
+   "compressed_bytes_all": 16716127,
+   "occ_err": "'cupy._core.raw.RawKernel' object has no attribute 'ptr'",
+   "m1": {
+    "us_median": 1383.4240436553955,
+    "us_min": 1380.3520202636719,
+    "us_p90": 3816.2432193756104,
+    "us_per_matrix": 1383.4240436553955,
+    "us_per_record_equiv": 4150.2721309661865,
+    "decoded_GiB_s": 3.970701599189729,
+    "runs": 5
+   },
+   "m3": {
+    "us_median": 3260.416030883789,
+    "us_min": 3256.319999694824,
+    "us_p90": 5847.8590965271,
+    "us_per_matrix": 1086.8053436279297,
+    "us_per_record_equiv": 3260.416030883789,
+    "decoded_GiB_s": 5.054413924910364,
+    "runs": 5
+   },
+   "1rec_1streams": {
+    "us_median": 3480.5760383605957,
+    "us_min": 3371.0079193115234,
+    "us_per_record": 3480.5760383605957,
+    "decoded_GiB_s": 4.734702533682354
+   },
+   "multistream_verify_bad_streams": 0
+  },
+  "B2/nt32": {
+   "alpha": 16,
+   "ctx": 0,
+   "ilv": 2,
+   "nt": 32,
+   "smem_bytes": 18160,
+   "regs": 113,
+   "local_bytes": 0,
+   "verified_streams": 17280,
+   "mismatching_streams": 0,
+   "invariant_errors": 0,
+   "byte_exact": true,
+   "compressed_bytes_all": 16776483,
+   "occ_err": "'cupy._core.raw.RawKernel' object has no attribute 'ptr'",
+   "m1": {
+    "us_median": 352.25600004196167,
+    "us_min": 351.23199224472046,
+    "us_p90": 547.430419921875,
+    "us_per_matrix": 352.25600004196167,
+    "us_per_record_equiv": 1056.768000125885,
+    "decoded_GiB_s": 15.594238456820152,
+    "runs": 5
+   },
+   "m3": {
+    "us_median": 1037.3120307922363,
+    "us_min": 1036.2880229949951,
+    "us_p90": 1210.5727910995483,
+    "us_per_matrix": 345.7706769307454,
+    "us_per_record_equiv": 1037.3120307922363,
+    "decoded_GiB_s": 15.886726171404721,
+    "runs": 5
+   },
+   "1rec_1streams": {
+    "us_median": 1159.0080261230469,
+    "us_min": 1130.4960250854492,
+    "us_per_record": 1159.0080261230469,
+    "decoded_GiB_s": 14.218617831858262
+   },
+   "multistream_verify_bad_streams": 0
+  },
+  "B2/nt128": {
+   "alpha": 16,
+   "ctx": 0,
+   "ilv": 2,
+   "nt": 128,
+   "smem_bytes": 18160,
+   "regs": 48,
+   "local_bytes": 0,
+   "verified_streams": 17280,
+   "mismatching_streams": 0,
+   "invariant_errors": 0,
+   "byte_exact": true,
+   "compressed_bytes_all": 16776483,
+   "occ_err": "'cupy._core.raw.RawKernel' object has no attribute 'ptr'",
+   "m1": {
+    "us_median": 486.4000082015991,
+    "us_min": 486.4000082015991,
+    "us_p90": 487.0143949985504,
+    "us_per_matrix": 486.4000082015991,
+    "us_per_record_equiv": 1459.2000246047974,
+    "decoded_GiB_s": 11.293511451223575,
+    "runs": 5
+   },
+   "m3": {
+    "us_median": 666.6240096092224,
+    "us_min": 663.5519862174988,
+    "us_p90": 1596.0063695907593,
+    "us_per_matrix": 222.20800320307413,
+    "us_per_record_equiv": 666.6240096092224,
+    "decoded_GiB_s": 24.72082005741189,
+    "runs": 5
+   },
+   "1rec_1streams": {
+    "us_median": 820.576012134552,
+    "us_min": 741.375982761383,
+    "us_per_record": 820.576012134552,
+    "decoded_GiB_s": 20.082834428259908
+   },
+   "multistream_verify_bad_streams": 0
+  },
+  "B2c/nt32": {
+   "alpha": 16,
+   "ctx": 1,
+   "ilv": 2,
+   "nt": 32,
+   "smem_bytes": 8304,
+   "regs": 112,
+   "local_bytes": 0,
+   "verified_streams": 17280,
+   "mismatching_streams": 0,
+   "invariant_errors": 0,
+   "byte_exact": true,
+   "compressed_bytes_all": 16776483,
+   "occ_err": "'cupy._core.raw.RawKernel' object has no attribute 'ptr'",
+   "m1": {
+    "us_median": 357.37600922584534,
+    "us_min": 357.37600922584534,
+    "us_p90": 358.39998722076416,
+    "us_per_matrix": 357.37600922584534,
+    "us_per_record_equiv": 1072.128027677536,
+    "decoded_GiB_s": 15.370824903438248,
+    "runs": 5
+   },
+   "m3": {
+    "us_median": 804.8639893531799,
+    "us_min": 802.8159737586975,
+    "us_p90": 807.1168065071106,
+    "us_per_matrix": 268.28799645106,
+    "us_per_record_equiv": 804.8639893531799,
+    "decoded_GiB_s": 20.474878247122927,
+    "runs": 5
+   },
+   "1rec_1streams": {
+    "us_median": 920.5759763717651,
+    "us_min": 907.263994216919,
+    "us_per_record": 920.5759763717651,
+    "decoded_GiB_s": 17.901284207361204
+   },
+   "multistream_verify_bad_streams": 0
+  },
+  "B2c/nt128": {
+   "alpha": 16,
+   "ctx": 1,
+   "ilv": 2,
+   "nt": 128,
+   "smem_bytes": 8304,
+   "regs": 48,
+   "local_bytes": 0,
+   "verified_streams": 17280,
+   "mismatching_streams": 0,
+   "invariant_errors": 0,
+   "byte_exact": true,
+   "compressed_bytes_all": 16776483,
+   "occ_err": "'cupy._core.raw.RawKernel' object has no attribute 'ptr'",
+   "m1": {
+    "us_median": 427.0080029964447,
+    "us_min": 424.9599874019623,
+    "us_p90": 1338.1632208824158,
+    "us_per_matrix": 427.0080029964447,
+    "us_per_record_equiv": 1281.024008989334,
+    "decoded_GiB_s": 12.864311731753975,
+    "runs": 5
+   },
+   "m3": {
+    "us_median": 595.9680080413818,
+    "us_min": 591.871976852417,
+    "us_p90": 597.1968173980713,
+    "us_per_matrix": 198.6560026804606,
+    "us_per_record_equiv": 595.9680080413818,
+    "decoded_GiB_s": 27.651638955686572,
+    "runs": 5
+   },
+   "1rec_1streams": {
+    "us_median": 867.3279881477356,
+    "us_min": 687.1039867401123,
+    "us_per_record": 867.3279881477356,
+    "decoded_GiB_s": 19.000300247076748
+   },
+   "multistream_verify_bad_streams": 0
+  },
+  "C/nt32": {
+   "alpha": 16,
+   "ctx": 2,
+   "ilv": 0,
+   "nt": 32,
+   "smem_bytes": 33184,
+   "regs": 74,
+   "local_bytes": 0,
+   "verified_streams": 17280,
+   "mismatching_streams": 0,
+   "invariant_errors": 0,
+   "byte_exact": true,
+   "compressed_bytes_all": 16693348,
+   "occ_err": "'cupy._core.raw.RawKernel' object has no attribute 'ptr'",
+   "m1": {
+    "us_median": 697.3440051078796,
+    "us_min": 696.3199973106384,
+    "us_p90": 698.9824175834656,
+    "us_per_matrix": 697.3440051078796,
+    "us_per_record_equiv": 2092.032015323639,
+    "decoded_GiB_s": 7.877265771647672,
+    "runs": 5
+   },
+   "m3": {
+    "us_median": 2066.431999206543,
+    "us_min": 2065.4079914093018,
+    "us_p90": 3088.793659210205,
+    "us_per_matrix": 688.810666402181,
+    "us_per_record_equiv": 2066.431999206543,
+    "decoded_GiB_s": 7.974853367460292,
+    "runs": 5
+   },
+   "1rec_1streams": {
+    "us_median": 2538.4318828582764,
+    "us_min": 2176.0001182556152,
+    "us_per_record": 2538.4318828582764,
+    "decoded_GiB_s": 6.491997007595129
+   },
+   "multistream_verify_bad_streams": 0
+  },
+  "C/nt128": {
+   "alpha": 16,
+   "ctx": 2,
+   "ilv": 0,
+   "nt": 128,
+   "smem_bytes": 33184,
+   "regs": 40,
+   "local_bytes": 0,
+   "verified_streams": 17280,
+   "mismatching_streams": 0,
+   "invariant_errors": 0,
+   "byte_exact": true,
+   "compressed_bytes_all": 16693348,
+   "occ_err": "'cupy._core.raw.RawKernel' object has no attribute 'ptr'",
+   "m1": {
+    "us_median": 501.76000595092773,
+    "us_min": 500.7359981536865,
+    "us_p90": 502.37441062927246,
+    "us_per_matrix": 501.76000595092773,
+    "us_per_record_equiv": 1505.2800178527832,
+    "decoded_GiB_s": 10.947791767678735,
+    "runs": 5
+   },
+   "m3": {
+    "us_median": 1083.3920240402222,
+    "us_min": 1082.368016242981,
+    "us_p90": 1720.9343433380127,
+    "us_per_matrix": 361.13067468007404,
+    "us_per_record_equiv": 1083.3920240402222,
+    "decoded_GiB_s": 15.21101486980135,
+    "runs": 5
+   },
+   "1rec_1streams": {
+    "us_median": 1302.8160333633423,
+    "us_min": 1268.5120105743408,
+    "us_per_record": 1302.8160333633423,
+    "decoded_GiB_s": 12.649132161013277
+   },
+   "multistream_verify_bad_streams": 0
+  },
+  "D/nt32": {
+   "alpha": 8,
+   "ctx": 1,
+   "ilv": 0,
+   "nt": 32,
+   "smem_bytes": 4160,
+   "regs": 76,
+   "local_bytes": 0,
+   "verified_streams": 17280,
+   "mismatching_streams": 0,
+   "invariant_errors": 0,
+   "byte_exact": true,
+   "compressed_bytes_all": 16716049,
+   "occ_err": "'cupy._core.raw.RawKernel' object has no attribute 'ptr'",
+   "m1": {
+    "us_median": 358.39998722076416,
+    "us_min": 357.37600922584534,
+    "us_p90": 359.42399501800537,
+    "us_per_matrix": 358.39998722076416,
+    "us_per_record_equiv": 1075.1999616622925,
+    "decoded_GiB_s": 15.326909203030658,
+    "runs": 5
+   },
+   "m3": {
+    "us_median": 924.67200756073,
+    "us_min": 923.6479997634888,
+    "us_p90": 926.7200231552124,
+    "us_per_matrix": 308.22400252024335,
+    "us_per_record_equiv": 924.67200756073,
+    "decoded_GiB_s": 17.821986664193112,
+    "runs": 5
+   },
+   "1rec_1streams": {
+    "us_median": 1016.7679786682129,
+    "us_min": 998.304009437561,
+    "us_per_record": 1016.7679786682129,
+    "decoded_GiB_s": 16.207721459801707
+   },
+   "multistream_verify_bad_streams": 0
+  },
+  "D/nt128": {
+   "alpha": 8,
+   "ctx": 1,
+   "ilv": 0,
+   "nt": 128,
+   "smem_bytes": 4160,
+   "regs": 40,
+   "local_bytes": 0,
+   "verified_streams": 17280,
+   "mismatching_streams": 0,
+   "invariant_errors": 0,
+   "byte_exact": true,
+   "compressed_bytes_all": 16716049,
+   "occ_err": "'cupy._core.raw.RawKernel' object has no attribute 'ptr'",
+   "m1": {
+    "us_median": 464.89599347114563,
+    "us_min": 463.8719856739044,
+    "us_p90": 1031.7824363708496,
+    "us_per_matrix": 464.89599347114563,
+    "us_per_record_equiv": 1394.687980413437,
+    "decoded_GiB_s": 11.815898909958966,
+    "runs": 5
+   },
+   "m3": {
+    "us_median": 915.4559969902039,
+    "us_min": 914.4319891929626,
+    "us_p90": 921.8048095703125,
+    "us_per_matrix": 305.1519989967346,
+    "us_per_record_equiv": 915.4559969902039,
+    "decoded_GiB_s": 18.00140284369817,
+    "runs": 5
+   },
+   "1rec_1streams": {
+    "us_median": 1069.0560340881348,
+    "us_min": 1034.2400074005127,
+    "us_per_record": 1069.0560340881348,
+    "decoded_GiB_s": 15.414993846937497
+   },
+   "multistream_verify_bad_streams": 0
+  }
+ }
+}

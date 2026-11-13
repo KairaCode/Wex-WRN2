@@ -1,0 +1,434 @@
+[
+ {
+  "checkpoint": "deepseek-ai/DeepSeek-V4.1-Flash-1017 (upstream, 4 kept + 8 pruned + 1 MTP)",
+  "file": "upstream_v41_1017.json",
+  "items": 13,
+  "weights": 460062720,
+  "blocks": 14376960,
+  "bmax_share_pct_code6_code7": [
+   45.2,
+   54.8
+  ],
+  "blocks_max_below_6": 0,
+  "even_pct": 29.415,
+  "even_pct_iid_expected": 0.75065,
+  "even_pct_per_item_min_max": [
+   19.687,
+   31.649
+  ],
+  "max6_without_1_3_blocks": 25,
+  "roundtrip_failures": 0,
+  "scale_overflow_255": 0,
+  "zero_pos_pct": 5.798,
+  "zero_neg_pct": 5.799,
+  "w_bpw_orig_in_ho": [
+   3.7996,
+   3.81527
+  ],
+  "w_bpw_ceil_in_ho": [
+   3.72395,
+   3.7294
+  ],
+  "w_ceil_delta_pct_ho": -2.2509,
+  "w_ceil_delta_pct_in": -1.991,
+  "w_ceil_z_delta_pct_ho": -5.2886,
+  "w_orig_z_delta_pct_ho": -3.0377,
+  "s_bps_orig_in_ho": [
+   1.3541,
+   1.8369
+  ],
+  "s_bps_ceil_in_ho": [
+   1.2947,
+   1.6698
+  ],
+  "record_delta_pct_of_raw_ho": -2.1436,
+  "ratio_est_orig_to_ceil_ho": [
+   0.91122,
+   0.88978
+  ]
+ },
+ {
+  "checkpoint": "deepseek-ai/DeepSeek-V4.1-Flash",
+  "file": "other_ds_v41flash.json",
+  "items": 4,
+  "weights": 141557760,
+  "blocks": 4423680,
+  "bmax_share_pct_code6_code7": [
+   46.994,
+   53.006
+  ],
+  "blocks_max_below_6": 0,
+  "even_pct": 29.54,
+  "even_pct_iid_expected": 0.78241,
+  "even_pct_per_item_min_max": [
+   26.453,
+   31.322
+  ],
+  "max6_without_1_3_blocks": 2,
+  "roundtrip_failures": 0,
+  "scale_overflow_255": 0,
+  "zero_pos_pct": 5.828,
+  "zero_neg_pct": 5.829,
+  "w_bpw_orig_in_ho": [
+   3.79906,
+   3.87797
+  ],
+  "w_bpw_ceil_in_ho": [
+   3.71049,
+   3.71401
+  ],
+  "w_ceil_delta_pct_ho": -4.2279,
+  "w_ceil_delta_pct_in": -2.3314,
+  "w_ceil_z_delta_pct_ho": -7.2317,
+  "w_orig_z_delta_pct_ho": -3.0013,
+  "s_bps_orig_in_ho": [
+   1.021,
+   1.0619
+  ],
+  "s_bps_ceil_in_ho": [
+   0.8908,
+   0.9241
+  ],
+  "record_delta_pct_of_raw_ho": -3.9592,
+  "ratio_est_orig_to_ceil_ho": [
+   0.92027,
+   0.88068
+  ]
+ },
+ {
+  "checkpoint": "deepseek-ai/DeepSeek-V4-Flash",
+  "file": "other_ds_v4flash.json",
+  "items": 8,
+  "weights": 201326592,
+  "blocks": 6291456,
+  "bmax_share_pct_code6_code7": [
+   55.943,
+   44.057
+  ],
+  "blocks_max_below_6": 0,
+  "even_pct": 25.9823,
+  "even_pct_iid_expected": 0.80785,
+  "even_pct_per_item_min_max": [
+   17.685,
+   28.379
+  ],
+  "max6_without_1_3_blocks": 10,
+  "roundtrip_failures": 0,
+  "scale_overflow_255": 0,
+  "zero_pos_pct": 5.789,
+  "zero_neg_pct": 5.788,
+  "w_bpw_orig_in_ho": [
+   3.75363,
+   3.75429
+  ],
+  "w_bpw_ceil_in_ho": [
+   3.7145,
+   3.71515
+  ],
+  "w_ceil_delta_pct_ho": -1.0423,
+  "w_ceil_delta_pct_in": -1.0423,
+  "w_ceil_z_delta_pct_ho": -4.1239,
+  "w_orig_z_delta_pct_ho": -3.0816,
+  "s_bps_orig_in_ho": [
+   1.0027,
+   1.0062
+  ],
+  "s_bps_ceil_in_ho": [
+   0.6908,
+   0.6932
+  ],
+  "record_delta_pct_of_raw_ho": -1.1509,
+  "ratio_est_orig_to_ceil_ho": [
+   0.89076,
+   0.87925
+  ]
+ },
+ {
+  "checkpoint": "deepseek-ai/DeepSeek-V4-Pro",
+  "file": "other_ds_v4pro.json",
+  "items": 4,
+  "weights": 264241152,
+  "blocks": 8257536,
+  "bmax_share_pct_code6_code7": [
+   59.61,
+   40.39
+  ],
+  "blocks_max_below_6": 0,
+  "even_pct": 23.8916,
+  "even_pct_iid_expected": 0.64873,
+  "even_pct_per_item_min_max": [
+   19.514,
+   25.809
+  ],
+  "max6_without_1_3_blocks": 7,
+  "roundtrip_failures": 0,
+  "scale_overflow_255": 0,
+  "zero_pos_pct": 5.751,
+  "zero_neg_pct": 5.753,
+  "w_bpw_orig_in_ho": [
+   3.74822,
+   3.74933
+  ],
+  "w_bpw_ceil_in_ho": [
+   3.71745,
+   3.71859
+  ],
+  "w_ceil_delta_pct_ho": -0.82,
+  "w_ceil_delta_pct_in": -0.8208,
+  "w_ceil_z_delta_pct_ho": -3.8858,
+  "w_orig_z_delta_pct_ho": -3.0658,
+  "s_bps_orig_in_ho": [
+   0.9549,
+   0.962
+  ],
+  "s_bps_ceil_in_ho": [
+   0.5965,
+   0.6015
+  ],
+  "record_delta_pct_of_raw_ho": -0.9885,
+  "ratio_est_orig_to_ceil_ho": [
+   0.88927,
+   0.87938
+  ]
+ },
+ {
+  "checkpoint": "openai/gpt-oss-20b",
+  "file": "other_gptoss20.json",
+  "items": 12,
+  "weights": 298598400,
+  "blocks": 9331200,
+  "bmax_share_pct_code6_code7": [
+   51.997,
+   48.003
+  ],
+  "blocks_max_below_6": 0,
+  "even_pct": 21.9422,
+  "even_pct_iid_expected": 0.1103,
+  "even_pct_per_item_min_max": [
+   19.982,
+   23.493
+  ],
+  "max6_without_1_3_blocks": 41,
+  "roundtrip_failures": 0,
+  "scale_overflow_255": 0,
+  "zero_pos_pct": 6.404,
+  "zero_neg_pct": 6.41,
+  "w_bpw_orig_in_ho": [
+   3.82926,
+   3.83115
+  ],
+  "w_bpw_ceil_in_ho": [
+   3.75868,
+   3.75973
+  ],
+  "w_ceil_delta_pct_ho": -1.8644,
+  "w_ceil_delta_pct_in": -1.8432,
+  "w_ceil_z_delta_pct_ho": -5.2069,
+  "w_orig_z_delta_pct_ho": -3.3426,
+  "s_bps_orig_in_ho": [
+   3.2777,
+   3.3254
+  ],
+  "s_bps_ceil_in_ho": [
+   3.2745,
+   3.3164
+  ],
+  "record_delta_pct_of_raw_ho": -1.6873,
+  "ratio_est_orig_to_ceil_ho": [
+   0.9259,
+   0.90903
+  ]
+ },
+ {
+  "checkpoint": "openai/gpt-oss-120b",
+  "file": "other_gptoss120.json",
+  "items": 12,
+  "weights": 298598400,
+  "blocks": 9331200,
+  "bmax_share_pct_code6_code7": [
+   51.372,
+   48.628
+  ],
+  "blocks_max_below_6": 0,
+  "even_pct": 21.363,
+  "even_pct_iid_expected": 0.10227,
+  "even_pct_per_item_min_max": [
+   19.414,
+   23.652
+  ],
+  "max6_without_1_3_blocks": 13,
+  "roundtrip_failures": 0,
+  "scale_overflow_255": 0,
+  "zero_pos_pct": 6.455,
+  "zero_neg_pct": 6.458,
+  "w_bpw_orig_in_ho": [
+   3.83563,
+   3.83913
+  ],
+  "w_bpw_ceil_in_ho": [
+   3.76202,
+   3.76375
+  ],
+  "w_ceil_delta_pct_ho": -1.9635,
+  "w_ceil_delta_pct_in": -1.9193,
+  "w_ceil_z_delta_pct_ho": -5.3247,
+  "w_orig_z_delta_pct_ho": -3.3612,
+  "s_bps_orig_in_ho": [
+   2.9543,
+   3.0253
+  ],
+  "s_bps_ceil_in_ho": [
+   2.9866,
+   3.0554
+  ],
+  "record_delta_pct_of_raw_ho": -1.7515,
+  "ratio_est_orig_to_ceil_ho": [
+   0.92557,
+   0.90805
+  ]
+ },
+ {
+  "checkpoint": "amd/gpt-oss-120b-w-mxfp4-a-fp8 (Quark PTQ of gpt-oss-120b)",
+  "file": "other_amd_gptoss120.json",
+  "items": 6,
+  "weights": 149299200,
+  "blocks": 4665600,
+  "bmax_share_pct_code6_code7": [
+   51.576,
+   48.424
+  ],
+  "blocks_max_below_6": 0,
+  "even_pct": 21.5001,
+  "even_pct_iid_expected": 0.1106,
+  "even_pct_per_item_min_max": [
+   19.886,
+   23.583
+  ],
+  "max6_without_1_3_blocks": 7,
+  "roundtrip_failures": 0,
+  "scale_overflow_255": 0,
+  "zero_pos_pct": 13.725,
+  "zero_neg_pct": 0.0,
+  "w_bpw_orig_in_ho": [
+   3.69826,
+   3.70699
+  ],
+  "w_bpw_ceil_in_ho": [
+   3.62464,
+   3.62971
+  ],
+  "w_ceil_delta_pct_ho": -2.0849,
+  "w_ceil_delta_pct_in": -1.9906,
+  "w_ceil_z_delta_pct_ho": -2.0849,
+  "w_orig_z_delta_pct_ho": 0.0,
+  "s_bps_orig_in_ho": [
+   2.6974,
+   2.8417
+  ],
+  "s_bps_ceil_in_ho": [
+   2.7197,
+   2.8541
+  ],
+  "record_delta_pct_of_raw_ho": -1.8095,
+  "ratio_est_orig_to_ceil_ho": [
+   0.89313,
+   0.87503
+  ]
+ },
+ {
+  "checkpoint": "amd/DeepSeek-R1-0528-MXFP4 (Quark PTQ from FP8)",
+  "file": "other_amd_r1.json",
+  "items": 6,
+  "weights": 264241152,
+  "blocks": 8257536,
+  "bmax_share_pct_code6_code7": [
+   57.268,
+   42.732
+  ],
+  "blocks_max_below_6": 0,
+  "even_pct": 0.0049,
+  "even_pct_iid_expected": 0.00123,
+  "even_pct_per_item_min_max": [
+   0.001,
+   0.008
+  ],
+  "max6_without_1_3_blocks": 11,
+  "roundtrip_failures": 0,
+  "scale_overflow_255": 0,
+  "zero_pos_pct": 11.379,
+  "zero_neg_pct": 0.0,
+  "w_bpw_orig_in_ho": [
+   3.72555,
+   3.74961
+  ],
+  "w_bpw_ceil_in_ho": [
+   3.72554,
+   3.7496
+  ],
+  "w_ceil_delta_pct_ho": -0.0004,
+  "w_ceil_delta_pct_in": -0.0003,
+  "w_ceil_z_delta_pct_ho": -0.0004,
+  "w_orig_z_delta_pct_ho": 0.0,
+  "s_bps_orig_in_ho": [
+   1.7937,
+   2.0537
+  ],
+  "s_bps_ceil_in_ho": [
+   1.7937,
+   2.0537
+  ],
+  "record_delta_pct_of_raw_ho": -0.0003,
+  "ratio_est_orig_to_ceil_ho": [
+   0.89736,
+   0.89736
+  ]
+ },
+ {
+  "checkpoint": "RedHatAI/GLM-5.3-MXFP4 (llm-compressor PTQ)",
+  "file": "other_rh_glm53.json",
+  "items": 6,
+  "weights": 226492416,
+  "blocks": 7077888,
+  "bmax_share_pct_code6_code7": [
+   54.295,
+   45.705
+  ],
+  "blocks_max_below_6": 0,
+  "even_pct": 0.0034,
+  "even_pct_iid_expected": 0.0006,
+  "even_pct_per_item_min_max": [
+   0.002,
+   0.005
+  ],
+  "max6_without_1_3_blocks": 19,
+  "roundtrip_failures": 0,
+  "scale_overflow_255": 0,
+  "zero_pos_pct": 5.148,
+  "zero_neg_pct": 5.146,
+  "w_bpw_orig_in_ho": [
+   3.85088,
+   3.86872
+  ],
+  "w_bpw_ceil_in_ho": [
+   3.85087,
+   3.86871
+  ],
+  "w_ceil_delta_pct_ho": -0.0001,
+  "w_ceil_delta_pct_in": -0.0001,
+  "w_ceil_z_delta_pct_ho": -2.6147,
+  "w_orig_z_delta_pct_ho": -2.6146,
+  "s_bps_orig_in_ho": [
+   0.762,
+   0.9189
+  ],
+  "s_bps_ceil_in_ho": [
+   0.762,
+   0.9189
+  ],
+  "record_delta_pct_of_raw_ho": -0.0002,
+  "ratio_est_orig_to_ceil_ho": [
+   0.91704,
+   0.91704
+  ]
+ }
+]

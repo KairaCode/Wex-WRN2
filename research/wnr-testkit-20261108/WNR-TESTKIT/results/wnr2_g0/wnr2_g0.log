@@ -1,0 +1,344 @@
+[     0.1s] == wnr2_g0 (full) root=<KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT out=<KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\results\wnr2_g0 jobs=15
+[     0.1s] environment {"os": "Windows-11-10.0.26300-SP0", "system": "Windows", "machine": "AMD64", "cpu": "AMD Ryzen 9 7950X3D 16-Core Processor", "logical_cpus": 32, "ram_gb": 31.2, "gpu": ["NVIDIA GeForce RTX 5090, 621.01, 32607 MiB, 12.0"], "python": "3.14.8", "python_impl": "CPython", "numpy": "2.5.4", "cupy": {"cupy-cuda12x": "14.2.0"}, "nvrtc": {"nvidia-cuda-nvrtc-cu12": "12.9.86"}}
+[     0.2s] sample dir <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\data\v41-sample: 160/160 experts present, manifest = kit
+[     0.2s] counts: 80 experts (cache <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\results\_cache\cpu_counts)
+[     0.5s] count 1/80 done (0s)
+[     0.5s] count 2/80 done (0s)
+[     0.5s] count 3/80 done (0s)
+[     0.5s] count 4/80 done (0s)
+[     0.5s] count 5/80 done (0s)
+[     0.5s] count 6/80 done (0s)
+[     0.5s] count 7/80 done (0s)
+[     0.5s] count 8/80 done (0s)
+[     0.5s] count 9/80 done (0s)
+[     0.5s] count 10/80 done (0s)
+[     0.5s] count 11/80 done (0s)
+[     0.5s] count 12/80 done (0s)
+[     0.5s] count 13/80 done (0s)
+[     0.5s] count 14/80 done (0s)
+[     0.5s] count 15/80 done (0s)
+[     0.5s] count 16/80 done (0s)
+[     0.5s] count 17/80 done (0s)
+[     0.5s] count 18/80 done (0s)
+[     0.5s] count 19/80 done (0s)
+[     0.5s] count 20/80 done (0s)
+[     0.5s] count 21/80 done (0s)
+[     0.5s] count 22/80 done (0s)
+[     0.5s] count 23/80 done (0s)
+[     0.5s] count 24/80 done (0s)
+[     0.5s] count 25/80 done (0s)
+[     0.5s] count 26/80 done (0s)
+[     0.5s] count 27/80 done (0s)
+[     0.6s] count 28/80 done (0s)
+[     0.6s] count 29/80 done (0s)
+[     0.6s] count 30/80 done (0s)
+[     0.6s] count 31/80 done (0s)
+[     0.6s] count 32/80 done (0s)
+[     0.6s] count 33/80 done (0s)
+[     0.6s] count 34/80 done (0s)
+[     0.6s] count 35/80 done (0s)
+[     0.6s] count 36/80 done (0s)
+[     0.6s] count 37/80 done (0s)
+[     0.6s] count 38/80 done (0s)
+[     0.6s] count 39/80 done (0s)
+[     0.6s] count 40/80 done (0s)
+[     0.6s] count 41/80 done (0s)
+[     0.6s] count 42/80 done (0s)
+[     0.6s] count 43/80 done (0s)
+[     0.6s] count 44/80 done (0s)
+[     0.6s] count 45/80 done (0s)
+[     0.6s] count 46/80 done (0s)
+[     0.6s] count 47/80 done (0s)
+[     0.6s] count 48/80 done (0s)
+[     0.6s] count 49/80 done (0s)
+[     0.6s] count 50/80 done (0s)
+[     0.6s] count 51/80 done (0s)
+[     0.6s] count 52/80 done (0s)
+[     0.6s] count 53/80 done (0s)
+[     0.6s] count 54/80 done (0s)
+[     0.6s] count 55/80 done (0s)
+[     0.6s] count 56/80 done (0s)
+[     0.6s] count 57/80 done (0s)
+[     0.6s] count 58/80 done (0s)
+[     0.6s] count 59/80 done (0s)
+[     0.6s] count 60/80 done (0s)
+[     0.6s] count 61/80 done (0s)
+[     0.6s] count 62/80 done (0s)
+[     0.6s] count 63/80 done (0s)
+[     0.6s] count 64/80 done (0s)
+[     0.6s] count 65/80 done (0s)
+[     0.6s] count 66/80 done (0s)
+[     0.6s] count 67/80 done (0s)
+[     0.6s] count 68/80 done (0s)
+[     0.6s] count 69/80 done (0s)
+[     0.6s] count 70/80 done (0s)
+[     0.6s] count 71/80 done (0s)
+[     0.6s] count 72/80 done (0s)
+[     0.6s] count 73/80 done (0s)
+[     0.6s] count 74/80 done (0s)
+[     0.6s] count 75/80 done (0s)
+[     0.6s] count 76/80 done (0s)
+[     0.6s] count 77/80 done (0s)
+[     0.6s] count 78/80 done (0s)
+[     0.6s] count 79/80 done (0s)
+[     0.6s] count 80/80 done (0s)
+[     0.7s] check train_sources_sha256: ok 80/80
+[     0.7s] model med: anchor census {'w1=120': 79, 'w2=120': 75, 'w3=120': 76, 'w3=121': 4, 'w1=121': 1, 'w2=121': 5}
+[     0.7s] model c120: anchor census {'w1=120': 80, 'w2=120': 80, 'w3=120': 80}
+[     0.7s] model pair: anchor census {'w1=120': 80, 'w2=120': 80, 'w3=120': 80}
+[     0.7s] check models_equal_reference: ok {'med': {'wf': True, 'scf': True}, 'med_vs_ceilref_wnr2': {'wf': True, 'scf': True}, 'c120': {'wf': True, 'scf': True}, 'pair': {'wf': True, 'scf': True}}
+[     0.7s] model med: id 0xfc992a63, blob <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\results\wnr2_g0\med.wnm2
+[     0.7s] model c120: id 0x750c0967, blob <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\results\wnr2_g0\c120.wnm2
+[     0.7s] model pair: id 0x750c0967, blob <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\results\wnr2_g0\pair.wnm2
+[     0.7s] check model_ids_equal_team5: ok {'here': {'med': 4237896291, 'c120': 1963723111, 'pair': 1963723111}, 'ref': {'med': 4237896291, 'c120': 1963723111, 'pair': 1963723111, 'c119': 1638005140, 'c121': 3267482558}}
+[     0.7s] 40 experts x 3 rules = 120 records on 15 workers
+[     6.6s] record 1/120 done (6s)
+[     6.6s] L00_E113.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16887808 D1 True D2 True
+[     7.0s] record 2/120 done (6s)
+[     7.0s] L00_E113.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16883712 D1 True D2 True
+[     7.3s] record 3/120 done (7s)
+[     7.3s] L00_E113.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16883712 D1 True D2 True
+[     7.6s] record 4/120 done (7s)
+[     7.6s] L01_E187.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16891904 D1 True D2 True
+[     8.0s] record 5/120 done (7s)
+[     8.0s] L01_E187.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16887808 D1 True D2 True
+[     8.3s] record 6/120 done (8s)
+[     8.3s] L01_E187.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16887808 D1 True D2 True
+[     8.8s] record 7/120 done (8s)
+[     8.8s] L02_E062.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16863232 D1 True D2 True
+[     9.1s] record 8/120 done (8s)
+[     9.1s] L02_E062.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16859136 D1 True D2 True
+[     9.2s] record 9/120 done (8s)
+[     9.2s] L02_E062.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16859136 D1 True D2 True
+[     9.4s] record 10/120 done (9s)
+[     9.4s] L03_E142.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16826368 D1 True D2 True
+[     9.8s] record 11/120 done (9s)
+[     9.8s] L03_E142.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16818176 D1 True D2 True
+[    10.2s] record 12/120 done (9s)
+[    10.2s] L03_E142.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16818176 D1 True D2 True
+[    10.7s] record 13/120 done (10s)
+[    10.8s] L04_E038.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16863232 D1 True D2 True
+[    10.8s] record 14/120 done (10s)
+[    10.8s] L04_E038.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16859136 D1 True D2 True
+[    11.1s] record 15/120 done (10s)
+[    11.1s] L04_E038.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16859136 D1 True D2 True
+[    13.2s] record 16/120 done (12s)
+[    13.2s] L05_E084.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16838656 D1 True D2 True
+[    13.6s] record 17/120 done (13s)
+[    13.6s] L05_E084.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16830464 D1 True D2 True
+[    14.0s] record 18/120 done (13s)
+[    14.2s] L05_E084.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16830464 D1 True D2 True
+[    14.3s] record 19/120 done (14s)
+[    14.3s] L06_E073.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16850944 D1 True D2 True
+[    14.7s] record 20/120 done (14s)
+[    14.7s] L06_E073.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16846848 D1 True D2 True
+[    15.0s] record 21/120 done (14s)
+[    15.0s] L06_E073.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16846848 D1 True D2 True
+[    15.4s] record 22/120 done (15s)
+[    15.4s] L07_E167.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16863232 D1 True D2 True
+[    15.8s] record 23/120 done (15s)
+[    15.8s] L07_E167.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16855040 D1 True D2 True
+[    16.0s] record 24/120 done (15s)
+[    16.0s] L07_E167.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16855040 D1 True D2 True
+[    16.1s] record 25/120 done (15s)
+[    16.1s] L08_E019.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16826368 D1 True D2 True
+[    16.5s] record 26/120 done (16s)
+[    16.5s] L08_E019.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16822272 D1 True D2 True
+[    17.0s] record 27/120 done (16s)
+[    17.0s] L08_E019.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16822272 D1 True D2 True
+[    17.4s] record 28/120 done (17s)
+[    17.4s] L09_E160.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16891904 D1 True D2 True
+[    17.5s] record 29/120 done (17s)
+[    17.5s] L09_E160.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16891904 D1 True D2 True
+[    17.8s] record 30/120 done (17s)
+[    17.8s] L09_E160.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16891904 D1 True D2 True
+[    19.9s] record 31/120 done (19s)
+[    19.9s] L10_E060.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16908288 D1 True D2 True
+[    20.0s] record 32/120 done (19s)
+[    20.0s] L10_E060.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16904192 D1 True D2 True
+[    20.6s] record 33/120 done (20s)
+[    20.6s] L10_E060.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16904192 D1 True D2 True
+[    20.9s] record 34/120 done (20s)
+[    20.9s] L11_E132.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16875520 D1 True D2 True
+[    21.3s] record 35/120 done (21s)
+[    21.3s] L11_E132.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16871424 D1 True D2 True
+[    21.7s] record 36/120 done (21s)
+[    21.8s] L11_E132.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16871424 D1 True D2 True
+[    22.0s] record 37/120 done (21s)
+[    22.0s] L12_E034.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16896000 D1 True D2 True
+[    22.5s] record 38/120 done (22s)
+[    22.5s] L12_E034.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16891904 D1 True D2 True
+[    22.5s] record 39/120 done (22s)
+[    22.5s] L12_E034.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16891904 D1 True D2 True
+[    22.9s] record 40/120 done (22s)
+[    22.9s] L13_E167.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16904192 D1 True D2 True
+[    23.0s] record 41/120 done (22s)
+[    23.0s] L13_E167.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16900096 D1 True D2 True
+[    23.6s] record 42/120 done (23s)
+[    23.6s] L13_E167.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16900096 D1 True D2 True
+[    23.9s] record 43/120 done (23s)
+[    23.9s] L14_E135.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16900096 D1 True D2 True
+[    23.9s] record 44/120 done (23s)
+[    23.9s] L14_E135.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16900096 D1 True D2 True
+[    24.2s] record 45/120 done (23s)
+[    24.2s] L14_E135.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16900096 D1 True D2 True
+[    25.7s] record 46/120 done (25s)
+[    25.7s] L15_E156.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16867328 D1 True D2 True
+[    25.9s] record 47/120 done (25s)
+[    25.9s] L15_E156.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16859136 D1 True D2 True
+[    26.3s] record 48/120 done (26s)
+[    26.3s] L15_E156.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16859136 D1 True D2 True
+[    26.7s] record 49/120 done (26s)
+[    26.7s] L16_E034.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16941056 D1 True D2 True
+[    26.8s] record 50/120 done (26s)
+[    26.8s] L16_E034.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16941056 D1 True D2 True
+[    27.2s] record 51/120 done (26s)
+[    27.2s] L16_E034.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16941056 D1 True D2 True
+[    27.6s] record 52/120 done (27s)
+[    27.6s] L17_E123.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16936960 D1 True D2 True
+[    28.0s] record 53/120 done (27s)
+[    28.0s] L17_E123.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16932864 D1 True D2 True
+[    28.2s] record 54/120 done (27s)
+[    28.2s] L17_E123.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16932864 D1 True D2 True
+[    28.6s] record 55/120 done (28s)
+[    28.6s] L18_E081.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16928768 D1 True D2 True
+[    28.7s] record 56/120 done (28s)
+[    28.7s] L18_E081.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16924672 D1 True D2 True
+[    29.2s] record 57/120 done (28s)
+[    29.2s] L18_E081.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16924672 D1 True D2 True
+[    29.4s] record 58/120 done (29s)
+[    29.4s] L19_E180.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16916480 D1 True D2 True
+[    29.5s] record 59/120 done (29s)
+[    29.5s] L19_E180.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16916480 D1 True D2 True
+[    29.8s] record 60/120 done (29s)
+[    29.8s] L19_E180.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16916480 D1 True D2 True
+[    31.0s] record 61/120 done (30s)
+[    31.0s] L20_E074.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16920576 D1 True D2 True
+[    31.5s] record 62/120 done (31s)
+[    31.5s] L20_E074.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16916480 D1 True D2 True
+[    31.7s] record 63/120 done (31s)
+[    31.7s] L20_E074.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16916480 D1 True D2 True
+[    32.2s] record 64/120 done (31s)
+[    32.2s] L21_E072.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16900096 D1 True D2 True
+[    32.3s] record 65/120 done (32s)
+[    32.3s] L21_E072.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16904192 D1 True D2 True
+[    32.8s] record 66/120 done (32s)
+[    32.8s] L21_E072.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16900096 D1 True D2 True
+[    33.2s] record 67/120 done (32s)
+[    33.2s] L22_E059.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16875520 D1 True D2 True
+[    33.5s] record 68/120 done (33s)
+[    33.6s] L22_E059.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16871424 D1 True D2 True
+[    33.7s] record 69/120 done (33s)
+[    33.7s] L22_E059.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16871424 D1 True D2 True
+[    34.1s] record 70/120 done (33s)
+[    34.1s] L23_E178.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16830464 D1 True D2 True
+[    34.2s] record 71/120 done (33s)
+[    34.2s] L23_E178.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16834560 D1 True D2 True
+[    34.5s] record 72/120 done (34s)
+[    34.5s] L23_E178.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16830464 D1 True D2 True
+[    35.1s] record 73/120 done (34s)
+[    35.1s] L24_E058.bin med   anchors [120, 121, 120] med [120, 121, 120] total 17297408 D1 True D2 True
+[    36.3s] record 74/120 done (36s)
+[    36.3s] L25_E166.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16879616 D1 True D2 True
+[    36.9s] record 75/120 done (36s)
+[    36.9s] L25_E166.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16875520 D1 True D2 True
+[    37.3s] record 76/120 done (37s)
+[    37.3s] L25_E166.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16875520 D1 True D2 True
+[    37.7s] record 77/120 done (37s)
+[    37.7s] L26_E077.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16838656 D1 True D2 True
+[    38.0s] record 78/120 done (37s)
+[    38.0s] L26_E077.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16830464 D1 True D2 True
+[    38.1s] record 79/120 done (37s)
+[    38.1s] L26_E077.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16830464 D1 True D2 True
+[    38.6s] record 80/120 done (38s)
+[    38.6s] L27_E152.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16891904 D1 True D2 True
+[    38.9s] record 81/120 done (38s)
+[    38.9s] L27_E152.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16887808 D1 True D2 True
+[    39.2s] record 82/120 done (38s)
+[    39.2s] L27_E152.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16887808 D1 True D2 True
+[    39.6s] record 83/120 done (39s)
+[    39.6s] L28_E089.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16867328 D1 True D2 True
+[    39.7s] record 84/120 done (39s)
+[    39.7s] L24_E058.bin c120  anchors [120, 120, 120] med [120, 121, 120] total 17055744 D1 True D2 True R1 weight streams failed: 5760
+[    39.8s] record 85/120 done (39s)
+[    39.8s] L28_E089.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16863232 D1 True D2 True
+[    40.0s] record 86/120 done (39s)
+[    40.0s] L28_E089.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16863232 D1 True D2 True
+[    40.1s] record 87/120 done (39s)
+[    40.1s] L24_E058.bin pair  anchors [120, 120, 120] med [120, 121, 120] total 17055744 D1 True D2 True R1 weight streams failed: 5760
+[    40.8s] record 88/120 done (40s)
+[    40.8s] L29_E190.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16826368 D1 True D2 True
+[    42.0s] record 89/120 done (41s)
+[    42.0s] L29_E190.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16818176 D1 True D2 True
+[    42.7s] record 90/120 done (42s)
+[    42.8s] L29_E190.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16818176 D1 True D2 True
+[    43.1s] record 91/120 done (42s)
+[    43.1s] L30_E054.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16846848 D1 True D2 True
+[    43.2s] record 92/120 done (42s)
+[    43.2s] L30_E054.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16838656 D1 True D2 True
+[    43.6s] record 93/120 done (43s)
+[    43.7s] L30_E054.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16838656 D1 True D2 True
+[    43.9s] record 94/120 done (43s)
+[    43.9s] L31_E171.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16846848 D1 True D2 True
+[    44.3s] record 95/120 done (44s)
+[    44.3s] L31_E171.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16842752 D1 True D2 True
+[    44.6s] record 96/120 done (44s)
+[    44.6s] L31_E171.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16842752 D1 True D2 True
+[    45.1s] record 97/120 done (44s)
+[    45.1s] L32_E148.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16850944 D1 True D2 True
+[    45.2s] record 98/120 done (44s)
+[    45.2s] L32_E148.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16842752 D1 True D2 True
+[    45.4s] record 99/120 done (45s)
+[    45.4s] L33_E188.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16814080 D1 True D2 True
+[    45.6s] record 100/120 done (45s)
+[    45.6s] L32_E148.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16842752 D1 True D2 True
+[    45.9s] record 101/120 done (45s)
+[    45.9s] L33_E188.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16805888 D1 True D2 True
+[    46.1s] record 102/120 done (45s)
+[    46.1s] L33_E188.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16805888 D1 True D2 True
+[    46.5s] record 103/120 done (46s)
+[    46.5s] L34_E078.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16842752 D1 True D2 True
+[    47.7s] record 104/120 done (47s)
+[    47.7s] L34_E078.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16834560 D1 True D2 True
+[    48.8s] record 105/120 done (48s)
+[    48.8s] L34_E078.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16834560 D1 True D2 True
+[    49.2s] record 106/120 done (48s)
+[    49.4s] L35_E173.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16859136 D1 True D2 True
+[    49.4s] record 107/120 done (49s)
+[    49.4s] L35_E173.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16855040 D1 True D2 True
+[    49.9s] record 108/120 done (49s)
+[    50.0s] L35_E173.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16855040 D1 True D2 True
+[    50.0s] record 109/120 done (49s)
+[    50.0s] L36_E107.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16830464 D1 True D2 True
+[    50.5s] record 110/120 done (50s)
+[    50.5s] L36_E107.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16826368 D1 True D2 True
+[    50.7s] record 111/120 done (50s)
+[    50.7s] L36_E107.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16826368 D1 True D2 True
+[    51.3s] record 112/120 done (51s)
+[    51.4s] L37_E177.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16867328 D1 True D2 True
+[    51.4s] record 113/120 done (51s)
+[    51.4s] L37_E177.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16875520 D1 True D2 True
+[    51.7s] record 114/120 done (51s)
+[    51.7s] L38_E005.bin med   anchors [120, 121, 121] med [120, 121, 121] total 17252352 D1 True D2 True
+[    51.9s] record 115/120 done (51s)
+[    51.9s] L37_E177.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16867328 D1 True D2 True
+[    52.1s] record 116/120 done (51s)
+[    52.1s] L39_E156.bin med   anchors [121, 121, 121] med [121, 121, 121] total 17563648 D1 True D2 True
+[    56.7s] record 117/120 done (56s)
+[    56.7s] L38_E005.bin pair  anchors [120, 120, 120] med [120, 121, 121] total 16797696 D1 True D2 True R1 weight streams failed: 11520
+[    56.8s] record 118/120 done (56s)
+[    56.8s] L38_E005.bin c120  anchors [120, 120, 120] med [120, 121, 121] total 16797696 D1 True D2 True R1 weight streams failed: 11520
+[    58.0s] record 119/120 done (57s)
+[    58.0s] L39_E156.bin c120  anchors [120, 120, 120] med [121, 121, 121] total 16977920 D1 True D2 True R1 weight streams failed: 17280
+[    58.7s] record 120/120 done (58s)
+[    58.7s] L39_E156.bin pair  anchors [120, 120, 120] med [121, 121, 121] total 16977920 D1 True D2 True R1 weight streams failed: 17280
+[    58.8s] med   total   16909926.4 ratio 0.89943 anchors!=med 0 D1 40/40 D2 40/40
+[    58.8s] c120  total   16873369.6 ratio 0.89749 anchors!=med 6 D1 40/40 D2 40/40 vs med -0.1944% CI -0.4096..-0.0256
+[    58.8s] pair  total   16873369.6 ratio 0.89749 anchors!=med 6 D1 40/40 D2 40/40 vs med -0.1944% CI -0.4096..-0.0261
+[    58.8s] check sources_sha256: ok
+[    58.8s] check headers_carry_rule_anchors: ok
+[    58.8s] check plain_wnr2_decoders_byte_exact: ok []
+[    58.8s] check rederive_never_silent_wrong (R1): ok []
+[    58.9s] check records_identical_to_team5 (sha256): ok {'compared': 120, 'mismatch': []}
+[    58.9s] summary <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\results\wnr2_g0\summary.json
+RESULT wnr2_g0 PASS 40 experts; c120 -0.194%raw vs med (6 anchor mismatches); pair -0.194%raw vs med (6 anchor mismatches)

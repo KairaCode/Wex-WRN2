@@ -1,0 +1,110 @@
+w3-smoke-A-wex1: READY 16.82 s, avail RAM 15.5 GB, RAM_GB 16, logits c6e4044f8f956e66, disk reads/fwd 202.8 (4868 host + 0 direct), 3.81 GB/fwd, 92 GB
+   w0          16 tok  2.130 tok/s TTFT    4.21 nonVRAM  76.6 wait  294.0 gpu 100.3 attn  43.8 hc 21.1 head   1.4 p50  510.0 p90  567.8 host-hit  33.9%
+   wexprof demand: {'batched': {'batches': 0.0, 'reserved': 0.0, 'published': 0.0, 'per_batch': 0.0, 'read_ms': 0.0, 'decode_ms': 0.0, 'decode_ms_per_record': 0.0}, 'per_record': {'loads': 0.0, 'read_ms': 0.0, 'decode_ms': 0.0, 'read_ms_per_record': 0.0, 'decode_ms_per_record': 0.0}}
+   wexprof prefetch: {'batched': {'batches': 0.0, 'reserved': 0.0, 'published': 0.0, 'per_batch': 0.0, 'read_ms': 0.0, 'decode_ms': 0.0, 'decode_ms_per_record': 0.0}, 'per_record': {'loads': 0.0, 'read_ms': 0.0, 'decode_ms': 0.0, 'read_ms_per_record': 0.0, 'decode_ms_per_record': 0.0}}
+w3-smoke-B-wnr2: READY 18.27 s, avail RAM 19.2 GB, RAM_GB 16, logits c6e4044f8f956e66, disk reads/fwd 208.1 (2954 host + 2040 direct), 3.52 GB/fwd, 84 GB
+   w0          16 tok  2.231 tok/s TTFT    4.46 nonVRAM  17.9 wait  265.7 gpu  89.1 attn  54.6 hc 22.2 head   1.2 p50  473.0 p90  556.0 host-hit  33.2%
+   wexprof demand: {'batched': {'batches': 272.0, 'reserved': 417.0, 'published': 417.0, 'per_batch': 1.53, 'read_ms': 2678.7, 'decode_ms': 322.9, 'decode_ms_per_record': 0.774}, 'per_record': {'loads': 0.0, 'read_ms': 0.0, 'decode_ms': 0.0, 'read_ms_per_record': 0.0, 'decode_ms_per_record': 0.0}}
+   wexprof prefetch: {'batched': {'batches': 918.0, 'reserved': 1620.0, 'published': 1620.0, 'per_batch': 1.76, 'read_ms': 14835.5, 'decode_ms': 1373.9, 'decode_ms_per_record': 0.848}, 'per_record': {'loads': 3.0, 'read_ms': 43.7, 'decode_ms': 19.0, 'read_ms_per_record': 14.574, 'decode_ms_per_record': 6.343}}
+w3-A1-wex1: READY 15.75 s, avail RAM 19.6 GB, RAM_GB 16, logits 070fff1105833d65, disk reads/fwd 81.1 (335033 host + 0 direct), 1.53 GB/fwd, 6299 GB
+   w0          16 tok  2.261 tok/s TTFT    4.13 nonVRAM  75.5 wait  259.7 gpu 104.7 attn  45.0 hc 21.9 head   1.4 p50  467.0 p90  548.6 host-hit  37.2%
+   code1      130 tok  2.234 tok/s TTFT   10.50 nonVRAM  76.1 wait  236.9 gpu  89.9 attn  61.5 hc 21.7 head   1.3 p50  442.0 p90  527.0 host-hit  46.4%
+   code2      256 tok  2.125 tok/s TTFT   10.70 nonVRAM  81.4 wait  251.9 gpu  90.4 attn  72.3 hc 21.6 head   1.2 p50  474.0 p90  564.4 host-hit  46.2%
+   chat_it1   256 tok  1.667 tok/s TTFT    9.65 nonVRAM 111.0 wait  369.7 gpu  94.8 attn  73.6 hc 22.1 head   1.2 p50  596.0 p90  718.4 host-hit  46.8%
+   chat_it2   256 tok  1.852 tok/s TTFT   10.28 nonVRAM  79.3 wait  332.6 gpu  89.5 attn  70.9 hc 21.4 head   1.2 p50  533.0 p90  699.7 host-hit  40.5%
+   reason1    217 tok  1.873 tok/s TTFT   11.78 nonVRAM 103.2 wait  310.0 gpu  93.7 attn  71.1 hc 21.5 head   1.2 p50  536.0 p90  641.0 host-hit  49.9%
+   reason2    240 tok  1.856 tok/s TTFT   11.04 nonVRAM  98.9 wait  313.8 gpu  93.8 attn  73.2 hc 21.8 head   1.3 p50  543.0 p90  623.0 host-hit  48.4%
+   ctx2k      256 tok  1.526 tok/s TTFT  404.97 nonVRAM 113.1 wait  364.4 gpu  98.1 attn 137.2 hc 20.4 head   1.2 p50  654.5 p90  759.2 host-hit  39.0%
+   short1       8 tok  1.942 tok/s TTFT    4.42 nonVRAM  99.6 wait  328.5 gpu  96.0 attn  53.0 hc 19.5 head   1.4 p50  563.0 p90  583.6 host-hit  34.9%
+   wexprof demand: {'batched': {'batches': 0.0, 'reserved': 0.0, 'published': 0.0, 'per_batch': 0.0, 'read_ms': 0.0, 'decode_ms': 0.0, 'decode_ms_per_record': 0.0}, 'per_record': {'loads': 0.0, 'read_ms': 0.0, 'decode_ms': 0.0, 'read_ms_per_record': 0.0, 'decode_ms_per_record': 0.0}}
+   wexprof prefetch: {'batched': {'batches': 0.0, 'reserved': 0.0, 'published': 0.0, 'per_batch': 0.0, 'read_ms': 0.0, 'decode_ms': 0.0, 'decode_ms_per_record': 0.0}, 'per_record': {'loads': 0.0, 'read_ms': 0.0, 'decode_ms': 0.0, 'read_ms_per_record': 0.0, 'decode_ms_per_record': 0.0}}
+w3-B1-wnr2: READY 17.92 s, avail RAM 19.9 GB, RAM_GB 16, logits 070fff1105833d65, disk reads/fwd 90.0 (104621 host + 266900 direct), 1.52 GB/fwd, 6284 GB
+   w0          16 tok  2.239 tok/s TTFT    4.40 nonVRAM  18.0 wait  260.7 gpu  95.1 attn  54.2 hc 20.3 head   1.3 p50  461.0 p90  556.4 host-hit  33.3%
+   code1      130 tok  2.154 tok/s TTFT    9.70 nonVRAM  17.9 wait  249.9 gpu  78.6 attn  69.9 hc 22.1 head   1.3 p50  463.0 p90  524.2 host-hit  51.0%
+   code2      256 tok  2.037 tok/s TTFT   10.70 nonVRAM  17.6 wait  272.3 gpu  76.5 attn  79.4 hc 22.0 head   1.2 p50  495.0 p90  548.1 host-hit  52.7%
+   chat_it1   256 tok  1.651 tok/s TTFT    9.34 nonVRAM  25.3 wait  377.6 gpu  79.0 attn  79.9 hc 22.1 head   1.2 p50  602.5 p90  691.0 host-hit  56.8%
+   chat_it2   256 tok  1.998 tok/s TTFT   10.09 nonVRAM  19.7 wait  291.7 gpu  76.9 attn  76.3 hc 21.8 head   1.2 p50  499.0 p90  621.9 host-hit  62.5%
+   reason1    217 tok  1.799 tok/s TTFT   11.77 nonVRAM  27.2 wait  330.8 gpu  79.5 attn  79.7 hc 22.4 head   1.2 p50  551.5 p90  625.5 host-hit  58.0%
+   reason2    240 tok  1.774 tok/s TTFT   11.39 nonVRAM  23.8 wait  339.9 gpu  79.1 attn  80.7 hc 21.6 head   1.3 p50  563.0 p90  631.4 host-hit  55.9%
+   ctx2k      256 tok  1.534 tok/s TTFT  408.01 nonVRAM  27.7 wait  363.6 gpu  78.6 attn 142.8 hc 21.5 head   1.2 p50  648.5 p90  720.5 host-hit  40.5%
+   short1       8 tok  1.909 tok/s TTFT    4.30 nonVRAM  30.6 wait  345.2 gpu  78.7 attn  57.1 hc 20.4 head   1.4 p50  521.0 p90  568.4 host-hit  26.9%
+   wexprof demand: {'batched': {'batches': 34066.0, 'reserved': 53733.0, 'published': 53729.0, 'per_batch': 1.58, 'read_ms': 377165.9, 'decode_ms': 34402.3, 'decode_ms_per_record': 0.64}, 'per_record': {'loads': 9.0, 'read_ms': 167.0, 'decode_ms': 40.8, 'read_ms_per_record': 18.553, 'decode_ms_per_record': 4.539}}
+   wexprof prefetch: {'batched': {'batches': 107553.0, 'reserved': 211052.0, 'published': 210199.0, 'per_batch': 1.96, 'read_ms': 2024831.9, 'decode_ms': 147500.4, 'decode_ms_per_record': 0.702}, 'per_record': {'loads': 2963.0, 'read_ms': 50706.9, 'decode_ms': 2811.7, 'read_ms_per_record': 17.113, 'decode_ms_per_record': 0.949}}
+w3-B2-wnr2: READY 17.97 s, avail RAM 19.5 GB, RAM_GB 16, logits 070fff1105833d65, disk reads/fwd 90.4 (105002 host + 268181 direct), 1.53 GB/fwd, 6313 GB
+   w0          16 tok  2.236 tok/s TTFT    4.77 nonVRAM  18.3 wait  264.6 gpu  91.3 attn  54.1 hc 21.3 head   1.3 p50  468.0 p90  563.6 host-hit  34.1%
+   code1      130 tok  2.139 tok/s TTFT   10.21 nonVRAM  17.7 wait  255.5 gpu  77.5 attn  70.0 hc 21.7 head   1.2 p50  466.0 p90  525.8 host-hit  50.9%
+   code2      256 tok  2.031 tok/s TTFT   10.61 nonVRAM  17.9 wait  276.1 gpu  75.5 attn  79.4 hc 21.6 head   1.2 p50  496.5 p90  555.8 host-hit  52.8%
+   chat_it1   256 tok  1.630 tok/s TTFT    9.60 nonVRAM  25.2 wait  386.0 gpu  78.5 attn  80.8 hc 22.1 head   1.3 p50  613.5 p90  701.0 host-hit  56.0%
+   chat_it2   256 tok  1.977 tok/s TTFT   10.05 nonVRAM  19.5 wait  299.1 gpu  75.7 attn  76.8 hc 21.6 head   1.2 p50  508.5 p90  633.8 host-hit  61.6%
+   reason1    217 tok  1.786 tok/s TTFT   11.63 nonVRAM  27.2 wait  337.1 gpu  78.5 attn  79.8 hc 21.6 head   1.3 p50  550.5 p90  632.5 host-hit  57.9%
+   reason2    240 tok  1.779 tok/s TTFT   11.00 nonVRAM  25.3 wait  340.3 gpu  78.4 attn  80.1 hc 21.9 head   1.3 p50  561.0 p90  625.2 host-hit  57.3%
+   ctx2k      256 tok  1.535 tok/s TTFT  412.71 nonVRAM  27.5 wait  363.7 gpu  79.1 attn 141.4 hc 21.9 head   1.3 p50  651.0 p90  726.1 host-hit  40.7%
+   short1       8 tok  1.918 tok/s TTFT    4.29 nonVRAM  29.5 wait  336.1 gpu  79.1 attn  59.9 hc 21.4 head   1.4 p50  526.0 p90  566.2 host-hit  28.1%
+   wexprof demand: {'batched': {'batches': 34188.0, 'reserved': 54017.0, 'published': 54015.0, 'per_batch': 1.58, 'read_ms': 382205.1, 'decode_ms': 34200.1, 'decode_ms_per_record': 0.633}, 'per_record': {'loads': 11.0, 'read_ms': 242.6, 'decode_ms': 40.1, 'read_ms_per_record': 22.051, 'decode_ms_per_record': 3.646}}
+   wexprof prefetch: {'batched': {'batches': 107832.0, 'reserved': 212283.0, 'published': 211394.0, 'per_batch': 1.97, 'read_ms': 2043781.7, 'decode_ms': 146043.6, 'decode_ms_per_record': 0.691}, 'per_record': {'loads': 2761.0, 'read_ms': 46471.0, 'decode_ms': 2792.2, 'read_ms_per_record': 16.831, 'decode_ms_per_record': 1.011}}
+w3-A2-wex1: READY 15.38 s, avail RAM 18.6 GB, RAM_GB 16, logits 070fff1105833d65, disk reads/fwd 80.8 (333851 host + 0 direct), 1.52 GB/fwd, 6277 GB
+   w0          16 tok  2.247 tok/s TTFT    4.17 nonVRAM  75.6 wait  263.8 gpu 105.4 attn  43.7 hc 22.0 head   1.3 p50  470.0 p90  562.8 host-hit  36.8%
+   code1      130 tok  2.270 tok/s TTFT   10.37 nonVRAM  75.7 wait  233.9 gpu  90.0 attn  58.7 hc 21.5 head   1.2 p50  436.0 p90  517.6 host-hit  46.8%
+   code2      256 tok  2.141 tok/s TTFT   10.73 nonVRAM  80.9 wait  250.4 gpu  91.1 attn  70.1 hc 21.5 head   1.2 p50  468.0 p90  564.8 host-hit  46.3%
+   chat_it1   256 tok  1.670 tok/s TTFT    9.59 nonVRAM 110.3 wait  367.1 gpu  96.0 attn  73.5 hc 22.4 head   1.2 p50  596.0 p90  720.7 host-hit  46.8%
+   chat_it2   256 tok  1.863 tok/s TTFT   10.24 nonVRAM  78.6 wait  327.2 gpu  90.5 attn  71.1 hc 21.9 head   1.2 p50  532.5 p90  699.0 host-hit  40.8%
+   reason1    217 tok  1.874 tok/s TTFT   11.82 nonVRAM 102.6 wait  306.1 gpu  94.9 attn  71.9 hc 22.5 head   1.2 p50  535.0 p90  633.5 host-hit  49.9%
+   reason2    240 tok  1.859 tok/s TTFT   11.06 nonVRAM  98.3 wait  310.9 gpu  94.0 attn  73.4 hc 22.0 head   1.2 p50  544.0 p90  628.0 host-hit  48.4%
+   ctx2k      256 tok  1.525 tok/s TTFT  406.11 nonVRAM 112.5 wait  362.1 gpu  99.5 attn 136.7 hc 21.5 head   1.2 p50  656.0 p90  767.0 host-hit  38.8%
+   short1       8 tok  1.937 tok/s TTFT    4.40 nonVRAM  99.2 wait  328.6 gpu  93.5 attn  53.6 hc 21.9 head   1.4 p50  563.0 p90  601.0 host-hit  34.6%
+   wexprof demand: {'batched': {'batches': 0.0, 'reserved': 0.0, 'published': 0.0, 'per_batch': 0.0, 'read_ms': 0.0, 'decode_ms': 0.0, 'decode_ms_per_record': 0.0}, 'per_record': {'loads': 0.0, 'read_ms': 0.0, 'decode_ms': 0.0, 'read_ms_per_record': 0.0, 'decode_ms_per_record': 0.0}}
+   wexprof prefetch: {'batched': {'batches': 0.0, 'reserved': 0.0, 'published': 0.0, 'per_batch': 0.0, 'read_ms': 0.0, 'decode_ms': 0.0, 'decode_ms_per_record': 0.0}, 'per_record': {'loads': 0.0, 'read_ms': 0.0, 'decode_ms': 0.0, 'read_ms_per_record': 0.0, 'decode_ms_per_record': 0.0}}
+w3-A3-wex1: READY 16.94 s, avail RAM 18.2 GB, RAM_GB 16, logits 070fff1105833d65, disk reads/fwd 80.7 (333116 host + 0 direct), 1.52 GB/fwd, 6263 GB
+   w0          16 tok  2.253 tok/s TTFT    4.13 nonVRAM  75.3 wait  258.4 gpu 105.7 attn  45.4 hc 21.4 head   1.3 p50  467.0 p90  559.4 host-hit  37.0%
+   code1      130 tok  2.262 tok/s TTFT   10.46 nonVRAM  75.6 wait  234.1 gpu  90.3 attn  59.8 hc 21.7 head   1.2 p50  434.0 p90  518.2 host-hit  46.6%
+   code2      256 tok  2.140 tok/s TTFT   10.85 nonVRAM  80.8 wait  247.9 gpu  91.6 attn  71.8 hc 21.9 head   1.2 p50  468.5 p90  556.4 host-hit  46.4%
+   chat_it1   256 tok  1.679 tok/s TTFT    9.66 nonVRAM 110.2 wait  364.1 gpu  96.3 attn  73.5 hc 22.1 head   1.2 p50  593.0 p90  709.4 host-hit  47.0%
+   chat_it2   256 tok  1.861 tok/s TTFT   10.11 nonVRAM  78.5 wait  329.0 gpu  90.6 attn  70.5 hc 21.6 head   1.2 p50  529.5 p90  699.7 host-hit  40.6%
+   reason1    217 tok  1.875 tok/s TTFT   12.00 nonVRAM 102.4 wait  306.5 gpu  95.4 attn  71.9 hc 22.1 head   1.2 p50  534.0 p90  639.0 host-hit  49.9%
+   reason2    240 tok  1.864 tok/s TTFT   11.01 nonVRAM  98.0 wait  310.5 gpu  94.2 attn  73.0 hc 22.1 head   1.2 p50  541.0 p90  621.2 host-hit  48.4%
+   ctx2k      256 tok  1.529 tok/s TTFT  406.29 nonVRAM 112.4 wait  361.4 gpu  97.2 attn 135.7 hc 22.2 head   1.2 p50  652.0 p90  761.7 host-hit  38.9%
+   short1       8 tok  1.948 tok/s TTFT    4.39 nonVRAM  98.2 wait  322.2 gpu  94.2 attn  52.5 hc 22.0 head   1.2 p50  560.0 p90  593.0 host-hit  34.5%
+   wexprof demand: {'batched': {'batches': 0.0, 'reserved': 0.0, 'published': 0.0, 'per_batch': 0.0, 'read_ms': 0.0, 'decode_ms': 0.0, 'decode_ms_per_record': 0.0}, 'per_record': {'loads': 0.0, 'read_ms': 0.0, 'decode_ms': 0.0, 'read_ms_per_record': 0.0, 'decode_ms_per_record': 0.0}}
+   wexprof prefetch: {'batched': {'batches': 0.0, 'reserved': 0.0, 'published': 0.0, 'per_batch': 0.0, 'read_ms': 0.0, 'decode_ms': 0.0, 'decode_ms_per_record': 0.0}, 'per_record': {'loads': 0.0, 'read_ms': 0.0, 'decode_ms': 0.0, 'read_ms_per_record': 0.0, 'decode_ms_per_record': 0.0}}
+w3-B3-wnr2: READY 19.29 s, avail RAM 17.5 GB, RAM_GB 16, logits 070fff1105833d65, disk reads/fwd 90.0 (104567 host + 267019 direct), 1.52 GB/fwd, 6285 GB
+   w0          16 tok  2.235 tok/s TTFT    4.54 nonVRAM  17.9 wait  266.0 gpu  93.1 attn  51.8 hc 20.7 head   1.4 p50  478.0 p90  557.0 host-hit  33.0%
+   code1      130 tok  2.157 tok/s TTFT    9.91 nonVRAM  17.6 wait  252.4 gpu  77.4 attn  68.8 hc 21.6 head   1.2 p50  463.0 p90  516.8 host-hit  51.1%
+   code2      256 tok  2.047 tok/s TTFT   10.63 nonVRAM  17.9 wait  272.8 gpu  75.7 attn  78.4 hc 21.3 head   1.2 p50  490.5 p90  554.4 host-hit  53.3%
+   chat_it1   256 tok  1.654 tok/s TTFT    9.52 nonVRAM  25.5 wait  382.6 gpu  77.6 attn  76.9 hc 21.4 head   1.2 p50  604.5 p90  691.0 host-hit  57.1%
+   chat_it2   256 tok  1.997 tok/s TTFT    9.92 nonVRAM  19.1 wait  295.9 gpu  75.9 attn  74.5 hc 21.3 head   1.2 p50  500.0 p90  635.5 host-hit  62.5%
+   reason1    217 tok  1.791 tok/s TTFT   11.70 nonVRAM  26.3 wait  339.3 gpu  77.7 attn  77.0 hc 21.4 head   1.2 p50  552.5 p90  632.5 host-hit  57.4%
+   reason2    240 tok  1.780 tok/s TTFT   10.90 nonVRAM  24.4 wait  345.4 gpu  77.2 attn  78.0 hc 20.1 head   1.2 p50  563.0 p90  632.2 host-hit  56.5%
+   ctx2k      256 tok  1.528 tok/s TTFT  400.92 nonVRAM  26.9 wait  370.3 gpu  79.9 attn 140.2 hc 19.8 head   1.4 p50  653.0 p90  726.7 host-hit  39.9%
+   short1       8 tok  1.929 tok/s TTFT    4.13 nonVRAM  31.1 wait  335.0 gpu  81.6 attn  60.4 hc 19.2 head   1.4 p50  521.0 p90  564.4 host-hit  28.1%
+   wexprof demand: {'batched': {'batches': 34201.0, 'reserved': 54021.0, 'published': 54018.0, 'per_batch': 1.58, 'read_ms': 382385.6, 'decode_ms': 33741.4, 'decode_ms_per_record': 0.625}, 'per_record': {'loads': 14.0, 'read_ms': 252.4, 'decode_ms': 29.8, 'read_ms_per_record': 18.029, 'decode_ms_per_record': 2.125}}
+   wexprof prefetch: {'batched': {'batches': 107382.0, 'reserved': 210839.0, 'published': 209908.0, 'per_batch': 1.96, 'read_ms': 2036410.1, 'decode_ms': 142612.1, 'decode_ms_per_record': 0.679}, 'per_record': {'loads': 3079.0, 'read_ms': 51877.7, 'decode_ms': 2807.5, 'read_ms_per_record': 16.849, 'decode_ms_per_record': 0.912}}
+w3-B4-wnr2: READY 18.07 s, avail RAM 21.1 GB, RAM_GB 16, logits 070fff1105833d65, disk reads/fwd 89.3 (104148 host + 264596 direct), 1.51 GB/fwd, 6237 GB
+   w0          16 tok  2.271 tok/s TTFT    4.38 nonVRAM  18.4 wait  258.8 gpu  94.2 attn  50.6 hc 20.1 head   1.4 p50  464.0 p90  542.4 host-hit  34.0%
+   code1      130 tok  2.175 tok/s TTFT    9.71 nonVRAM  17.6 wait  251.1 gpu  79.6 attn  66.7 hc 19.8 head   1.2 p50  461.0 p90  513.8 host-hit  51.1%
+   code2      256 tok  2.060 tok/s TTFT   10.43 nonVRAM  17.7 wait  269.9 gpu  78.1 attn  78.8 hc 19.5 head   1.2 p50  490.5 p90  543.8 host-hit  52.9%
+   chat_it1   256 tok  1.658 tok/s TTFT    9.06 nonVRAM  25.4 wait  375.9 gpu  81.0 attn  79.7 hc 20.5 head   1.2 p50  605.0 p90  690.7 host-hit  57.2%
+   chat_it2   256 tok  2.011 tok/s TTFT    9.94 nonVRAM  19.5 wait  293.7 gpu  78.4 attn  71.4 hc 19.9 head   2.5 p50  496.0 p90  625.7 host-hit  62.1%
+   reason1    217 tok  1.817 tok/s TTFT   11.45 nonVRAM  26.5 wait  340.5 gpu  78.9 attn  69.4 hc 20.5 head   1.2 p50  547.0 p90  622.0 host-hit  57.8%
+   reason2    240 tok  1.803 tok/s TTFT   11.11 nonVRAM  24.9 wait  342.8 gpu  78.2 attn  72.0 hc 21.1 head   1.2 p50  557.0 p90  615.2 host-hit  57.3%
+   ctx2k      256 tok  1.541 tok/s TTFT  410.71 nonVRAM  26.9 wait  360.7 gpu  82.5 attn 141.4 hc 19.5 head   1.3 p50  652.5 p90  718.0 host-hit  40.3%
+   short1       8 tok  1.929 tok/s TTFT    4.27 nonVRAM  30.4 wait  333.6 gpu  82.4 attn  59.4 hc 21.0 head   1.4 p50  532.0 p90  563.6 host-hit  27.2%
+   wexprof demand: {'batched': {'batches': 33880.0, 'reserved': 53338.0, 'published': 53336.0, 'per_batch': 1.57, 'read_ms': 376438.9, 'decode_ms': 33784.0, 'decode_ms_per_record': 0.633}, 'per_record': {'loads': 10.0, 'read_ms': 241.0, 'decode_ms': 35.7, 'read_ms_per_record': 24.104, 'decode_ms_per_record': 3.573}}
+   wexprof prefetch: {'batched': {'batches': 107355.0, 'reserved': 209429.0, 'published': 208542.0, 'per_batch': 1.95, 'read_ms': 2022350.0, 'decode_ms': 144876.9, 'decode_ms_per_record': 0.695}, 'per_record': {'loads': 2708.0, 'read_ms': 45492.7, 'decode_ms': 2564.1, 'read_ms_per_record': 16.799, 'decode_ms_per_record': 0.947}}
+w3-A4-wex1: READY 15.98 s, avail RAM 19.5 GB, RAM_GB 16, logits 070fff1105833d65, disk reads/fwd 80.1 (330628 host + 0 direct), 1.51 GB/fwd, 6216 GB
+   w0          16 tok  2.238 tok/s TTFT    4.44 nonVRAM  74.9 wait  257.6 gpu 114.2 attn  43.9 hc 21.4 head   5.0 p50  462.0 p90  569.2 host-hit  36.9%
+   code1      130 tok  2.305 tok/s TTFT   10.89 nonVRAM  75.2 wait  240.4 gpu  88.9 attn  51.2 hc 19.7 head   1.5 p50  429.0 p90  513.2 host-hit  46.6%
+   code2      256 tok  2.176 tok/s TTFT   10.94 nonVRAM  80.0 wait  248.5 gpu  94.3 attn  64.8 hc 19.8 head   1.3 p50  459.0 p90  551.4 host-hit  46.5%
+   chat_it1   256 tok  1.677 tok/s TTFT    9.92 nonVRAM 109.8 wait  363.2 gpu  99.7 attn  72.8 hc 21.2 head   1.5 p50  595.5 p90  715.1 host-hit  46.8%
+   chat_it2   256 tok  1.884 tok/s TTFT   10.51 nonVRAM  77.4 wait  326.2 gpu  91.2 attn  67.0 hc 20.7 head   1.5 p50  523.0 p90  695.1 host-hit  40.9%
+   reason1    217 tok  1.900 tok/s TTFT   12.19 nonVRAM 101.6 wait  300.9 gpu  96.1 attn  70.3 hc 20.4 head   1.5 p50  528.0 p90  631.5 host-hit  50.2%
+   reason2    240 tok  1.895 tok/s TTFT   11.66 nonVRAM  98.3 wait  321.5 gpu  97.1 attn  57.1 hc 20.3 head   1.3 p50  533.0 p90  615.2 host-hit  48.6%
+   ctx2k      256 tok  1.568 tok/s TTFT  385.16 nonVRAM 113.7 wait  390.5 gpu 101.5 attn  95.3 hc 18.6 head   1.3 p50  633.0 p90  750.0 host-hit  39.5%
+   short1       8 tok  1.951 tok/s TTFT    4.33 nonVRAM  98.0 wait  327.7 gpu 106.0 attn  44.6 hc 17.8 head   3.8 p50  561.0 p90  614.8 host-hit  34.6%
+   wexprof demand: {'batched': {'batches': 0.0, 'reserved': 0.0, 'published': 0.0, 'per_batch': 0.0, 'read_ms': 0.0, 'decode_ms': 0.0, 'decode_ms_per_record': 0.0}, 'per_record': {'loads': 0.0, 'read_ms': 0.0, 'decode_ms': 0.0, 'read_ms_per_record': 0.0, 'decode_ms_per_record': 0.0}}
+   wexprof prefetch: {'batched': {'batches': 0.0, 'reserved': 0.0, 'published': 0.0, 'per_batch': 0.0, 'read_ms': 0.0, 'decode_ms': 0.0, 'decode_ms_per_record': 0.0}, 'per_record': {'loads': 0.0, 'read_ms': 0.0, 'decode_ms': 0.0, 'read_ms_per_record': 0.0, 'decode_ms_per_record': 0.0}}
+arm stats {"WEX1": {"n": 32, "mean_tok_s": 1.89775, "ci95": 0.08038865296673688, "lat_p50_ms": 535.5000000000416, "lat_p90_ms": 629.7500000000014}, "WNR2": {"n": 32, "mean_tok_s": 1.86025, "ci95": 0.07153964339734546, "lat_p50_ms": 539.499999999947, "lat_p90_ms": 625.3499999999917}}
+delta {"mean_pct": -1.7963577131262232, "ci95_pct": 1.3954106704974945, "n": 32, "pairs_mean_pct": -1.7963577131262232, "pairs_ci95_pct": 0.645165336247463, "pair_means_pct": [-1.292831606906504, -2.063643177709827, -1.6494982624080168, -2.1794578054805447], "arm_means_pct": -1.976024239230667}
+per prompt {"code1": [-3.58, -5.77, -4.64, -5.64], "code2": [-4.14, -5.14, -4.35, -5.33], "chat_it1": [-0.96, -2.4, -1.49, -1.13], "chat_it2": [7.88, 6.12, 7.31, 6.74], "reason1": [-3.95, -4.7, -4.48, -4.37], "reason2": [-4.42, -4.3, -4.51, -4.85], "ctx2k": [0.52, 0.66, -0.07, -1.72], "short1": [-1.7, -0.98, -0.98, -1.13]}
+ttft delta {"code1": {"mean_pct": -6.309923699866185, "ci95_pct": 6.183707356715903}, "code2": {"mean_pct": -1.9467331785385593, "ci95_pct": 3.1670584452168358}, "chat_it1": {"mean_pct": -3.313160125458078, "ci95_pct": 6.039621042941053}, "chat_it2": {"mean_pct": -2.73659467064479, "ci95_pct": 2.881837000975325}, "reason1": {"mean_pct": -2.550308497075568, "ci95_pct": 4.092846644758509}, "reason2": {"mean_pct": -0.7429058243287684, "ci95_pct": 5.13676968285373}, "ctx2k": {"mean_pct": 1.9208841666427197, "ci95_pct": 5.369459004948762}, "short1": {"mean_pct": -3.063864304409744, "ci95_pct": 3.185559390916325}}
+token identity {'smoke:w0': True, 'abba:w0': True, 'abba:code1': True, 'abba:code2': True, 'abba:chat_it1': True, 'abba:chat_it2': True, 'abba:reason1': True, 'abba:reason2': True, 'abba:ctx2k': True, 'abba:short1': True} ABBA logits bit-identical True
+verdict (user rule): WNR2 not adopted | PLAN 3.2 rule: capacity format

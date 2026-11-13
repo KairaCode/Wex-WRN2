@@ -1,0 +1,349 @@
+﻿record ratios: WEX1 1.0000, WNR2 0.8997, WNR2+a 0.8978, WNR2+ab 0.8966, WNR2+d 0.8982, WNR2+e 0.8997, WNR3 0.8952, WNR2z 0.8723, WNR3z 0.8682
+
+== center scenario (all params at center; 3000 tokens) ==
+config                              tok/s  ms/tok   vdec     cv    ram   disk  reads  GB/t bound  C_tot
+U|WEX1|none|W2                      3.749   266.8  160.2    0.0   18.5   61.3   73.5  1.38  0.00   1658
+U|WNR2|none|W2                      4.056   246.5  160.2    0.0   19.0   60.8   73.0  1.23  0.00   1679
+U|WNR2|none|single                  3.956   252.8  160.2    0.0   19.0   60.8   73.0  1.23  0.00   1679
+U|WNR2|cvbest|W2                    4.047   247.1  145.3   15.2   18.8   60.7   72.8  1.23  0.00   1685  design=('excl', 0.75)
+U|WNR2|cvall|W2                     3.970   251.9   26.1  137.5   17.2   59.2   71.0  1.20  0.00   1757
+U|WNR2+a|none|W2                    4.063   246.1  160.2    0.0   19.0   60.8   73.0  1.23  0.00   1679
+U|WNR2+a|none|single                3.962   252.4  160.2    0.0   19.0   60.8   73.0  1.23  0.00   1679
+U|WNR2+a|cvbest|W2                  4.054   246.6  145.3   15.2   18.8   60.7   72.8  1.23  0.00   1687  design=('excl', 0.75)
+U|WNR2+a|cvall|W2                   3.978   251.4   26.1  137.6   17.2   59.1   71.0  1.20  0.00   1760
+U|WNR2+ab|none|W2                   4.067   245.9  160.2    0.0   19.0   60.8   73.0  1.23  0.00   1680
+U|WNR2+ab|none|single               3.966   252.1  160.2    0.0   19.0   60.8   73.0  1.23  0.00   1680
+U|WNR2+ab|cvbest|W2                 4.059   246.4  145.3   15.3   18.8   60.6   72.8  1.23  0.00   1687  design=('excl', 0.75)
+U|WNR2+ab|cvall|W2                  3.983   251.1   26.1  137.7   17.2   59.1   70.9  1.20  0.00   1762
+U|WNR2+d|none|W2                    4.061   246.2  160.2    0.0   19.0   60.8   73.0  1.23  0.00   1679
+U|WNR2+d|none|single                3.961   252.5  160.2    0.0   19.0   60.8   73.0  1.23  0.00   1679
+U|WNR2+d|cvbest|W2                  4.053   246.7  145.3   15.2   18.8   60.7   72.8  1.23  0.00   1686  design=('excl', 0.75)
+U|WNR2+d|cvall|W2                   3.976   251.5   26.1  137.6   17.2   59.1   71.0  1.20  0.00   1760
+U|WNR2+e|none|W2                    4.056   246.5  160.2    0.0   19.0   60.8   73.0  1.23  0.00   1679
+U|WNR2+e|none|single                3.956   252.8  160.2    0.0   19.0   60.8   73.0  1.23  0.00   1679
+U|WNR2+e|cvbest|W2                  4.047   247.1  145.3   15.2   18.8   60.7   72.8  1.23  0.00   1685  design=('excl', 0.75)
+U|WNR2+e|cvall|W2                   3.970   251.9   26.1  137.5   17.2   59.2   71.0  1.20  0.00   1757
+U|WNR3|none|W2                      4.073   245.5  160.2    0.0   19.0   60.8   73.0  1.23  0.00   1680
+U|WNR3|none|single                  3.971   251.8  160.2    0.0   19.0   60.8   73.0  1.23  0.00   1680
+U|WNR3|cvbest|W2                    4.065   246.0  145.3   15.3   18.8   60.6   72.7  1.22  0.00   1688  design=('excl', 0.75)
+U|WNR3|cvall|W2                     3.989   250.7   26.1  137.7   17.1   59.1   70.9  1.19  0.00   1764
+U|WNR2z|none|W2                     4.157   240.6  160.2    0.0   19.2   60.6   72.8  1.19  0.00   1687
+U|WNR2z|none|single                 4.046   247.2  160.2    0.0   19.2   60.6   72.8  1.19  0.00   1687
+U|WNR2z|cvbest|W2                   4.156   240.6  119.3   43.0   18.0   59.6   71.6  1.17  0.00   1735  design=('excl', 0.5)
+U|WNR2z|cvall|W2                    4.085   244.8   26.1  138.9   16.7   58.3   70.0  1.15  0.00   1801
+U|WNR3z|none|W2                     4.172   239.7  160.2    0.0   19.2   60.6   72.8  1.19  0.00   1688
+U|WNR3z|none|single                 4.059   246.4  160.2    0.0   19.2   60.6   72.8  1.19  0.00   1688
+U|WNR3z|cvbest|W2                   4.173   239.6  119.3   43.1   18.0   59.6   71.5  1.17  0.00   1739  design=('excl', 0.5)
+U|WNR3z|cvall|W2                    4.102   243.8   26.1  139.1   16.6   58.2   69.8  1.14  0.00   1808
+E|WEX1|none|W2                      1.643   608.6  160.2    0.0   18.5   61.3   73.5  1.38  0.82   1658
+E|WNR2|none|W2                      1.829   546.8  160.2    0.0   19.0   60.8   73.0  1.23  0.74   1679
+E|WNR2|none|single                  1.818   550.1  160.2    0.0   19.0   60.8   73.0  1.23  0.67   1679
+E|WNR2|cvbest|W2                    1.855   539.0   26.1  137.5   17.2   59.2   71.0  1.20  0.59   1757  design=('incl', 16)
+E|WNR2|cvall|W2                     1.855   539.0   26.1  137.5   17.2   59.2   71.0  1.20  0.59   1757
+E|WNR2+a|none|W2                    1.833   545.7  160.2    0.0   19.0   60.8   73.0  1.23  0.74   1679
+E|WNR2+a|none|single                1.822   549.0  160.2    0.0   19.0   60.8   73.0  1.23  0.66   1679
+E|WNR2+a|cvbest|W2                  1.860   537.6   26.1  137.6   17.2   59.1   71.0  1.20  0.59   1760  design=('incl', 16)
+E|WNR2+a|cvall|W2                   1.860   537.6   26.1  137.6   17.2   59.1   71.0  1.20  0.59   1760
+E|WNR2+ab|none|W2                   1.835   544.9  160.2    0.0   19.0   60.8   73.0  1.23  0.74   1680
+E|WNR2+ab|none|single               1.824   548.2  160.2    0.0   19.0   60.8   73.0  1.23  0.66   1680
+E|WNR2+ab|cvbest|W2                 1.863   536.7   26.1  137.7   17.2   59.1   70.9  1.20  0.58   1762  design=('incl', 16)
+E|WNR2+ab|cvall|W2                  1.863   536.7   26.1  137.7   17.2   59.1   70.9  1.20  0.58   1762
+E|WNR2+d|none|W2                    1.832   545.9  160.2    0.0   19.0   60.8   73.0  1.23  0.74   1679
+E|WNR2+d|none|single                1.821   549.2  160.2    0.0   19.0   60.8   73.0  1.23  0.66   1679
+E|WNR2+d|cvbest|W2                  1.859   537.9   26.1  137.6   17.2   59.1   71.0  1.20  0.59   1760  design=('incl', 16)
+E|WNR2+d|cvall|W2                   1.859   537.9   26.1  137.6   17.2   59.1   71.0  1.20  0.59   1760
+E|WNR2+e|none|W2                    1.829   546.9  160.2    0.0   19.0   60.8   73.0  1.23  0.74   1679
+E|WNR2+e|none|single                1.818   550.2  160.2    0.0   19.0   60.8   73.0  1.23  0.67   1679
+E|WNR2+e|cvbest|W2                  1.855   539.1   26.1  137.5   17.2   59.2   71.0  1.20  0.59   1757  design=('incl', 16)
+E|WNR2+e|cvall|W2                   1.855   539.1   26.1  137.5   17.2   59.2   71.0  1.20  0.59   1757
+E|WNR3|none|W2                      1.838   544.0  160.2    0.0   19.0   60.8   73.0  1.23  0.74   1680
+E|WNR3|none|single                  1.827   547.4  160.2    0.0   19.0   60.8   73.0  1.23  0.66   1680
+E|WNR3|cvbest|W2                    1.867   535.6   26.1  137.7   17.1   59.1   70.9  1.19  0.58   1764  design=('incl', 16)
+E|WNR3|cvall|W2                     1.867   535.6   26.1  137.7   17.1   59.1   70.9  1.19  0.58   1764
+E|WNR2z|none|W2                     1.888   529.7  160.2    0.0   19.2   60.6   72.8  1.19  0.71   1687
+E|WNR2z|none|single                 1.875   533.5  160.2    0.0   19.2   60.6   72.8  1.19  0.63   1687
+E|WNR2z|cvbest|W2                   1.931   518.0   26.1  138.9   16.7   58.3   70.0  1.15  0.53   1801  design=('incl', 16)
+E|WNR2z|cvall|W2                    1.931   518.0   26.1  138.9   16.7   58.3   70.0  1.15  0.53   1801
+E|WNR3z|none|W2                     1.897   527.2  160.2    0.0   19.2   60.6   72.8  1.19  0.71   1688
+E|WNR3z|none|single                 1.883   531.0  160.2    0.0   19.2   60.6   72.8  1.19  0.62   1688
+E|WNR3z|cvbest|W2                   1.942   514.9   26.1  139.1   16.6   58.2   69.8  1.14  0.52   1808  design=('incl', 16)
+E|WNR3z|cvall|W2                    1.942   514.9   26.1  139.1   16.6   58.2   69.8  1.14  0.52   1808
+U+D|WEX1|none|W2                    3.482   287.2  160.2    0.0   18.5   61.3   73.5  1.38  0.01   1658
+
+== Monte Carlo, paired deltas in % tok/s: p5 / p50 / p95, P(>=+3%), P(>0) ==
+-- drive U:
+   WNR2 vs WEX1                                        2.97    6.38   11.91  P>=3%: 0.95  P>0: 1.00
+   WNR2(no W2, single-record helper) vs WEX1          -1.84    2.35   10.89  P>=3%: 0.45  P>0: 0.81
+   WNR3 vs WNR2                                        0.18    0.33    0.54  P>=3%: 0.00  P>0: 1.00
+   WNR3 vs WEX1                                        3.15    6.74   12.54  P>=3%: 0.96  P>0: 1.00
+   WNR3z vs WNR2                                       1.27    2.35    3.82  P>=3%: 0.20  P>0: 1.00
+   WNR3z vs WNR3                                       1.09    2.01    3.27  P>=3%: 0.10  P>0: 1.00
+   WNR3z vs WEX1                                       4.32    8.87   16.21  P>=3%: 0.99  P>0: 1.00
+   (a) vs WNR2                                         0.07    0.13    0.25  P>=3%: 0.00  P>0: 1.00
+   (a)+(b) vs WNR2                                     0.12    0.22    0.39  P>=3%: 0.00  P>0: 1.00
+   (d) vs WNR2                                         0.05    0.10    0.19  P>=3%: 0.00  P>0: 1.00
+   (e) vs WNR2                                        -0.01   -0.00   -0.00  P>=3%: 0.00  P>0: 0.00
+   (c) alone vs WNR2                                   1.09    2.03    3.28  P>=3%: 0.10  P>0: 1.00
+   CV best-design (WNR2) vs WNR2                      -1.44   -0.47    0.75  P>=3%: 0.01  P>0: 0.19
+   CV all-compressed (WNR2) vs WNR2                  -11.98   -4.52    0.69  P>=3%: 0.01  P>0: 0.08
+   CV best-design (WNR3z) vs WNR3z                    -1.32   -0.29    1.37  P>=3%: 0.04  P>0: 0.31
+   CV best-design (WNR3z) vs WEX1                      3.27    8.51   17.65  P>=3%: 0.96  P>0: 1.00
+   CV + decode-ahead (WNR2) vs WNR2                   -0.66   -0.16    1.48  P>=3%: 0.01  P>0: 0.35
+   CV + decode-ahead (WNR3z) vs WNR3z                 -0.51    0.11    2.34  P>=3%: 0.04  P>0: 0.58
+   W2 batch vs single-record (WNR2)                    0.82    3.62    6.01  P>=3%: 0.64  P>0: 0.97
+   elasticity tok/s % per bytes % (WNR2->WNR3z)        0.35    0.65    1.05
+-- drive E:
+   WNR2 vs WEX1                                        8.88   11.94   13.52  P>=3%: 1.00  P>0: 1.00
+   WNR2(no W2, single-record helper) vs WEX1           6.28   11.33   13.42  P>=3%: 1.00  P>0: 1.00
+   WNR3 vs WNR2                                        0.40    0.54    0.70  P>=3%: 0.00  P>0: 1.00
+   WNR3 vs WEX1                                        9.32   12.55   14.23  P>=3%: 1.00  P>0: 1.00
+   WNR3z vs WNR2                                       3.00    3.94    4.56  P>=3%: 0.95  P>0: 1.00
+   WNR3z vs WNR3                                       2.58    3.35    3.94  P>=3%: 0.78  P>0: 1.00
+   WNR3z vs WEX1                                      12.06   16.37   18.67  P>=3%: 1.00  P>0: 1.00
+   (a) vs WNR2                                         0.15    0.21    0.31  P>=3%: 0.00  P>0: 1.00
+   (a)+(b) vs WNR2                                     0.26    0.37    0.49  P>=3%: 0.00  P>0: 1.00
+   (d) vs WNR2                                         0.12    0.16    0.25  P>=3%: 0.00  P>0: 1.00
+   (e) vs WNR2                                        -0.01   -0.01   -0.01  P>=3%: 0.00  P>0: 0.00
+   (c) alone vs WNR2                                   2.60    3.41    3.98  P>=3%: 0.80  P>0: 1.00
+   CV best-design (WNR2) vs WNR2                      -0.23    1.89    4.34  P>=3%: 0.22  P>0: 0.90
+   CV all-compressed (WNR2) vs WNR2                   -2.15    1.89    4.34  P>=3%: 0.22  P>0: 0.80
+   CV best-design (WNR3z) vs WNR3z                     0.11    3.05    6.31  P>=3%: 0.51  P>0: 0.96
+   CV best-design (WNR3z) vs WEX1                     12.63   19.93   25.41  P>=3%: 1.00  P>0: 1.00
+   CV + decode-ahead (WNR2) vs WNR2                    0.14    2.21    4.49  P>=3%: 0.28  P>0: 0.96
+   CV + decode-ahead (WNR3z) vs WNR3z                  0.68    3.44    6.48  P>=3%: 0.61  P>0: 1.00
+   W2 batch vs single-record (WNR2)                    0.00    0.66    2.71  P>=3%: 0.03  P>0: 0.72
+   elasticity tok/s % per bytes % (WNR2->WNR3z)        0.83    1.09    1.26
+   cross-drive: WNR2 on E: vs WEX1 on U:             -60.83  -52.11  -40.05
+   cross-drive: WNR3z on E: vs WEX1 on U:            -59.25  -50.25  -38.06
+   WEX1 U:+D: mirror (20% on D:) vs WEX1 U:          -15.00   -9.45    1.55
+   WNR2 on U: vs WNR2 on E: (drive alone)             72.22  124.54  185.88
+
+== decision aid: format gain vs WEX1 disk-busy share after G2 ==
+   share 0.4-0.5: n= 15  WNR2 vs WEX1   2.02   3.49   4.77  P>=3% 0.73 | WNR3z vs WEX1 p50   5.00 P>=3% 0.93 | WNR3z vs WNR2 p50  1.61
+   share 0.5-0.6: n= 41  WNR2 vs WEX1   2.23   5.02   6.88  P>=3% 0.88 | WNR3z vs WEX1 p50   6.81 P>=3% 0.95 | WNR3z vs WNR2 p50  1.79
+   share 0.6-0.7: n=108  WNR2 vs WEX1   2.82   6.18   9.35  P>=3% 0.94 | WNR3z vs WEX1 p50   8.55 P>=3% 0.99 | WNR3z vs WNR2 p50  2.23
+   share 0.7-0.8: n=170  WNR2 vs WEX1   4.20   9.51  12.38  P>=3% 0.98 | WNR3z vs WEX1 p50  13.33 P>=3% 1.00 | WNR3z vs WNR2 p50  3.28
+   share 0.8-0.9: n= 99  WNR2 vs WEX1   3.54   8.32  10.76  P>=3% 0.98 | WNR3z vs WEX1 p50  11.59 P>=3% 0.99 | WNR3z vs WNR2 p50  2.97
+   share 0.9-1.0: n=367  WNR2 vs WEX1   6.30  12.07  13.66  P>=3% 1.00 | WNR3z vs WEX1 p50  16.54 P>=3% 1.00 | WNR3z vs WNR2 p50  3.94
+   WEX1 disk-busy share on U: 0.53 0.74 1.00
+   WEX1 disk-busy share on E: 0.74 0.99 1.00
+
+== Monte Carlo absolute (p5 / p50 / p95) ==
+   U|WEX1|none|W2               tok/s  2.67  3.88  5.89 | reads  65.2 | GB/t 1.23 | disk-bound 0.00 | n_cv   0.0
+   U|WNR2|none|W2               tok/s  2.85  4.13  6.25 | reads  64.0 | GB/t 1.08 | disk-bound 0.00 | n_cv   0.0
+   U|WNR2|none|single           tok/s  2.77  3.97  5.98 | reads  64.0 | GB/t 1.08 | disk-bound 0.00 | n_cv   0.0
+   U|WNR2|cvbest|W2             tok/s  2.84  4.12  6.15 | reads  63.6 | GB/t 1.08 | disk-bound 0.00 | n_cv  16.9
+   U|WNR2|cvall|W2              tok/s  2.82  3.94  5.62 | reads  61.8 | GB/t 1.05 | disk-bound 0.00 | n_cv 147.7
+   U|WNR2|cvahead|W2            tok/s  2.85  4.14  6.22 | reads  63.3 | GB/t 1.07 | disk-bound 0.00 | n_cv  18.3
+   U|WNR2+a|none|W2             tok/s  2.85  4.14  6.26 | reads  63.9 | GB/t 1.08 | disk-bound 0.00 | n_cv   0.0
+   U|WNR2+ab|none|W2            tok/s  2.85  4.14  6.26 | reads  63.9 | GB/t 1.08 | disk-bound 0.00 | n_cv   0.0
+   U|WNR2+d|none|W2             tok/s  2.85  4.14  6.26 | reads  63.9 | GB/t 1.08 | disk-bound 0.00 | n_cv   0.0
+   U|WNR2+e|none|W2             tok/s  2.85  4.13  6.25 | reads  64.0 | GB/t 1.08 | disk-bound 0.00 | n_cv   0.0
+   U|WNR3|none|W2               tok/s  2.86  4.15  6.27 | reads  63.9 | GB/t 1.08 | disk-bound 0.00 | n_cv   0.0
+   U|WNR3|none|single           tok/s  2.78  3.98  5.99 | reads  63.9 | GB/t 1.08 | disk-bound 0.00 | n_cv   0.0
+   U|WNR3|cvbest|W2             tok/s  2.86  4.13  6.16 | reads  63.5 | GB/t 1.07 | disk-bound 0.00 | n_cv  17.1
+   U|WNR3|cvall|W2              tok/s  2.84  3.95  5.64 | reads  61.7 | GB/t 1.04 | disk-bound 0.00 | n_cv 147.9
+   U|WNR2z|none|W2              tok/s  2.92  4.22  6.35 | reads  63.5 | GB/t 1.04 | disk-bound 0.00 | n_cv   0.0
+   U|WNR3z|none|W2              tok/s  2.92  4.23  6.36 | reads  63.4 | GB/t 1.03 | disk-bound 0.00 | n_cv   0.0
+   U|WNR3z|none|single          tok/s  2.84  4.05  6.06 | reads  63.4 | GB/t 1.03 | disk-bound 0.00 | n_cv   0.0
+   U|WNR3z|cvbest|W2            tok/s  2.95  4.20  6.29 | reads  62.8 | GB/t 1.03 | disk-bound 0.00 | n_cv  17.6
+   U|WNR3z|cvall|W2             tok/s  2.94  4.02  5.75 | reads  60.5 | GB/t 0.99 | disk-bound 0.00 | n_cv 149.2
+   U|WNR3z|cvahead|W2           tok/s  2.95  4.22  6.34 | reads  62.1 | GB/t 1.01 | disk-bound 0.00 | n_cv  36.7
+   E|WEX1|none|W2               tok/s  1.08  1.71  2.62 | reads  65.2 | GB/t 1.23 | disk-bound 0.80 | n_cv   0.0
+   E|WNR2|none|W2               tok/s  1.21  1.91  2.93 | reads  64.0 | GB/t 1.08 | disk-bound 0.65 | n_cv   0.0
+   E|WNR2|none|single           tok/s  1.20  1.89  2.88 | reads  64.0 | GB/t 1.08 | disk-bound 0.57 | n_cv   0.0
+   E|WNR2|cvbest|W2             tok/s  1.23  1.94  2.98 | reads  62.3 | GB/t 1.05 | disk-bound 0.55 | n_cv 131.6
+   E|WNR2|cvall|W2              tok/s  1.23  1.93  2.96 | reads  61.8 | GB/t 1.05 | disk-bound 0.40 | n_cv 147.7
+   E|WNR2|cvahead|W2            tok/s  1.23  1.95  2.98 | reads  61.9 | GB/t 1.05 | disk-bound 0.51 | n_cv 142.6
+   E|WNR2+a|none|W2             tok/s  1.22  1.91  2.94 | reads  63.9 | GB/t 1.08 | disk-bound 0.65 | n_cv   0.0
+   E|WNR2+ab|none|W2            tok/s  1.22  1.92  2.94 | reads  63.9 | GB/t 1.08 | disk-bound 0.65 | n_cv   0.0
+   E|WNR2+d|none|W2             tok/s  1.22  1.91  2.93 | reads  63.9 | GB/t 1.08 | disk-bound 0.65 | n_cv   0.0
+   E|WNR2+e|none|W2             tok/s  1.21  1.91  2.93 | reads  64.0 | GB/t 1.08 | disk-bound 0.65 | n_cv   0.0
+   E|WNR3|none|W2               tok/s  1.22  1.92  2.94 | reads  63.9 | GB/t 1.08 | disk-bound 0.65 | n_cv   0.0
+   E|WNR3|none|single           tok/s  1.21  1.90  2.90 | reads  63.9 | GB/t 1.08 | disk-bound 0.57 | n_cv   0.0
+   E|WNR3|cvbest|W2             tok/s  1.24  1.95  3.00 | reads  62.0 | GB/t 1.04 | disk-bound 0.55 | n_cv 132.2
+   E|WNR3|cvall|W2              tok/s  1.24  1.94  2.99 | reads  61.7 | GB/t 1.04 | disk-bound 0.40 | n_cv 147.9
+   E|WNR2z|none|W2              tok/s  1.25  1.97  3.02 | reads  63.5 | GB/t 1.04 | disk-bound 0.62 | n_cv   0.0
+   E|WNR3z|none|W2              tok/s  1.26  1.98  3.03 | reads  63.4 | GB/t 1.03 | disk-bound 0.62 | n_cv   0.0
+   E|WNR3z|none|single          tok/s  1.24  1.96  3.01 | reads  63.4 | GB/t 1.03 | disk-bound 0.54 | n_cv   0.0
+   E|WNR3z|cvbest|W2            tok/s  1.29  2.02  3.17 | reads  60.5 | GB/t 0.99 | disk-bound 0.45 | n_cv 139.7
+   E|WNR3z|cvall|W2             tok/s  1.29  2.02  3.12 | reads  60.5 | GB/t 0.99 | disk-bound 0.33 | n_cv 149.2
+   E|WNR3z|cvahead|W2           tok/s  1.29  2.04  3.17 | reads  60.5 | GB/t 0.99 | disk-bound 0.42 | n_cv 146.1
+
+== rank correlations (Spearman) of parameters with key outputs ==
+   U WNR2 vs WEX1           T0 -0.60, beta -0.42, w_extra +0.25, kappa -0.15, qmix +0.15
+   U WNR3z vs WNR2          T0 -0.63, beta -0.44, w_extra +0.23, qmix +0.17, cv1 -0.12
+   U CVbest(WNR2) vs WNR2   beta -0.63, q -0.32, cv1 -0.26, w_extra +0.23, T0 -0.19
+   U WEX1 tok/s             beta +0.65, q +0.40, T0 -0.37, qmix -0.29, w_extra -0.20
+   E WNR2 vs WEX1           q +0.42, qmix -0.30, T0 -0.29, w_extra +0.26, crc_share +0.25
+   E WNR3z vs WNR2          q +0.43, T0 -0.27, crc_share +0.25, qmix -0.23, w_extra +0.23
+   E CVbest(WNR2) vs WNR2   q +0.39, R_tot -0.31, slot_ov -0.28, w_extra +0.27, qmix -0.23
+   E WEX1 tok/s             beta +0.81, w_extra -0.31, qmix -0.22, q +0.19, R_tot +0.17
+
+== tornado (one-at-a-time; low -> high) ==
+-- drive U: param: WEX1 tok/s | WNR2 vs WEX1 % | WNR3 vs WNR2 % | WNR3z vs WNR2 % | CVbest vs WNR2 %
+   CV0         3.67-> 3.76 |   8.34->  8.20 |  0.41-> 0.40 |  2.89-> 2.84 |  -0.23-> -0.22
+   beta        3.16-> 5.51 |   5.74->  4.76 |  0.33-> 0.27 |  2.29-> 1.84 |  -0.32-> -1.10
+   mA          3.77-> 3.66 |   8.16->  8.35 |  0.41-> 0.40 |  2.86-> 2.89 |  -0.22-> -0.22
+   sigma       3.73-> 3.76 |   8.21->  8.20 |  0.40-> 0.40 |  2.83-> 2.85 |  -0.24-> -0.23
+   q           3.20-> 4.69 |   7.39-> 10.86 |  0.38-> 0.48 |  2.68-> 3.38 |  -0.08-> -0.13
+   w_extra     4.02-> 3.58 |   6.92->  6.67 |  0.35-> 0.33 |  2.50-> 2.33 |  -0.38-> -0.44
+   T0          4.26-> 3.12 |   6.62->  4.79 |  0.37-> 0.25 |  2.59-> 1.79 |  -0.59-> -0.36
+   cfix        3.74-> 3.68 |   8.43->  7.94 |  0.41-> 0.39 |  2.92-> 2.76 |  -0.22-> -0.24
+   cdec_x      3.72-> 3.72 |   8.49->  7.97 |  0.41-> 0.40 |  2.87-> 2.84 |  -0.22-> -0.23
+   csingle     3.72-> 3.72 |   8.23->  8.23 |  0.40-> 0.40 |  2.86-> 2.86 |  -0.23-> -0.23
+   kappa       3.72-> 3.72 |   8.88->  7.58 |  0.41-> 0.40 |  2.90-> 2.82 |  -0.02-> -0.33
+   cv1         3.72-> 3.72 |   8.23->  8.23 |  0.40-> 0.40 |  2.86-> 2.86 |  -0.20-> -0.32
+   cvtp        3.72-> 3.72 |   8.28->  8.13 |  0.40-> 0.40 |  2.86-> 2.85 |  -0.21-> -0.25
+   slot_ov     3.72-> 3.72 |   8.37->  8.17 |  0.40-> 0.40 |  2.86-> 2.87 |  -0.07-> -0.29
+   R_tot       3.49-> 3.92 |   7.27->  7.85 |  0.42-> 0.40 |  2.97-> 2.79 |   0.04-> -0.28
+   crc_share   3.72-> 3.72 |   8.23->  9.09 |  0.40-> 0.43 |  2.86-> 3.19 |  -0.23-> -0.25
+   bw_scale    3.51-> 3.84 |   6.86->  7.85 |  0.43-> 0.39 |  3.07-> 2.75 |  -0.05-> -0.27
+   qmix        4.59-> 3.41 |   6.66->  8.56 |  0.30-> 0.42 |  2.06-> 2.97 |  -0.55-> -0.18
+-- drive E: param: WEX1 tok/s | WNR2 vs WEX1 % | WNR3 vs WNR2 % | WNR3z vs WNR2 % | CVbest vs WNR2 %
+   CV0         1.60-> 1.65 |  11.41-> 11.28 |  0.52-> 0.51 |  3.73-> 3.70 |   1.50->  1.53
+   beta        1.24-> 2.68 |  11.68->  8.49 |  0.54-> 0.41 |  3.83-> 2.92 |   1.81-> -0.45
+   mA          1.65-> 1.59 |  11.25-> 11.38 |  0.53-> 0.51 |  3.74-> 3.73 |   1.52->  1.59
+   sigma       1.64-> 1.65 |  11.25-> 11.40 |  0.51-> 0.52 |  3.68-> 3.77 |   1.18->  1.70
+   q           1.30-> 1.64 |  10.84-> 11.94 |  0.51-> 0.55 |  3.63-> 3.93 |   1.66->  2.76
+   w_extra     1.79-> 1.31 |   9.09-> 11.94 |  0.44-> 0.55 |  3.13-> 3.93 |  -0.02->  2.75
+   T0          1.63-> 1.55 |  11.84->  8.57 |  0.54-> 0.40 |  3.89-> 2.83 |   2.38->  0.07
+   cfix        1.63-> 1.62 |  11.39-> 11.17 |  0.52-> 0.51 |  3.74-> 3.65 |   1.61->  1.37
+   cdec_x      1.63-> 1.63 |  11.36-> 11.25 |  0.52-> 0.52 |  3.71-> 3.69 |   1.53->  1.50
+   csingle     1.63-> 1.63 |  11.31-> 11.31 |  0.52-> 0.52 |  3.70-> 3.70 |   1.51->  1.51
+   kappa       1.63-> 1.63 |  11.43-> 11.17 |  0.52-> 0.52 |  3.72-> 3.68 |   1.85->  1.13
+   cv1         1.63-> 1.63 |  11.31-> 11.31 |  0.52-> 0.52 |  3.70-> 3.70 |   1.54->  1.42
+   cvtp        1.63-> 1.63 |  11.32-> 11.29 |  0.52-> 0.52 |  3.71-> 3.70 |   1.60->  1.34
+   slot_ov     1.63-> 1.63 |  11.48-> 11.22 |  0.52-> 0.52 |  3.70-> 3.72 |   2.20->  1.18
+   R_tot       1.48-> 1.74 |  11.38-> 11.14 |  0.52-> 0.53 |  3.76-> 3.69 |   2.47->  0.71
+   crc_share   1.63-> 1.63 |  11.31-> 12.44 |  0.52-> 0.55 |  3.70-> 4.17 |   1.51->  1.46
+   bw_scale    1.47-> 1.70 |  11.55-> 11.05 |  0.53-> 0.51 |  3.79-> 3.62 |   1.94->  1.13
+   qmix        1.64-> 1.36 |  11.94->  9.38 |  0.55-> 0.45 |  3.93-> 3.25 |   2.76->  1.03
+
+== RAM-tier scenarios (center params) ==
+   U R=10.3 GiB crc_share=0.39        WEX1  3.72 tok/s | WNR2 vs WEX1  +8.23% | WNR3z vs WNR2 +2.86% | reads  74.4-> 73.9 (-0.7%), bytes -10.7%
+   U R=10.3 GiB crc_share=1.0         WEX1  3.72 tok/s | WNR2 vs WEX1  +9.09% | WNR3z vs WNR2 +3.19% | reads  74.4-> 73.0 (-1.8%), bytes -11.7%
+   U R=6.0 GiB crc_share=1.0          WEX1  3.49 tok/s | WNR2 vs WEX1  +7.88% | WNR3z vs WNR2 +3.22% | reads  82.0-> 80.9 (-1.3%), bytes -11.2%
+   U R=14.0 GiB crc_share=1.0         WEX1  3.92 tok/s | WNR2 vs WEX1  +8.87% | WNR3z vs WNR2 +3.05% | reads  69.2-> 67.6 (-2.3%), bytes -12.1%
+   U R=14.0 GiB crc_share=0.39        WEX1  3.92 tok/s | WNR2 vs WEX1  +7.85% | WNR3z vs WNR2 +2.79% | reads  69.2-> 68.6 (-0.9%), bytes -10.8%
+   U R=6.0 GiB crc_share=0.0          WEX1  3.49 tok/s | WNR2 vs WEX1  +6.90% | WNR3z vs WNR2 +2.81% | reads  82.0-> 82.0 (-0.0%), bytes -10.0%
+   E R=10.3 GiB crc_share=0.39        WEX1  1.63 tok/s | WNR2 vs WEX1 +11.31% | WNR3z vs WNR2 +3.70% | reads  74.4-> 73.9 (-0.7%), bytes -10.7%
+   E R=10.3 GiB crc_share=1.0         WEX1  1.63 tok/s | WNR2 vs WEX1 +12.44% | WNR3z vs WNR2 +4.17% | reads  74.4-> 73.0 (-1.8%), bytes -11.7%
+   E R=6.0 GiB crc_share=1.0          WEX1  1.48 tok/s | WNR2 vs WEX1 +12.23% | WNR3z vs WNR2 +4.10% | reads  82.0-> 80.9 (-1.3%), bytes -11.2%
+   E R=14.0 GiB crc_share=1.0         WEX1  1.74 tok/s | WNR2 vs WEX1 +12.53% | WNR3z vs WNR2 +4.10% | reads  69.2-> 67.6 (-2.3%), bytes -12.1%
+   E R=14.0 GiB crc_share=0.39        WEX1  1.74 tok/s | WNR2 vs WEX1 +11.14% | WNR3z vs WNR2 +3.69% | reads  69.2-> 68.6 (-0.9%), bytes -10.8%
+   E R=6.0 GiB crc_share=0.0          WEX1  1.48 tok/s | WNR2 vs WEX1 +10.88% | WNR3z vs WNR2 +3.53% | reads  82.0-> 82.0 (-0.0%), bytes -10.0%
+
+== checks ==
+{
+ "M0 two-point fit (serial, no overlap)": {
+  "misses_per_token": 138.27717055968978,
+  "non_disk_s_per_token": 0.4949845768090146,
+  "note": "vs ~214 misses/token [inferred] in ref s12 and 240*(1-0.346..0.371)=151-157 from the M0 hit rate"
+ },
+ "ref disk floor 214 x 18.8 MB on D: (s)": 2.498967055900621,
+ "measured M0 WEX1 on D: s/token": 2.109704641350211,
+ "beta=0.42: VRAM hit, total hit, disk demand reads/token": [
+  0.5943384056445146,
+  0.6625171553802136,
+  80.99588270874875
+ ],
+ "beta=0.6: VRAM hit, total hit, disk demand reads/token": [
+  0.6665664752778233,
+  0.7436407520335022,
+  61.52621951195948
+ ],
+ "beta=0.71: VRAM hit, total hit, disk demand reads/token": [
+  0.7042189659460085,
+  0.7832891453938655,
+  52.01060510547229
+ ],
+ "beta=1.0: VRAM hit, total hit, disk demand reads/token": [
+  0.7843364485981308,
+  0.8608415353466896,
+  33.39803151679448
+ ],
+ "Zipf-IRM fit to M0": {
+  "s": 0.8198391169748769,
+  "miss@27/layer": 0.453728525320342,
+  "miss@33/layer": 0.41461695827687006,
+  "local beta 27->33": 0.4492133503923697
+ },
+ "Oct replay d ln reads / d ln C_VRAM (1530->2000)": -0.41329047979595024,
+ "history: V4 equal-RAM A/B (measured -3 %, 64 GB machine)": {
+  "T0_calibrated_s": 0.07693043541507902,
+  "beta=0.42 q=0.2": {
+   "WEX1_tok_s": 4.370178168513876,
+   "WNR2 single (Oct helper ~1.0 ms) vs WEX1 %": -2.9719780293277487,
+   "WNR2 W2 vs WEX1 %": 7.458505764595014,
+   "WEX1 reads/token": 67.75439999999999,
+   "disk_bound_frac": 0.0
+  },
+  "beta=0.42 q=0.5": {
+   "WEX1_tok_s": 5.190282698102877,
+   "WNR2 single (Oct helper ~1.0 ms) vs WEX1 %": -1.1642089215143425,
+   "WNR2 W2 vs WEX1 %": 7.721616066158665,
+   "WEX1 reads/token": 67.75439999999999,
+   "disk_bound_frac": 0.0
+  },
+  "beta=0.42 q=0.8": {
+   "WEX1_tok_s": 6.917021611587277,
+   "WNR2 single (Oct helper ~1.0 ms) vs WEX1 %": 0.12550075098800573,
+   "WNR2 W2 vs WEX1 %": 6.811048434222222,
+   "WEX1 reads/token": 67.75439999999999,
+   "disk_bound_frac": 0.4886666666666667
+  },
+  "beta=0.6 q=0.2": {
+   "WEX1_tok_s": 4.694450204276108,
+   "WNR2 single (Oct helper ~1.0 ms) vs WEX1 %": -4.769019638202677,
+   "WNR2 W2 vs WEX1 %": 6.843349707692847,
+   "WEX1 reads/token": 59.231199999999994,
+   "disk_bound_frac": 0.0
+  },
+  "beta=0.6 q=0.5": {
+   "WEX1_tok_s": 5.620000000002594,
+   "WNR2 single (Oct helper ~1.0 ms) vs WEX1 %": -3.356087186988055,
+   "WNR2 W2 vs WEX1 %": 6.769621001913317,
+   "WEX1 reads/token": 59.231199999999994,
+   "disk_bound_frac": 0.0
+  },
+  "beta=0.6 q=0.8": {
+   "WEX1_tok_s": 7.473349030355753,
+   "WNR2 single (Oct helper ~1.0 ms) vs WEX1 %": -1.0318920535143716,
+   "WNR2 W2 vs WEX1 %": 4.269332673090531,
+   "WEX1 reads/token": 59.231199999999994,
+   "disk_bound_frac": 0.266
+  },
+  "beta=1.0 q=0.2": {
+   "WEX1_tok_s": 5.414487207470501,
+   "WNR2 single (Oct helper ~1.0 ms) vs WEX1 %": -9.019064748569516,
+   "WNR2 W2 vs WEX1 %": 5.356150458381825,
+   "WEX1 reads/token": 43.968799999999995,
+   "disk_bound_frac": 0.0
+  },
+  "beta=1.0 q=0.5": {
+   "WEX1_tok_s": 6.525646168125149,
+   "WNR2 single (Oct helper ~1.0 ms) vs WEX1 %": -7.92508858714257,
+   "WNR2 W2 vs WEX1 %": 4.685625467076715,
+   "WEX1 reads/token": 43.968799999999995,
+   "disk_bound_frac": 0.0
+  },
+  "beta=1.0 q=0.8": {
+   "WEX1_tok_s": 8.556879240246047,
+   "WNR2 single (Oct helper ~1.0 ms) vs WEX1 %": -3.269348930572691,
+   "WNR2 W2 vs WEX1 %": 4.5539361736835815,
+   "WEX1 reads/token": 43.968799999999995,
+   "disk_bound_frac": 0.03333333333333333
+  }
+ }
+}
+
+== PLAN 3.2 detectability ==
+{
+ "per_run_cv_pct": 0.4907915583957642,
+ "abba2_se_diff_pct": 0.3470420390907583,
+ "ci95_halfwidth_pct (t6=2.447)": 0.8492118696550857,
+ "note": "from 3 clean repeat pairs on V4/64 GB; a disk-bound 32 GB machine with NVMe thermals is likely noisier"
+}
+
+runtime 39.4 s

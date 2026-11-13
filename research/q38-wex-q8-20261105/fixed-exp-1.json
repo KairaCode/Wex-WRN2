@@ -1,0 +1,80 @@
+{
+ "experts": 48,
+ "values": 235929600,
+ "exponent_histogram": [
+  31878,
+  34092,
+  65969,
+  132584,
+  264522,
+  528372,
+  1058498,
+  2116821,
+  4226349,
+  8428021,
+  16636729,
+  31813922,
+  55122715,
+  71412998,
+  40789186,
+  3266944
+ ],
+ "configs": [
+  {
+   "tile": 64,
+   "k": 2,
+   "escape_rate": 0.2547,
+   "bits_per_value": 9.7532,
+   "saving_vs_fp8": -0.2192
+  },
+  {
+   "tile": 64,
+   "k": 3,
+   "escape_rate": 0.0225,
+   "bits_per_value": 7.5025,
+   "saving_vs_fp8": 0.0622
+  },
+  {
+   "tile": 128,
+   "k": 2,
+   "escape_rate": 0.25855,
+   "bits_per_value": 9.9721,
+   "saving_vs_fp8": -0.2465
+  },
+  {
+   "tile": 128,
+   "k": 3,
+   "escape_rate": 0.02456,
+   "bits_per_value": 7.4622,
+   "saving_vs_fp8": 0.0672
+  },
+  {
+   "tile": 256,
+   "k": 2,
+   "escape_rate": 0.26674,
+   "bits_per_value": 10.3147,
+   "saving_vs_fp8": -0.2893
+  },
+  {
+   "tile": 256,
+   "k": 3,
+   "escape_rate": 0.02668,
+   "bits_per_value": 7.4737,
+   "saving_vs_fp8": 0.0658
+  },
+  {
+   "tile": 1024,
+   "k": 2,
+   "escape_rate": 0.27215,
+   "bits_per_value": 10.9104,
+   "saving_vs_fp8": -0.3638
+  },
+  {
+   "tile": 1024,
+   "k": 3,
+   "escape_rate": 0.02857,
+   "bits_per_value": 7.5259,
+   "saving_vs_fp8": 0.0593
+  }
+ ]
+}

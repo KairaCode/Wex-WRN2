@@ -1,0 +1,28 @@
+{
+ "rule_T_always__domain_no_max5": {
+  "domain_pairs": 328800,
+  "even": 64416,
+  "scale_overflow_256": 10736,
+  "collisions": 0,
+  "roundtrip_fail": 0,
+  "canonical_zero_commute_fail": 0
+ },
+ "rule_T_skip_if_scale255__domain_no_max5": {
+  "domain_pairs": 328800,
+  "even": 53680,
+  "scale_overflow_256": 0,
+  "collisions": 0,
+  "roundtrip_fail": 0,
+  "canonical_zero_commute_fail": 0
+ },
+ "rule_T_skip_if_scale255__domain_all_blocks(incl_max5)": {
+  "domain_pairs": 393216,
+  "even": 53680,
+  "scale_overflow_256": 0,
+  "collisions": 32208,
+  "roundtrip_fail": 64416,
+  "canonical_zero_commute_fail": 64416
+ },
+ "share_of_4nibble_space_with_max5": 0.163818359375,
+ "value_preservation_fail_per_magnitude_scale": 0
+}

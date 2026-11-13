@@ -1,0 +1,120 @@
+{
+ "gauss": {
+  "A_ceil_once": {
+   "bmax_hist_pct": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    22.328,
+    51.356,
+    26.316
+   ],
+   "even_pct": 0.001
+  },
+  "B_floor_once": {
+   "bmax_hist_pct": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    32.094,
+    67.906
+   ],
+   "even_pct": 0.014
+  },
+  "C_ceil_twice": {
+   "bmax_hist_pct": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    51.356,
+    48.644
+   ],
+   "even_pct": 22.329
+  },
+  "D_ceil_then_floor": {
+   "bmax_hist_pct": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    51.356,
+    48.644
+   ],
+   "even_pct": 22.329
+  },
+  "C_value_exact": true,
+  "D_value_exact": true,
+  "C_equals_D_codes": true,
+  "C_blocks_with_changed_scale_pct": 22.328,
+  "A_share_max3_pct": 22.328
+ },
+ "laplace": {
+  "A_ceil_once": {
+   "bmax_hist_pct": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    22.224,
+    51.504,
+    26.271
+   ],
+   "even_pct": 0.0
+  },
+  "B_floor_once": {
+   "bmax_hist_pct": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    32.189,
+    67.811
+   ],
+   "even_pct": 0.001
+  },
+  "C_ceil_twice": {
+   "bmax_hist_pct": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    51.504,
+    48.496
+   ],
+   "even_pct": 22.224
+  },
+  "D_ceil_then_floor": {
+   "bmax_hist_pct": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    51.504,
+    48.496
+   ],
+   "even_pct": 22.224
+  },
+  "C_value_exact": true,
+  "D_value_exact": true,
+  "C_equals_D_codes": true,
+  "C_blocks_with_changed_scale_pct": 22.224,
+  "A_share_max3_pct": 22.224
+ }
+}

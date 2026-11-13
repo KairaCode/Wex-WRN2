@@ -1,0 +1,43 @@
+--- a/backend_cuda_dsv4.cu
++++ b/backend_cuda_dsv4.cu
+@@ -1550,15 +1550,20 @@
+ }
+ extern "C" int dsv4_cuda_graph_launch(Dsv4CudaGraph*g){Dev*c=g?ctx(g->device):nullptr;return c&&ok(cudaSetDevice(g->device),"select graph device")&&ok(cudaGraphLaunch(g->exec,c->stream),"launch graph");}
+ extern "C" void dsv4_cuda_graph_free(Dsv4CudaGraph*g){if(!g)return;cudaSetDevice(g->device);if(g->exec)cudaGraphExecDestroy(g->exec);if(g->graph)cudaGraphDestroy(g->graph);free(g);}
++/* The copies go on the backend stream and are drained before returning. A
++ * pageable cudaMemcpy runs on the legacy stream and may return before its DMA
++ * lands, and the compute streams are non-blocking, so kernels queued right after
++ * could read a half-written tensor (seen as a rare token divergence). */
+ static int upload(Dsv4CudaTensor **pt,const void *w,size_t wb,const uint8_t *sc,size_t sb,int O,int I,int d,int fmt){if(*pt)return 1;Dev *c=ctx(d);if(!c||!ok(cudaSetDevice(d),"select upload device"))return 0;Dsv4CudaTensor *t=(Dsv4CudaTensor*)calloc(1,sizeof(*t));t->O=O;t->I=I;t->device=d;t->fmt=fmt;t->bytes=wb+sb;
+-    if(!ok(cudaMalloc(&t->w,wb),"weight allocation")){dsv4_cuda_tensor_free(t);return 0;}t->own_w=1;if(!ok(cudaMemcpy(t->w,w,wb,cudaMemcpyHostToDevice),"weight upload")){dsv4_cuda_tensor_free(t);return 0;}
+-    if(sb){if(!ok(cudaMalloc(&t->scale,sb),"scale allocation")){dsv4_cuda_tensor_free(t);return 0;}t->own_scale=1;if(!ok(cudaMemcpy(t->scale,sc,sb,cudaMemcpyHostToDevice),"scale upload")){dsv4_cuda_tensor_free(t);return 0;}}
++    if(!ok(cudaMalloc(&t->w,wb),"weight allocation")){dsv4_cuda_tensor_free(t);return 0;}t->own_w=1;if(!ok(cudaMemcpyAsync(t->w,w,wb,cudaMemcpyHostToDevice,c->stream),"weight upload")){cudaStreamSynchronize(c->stream);dsv4_cuda_tensor_free(t);return 0;}
++    if(sb){if(!ok(cudaMalloc(&t->scale,sb),"scale allocation")){cudaStreamSynchronize(c->stream);dsv4_cuda_tensor_free(t);return 0;}t->own_scale=1;if(!ok(cudaMemcpyAsync(t->scale,sc,sb,cudaMemcpyHostToDevice,c->stream),"scale upload")){cudaStreamSynchronize(c->stream);dsv4_cuda_tensor_free(t);return 0;}}
+ #ifdef COLI_DSV4_DEEPGEMM
+-    if((fmt==8||fmt==9)&&O%128==0&&I%128==0){size_t db=(size_t)O*(I/128/4)*sizeof(int);if(!ok(cudaMalloc(&t->dg_scale,db),"dense DeepGEMM scale allocation")){dsv4_cuda_tensor_free(t);return 0;}t->own_dg_scale=1;
++    if((fmt==8||fmt==9)&&O%128==0&&I%128==0){size_t db=(size_t)O*(I/128/4)*sizeof(int);if(!ok(cudaMalloc(&t->dg_scale,db),"dense DeepGEMM scale allocation")){cudaStreamSynchronize(c->stream);dsv4_cuda_tensor_free(t);return 0;}t->own_dg_scale=1;
+         if(fmt==9){int groups=O/1024;dg_pack_batched_scale<<<(O*(I/128/4)+255)/256,256,0,c->stream>>>(t->dg_scale,t->scale,O/groups,I/128,groups);}
+         else dg_pack_dense_scale<<<(O*(I/128/4)+255)/256,256,0,c->stream>>>(t->dg_scale,t->scale,O,I/128);
+-        if(!ok(cudaGetLastError(),"dense DeepGEMM scale packing")){dsv4_cuda_tensor_free(t);return 0;}t->bytes+=db;}
+-#endif
++        if(!ok(cudaGetLastError(),"dense DeepGEMM scale packing")){cudaStreamSynchronize(c->stream);dsv4_cuda_tensor_free(t);return 0;}t->bytes+=db;}
++#endif
++    if(!ok(cudaStreamSynchronize(c->stream),"upload drain")){dsv4_cuda_tensor_free(t);return 0;}
+     *pt=t;return 1;}
+ extern "C" int dsv4_cuda_upload_fp8(Dsv4CudaTensor **t,const uint8_t*w,const uint8_t*s,int O,int I,int d){return upload(t,w,(size_t)O*I,s,(size_t)((O+127)/128)*((I+127)/128),O,I,d,8);}
+ extern "C" int dsv4_cuda_upload_fp8_bf16(Dsv4CudaTensor **t,const uint8_t*w,const uint8_t*s,int O,int I,int d){return upload(t,w,(size_t)O*I,s,(size_t)((O+127)/128)*((I+127)/128),O,I,d,9);}
+@@ -1611,8 +1616,12 @@
+            !ok(cudaMemcpyAsync(t->scale,s,sb,cudaMemcpyHostToDevice,c->stream),"refill scale upload"))return 0;
+         if(sync&&!ok(cudaStreamSynchronize(c->stream),"refill drain"))return 0;
+     }else{
+-        if(!ok(cudaMemcpy(t->w,w,wb,cudaMemcpyHostToDevice),"refill weight upload")||
+-           !ok(cudaMemcpy(t->scale,s,sb,cudaMemcpyHostToDevice),"refill scale upload"))return 0;
++        /* pageable: still stream-ordered (a legacy-stream cudaMemcpy could overwrite
++         * bytes that queued kernels still read, or land after the next one starts),
++         * and always drained, as the old synchronous copy was for the caller */
++        if(!ok(cudaMemcpyAsync(t->w,w,wb,cudaMemcpyHostToDevice,c->stream),"refill weight upload")||
++           !ok(cudaMemcpyAsync(t->scale,s,sb,cudaMemcpyHostToDevice,c->stream),"refill scale upload")||
++           !ok(cudaStreamSynchronize(c->stream),"refill drain")){cudaStreamSynchronize(c->stream);return 0;}
+     }
+     return 1;
+ }

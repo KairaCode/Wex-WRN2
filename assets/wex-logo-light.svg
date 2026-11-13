@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 160" width="520" height="160" role="img" aria-labelledby="t d">
+  <title id="t">WEX</title>
+  <desc id="d">A container of expert records, the few routed ones lit in the shape of a W, next to the wordmark WEX.</desc>
+  <!-- the container -->
+  <rect x="10" y="21" width="142" height="118" rx="18" fill="none" stroke="#1F2328" stroke-width="5"/>
+  <!-- 5 x 4 expert records: resident ones dim, routed ones lit -->
+  <g fill="#D0D7DE">
+    <rect x="48" y="35" width="18" height="18" rx="4"/><rect x="72" y="35" width="18" height="18" rx="4"/><rect x="96" y="35" width="18" height="18" rx="4"/>
+    <rect x="48" y="59" width="18" height="18" rx="4"/><rect x="72" y="59" width="18" height="18" rx="4"/><rect x="96" y="59" width="18" height="18" rx="4"/>
+    <rect x="48" y="83" width="18" height="18" rx="4"/><rect x="96" y="83" width="18" height="18" rx="4"/>
+    <rect x="24" y="107" width="18" height="18" rx="4"/><rect x="72" y="107" width="18" height="18" rx="4"/><rect x="120" y="107" width="18" height="18" rx="4"/>
+  </g>
+  <g fill="#0FA08A">
+    <rect x="24" y="35" width="18" height="18" rx="4"/><rect x="120" y="35" width="18" height="18" rx="4"/>
+    <rect x="24" y="59" width="18" height="18" rx="4"/><rect x="120" y="59" width="18" height="18" rx="4"/>
+    <rect x="24" y="83" width="18" height="18" rx="4"/><rect x="72" y="83" width="18" height="18" rx="4"/><rect x="120" y="83" width="18" height="18" rx="4"/>
+    <rect x="48" y="107" width="18" height="18" rx="4"/><rect x="96" y="107" width="18" height="18" rx="4"/>
+  </g>
+  <!-- the wordmark, drawn (no font); the middle bar of the E is one more record -->
+  <path d="M334,80 H380" fill="none" stroke="#0FA08A" stroke-width="16" stroke-linecap="round"/>
+  <g fill="none" stroke="#1F2328" stroke-width="16" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="192,43 215,117 242,64 269,117 292,43"/>
+    <polyline points="392,43 334,43 334,117 392,117"/>
+    <path d="M428,43 L496,117 M496,43 L428,117"/>
+  </g>
+</svg>

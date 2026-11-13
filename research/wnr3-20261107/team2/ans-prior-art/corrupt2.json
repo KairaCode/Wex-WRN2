@@ -1,0 +1,619 @@
+{
+ "trials": 6000,
+ "reached_final_check": 700,
+ "accepted": 38,
+ "accepted_all_single_sign_flips": true,
+ "model_pairs_f_s_eq_f_s^8": 9544,
+ "of_which_pow2_cdf_distance": 8499,
+ "model_pairs_total": 13608,
+ "cases": [
+  {
+   "byte": 141,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 292,
+     "orig": 1,
+     "decoded": 9,
+     "sign_flip": true,
+     "f_orig": 381,
+     "f_dec": 381,
+     "cdf_dist": 8192
+    }
+   ]
+  },
+  {
+   "byte": 603,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 1290,
+     "orig": 12,
+     "decoded": 4,
+     "sign_flip": true,
+     "f_orig": 1107,
+     "f_dec": 1107,
+     "cdf_dist": -8192
+    }
+   ]
+  },
+  {
+   "byte": 748,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 1568,
+     "orig": 4,
+     "decoded": 12,
+     "sign_flip": true,
+     "f_orig": 1540,
+     "f_dec": 1540,
+     "cdf_dist": 8192
+    }
+   ]
+  },
+  {
+   "byte": 707,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 1458,
+     "orig": 5,
+     "decoded": 13,
+     "sign_flip": true,
+     "f_orig": 591,
+     "f_dec": 591,
+     "cdf_dist": 8192
+    }
+   ]
+  },
+  {
+   "byte": 844,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 1786,
+     "orig": 2,
+     "decoded": 10,
+     "sign_flip": true,
+     "f_orig": 1880,
+     "f_dec": 1880,
+     "cdf_dist": 8192
+    }
+   ]
+  },
+  {
+   "byte": 76,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 164,
+     "orig": 10,
+     "decoded": 2,
+     "sign_flip": true,
+     "f_orig": 1574,
+     "f_dec": 1574,
+     "cdf_dist": -8192
+    }
+   ]
+  },
+  {
+   "byte": 930,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 1933,
+     "orig": 10,
+     "decoded": 2,
+     "sign_flip": true,
+     "f_orig": 1431,
+     "f_dec": 1431,
+     "cdf_dist": -8192
+    }
+   ]
+  },
+  {
+   "byte": 210,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 438,
+     "orig": 14,
+     "decoded": 6,
+     "sign_flip": true,
+     "f_orig": 975,
+     "f_dec": 975,
+     "cdf_dist": -8192
+    }
+   ]
+  },
+  {
+   "byte": 632,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 1347,
+     "orig": 4,
+     "decoded": 12,
+     "sign_flip": true,
+     "f_orig": 1129,
+     "f_dec": 1129,
+     "cdf_dist": 8192
+    }
+   ]
+  },
+  {
+   "byte": 54,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 107,
+     "orig": 8,
+     "decoded": 0,
+     "sign_flip": true,
+     "f_orig": 792,
+     "f_dec": 792,
+     "cdf_dist": -8192
+    }
+   ]
+  },
+  {
+   "byte": 322,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 684,
+     "orig": 12,
+     "decoded": 4,
+     "sign_flip": true,
+     "f_orig": 1107,
+     "f_dec": 1107,
+     "cdf_dist": -8192
+    }
+   ]
+  },
+  {
+   "byte": 792,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 1701,
+     "orig": 12,
+     "decoded": 4,
+     "sign_flip": true,
+     "f_orig": 1603,
+     "f_dec": 1603,
+     "cdf_dist": -8192
+    }
+   ]
+  },
+  {
+   "byte": 132,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 273,
+     "orig": 4,
+     "decoded": 12,
+     "sign_flip": true,
+     "f_orig": 1479,
+     "f_dec": 1479,
+     "cdf_dist": 8192
+    }
+   ]
+  },
+  {
+   "byte": 44,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 92,
+     "orig": 9,
+     "decoded": 1,
+     "sign_flip": true,
+     "f_orig": 2126,
+     "f_dec": 2126,
+     "cdf_dist": -8192
+    }
+   ]
+  },
+  {
+   "byte": 540,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 1124,
+     "orig": 8,
+     "decoded": 0,
+     "sign_flip": true,
+     "f_orig": 838,
+     "f_dec": 838,
+     "cdf_dist": -8192
+    }
+   ]
+  },
+  {
+   "byte": 64,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 129,
+     "orig": 9,
+     "decoded": 1,
+     "sign_flip": true,
+     "f_orig": 790,
+     "f_dec": 790,
+     "cdf_dist": -8192
+    }
+   ]
+  },
+  {
+   "byte": 163,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 339,
+     "orig": 3,
+     "decoded": 11,
+     "sign_flip": true,
+     "f_orig": 1317,
+     "f_dec": 1317,
+     "cdf_dist": 8192
+    }
+   ]
+  },
+  {
+   "byte": 573,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 1240,
+     "orig": 5,
+     "decoded": 13,
+     "sign_flip": true,
+     "f_orig": 553,
+     "f_dec": 553,
+     "cdf_dist": 8192
+    }
+   ]
+  },
+  {
+   "byte": 820,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 1750,
+     "orig": 3,
+     "decoded": 11,
+     "sign_flip": true,
+     "f_orig": 1317,
+     "f_dec": 1317,
+     "cdf_dist": 8192
+    }
+   ]
+  },
+  {
+   "byte": 181,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 381,
+     "orig": 5,
+     "decoded": 13,
+     "sign_flip": true,
+     "f_orig": 1336,
+     "f_dec": 1336,
+     "cdf_dist": 8192
+    }
+   ]
+  },
+  {
+   "byte": 141,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 292,
+     "orig": 1,
+     "decoded": 9,
+     "sign_flip": true,
+     "f_orig": 381,
+     "f_dec": 381,
+     "cdf_dist": 8192
+    }
+   ]
+  },
+  {
+   "byte": 449,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 950,
+     "orig": 2,
+     "decoded": 10,
+     "sign_flip": true,
+     "f_orig": 1758,
+     "f_dec": 1758,
+     "cdf_dist": 8192
+    }
+   ]
+  },
+  {
+   "byte": 849,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 1794,
+     "orig": 9,
+     "decoded": 1,
+     "sign_flip": true,
+     "f_orig": 711,
+     "f_dec": 711,
+     "cdf_dist": -8192
+    }
+   ]
+  },
+  {
+   "byte": 534,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 1130,
+     "orig": 5,
+     "decoded": 13,
+     "sign_flip": true,
+     "f_orig": 1318,
+     "f_dec": 1318,
+     "cdf_dist": 8192
+    }
+   ]
+  },
+  {
+   "byte": 878,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 1848,
+     "orig": 8,
+     "decoded": 0,
+     "sign_flip": true,
+     "f_orig": 950,
+     "f_dec": 950,
+     "cdf_dist": -8192
+    }
+   ]
+  },
+  {
+   "byte": 400,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 852,
+     "orig": 3,
+     "decoded": 11,
+     "sign_flip": true,
+     "f_orig": 1317,
+     "f_dec": 1317,
+     "cdf_dist": 8192
+    }
+   ]
+  },
+  {
+   "byte": 905,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 1914,
+     "orig": 9,
+     "decoded": 1,
+     "sign_flip": true,
+     "f_orig": 455,
+     "f_dec": 455,
+     "cdf_dist": -8192
+    }
+   ]
+  },
+  {
+   "byte": 948,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 1999,
+     "orig": 13,
+     "decoded": 5,
+     "sign_flip": true,
+     "f_orig": 591,
+     "f_dec": 591,
+     "cdf_dist": -8192
+    }
+   ]
+  },
+  {
+   "byte": 88,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 184,
+     "orig": 1,
+     "decoded": 9,
+     "sign_flip": true,
+     "f_orig": 1327,
+     "f_dec": 1327,
+     "cdf_dist": 8192
+    }
+   ]
+  },
+  {
+   "byte": 216,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 461,
+     "orig": 1,
+     "decoded": 9,
+     "sign_flip": true,
+     "f_orig": 2126,
+     "f_dec": 2126,
+     "cdf_dist": 8192
+    }
+   ]
+  },
+  {
+   "byte": 100,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 212,
+     "orig": 11,
+     "decoded": 3,
+     "sign_flip": true,
+     "f_orig": 1314,
+     "f_dec": 1314,
+     "cdf_dist": -8192
+    }
+   ]
+  },
+  {
+   "byte": 161,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 327,
+     "orig": 10,
+     "decoded": 2,
+     "sign_flip": true,
+     "f_orig": 1574,
+     "f_dec": 1574,
+     "cdf_dist": -8192
+    }
+   ]
+  },
+  {
+   "byte": 441,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 927,
+     "orig": 5,
+     "decoded": 13,
+     "sign_flip": true,
+     "f_orig": 1318,
+     "f_dec": 1318,
+     "cdf_dist": 8192
+    }
+   ]
+  },
+  {
+   "byte": 329,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 692,
+     "orig": 1,
+     "decoded": 9,
+     "sign_flip": true,
+     "f_orig": 455,
+     "f_dec": 455,
+     "cdf_dist": 8192
+    }
+   ]
+  },
+  {
+   "byte": 620,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 1328,
+     "orig": 0,
+     "decoded": 8,
+     "sign_flip": true,
+     "f_orig": 950,
+     "f_dec": 950,
+     "cdf_dist": 8192
+    }
+   ]
+  },
+  {
+   "byte": 700,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 1501,
+     "orig": 4,
+     "decoded": 12,
+     "sign_flip": true,
+     "f_orig": 1185,
+     "f_dec": 1185,
+     "cdf_dist": 8192
+    }
+   ]
+  },
+  {
+   "byte": 554,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 1170,
+     "orig": 1,
+     "decoded": 9,
+     "sign_flip": true,
+     "f_orig": 2126,
+     "f_dec": 2126,
+     "cdf_dist": 8192
+    }
+   ]
+  },
+  {
+   "byte": 460,
+   "bit": 5,
+   "n_wrong": 1,
+   "wrong": [
+    {
+     "pos": 976,
+     "orig": 11,
+     "decoded": 3,
+     "sign_flip": true,
+     "f_orig": 1036,
+     "f_dec": 1036,
+     "cdf_dist": -8192
+    }
+   ]
+  }
+ ]
+}

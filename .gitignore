@@ -1,0 +1,22 @@
+*.exe
+*.dll
+*.lib
+*.exp
+*.obj
+*.o
+*.pdb
+*.npz
+*.wex
+__pycache__/
+out/
+launch.json
+colibri.stdout.log
+.coli_usage
+.claude/
+# output folders of archive/bench/build.cmd and archive/nr2/build_test_nr2.cmd
+/archive/bench/build/
+/archive/nr2/build/
+# reports written into archive/nr2/ by its legacy GPU scripts
+/archive/nr2/test-nr2.json
+/archive/nr2/build-*.json
+/archive/nr2/model-*.wnm2

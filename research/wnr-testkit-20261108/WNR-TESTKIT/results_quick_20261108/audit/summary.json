@@ -1,0 +1,1695 @@
+{
+ "test": "audit",
+ "spec": "WNR3-DRAFT-v2.1 section 11 T3 (+ 5.8 TAIL profile gate)",
+ "started": "2026-11-08 02:37:29",
+ "argv": [
+  "--root",
+  "<KAIRA>\\lab\\wnr-testkit-20261108\\WNR-TESTKIT",
+  "--quick"
+ ],
+ "quick": true,
+ "environment": {
+  "os": "Windows-11-10.0.26300-SP0",
+  "machine": "AMD64",
+  "cpu": "AMD Ryzen 9 7950X3D 16-Core Processor",
+  "cpu_count": 32,
+  "ram_gb": 31.2,
+  "python": "3.14.8",
+  "numpy": "2.5.4",
+  "cupy": [
+   "cupy-cuda12x==14.2.0"
+  ],
+  "gpu": [
+   "NVIDIA GeForce RTX 5090, 621.01, 32607 MiB"
+  ]
+ },
+ "config": {
+  "rules": [
+   "R0",
+   "HASH",
+   "HASH32",
+   "TAIL",
+   "TAILD"
+  ],
+  "decoder_kinds": [
+   "fg0d",
+   "fg0de",
+   "fg0dh",
+   "fg0dt"
+  ],
+  "record_kinds": [
+   "fg0d",
+   "fg0de",
+   "fg0dh",
+   "fg0dt",
+   "fg0dtD"
+  ],
+  "cases": [
+   "W0",
+   "A",
+   "B",
+   "C",
+   "D",
+   "E",
+   "F",
+   "G",
+   "H",
+   "I",
+   "J",
+   "T",
+   "M2",
+   "N1",
+   "N2",
+   "N3",
+   "S0",
+   "K",
+   "L",
+   "M3",
+   "N4",
+   "N5",
+   "M1",
+   "P1",
+   "P2",
+   "P3",
+   "O"
+  ],
+  "experts_idx": [
+   1,
+   159
+  ],
+  "params": {
+   "per_w": 300,
+   "per_a": 1000,
+   "per_s": 60,
+   "rper": {
+    "M1": 50,
+    "P1": 1,
+    "P2": 20,
+    "P3": 4,
+    "O": 2
+   }
+  },
+  "verify_records": true,
+  "validate_n": 5,
+  "validate_full": 1,
+  "jobs": 4,
+  "model": "models/even.npz:fg_a0_K0_c0 (ceil-ref, trained on the 80 even-index experts)",
+  "anchor": 120,
+  "case_doc": {
+   "W0": "clean weight streams (control: all must be accepted, identical output)",
+   "A": "team2 A: one random bit flip anywhere in a weight stream (state bytes included)",
+   "B": "team2 B: bit flip in the last byte of a weight stream",
+   "C": "team2 C: bit flip in the 4-byte initial state",
+   "D": "team2 D: random 2-byte overwrite",
+   "E": "team2 E: zero-fill from a random offset (>= 4) to the stream end (torn write)",
+   "F": "team2 F: length - 1 (truncated stream)",
+   "G": "team2 G: length + 1 (one extra random byte)",
+   "H": "team2 H: valid stream decoded at the next index (next stream srel and identity, own length)",
+   "I": "team2 I: valid stream at the next index with IDENTICAL contexts (own srel), identity of the next index",
+   "J": "team2 J: valid stream decoded with another matrix type model (w1->w3, w2->w3, w3->w1)",
+   "T": "tail magnitude change: valid re-encode with one magnitude changed in the last 5 symbols, integrity field of the ORIGINAL data (stale hash); for R0 and TAIL accepted by construction",
+   "M2": "length-table corruption, sum preserving: boundary between adjacent weight streams shifted by +-1..8 bytes",
+   "N1": "swapped adjacent weight streams (bytes and lengths consistent)",
+   "N2": "swapped weight streams j <-> random k",
+   "N3": "weight stream of another record (other expert, same index and kind)",
+   "S0": "clean scale streams (control)",
+   "K": "random single bit flip in a scale stream (5 passes over all scale streams)",
+   "L": "bit flip in the last byte of a scale stream (2 passes)",
+   "M3": "scale length boundary shift between adjacent scale streams (+-1..4 bytes)",
+   "N4": "swapped adjacent scale streams",
+   "N5": "scale stream of another record (same index)",
+   "M1": "record level: random bit flip in the LENC length section",
+   "P1": "record level: last 4096-byte page dropped",
+   "P2": "record level: torn write, zero from a random offset in the used region to the end",
+   "P3": "record level: last k = 1..4 payload bytes zeroed",
+   "O": "record level: whole valid record decoded in another expert slot (layer/expert binding)"
+  }
+ },
+ "h32_selftest": {
+  "verification": "0xb0f57ee3",
+  "expected": "0xb0f57ee3",
+  "vectors_ok": true,
+  "ok": true
+ },
+ "data": {
+  "sample_dir": "<KAIRA>\\lab\\wnr-testkit-20261108\\WNR-TESTKIT\\data\\v41-sample",
+  "experts": [
+   {
+    "idx": 1,
+    "file": "L00_E113.bin",
+    "present": true,
+    "extracted": false,
+    "sha256_ok": true
+   },
+   {
+    "idx": 159,
+    "file": "L39_E156.bin",
+    "present": true,
+    "extracted": false,
+    "sha256_ok": true
+   }
+  ],
+  "manifest": "tests/audit/manifest_v41_sample.json",
+  "repo": "patrickbdevaney/DeepSeek-V4.1-Flash-1017-REAP192-MXFP4",
+  "revision": "4ab649b2254afdcf6c2f7c1fbea1c05eda11828c"
+ },
+ "records": [
+  {
+   "idx": 1,
+   "file": "L00_E113.bin",
+   "layer": 0,
+   "expert": 113,
+   "model_id": 2694569643,
+   "model_sha256": "e5612c1a7743940544e3133246d9957afbc25150daf85b93fdaa07e6da5b352b",
+   "ceil": {
+    "blocks": [
+     368640,
+     368640,
+     368640
+    ],
+    "even": [
+     111218,
+     117365,
+     111263
+    ],
+    "below6": [
+     0,
+     0,
+     0
+    ],
+    "overflow": [
+     0,
+     0,
+     0
+    ]
+   },
+   "encode_s": 9.6,
+   "kinds": {
+    "fg0d": {
+     "flags": 20,
+     "total": 16547840,
+     "used": 16544052,
+     "length_table": 13356,
+     "scale_payload": 138949,
+     "weight_payload": 16391699,
+     "sha256": "f19db8ab261d3ec3388e987533391e8c3942a9ca7f4db79cfcbba98a43778dd8",
+     "sha256_equal_to_reference": true,
+     "verified": true,
+     "mine_byte_exact": true,
+     "mine_status": "accepted",
+     "mine_stage": null,
+     "mine_ceilref_reject": false,
+     "mine_dec_s": 2.7,
+     "ceilref_decoder_byte_exact": true,
+     "ceilref_dec_s": 1.5
+    },
+    "fg0de": {
+     "flags": 28,
+     "total": 16547840,
+     "used": 16545412,
+     "length_table": 13360,
+     "scale_payload": 139097,
+     "weight_payload": 16392907,
+     "sha256": "6499edb31dfdeb72f0f976f9d1ca2bf62641710002a1e63bd4e5f768fd2b05df",
+     "sha256_equal_to_reference": true,
+     "verified": true,
+     "mine_byte_exact": true,
+     "mine_status": "accepted",
+     "mine_stage": null,
+     "mine_ceilref_reject": false,
+     "mine_dec_s": 2.8,
+     "ceilref_decoder_byte_exact": true,
+     "ceilref_dec_s": 1.6
+    },
+    "fg0dt": {
+     "flags": 52,
+     "total": 16506880,
+     "used": 16503849,
+     "length_table": 13420,
+     "scale_payload": 138438,
+     "weight_payload": 16351943,
+     "sha256": "52a945eee81c1436b4af15b5b6b010d81da86c209427e455f1443716fcd29834",
+     "sha256_equal_to_reference": true,
+     "verified": true,
+     "mine_byte_exact": true,
+     "mine_status": "accepted",
+     "mine_stage": null,
+     "mine_ceilref_reject": false,
+     "mine_dec_s": 2.7,
+     "ceilref_decoder_byte_exact": true,
+     "ceilref_dec_s": 1.6
+    },
+    "fg0dh": {
+     "flags": 28,
+     "total": 16547840,
+     "used": 16545452,
+     "length_table": 13368,
+     "scale_payload": 139093,
+     "weight_payload": 16392943,
+     "sha256": "6159b7b28969678bae9134e044dab04d125c1c2088856425385544e49a8c506e",
+     "sha256_equal_to_reference": true,
+     "verified": true,
+     "mine_byte_exact": true,
+     "mine_status": "accepted",
+     "mine_stage": null,
+     "mine_ceilref_reject": false,
+     "mine_dec_s": 2.7
+    },
+    "fg0dtD": {
+     "flags": 180,
+     "total": 16506880,
+     "used": 16503853,
+     "length_table": 13420,
+     "scale_payload": 138438,
+     "weight_payload": 16351943,
+     "sha256": "bbfac9677256bfbfa5f88ba11ddbd9367ecb9d75408b4a82ee26448f7b071cd9",
+     "sha256_equal_to_reference": true,
+     "verified": true,
+     "mine_byte_exact": true,
+     "mine_status": "accepted",
+     "mine_stage": null,
+     "mine_ceilref_reject": false,
+     "mine_dec_s": 2.7,
+     "digest": 3567591131
+    }
+   },
+   "reused": false
+  },
+  {
+   "idx": 159,
+   "file": "L39_E156.bin",
+   "layer": 39,
+   "expert": 156,
+   "model_id": 2694569643,
+   "model_sha256": "e5612c1a7743940544e3133246d9957afbc25150daf85b93fdaa07e6da5b352b",
+   "ceil": {
+    "blocks": [
+     368640,
+     368640,
+     368640
+    ],
+    "even": [
+     93805,
+     67862,
+     90292
+    ],
+    "below6": [
+     0,
+     0,
+     0
+    ],
+    "overflow": [
+     0,
+     0,
+     0
+    ]
+   },
+   "encode_s": 9.6,
+   "kinds": {
+    "fg0d": {
+     "flags": 20,
+     "total": 16732160,
+     "used": 16731566,
+     "length_table": 17368,
+     "scale_payload": 139184,
+     "weight_payload": 16574966,
+     "sha256": "5234a63ad131a9b6bcc372df4e6e952b3752ca04a668c5ac2fd54f12a6b48357",
+     "sha256_equal_to_reference": true,
+     "verified": true,
+     "mine_byte_exact": true,
+     "mine_status": "accepted",
+     "mine_stage": null,
+     "mine_ceilref_reject": false,
+     "mine_dec_s": 2.9,
+     "ceilref_decoder_byte_exact": true,
+     "ceilref_dec_s": 1.6
+    },
+    "fg0de": {
+     "flags": 28,
+     "total": 16736256,
+     "used": 16732950,
+     "length_table": 17356,
+     "scale_payload": 139356,
+     "weight_payload": 16576190,
+     "sha256": "8b74d1be0a639b9acb19933e52dcf8cd01c00ed965843770ec58c3b693444823",
+     "sha256_equal_to_reference": true,
+     "verified": true,
+     "mine_byte_exact": true,
+     "mine_status": "accepted",
+     "mine_stage": null,
+     "mine_ceilref_reject": false,
+     "mine_dec_s": 2.8,
+     "ceilref_decoder_byte_exact": true,
+     "ceilref_dec_s": 1.6
+    },
+    "fg0dt": {
+     "flags": 52,
+     "total": 16691200,
+     "used": 16690771,
+     "length_table": 17336,
+     "scale_payload": 138650,
+     "weight_payload": 16534737,
+     "sha256": "d84fa527118459162842eec4c2fe7016a9b33042446292e7e8e465c82adada97",
+     "sha256_equal_to_reference": true,
+     "verified": true,
+     "mine_byte_exact": true,
+     "mine_status": "accepted",
+     "mine_stage": null,
+     "mine_ceilref_reject": false,
+     "mine_dec_s": 2.7,
+     "ceilref_decoder_byte_exact": true,
+     "ceilref_dec_s": 1.6
+    },
+    "fg0dh": {
+     "flags": 28,
+     "total": 16736256,
+     "used": 16732914,
+     "length_table": 17356,
+     "scale_payload": 139346,
+     "weight_payload": 16576164,
+     "sha256": "70471956b08e838ff0b58edaaa2e06c6e11db3f6a7d975c794c5d5c6b10a0056",
+     "sha256_equal_to_reference": true,
+     "verified": true,
+     "mine_byte_exact": true,
+     "mine_status": "accepted",
+     "mine_stage": null,
+     "mine_ceilref_reject": false,
+     "mine_dec_s": 2.8
+    },
+    "fg0dtD": {
+     "flags": 180,
+     "total": 16691200,
+     "used": 16690775,
+     "length_table": 17336,
+     "scale_payload": 138650,
+     "weight_payload": 16534737,
+     "sha256": "5369d199f856bc58bccb9fb7c46e0a67f3fb12de4e7ca3c14f769ad20f8d79fe",
+     "sha256_equal_to_reference": true,
+     "verified": true,
+     "mine_byte_exact": true,
+     "mine_status": "accepted",
+     "mine_stage": null,
+     "mine_ceilref_reject": false,
+     "mine_dec_s": 2.7,
+     "digest": 625911374
+    }
+   },
+   "reused": false
+  }
+ ],
+ "records_seconds": 29.1,
+ "records_sha256_equal_to_reference": {
+  "equal": 10,
+  "different": 0,
+  "no_reference": 0
+ },
+ "cases_seconds": 19.9,
+ "validate_seconds": 23.7,
+ "validate": {
+  "n_each": 5,
+  "n_full": 1,
+  "all_agree": true,
+  "full_consistent": true,
+  "per_case_rule": {
+   "A": {
+    "R0": {
+     "checked": 10,
+     "agree": 10,
+     "silent_checked": 5,
+     "full_decoder_checked": 2,
+     "full_decoder_consistent": true
+    },
+    "HASH": {
+     "checked": 5,
+     "agree": 5,
+     "silent_checked": 0,
+     "full_decoder_checked": 1,
+     "full_decoder_consistent": true
+    },
+    "HASH32": {
+     "checked": 5,
+     "agree": 5,
+     "silent_checked": 0,
+     "full_decoder_checked": 0,
+     "full_decoder_consistent": true
+    },
+    "TAIL": {
+     "checked": 10,
+     "agree": 10,
+     "silent_checked": 5,
+     "full_decoder_checked": 2,
+     "full_decoder_consistent": true
+    },
+    "TAILD": {
+     "checked": 5,
+     "agree": 5,
+     "silent_checked": 0,
+     "full_decoder_checked": 0,
+     "full_decoder_consistent": true
+    }
+   },
+   "K": {
+    "R0": {
+     "checked": 7,
+     "agree": 7,
+     "silent_checked": 2,
+     "full_decoder_checked": 2,
+     "full_decoder_consistent": true
+    },
+    "HASH": {
+     "checked": 5,
+     "agree": 5,
+     "silent_checked": 0,
+     "full_decoder_checked": 1,
+     "full_decoder_consistent": true
+    },
+    "HASH32": {
+     "checked": 5,
+     "agree": 5,
+     "silent_checked": 0,
+     "full_decoder_checked": 0,
+     "full_decoder_consistent": true
+    },
+    "TAIL": {
+     "checked": 5,
+     "agree": 5,
+     "silent_checked": 0,
+     "full_decoder_checked": 1,
+     "full_decoder_consistent": true
+    },
+    "TAILD": {
+     "checked": 5,
+     "agree": 5,
+     "silent_checked": 0,
+     "full_decoder_checked": 0,
+     "full_decoder_consistent": true
+    }
+   }
+  }
+ },
+ "gates": {
+  "h32_selftest": true,
+  "records_byte_exact": true,
+  "cases_without_error": true,
+  "controls_clean_all_accepted": true,
+  "strong_rules_zero_silent": true,
+  "validate_paths_agree": true,
+  "random_flip_target_met": false
+ },
+ "strong_rule_silent_by_case": {
+  "HASH": {},
+  "HASH32": {},
+  "TAILD": {}
+ },
+ "random_flip_trials_per_matrix": {
+  "R0": {
+   "A": {
+    "w1": 2000,
+    "w2": 2000,
+    "w3": 2000
+   },
+   "K": {
+    "w1": 600,
+    "w2": 600,
+    "w3": 600
+   }
+  },
+  "HASH": {
+   "A": {
+    "w1": 2000,
+    "w2": 2000,
+    "w3": 2000
+   },
+   "K": {
+    "w1": 600,
+    "w2": 600,
+    "w3": 600
+   }
+  },
+  "HASH32": {
+   "A": {
+    "w1": 2000,
+    "w2": 2000,
+    "w3": 2000
+   },
+   "K": {
+    "w1": 600,
+    "w2": 600,
+    "w3": 600
+   }
+  },
+  "TAIL": {
+   "A": {
+    "w1": 2000,
+    "w2": 2000,
+    "w3": 2000
+   },
+   "K": {
+    "w1": 600,
+    "w2": 600,
+    "w3": 600
+   }
+  },
+  "TAILD": {
+   "A": {
+    "w1": 2000,
+    "w2": 2000,
+    "w3": 2000
+   },
+   "K": {
+    "w1": 600,
+    "w2": 600,
+    "w3": 600
+   }
+  }
+ },
+ "expected_chance_acceptances": {
+  "HASH": {
+   "corruption_trials": 34954,
+   "expected_chance_acceptances": 0.004166841506958008
+  },
+  "HASH32": {
+   "corruption_trials": 34954,
+   "expected_chance_acceptances": 0.004166841506958008
+  },
+  "TAILD": {
+   "corruption_trials": 34954,
+   "expected_chance_acceptances": 8.138362318277359e-06
+  }
+ },
+ "headline": {
+  "R0": {
+   "random_flip": {
+    "A": {
+     "w1": {
+      "trials": 2000,
+      "silent": 6,
+      "rate": 0.003,
+      "ci95": [
+       0.0011017182250136204,
+       0.006518218609975257
+      ]
+     },
+     "w2": {
+      "trials": 2000,
+      "silent": 9,
+      "rate": 0.0045,
+      "ci95": [
+       0.0020596885284815533,
+       0.008525141240993846
+      ]
+     },
+     "w3": {
+      "trials": 2000,
+      "silent": 12,
+      "rate": 0.006,
+      "ci95": [
+       0.0031040162823716983,
+       0.010457313821793563
+      ]
+     },
+     "all": {
+      "trials": 6000,
+      "silent": 27,
+      "rate": 0.0045,
+      "ci95": [
+       0.0029675597955251655,
+       0.006540559187120206
+      ]
+     }
+    },
+    "K": {
+     "w1": {
+      "trials": 600,
+      "silent": 0,
+      "rate": 0.0,
+      "ci95": [
+       0.0,
+       0.00612927133066926
+      ]
+     },
+     "w2": {
+      "trials": 600,
+      "silent": 0,
+      "rate": 0.0,
+      "ci95": [
+       0.0,
+       0.00612927133066926
+      ]
+     },
+     "w3": {
+      "trials": 600,
+      "silent": 2,
+      "rate": 0.0033333333333333335,
+      "ci95": [
+       0.0004039373604422486,
+       0.011988833958652013
+      ]
+     },
+     "all": {
+      "trials": 1800,
+      "silent": 2,
+      "rate": 0.0011111111111111111,
+      "ci95": [
+       0.00013458904635997191,
+       0.004007894479330866
+      ]
+     }
+    }
+   },
+   "per_case_trials_silent_blockflip": {
+    "W0": [
+     6000,
+     0,
+     0
+    ],
+    "A": [
+     6000,
+     27,
+     0
+    ],
+    "B": [
+     1800,
+     0,
+     0
+    ],
+    "C": [
+     1800,
+     3,
+     0
+    ],
+    "D": [
+     1800,
+     0,
+     0
+    ],
+    "E": [
+     1800,
+     0,
+     0
+    ],
+    "F": [
+     1800,
+     0,
+     0
+    ],
+    "G": [
+     1800,
+     0,
+     0
+    ],
+    "H": [
+     1800,
+     0,
+     0
+    ],
+    "I": [
+     1800,
+     1800,
+     1800
+    ],
+    "J": [
+     1800,
+     0,
+     0
+    ],
+    "T": [
+     1800,
+     1800,
+     141
+    ],
+    "M2": [
+     1800,
+     0,
+     0
+    ],
+    "N1": [
+     1800,
+     0,
+     0
+    ],
+    "N2": [
+     1800,
+     0,
+     0
+    ],
+    "N3": [
+     1800,
+     0,
+     0
+    ],
+    "S0": [
+     360,
+     0,
+     0
+    ],
+    "K": [
+     1800,
+     2,
+     0
+    ],
+    "L": [
+     720,
+     0,
+     0
+    ],
+    "M3": [
+     360,
+     0,
+     0
+    ],
+    "N4": [
+     360,
+     0,
+     0
+    ],
+    "N5": [
+     360,
+     0,
+     0
+    ],
+    "M1": [
+     100,
+     0,
+     0
+    ],
+    "P1": [
+     2,
+     0,
+     0
+    ],
+    "P2": [
+     40,
+     0,
+     0
+    ],
+    "P3": [
+     8,
+     0,
+     0
+    ],
+    "O": [
+     4,
+     4,
+     4
+    ]
+   },
+   "corruption_trials_total": 34954,
+   "silent_total": 3636,
+   "silent_with_block_flip_total": 1945,
+   "max_err_units_silent": 1.361129467683754e+39,
+   "max_err_abs_silent": 8.507059173023462e+37
+  },
+  "HASH": {
+   "random_flip": {
+    "A": {
+     "w1": {
+      "trials": 2000,
+      "silent": 0,
+      "rate": 0.0,
+      "ci95": [
+       0.0,
+       0.0018427397934059368
+      ]
+     },
+     "w2": {
+      "trials": 2000,
+      "silent": 0,
+      "rate": 0.0,
+      "ci95": [
+       0.0,
+       0.0018427397934059368
+      ]
+     },
+     "w3": {
+      "trials": 2000,
+      "silent": 0,
+      "rate": 0.0,
+      "ci95": [
+       0.0,
+       0.0018427397934059368
+      ]
+     },
+     "all": {
+      "trials": 6000,
+      "silent": 0,
+      "rate": 0.0,
+      "ci95": [
+       0.0,
+       0.0006146242834176392
+      ]
+     }
+    },
+    "K": {
+     "w1": {
+      "trials": 600,
+      "silent": 0,
+      "rate": 0.0,
+      "ci95": [
+       0.0,
+       0.00612927133066926
+      ]
+     },
+     "w2": {
+      "trials": 600,
+      "silent": 0,
+      "rate": 0.0,
+      "ci95": [
+       0.0,
+       0.00612927133066926
+      ]
+     },
+     "w3": {
+      "trials": 600,
+      "silent": 0,
+      "rate": 0.0,
+      "ci95": [
+       0.0,
+       0.00612927133066926
+      ]
+     },
+     "all": {
+      "trials": 1800,
+      "silent": 0,
+      "rate": 0.0,
+      "ci95": [
+       0.0,
+       0.002047278934303034
+      ]
+     }
+    }
+   },
+   "per_case_trials_silent_blockflip": {
+    "W0": [
+     6000,
+     0,
+     0
+    ],
+    "A": [
+     6000,
+     0,
+     0
+    ],
+    "B": [
+     1800,
+     0,
+     0
+    ],
+    "C": [
+     1800,
+     0,
+     0
+    ],
+    "D": [
+     1800,
+     0,
+     0
+    ],
+    "E": [
+     1800,
+     0,
+     0
+    ],
+    "F": [
+     1800,
+     0,
+     0
+    ],
+    "G": [
+     1800,
+     0,
+     0
+    ],
+    "H": [
+     1800,
+     0,
+     0
+    ],
+    "I": [
+     1800,
+     0,
+     0
+    ],
+    "J": [
+     1800,
+     0,
+     0
+    ],
+    "T": [
+     1800,
+     0,
+     0
+    ],
+    "M2": [
+     1800,
+     0,
+     0
+    ],
+    "N1": [
+     1800,
+     0,
+     0
+    ],
+    "N2": [
+     1800,
+     0,
+     0
+    ],
+    "N3": [
+     1800,
+     0,
+     0
+    ],
+    "S0": [
+     360,
+     0,
+     0
+    ],
+    "K": [
+     1800,
+     0,
+     0
+    ],
+    "L": [
+     720,
+     0,
+     0
+    ],
+    "M3": [
+     360,
+     0,
+     0
+    ],
+    "N4": [
+     360,
+     0,
+     0
+    ],
+    "N5": [
+     360,
+     0,
+     0
+    ],
+    "M1": [
+     100,
+     0,
+     0
+    ],
+    "P1": [
+     2,
+     0,
+     0
+    ],
+    "P2": [
+     40,
+     0,
+     0
+    ],
+    "P3": [
+     8,
+     0,
+     0
+    ],
+    "O": [
+     4,
+     0,
+     0
+    ]
+   },
+   "corruption_trials_total": 34954,
+   "silent_total": 0,
+   "silent_with_block_flip_total": 0,
+   "max_err_units_silent": 0.0,
+   "max_err_abs_silent": 0.0
+  },
+  "HASH32": {
+   "random_flip": {
+    "A": {
+     "w1": {
+      "trials": 2000,
+      "silent": 0,
+      "rate": 0.0,
+      "ci95": [
+       0.0,
+       0.0018427397934059368
+      ]
+     },
+     "w2": {
+      "trials": 2000,
+      "silent": 0,
+      "rate": 0.0,
+      "ci95": [
+       0.0,
+       0.0018427397934059368
+      ]
+     },
+     "w3": {
+      "trials": 2000,
+      "silent": 0,
+      "rate": 0.0,
+      "ci95": [
+       0.0,
+       0.0018427397934059368
+      ]
+     },
+     "all": {
+      "trials": 6000,
+      "silent": 0,
+      "rate": 0.0,
+      "ci95": [
+       0.0,
+       0.0006146242834176392
+      ]
+     }
+    },
+    "K": {
+     "w1": {
+      "trials": 600,
+      "silent": 0,
+      "rate": 0.0,
+      "ci95": [
+       0.0,
+       0.00612927133066926
+      ]
+     },
+     "w2": {
+      "trials": 600,
+      "silent": 0,
+      "rate": 0.0,
+      "ci95": [
+       0.0,
+       0.00612927133066926
+      ]
+     },
+     "w3": {
+      "trials": 600,
+      "silent": 0,
+      "rate": 0.0,
+      "ci95": [
+       0.0,
+       0.00612927133066926
+      ]
+     },
+     "all": {
+      "trials": 1800,
+      "silent": 0,
+      "rate": 0.0,
+      "ci95": [
+       0.0,
+       0.002047278934303034
+      ]
+     }
+    }
+   },
+   "per_case_trials_silent_blockflip": {
+    "W0": [
+     6000,
+     0,
+     0
+    ],
+    "A": [
+     6000,
+     0,
+     0
+    ],
+    "B": [
+     1800,
+     0,
+     0
+    ],
+    "C": [
+     1800,
+     0,
+     0
+    ],
+    "D": [
+     1800,
+     0,
+     0
+    ],
+    "E": [
+     1800,
+     0,
+     0
+    ],
+    "F": [
+     1800,
+     0,
+     0
+    ],
+    "G": [
+     1800,
+     0,
+     0
+    ],
+    "H": [
+     1800,
+     0,
+     0
+    ],
+    "I": [
+     1800,
+     0,
+     0
+    ],
+    "J": [
+     1800,
+     0,
+     0
+    ],
+    "T": [
+     1800,
+     0,
+     0
+    ],
+    "M2": [
+     1800,
+     0,
+     0
+    ],
+    "N1": [
+     1800,
+     0,
+     0
+    ],
+    "N2": [
+     1800,
+     0,
+     0
+    ],
+    "N3": [
+     1800,
+     0,
+     0
+    ],
+    "S0": [
+     360,
+     0,
+     0
+    ],
+    "K": [
+     1800,
+     0,
+     0
+    ],
+    "L": [
+     720,
+     0,
+     0
+    ],
+    "M3": [
+     360,
+     0,
+     0
+    ],
+    "N4": [
+     360,
+     0,
+     0
+    ],
+    "N5": [
+     360,
+     0,
+     0
+    ],
+    "M1": [
+     100,
+     0,
+     0
+    ],
+    "P1": [
+     2,
+     0,
+     0
+    ],
+    "P2": [
+     40,
+     0,
+     0
+    ],
+    "P3": [
+     8,
+     0,
+     0
+    ],
+    "O": [
+     4,
+     0,
+     0
+    ]
+   },
+   "corruption_trials_total": 34954,
+   "silent_total": 0,
+   "silent_with_block_flip_total": 0,
+   "max_err_units_silent": 0.0,
+   "max_err_abs_silent": 0.0
+  },
+  "TAIL": {
+   "random_flip": {
+    "A": {
+     "w1": {
+      "trials": 2000,
+      "silent": 16,
+      "rate": 0.008,
+      "ci95": [
+       0.0045794046613844355,
+       0.012959068588470107
+      ]
+     },
+     "w2": {
+      "trials": 2000,
+      "silent": 14,
+      "rate": 0.007,
+      "ci95": [
+       0.0038320939003653803,
+       0.011716945770531437
+      ]
+     },
+     "w3": {
+      "trials": 2000,
+      "silent": 17,
+      "rate": 0.0085,
+      "ci95": [
+       0.004959135021764229,
+       0.01357454619973076
+      ]
+     },
+     "all": {
+      "trials": 6000,
+      "silent": 47,
+      "rate": 0.007833333333333333,
+      "ci95": [
+       0.005761153004102791,
+       0.010403204129155998
+      ]
+     }
+    },
+    "K": {
+     "w1": {
+      "trials": 600,
+      "silent": 0,
+      "rate": 0.0,
+      "ci95": [
+       0.0,
+       0.00612927133066926
+      ]
+     },
+     "w2": {
+      "trials": 600,
+      "silent": 0,
+      "rate": 0.0,
+      "ci95": [
+       0.0,
+       0.00612927133066926
+      ]
+     },
+     "w3": {
+      "trials": 600,
+      "silent": 0,
+      "rate": 0.0,
+      "ci95": [
+       0.0,
+       0.00612927133066926
+      ]
+     },
+     "all": {
+      "trials": 1800,
+      "silent": 0,
+      "rate": 0.0,
+      "ci95": [
+       0.0,
+       0.002047278934303034
+      ]
+     }
+    }
+   },
+   "per_case_trials_silent_blockflip": {
+    "W0": [
+     6000,
+     0,
+     0
+    ],
+    "A": [
+     6000,
+     47,
+     15
+    ],
+    "B": [
+     1800,
+     1719,
+     100
+    ],
+    "C": [
+     1800,
+     4,
+     0
+    ],
+    "D": [
+     1800,
+     6,
+     2
+    ],
+    "E": [
+     1800,
+     7,
+     4
+    ],
+    "F": [
+     1800,
+     0,
+     0
+    ],
+    "G": [
+     1800,
+     0,
+     0
+    ],
+    "H": [
+     1800,
+     1,
+     1
+    ],
+    "I": [
+     1800,
+     1800,
+     1800
+    ],
+    "J": [
+     1800,
+     1,
+     1
+    ],
+    "T": [
+     1800,
+     1800,
+     141
+    ],
+    "M2": [
+     1800,
+     0,
+     0
+    ],
+    "N1": [
+     1800,
+     0,
+     0
+    ],
+    "N2": [
+     1800,
+     0,
+     0
+    ],
+    "N3": [
+     1800,
+     0,
+     0
+    ],
+    "S0": [
+     360,
+     0,
+     0
+    ],
+    "K": [
+     1800,
+     0,
+     0
+    ],
+    "L": [
+     720,
+     1,
+     0
+    ],
+    "M3": [
+     360,
+     0,
+     0
+    ],
+    "N4": [
+     360,
+     0,
+     0
+    ],
+    "N5": [
+     360,
+     0,
+     0
+    ],
+    "M1": [
+     100,
+     0,
+     0
+    ],
+    "P1": [
+     2,
+     0,
+     0
+    ],
+    "P2": [
+     40,
+     0,
+     0
+    ],
+    "P3": [
+     8,
+     1,
+     0
+    ],
+    "O": [
+     4,
+     4,
+     4
+    ]
+   },
+   "corruption_trials_total": 34954,
+   "silent_total": 5391,
+   "silent_with_block_flip_total": 2068,
+   "max_err_units_silent": 252.0,
+   "max_err_abs_silent": 1.96875
+  },
+  "TAILD": {
+   "random_flip": {
+    "A": {
+     "w1": {
+      "trials": 2000,
+      "silent": 0,
+      "rate": 0.0,
+      "ci95": [
+       0.0,
+       0.0018427397934059368
+      ]
+     },
+     "w2": {
+      "trials": 2000,
+      "silent": 0,
+      "rate": 0.0,
+      "ci95": [
+       0.0,
+       0.0018427397934059368
+      ]
+     },
+     "w3": {
+      "trials": 2000,
+      "silent": 0,
+      "rate": 0.0,
+      "ci95": [
+       0.0,
+       0.0018427397934059368
+      ]
+     },
+     "all": {
+      "trials": 6000,
+      "silent": 0,
+      "rate": 0.0,
+      "ci95": [
+       0.0,
+       0.0006146242834176392
+      ]
+     }
+    },
+    "K": {
+     "w1": {
+      "trials": 600,
+      "silent": 0,
+      "rate": 0.0,
+      "ci95": [
+       0.0,
+       0.00612927133066926
+      ]
+     },
+     "w2": {
+      "trials": 600,
+      "silent": 0,
+      "rate": 0.0,
+      "ci95": [
+       0.0,
+       0.00612927133066926
+      ]
+     },
+     "w3": {
+      "trials": 600,
+      "silent": 0,
+      "rate": 0.0,
+      "ci95": [
+       0.0,
+       0.00612927133066926
+      ]
+     },
+     "all": {
+      "trials": 1800,
+      "silent": 0,
+      "rate": 0.0,
+      "ci95": [
+       0.0,
+       0.002047278934303034
+      ]
+     }
+    }
+   },
+   "per_case_trials_silent_blockflip": {
+    "W0": [
+     6000,
+     0,
+     0
+    ],
+    "A": [
+     6000,
+     0,
+     0
+    ],
+    "B": [
+     1800,
+     0,
+     0
+    ],
+    "C": [
+     1800,
+     0,
+     0
+    ],
+    "D": [
+     1800,
+     0,
+     0
+    ],
+    "E": [
+     1800,
+     0,
+     0
+    ],
+    "F": [
+     1800,
+     0,
+     0
+    ],
+    "G": [
+     1800,
+     0,
+     0
+    ],
+    "H": [
+     1800,
+     0,
+     0
+    ],
+    "I": [
+     1800,
+     0,
+     0
+    ],
+    "J": [
+     1800,
+     0,
+     0
+    ],
+    "T": [
+     1800,
+     0,
+     0
+    ],
+    "M2": [
+     1800,
+     0,
+     0
+    ],
+    "N1": [
+     1800,
+     0,
+     0
+    ],
+    "N2": [
+     1800,
+     0,
+     0
+    ],
+    "N3": [
+     1800,
+     0,
+     0
+    ],
+    "S0": [
+     360,
+     0,
+     0
+    ],
+    "K": [
+     1800,
+     0,
+     0
+    ],
+    "L": [
+     720,
+     0,
+     0
+    ],
+    "M3": [
+     360,
+     0,
+     0
+    ],
+    "N4": [
+     360,
+     0,
+     0
+    ],
+    "N5": [
+     360,
+     0,
+     0
+    ],
+    "M1": [
+     100,
+     0,
+     0
+    ],
+    "P1": [
+     2,
+     0,
+     0
+    ],
+    "P2": [
+     40,
+     0,
+     0
+    ],
+    "P3": [
+     8,
+     0,
+     0
+    ],
+    "O": [
+     4,
+     0,
+     0
+    ]
+   },
+   "corruption_trials_total": 34954,
+   "silent_total": 0,
+   "silent_with_block_flip_total": 0,
+   "max_err_units_silent": 0.0,
+   "max_err_abs_silent": 0.0
+  }
+ },
+ "pass_rule": "PASS = H32 self test, clean records byte-exact (own + ceil-ref decoder), W0/S0 controls all accepted identical, no case errors, 0 silent acceptances for every strong rule (HASH, HASH32, TAILD) in every case, record-level cross-check agrees. R0 and TAIL-alone acceptance and damage are reported, not gated. DONE = nothing failed but a gate was not run.",
+ "status": "PASS",
+ "seconds_total": 73.2
+}

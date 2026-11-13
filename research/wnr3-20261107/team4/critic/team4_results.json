@@ -1,0 +1,1397 @@
+{
+ "validators": [
+  {
+   "member": "ceil-ref",
+   "verdict": "This resumed run did not start any second copy of a job. No python job of this task was still running (the only python processes were two unrelated fake_coli.py web servers), and the previous attempt had already finished both held-out halves (results\\heldout_A.jsonl and heldout_B.jsonl, 360 rows each, last written 20:41). Checked on resume: 720/720 rows present (40 test experts = team 3's set [1,7,9,...,159] x 18 configs), 0 duplicates, 0 decode errors, all source sha256 OK, 0 ceil fallbacks. Every record decodes from bytes alone: byte-exact for the 12 non-c configs (480/480) and value-exact (-0 -> +0) for the 6 c configs (240/240). The WNR2 records are identical to team 3's (total, used, model_id 40/40). The model checks also pass: WNR2 model == team 3 even.npz, and count cross-checks vs team 3 and vs mxceil.py are 80/80 true. Real mean record bytes (4096-aligned), with raw = 18,800,640: WNR2 16,909,926.4 (0.89943); f 16,578,764.8 (0.88182, -1.761% of raw, CI -1.948..-1.632); fg 0.88179 (-1.764%); fgd 0.88039 (-1.905%); fgde 0.88048 (-1.895%); fgdt (tail seeding instead of e) 0.87827 (-2.116%); fga 0.88232 (-1.711%); fgaK2 0.88221 (-1.722%); fgc 0.85439 (-4.504%); fgcde 0.85309 (-4.634%). Increments, measured on unpadded bytes: d -25.8 KB (-0.137%); e +1,352 B; tail seeding -40.2 KB (-0.214%), so tail instead of hash = -41.5 KB (-0.221%); the 3-valued a costs +10.6 KB (+0.057%) and is worse on all 40 experts; K=2 on top of a gives -2.1 KB; c -514.8 KB (-2.738%). g as defined is a wash: -853 B, CI -17.0 KB..+15.1 KB. The reason is that both anchor rules flip once on ceil-form. The f median gives 120 instead of 121 on L24_E058 w1 (costs 217 KB). The densest-pair rule gives 121 on L39_E156 w2, a near tie (pair sums 349,985 vs 350,076), which costs 205-209 KB. A constant anchor of 120 (g0) is what every one of the 240 training matrices and 119/120 test matrices already use. Measured: g0 gives fg -1.791%, fgdt 0.87800 (-2.144%), fgcde 0.85282 (-4.661%), and g0 vs f = -6.0 KB (CI -17.0..-0.5 KB). The f-only cross-check holds. Real delta -331,067 B vs the code-length estimate with the same models on the same experts -331,072 B (difference 5 B, CI -17..+26). An independent estimate from the mxceil counts on the same 40 experts gives -331,088 B. Flush overhead cancels in the delta: same 19,440 streams, real flush = estimate - 0.50 B/stream (about 3.5 B). The quoted -1.81% is the all-160 / odd-80 figure (-1.803% / -1.846% in that estimate); the 40-expert test set is -1.761%, so the 0.045 pp gap comes from which experts are in the set, not from coding overhead. Fallback path tested in memory on L00_E113. A block with max 0, or an even block with scale 254, clears F and the record still decodes byte-exact. Scale 253 keeps F. A forged F flag on a plain record is rejected. A fallback record coded with the ceil-trained model costs +397 KB vs WNR2 on that expert.",
+   "findings": [
+    {
+     "claim": "Resume state: the previous attempt's held-out run was complete and correct; nothing was re-run except the missing summary, the fallback tests and a new constant-anchor variant",
+     "evidence": "No python process of this task running at 21:01 (only fake_coli.py PIDs 32444/33048). check_results.py: 720 rows, 18 configs, experts == team3 test set [4l+1 even l, 4l+3 odd l], missing 0, duplicates 0, decode failures 0, sha bad 0, fallbacks 0, record_bytes_check==total for all rows. WNR2 rows identical to team3 heldout_A/B (total, used, model_id) 40/40. counts\\check_p0.json and check_p1.json: t3_base/t3_a_bm7/t3_side/t3_s/t3_med/mxceil_w_ceil/mxceil_s_ceil/mxceil_even 40/40 each. models\\train_summary.json: check_wnr2_equals_team3_even_a0_K0_c0 wf=true scf=true",
+     "kind": "measured",
+     "impact": "All numbers below are real rANS record bytes from complete 40-expert held-out runs (the 20-expert fallback was not needed)",
+     "confidence": "high"
+    },
+    {
+     "claim": "Every record decodes back exactly: byte-exact for non-c configs, value-exact (nibble 8 -> 0) for c configs",
+     "evidence": "results\\heldout_summary.json decode_check: 40/40 for each of the 18 configs; byte_exact_vs_source 40/40 for wnr2,f,fg,fgd,fge,fgde,fgt,fgdt,fga,fgad,fgaK2,fgaK2d; 0/40 byte-exact but 40/40 value-exact for fgc,fgcd,fgce,fgcde,fgaK2ce,fgaK2cde. The decoder (wnr_common.py:812-934) reads only the record bytes, model tables, layer/expert ids and shapes; the decoded slab is compared with the source .bin (run_ceil.py:107-130). Plus 16/16 g0 records (results\\fixed120_L39.jsonl) equal to reference",
+     "kind": "measured",
+     "impact": "Lossless (or value-exact with c) for all 736 records",
+     "confidence": "high"
+    },
+    {
+     "claim": "f (ceil-form) real record: 16,578,764.8 B mean, ratio 0.88182, -1.761% of raw vs WNR2 (CI -1.948..-1.632), median expert -1.656%",
+     "evidence": "results\\heldout_summary.json configs.f; delta total -331,161.6 B, CI [-366,902, -306,586] B; weight payload 16,402,894.8 vs 16,722,151.7 B; scale payload 134,849.5 vs 146,675.6 B; bit/w 3.7801 -> 3.7080, bit/scale 1.0610 -> 0.9755 (both include the flush)",
+     "kind": "measured",
+     "impact": "ceil-form alone is worth 1.76% of raw on real records in the team 3 held-out protocol",
+     "confidence": "high"
+    },
+    {
+     "claim": "The f delta matches the entropy estimate: the 0.045 pp gap to the quoted -1.81% comes from which experts are tested, not from flush or coding overhead",
+     "evidence": "Code-length estimate with the same models on the same experts: -331,072.2 B vs real -331,067.1 B (real-est = 5.1 B, bootstrap CI -16.6..+26.2). Independent mxceil counts (est_subset_check.py, <RESEARCH-PC>\\v41-ceil) with even-trained models: test40 -331,088 B (-1.761%), odd80 -347,013 B (-1.846%), all160 -338,946 B (-1.803%). Real-minus-estimate flush = -0.50 B/stream (4-B flush assumed, about 3.5 B real) for both wnr2 and f, so it cancels in the delta (same 17,280 + 2,160 streams). Layers 32-39 give -2.366% in the estimate vs about -1.65% for the other layer bands; corr(even fraction, delta) = 0.67",
+     "kind": "measured",
+     "impact": "Confirms the -1.81% entropy figure for this subset; real coding loses nothing beyond the estimate",
+     "confidence": "high"
+    },
+    {
+     "claim": "g as specified (lower value of the densest adjacent pair) is a wash on ceil-form, because each anchor rule flips once among the 120 test matrices",
+     "evidence": "fg vs f used -853.1 B (CI -16,952..+15,062), 38/40 experts improved, median -742.5 B. Without the 2 flipped experts: mean -698 B, range -950..+200. L24_E058 w1: the f median gives 120 vs 121 elsewhere; G saves 217,350 B. L39_E156 w2: G gives 121 (transformed histogram 120:18,200, 121:331,785, 122:18,291; pair sums (120,121) = 349,985 vs (121,122) = 350,076); costs +209,760 B. Anchors from anchor_diag.py: training G 240/240 = 120, f median 239/240 = 121; test G 119/120 = 120. Code: wnr_common.py:206-209",
+     "kind": "measured",
+     "impact": "Per matrix, the densest-pair rule is unstable when the transformed scales sit on a single value with symmetric neighbours; the measured mean benefit is under 0.005% of raw",
+     "confidence": "high"
+    },
+    {
+     "claim": "g0 (constant anchor 120 stored in the existing median byte, decoder unchanged) avoids both flips",
+     "evidence": "run_fixed_anchor.py on L39_E156 (the only test expert whose G anchors are not all 120) gives -204,800..-212,992 B per config; merged in heldout_g0.jsonl. fg 16,573,132.8 B (0.88152, -1.791%, CI -1.992..-1.640); fgd -1.932%; fgde -1.922%; fgdt 16,506,880.0 (0.87800, -2.144%, CI -2.334..-1.992); fgc -4.532%; fgcde 16,033,587.2 (0.85282, -4.661%, CI -4.855..-4.512); g0 vs f -6,028 B (CI -16,967..-459). The fg models are exactly what a constant-120 rule trains, since all 240 training anchors are 120",
+     "kind": "measured",
+     "impact": "About -0.03% of raw on top of f; whether 120 is right for models other than V4.1 is untested",
+     "confidence": "medium"
+    },
+    {
+     "claim": "d (coded length table) saves 25.8 KB per record (-0.137% of raw) on ceil-form",
+     "evidence": "fgd vs fg used -25,791 B (CI -26,080..-25,483), 40/40 experts improved. Length table 38,880 -> 13,088.8 B; residual std 3.80 (scale streams) and 7.20 (weight streams). With c the table is 13,366 B (weight residual std 8.11)",
+     "kind": "measured",
+     "impact": "Matches the confirmed -0.12..-0.15% engineering item",
+     "confidence": "high"
+    },
+    {
+     "claim": "e (23-bit hash in x0) costs +1,352 B per record (+0.0072% of raw)",
+     "evidence": "fge vs fg +1,351.6 B (CI +1,339..+1,363); fgde vs fgd +1,353.8 B. Inferred check: 19,440 streams x E[log2(1+U)] = 0.557 bit / 8 = 1,353 B",
+     "kind": "measured",
+     "impact": "The hash is almost free in size",
+     "confidence": "high"
+    },
+    {
+     "claim": "Tail seeding (5 weight codes / 2 scale bytes in the start state) saves 40.2 KB per record (-0.214% of raw); used instead of e it is 41.5 KB smaller than d+e",
+     "evidence": "fgt vs fg -40,199 B (CI -40,265..-40,150); fgdt vs fgd -40,194 B; fgdt vs fgde -41,548 B (CI -41,618..-41,495), i.e. -0.221% of raw; 40/40 experts improved. fgdt 16,512,102.4 B (0.87827, -2.116% vs WNR2). Code: wnr_common.py:62, 675-676, 731-733, final check 398-405 (L <= x < L + 2^20 for weights, 2^16 for scales)",
+     "kind": "measured",
+     "impact": "The start-state conflict comes down to 0.22% of raw (tail seeding) vs the per-stream hash",
+     "confidence": "high"
+    },
+    {
+     "claim": "Tail seeding weakens the final-state integrity check from x == L (+h23) to a 2^20 / 2^16 window",
+     "evidence": "wnr_common.py:398-405",
+     "kind": "read-in-code",
+     "impact": "The acceptance rate for corrupted records with tail seeding was not measured; the 0.5% sign-flip hole from the team 2 audit stays open without e",
+     "confidence": "medium"
+    },
+    {
+     "claim": "The 3-valued side symbol a (block max 5/6/7 on ceil-form) makes records larger",
+     "evidence": "fga vs fg +10,642 B (CI +10,135..+11,524), 0/40 experts improved; side symbols cost 0.0332 bit/w. In-sample training bit/w: fg 3.6916 vs fga 3.6939 (models\\train_summary.json). Code: bm3 = clip(max-5,0,2) at wnr_common.py:285; side decode at 456-467",
+     "kind": "measured",
+     "impact": "Drop a on ceil-form. Inferred reason: what the max-7 bit carried on WNR2 data is now captured by the transform itself",
+     "confidence": "high"
+    },
+    {
+     "claim": "b with K=2 on top of a gives only -2.1 KB, and a+b stays worse than without them",
+     "evidence": "fgaK2 vs fga -2,087 B (CI -4,564..-601), 27/40 experts improved; fgaK2 -1.722% vs fg -1.764%; fgaK2cde vs fgcde +8,585 B (CI +6,900..+9,625). Training: 5-6 k-means iterations, clusters 153/87 (c0) and 154/86 (c1); test choice histogram [74,46]",
+     "kind": "measured",
+     "impact": "b is not worth it on ceil-form",
+     "confidence": "high"
+    },
+    {
+     "claim": "c (canonical zero) adds -2.738% of raw on top of fg; best measured combinations are fgcd 0.85302 and fgcde 0.85309 (g as defined), fgcde 0.85282 (g0)",
+     "evidence": "fgc vs fg -514,848 B (CI -515,456..-514,249); fgc 16,063,078.4 B (0.85439, -4.504%, CI -4.658..-4.381, median -4.401%); fgcde 16,038,707.2 B (0.85309, -4.634%, CI -4.790..-4.512, median -4.532%), bit/w 3.5917, bit/scale 0.9765",
+     "kind": "measured",
+     "impact": "Matches the brief's value-exact estimate (3.5920 bit/w, -4.55%)",
+     "confidence": "high"
+    },
+    {
+     "claim": "The ceil fallback works as specified, but a fallback record coded with the ceil-trained model is much larger than WNR2",
+     "evidence": "results\\test_ceil.json (expert idx 1, L00_E113, modified in memory). Synthetic: 200,000 blocks round trip equal, transformed max values {5,6,7}, canonical zero then ceil round trip equal. a) block max 0: F cleared, below6=[1,0,0], byte-exact for fg/fgdt and value-exact for fgaK2ce. b) even block scale 254: overflow=[0,1,0], F cleared, byte-exact. c) scale 253: F kept, byte-exact. d) unmodified: F kept. Forged F flag on a plain record with a max-0 block: rejected ('ceil: decoded block max < 5'). Fallback sizes: fg 17,285,120 B vs WNR2 16,887,808 B for the same expert (+397,312 B). Code: wnr_common.py:217-243, 250-265, 651-652",
+     "kind": "measured",
+     "impact": "0/40 test records and 0/80 training records fell back. A real format should code fallback records with a plain (WNR2) model",
+     "confidence": "high"
+    },
+    {
+     "claim": "Model and table sizes",
+     "evidence": "WNM2 blob (wnr2): 59,408 B (1,701 rows, 655 with training counts; compacted about 24,144 B). WNM3 f/fg/fgc: 59,708 B (+48-B header record, +300-B etab); used rows f 637, fg 572; compacted about 23,532 / 21,322 B. fga: 349,046 B (10,206 rows, 2,189 used, side CDFs 168 B, compacted about 76,468 B). fgaK2: 233,322 B (6,804 rows, 1,573 used, side CDFs 112 B, compacted about 55,468 B). Scale CDFs 1,542 B; etab 300 B",
+     "kind": "measured",
+     "impact": "a multiplies the table 6x, while ceil-form leaves the table size unchanged",
+     "confidence": "high"
+    },
+    {
+     "claim": "Reference codec speed per 18.8 MB record (NumPy lock-step, not optimised, 2 processes sharing the CPU)",
+     "evidence": "Median encode / decode: wnr2 3.00 / 2.78 s; f 3.35 / 3.10 s; fgdt 3.63 / 3.09 s; fgcde 3.71 / 3.13 s; fgaK2cde 3.94 / 2.58 s (heldout_summary.json timing_s)",
+     "kind": "measured",
+     "impact": "Shows only that the reference codec runs; not a measure of production decode speed",
+     "confidence": "medium"
+    }
+   ],
+   "numbers": [
+    {
+     "what": "raw record",
+     "value": "18,800,640 B",
+     "conditions": "35,389,440 weights + 1,105,920 scales; 17,280 weight + 2,160 scale streams"
+    },
+    {
+     "what": "WNR2 mean record total / ratio",
+     "value": "16,909,926.4 B / 0.89943 (used 16,907,739.3); bit/w 3.7801; bit/scale 1.0610; blob 59,408 B; 40/40 byte-exact",
+     "conditions": "40 odd test experts, models from 80 even experts; identical to team 3"
+    },
+    {
+     "what": "f",
+     "value": "16,578,764.8 B / 0.88182; d -1.761% raw (CI -1.948..-1.632), d -331,161.6 B (CI -366,902..-306,586), median -1.656%; bit/w 3.7080; bit/scale 0.9755; blob 59,708; 40/40 byte-exact; 0 fallbacks",
+     "conditions": "median anchor of transformed scales"
+    },
+    {
+     "what": "fg (g as defined)",
+     "value": "16,578,252.8 B / 0.88179; d -1.764% (CI -1.927..-1.640), median -1.656%; bit/w 3.7078; bit/scale 0.9755; 40/40 byte-exact",
+     "conditions": "densest-pair anchor"
+    },
+    {
+     "what": "fgd",
+     "value": "16,551,833.6 B / 0.88039; d -1.905% (CI -2.059..-1.781), median -1.808%; bit/w 3.7078; bit/scale 0.9755; length table 13,088.8 B; 40/40 byte-exact",
+     "conditions": ""
+    },
+    {
+     "what": "fge",
+     "value": "16,579,174.4 B / 0.88184; d -1.759% (CI -1.916..-1.636); bit/w 3.7081; bit/scale 0.9765; 40/40 byte-exact",
+     "conditions": ""
+    },
+    {
+     "what": "fgde",
+     "value": "16,553,676.8 B / 0.88048; d -1.895% (CI -2.049..-1.773), median -1.786%; bit/w 3.7081; bit/scale 0.9765; 40/40 byte-exact",
+     "conditions": ""
+    },
+    {
+     "what": "fgt",
+     "value": "16,537,804.8 B / 0.87964; d -1.979% (CI -2.134..-1.854), median -1.874%; bit/w 3.6988; bit/scale 0.9719; 40/40 byte-exact",
+     "conditions": "tail seeding k=5 weight codes, 2 scale bytes"
+    },
+    {
+     "what": "fgdt (d + tail seeding instead of e)",
+     "value": "16,512,102.4 B / 0.87827; d -2.116% (CI -2.272..-1.992), median -2.004%; bit/w 3.6988; bit/scale 0.9719; LT 13,094.1 B; 40/40 byte-exact",
+     "conditions": ""
+    },
+    {
+     "what": "fga (3-valued side symbol)",
+     "value": "16,588,185.6 B / 0.88232; d -1.711% (CI -1.869..-1.591), median -1.612%; bit/w 3.7102 (side symbols 0.0332); blob 349,046; 40/40 byte-exact",
+     "conditions": ""
+    },
+    {
+     "what": "fgad",
+     "value": "16,562,688.0 B / 0.88096; d -1.847% (CI -2.003..-1.724); 40/40 byte-exact",
+     "conditions": ""
+    },
+    {
+     "what": "fgaK2",
+     "value": "16,586,137.6 B / 0.88221; d -1.722% (CI -1.886..-1.592), median -1.612%; bit/w 3.7097; blob 233,322; 40/40 byte-exact",
+     "conditions": "K=2 k-means models shared across matrix types"
+    },
+    {
+     "what": "fgaK2d",
+     "value": "16,560,640.0 B / 0.88086; d -1.858% (CI -2.019..-1.729); 40/40 byte-exact",
+     "conditions": ""
+    },
+    {
+     "what": "fgc",
+     "value": "16,063,078.4 B / 0.85439; d -4.504% (CI -4.658..-4.381), median -4.401%; bit/w 3.5914; bit/scale 0.9755; 40/40 value-exact",
+     "conditions": "-0 -> +0"
+    },
+    {
+     "what": "fgcd",
+     "value": "16,037,273.6 B / 0.85302; d -4.642% (CI -4.797..-4.518), median -4.532%; 40/40 value-exact",
+     "conditions": ""
+    },
+    {
+     "what": "fgce",
+     "value": "16,064,307.2 B / 0.85446; d -4.498% (CI -4.655..-4.373); 40/40 value-exact",
+     "conditions": ""
+    },
+    {
+     "what": "fgcde",
+     "value": "16,038,707.2 B / 0.85309; d -4.634% (CI -4.790..-4.512), median -4.532%; bit/w 3.5917; bit/scale 0.9765; LT 13,366.8 B; 40/40 value-exact",
+     "conditions": ""
+    },
+    {
+     "what": "fgaK2ce / fgaK2cde",
+     "value": "16,073,318.4 B (0.85493, -4.450%) / 16,047,718.4 B (0.85357, -4.586%, CI -4.746..-4.459); 40/40 value-exact",
+     "conditions": ""
+    },
+    {
+     "what": "g0 (constant anchor 120) results",
+     "value": "fg 16,573,132.8 B (0.88152, -1.791%, CI -1.992..-1.640); fgd 0.88011 (-1.932%); fgde 0.88021 (-1.922%); fgdt 16,506,880.0 B (0.87800, -2.144%, CI -2.334..-1.992); fgc 0.85411 (-4.532%); fgcd 0.85275 (-4.669%); fgcde 16,033,587.2 B (0.85282, -4.661%, CI -4.855..-4.512)",
+     "conditions": "same models; L39_E156 re-encoded with anchor 120 (16 records, all equal to reference); other 39 experts already at 120"
+    },
+    {
+     "what": "pairwise increments (used bytes, mean, bootstrap CI)",
+     "value": "g: -853 (-16,952..+15,062); g0 vs f: -6,028 (-16,967..-459); d: -25,791 (-26,080..-25,483); e: +1,352 (+1,339..+1,363); t: -40,199 (-40,265..-40,150); t instead of e (fgdt vs fgde): -41,548 (-41,618..-41,495); a: +10,642 (+10,135..+11,524); K2 on a: -2,087 (-4,564..-601); c: -514,848 (-515,456..-514,249); a+K2 on c+d+e: +8,585 (+6,900..+9,625)",
+     "conditions": "40 test experts, 10,000 resamples, rng seed 20261107"
+    },
+    {
+     "what": "f entropy cross-check",
+     "value": "real -331,067.1 B vs same-model code-length estimate -331,072.2 B (diff 5.1 B, CI -16.6..+26.2); mxceil-count estimate on the same 40 experts -331,088 B (-1.761%); quoted -1.8058% equals the all-160 (-1.803%) / odd-80 (-1.846%) figure",
+     "conditions": "flush real = estimate - 0.50 B/stream (about 3.5 B), cancels in the delta"
+    },
+    {
+     "what": "flipped anchors",
+     "value": "L24_E058 w1 f median 120 (cost 217,350 B); L39_E156 w2 G pair 121 (pair sums 349,985 vs 350,076; cost 204,800-212,992 B by config)",
+     "conditions": "1/120 test matrices each"
+    },
+    {
+     "what": "fallback record size with ceil-trained model",
+     "value": "17,285,120 B (fg) vs WNR2 16,887,808 B, i.e. +397,312 B",
+     "conditions": "L00_E113 with one block set to 0, in memory"
+    },
+    {
+     "what": "model blobs",
+     "value": "wnr2 59,408; f/fg/fgc 59,708; fga 349,046; fgaK2/fgaK2c 233,322 B; used rows 655/637/572/2,189/1,573; compacted about 24,144/23,532/21,322/76,468/55,468 B",
+     "conditions": "14-bit CDFs, 17 u16 per weight row"
+    },
+    {
+     "what": "reference codec time per record (median enc/dec)",
+     "value": "wnr2 3.00/2.78 s; f 3.35/3.10 s; fgdt 3.63/3.09 s; fgcde 3.71/3.13 s",
+     "conditions": "NumPy reference, 2 concurrent processes, shared 8-core CPU"
+    }
+   ],
+   "files_written": [
+    "<RESEARCH-PC>\\team4\\ceil-ref\\check_results.py",
+    "<RESEARCH-PC>\\team4\\ceil-ref\\anchor_diag.py",
+    "<RESEARCH-PC>\\team4\\ceil-ref\\run_fixed_anchor.py",
+    "<RESEARCH-PC>\\team4\\ceil-ref\\merge_g0.py",
+    "<RESEARCH-PC>\\team4\\ceil-ref\\print_summary.py",
+    "<RESEARCH-PC>\\team4\\ceil-ref\\results\\heldout_summary.json",
+    "<RESEARCH-PC>\\team4\\ceil-ref\\results\\heldout_summary_g0.json",
+    "<RESEARCH-PC>\\team4\\ceil-ref\\results\\heldout_g0.jsonl",
+    "<RESEARCH-PC>\\team4\\ceil-ref\\results\\fixed120_L39.jsonl",
+    "<RESEARCH-PC>\\team4\\ceil-ref\\results\\fixed120_L39.log",
+    "<RESEARCH-PC>\\team4\\ceil-ref\\results\\test_ceil.json",
+    "<RESEARCH-PC>\\team4\\ceil-ref\\results\\test_ceil.log",
+    "<RESEARCH-PC>\\team4\\ceil-ref\\results\\heldout_A.jsonl (previous attempt, reused)",
+    "<RESEARCH-PC>\\team4\\ceil-ref\\results\\heldout_B.jsonl (previous attempt, reused)",
+    "<RESEARCH-PC>\\team4\\ceil-ref\\wnr_common.py (previous attempt, reused)",
+    "<RESEARCH-PC>\\team4\\ceil-ref\\run_ceil.py (previous attempt, reused)",
+    "<RESEARCH-PC>\\team4\\ceil-ref\\models\\even.npz (previous attempt, reused)"
+   ],
+   "open_questions": [
+    "Is a constant srel anchor (120 on ceil-form) safe for models other than V4.1, or should the rule be 'densest pair unless it is a near tie'? Measured here on 1 flip in 120 test matrices only.",
+    "How often does tail seeding accept corrupted streams? The final-state check becomes a 2^20 / 2^16 window and the 23-bit hash is lost. Not measured.",
+    "Fallback records should use a plain (WNR2) model id instead of the ceil-trained model (+397 KB measured); no V4.1 record needs a fallback, but other checkpoints might.",
+    "The CIs (about +-0.15 pp) are dominated by layers 32-39, where f gains about -2.37% vs about -1.65% elsewhere (estimate); 40 test experts were used, not all 80 odd-indexed experts.",
+    "Not run: fgct/fgcdt (c + tail seeding); they are defined in run_ceil.py but were not part of the required set. Expected from the measured increments: about fgcd - 40.2 KB."
+   ]
+  },
+  {
+   "member": "ceil-gpu",
+   "verdict": "The ceil-form inverse runs byte-exact inside the GPU rANS decoder on the RTX 3070 (sm_86). Across 3 independent paired runs with 41 rounds each, every non-diagnostic variant produced weight and scale slabs equal to the ORIGINAL safetensors bytes. That covers 8 launch configs (nt 32/64/128/256 x plain-store 'lb' / team-2 'out4'), 4 launch patterns and the full GPU pipeline (scale-stream decode, then weight decode with in-place scale fix-up): 352 checks in the final run, 0 bad streams and 0 invariant errors. The negative controls fail as they should (inverse off: 138,240/138,240 weight streams wrong; weight-only inverse: all 138,240 scale groups wrong). Bytes on team 2's 8 experts (in-sample model trained on all 160 experts, flush 4 B/stream): A259 16,963,218 B/record = 0.90227 of raw, ceil-form CF 16,573,694 B/record = 0.88155 (-2.30% of record, -2.07% of raw). That is weights 3.7917 -> 3.7079 bit/w plus scale streams 155,361 -> 136,654 B/record. CFD (+ sign bypass) is 0.88156 and CFDB2 0.88477 (-2.29% vs DB2). The A259, D and DB2 encodings are byte-identical in size to team 2's, which validates the copy. Cost depends on how the scale is fixed. The nibble LUT on the 4 register words is free: CF3/CF0 median 0.995-0.999. The literal per-block 1-byte scale store (CF, CEIL=1) is expensive: +0.3..+21%, median +15.7% for 1 record. The deferred variant (CF5) keeps a 64-bit mask per stream and rewrites at most 4 aligned 16-B scale words at the stream end. Its medians vs the same streams with the inverse off are +1.7% (1 matrix), +0.7% (1 record), +0.3% (8 records), range -2.4..+3.4%. Against A259 at the same config CF5 is 0.988-1.014 (median). Best-config times (final run): 1 matrix A259 300.0 / CF5 304.1 / D 280.6 / CFD5 276.5 / DB2 271.4 / CFDB2 270.3 us. 1 record A259 590.8 / CF5 565.2 / D 523.3 / CFD5 540.7 / DB2 415.7 / CFDB2 431.1 us. 8 records in one launch A259 4171.8 / CF5 4185.1 / D 3835.9 / CFD5 3848.2 / DB2 3230.7 / CFDB2 3307.5 us. The inverse adds 0 B of shared memory and 0-7 registers (CFDB2 +8-10 at nt128/256 lb, which costs occupancy 40->36/32 warps). The scale-stream GPU decoder adds ~45 us per record. The 5090 transfer is uncertain: one record there is ~3 warps/SM (latency-bound, like the 1-matrix case here, where CF5 costs about +1.7%), the L2 and store behaviour differ, and KAIRA's kernel (cp.async ring, 567 rows) is a different code base.",
+   "findings": [
+    {
+     "claim": "The ceil-form inverse is byte-exact on the GPU against the ORIGINAL safetensors weight and scale bytes, for every stream and every launch config tested.",
+     "evidence": "bench_final.json (<RESEARCH-PC>\\team4\\ceil-gpu\\out): 'byte-exact ... for all non-diagnostic variants: True' and 'pipeline checks all clean: True' (bench_final_table.txt:2-3). 352 checks = variants {A259,D,CF,CF5,CF6,CFD5,DB2,CFDB2} x 8 configs x {24-matrix single launch, 8 launches on 8 streams, 1-matrix and 3-matrix partial launches} + pipeline single/multi for A259,D,CF5,CFD5,DB2,CFDB2. Each check covers 138,240 weight streams (1024 B each) and 138,240 64-B scale groups, comparing d_out vs d_raw and the scale slab vs com['scales'] on the GPU (ceilbench.py:261-267). The same result held in bench_full.json and bench_run2.json (earlier runs of this member). Scale streams (sdec): 17,280 streams per set, orig and ceil, nt32-256, 0 bad.",
+     "kind": "measured",
+     "impact": "The ceil-form transform is implementable losslessly in the decoder kernel (precondition: no stored block with max < 6, measured 0 of 8,847,360 blocks here).",
+     "confidence": "high"
+    },
+    {
+     "claim": "The negative controls show the check is sensitive: with the inverse off, or with only the weight inverse, the outputs mismatch everywhere.",
+     "evidence": "bench_final.json diag: CF0/CFD0/CFDB20 (ceil-form streams, CEIL=0) weight_bad 138,240, scale_bad 138,240 in all 8 configs. CF3 (weight inverse only) weight_bad 0, scale_bad 138,240.",
+     "kind": "measured",
+     "impact": "A missing or partial inverse would be caught by this harness.",
+     "confidence": "high"
+    },
+    {
+     "claim": "The nibble LUT itself (magnitudes 0..5 -> 0,2,4,5,6,7, sign kept, applied to the 4 u32 register words when the running block max == 5) costs nothing measurable.",
+     "evidence": "SWAR f(m)=m+min(m,2): wnr2dec.cu:183-188, applied at wnr2dec.cu:310-315. Paired CF3/CF0 (same ceil streams, inverse on vs off), final run, 8 configs, min/median/max: m1 0.987/0.995/1.010, m3 0.991/0.997/1.007, m24 0.972/0.998/1.003, 8streams 0.964/0.999/1.003.",
+     "kind": "measured",
+     "impact": "The weight half of the inverse is free on sm_86. It sits off the rANS dependency chain (after the 32nd symbol, before the uint4 store).",
+     "confidence": "high"
+    },
+    {
+     "claim": "Writing the corrected scale byte per transformed block inside the block loop (the literal spec, CEIL=1) is expensive. A deferred end-of-stream patch (64-bit even mask, at most 4 aligned 16-B read-modify-writes per lane) brings the cost to about 0-2%.",
+     "evidence": "CF/CF0 (CEIL=1, byte store per transformed block, wnr2dec.cu:316-317), final run, min/median/max: m1 1.003/1.019/1.048, m3 1.012/1.157/1.205, m24 1.015/1.059/1.213, 8streams 1.017/1.058/1.208. CF5/CF0 (CEIL=5, wnr2dec.cu:199-215 and :321-327): m1 0.976/1.017/1.034, m3 0.986/1.007/1.022, m24 0.986/1.003/1.015, 8streams 0.983/1.003/1.018. Over all 3 runs (n=22): m1 0.976/1.014/1.034, m3 0.984/1.003/1.024, m24 0.983/1.002/1.017. CF6 (full 64-byte write, CEIL=6) is the same as CF5: m24 median 1.003.",
+     "kind": "measured",
+     "impact": "Use the deferred mask form (or full-slab write) in production, not per-block byte stores. The mask form also allows folding the fix-up into KAIRA's commit kernel, which already copies every scale byte (WNR2-REFERENCE.md:431); that fusion was not measured.",
+     "confidence": "high"
+    },
+    {
+     "claim": "At the same launch config, the ceil-form kernel with the deferred patch (CF5) runs at about the same speed as A259.",
+     "evidence": "CF5/A259 paired, final run, min/median/max over 8 configs: m1 0.976/1.014/1.033, m3 0.958/1.003/1.009, m24 0.944/0.988/1.014, 8streams 0.945/0.990/1.013. Pipeline (sdec<32> + wdec, in-place patch) CF5/A259: m1 1.012, m3 1.001, m24 0.990, 8streams 0.989 (medians). CF0/A259 m24 min 0.942 at nt64/lb: the lb high-occupancy configs are noisy and stream-dependent (team 2 'mem' finding), so the inverse cost is better read from the own ratio (CF5/CF0).",
+     "kind": "measured",
+     "impact": "Ceil-form gives -2.07% of raw bytes (in-sample) at roughly 0 to +1.5% kernel time on the 3070.",
+     "confidence": "high"
+    },
+    {
+     "claim": "Ceil-form combined with sign bypass costs about the same as sign bypass alone, for both one chain (CFD5 vs D) and two chains (CFDB2 vs DB2).",
+     "evidence": "Final run, min/median/max over 8 configs. CFD5/D: m1 0.974/0.985/1.032, m3 0.982/1.008/1.035, m24 0.991/0.993/1.019, 8streams 0.990/0.993/1.020. CFD5/CFD0: m24 median 1.000. CFDB2/DB2: m1 0.977/0.996/1.022, m3 0.973/1.002/1.032, m24 0.952/0.993/1.024, 8streams 0.972/0.989/1.022. CFDB2/CFDB20: m3 median 1.004, max 1.034 (nt64/out4).",
+     "kind": "measured",
+     "impact": "The fastest lossless combination is CFDB2: 0.88477 of raw and 3307.5 us per 8 records (413 us/record) vs A259 at 0.90227 and 4171.8 us (521 us/record) at their best configs on the 3070.",
+     "confidence": "high"
+    },
+    {
+     "claim": "Bytes per variant (8 team-2 experts, in-sample model over all 160 experts, flush 4 B/stream, u16 lengths, order-0 scale streams of 512): A259 0.90227, D 0.90227, CF 0.88155, CFD 0.88156, DB2 0.90548, CFDB2 0.88477 of the raw record.",
+     "evidence": "<RESEARCH-PC>\\team4\\ceil-gpu\\enc\\encode_report.json and encode_report_DB2_CFDB2.json. Per record (B): A259 16,963,218; D 16,963,203; CF 16,573,694; CFD 16,573,814; DB2 17,023,667; CFDB2 16,634,296. A259/D/DB2 weight payloads 134,186,379 / 98,796,815 / 99,280,529 B, identical to team 2's out\\enc8\\encode_report.json. Ceil scale streams 1,093,228 vs 1,242,888 B per 8 records (0.9573 vs 1.0926 bit/scale incl. flush).",
+     "kind": "measured",
+     "impact": "-2.07% of raw (in-sample, these 8 experts) vs the held-out -1.81% in measured-v41.md. Capacity +2.3% records.",
+     "confidence": "high"
+    },
+    {
+     "claim": "The transform preconditions hold on the 8 benchmark experts, and my own CPU implementation round-trips.",
+     "evidence": "encode_report.json 'transform': blocks 8,847,360, even 2,648,067 (29.93%), max_below_6 0, scale_overflow 0, cpu_roundtrip_fail_matrices 0, own_counts_eq_mxceil_counts_experts 8/8, sha256_ok 8/8. Code: ceilenc.py:42-66.",
+     "kind": "measured",
+     "impact": "Independent third implementation agrees with mxceil.py counts.",
+     "confidence": "high"
+    },
+    {
+     "claim": "Register and shared-memory cost: the inverse adds no shared memory and 0-7 registers. The exception is two-chain CFDB2 at nt128/256 lb, where +8-10 registers reduce occupancy.",
+     "evidence": "bench_final.json regs/smem/occW per config. A259 vs CF5: nt32/lb 74 vs 76; nt64 64 vs 64; nt128/256 lb 40 vs 40; nt32/out4 73 vs 80 (occW 7 unchanged); nt128/out4 and nt256/out4 40 vs 44 (occW unchanged, smem-limited). D vs CFD5: 76/76, 64/64, 40/40, 73/78, 66/64, 44/46. DB2 vs CFDB2: nt32/lb 112/113; nt128/lb 48/56 (occW 40->36); nt256/lb 48/57 (40->32); nt128/out4 48/56; nt256/out4 48/58 (occW 16 unchanged). Shared memory per block: A259/CF 8,304 B (lb), out4 adds nt*144 (12,912/17,520/26,736/45,168); D/CFD/DB2/CFDB2 4,160 (lb), 8,768/13,376/22,592/41,024 (out4). Local memory 0 everywhere. sdec: 16,912 B static smem, 78/75/75/44 regs at nt 32/64/128/256, 5 blocks/SM.",
+     "kind": "measured",
+     "impact": "No layout or occupancy obstacle on sm_86. Register pressure only matters for the two-chain variant.",
+     "confidence": "high"
+    },
+    {
+     "claim": "GPU scale-stream decode (order-0, 512 scales/stream) takes about 45 us per record and is the same for ceil-form and original scale streams.",
+     "evidence": "bench_final.json scale_decode_timing medians. orig/nt32 m1 50.2, m3 46.1, m24 182.3 us; ceil/nt32 m1 50.2, m3 45.3, m24 178.2 us; nt64 m3 44.0 both. Kernel: wnr2dec.cu:543-587 (16 KB slot->symbol LUT in shared memory). KAIRA's own scale kernel is 75 us/expert with cp.async ring (WNR2-REFERENCE.md:427).",
+     "kind": "measured",
+     "impact": "The full pipeline adds ~45-50 us per record on top of the weight kernel. Ceil-form makes it neither slower nor faster.",
+     "confidence": "high"
+    },
+    {
+     "claim": "Robustness caveat: the SWAR scale decrement in ceil_fix borrows into the neighbouring byte if a decoded transformed scale byte is 0. Valid data cannot produce this (transformed scale = original + 1 >= 1), but a corrupted stream could.",
+     "evidence": "wnr2dec.cu:208-211 uses plain u32 subtraction 'v.x -= ...'. __vsub4, or a validity check (bad |= transformed block with scale byte 0), would close it.",
+     "kind": "read-in-code",
+     "impact": "A production kernel should use per-byte subtraction or flag the case as an error.",
+     "confidence": "high"
+    },
+    {
+     "claim": "Caveat: the in-place pipeline variant passes the same buffer as the __restrict__ 'scales' input and the 'osc' output.",
+     "evidence": "wnr2dec.cu:218-223 (both pointers __restrict__) and ceilbench.py:321 (sc_in=buf, osc=buf). Each lane reads only its own 64 bytes, and reads them before writing, so it was verified byte-exact; formally, though, this is restrict aliasing.",
+     "kind": "read-in-code",
+     "impact": "Production code should drop __restrict__ on that pair or use a separate output (CF6 full-write semantics cost the same as CF5).",
+     "confidence": "high"
+    },
+    {
+     "claim": "Several 3070 results may not carry to the RTX 5090: the occupancy regime, the L2 and store behaviour, the compiler, and the KAIRA kernel differences.",
+     "evidence": "One record = 17,280 lanes = 540 warps: on 46 SMs that is ~11.7 warps/SM (about one wave at occW 10-16); on 170 SMs (WNR2-REFERENCE.md:432) it is ~3.2 warps/SM, latency-bound like our m1 case (5,760 lanes = 3.9 warps/SM). There the CF5 own-ratio is 0.976-1.034 (median 1.017): lb configs +1.7..+3.4%, out4 configs -2.4..0%. The CEIL=1 per-block byte-store penalty and the lb vs out4 gaps are memory-system effects; the 3070 has 4 MB L2, while the 5090 L2 is much larger (not measured here), and 8 records of output (~47 MB) could stay L2 resident. Register counts are sm_86/NVRTC (runtime 12090) only, and sm_120 ptxas may allocate differently. KAIRA's kernel uses a cp.async 64-word ring, 567-row table, separate 88 KB-smem scale kernel and commit kernel (WNR2-REFERENCE.md:425-431), so absolute us do not transfer: A259 here is ~520-590 us/record vs 0.2 ms/record on the 5090 in the brief. On the 5090 PCIe path (0.28 ms/record, PCIe-bound) the -2.07%-of-raw bytes shorten the upload ~2%, which matters more than a 0-1.5% kernel change.",
+     "kind": "inferred",
+     "impact": "Re-measure on the 5090 with KAIRA's kernel before deciding speed effects; the byte saving carries over unchanged.",
+     "confidence": "medium"
+    }
+   ],
+   "numbers": [
+    {
+     "what": "record bytes A259 (baseline)",
+     "value": "16,963,218 B/record = 0.90227 of raw 18,800,640",
+     "conditions": "8 team-2 experts [17,0,40,80,120,159,60,100], in-sample model over 160 experts, flush 4 B/stream, u16 lengths, scale streams 512/stream order-0"
+    },
+    {
+     "what": "record bytes CF (ceil-form, nibble alphabet)",
+     "value": "16,573,694 B/record = 0.88155 of raw; -2.296% vs A259 = -2.072% of raw",
+     "conditions": "same 8 experts; model retrained on ceil-form data of 160 experts (median on transformed scales = 121)"
+    },
+    {
+     "what": "record bytes D / CFD / DB2 / CFDB2",
+     "value": "16,963,203 (0.90227) / 16,573,814 (0.88156) / 17,023,667 (0.90548) / 16,634,296 (0.88477); CFDB2 -2.287% vs DB2",
+     "conditions": "sign plane 4 B per 32-block included; DB2 = 2 states, even/odd blocks"
+    },
+    {
+     "what": "weight bits rANS-only A259 -> CF",
+     "value": "3.79171 -> 3.70788 bit/w (-2.21%); D 2.79170 -> CFD 2.70791 + 1 raw sign bit",
+     "conditions": "8 experts, incl. 4-B flush per stream"
+    },
+    {
+     "what": "scale streams orig -> ceil",
+     "value": "1,242,888 -> 1,093,228 B per 8 records (1.0926 -> 0.9573 bit/scale payload incl. flush)",
+     "conditions": "17,280 streams, lengths 34,560 B included in totals"
+    },
+    {
+     "what": "in-sample model cost over 160 experts",
+     "value": "A259 3.76652 -> CF 3.69274 bit/w; scales 1.00467 -> 0.91635 bit/scale",
+     "conditions": "ideal entropy under quantized 14-bit CDFs, no flush"
+    },
+    {
+     "what": "even (transformed) blocks in the 8 experts",
+     "value": "2,648,067 of 8,847,360 = 29.93%; blocks with max<6: 0; scale overflow: 0",
+     "conditions": "ceilenc.py transform"
+    },
+    {
+     "what": "1 matrix (m1) best-config median",
+     "value": "A259 300.0 us; CF5 304.1 us (x1.014 vs A259, x1.017 vs CF0); D 280.6; CFD5 276.5 (x0.985 vs D); DB2 271.4; CFDB2 270.3 (x0.996 vs DB2)",
+     "conditions": "all nt32/lb, RTX 3070, final run, 41 paired rounds"
+    },
+    {
+     "what": "1 record (m3 = 3 matrices) best-config median",
+     "value": "A259 590.8 us (nt128/out4); CF5 565.2 (nt128/out4, x0.958 vs A259, x0.986 vs CF0); D 523.3 (nt64/out4); CFD5 540.7 (nt64/out4, x1.035 vs D); DB2 415.7 (nt64/out4); CFDB2 431.1 (nt64/out4, x1.032 vs DB2; at nt128/out4 447.5 = x0.998 vs DB2)",
+     "conditions": "final run, 41 rounds"
+    },
+    {
+     "what": "8 records single launch (m24) best-config median",
+     "value": "A259 4171.8 us (521.5/rec, nt64/out4); CF5 4185.1 (523.1/rec, x1.000); D 3835.9 (479.5/rec, nt32/out4); CFD5 3848.2 (481.0/rec, x1.003); DB2 3230.7 (403.8/rec, nt64/out4); CFDB2 3307.5 (413.4/rec, x1.024; nt128/out4 3524.6 = x0.993)",
+     "conditions": "final run, 41 rounds"
+    },
+    {
+     "what": "8 records as 8 launches on 8 streams, best median",
+     "value": "A259 4226.0; CF5 4234.2 (x1.004); D 3894.2; CFD5 3908.6 (x1.005); DB2 3287.4; CFDB2 3360.0 (x1.022) us",
+     "conditions": "final run, 41 rounds"
+    },
+    {
+     "what": "inverse cost, deferred patch CF5/CF0 min/median/max over 8 configs",
+     "value": "m1 0.976/1.017/1.034; m3 0.986/1.007/1.022; m24 0.986/1.003/1.015; 8streams 0.983/1.003/1.018",
+     "conditions": "same ceil streams, inverse on vs off, final run"
+    },
+    {
+     "what": "inverse cost, per-block byte store CF/CF0 min/median/max",
+     "value": "m1 1.003/1.019/1.048; m3 1.012/1.157/1.205; m24 1.015/1.059/1.213; 8streams 1.017/1.058/1.208",
+     "conditions": "CEIL=1, final run"
+    },
+    {
+     "what": "LUT-only cost CF3/CF0 median",
+     "value": "m1 0.995; m3 0.997; m24 0.998; 8streams 0.999",
+     "conditions": "final run, 8 configs"
+    },
+    {
+     "what": "CF5/A259 median (same config)",
+     "value": "m1 1.014; m3 1.003; m24 0.988; 8streams 0.990 (range 0.944-1.033)",
+     "conditions": "final run"
+    },
+    {
+     "what": "CFD5/D and CFDB2/DB2 median",
+     "value": "CFD5/D m1 0.985, m3 1.008, m24 0.993, 8str 0.993; CFDB2/DB2 m1 0.996, m3 1.002, m24 0.993, 8str 0.989",
+     "conditions": "final run, 8 configs"
+    },
+    {
+     "what": "registers A259/CF5, D/CFD5, DB2/CFDB2",
+     "value": "nt32/lb 74/76, 76/76, 112/113; nt64/lb 64/64 all; nt128/lb 40/40, 40/40, 48/56; nt256/lb 40/40, 40/40, 48/57; nt32/out4 73/80, 73/78, 114/114; nt64/out4 64/64, 66/64, 64/64; nt128/out4 40/44, 44/46, 48/56; nt256/out4 40/44, 44/46, 48/58",
+     "conditions": "sm_86 NVRTC (CUDA runtime 12090, driver 13050), __launch_bounds__(nt), 0 local memory"
+    },
+    {
+     "what": "shared memory per block",
+     "value": "16-symbol tables (A259/CF): 8,304 B lb; out4 12,912 / 17,520 / 26,736 / 45,168 B at nt 32/64/128/256. 8-symbol (D/CFD/DB2/CFDB2): 4,160 B lb; out4 8,768 / 13,376 / 22,592 / 41,024 B. Ceil inverse adds 0 B. sdec 16,912 B static",
+     "conditions": "smem = 16 + rows*alpha*2 (+ nt*144 for out4)"
+    },
+    {
+     "what": "occupancy warps/SM changed by inverse",
+     "value": "only CFDB2 nt128/lb 40->36 and nt256/lb 40->32; CF3 nt128/256 lb 43 regs (nt256 48->40); all others unchanged",
+     "conditions": "cudaOccupancyMaxActiveBlocksPerMultiprocessor"
+    },
+    {
+     "what": "GPU scale-stream decode (sdec) median",
+     "value": "orig nt32: m1 50.2, m3 46.1, m24 182.3 us; ceil nt32: 50.2, 45.3, 178.2 us; nt64 m3 44.0 both",
+     "conditions": "17,280 streams/8 records, 16 KB LUT in smem"
+    },
+    {
+     "what": "pipeline overhead (sdec<32> + wdec, in-place patch) vs weight kernel alone",
+     "value": "+45..50 us at m1/m3, +170..190 us at m24; PIPE CF5/A259 medians m1 1.012, m3 1.001, m24 0.990, 8str 0.989",
+     "conditions": "final run"
+    },
+    {
+     "what": "GPU checks in final run",
+     "value": "352 checks, 0 failing; each 138,240 weight streams + 138,240 scale groups vs original bytes",
+     "conditions": "bench_final.json; also clean in bench_full.json and bench_run2.json"
+    },
+    {
+     "what": "GPU state during final run",
+     "value": "start 210 MHz idle; end 2025 MHz SM, 6801 MHz mem, 98% util, 219 W, 70 C",
+     "conditions": "nvidia-smi, RTX 3070 46 SMs, WDDM"
+    }
+   ],
+   "files_written": [
+    "<RESEARCH-PC>\\team4\\ceil-gpu\\src\\wnr2dec.cu",
+    "<RESEARCH-PC>\\team4\\ceil-gpu\\src\\ceilenc.py",
+    "<RESEARCH-PC>\\team4\\ceil-gpu\\src\\ceilbench.py",
+    "<RESEARCH-PC>\\team4\\ceil-gpu\\src\\ceilsumm.py",
+    "<RESEARCH-PC>\\team4\\ceil-gpu\\src\\ceilbest.py",
+    "<RESEARCH-PC>\\team4\\ceil-gpu\\src\\ceilratios.py",
+    "<RESEARCH-PC>\\team4\\ceil-gpu\\src\\dbg_cfd.py",
+    "<RESEARCH-PC>\\team4\\ceil-gpu\\enc\\encode_report.json",
+    "<RESEARCH-PC>\\team4\\ceil-gpu\\enc\\encode_report_DB2_CFDB2.json",
+    "<RESEARCH-PC>\\team4\\ceil-gpu\\enc\\common.npz",
+    "<RESEARCH-PC>\\team4\\ceil-gpu\\enc\\var_A259.npz",
+    "<RESEARCH-PC>\\team4\\ceil-gpu\\enc\\var_D.npz",
+    "<RESEARCH-PC>\\team4\\ceil-gpu\\enc\\var_CF.npz",
+    "<RESEARCH-PC>\\team4\\ceil-gpu\\enc\\var_CFD.npz",
+    "<RESEARCH-PC>\\team4\\ceil-gpu\\enc\\var_DB2.npz",
+    "<RESEARCH-PC>\\team4\\ceil-gpu\\enc\\var_CFDB2.npz",
+    "<RESEARCH-PC>\\team4\\ceil-gpu\\enc\\scl_orig.npz",
+    "<RESEARCH-PC>\\team4\\ceil-gpu\\enc\\scl_ceil.npz",
+    "<RESEARCH-PC>\\team4\\ceil-gpu\\out\\bench_final.json",
+    "<RESEARCH-PC>\\team4\\ceil-gpu\\out\\bench_final.log",
+    "<RESEARCH-PC>\\team4\\ceil-gpu\\out\\bench_final_table.txt",
+    "<RESEARCH-PC>\\team4\\ceil-gpu\\out\\best_final.txt",
+    "<RESEARCH-PC>\\team4\\ceil-gpu\\out\\ratios_final.json",
+    "<RESEARCH-PC>\\team4\\ceil-gpu\\out\\ratios_all.json",
+    "<RESEARCH-PC>\\team4\\ceil-gpu\\out\\bench_full.json",
+    "<RESEARCH-PC>\\team4\\ceil-gpu\\out\\bench_full_table.txt",
+    "<RESEARCH-PC>\\team4\\ceil-gpu\\out\\bench_run2.json",
+    "<RESEARCH-PC>\\team4\\ceil-gpu\\out\\bench_run2_table.txt"
+   ],
+   "open_questions": [
+    "Not measured on the RTX 5090, nor inside KAIRA's kernel (cp.async ring, 567-row table, separate scale kernel, commit kernel). The ratios measured here are a proxy only.",
+    "Folding the scale fix-up into KAIRA's commit kernel (a per-stream 64-bit mask, 138 KB per record, written by the weight kernel) instead of patching in the weight kernel: not implemented or timed.",
+    "The sizes here are in-sample: the model was trained on all 160 experts, including the 8 benchmarked ones, as team 2 did. Held-out, measured-v41.md gives -1.81% of raw instead of -2.07%.",
+    "Not tested on the GPU: ceil-form combined with canonical zero (value-exact), the 23-bit hash in x0, or coded length tables.",
+    "Ceil-form was timed only with the compacted 259-row layout, not with KAIRA's 567-row CTX 0 layout. The 567-row layout has 2x the shared-memory table and lower occupancy.",
+    "Provenance: bench_full.json (an earlier run of this member) started at 20:08:49, before the last wnr2dec.cu edit at 20:09:59, so it may have used a slightly older kernel source. bench_final.json used the current source and agrees with it within about +-2%."
+   ]
+  },
+  {
+   "member": "ceil-refuter",
+   "verdict": "I could not break ceil-form, but its headline gain is overstated by about 0.27 points. What holds (measured). The invariant held on every record checked: 236 records (160 sample, 70 extra routed covering all 40 layers, 6 MTP), 260,997,120 blocks, 0 blocks with max magnitude below 6, 0 with stored max 5, 0 all-zero. The byte round trip failed on 0 of 708 matrices, and the scale range was 112..126 (no 0, 254 or 255). The real rANS coder decoded 17/17 records exactly, both with and without the x0 hash, and T^-1 reproduced the WEX1-layout file byte for byte. The exact bijection condition is narrower than the brief says: 'no stored block with max == 5', not 'max < 6'. Adding 'skip T when scale == 255' makes T total on that domain (exhaustive 4-nibble test: 0 collisions, 0 overflow). Expected fallbacks: 0 of 7680 (95% upper bound 100 records, rule of three on 230 routed records). What is overstated (measured, held-out). The quoted -1.996% weights / -1.846% record (P2) includes the srel anchor fix: the median anchor flips 120->121 in 43 of 690 routed matrices in today's form but in only 2 of 690 in ceil form. Fixing the anchor alone gives -0.305% weights / -0.272% record. With fixed anchors on both sides, ceil-form gives -1.716% weights and -1.592% of raw (P2); P3 gives -1.731% / -1.601%, P4 -1.717% / -1.592%. The best non-ceil model (3-class side symbol + half + fixed anchor + scale|class) reaches -1.807% / -1.780% / -1.827%, which is 97% of the ceil gain. Ceil-form adds only -0.055..-0.057% of raw on top of it (about 10.5 KB per record), but keeps the 567-row table and no extra stream. A single even-flag bit captures 86%. Per-expert spread under today's median anchor was -0.53..-5.10% (std 0.616); with fixed anchors it is -1.18..-1.82% (std 0.103), 0 of 230 experts worse. What breaks or needs care. (a) MTP experts: the routed-trained model expands them (ratio 1.110 original form, 1.079 ceil form) because MTP w1/w3 scales sit at 113-114, so they would be stored raw. With MTP-own models, the median anchor makes ceil worse on MTP layer 0 (+0.14% of raw); with the anchor rule pair(original)+1, all 3 MTP layers gain (-1.25/-1.53/-1.40%). (b) Without the hash, the silent single-sign-flip hole widens: w2 0.29% -> 0.58% of random bit flips accepted, w1 0.26% -> 0.34%. No damage amplification: after T^-1 every accepted flip is still one sign flip with 0 scale changes. (c) GPU: the final scale (ts - 1 when the block max is 5) is known only after the weight block is decoded. The weight kernel must write it to a separate output. Patching the const __restrict__ / __ldg scales buffer in place is undefined behaviour and makes retries non-idempotent. srel and the median ordering are unchanged, and there are no partial blocks.",
+   "findings": [
+    {
+     "claim": "Invariant holds on all 76 extra experts (70 routed over all 40 layers + 6 MTP), not in the 160-expert sample; together with the sample, 0 of 260,997,120 blocks have max magnitude < 6 or == 5.",
+     "evidence": "<RESEARCH-PC>\\team4\\ceil-refuter\\out\\refute_an.json invariants (from refute_count.py; stats_extra.json / stats_sample.json). Extra routed: 77,414,400 blocks, max-code hist 6: 34,789,754, 7: 42,624,646. MTP: 6,635,520 blocks, 6: 3,171,234, 7: 3,464,286. Sample: 176,947,200 blocks, 79,342,654 / 97,604,546. blocks_max_lt6 = stored_max5 = allzero = 0 in every set. Download: pinned patrickbdevaney/DeepSeek-V4.1-Flash-1017-REAP192-MXFP4 @4ab649b2, seed 20261108, extra_fetch.py. sha256 re-verified 76/76 with verify_extra.py, 0 overlap with the sample manifest. 1,428,848,640 tensor bytes + 5,488,736 header bytes (no new downloads in this run).",
+     "kind": "measured",
+     "impact": "Coverage beyond the sample confirms the structure across all layers and in MTP.",
+     "confidence": "high"
+    },
+    {
+     "claim": "Even-block share is stable for routed experts and lower for MTP; scale bytes never come near 0/254/255.",
+     "evidence": "refute_an.json: extra routed even 30.646% (per expert 26.02-31.66%; w1/w2/w3 30.33/31.18/30.43%); sample 30.647% (22.78-31.88%); MTP 22.154% (19.22-25.55%). Scale min/max: sample 118/126, extra routed 118/125, MTP 112/126. scale_n0 = n254 = n255 = 0. Max scale of an even block: 124 (routed), 125 (MTP). Max transformed scale: 126.",
+     "kind": "measured",
+     "impact": "No E8M0 overflow or NaN case in real data.",
+     "confidence": "high"
+    },
+    {
+     "claim": "Byte round trip, canonical-zero commutation and sign-plane preservation pass on all 708 matrices.",
+     "evidence": "refute_an.json: roundtrip_fail_matrices 0, inverse_selects_exactly_even_fail 0, canonical_zero_commute_fail 0, canonical_zero_roundtrip_fail 0, sign_plane_changed 0 for sample (480), extra routed (210) and MTP (18). value_check.json: dequantized values equal, signbit equal (6 matrices). Duplicate matrices by sha256 among the 708: 0.",
+     "kind": "measured",
+     "impact": "T is exact on all checked data. DEDUP is moot: there are no identical records.",
+     "confidence": "high"
+    },
+    {
+     "claim": "The exact bijection condition is 'no stored block with max magnitude == 5', not 'no block with max < 6'. Blocks with max 0..4 (including all-zero) pass through unchanged. The only other hazard is an even block with scale 255 (T gives 256), and the rule 'skip T when scale == 255' removes it without breaking bijectivity.",
+     "evidence": "edge_tests2.json, exhaustive over all 65,536 4-nibble blocks x scales {0,1,120,253,254,255}. T always, domain without max-5 blocks: 328,800 pairs, 0 collisions, 0 RT failures, 10,736 overflow to 256. Skip at 255: 0 overflow, 0 collisions, 0 RT failures, 0 canonical-zero failures. Including max-5 blocks: 32,208 collisions, 64,416 RT failures. edge_tests.json: max-4 and max-3 blocks round trip OK, max-5 block fails. ±0/±6-only block is even and maps to ±0/±3 with scale+1, OK. Scale 0 -> 1 OK. 254 -> 255 OK as a symbol, but byte 255 is E8M0 NaN.",
+     "kind": "measured",
+     "impact": "No per-record fallback is needed for the scale-255 case. The coded form must never be dequantized directly when ts == 255.",
+     "confidence": "high"
+    },
+    {
+     "claim": "Fallback frequency over 7680 records: point estimate 0, 95% upper bound about 100 records. Structurally expected 0. A fallback record coded with the ceil model would cost about +12% of raw.",
+     "evidence": "refute_an.json fallback_estimate: 230 routed records, 254,361,600 routed blocks, 0 violating, 0 records violating; rule-of-3 bound 3/230 = 1.30%, i.e. 100.2 of 7680. Both the floor rule and the ceil-then-floor rule give block max 4.0 or 6.0, so stored max 3.0 would need a clamped scale; observed min scale 112. fallback_record_coded_with_ceil_model: penalty +12.65% (P2) / +11.73% (P4) of raw.",
+     "kind": "inferred",
+     "impact": "A violating record must use the original-form model (a K-model slot) or be stored raw, not the ceil model.",
+     "confidence": "medium"
+    },
+    {
+     "claim": "About 0.27 points of the claimed ceil-form gain is the srel anchor fix, which is available without ceil-form. With fixed anchors on both forms, ceil-form gives -1.72% of weight bits and -1.59% of raw record, not -1.96% / -1.81%.",
+     "evidence": "anchor_an.json (anchor_count.py per-matrix abs-scale counts, 14-bit wex_nr2_quantize rule, flush 4 B/stream). P2 (train even 80, test odd 80): o_med 3.7844 bpw / 1.0090 bps; o_pair 3.7728 (-0.305% W, -0.272% rec); c_med 3.7088 / 0.9161 (-1.996% W, -1.846% rec); c_fixed120 = c_pair+1o 3.7081 (-2.016% W, -1.864% rec). Ceil vs anchor-fixed original: -1.716% W, -1.592% rec. P3: -1.731% / -1.601% (anchor alone -0.235%). P4 (train 160, test 70 extra): -1.717% / -1.592% (anchor alone -0.290%). Median anchor hist over 690 routed matrices: original 120 x647, 121 x43; ceil 121 x688, 120 x2. The independent count path reproduces refute_an V0/C0 exactly (3.7844 / 3.7088).",
+     "kind": "measured",
+     "impact": "If WNR3 adopts team 3's anchor fix, the incremental record gain of ceil-form is about -1.59% of raw (ratio about 0.8997 -> 0.8853 with WNR2 overheads), not -1.81%.",
+     "confidence": "high"
+    },
+    {
+     "claim": "A non-ceil model with cheap side information captures 86-97% of the ceil gain. Ceil-form adds only -0.055..-0.057% of raw on top of the best non-ceil model.",
+     "evidence": "refute_an.json P2 byte (record % of raw): V2 even-flag side bit for all blocks -1.593% (86%); V5 team-2 bm7+half+pm2b -0.441% (weights -0.495%, team 2 claimed -0.478%); V6b class order-0 + scale|class -1.694% (92%). anchor_an.json with pair anchor: V4b_clsh_pair (3-class side + half, class order-0, scale|class) bpw 3.7257, bps 0.4306, -1.807% (P2) / -1.780% (P3) / -1.827% (P4). Ceil on top: -0.0569 / -0.0556 / -0.0552% of raw; weights alone -0.47%, offset by scales 0.916 vs 0.431 bps. Ceil plus side information is worse: C4 -1.788%, C4b -1.792% vs C0 -1.846%.",
+     "kind": "measured",
+     "impact": "The gain is a real modelling gain, not an artifact. Ceil-form's practical advantage over the alternative is format simplicity: a 567-row table and no side stream, versus 3402 rows plus a class stream decoded before scales. The size advantage is small.",
+     "confidence": "high"
+    },
+    {
+     "claim": "The per-expert gain variance comes from anchor flips. With fixed anchors, every routed expert gains 1.18-1.82% of raw.",
+     "evidence": "anchor_an.json per_expert_gain_distribution over 230 routed experts (sample two-way, extra with the all-sample model). Median anchors: mean -1.828, std 0.616, min -4.93 (L38/L39 experts with original anchor 121), max -0.531 (L36_E066: its ceil-form w1 median stayed 120). Fixed anchors: mean -1.597, median -1.617, std 0.103, min -1.823, max -1.179, 0 worse, 0 below 1%. Smallest gains: L39_E156 -1.18, L39_E010 -1.21, L37_E155 -1.30 (lower even share, 22.8-27%). look_outlier.py: L36_E066 w1 med_o 120, med_c 120.",
+     "kind": "measured",
+     "impact": "The gain is robust per expert. The ceil-form anchor rule should be fixed: pair rule on the original scales + 1, or fixed 121 for routed.",
+     "confidence": "high"
+    },
+    {
+     "claim": "The real rANS coder confirms the estimates: decode is exact in the coded domain, and T^-1 gives the original file byte for byte, with and without the 23-bit hash.",
+     "evidence": "e2e_real.json (team 3 coder copy wnr_common_t3copy.py): 17 records (9 sample odd, 6 extra routed, 2 MTP), all_decoded_ok true, all_inverse_byte_exact true. Mean used delta: sample_odd -1.772%, extra_routed -1.972% (L38_E057 -3.70% from an anchor flip). Hash (x0 = L + h23 over CODED symbols) costs 1345 B/record mean (0.0072%). e2e_est.json: estimate vs real payload delta within 0.0009 points of raw on all 17.",
+     "kind": "measured",
+     "impact": "The deploy gate byte compare against WEX1 passes when run after T^-1. Hashing the coded domain works.",
+     "confidence": "high"
+    },
+    {
+     "claim": "MTP experts break the routed model, independent of ceil-form. With MTP-own models, ceil-form helps only with the right anchor rule; with the median anchor one MTP layer gets worse.",
+     "evidence": "anchor_an.json mtp. Routed model on 6 MTP experts: original ratio 1.110, ceil 1.079 (bps 10.92 / 10.22, bpw 4.376 / 4.266); per REFERENCE.md:186 such records must be stored raw. MTP w1/w3 anchors are 113-114 (agg_extra.json). Own models, leave-one-MTP-layer-out (4 train experts): med/med mean -0.756% (layer0 +0.138%, layer1 -1.464%, layer2 -0.941%); pair/fixed121 mean -0.990% (layer0 +1.204%); pair/pair+1o mean -1.391% (-1.245/-1.527/-1.400), ratio 0.892 -> 0.878. MTP differs: -0 = 11.06% (routed 5.83%), max-6 blocks with no 1/3 = 63,901 of 3.17M = 2.0% (sample 292 of 79.3M). The index has 3 x 128 = 384 MTP routed experts.",
+     "kind": "measured",
+     "impact": "If MTP records are coded, they need their own model (K models) and the anchor rule pair(original)+1. Otherwise ceil-form can lose on some MTP layers.",
+     "confidence": "medium"
+    },
+    {
+     "claim": "Ceil-form widens today's silent sign-flip hole when there is no hash, but does not amplify damage: after T^-1 every accepted flip is still one sign flip.",
+     "evidence": "flip_ceil_big.json (team 2 vectorised decoder copy audit_core_t2copy.py, today's structural rule, models from sample groups {0,2}, 16 odd experts x 1500 streams = 24,000 random single-bit flips per matrix per form). w1: original 63 accepted (0.263%), ceil 82 (0.342%). w2: original 69 (0.288%), ceil 139 (0.579%). All accepted flips are single sign flips in the original domain, 0 scale changes, max 1 weight changed. Mechanism, signsym.json: usage share of symbols in rows with f[s] == f[s^8] and CDF starts 8192 apart: w1 4.83 -> 5.80%, w2 5.28 -> 9.44%, w3 4.50 -> 7.65%.",
+     "kind": "measured",
+     "impact": "Strengthens the case for the 23-bit x0 hash (WNR3 feature e) together with ceil-form. Accepted flips change only signs, not magnitudes, so T^-1 decisions are unaffected.",
+     "confidence": "high"
+    },
+    {
+     "claim": "GPU decode ordering is preserved (coded scales first, then weights), but the final scale bytes can only be written by the weight kernel, after each block's max is known. In-place patching of the scales input buffer is unsafe.",
+     "evidence": "Read in <RESEARCH-PC>\\team2\\gpu-proto\\src\\wnr2dec.cu. Scales are an input 'const u8* __restrict__ scales' (line 182), read via __ldg per block (237, 244; u16 pairs at 276-286). srel = clamp(scale - med) (240-241, 281-283). Running block max mx (255, 265; wdec2 392, 403). Each block is stored once as uint4 (269, 320-321, 409, 460-461). The anchor is the per-record header median[3] (WNR2-REFERENCE.md:200, 225), so the ceil-form anchor is stored, not recomputed. Ceil-form: srel uses the coded ts (no new dependency); at block end, if mx == 5, remap the 32 nibbles (0..5 -> 0,2,4,5,6,7, sign kept) before the store and write ts - 1 to a SEPARATE scale output. Writing through the const __restrict__ / __ldg buffer is undefined behaviour, and a retry would read patched scales and decode with wrong srel. Anything reading the slab's scale region between the scale kernel and the weight kernel sees +1 scales on 30.6% of blocks.",
+     "kind": "read-in-code",
+     "impact": "A small kernel change: one compare plus a nibble remap per block, and one extra byte store per even block. Speed was not measured (GPU reserved for ceil-gpu).",
+     "confidence": "medium"
+    },
+    {
+     "claim": "No partial blocks or block-misaligned streams can occur, in V4.1 or in any valid WNR2 entry.",
+     "evidence": "refute_count.py:222 asserted scale cols*16 == weight byte cols for all 708 matrices (5120 and 2304 columns = 160 and 72 blocks per row). WNR2-REFERENCE.md:184 (wex_entry_raw_sizes enforces the same), :205 (streams never cross a matrix), :209-210 (weight chunk a power of 2 in 512..16384; V4.1 uses 2048, i.e. 64 blocks). Each matrix is 11,796,480 weights = 5760 streams exactly. The GPU prototype assumes 64 blocks per stream with scales at scales + gs*64 (wnr2dec.cu:217, 239, 381).",
+     "kind": "read-in-code",
+     "impact": "T and T^-1 are always applied to whole blocks inside one stream.",
+     "confidence": "high"
+    },
+    {
+     "claim": "Interplay with other features: canonical zero, sign bypass, DEDUP, hash and the deploy gate.",
+     "evidence": "Canonical zero commutes with T (0 failures on 708 matrices and exhaustively). Ceil + canonical zero, P2 held-out: 3.5924 bpw vs 3.6679, -1.846% rec. Sign bypass: sign plane unchanged by T (708/708); ceil + canonical zero + sign bypass, P2: C0 3.5923 vs V0 3.6678 bpw. T^-1 needs magnitudes only, so it is compatible with the raw sign plane (wnr2dec.cu ALPHA 8 path). DEDUP: 0 duplicate matrices; T is deterministic and bijective, so identical raw records give identical coded records. Hash: computed over coded symbols in e2e_real (17/17 OK). If the identity is hashed into x0, aliased entries fail the check regardless of ceil-form (inferred). Deploy gate: must compare after T^-1, and against Z(WEX1) when canonical zero is used.",
+     "kind": "measured",
+     "impact": "No conflict found. Recommended order: decode coded domain, verify hash in the coded domain, apply T^-1, then byte-compare to WEX1.",
+     "confidence": "medium"
+    },
+    {
+     "claim": "srel alignment on top of ceil-form is tiny. The ceil-form median anchor is nearly stable (2/690 flips), while the original form flips 6.2% of the time.",
+     "evidence": "anchor_an.json P2: c_med 3.7088 vs c_fixed/pair+1o/search 3.7081 bpw (-0.0007). P3: 3.7092 vs 3.7078. Original form: 3.7844 vs 3.7728 (-0.0116). Encoder-side anchor search (3 EM rounds, ±2) never moved a test anchor (o: 240x0; c: 239x0, 1x+1). c_med+1o (original median + 1) is bad: -1.628% vs -1.864%.",
+     "kind": "measured",
+     "impact": "Consistent with the online team's -0.003 bit/w. The anchor effect explains part of the claimed gain rather than adding to it.",
+     "confidence": "high"
+    }
+   ],
+   "numbers": [
+    {
+     "what": "blocks checked, total",
+     "value": "260,997,120 (sample 176,947,200; extra routed 77,414,400; MTP 6,635,520)",
+     "conditions": "236 records; 0 with max<6, 0 with max==5, 0 all-zero"
+    },
+    {
+     "what": "even-block share",
+     "value": "sample 30.647%, extra routed 30.646%, MTP 22.154%",
+     "conditions": "per-expert range: routed 22.78-31.88%, MTP 19.22-25.55%"
+    },
+    {
+     "what": "scale byte range",
+     "value": "routed 118..126, MTP 112..126; count of 0/254/255 = 0; transformed max 126",
+     "conditions": "all 708 matrices"
+    },
+    {
+     "what": "fallback records over 7680",
+     "value": "point 0; 95% upper bound 100 (1.30%)",
+     "conditions": "rule of three on 230 routed records"
+    },
+    {
+     "what": "cost of a fallback record coded with the ceil model",
+     "value": "+12.65% (P2) / +11.73% (P4) of raw",
+     "conditions": "original-form record, ceil-trained 567 model + scales"
+    },
+    {
+     "what": "ceil gain vs today, weights / record",
+     "value": "-1.996% / -1.846% (P2); -1.954% / -1.803% (P3); -2.033% / -1.879% (P4)",
+     "conditions": "median anchors on both forms, held-out"
+    },
+    {
+     "what": "anchor fix alone, original form, weights / record",
+     "value": "-0.305% / -0.272% (P2); -0.264% / -0.235% (P3); -0.326% / -0.290% (P4)",
+     "conditions": "pair rule = fixed 120 for all routed matrices"
+    },
+    {
+     "what": "clean ceil gain (anchors fixed on both forms), weights / record",
+     "value": "-1.716% / -1.592% (P2); -1.731% / -1.601% (P3); -1.717% / -1.592% (P4)",
+     "conditions": "c_fixed120/121/122 or c_pair+1o vs o_pair"
+    },
+    {
+     "what": "best non-ceil V4b_clsh_pair, record",
+     "value": "-1.807% (P2) / -1.780% (P3) / -1.827% (P4); bpw 3.7257, bps 0.4306 (P2)",
+     "conditions": "3-class side + half + pair anchor, class order-0, scale|class"
+    },
+    {
+     "what": "ceil on top of best non-ceil, record",
+     "value": "-0.0569% (P2) / -0.0556% (P3) / -0.0552% (P4) of raw (~10.5 KB/record)",
+     "conditions": "held-out"
+    },
+    {
+     "what": "share of ceil gain captured by the even-flag side bit (V2)",
+     "value": "0.863 (P2), 0.882 (P3), 0.850 (P4)",
+     "conditions": "median anchors, 1 coded bit per block"
+    },
+    {
+     "what": "team-2 best non-ceil V5 reproduced",
+     "value": "-0.495% weights / -0.441% record (P2)",
+     "conditions": "bm7 side + half + B6 pm2; team 2 claimed -0.478%"
+    },
+    {
+     "what": "per-expert ceil gain, median anchors",
+     "value": "mean -1.828, std 0.616, range -4.93..-0.53% of raw",
+     "conditions": "230 routed, held-out"
+    },
+    {
+     "what": "per-expert ceil gain, fixed anchors",
+     "value": "mean -1.597, std 0.103, range -1.823..-1.179%; 0 worse",
+     "conditions": "230 routed, held-out"
+    },
+    {
+     "what": "median anchor flips",
+     "value": "original 43/690 (121 instead of 120); ceil 2/690",
+     "conditions": "routed matrices"
+    },
+    {
+     "what": "real rANS e2e",
+     "value": "17/17 exact decode and byte-exact inverse; mean used delta sample_odd -1.772%, extra -1.972%; hash +1345 B/record",
+     "conditions": "team 3 reference coder copy, models from sample even groups"
+    },
+    {
+     "what": "MTP with routed model",
+     "value": "ratio original 1.110, ceil 1.079; 10.92 / 10.22 bit/scale",
+     "conditions": "6 MTP experts"
+    },
+    {
+     "what": "MTP with own models, ceil delta",
+     "value": "median anchors -0.756% (layer0 +0.138%); pair(original)+1 anchors -1.391% (-1.245/-1.527/-1.400)",
+     "conditions": "leave-one-MTP-layer-out, 4 training experts"
+    },
+    {
+     "what": "silent bit-flip acceptance, today's rule",
+     "value": "w1 0.263% -> 0.342%, w2 0.288% -> 0.579% (original -> ceil)",
+     "conditions": "24,000 flips per matrix per form; all accepted = 1 sign flip, 0 scale changes after T^-1"
+    },
+    {
+     "what": "exhaustive bijection test, 4-nibble blocks",
+     "value": "skip-255 rule: 0 collisions, 0 RT failures, 0 overflow over 328,800 pairs; including max-5 blocks: 32,208 collisions",
+     "conditions": "scales {0,1,120,253,254,255}"
+    },
+    {
+     "what": "-0 share",
+     "value": "5.826% routed (sample and extra), 11.06% MTP",
+     "conditions": "share of all weights"
+    },
+    {
+     "what": "download used",
+     "value": "1,434,337,376 B of the 1.5 GB budget (tensors + headers); 0 B in this run",
+     "conditions": "<RESEARCH-PC>\\team4-data\\extra"
+    }
+   ],
+   "files_written": [
+    "<RESEARCH-PC>\\team4\\ceil-refuter\\anchor_count.py",
+    "<RESEARCH-PC>\\team4\\ceil-refuter\\anchor_an.py",
+    "<RESEARCH-PC>\\team4\\ceil-refuter\\edge_tests2.py",
+    "<RESEARCH-PC>\\team4\\ceil-refuter\\flip_ceil.py",
+    "<RESEARCH-PC>\\team4\\ceil-refuter\\signsym.py",
+    "<RESEARCH-PC>\\team4\\ceil-refuter\\verify_extra.py",
+    "<RESEARCH-PC>\\team4\\ceil-refuter\\look_outlier.py",
+    "<RESEARCH-PC>\\team4\\ceil-refuter\\audit_core_t2copy.py",
+    "<RESEARCH-PC>\\team4\\ceil-refuter\\anchor_an.log",
+    "<RESEARCH-PC>\\team4\\ceil-refuter\\anc_sample.log",
+    "<RESEARCH-PC>\\team4\\ceil-refuter\\anc_extra.log",
+    "<RESEARCH-PC>\\team4\\ceil-refuter\\flip.log",
+    "<RESEARCH-PC>\\team4\\ceil-refuter\\flip_big.log",
+    "<RESEARCH-PC>\\team4\\ceil-refuter\\out\\anchor_an.json",
+    "<RESEARCH-PC>\\team4\\ceil-refuter\\out\\agg_sample.npz",
+    "<RESEARCH-PC>\\team4\\ceil-refuter\\out\\agg_sample.json",
+    "<RESEARCH-PC>\\team4\\ceil-refuter\\out\\agg_extra.npz",
+    "<RESEARCH-PC>\\team4\\ceil-refuter\\out\\agg_extra.json",
+    "<RESEARCH-PC>\\team4\\ceil-refuter\\out\\pe\\ (236 per-expert npz)",
+    "<RESEARCH-PC>\\team4\\ceil-refuter\\out\\edge_tests2.json",
+    "<RESEARCH-PC>\\team4\\ceil-refuter\\out\\flip_ceil_small.json",
+    "<RESEARCH-PC>\\team4\\ceil-refuter\\out\\flip_ceil_big.json",
+    "<RESEARCH-PC>\\team4\\ceil-refuter\\out\\signsym.json",
+    "reused from the first attempt (checked, not re-run): <RESEARCH-PC>\\team4\\ceil-refuter\\out\\refute_an.json, e2e_real.json, e2e_est.json, per_expert_an.json, value_check.json, stats_*.json, counts_*.npz, <RESEARCH-PC>\\team4\\ceil-refuter\\edge_tests.json"
+   ],
+   "open_questions": [
+    "Will WNR3 adopt the fixed srel anchor anyway? If so, the incremental value of ceil-form is -1.59% of raw (and only -0.055% versus a 3-class side-info model), not -1.81%.",
+    "Does the container code the 384 MTP routed experts? The routed model expands them (ratio 1.11); they need their own model and the pair(original)+1 anchor, otherwise they are stored raw.",
+    "GPU cost of the per-block T^-1 fix-up and the extra scale-output store is not measured. Only ceil-gpu may use the GPU.",
+    "Shared experts (40 routed-layer + 3 MTP) were not checked against the invariant. They are outside the 7680 records, and the remaining download budget is about 66 MB.",
+    "Why MTP experts have 11% -0 and 2% max-6 blocks without 1/3 (a different quantizer path?) was not investigated further.",
+    "Exact rANS flush is ~3.5 B/stream, not the 4 B used in these estimates; absolute sizes are slightly high, deltas are unaffected."
+   ]
+  },
+  {
+   "member": "ceil-origin",
+   "verdict": "The doubled-block artifact was already in DeepSeek's own release, before the REAP/MXFP4 repack. It is also not specific to this checkpoint: it shows up in every MXFP4 checkpoint we measured that came from quantization-aware training (QAT). Measured: 8 upstream experts of deepseek-ai/DeepSeek-V4.1-Flash-1017 @1bae0e1 that REAP pruned (so they are never in the REAP repo) have 27.8-31.6% 'even' blocks. The 4 kept experts are byte-identical to the REAP sample files. All 13 upstream items together: 14,376,960 blocks, block max code 6 = 45.20%, code 7 = 54.80%, below 6 = 0, even = 29.415% (i.i.d. expectation 0.75%). Other checkpoints: V4.1-Flash 29.54%, V4-Flash 25.98%, V4-Pro 23.89%, openai gpt-oss-20b 21.94%, gpt-oss-120b 21.36%, and AMD's Quark re-export of gpt-oss-120b 21.50% (its scales are byte-identical to OpenAI's; only -0 became +0). Checkpoints quantized after training (PTQ) do not have it: AMD DeepSeek-R1-0528-MXFP4 0.0049%, RedHatAI GLM-5.3-MXFP4 0.0034%. The invariant (no block max < 6) held in all 9 checkpoints, about 85M blocks. Mechanism (sources read; how the exporter ran is inferred): DeepSeek's quantizer (kernel.py fast_round_scale, 2^ceil(log2(amax/6))) and OpenAI's triton_kernels default ROUND_UP are both ceil rules, so a single pass gives block max 3.0/4.0/6.0. Re-quantizing those already-dequantized values with ceil again, or with the OCP floor rule, moves exactly the max-3.0 blocks to half the scale with every code doubled (3s/6 = s/2 is an exact power of two). It changes nothing else, and it is value-exact. Simulation (my sim_double.json, 400k-block runs): ceil twice and ceil-then-floor give identical codes and scales, block max 6/7 = 51.4/48.6%, even 22.3%. Reading gpt-oss's stored data back to its first pass gives 21.9/52.0/26.1%, against 22.2/51.5/26.3% for a single ceil pass on log-uniform data. The public inference code never quantizes expert weights: convert.py only reinterprets the stored bytes. The OCP MX v1.0 spec §6.3 sets the floor rule but explicitly allows other algorithms. Ceil-form gain with a simple shared base model, held-out by item parity: gpt-oss-20b -1.86% of weight bits (record -1.69% of raw), gpt-oss-120b -1.96% (-1.75%), AMD gpt-oss -2.08% (-1.81%), V4-Flash -1.04% (-1.15%), V4-Pro -0.82% (-0.99%), upstream 1017 -2.25% (-2.14%), PTQ checkpoints about 0. Transfer test (per-matrix-type WNR2 models trained on the 160 REAP sample experts, tested on experts never in that training set): 8 pruned 1017 experts 3.7907 -> 3.7054 bit/w (-2.24%), V4.1-Flash -2.58%, V4-Flash 3.906 -> 3.721 (-4.73%), V4-Pro -4.54%. With a fresh model per expert the gain is only -0.8..-1.7%. Most of the larger transfer gain comes from ceil-form removing the cost of reusing a model trained on another checkpoint (+4.2% in the original form, +0.3% in ceil-form): the matrix median scale is 120 in V4.1 but 121 in V4/V4-Pro, and ceil-form stabilises it. Conclusion: ceil-form is a reusable format feature for QAT-native MXFP4 checkpoints (DeepSeek V4 family, gpt-oss). It should sit behind a per-matrix or per-container flag that is set only when no block has max < 6. A checkpoint quantized once with a ceil rule (for example transformers quantize_to_mxfp4 with its ROUND_UP default) would already contain about 22% max-code-5 blocks (simulated, not seen on a real checkpoint), so the transform must stay off there. That data is already in the compact form.",
+   "findings": [
+    {
+     "claim": "The official upstream checkpoint deepseek-ai/DeepSeek-V4.1-Flash-1017 already has the doubled blocks, including experts that REAP pruned (so they never passed through the REAP repack).",
+     "evidence": "<RESEARCH-PC>\\team4\\ceil-origin\\upstream_v41_1017.json: 13 items (kept L00/U183, L13/U033, L26/U004, L39/U056; pruned L00/U301, L05/U340, L10/U199, L15/U240, L20/U010, L25/U076, L30/U361, L39/U304; mtp.0 expert 0), 14,376,960 blocks, bmax_hist code6=6,498,352 code7=7,878,608, below 6 = 0, even=4,228,984 (29.415%), per item 19.69-31.65% (pruned 27.80-31.65%, MTP 19.69%), roundtrip_fail 0, scale_ovf 0, max6_no13 = 25 blocks. Data <RESEARCH-PC>\\team4-data\\origin\\up\\ (HTTP Range, rev 1bae0e1088993b9b82de08f59de5be5a34e42170)",
+     "kind": "measured",
+     "impact": "The artifact predates REAP/MXFP4 packaging: it is DeepSeek's export, so every repack of DeepSeek V4.x experts inherits it",
+     "confidence": "high"
+    },
+    {
+     "claim": "The REAP192-MXFP4 repo holds bit-exact copies of the upstream expert bytes (E2M1 + E8M0), with no requantization.",
+     "evidence": "Measured: identical_to_sample=true for all 4 kept experts (byte compare against <RESEARCH-PC>\\v41-sample\\L00_E097, L13_E018, L26_E002, L39_E032). Source: https://huggingface.co/patrickbdevaney/DeepSeek-V4.1-Flash-1017-REAP192-MXFP4/raw/4ab649b2254afdcf6c2f7c1fbea1c05eda11828c/README.md says each kept expert 'is copied byte for byte from the base checkpoint'; base revision 1bae0e1088993b9b82de08f59de5be5a34e42170; pipeline https://github.com/patrickbdevaney/deepseek-v4.1-flash-reap-thor. Local copies of that pipeline's ops/ files (in <RESEARCH-PC>\\team4-data\\origin\\src\\reapthor\\): ops__s05_surgery.py:2-6 (E2M1 bytes and E8M0 scales copied byte for byte), :104-115 (byte-compare against the source, fatal on mismatch); ops__cards__mxfp4.md.tmpl:44, :71, :89 (the heal gain is not applied because an E8M0 scale only moves by powers of two); ops__s07_quant.py:22, :523-524. REAP method: https://github.com/CerebrasResearch/reap, arXiv 2510.13999 (pruning only)",
+     "kind": "source",
+     "impact": "Rules out the REAP/MXFP4 packaging as the cause",
+     "confidence": "high"
+    },
+    {
+     "claim": "DeepSeek stores routed experts natively as FP4 E2M1 packed in I8 with one E8M0 scale per 32 inputs. The public inference code never quantizes weights; it only reinterprets the stored bytes or casts them losslessly to FP8.",
+     "evidence": "Local copies of deepseek-ai/DeepSeek-V4.1-Flash inference files, <RESEARCH-PC>\\team4-data\\origin\\src\\: v41flash__inference__convert.py:174-181 (int8 experts -> .view(torch.float4_e2m1fn_x2), or lossless cast_e2m1fn_to_e4m3fn at :18-53, MAX_OFFSET_BITS=6 at :36-38); v41flash__inference__model.py:29-30 (scale_fmt='ue8m0', float8_e8m0fnu), :219-231 (weight [out,in/2] float4_e2m1fn_x2 + scale [out,in/32] e8m0), :874; fp4_act_quant is used only for activations at model.py:546, :553, :761. V4-Pro: v4pro__inference__convert.py:149 (same view). V4/V4-Pro README:72: 'MoE expert parameters use FP4 precision'. Secondary source (not the official report): https://jianyuh.github.io/llm/2026/04/25/DeepSeek-V4-Infra.html describes FP4 QAT with FP32 master weights quantized to FP4 and dequantized to FP8 for compute",
+     "kind": "read-in-code",
+     "impact": "The doubled blocks must come from DeepSeek's private training/export step (QAT fake-quant followed by an export quantization), not from any public script",
+     "confidence": "high"
+    },
+    {
+     "claim": "DeepSeek's quantizer uses the ceil rule s = 2^ceil(log2(amax/6)). OpenAI's triton_kernels defaults to the same rule (ROUND_UP), and transformers' quantize_to_mxfp4 inherits that default. OCP MX v1.0 sets the floor rule but allows other algorithms.",
+     "evidence": "v41flash__inference__kernel.py:22-27 fast_log2_ceil (exponent + 1 if any mantissa bit is set, so it is exact for powers of two), :36-37 fast_round_scale, :128-132 fp4_quant_kernel fp4_max=6, :164-166 s = fast_round_scale(amax, 1/6) for E8M0; the same in v4pro__inference__kernel.py:22, :36, :164. triton_kernels numerics_details/mxfp.py (local copy <RESEARCH-PC>\\team4-data\\other\\src\\triton_kernels__mxfp.py, revision not pinned): :19-25 ROUND_UP '2^round_up(log2(max/max_q)) avoids clipping', ROUND_DOWN 'follows the OCP standard ~50% of chance of clipping'; :32 and :202 default ROUND_UP; :271-281 dequant_scale = max/6 then (bits + 0x7FFFFF) & 0x7F800000. transformers integrations/mxfp4.py (local copy ...\\other\\src\\transformers__mxfp4.py):204-206 quantize_to_mxfp4 -> downcast_to_mxfp_torch(..., axis=1) with the default rule; :244 scales - 127; :271-277 low nibble = even column. OCP MX v1.0 spec §6.3 (https://www.opencompute.org/documents/ocp-microscaling-formats-mx-v1-0-spec-final-pdf; text extracted with pdf_grep.py): X = largest power of two <= max|V_i| divided by the largest power of two of the element type (4 for E2M1); clamp to max normal; roundTiesToEven required; 'Other algorithms ... may be supported'",
+     "kind": "source",
+     "impact": "Both stored forms are MX-compliant. A codec cannot assume the floor form; it has to detect which form it is reading",
+     "confidence": "high"
+    },
+    {
+     "claim": "Mechanism: requantizing ceil-quantized (dequantized) values with the ceil rule again, or with the OCP floor rule, changes exactly the max-3.0 blocks. Their scale halves and every code doubles, value-exact. All other blocks are unchanged. A single pass with any rule gives about 0 even blocks.",
+     "evidence": "Derivation: a block with amax = 3s has 3s/6 = s/2, an exact power of two (fp32 3*fl(1/6) rounds to exactly 0.5), so ceil gives s/2; floor gives 2^floor(log2 3s)/4 = s/2; for amax 4s or 6s both rules return s. Simulation <RESEARCH-PC>\\team4\\ceil-origin\\sim_double.json (400k blocks of 32, gauss and laplace, lognormal row spread): ceil once: max code 5/6/7 = 22.33/51.36/26.32%, even 0.001%; floor once: max 6/7 = 32.09/67.91%, even 0.014%; ceil twice and ceil-then-floor give identical codes and scales, value-exact, max 6/7 = 51.36/48.64%, even 22.33% (laplace 22.22%). Only 25 of 14.4M upstream blocks are max-6 blocks without codes 1/3 (a first ceil pass never yields a max of 2.0)",
+     "kind": "inferred",
+     "impact": "The fingerprint (no block max < 6 plus 20-30% even blocks) identifies 'ceil-quantized, then re-quantized', which is the typical QAT-then-export pipeline. That makes it a property of the pipeline, not of one checkpoint",
+     "confidence": "medium"
+    },
+    {
+     "claim": "Generality: the same fingerprint is in every DeepSeek V4 release and in OpenAI's gpt-oss. gpt-oss matches the textbook ceil-twice simulation almost exactly.",
+     "evidence": "summary.json + other_*.json (<RESEARCH-PC>\\team4\\ceil-origin\\): deepseek-ai/DeepSeek-V4.1-Flash @314113f8: 4 experts, 4,423,680 blocks, max6/7 = 46.99/53.01%, below 6 = 0, even 29.54%; DeepSeek-V4-Flash @60d8d707: 8 experts, 6,291,456 blocks, 55.94/44.06, even 25.98%; DeepSeek-V4-Pro @b5968e91: 4 experts, 8,257,536 blocks, 59.61/40.39, even 23.89%; openai/gpt-oss-20b @6cee5e81: 12 experts, 9,331,200 blocks, 52.00/48.00, even 21.94% (i.i.d. 0.110%); gpt-oss-120b @b5c939de: 12 experts, 51.37/48.63, even 21.36% (i.i.d. 0.102%). First pass read back from the stored data (P(max 3.0) = even, P(4.0) = code-6 share, P(6.0) = code-7 share minus even): gpt-oss-20b 21.9/52.0/26.1 vs single ceil pass on log-uniform data 22.2/51.5/26.3; DeepSeek 1017: 29.4/45.2/25.4. gpt-oss card (<RESEARCH-PC>\\team4-data\\other\\meta\\openai__gpt-oss-20b__README.md:41): 'post-trained with MXFP4 quantization of the MoE weights'. Re-run of gpt-oss-20b this session reproduced every number exactly (rerun_gptoss20.json)",
+     "kind": "measured",
+     "impact": "Ceil-form is reusable across QAT-native MXFP4 MoE checkpoints from at least two independent labs",
+     "confidence": "high"
+    },
+    {
+     "claim": "PTQ MXFP4 checkpoints (single pass from BF16/FP8) do not have the artifact. The invariant still holds, so the transform is safe there but gains about 0.",
+     "evidence": "amd/DeepSeek-R1-0528-MXFP4 @913fc83b (Quark, from FP8): 6 experts, 8,257,536 blocks, max6/7 = 57.27/42.73, below 6 = 0, even 0.0049% (i.i.d. 0.0012%), -0 = 0%; ceil weight delta -0.0004%. RedHatAI/GLM-5.3-MXFP4 @88118422 (llm-compressor): 6 experts, 7,077,888 blocks, 54.30/45.70, below 6 = 0, even 0.0034%, -0 = 5.146%; delta -0.0001%",
+     "kind": "measured",
+     "impact": "A WNR codec can turn on ceil-form whenever the invariant holds. It costs nothing on PTQ data and gains about 1-2% on QAT data",
+     "confidence": "high"
+    },
+    {
+     "claim": "Re-exporting a QAT checkpoint with a floor-type MXFP4 quantizer keeps the doubled blocks. AMD Quark's gpt-oss-120b has OpenAI's scales byte for byte; only the sign of zero changed.",
+     "evidence": "cmp_openai_vs_amd_gptoss120.json: 6 experts x (down_proj, gate_up_proj): scale_bytes_identical=true for all, values_equal_pct=100.0, weight bytes differ only by -0 -> +0 (neg_zero_B = 0); other_amd_gptoss120.json even 21.50% vs OpenAI 21.36%",
+     "kind": "measured",
+     "impact": "Downstream re-quantizations (Quark, floor rule) do not erase the ceil-form gain, because the normal form is a fixed point of both rules",
+     "confidence": "high"
+    },
+    {
+     "claim": "Held-out ceil-form gain with a simple shared WNR2 base model (srel7 x pm9 x mx9 x 16, one table shared by all matrix types, split by item parity, both directions, flush 4 B/2048 w).",
+     "evidence": "weight bit/w orig -> ceil held-out (record delta % of raw): 1017 upstream 3.8153 -> 3.7294 (-2.25%, rec -2.14%); V4.1-Flash 3.8780 -> 3.7140 (-4.23%, noisy: only 4 items; in-sample -2.33%); V4-Flash 3.7543 -> 3.7152 (-1.04%, rec -1.15%; scales 1.006 -> 0.693 bit/scale); V4-Pro 3.7493 -> 3.7186 (-0.82%, rec -0.99%; scales 0.962 -> 0.602); gpt-oss-20b 3.8312 -> 3.7597 (-1.86%, rec -1.69%; scales 3.325 -> 3.316); gpt-oss-120b 3.8391 -> 3.7638 (-1.96%, rec -1.75%; scales 3.025 -> 3.055, slightly worse); AMD gpt-oss-120b 3.7070 -> 3.6297 (-2.08%, rec -1.81%); AMD R1 -0.0004%; GLM-5.3 -0.0001%. Ceil + zero-sign merge: 1017 -5.29%, gpt-oss-20b -5.21%, gpt-oss-120b -5.32%",
+     "kind": "measured",
+     "impact": "The gain scales with the even share: about -0.8% (V4-Pro) to -2.3% (V4.1) of weight bits",
+     "confidence": "medium"
+    },
+    {
+     "claim": "Transfer test: a WNR2 model trained on the 160 REAP sample experts (one table per matrix type) and tested on experts never in that training set. Ceil-form also nearly removes the extra cost of reusing a model trained on another checkpoint.",
+     "evidence": "<RESEARCH-PC>\\team4\\ceil-origin\\transfer_ds.json (transfer_ho.py, flush 3.5 B): 8 pruned 1017 experts, mean 3.7907 -> 3.7054 bit/w (-2.24%); per-expert fitted model (lower bound) 3.7690 -> 3.7037 (-1.73%). V4.1-Flash, 4 experts: 3.8078 -> 3.7089 (-2.58%), record -2.42% of raw, ratio 0.9035 -> 0.8793; fitted -1.60%. V4-Flash, 8 experts: 3.9063 -> 3.7214 (-4.73%), record -4.60%, ratio 0.9274 -> 0.8814; fitted 3.7493 -> 3.7104 (-1.04%). V4-Pro, 4 experts: 3.9084 -> 3.7309 (-4.54%); fitted -0.82%. So the extra cost of the borrowed model is +4.2% in the original form vs +0.3% in ceil-form. Matrix median scale: V4.1 = 120 (121 in some L39 matrices), V4/V4-Pro = 121. Last-layer experts gain most: L39_U304 -4.94%. The MTP expert is badly matched to the main-model tables (scales 11.4 bit/scale, ceil +2.06%), but with a model fitted to it the gain is -1.91%",
+     "kind": "measured",
+     "impact": "Ceil-form makes one shared model more robust across layers and checkpoint versions (relevant to the median-scale anchor flip found by team 3 and to the 'old model gives 0.94-0.95' observation)",
+     "confidence": "medium"
+    },
+    {
+     "claim": "Format rule: apply T per matrix (or per container) only when no stored block has max < 6, and record it as a 1-bit flag. Data quantized once with a ceil rule already contains max-5 blocks, so T would not be invertible there; that data is already in the compact form.",
+     "evidence": "Invariant max<6 = 0 measured in all 9 checkpoints (about 85M blocks, plus the 176.9M blocks of the REAP sample). Simulation of a single ceil pass: 22.3% max-code-5 blocks (sim_double.json A_ceil_once). transformers quantize_to_mxfp4 (mxfp4.py:204-206) with the triton default ROUND_UP (mxfp.py:32, :202) would produce such data. No real ceil-native checkpoint was measured",
+     "kind": "inferred",
+     "impact": "Ceil-form is a general, cheap format feature with an explicit applicability check, not a trick tied to one checkpoint",
+     "confidence": "medium"
+    },
+    {
+     "claim": "Signed-zero shares (side data). The brief's '-0 is 12.8%' is wrong: in DeepSeek data -0 is about 5.8%. Quark-produced checkpoints have no -0 at all.",
+     "evidence": "upstream 1017 +0 5.798% / -0 5.799%; V4.1-Flash 5.828/5.829; V4-Flash 5.789/5.788; V4-Pro 5.751/5.753; gpt-oss-20b 6.404/6.410; gpt-oss-120b 6.455/6.458; GLM-5.3 5.148/5.146; AMD Quark R1 11.379/0.0 and Quark gpt-oss 13.725/0.0",
+     "kind": "measured",
+     "impact": "Zero-sign merge (WNR2z) is worth about 3% only on non-Quark data; ceil-form and WNR2z add up (about -5.3% on 1017 and on gpt-oss)",
+     "confidence": "high"
+    }
+   ],
+   "numbers": [
+    {
+     "what": "upstream 1017 even-block share",
+     "value": "29.415% (4,228,984 / 14,376,960 blocks); per item 19.69-31.65%",
+     "conditions": "13 experts: 4 kept, 8 pruned, 1 MTP; i.i.d. expectation 0.751%"
+    },
+    {
+     "what": "upstream 1017 block-max histogram",
+     "value": "code6 45.20%, code7 54.80%, below 6 = 0",
+     "conditions": "same 13 experts"
+    },
+    {
+     "what": "kept experts byte-identical to the REAP sample",
+     "value": "4/4",
+     "conditions": "L00 U183/N097, L13 U033/N018, L26 U004/N002, L39 U056/N032"
+    },
+    {
+     "what": "V4.1-Flash / V4-Flash / V4-Pro even share",
+     "value": "29.54% / 25.98% / 23.89%",
+     "conditions": "4 / 8 / 4 experts; below 6 = 0 in all"
+    },
+    {
+     "what": "gpt-oss-20b / gpt-oss-120b / AMD-Quark gpt-oss-120b even share",
+     "value": "21.94% / 21.36% / 21.50%",
+     "conditions": "12 / 12 / 6 experts; max6/7 about 52/48; below 6 = 0"
+    },
+    {
+     "what": "PTQ AMD R1-0528 / RedHat GLM-5.3 even share",
+     "value": "0.0049% / 0.0034%",
+     "conditions": "6 experts each; below 6 = 0; i.i.d. 0.0012% / 0.0006%"
+    },
+    {
+     "what": "held-out ceil weight delta (simple shared model)",
+     "value": "1017 -2.25%, V4-Flash -1.04%, V4-Pro -0.82%, gpt-oss-20b -1.86%, gpt-oss-120b -1.96%, AMD gpt-oss -2.08%, R1 -0.0004%, GLM -0.0001%",
+     "conditions": "one table for all matrix types, split by item parity, flush 4 B/2048 w"
+    },
+    {
+     "what": "record delta (% of raw), held-out",
+     "value": "1017 -2.14, V4-Flash -1.15, V4-Pro -0.99, gpt-oss-20b -1.69, gpt-oss-120b -1.75, AMD gpt-oss -1.81",
+     "conditions": "same model; scales coded order-0"
+    },
+    {
+     "what": "transfer: 8 pruned 1017 experts",
+     "value": "3.7907 -> 3.7054 bit/w (-2.24%)",
+     "conditions": "per-matrix-type WNR2 models trained on the 160 REAP sample experts, flush 3.5 B"
+    },
+    {
+     "what": "transfer: V4-Flash / V4-Pro",
+     "value": "3.9063 -> 3.7214 (-4.73%) / 3.9084 -> 3.7309 (-4.54%)",
+     "conditions": "same V4.1-trained model; per-expert fitted model gives only -1.04% / -0.82%"
+    },
+    {
+     "what": "cost of borrowing the V4.1 model for V4-Flash",
+     "value": "orig +4.19% (3.9063 vs 3.7493), ceil +0.30% (3.7214 vs 3.7104)",
+     "conditions": "mean over 8 experts"
+    },
+    {
+     "what": "simulation of a single ceil pass",
+     "value": "max code 5/6/7 = 22.33/51.36/26.32%, even 0.001%",
+     "conditions": "400k gaussian blocks, lognormal row spread"
+    },
+    {
+     "what": "simulation ceil twice = ceil then floor",
+     "value": "max6/7 51.36/48.64%, even 22.33%, value-exact",
+     "conditions": "same blocks"
+    },
+    {
+     "what": "download use",
+     "value": "origin 276.6 MB (of 300), other 1025.1 MB (of 1500)",
+     "conditions": "<RESEARCH-PC>\\team4-data\\origin, \\other"
+    }
+   ],
+   "files_written": [
+    "<RESEARCH-PC>\\team4\\ceil-origin\\transfer_ho.py",
+    "<RESEARCH-PC>\\team4\\ceil-origin\\transfer_ds.json",
+    "<RESEARCH-PC>\\team4\\ceil-origin\\transfer_ds.log",
+    "<RESEARCH-PC>\\team4\\ceil-origin\\rerun_gptoss20.json",
+    "<RESEARCH-PC>\\team4\\ceil-origin\\pdf_grep.py",
+    "<RESEARCH-PC>\\team4\\ceil-origin\\summary.json",
+    "<RESEARCH-PC>\\team4\\ceil-origin\\upstream_v41_1017.json",
+    "<RESEARCH-PC>\\team4\\ceil-origin\\other_ds_v41flash.json",
+    "<RESEARCH-PC>\\team4\\ceil-origin\\other_ds_v4flash.json",
+    "<RESEARCH-PC>\\team4\\ceil-origin\\other_ds_v4pro.json",
+    "<RESEARCH-PC>\\team4\\ceil-origin\\other_gptoss20.json",
+    "<RESEARCH-PC>\\team4\\ceil-origin\\other_gptoss120.json",
+    "<RESEARCH-PC>\\team4\\ceil-origin\\other_amd_gptoss120.json",
+    "<RESEARCH-PC>\\team4\\ceil-origin\\other_amd_r1.json",
+    "<RESEARCH-PC>\\team4\\ceil-origin\\other_rh_glm53.json",
+    "<RESEARCH-PC>\\team4\\ceil-origin\\cmp_openai_vs_amd_gptoss120.json",
+    "<RESEARCH-PC>\\team4\\ceil-origin\\sim_double.json",
+    "<RESEARCH-PC>\\team4\\ceil-origin\\mxfp.py",
+    "<RESEARCH-PC>\\team4\\ceil-origin\\ds_analyze.py",
+    "<RESEARCH-PC>\\team4\\ceil-origin\\other_analyze.py",
+    "<RESEARCH-PC>\\team4\\ceil-origin\\fetch_upstream.py",
+    "<RESEARCH-PC>\\team4\\ceil-origin\\fetch_other.py",
+    "<RESEARCH-PC>\\team4\\ceil-origin\\sim_double.py",
+    "<RESEARCH-PC>\\team4\\ceil-origin\\cmp_pairs.py",
+    "<RESEARCH-PC>\\team4\\ceil-origin\\summarize.py",
+    "<RESEARCH-PC>\\team4-data\\origin\\up\\manifest.json",
+    "<RESEARCH-PC>\\team4-data\\other\\gptoss20\\manifest.json"
+   ],
+   "open_questions": [
+    "DeepSeek's and OpenAI's training/export code is not public. That a second quantization pass (QAT fake-quant -> FP8 or BF16 -> FP4 again) produced the doubled blocks is inferred from the fingerprint and the simulation, not read in code; the official DeepSeek V4 tech report section on FP4 QAT was seen only through a secondary blog.",
+    "The triton_kernels mxfp.py and transformers mxfp4.py citations come from local copies whose upstream revision was not pinned (fetched about 2026-11-07, main).",
+    "No real checkpoint quantized once with a ceil rule (for example transformers quantize_to_mxfp4 with ROUND_UP) was measured; the prediction that about 22% of its blocks would have max code 5 (invariant broken, T must be off) comes from simulation only.",
+    "Not measured: AMD Kimi-K2.6-MXFP4 (its source model is INT4 QAT) and AMD MiniMax-M3-MXFP4. Their index/config files are in <RESEARCH-PC>\\team4-data\\other\\meta\\, and about 475 MB of download budget remains.",
+    "The within-family held-out splits on small DeepSeek sets (4 items) are noisy (V4.1-Flash -4.23% held-out vs -2.33% in-sample); prefer the transfer numbers and the per-expert fitted-model numbers.",
+    "Why DeepSeek's share of first-pass max-3.0 blocks (about 24-31%) is above the log-uniform 22% while gpt-oss matches 22% exactly: probably QAT-trained weights clustering differently within an octave; not investigated.",
+    "The MTP expert's scale distribution (median 122) is not covered by the main-model tables (11.4 bit/scale under transfer); MTP experts would need their own tables if they are ever stored in WNR records."
+   ]
+  }
+ ],
+ "integration": [
+  {
+   "member": "capacity-update",
+   "verdict": "I re-ran team 3's value model with ceil-ref's real record sizes; ceil-ref's run had worked, so no entropy estimates were needed. The model is a verbatim copy (sha256 D5B06E88...E19B). Re-running it reproduces team 3's output text exactly, apart from the runtime line. My array-ratio version simulate2 matches the original with max abs diff 0.0. All tok/s figures are model outputs, not measurements. They assume team 3's G2 and W2 are built, and neither is in KAIRA src (ref:123-135). Record sizes come from ceil-ref's real records: 40 held-out experts, applied as a paired byte delta to production WNR2's 16,914,680 B, with a per-draw bootstrap over the experts. That gives ratios WNR2 0.89969, WNR3 (f+g+d+e) 0.88074, WNR3t (tail seeding instead of the hash) 0.87853 and WNR3z (f+g+c+d+e) 0.85335. Median and 90% range from the paired Monte Carlo (400 draws), with P(>=+3%). Drive U: WEX1 3.88 tok/s [2.68-5.89]. WNR2 4.13 tok/s, +6.38% vs WEX1 [2.97-11.91], P 0.948. WNR3 4.19 tok/s, +7.89% vs WEX1 [3.86-14.56], P 0.980; +1.41% vs WNR2 [0.74-2.27], P 0.000. WNR3t 4.20 tok/s, +8.07% [3.93-14.86], P 0.985; +1.58% vs WNR2 [0.83-2.52], P 0.000. WNR3z 4.26 tok/s, +10.10% [4.92-18.33], P 0.990; +3.49% vs WNR2 [1.91-5.61], P 0.665. Drive E: WEX1 1.71 tok/s [1.08-2.62]. WNR2 1.91 tok/s, +11.94% [8.88-13.52], P 1.000. WNR3 1.95 tok/s, +14.56% [10.76-16.59]; +2.31% vs WNR2 [1.75-2.75], P 0.018. WNR3t 1.96 tok/s, +14.85% [10.96-16.91]; +2.59% vs WNR2 [1.98-3.06], P 0.080. WNR3z 2.02 tok/s, +18.61% [13.90-21.19]; +5.93% vs WNR2 [4.46-6.82], P 1.000. Elasticity is an output of the model, not an input: % tok/s per % fewer bytes vs WNR2 is 0.65 [0.34-1.05] on U: and 1.08 [0.81-1.26] on E:. Applying team 3's median elasticity to the new byte deltas reproduces the simulated medians within 0.03 pp. The real records gain about 1.1 pp more tok/s vs WNR2 than team 3's entropy estimates did (old WNR3 0.8952, WNR3z 0.8682). Container sizes use header 4096 + WNM3 59,708 B padded to 65,536 + table 552,960 + 7680 padded records; the formula reproduces the reference's WEX1 and WNR2 sizes to the byte. WNR2 129.905 GB, WNR3 127.169 GB, WNR3t 126.850 GB, WNR3z 123.214 GB (CI 122.988-123.392). Against U: free 122.6 GB (KAIRA machine, 17:11) every format is short. Shortfall: WNR2 7.31 GB, WNR3 4.57, WNR3t 4.25, WNR3z 0.61; with a 5 GiB reserve 12.67 / 9.94 / 9.62 / 5.98 GB. The drive letters U:, E: and D: belong to the KAIRA machine, not to this PC: here U: shows 607.9 GB free and E: 1102.9 GB.",
+   "findings": [
+    {
+     "claim": "The model copy and the extension reproduce team 3 exactly: same text output (only the runtime line differs), identical MC numbers, and simulate2 is bit-identical to team 3's simulate for scalar ratios",
+     "evidence": "Copy-Item, then Get-FileHash: both D5B06E887E8783852000B27C3167A864343A64F5B0EC66E3E95D123C6D41E19B. Compare-Object of repro_team3_capacity_value_output.txt vs <RESEARCH-PC>\\team3\\capacity-value\\capacity_value_output.txt: only 'runtime 39.4 s' vs 'runtime 85.1 s'. capacity_update_results.json equivalence_simulate2_vs_team3: 9 cases (U/E/U+D, W2/single, none/incl16/excl0.5), max_abs_diff_all_outputs 0.0. reproduction_team3: WNR2 vs WEX1 U [2.9711, 6.3818, 11.9085], WNR3z(T3) vs WNR2 U [1.2730, 2.3479, 3.8246], elasticity [0.3510, 0.6473, 1.0545]; identical=True on U and E",
+     "kind": "measured",
+     "impact": "All new numbers are team 3's model with only the record ratios changed (plus explicitly labelled sensitivities)",
+     "confidence": "high"
+    },
+    {
+     "claim": "Record ratios used (production WNR2 16,914,680 B + paired mean delta from ceil-ref's real records): WNR2 0.89969, WNR3 0.88074, WNR3t 0.87853, WNR3z 0.85335; g0 variants 0.88047 / 0.87825 / 0.85307",
+     "evidence": "ceil-ref heldout_A/B.jsonl and heldout_g0.jsonl, 40 experts x 18 configs, all decode-verified (my load asserts 40/40 ok and means equal heldout_summary mean_total_bytes). Padded deltas vs WNR2: fgde -356,249.6 B (-1.895% of raw), fgdt -397,824.0 (-2.116%), fgcde -871,219.2 (-4.634%), g0 -361,369.6 / -403,046.4 / -876,339.2. Bootstrap p5-p95 of the ratios: WNR3 0.87930-0.88167, WNR3t 0.87709-0.87944, WNR3z 0.85191-0.85426. Bytes fewer vs WNR2: 2.148 / 2.404 / 5.429%; vs WEX1: 13.54 / 13.82 / 17.18% (WNR2 11.15%)",
+     "kind": "measured",
+     "impact": "Replaces team 3's entropy-based estimates (WNR3 0.8952, WNR3z 0.8682); the real WNR3 saves 4.3x more bytes vs WNR2 than estimated",
+     "confidence": "high"
+    },
+    {
+     "claim": "tok/s and gains with G2+W2 built (team 3's assumption), paired MC with 400 draws: on U:, WNR3 and WNR3t gain +1.4/+1.6% vs WNR2 with P(>=3%) = 0, while WNR3z gains +3.5% with P(>=3%) = 0.67; on E:, the gains are +2.3/+2.6/+5.9% with P(>=3%) = 0.02/0.08/1.00",
+     "evidence": "capacity_update_output.txt 'Monte Carlo (W2)'. U: WEX1 3.879 [2.675-5.893]; WNR2 4.129 [2.847-6.252], +6.38 [2.97-11.91] vs WEX1, P3 0.948; WNR3 4.192 [2.890-6.327], +7.89 [3.86-14.56] P3 0.980, vs WNR2 +1.41 [0.74-2.27] P3 0.000; WNR3t 4.198 [2.896-6.333], +8.07 [3.93-14.86] P3 0.985, +1.58 [0.83-2.52] P3 0.000; WNR3z 4.264 [2.956-6.417], +10.10 [4.92-18.33] P3 0.990, +3.49 [1.91-5.61] P3 0.665. E: WEX1 1.705 [1.084-2.618]; WNR2 1.908 [1.213-2.930], +11.94 [8.88-13.52] P3 1.000; WNR3 1.954 [1.240-2.989], +14.56 [10.76-16.59], +2.31 [1.75-2.75] P3 0.0175; WNR3t 1.959 [1.244-2.998], +14.85 [10.96-16.91], +2.59 [1.98-3.06] P3 0.080; WNR3z 2.018 [1.282-3.078], +18.61 [13.90-21.19], +5.93 [4.46-6.82] P3 1.000. P(>0) = 1.00 in all of these",
+     "kind": "inferred",
+     "impact": "Under the +3% rule, only WNR3z on E: clears +3% vs WNR2 with confidence; on U: no WNR3 variant reliably clears +3% vs WNR2. Vs WEX1, every ceil-form format has P(>=3%) >= 0.98 on U: (WNR2 0.948) and 1.00 on E:",
+     "confidence": "medium"
+    },
+    {
+     "claim": "Elasticity (% tok/s per % fewer record bytes) is an output of team 3's model, not an input: about 0.65 on U: and about 1.08 on E:, nearly the same for every format",
+     "evidence": "Per-draw elasticity vs WNR2, p50 [p5-p95]. U: WNR3 0.653 [0.340-1.051], WNR3t 0.647 [0.343-1.056], WNR3z 0.635 [0.345-1.034]. E: 1.081 [0.814-1.261], 1.084 [0.804-1.260], 1.096 [0.823-1.250]. Vs WEX1: U WNR2 0.572 [0.266-1.068], WNR3 0.580, WNR3t 0.582, WNR3z 0.589; E 1.071 [0.797-1.212], 1.077, 1.078, 1.086. Linear check with team 3's median elasticity (U 0.6473, E 1.0853) x bytes%: U predicts 1.39/1.56/3.52 vs simulated 1.41/1.58/3.49; E predicts 2.34/2.61/5.89 vs 2.31/2.59/5.93",
+     "kind": "inferred",
+     "impact": "A simple rule follows: gain vs WNR2 is about 0.65 x (U:) or 1.08 x (E:) the % fewer bytes. It reproduces the full simulation within 0.04 pp",
+     "confidence": "medium"
+    },
+    {
+     "claim": "Tail seeding instead of the hash adds only +0.16% (U:) / +0.25% (E:) tok/s over WNR3. Canonical zero adds +2.0% / +3.5% over WNR3",
+     "evidence": "WNR3t vs WNR3: U +0.16 [0.08-0.28], E +0.25 [0.18-0.36], P3 0. WNR3z vs WNR3: U +2.03 [1.13-3.34] P3 0.107; E +3.50 [2.64-4.05] P3 0.818. WNR3z vs WNR3t: U +1.87, E +3.22 (P3 0.657)",
+     "kind": "inferred",
+     "impact": "Giving up the 23-bit hash buys ~0.2% tok/s, while the team 2 / ceil-refuter audits show the hash closes the silent sign-flip hole. Canonical zero is the only remaining large lever, and it is value-exact (needs the logprob check)",
+     "confidence": "medium"
+    },
+    {
+     "claim": "The results are stable across seeds, and the record-size uncertainty hardly matters",
+     "evidence": "Pooled 1200 draws (seeds 7, 11, 12). U: WNR2 vs WEX1 6.53 [2.80-11.89] P3 0.934; vs WNR2: WNR3 1.42 [0.73-2.30] P3 0.000, WNR3t 1.59 [0.83-2.56] P3 0.004, WNR3z 3.52 [1.85-5.75] P3 0.679. E: WNR2 11.91 [8.71-13.64]; 2.32 / 2.60 / 5.90, P3 0.014 / 0.083 / 1.000. Per-seed medians vs WNR2 vary by <=0.07 pp. Fixed mean ratios (no bootstrap): U 1.40 / 1.57 / 3.45, E 2.32 / 2.61 / 5.92. Spearman of the bootstrap ratio with the gain: U < 0.09, E +0.30 (WNR3) / +0.12 (WNR3z); T0, beta and q dominate",
+     "kind": "inferred",
+     "impact": "Model-parameter uncertainty (T0, beta, q, qmix) dominates the 90% ranges, not the measured record sizes",
+     "confidence": "high"
+    },
+    {
+     "claim": "Without W2 (per-record helper), gains vs WEX1 on U: shrink a lot, while gains vs WNR2 change little",
+     "evidence": "noW2_single_helper. U vs WEX1: WNR2 +2.35 [-1.84-10.89] P3 0.445; WNR3 +3.72 [-1.22-13.10] P3 0.585; WNR3t +3.87 P3 0.600; WNR3z +5.73 [-0.09-16.12] P3 0.723. Vs WNR2: 1.28 / 1.42 / 3.13 (P3 0 / 0 / 0.538). E vs WEX1: 11.33 / 13.90 / 14.20 / 17.87; vs WNR2: 2.26 / 2.54 / 5.79 (P3 0.015 / 0.078 / 1.000)",
+     "kind": "inferred",
+     "impact": "W2 stays the precondition for any U: speed claim vs WEX1",
+     "confidence": "medium"
+    },
+    {
+     "claim": "Even the worst measured ceil-form decode penalties cost at most 0.4 pp of tok/s",
+     "evidence": "dk = relative kernel slowdown on cvtp/cv1/csingle, with dk*cvtp added unhidden to cdec_x. dk=0.034 (ceil-gpu CF5/CF0 max): U vs WNR2 1.33 / 1.51 / 3.40 (P3 WNR3z 0.64); E 2.30 / 2.58 / 5.92. dk=0.157 (naive per-block byte store, CF/CF0 m3 median): U 1.03 / 1.19 / 3.07 (P3 0.53); E 2.27 / 2.53 / 5.86",
+     "kind": "inferred",
+     "impact": "The deferred-patch kernel is effectively free in capacity terms; only the naive store costs ~0.4 pp on U:",
+     "confidence": "medium"
+    },
+    {
+     "claim": "Ceil-form also shrinks the largest record relative to the mean (40 test experts). With fixed RAM slots sized to the largest record, that adds a little capacity",
+     "evidence": "max/mean padded record on the 40 experts: WNR2 1.0387 (L39); WNR3 1.0234, WNR3t 1.0235, WNR3z 1.0243; g0 1.0113 / 1.0112 / 1.0119. Team 3's slot_ov range is 1.00-1.03, and the V4 largest record was 11.76 MiB = 1.057 x mean (ref:500). Sensitivity with these fixed slot_ov values: U vs WNR2 1.55 / 1.70 / 3.61 (P3 0 / 0.01 / 0.69); E 2.53 / 2.81 / 6.12 (P3 0.10 / 0.32 / 1.00). g0 plus its slot_ov: U 1.66 / 1.82 / 3.74; E 2.74 (P3 0.29) / 3.01 (P3 0.52) / 6.32",
+     "kind": "inferred",
+     "impact": "Up to +0.1..+0.4 pp more vs WNR2; the true maximum over 7680 records is unknown, so this is not in the primary numbers",
+     "confidence": "low"
+    },
+    {
+     "claim": "g0 (constant anchor 120) instead of g changes tok/s by only +0.02..+0.03 pp",
+     "evidence": "WNR3_g0 vs WNR3: U median 0.02 [0.00-0.06], E 0.03 [0.00-0.09], P(>0) 0.652 (= the chance that L39_E156 is in a bootstrap sample)",
+     "kind": "inferred",
+     "impact": "The anchor-rule choice is irrelevant for speed; choose it for robustness",
+     "confidence": "high"
+    },
+    {
+     "claim": "Container sizes: WEX1 144.389 GB, WNR2 129.905 GB (both exactly as in the reference), WNR3 127.169 GB, WNR3t 126.850 GB, WNR3z 123.214 GB",
+     "evidence": "Formula: 4096 header + align4096(model) + align4096(72 x 7680 = 552,960) + 7680 x mean padded record. Checks: WEX1 144,389,472,256 B == ref:81-82; WNR2 129,905,360,896 B == ref:80; records start 618,496 == ref:101; (container - 618,496)/7680 = 16,914,680.0. Each WNM3 blob is 59,708 B (ceil-ref), padded to 61,440, so table_offset stays 65,536. Means (B): WNR3 16,558,430.4 -> 127,169,363,968 B = 118.44 GiB (CI95 126.941-127.349 GB); WNR3t 16,516,856.0 -> 126,850,072,576 B = 118.14 GiB (126.623-127.029); WNR3z 16,043,460.8 -> 123,214,397,440 B = 114.75 GiB (122.988-123.392); g0 127.130 / 126.810 / 123.175 GB; F (ceil only) 127.362 GB; WNR3zt_est 122.894 GB. A 64-B record header (WNR3-DRAFT.md:52) instead of ceil-ref's 48 B adds +122,880 B in expectation. The draft's compacted layout-0 model (table_offset 16,384, WNR3-DRAFT.md:168) saves 49,152 B",
+     "kind": "inferred",
+     "impact": "Ceil-form saves 2.7 GB (WNR3) to 6.7 GB (WNR3z) per container vs WNR2",
+     "confidence": "high"
+    },
+    {
+     "claim": "No format fits on U: at the 122.6 GB free reported at 17:11 (KAIRA machine). WNR3z is 0.61 GB short",
+     "evidence": "Free-space figures: ref:111, ref:115, ref:139 (122.6 GB = 114.2 GiB, Get-PSDrive decimal, 2026-11-07 17:11; WEX1 is already on U: and counted as used). Margin = free - size: WNR2 -7.31 GB (ref says ~7 GB short), WNR3 -4.57 (CI -4.75..-4.34), WNR3t -4.25, WNR3z -0.61 (CI -0.79..-0.39), WNR3zt_est -0.29. With the 5 GiB reserve used for W1 (ref:61, ref:320): -12.67 / -9.94 / -9.62 / -5.98. E: 105.9 GB free (it already holds the WNR2 container, ref:80): every format is 17-24 GB short unless the WNR2 container is removed. D: 61.4 GB: 61-69 GB short",
+     "kind": "inferred",
+     "impact": "A U: copy of any format needs space freed first: at least 4.6 GB (WNR3) or 0.6 GB (WNR3z), plus any safety reserve. The 122.6 GB figure is rounded to 0.1 GB and dated, so it must be re-checked",
+     "confidence": "medium"
+    },
+    {
+     "claim": "The WNR2 builder's up-front free-space rule (0.90 x source size + margin) would refuse output to U: for any format",
+     "evidence": "ref:300: build_nr2_full.py up-front check 0.90 x source + margin. 0.90 x 144,389,472,256 = 129.95 GB > 122.6 GB. Whether a WNR3 builder would inherit that rule is inferred",
+     "kind": "read-in-code",
+     "impact": "Building directly on U: needs the check changed or more space. Copying a finished, verified container needs only its size",
+     "confidence": "medium"
+    },
+    {
+     "claim": "This PC's drive letters are not the KAIRA machine's",
+     "evidence": "Get-PSDrive on this PC: C..Z drives. This PC's U: shows 607.9 GB free and E: 1102.9 GB free, vs the reference's KAIRA U: 122.6 GB and E: 105.9 GB. The reference's drive table (ref:106-119) is the KAIRA machine's M0 probe; the reference's paths are under <HOME>, while this PC's user is SHC",
+     "kind": "measured",
+     "impact": "No free-space or drive-speed number here was measured on the KAIRA drives; all come from the reference",
+     "confidence": "high"
+    }
+   ],
+   "numbers": [
+    {
+     "what": "record ratio WNR2 / WNR3 / WNR3t / WNR3z",
+     "value": "0.89969 / 0.88074 / 0.87853 / 0.85335 (bootstrap p5-p95 WNR3 0.87930-0.88167, WNR3t 0.87709-0.87944, WNR3z 0.85191-0.85426)",
+     "conditions": "production WNR2 16,914,680 B + paired ceil-ref real-record delta, 40 held-out experts"
+    },
+    {
+     "what": "record ratio g0 variants / WNR3zt estimate",
+     "value": "0.88047 / 0.87825 / 0.85307; WNR3zt_est 0.85113 (not encoded)",
+     "conditions": "constant anchor 120; WNR3zt = fgcd + per-expert (fgdt - fgd)"
+    },
+    {
+     "what": "team 3 old estimates (replaced)",
+     "value": "WNR3 0.89516, WNR3z 0.86820; on U: vs WNR2 +0.33% / +2.35%, on E: +0.54% / +3.94%",
+     "conditions": "team 3 format_ratios, same draws"
+    },
+    {
+     "what": "U: WEX1 tok/s",
+     "value": "3.879 [2.675-5.893]",
+     "conditions": "G2+W2 built, MC 400 draws x 40 tokens, rng 7"
+    },
+    {
+     "what": "U: WNR2",
+     "value": "4.129 tok/s [2.847-6.252]; vs WEX1 +6.38% [2.97-11.91], P(>=3%) 0.948",
+     "conditions": "same"
+    },
+    {
+     "what": "U: WNR3 (f+g+d+e)",
+     "value": "4.192 tok/s [2.890-6.327]; vs WEX1 +7.89% [3.86-14.56] P3 0.980; vs WNR2 +1.41% [0.74-2.27] P3 0.000",
+     "conditions": "same, record bootstrap per draw"
+    },
+    {
+     "what": "U: WNR3t (f+g+d+tail seeding)",
+     "value": "4.198 tok/s [2.896-6.333]; vs WEX1 +8.07% [3.93-14.86] P3 0.985; vs WNR2 +1.58% [0.83-2.52] P3 0.000",
+     "conditions": "same"
+    },
+    {
+     "what": "U: WNR3z (f+g+c+d+e)",
+     "value": "4.264 tok/s [2.956-6.417]; vs WEX1 +10.10% [4.92-18.33] P3 0.990; vs WNR2 +3.49% [1.91-5.61] P3 0.665",
+     "conditions": "same; value-exact"
+    },
+    {
+     "what": "E: WEX1 tok/s",
+     "value": "1.705 [1.084-2.618]",
+     "conditions": "G2+W2 built, MC 400 draws"
+    },
+    {
+     "what": "E: WNR2",
+     "value": "1.908 tok/s [1.213-2.930]; vs WEX1 +11.94% [8.88-13.52], P3 1.000",
+     "conditions": "same"
+    },
+    {
+     "what": "E: WNR3",
+     "value": "1.954 tok/s [1.240-2.989]; vs WEX1 +14.56% [10.76-16.59] P3 1.000; vs WNR2 +2.31% [1.75-2.75] P3 0.0175",
+     "conditions": "same"
+    },
+    {
+     "what": "E: WNR3t",
+     "value": "1.959 tok/s [1.244-2.998]; vs WEX1 +14.85% [10.96-16.91] P3 1.000; vs WNR2 +2.59% [1.98-3.06] P3 0.080",
+     "conditions": "same"
+    },
+    {
+     "what": "E: WNR3z",
+     "value": "2.018 tok/s [1.282-3.078]; vs WEX1 +18.61% [13.90-21.19] P3 1.000; vs WNR2 +5.93% [4.46-6.82] P3 1.000",
+     "conditions": "same"
+    },
+    {
+     "what": "elasticity vs WNR2 (% tok/s per % fewer bytes)",
+     "value": "U: WNR3 0.653 [0.340-1.051], WNR3t 0.647 [0.343-1.056], WNR3z 0.635 [0.345-1.034]; E: 1.081 [0.814-1.261], 1.084 [0.804-1.260], 1.096 [0.823-1.250]",
+     "conditions": "per draw, output of the model (not an input)"
+    },
+    {
+     "what": "elasticity vs WEX1",
+     "value": "U: WNR2 0.572 [0.266-1.068], WNR3 0.580, WNR3t 0.582, WNR3z 0.589; E: 1.071 [0.797-1.212], 1.077, 1.078, 1.086",
+     "conditions": "per draw"
+    },
+    {
+     "what": "bytes fewer",
+     "value": "vs WNR2: WNR3 2.148%, WNR3t 2.404%, WNR3z 5.429%; vs WEX1: WNR2 11.150%, WNR3 13.537%, WNR3t 13.822%, WNR3z 17.184%",
+     "conditions": "(r_base / r - 1) x 100, bootstrap median"
+    },
+    {
+     "what": "pairwise WNR3t vs WNR3 / WNR3z vs WNR3",
+     "value": "U +0.16% [0.08-0.28] / +2.03% [1.13-3.34] P3 0.107; E +0.25% [0.18-0.36] / +3.50% [2.64-4.05] P3 0.818",
+     "conditions": "W2"
+    },
+    {
+     "what": "pooled 1200 draws (3 seeds) vs WNR2",
+     "value": "U: 1.42 / 1.59 / 3.52, P3 0.000 / 0.004 / 0.679; E: 2.32 / 2.60 / 5.90, P3 0.014 / 0.083 / 1.000; WNR2 vs WEX1 U 6.53 [2.80-11.89] P3 0.934, E 11.91 [8.71-13.64]",
+     "conditions": "seeds 7, 11, 12; per-seed medians vary by <= 0.07 pp"
+    },
+    {
+     "what": "no-W2 (single-record helper) vs WEX1",
+     "value": "U: WNR2 +2.35% [-1.84-10.89] P3 0.445, WNR3 +3.72 P3 0.585, WNR3t +3.87 P3 0.600, WNR3z +5.73 [-0.09-16.12] P3 0.723; E: 11.33 / 13.90 / 14.20 / 17.87",
+     "conditions": "sensitivity; W2 not built"
+    },
+    {
+     "what": "ceil decode penalty sensitivity (vs WNR2 medians)",
+     "value": "dk 0.034: U 1.33 / 1.51 / 3.40, E 2.30 / 2.58 / 5.92; dk 0.157: U 1.03 / 1.19 / 3.07, E 2.27 / 2.53 / 5.86",
+     "conditions": "WNR3 / WNR3t / WNR3z; dk from ceil-gpu RTX 3070 ratios"
+    },
+    {
+     "what": "max/mean padded record over the 40 experts",
+     "value": "WNR2 1.0387; WNR3 1.0234; WNR3t 1.0235; WNR3z 1.0243; g0 1.0113 / 1.0112 / 1.0119",
+     "conditions": "ceil-ref heldout records; slot_ov sensitivity only"
+    },
+    {
+     "what": "center scenario (all parameters at center, 3000 tokens)",
+     "value": "U: WEX1 3.749, WNR2 4.056 (+8.21%), WNR3 4.125 (+1.70% vs WNR2), WNR3t 4.133 (+1.90%), WNR3z 4.227 (+4.22%); E: 1.643, 1.829 (+11.29%), 1.869 (+2.20%), 1.874 (+2.47%), 1.930 (+5.53%)",
+     "conditions": "team 3 center, rng 20261107"
+    },
+    {
+     "what": "container WEX1 / WNR2",
+     "value": "144,389,472,256 B (144.389 GB, 134.47 GiB) / 129,905,360,896 B (129.905 GB, 120.98 GiB)",
+     "conditions": "formula reproduces ref:80-82 exactly"
+    },
+    {
+     "what": "container WNR3 / WNR3t / WNR3z",
+     "value": "127,169,363,968 B = 127.169 GB = 118.44 GiB (CI 126.941-127.349) / 126,850,072,576 B = 126.850 GB = 118.14 GiB (126.623-127.029) / 123,214,397,440 B = 123.214 GB = 114.75 GiB (122.988-123.392)",
+     "conditions": "4096 header + model padded to 65,536 + 552,960 table + 7680 padded records; CI from the 10,000-resample expert bootstrap"
+    },
+    {
+     "what": "container g0 variants / F / WNR3zt_est",
+     "value": "127.130 / 126.810 / 123.175 GB; F 127.362 GB; WNR3zt_est 122.894 GB",
+     "conditions": "same formula"
+    },
+    {
+     "what": "U: shortfall at 122.6 GB free (17:11)",
+     "value": "WNR2 -7.31 GB; WNR3 -4.57; WNR3t -4.25; WNR3z -0.61 (CI -0.79..-0.39); WNR3zt_est -0.29; with a 5 GiB reserve -12.67 / -9.94 / -9.62 / -5.98",
+     "conditions": "KAIRA machine, decimal GB, WEX1 already on U:"
+    },
+    {
+     "what": "E: / D: shortfall",
+     "value": "E: 105.9 GB free: WNR2 -24.01, WNR3 -21.27, WNR3t -20.95, WNR3z -17.31 GB (the WNR2 container already sits on E:); D: 61.4 GB: -68.5 / -65.8 / -65.5 / -61.8 GB",
+     "conditions": "ref:110-117, 17:11"
+    },
+    {
+     "what": "builder up-front check",
+     "value": "0.90 x 144,389,472,256 = 129.95 GB > 122.6 GB U: free",
+     "conditions": "ref:300 rule of build_nr2_full.py"
+    }
+   ],
+   "files_written": [
+    "<RESEARCH-PC>\\team4\\capacity-update\\capacity_value.py (verbatim copy of team 3, sha256 D5B06E88...E19B)",
+    "<RESEARCH-PC>\\team4\\capacity-update\\capacity_update.py",
+    "<RESEARCH-PC>\\team4\\capacity-update\\capacity_update_results.json",
+    "<RESEARCH-PC>\\team4\\capacity-update\\capacity_update_output.txt",
+    "<RESEARCH-PC>\\team4\\capacity-update\\capacity_update_stdout.log",
+    "<RESEARCH-PC>\\team4\\capacity-update\\print_key.py",
+    "<RESEARCH-PC>\\team4\\capacity-update\\repro_team3_capacity_value_output.txt",
+    "<RESEARCH-PC>\\team4\\capacity-update\\repro_team3_capacity_value_results.json",
+    "<RESEARCH-PC>\\team4\\capacity-update\\repro_team3_stdout.log",
+    "<RESEARCH-PC>\\team4\\capacity-update\\__pycache__\\capacity_value.cpython-314.pyc"
+   ],
+   "open_questions": [
+    "Every tok/s number assumes G2 and W2 are built (team 3's assumption). Neither is in KAIRA src (ref:123-135); without W2, U: gains vs WEX1 fall to +2.4% (WNR2) .. +5.7% (WNR3z).",
+    "The record deltas are held-out on 40 experts (one per layer). ceil-ref's all-160 code-length estimate is about 0.04 pp of raw larger (-1.803% vs -1.761% for f), and a production model trained in-sample on all 7680 may differ slightly. At elasticity 0.65 / 1.08 that changes tok/s by only about +0.03 / +0.05 pp.",
+    "The largest record over all 7680 is unknown. On 40 experts WNR2 max/mean is 1.039 (above team 3's slot_ov range 1.00-1.03), and ceil-form lowers it to 1.023 (g0 1.011). A full build's max record would decide whether the +0.1..+0.4 pp slot sensitivity is real.",
+    "WNR3z is value-exact only and needs the logprob check. WNR3t gives up the 23-bit hash for +0.16..+0.25% tok/s, and its corrupted-stream acceptance rate is unmeasured.",
+    "WNR3zt (c + tail seeding) was not encoded; its 0.85113 ratio and 122.894 GB container are estimates from per-expert increments.",
+    "Ceil-form decode cost was measured only on the RTX 3070, not on the 5090 or inside KAIRA's kernel; dk 0.034 / 0.157 are sensitivity values.",
+    "U: free space (122.6 GB) is a 17:11 snapshot rounded to 0.1 GB, and other data on U: changed at 16:04. WNR3z's 0.61 GB shortfall is close enough that it must be re-measured before any decision."
+   ]
+  },
+  {
+   "member": "spec-update",
+   "verdict": "I wrote <RESEARCH-PC>\\team4\\spec-update\\WNR3-DRAFT-v2.md (DRAFT 0.2, 70,223 B). It sits next to a byte copy of team 3's draft, and the original is unchanged (sha256 086C4B56...1844BED0 before and after). The container rules stay as they were: WEX3 v3, header flags 32/64, codec 5, entry bits 8-15 now mirror the 8 record flag bits, and table_offset stays 65,536 for the v1 model (K=2, 57,736 B). Ceil-form (f) is now a first-class feature. Its exact per-matrix gate is \"no block with max magnitude 5\", even blocks with scale 255 are left untransformed, and a matrix that fails the gate falls back to a plain-form table set; coding it with the ceil set instead costs +397,312 B, measured by ceil-ref. The decoder inverse runs on the coded domain after the block max is known, applies the SWAR D(m)=m+min(m,2) before the uint4 store, and writes the final scales deferred into a separate output; in-place patching is forbidden. All hashes are computed on the coded domain. Anchor rule g0 is a constant per set and matrix type: 120 on V4.1, measured at -6,028 B vs f; the densest-pair rule is a wash on ceil-form. Features a (+10,642 B, worse on all 40 experts) and k-means b (+8,585 B on c+d+e) move to an appendix as measured but not adopted; a also needs a 1,211-3,402-row table against 259 rows for v1. For the start-state bits I recommend TAIL+DIGEST: -41,548 B (-0.221% of raw) vs HASH, with the digest at 0 B in a reserved header word. The digest closes the 0.26-0.58% silent sign-flip hole, which TAIL alone would leave open. Sign bypass is an optional layout 2 (1.03e-6 bit/w; -6.5..-11.4% decode time vs A259 on the 3070). It may not be combined with canonical zero, because the fixed sign plane gives back all of c's gain. The canonical-zero section records team 2's 0-differing-bit results, the untested sm_120/Vulkan paths, the required 5090 bit test and per-step logits memcmp, and the tooling breakages. The v1 byte-exact default (CEIL|LENC|TAIL|DIGEST) measured 0.87800 of raw (-2.144% vs WNR2 0.89943); with this spec's layout about 0.8781 (estimate). The value-exact profile measured 0.85282 with e; with t instead about 0.8507 (estimate, not run). I took the measured numbers from the team result files, spot-checking ceil-ref's g0 summary and ceil-gpu's best_final.txt against the files themselves. KAIRA-dependent items are listed as OPEN-K.",
+   "findings": [
+    {
+     "claim": "Exact ceil-form gate is per matrix 'no block with max magnitude 5' (not 'max < 6'); blocks with max 0..4 pass through; even blocks with scale 255 are skipped; the decoder inverts only blocks with coded max 5 and rejects coded scale 0 there",
+     "evidence": "<RESEARCH-PC>\\team4\\ceil-refuter\\out\\edge_tests2.json (exhaustive 65,536 4-nibble blocks x scales {0,1,120,253,254,255}: 0 collisions/0 RT failures without max-5 blocks, 32,208 collisions with them); measured codecs used the stricter record gate (<RESEARCH-PC>\\team4\\ceil-ref\\wnr_common.py:217-265), identical bytes on V4.1 since 0 of 260,997,120 blocks have max < 6 and the largest scale of an even block is 124/125 (refute_an.json)",
+     "kind": "measured",
+     "impact": "Spec section 5.2: fallback needed only for max-5 blocks; per-matrix ceil_mask + plain set",
+     "confidence": "high"
+    },
+    {
+     "claim": "Fallback matrices must use a plain-form table set, not the ceil set",
+     "evidence": "ceil-ref test_ceil.json: fallback record with ceil model 17,285,120 B vs WNR2 model 16,887,808 B (+397,312 B); refuter estimate +11.7..+12.7% of raw",
+     "kind": "measured",
+     "impact": "WNM3 sets carry form/anchor0; v1 builder writes K=2 (ceil + plain), which keeps table_offset 65,536",
+     "confidence": "high"
+    },
+    {
+     "claim": "Hashes/digest must cover the coded domain; the scale fix-up must go to a separate output written deferred at stream end",
+     "evidence": "ceil-gpu bench_final.json: per-block byte store CF/CF0 1 record median 1.157 (max 1.205); deferred CF5 own-cost medians 1.017/1.007/1.003 (m1/1 rec/8 rec); CF6 full write same; refuter read team2 wnr2dec.cu:182,237,244 (const __restrict__/__ldg scales: in-place patch is UB); ceil-gpu wnr2dec.cu:208-211 SWAR borrow",
+     "kind": "measured",
+     "impact": "Spec sections 5.1, 6, 7.2 define the kernel position (after the 32nd symbol, before the uint4 store) and the separate output",
+     "confidence": "high"
+    },
+    {
+     "claim": "g0 (constant anchor per set/type, 120 on V4.1) is better than the densest-pair rule on ceil-form",
+     "evidence": "ceil-ref heldout_summary_g0.json: fg0 16,573,132.8 B (0.88152); g0 vs f -6,028 B (CI -16,967..-459); densest pair vs f -853 B (CI -16,952..+15,062) because of 1 flip each (L24_E058 w1, L39_E156 w2)",
+     "kind": "measured",
+     "impact": "anchor byte becomes an encoder choice; decoders unchanged (OPEN-K: any re-check of median)",
+     "confidence": "medium"
+    },
+    {
+     "claim": "Feature a and k-means b do not pay after f+g",
+     "evidence": "ceil-ref: fga vs fg +10,642 B (0/40 improved); fgaK2 vs fga -2,087 B; fgaK2cde vs fgcde +8,585 B; a tables 3,402 rows (108,864 B, over the 99 KB per-block budget) or 1,211 rows compacted (inferred); team 2 C variant with a 33 KB table 1.9-2.3x slower (final_table.txt:11)",
+     "kind": "measured",
+     "impact": "Moved to Appendix A; record flag bit 0 and model layout 1 reserved",
+     "confidence": "high"
+    },
+    {
+     "claim": "TAIL+DIGEST beats HASH for the 23 start-state bits",
+     "evidence": "ceil-ref: fgdt vs fgde -41,548 B (CI -41,618..-41,495) = -0.221% of raw; fge vs fg +1,352 B; fgt vs fg -40,199 B; today's rule accepts w1 31/12,000, w2 62/12,000 (team2 corrupt_audit.json), 392/69,120 (symperm_audit.json), ceil-form w1 0.342%/w2 0.579% (flip_ceil_big.json); the TAIL window weakens the per-stream check to about 2^-11 (inferred)",
+     "kind": "measured",
+     "impact": "Default v1 = TAIL + 32-bit XOR digest in header word 48 (0 B); TAIL without DIGEST forbidden; HASH kept as an exclusive alternative",
+     "confidence": "medium"
+    },
+    {
+     "claim": "Sign bypass is an optional speed layout and incompatible with canonical zero in a fixed sign plane",
+     "evidence": "team2 signent.json 1.03e-6 bit/w; ceil-gpu best_final.txt: D vs A259 best-vs-best -6.5% (1 matrix), -11.4% (1 record), -8.1% (8 records); CFD5 vs CF5 -9.1/-4.3/-8.1%; the fixed plane stores the zero signs, so the 0.1165 bit/w CZ gain is lost (inferred)",
+     "kind": "measured",
+     "impact": "Model layout 2 + SIGNPLANE flag; requires DIGEST or HASH; not the v1 default",
+     "confidence": "medium"
+    },
+    {
+     "claim": "Canonical-zero evidence and gaps summarised for the spec",
+     "evidence": "team2 run_full4_quick160.json (350,208 outputs/kernel x 14 kernels incl. negative control; 3,112,960 x 6 kernels over 160 experts; 0 mismatches), gpu_all160.json (10 colibri CUDA kernels on sm_86, 14,008,320 / 56,033,280 outputs, 0 mismatches), mma_signedzero.json; untested: sm_120 DeepGEMM FP4, cuBLASLt MXFP8, Vulkan on other drivers (RIC section 2)",
+     "kind": "measured",
+     "impact": "Spec section 5.6: required 5090 bit test + per-step logits memcmp; tooling breakages (deploy gate REF:331-334, sha256/.verified REF:42-44, irreversibility)",
+     "confidence": "high"
+    },
+    {
+     "claim": "The LENC layout in this spec costs about 2.4 KB more than the measured ref-impl layout",
+     "evidence": "ceil-ref fgdt g0 length table 13,121.2 B (no base offsets); base offsets 4 x (69+540) = 2,436 B",
+     "kind": "inferred",
+     "impact": "d about -23.3 KB (-0.124%) instead of the measured -25.8 KB; v1 about 0.8781 instead of 0.87800",
+     "confidence": "medium"
+    }
+   ],
+   "numbers": [
+    {
+     "what": "v1 byte-exact profile (f g0 d t) measured",
+     "value": "16,506,880.0 B = 0.87800 of raw, -2.144% vs WNR2 (CI -2.334..-1.992)",
+     "conditions": "ceil-ref heldout_summary_g0.json, 40 odd held-out experts, ref-impl layout (48-B header, no group base offsets)"
+    },
+    {
+     "what": "v1 with this spec's layout",
+     "value": "about 16,509,300 B = 0.8781, -2.13% vs WNR2; capacity +13.9% vs WEX1; 7,680 records about 126.8 GB",
+     "conditions": "inferred: +2,436 B base offsets + 16 B header"
+    },
+    {
+     "what": "WNR2 held-out baseline",
+     "value": "16,909,926.4 B = 0.89943",
+     "conditions": "ceil-ref, identical to team 3"
+    },
+    {
+     "what": "f alone",
+     "value": "-331,162 B = -1.761% of raw (CI -1.948..-1.632), 0.88182",
+     "conditions": "ceil-ref"
+    },
+    {
+     "what": "value-exact f g0 c d e",
+     "value": "16,033,587.2 B = 0.85282 (-4.661%)",
+     "conditions": "ceil-ref g0, 40/40 value-exact"
+    },
+    {
+     "what": "value-exact f g0 c d t (v1z)",
+     "value": "about 15,994,400 B = 0.8507 (-4.87%)",
+     "conditions": "inferred: fg0cd - 40,199 + 2,452; not run"
+    },
+    {
+     "what": "TAIL+DIGEST vs HASH",
+     "value": "-41,548 B per record (-0.221% of raw); digest 0 B",
+     "conditions": "ceil-ref fgdt vs fgde"
+    },
+    {
+     "what": "HASH cost",
+     "value": "+1,352 B (+0.0072%)",
+     "conditions": "ceil-ref fge vs fg"
+    },
+    {
+     "what": "WNM3 v1 blob",
+     "value": "57,736 B (layout 0, K=2, LENPRED), table_offset 65,536",
+     "conditions": "computed from spec section 3"
+    },
+    {
+     "what": "v1 shared memory per matrix table",
+     "value": "8,288 B (259 rows x 32 B); layout 2: 4,144 B; a uncompacted 108,864 B",
+     "conditions": "computed; prototype 8,304 / 4,160 B measured by ceil-gpu"
+    },
+    {
+     "what": "ceil inverse GPU own-cost (deferred write)",
+     "value": "median 1.017 (1 matrix), 1.007 (1 record), 1.003 (8 records)",
+     "conditions": "ceil-gpu bench_final.json, RTX 3070"
+    },
+    {
+     "what": "extra device memory for the coded-scale buffer",
+     "value": "1,105,920 B per lane, about 8.4 MiB per batch-calling thread (8 lanes)",
+     "conditions": "inferred, V4.1"
+    }
+   ],
+   "files_written": [
+    "<RESEARCH-PC>\\team4\\spec-update\\WNR3-DRAFT-v2.md",
+    "<RESEARCH-PC>\\team4\\spec-update\\WNR3-DRAFT.md (byte copy of team 3 DRAFT 0.1, sha256 086C4B56AD74F0E115A16CE2AF08DE3177C19D9C1A558C94D719B8DA1844BED0)",
+    "<TMP>\\specupd_calc.py (arithmetic helper, temporary folder)"
+   ],
+   "open_questions": [
+    "OPEN-K: does wex_validate_header reject unknown flags; does any path read entry.flags>>8 as scale_pages for codec 5; where are the uint4 store, the running mx and the __ldg scale reads in KAIRA's weight kernel; is there room in the commit kernel and in WexCudaBatchHost for a digest word and a separate final-scale region; does any decoder or checker re-derive median[m] (which would reject g0 records)?",
+    "GPU cost of the per-lane H32 and the digest atomics is not measured anywhere; neither is the TAIL-alone silent-acceptance rate (test T3).",
+    "fg0cdt (CZ + tail) and the layout-2 tail were not run.",
+    "Is the constant anchor (g0) safe for other checkpoints and for MTP records? Is the MTP anchor rule the mode or pair(original)+1?",
+    "Will the container store the 384 MTP routed experts (own sets needed)?",
+    "Which kernels does KAIRA dispatch on sm_120 for the canonical-zero bit test? Do team 2's colibri line numbers match KAIRA's fork?"
+   ]
+  }
+ ]
+}

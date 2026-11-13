@@ -1,0 +1,45 @@
+{
+ "function_vectors": {
+  "smhasher_verification": "0xB0F57EE3",
+  "h32(\"\",0)": "0x00000000",
+  "h32(\"\",seed)": "0xE7F741F1",
+  "h32(00..0F,seed)": "0x31CE0919",
+  "D1 weight-stream vector h23": "0x0C48D3",
+  "D1 scale-stream vector h23": "0x3C0999",
+  "0.2.1 weight-stream vector, same data, g=2165|ceil<<31, flags 0x1C, m1, set 3, anchor 127: h23": "0x1FCF7E"
+ },
+ "record_level_vectors": {
+  "record": "L00_E113.wnr3",
+  "model_id": "0x37D1DBFA",
+  "flags": "0x1C",
+  "owner": [
+   0,
+   113
+  ],
+  "header_bytes_0_59_hex": "574e5233fadbd1371c000000e03d0000511f0200a822fa00000800000002000078787800000007000000710000000000000000000000000000000000",
+  "header_check": "0x529A9761",
+  "header_check_recomputed": "0x529A9761",
+  "stream g=0": {
+   "ident_hex": "fadbd13771000000000000801c000078",
+   "coded_bytes": 512,
+   "coded_sha256": "0e6671f48862a7080ba5209e0ebcdb608e20f320a77dcf719cc3f7edd134268b",
+   "coded_first16_hex": "79787979787978787979797979797979",
+   "H32": "0xDB0B5A3A",
+   "h23": "0x0B5A3A",
+   "x0": "0x008B5A3A",
+   "x0_be_bytes_in_record": "485b6fd6"
+  },
+  "stream g=2160": {
+   "ident_hex": "fadbd13771000000700800801c000078",
+   "coded_bytes": 1024,
+   "coded_sha256": "3988084886e3fd075756ad7f37ce5be8eeeee4899a7d96a42ccb5aa0d5cb49e5",
+   "coded_first16_hex": "cd9333288211a3aa1122a304e14b2253",
+   "H32": "0x42DA674B",
+   "h23": "0x5A674B",
+   "x0": "0x00DA674B",
+   "x0_be_bytes_in_record": "02f73d5e"
+  },
+  "note": "x0_be_bytes_in_record is the stream start = the encoder FINAL state (big-endian), not x0; the decoder ends at x0 = L + h23.",
+  "coded_scales_match_slab_retransform": true
+ }
+}

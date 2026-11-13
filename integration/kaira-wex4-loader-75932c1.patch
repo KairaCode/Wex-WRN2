@@ -1,0 +1,961 @@
+From 75932c1b562a5d89264cd84b6f131fa7f50fe7c5 Mon Sep 17 00:00:00 2001
+From: KAIRA maintainer <kaira@localhost>
+Date: Wed, 11 Nov 2026 02:51:22 +0100
+Subject: [PATCH] dsv4: open WEX4 expert containers (hashed header and index)
+
+v4_wex_load_manifest accepts the WEX4 container (wex4.h, spec in the
+Wex-WRN2 repo): header page and index are validated, COLI_WEX_ROOT pins
+the root, the WexEntry table and the legacy header fields are rebuilt
+from the index, the model blob is hash-checked and registered. Record
+bytes and offsets are those of WEX3, so the read path, the owner check
+and the helper are unchanged. A mirror matches when its root matches.
+
+tests/test_v4_wex_nr3 runs the same container as WEX4: same bytes
+served; pinned root, damaged header or index, corrupted and foreign
+records and the masked path behave as for WEX3.
+
+Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>
+---
+ src/colibri/c/deepseek_v4.c           | 100 ++++
+ src/colibri/c/tests/test_v4_wex_nr3.c | 110 +++++
+ src/colibri/c/wex4.h                  | 661 ++++++++++++++++++++++++++
+ 3 files changed, 871 insertions(+)
+ create mode 100644 src/colibri/c/wex4.h
+
+diff --git a/src/colibri/c/deepseek_v4.c b/src/colibri/c/deepseek_v4.c
+index e888898..f9a3550 100644
+--- a/src/colibri/c/deepseek_v4.c
++++ b/src/colibri/c/deepseek_v4.c
+@@ -13961,6 +13961,96 @@ static int v4_wex_read_exact(HANDLE file, void *buffer, DWORD bytes,
+     return ok && read_bytes == bytes ? 0 : -1;
+ }
+ 
++#include "wex4.h"
++/* WEX4 container (wex4.h): validate the header page and the index, then hand the
++ * caller what a WEX3 container gives it: the layers x experts WexEntry table and a
++ * header block with the legacy fields (version 3, flags, slab size). The record
++ * bytes and offsets are those of WEX3, so nothing after the open changes. The
++ * block keeps the container's root at byte 4064: equal blocks <=> same container.
++ * COLI_WEX_ROOT (64 hex digits) pins the root. */
++static int v4_wex4_load_manifest(HANDLE file, uint64_t size, int layers, int experts,
++                                  unsigned char *block, WexEntry **entries_out,
++                                  size_t *table_span) {
++    Wex4Header h;
++    Wex4View v;
++    Wex4Record rec;
++    unsigned char *index = NULL, *model = NULL;
++    WexEntry *entries = NULL;
++    uint64_t span, slab = 0;
++    uint32_t r, flags = 0, model_blob = 0;
++    const char *pin = getenv("COLI_WEX_ROOT");
++    if (wex4_parse_header(block, size, &h) || h.layers != (uint32_t)layers ||
++        h.experts != (uint32_t)experts) return -1;
++    if (pin && *pin) {
++        char hex[65];
++        for (r = 0; r < 32u; r++) snprintf(hex + r * 2u, 3, "%02x", h.root[r]);
++        if (_stricmp(pin, hex)) {
++            fprintf(stderr, "[v4_wex] WEX4 root %s is not the pinned COLI_WEX_ROOT\n", hex);
++            return -1;
++        }
++    }
++    span = wex4_align((uint64_t)h.layers * h.experts * sizeof(WexEntry));
++    index = (unsigned char *)_aligned_malloc((size_t)wex4_align(h.index_bytes), WEX_ALIGN);
++    entries = (WexEntry *)_aligned_malloc((size_t)span, WEX_ALIGN);
++    if (!index || !entries ||
++        v4_wex_read_exact(file, index, (DWORD)wex4_align(h.index_bytes), h.index_offset) ||
++        wex4_open(&h, index, (size_t)wex4_align(h.index_bytes), &v)) goto fail;
++    memset(entries, 0, (size_t)span);
++    for (r = 0; r < h.records; r++) {
++        wex4_get_record(&v, r, &rec);
++        if (!(rec.flags & WEX4_REC_EXPERT)) continue;
++        if (wex4_expert_entry(&v, r, &entries[(size_t)(rec.owner >> 16) * h.experts + (rec.owner & 0xffffu)]))
++            goto fail;
++        if (wex4_align(rec.decoded) > slab) slab = wex4_align(rec.decoded);
++        if (rec.flags & WEX4_REC_VALUE_EXACT) flags |= WEX_HEADER_CANONICAL_ZERO;
++        if (rec.codec == WEX4_CODEC_WNR3) {
++            flags |= WEX_HEADER_NEURAL_RANS3;
++            if (model_blob && model_blob != rec.blob) goto fail;   /* one registered model */
++            model_blob = rec.blob;
++        }
++    }
++    /* the store applies canonical zero per container: refuse a mixed file */
++    for (r = 0; (flags & WEX_HEADER_CANONICAL_ZERO) && r < h.records; r++) {
++        wex4_get_record(&v, r, &rec);
++        if (rec.codec == WEX4_CODEC_WNR3 && !(rec.flags & WEX4_REC_VALUE_EXACT)) goto fail;
++    }
++    if (model_blob) {
++        Wex4Blob blob;
++        unsigned char digest[32];
++        uint32_t registered = 0;
++        uint64_t at;
++        wex4_get_blob(&v, model_blob - 1u, &blob);
++        model = (unsigned char *)_aligned_malloc((size_t)wex4_align(blob.bytes), WEX_ALIGN);
++        if (!model || v4_wex_read_exact(file, model, (DWORD)wex4_align(blob.bytes), blob.offset)) goto fail;
++        wex4_sha256(model, (size_t)blob.bytes, digest);
++        if (memcmp(digest, blob.sha, 32u)) goto fail;
++        for (at = blob.bytes; at < wex4_align(blob.bytes); at++) if (model[at]) goto fail;
++        if (coli_wex_register_model(model, (size_t)blob.bytes, &registered) || registered != blob.id) goto fail;
++        if (!coli_wex_cuda_nr2_available() || !coli_wex_cuda_nr3_available()) {
++            fprintf(stderr, "[v4_wex] WNR3 container needs kaira_wex_cuda.dll with WNR3 support "
++                            "(helper feature 16) next to the engine\n");
++            goto fail;
++        }
++        if (coli_wex_container_refused(flags, "v4_wex")) goto fail;
++    }
++    {
++        WexHeader legacy = {WEX_MAGIC_V3, 3u, h.layers, h.experts, slab, WEX_ALIGN, flags, 0u};
++        memset(block, 0, WEX_ALIGN);
++        memcpy(block, &legacy, sizeof(legacy));
++        memcpy(block + WEX4_HEADER_HASHED, h.root, 32u);
++    }
++    _aligned_free(index);
++    _aligned_free(model);
++    *entries_out = entries;
++    *table_span = (size_t)span;
++    return 0;
++fail:
++    _aligned_free(index);
++    _aligned_free(model);
++    _aligned_free(entries);
++    return -1;
++}
++
+ static int v4_wex_load_manifest(HANDLE file, int layers, int experts,
+                                  unsigned char **header_block,
+                                  WexEntry **entries_out, size_t *table_span,
+@@ -13975,6 +14065,15 @@ static int v4_wex_load_manifest(HANDLE file, int layers, int experts,
+         return -1;
+     block = (unsigned char *)_aligned_malloc(WEX_ALIGN, WEX_ALIGN);
+     if (!block || v4_wex_read_exact(file, block, WEX_ALIGN, 0)) goto fail;
++    if (wex_read_u32_le(block) == WEX4_MAGIC) {
++        if (v4_wex4_load_manifest(file, (uint64_t)length.QuadPart, layers, experts, block,
++                                  &entries, &aligned_table_bytes)) {
++            entries = NULL;
++            goto fail;
++        }
++        fprintf(stderr, "[v4_wex] WEX4 container (hashed header and index)\n");
++        goto done;
++    }
+     const WexHeader *header = (const WexHeader *)block;
+     if (wex_validate_header(header, (uint64_t)length.QuadPart,
+                             (uint32_t)layers, (uint32_t)experts,
+@@ -14015,6 +14114,7 @@ static int v4_wex_load_manifest(HANDLE file, int layers, int experts,
+         }
+         if (coli_wex_container_refused(header->flags, "v4_wex")) goto fail;
+     }
++done:
+     *header_block = block;
+     *entries_out = entries;
+     *table_span = aligned_table_bytes;
+diff --git a/src/colibri/c/tests/test_v4_wex_nr3.c b/src/colibri/c/tests/test_v4_wex_nr3.c
+index 156f86f..6e098a3 100644
+--- a/src/colibri/c/tests/test_v4_wex_nr3.c
++++ b/src/colibri/c/tests/test_v4_wex_nr3.c
+@@ -20,6 +20,7 @@ int main(void) {
+ #else
+ #include <malloc.h>
+ #include "../wex_decode.h"
++#include "../wex4.h"
+ 
+ int coli_v4_test_wex_active(ColiExpertStore *store);
+ /* deepseek_v4_internal.h declares these only for the GPU unit */
+@@ -167,6 +168,112 @@ static unsigned char *swapped_copy(const Container *c) {
+     return copy;
+ }
+ 
++/* The WEX4 form of a WEX3/WNR3 container, as the in-place upgrade writes it: the same bytes, then the old
++ * header page and the index appended, and a new header page. *root gets the 64 hex digits of its root. */
++static unsigned char *upgrade_wex4(const unsigned char *old, size_t old_bytes, size_t *bytes, char root[65]) {
++    const WexHeader *h3 = (const WexHeader *)old;
++    const WexEntry *table = (const WexEntry *)(old + h3->table_offset);
++    int cz = (h3->flags & WEX_HEADER_CANONICAL_ZERO) != 0;
++    uint32_t model_id;
++    char names[EXPERTS * 6][48];
++    size_t name_bytes = 0, at = 0;
++    for (int i = 0; i < EXPERTS * 6; i++)
++        name_bytes += (size_t)snprintf(names[i], sizeof names[i], "layers.0.ffn.experts.%d.w%d.%s", i / 6, i % 3 + 1,
++                                       i % 6 < 3 ? "scale" : "weight");
++    size_t index_bytes = 3 * WEX4_BLOB_BYTES + EXPERTS * WEX4_RECORD_BYTES + EXPERTS * 6 * (WEX4_TENSOR_BYTES + 4) + name_bytes;
++    size_t index_offset = old_bytes + WEX_ALIGN, total = index_offset + WEX_ALIGN_UP(index_bytes, WEX_ALIGN);
++    unsigned char *out = calloc(1, total), *x;
++    assert(out);
++    memcpy(out, old, old_bytes);
++    memcpy(out + old_bytes, old, WEX_ALIGN);                       /* the old header page */
++    memcpy(&model_id, old + WEX_NR2_DESCRIPTOR_OFFSET + 16u, 4u);
++    x = out + index_offset;
++#define PUT(value, type) do { type t_ = (type)(value); memcpy(x + at, &t_, sizeof t_); at += sizeof t_; } while (0)
++    struct { uint32_t kind, id; uint64_t offset, size; } blobs[3] = {
++        {WEX4_BLOB_WNM2, model_id, WEX_ALIGN, WEX_NR2_MODEL_BYTES},
++        {17u, 0u, h3->table_offset, EXPERTS * sizeof(WexEntry)},
++        {16u, 0u, old_bytes, WEX_ALIGN}};
++    for (int b = 0; b < 3; b++) {
++        PUT(blobs[b].kind, uint32_t); PUT(blobs[b].id, uint32_t); PUT(blobs[b].offset, uint64_t); PUT(blobs[b].size, uint64_t);
++        wex4_sha256(out + blobs[b].offset, (size_t)blobs[b].size, x + at); at += 32; PUT(0, uint64_t);
++    }
++    for (int i = 0; i < EXPERTS; i++) {
++        PUT(table[i].file_offset, uint64_t); PUT(table[i].total_bytes, uint32_t); PUT(RAW, uint32_t);
++        PUT(WEX4_CODEC_WNR3, uint16_t); PUT(WEX4_REC_EXPERT | (cz ? WEX4_REC_VALUE_EXACT : 0), uint16_t);
++        PUT(1, uint32_t); PUT(i, uint32_t); PUT(i * 6, uint32_t); PUT(6, uint32_t);
++        wex4_sha256(out + table[i].file_offset, table[i].total_bytes, x + at); at += 32; PUT(0, uint32_t);
++    }
++    for (int i = 0, name_at = 0; i < EXPERTS * 6; i++) {
++        int m = i % 3, weight = i % 6 >= 3;
++        PUT(name_at, uint32_t); PUT(strlen(names[i]), uint16_t); PUT(weight ? 3 : 6, uint8_t); PUT(2, uint8_t);
++        PUT(ROWS, uint64_t); PUT(weight ? WEIGHT_COLS : SCALE_COLS, uint64_t);
++        for (int d = 2; d < 8; d++) PUT(0, uint64_t);
++        PUT(i / 6, uint32_t); PUT(1, uint32_t);
++        PUT(weight ? 3 * SCALE_M + m * WEIGHT_M : m * SCALE_M, uint64_t); PUT(weight ? WEIGHT_M : SCALE_M, uint64_t);
++        name_at += (int)strlen(names[i]);
++    }
++    for (int i = 0; i < EXPERTS * 6; i++) {   /* name order: w1.scale < w1.weight < w2.scale ... */
++        static const int by_name[6] = {0, 3, 1, 4, 2, 5};
++        PUT(i / 6 * 6 + by_name[i % 6], uint32_t);
++    }
++    for (int i = 0; i < EXPERTS * 6; i++) { memcpy(x + at, names[i], strlen(names[i])); at += strlen(names[i]); }
++    assert(at == index_bytes);
++    x = out; at = 0;
++    memset(out, 0, WEX_ALIGN);
++    PUT(WEX4_MAGIC, uint32_t); PUT(4, uint16_t); PUT(0, uint16_t); PUT(cz, uint64_t); PUT(0, uint64_t);
++    PUT(total, uint64_t); PUT(index_offset, uint64_t); PUT(index_bytes, uint64_t);
++    PUT(3, uint32_t); PUT(EXPERTS, uint32_t); PUT(EXPERTS * 6, uint32_t); PUT(1, uint32_t); PUT(EXPERTS, uint32_t);
++    PUT(RAW, uint32_t); PUT(name_bytes, uint64_t); PUT(0, uint64_t); PUT((uint64_t)EXPERTS * RAW, uint64_t);
++    wex4_sha256(out + index_offset, index_bytes, out + at);
++    wex4_sha256(out, WEX4_HEADER_HASHED, out + WEX4_HEADER_HASHED);
++#undef PUT
++    for (int i = 0; i < 32; i++) snprintf(root + i * 2, 3, "%02x", out[WEX4_HEADER_HASHED + i]);
++    *bytes = total;
++    return out;
++}
++
++static void check_host(const int want[EXPERTS], int active);
++/* The same container as WEX4: the engine must serve the same bytes and fall back in the same cases. */
++static void run_wex4(const Container *c, int cz) {
++    int all[EXPERTS] = {1, 1, 1, 1}, none[EXPERTS] = {0}, two_bad[EXPERTS] = {0, 0, 1, 1}, one_bad[EXPERTS] = {1, 0, 1, 1};
++    char root[65], other[65];
++    size_t bytes;
++    unsigned char *w4 = upgrade_wex4(c->data, c->bytes, &bytes, root);
++    assert(!memcmp(w4 + WEX_ALIGN, c->data + WEX_ALIGN, c->bytes - WEX_ALIGN));   /* nothing moved */
++    write_file(wex_path, w4, bytes);
++    check_host(all, 1);
++    setenv("COLI_WEX_ROOT", root, 1);                      /* the right root pinned */
++    check_host(all, 1);
++    w4[c->entries[1].file_offset + c->used[1] / 2] ^= 0x10u;   /* a flipped byte inside record 1 */
++    write_file(wex_path, w4, bytes);
++    check_host(one_bad, 1);
++    w4[c->entries[1].file_offset + c->used[1] / 2] ^= 0x10u;
++    w4[bytes - WEX_ALIGN + 20] ^= 1u;                      /* a bit of the index: the open fails */
++    write_file(wex_path, w4, bytes);
++    check_host(none, 0);
++    w4[bytes - WEX_ALIGN + 20] ^= 1u;
++    w4[30] ^= 1u;                                          /* a bit of the header page */
++    write_file(wex_path, w4, bytes);
++    check_host(none, 0);
++    w4[30] ^= 1u;
++    free(w4);
++    unsigned char *copy = swapped_copy(c);                 /* records 0 and 1 swapped: the owner check */
++    w4 = upgrade_wex4(copy, c->bytes, &bytes, other);
++    write_file(wex_path, w4, bytes);
++    check_host(none, 0);                                   /* another container than the pinned one */
++    unsetenv("COLI_WEX_ROOT");
++    check_host(two_bad, 1);
++    free(copy); free(w4);
++    w4 = upgrade_wex4(c->data, c->bytes, &bytes, root);
++    write_file(wex_path, w4, bytes);
++    setenv("DSV4_CUDA_MOE_MASKED", "1", 1);                /* canonical zero on the masked path: refused */
++    check_host(cz ? none : all, !cz);
++    unsetenv("DSV4_CUDA_MOE_MASKED");
++    free(w4);
++    printf("WEX4%s on the engine store: same bytes served; pinned root, damaged header / index, corrupted and "
++           "foreign records and the masked path handled as for WEX3.\n", cz ? " canonical-zero" : "");
++}
++
+ static ColiExpertStore *open_store(void) {
+     char error[256] = {0};
+     ColiDeepSeekV4ExpertStoreOptions options = {directory, 1, EXPERTS, (uint64_t)EXPERTS * RAW, -1, UINT64_MAX, 0, 0, 0};
+@@ -301,6 +408,8 @@ static void run_profile(int cz) {
+     check_host(cz ? none : all, !cz);
+     unsetenv("DSV4_CUDA_MOE_MASKED");
+     check_direct(&c);
++    run_wex4(&c, cz);
++    write_file(wex_path, c.data, c.bytes);
+     printf("WNR3%s on the engine store: host path exact, corrupted / wrong-profile / foreign records and the "
+            "masked path fall back to safetensors; direct fill drops a bad cached record and rereads it.\n",
+            cz ? " canonical-zero" : "");
+@@ -327,6 +436,7 @@ int main(int argc, char **argv) {
+     unsetenv("COLI_WEX_PATH");
+     unsetenv("COLI_MODEL_MIRROR");
+     unsetenv("DSV4_CUDA_MOE_MASKED");
++    unsetenv("COLI_WEX_ROOT");
+     assert(mkdtemp(directory));
+     snprintf(st_path, sizeof st_path, "%s/model.safetensors", directory);
+     snprintf(wex_path, sizeof wex_path, "%s\\v4_flash_experts.wex", directory);
+diff --git a/src/colibri/c/wex4.h b/src/colibri/c/wex4.h
+new file mode 100644
+index 0000000..0c023ed
+--- /dev/null
++++ b/src/colibri/c/wex4.h
+@@ -0,0 +1,661 @@
++#ifndef KAIRA_WEX4_H
++#define KAIRA_WEX4_H
++
++/* WEX4: self-describing lossless tensor container (docs/NEXT-FORMAT-SPEC.md).
++ * Prototype reader, validator and codecs; no engine dependency. Every integer
++ * on disk is little-endian and is read byte by byte (no struct casts).
++ * Validation works in place on the header page and the index: no allocation,
++ * no parsing into heap structures. A file is used only after wex4_parse_header
++ * and wex4_open both returned 0. */
++#include <stdint.h>
++#include <stddef.h>
++#include <string.h>
++#include <stdlib.h>
++#include "wex_format.h"   /* WexEntry, WNR3 codec, rANS primitives, MurmurHash3 */
++#ifdef WEX4_FAST_NR3
++/* next/research/fast-cpu-decode: same bytes and same verdicts as wex_nr2_decode, AVX2 + OpenMP
++ * (7x on one thread, about 30x on 8). Build with -O3 -march=haswell -fopenmp. */
++#include "wex_fast_decode.h"
++#define WEX4_NR3_DECODE wex_fast_decode
++#else
++#define WEX4_NR3_DECODE wex_nr2_decode
++#endif
++
++#define WEX4_MAGIC UINT32_C(0x57455834)
++#define WEX4_PAGE 4096u
++#define WEX4_HEADER_HASHED 4064u               /* header_sha256 = SHA-256(page[0..4064)) at 4064 */
++#define WEX4_REQ_VALUE_EXACT UINT64_C(1)       /* some records are value-exact, not byte-exact */
++#define WEX4_REQUIRED_KNOWN WEX4_REQ_VALUE_EXACT
++#define WEX4_OPT_ST_SOURCES UINT64_C(1)        /* meta holds the safetensors sources (tools only) */
++#define WEX4_MAX_BLOBS (1u << 16)
++#define WEX4_MAX_RECORDS (1u << 24)
++#define WEX4_MAX_TENSORS (1u << 24)
++#define WEX4_MAX_INDEX (UINT64_C(1) << 28)
++#define WEX4_MAX_DECODED (1u << 30)            /* per record; larger tensors are split into parts */
++#define WEX4_BLOB_BYTES 64u
++#define WEX4_RECORD_BYTES 72u
++#define WEX4_TENSOR_BYTES 96u
++#define WEX4_CODEC_RAW 0u
++#define WEX4_CODEC_WNR3 5u
++#define WEX4_CODEC_WBP1 6u
++#define WEX4_REC_VALUE_EXACT 1u
++#define WEX4_REC_EXPERT 2u
++#define WEX4_BLOB_WNM2 1u
++#define WEX4_BP_MAGIC UINT32_C(0x31504257)     /* "WBP1" */
++#define WEX4_BP_HEADER 16u
++
++enum { WEX4_OK = 0, WEX4_E_ARG = -1, WEX4_E_MAGIC = -2, WEX4_E_HASH = -3, WEX4_E_VERSION = -4, WEX4_E_FEATURE = -5,
++       WEX4_E_HEADER = -6, WEX4_E_INDEX = -7, WEX4_E_BLOB = -8, WEX4_E_RECORD = -9, WEX4_E_TENSOR = -10,
++       WEX4_E_NAME = -11, WEX4_E_LAYOUT = -12, WEX4_E_EXPERT = -13, WEX4_E_DATA = -14, WEX4_E_UNSUPPORTED = -15 };
++
++/* ---- SHA-256 (FIPS 180-4) ------------------------------------------------ */
++typedef struct { uint32_t h[8]; uint64_t n; unsigned char buf[64]; } Wex4Sha;
++static const uint32_t wex4_sha_k[64] = {
++    0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
++    0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
++    0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
++    0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
++    0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
++    0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
++    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
++    0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2};
++#define WEX4_ROR(x, r) ((x) >> (r) | (x) << (32 - (r)))
++static inline void wex4_sha_block(uint32_t h[8], const unsigned char *p) {
++    uint32_t w[64], s[8], i;
++    for (i = 0; i < 16u; i++)
++        w[i] = (uint32_t)p[i * 4u] << 24 | (uint32_t)p[i * 4u + 1u] << 16 | (uint32_t)p[i * 4u + 2u] << 8 | p[i * 4u + 3u];
++    for (; i < 64u; i++)
++        w[i] = w[i - 16u] + (WEX4_ROR(w[i - 15u], 7) ^ WEX4_ROR(w[i - 15u], 18) ^ w[i - 15u] >> 3) + w[i - 7u] +
++               (WEX4_ROR(w[i - 2u], 17) ^ WEX4_ROR(w[i - 2u], 19) ^ w[i - 2u] >> 10);
++    memcpy(s, h, sizeof(s));
++    for (i = 0; i < 64u; i++) {
++        uint32_t t1 = s[7] + (WEX4_ROR(s[4], 6) ^ WEX4_ROR(s[4], 11) ^ WEX4_ROR(s[4], 25)) +
++                      ((s[4] & s[5]) ^ (~s[4] & s[6])) + wex4_sha_k[i] + w[i];
++        uint32_t t2 = (WEX4_ROR(s[0], 2) ^ WEX4_ROR(s[0], 13) ^ WEX4_ROR(s[0], 22)) +
++                      ((s[0] & s[1]) ^ (s[0] & s[2]) ^ (s[1] & s[2]));
++        s[7] = s[6]; s[6] = s[5]; s[5] = s[4]; s[4] = s[3] + t1; s[3] = s[2]; s[2] = s[1]; s[1] = s[0]; s[0] = t1 + t2;
++    }
++    for (i = 0; i < 8u; i++) h[i] += s[i];
++}
++static inline void wex4_sha_init(Wex4Sha *s) {
++    static const uint32_t iv[8] = {0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19};
++    memcpy(s->h, iv, sizeof(iv)); s->n = 0;
++}
++static inline void wex4_sha_update(Wex4Sha *s, const unsigned char *p, size_t n) {
++    size_t fill = (size_t)(s->n & 63u);
++    s->n += n;
++    if (fill) {
++        size_t take = 64u - fill < n ? 64u - fill : n;
++        memcpy(s->buf + fill, p, take); p += take; n -= take;
++        if (fill + take < 64u) return;
++        wex4_sha_block(s->h, s->buf);
++    }
++    for (; n >= 64u; p += 64u, n -= 64u) wex4_sha_block(s->h, p);
++    if (n) memcpy(s->buf, p, n);
++}
++static inline void wex4_sha_final(Wex4Sha *s, unsigned char out[32]) {
++    uint64_t bits = s->n * 8u;
++    unsigned char pad[72] = {0x80}, len[8];
++    unsigned int i;
++    for (i = 0; i < 8u; i++) len[i] = (unsigned char)(bits >> (56u - i * 8u));
++    wex4_sha_update(s, pad, (size_t)((119u - (s->n & 63u)) & 63u) + 1u);
++    wex4_sha_update(s, len, 8u);
++    for (i = 0; i < 32u; i++) out[i] = (unsigned char)(s->h[i / 4u] >> (24u - (i % 4u) * 8u));
++}
++static inline void wex4_sha256(const unsigned char *p, size_t n, unsigned char out[32]) {
++    Wex4Sha s;
++    wex4_sha_init(&s); wex4_sha_update(&s, p, n); wex4_sha_final(&s, out);
++}
++
++/* ---- Wire access ---------------------------------------------------------- */
++static inline uint64_t wex4_u64(const unsigned char *p) { return wex_nr_u32(p) | (uint64_t)wex_nr_u32(p + 4u) << 32; }
++static inline uint64_t wex4_align(uint64_t n) { return (n + (WEX4_PAGE - 1u)) & ~(uint64_t)(WEX4_PAGE - 1u); }
++
++typedef struct {
++    uint32_t major, minor, blobs, records, tensors, layers, experts, max_decoded;
++    uint64_t required, optional, file_bytes, index_offset, index_bytes, names_bytes, meta_bytes, total_decoded;
++    unsigned char index_sha[32], root[32];   /* root = header_sha256: the container's identity */
++} Wex4Header;
++typedef struct { uint32_t kind, id; uint64_t offset, bytes; const unsigned char *sha; } Wex4Blob;
++typedef struct {
++    uint64_t offset;
++    uint32_t stored, decoded, codec, flags, blob, owner, first_tensor, tensor_count;
++    const unsigned char *sha;
++} Wex4Record;
++typedef struct {
++    const unsigned char *name;
++    uint32_t name_len, dtype, rank, record, record_count;
++    uint64_t shape[8], offset, nbytes;
++} Wex4Tensor;
++typedef struct {
++    Wex4Header h;
++    const unsigned char *blobs, *records, *tensors, *order, *names, *meta;
++} Wex4View;
++
++/* Bits per element of dtype codes 1..22 (the safetensors dtypes); 0 = unknown, opaque bytes. */
++static const unsigned char wex4_dtype_bits[23] = {0, 8, 8, 8, 8, 8, 8, 16, 16, 16, 16, 32, 32, 32, 64, 64, 64, 64, 4, 6, 6, 8, 8};
++#define WEX4_DT_U8 2u
++#define WEX4_DT_I8 3u
++#define WEX4_DT_F8_E8M0 6u
++
++/* Validate the 4096-byte header page of a file of file_bytes bytes. */
++static inline int wex4_parse_header(const unsigned char *page, uint64_t file_bytes, Wex4Header *h) {
++    unsigned char digest[32];
++    uint64_t need;
++    if (!page || !h) return WEX4_E_ARG;
++    if (wex_nr_u32(page) != WEX4_MAGIC) return WEX4_E_MAGIC;
++    wex4_sha256(page, WEX4_HEADER_HASHED, digest);
++    if (memcmp(digest, page + WEX4_HEADER_HASHED, 32u)) return WEX4_E_HASH;
++    h->major = wex_nr_u16(page + 4u); h->minor = wex_nr_u16(page + 6u);
++    if (h->major != 4u) return WEX4_E_VERSION;
++    h->required = wex4_u64(page + 8u); h->optional = wex4_u64(page + 16u);
++    if (h->required & ~WEX4_REQUIRED_KNOWN) return WEX4_E_FEATURE;
++    h->file_bytes = wex4_u64(page + 24u); h->index_offset = wex4_u64(page + 32u); h->index_bytes = wex4_u64(page + 40u);
++    h->blobs = wex_nr_u32(page + 48u); h->records = wex_nr_u32(page + 52u); h->tensors = wex_nr_u32(page + 56u);
++    h->layers = wex_nr_u32(page + 60u); h->experts = wex_nr_u32(page + 64u); h->max_decoded = wex_nr_u32(page + 68u);
++    h->names_bytes = wex4_u64(page + 72u); h->meta_bytes = wex4_u64(page + 80u); h->total_decoded = wex4_u64(page + 88u);
++    memcpy(h->index_sha, page + 96u, 32u); memcpy(h->root, digest, 32u);
++    if (h->file_bytes != file_bytes || file_bytes < WEX4_PAGE || (file_bytes & (WEX4_PAGE - 1u)) ||
++        h->blobs > WEX4_MAX_BLOBS || h->records > WEX4_MAX_RECORDS || h->tensors > WEX4_MAX_TENSORS ||
++        h->names_bytes > WEX4_MAX_INDEX || h->meta_bytes > WEX4_MAX_INDEX ||
++        h->layers > 65536u || h->experts > 65536u || !h->layers != !h->experts ||
++        (uint64_t)h->layers * h->experts > WEX4_MAX_RECORDS ||   /* bounds the legacy entry table */
++        h->max_decoded > WEX4_MAX_DECODED || (!h->records && (h->max_decoded || h->total_decoded)))
++        return WEX4_E_HEADER;
++    need = (uint64_t)h->blobs * WEX4_BLOB_BYTES + (uint64_t)h->records * WEX4_RECORD_BYTES +
++           (uint64_t)h->tensors * (WEX4_TENSOR_BYTES + 4u) + h->names_bytes + h->meta_bytes;
++    if (need != h->index_bytes || need > WEX4_MAX_INDEX || h->index_offset < WEX4_PAGE ||
++        (h->index_offset & (WEX4_PAGE - 1u)) || h->index_offset > file_bytes ||
++        wex4_align(need) > file_bytes - h->index_offset || (!need && h->index_offset != WEX4_PAGE))
++        return WEX4_E_HEADER;
++    return WEX4_OK;
++}
++
++static inline void wex4_get_blob(const Wex4View *v, uint32_t i, Wex4Blob *b) {
++    const unsigned char *p = v->blobs + (size_t)i * WEX4_BLOB_BYTES;
++    b->kind = wex_nr_u32(p); b->id = wex_nr_u32(p + 4u); b->offset = wex4_u64(p + 8u); b->bytes = wex4_u64(p + 16u);
++    b->sha = p + 24u;
++}
++static inline void wex4_get_record(const Wex4View *v, uint32_t i, Wex4Record *r) {
++    const unsigned char *p = v->records + (size_t)i * WEX4_RECORD_BYTES;
++    r->offset = wex4_u64(p); r->stored = wex_nr_u32(p + 8u); r->decoded = wex_nr_u32(p + 12u);
++    r->codec = wex_nr_u16(p + 16u); r->flags = wex_nr_u16(p + 18u); r->blob = wex_nr_u32(p + 20u);
++    r->owner = wex_nr_u32(p + 24u); r->first_tensor = wex_nr_u32(p + 28u); r->tensor_count = wex_nr_u32(p + 32u);
++    r->sha = p + 36u;
++}
++static inline void wex4_get_tensor(const Wex4View *v, uint32_t i, Wex4Tensor *t) {
++    const unsigned char *p = v->tensors + (size_t)i * WEX4_TENSOR_BYTES;
++    unsigned int d;
++    t->name = v->names + wex_nr_u32(p); t->name_len = wex_nr_u16(p + 4u); t->dtype = p[6]; t->rank = p[7];
++    for (d = 0; d < 8u; d++) t->shape[d] = wex4_u64(p + 8u + d * 8u);
++    t->record = wex_nr_u32(p + 72u); t->record_count = wex_nr_u32(p + 76u);
++    t->offset = wex4_u64(p + 80u); t->nbytes = wex4_u64(p + 88u);
++}
++
++/* Strict UTF-8 (shortest form, no surrogates, <= U+10FFFF) without NUL. */
++static inline int wex4_utf8_ok(const unsigned char *p, size_t n) {
++    size_t i = 0;
++    while (i < n) {
++        unsigned int c = p[i], extra, k;
++        uint32_t cp;
++        if (!c) return 0;
++        if (c < 0x80u) { i++; continue; }
++        if (c >= 0xc2u && c <= 0xdfu) { extra = 1; cp = c & 0x1fu; }
++        else if (c >= 0xe0u && c <= 0xefu) { extra = 2; cp = c & 0x0fu; }
++        else if (c >= 0xf0u && c <= 0xf4u) { extra = 3; cp = c & 0x07u; }
++        else return 0;
++        if (n - i <= extra) return 0;
++        for (k = 1; k <= extra; k++) {
++            if ((p[i + k] & 0xc0u) != 0x80u) return 0;
++            cp = cp << 6 | (p[i + k] & 0x3fu);
++        }
++        if ((extra == 2 && (cp < 0x800u || (cp >= 0xd800u && cp <= 0xdfffu))) ||
++            (extra == 3 && (cp < 0x10000u || cp > 0x10ffffu))) return 0;
++        i += extra + 1u;
++    }
++    return 1;
++}
++
++/* Legacy 72-byte entry of an EXPERT record (3 scale + 3 weight tensors): what
++ * the engine store and the CUDA helper already consume. Validates the slab layout. */
++static inline int wex4_expert_entry(const Wex4View *v, uint32_t r, WexEntry *e) {
++    Wex4Record rec;
++    Wex4Tensor t;
++    uint64_t raw, aligned;
++    uint32_t m;
++    if (!v || !e || r >= v->h.records) return WEX4_E_ARG;
++    wex4_get_record(v, r, &rec);
++    if (!(rec.flags & WEX4_REC_EXPERT) || rec.tensor_count != 6u) return WEX4_E_EXPERT;
++    memset(e, 0, sizeof(*e));
++    e->file_offset = rec.offset; e->total_bytes = rec.stored; e->flags = rec.codec;
++    for (m = 0; m < 6u; m++) {
++        wex4_get_tensor(v, rec.first_tensor + m, &t);
++        if (t.rank != 2u || t.record_count != 1u || !t.shape[0] || !t.shape[1] || t.shape[0] > 65535u ||
++            t.shape[1] > 65535u) return WEX4_E_EXPERT;
++        if (m < 3u) {
++            if (t.dtype != WEX4_DT_U8 && t.dtype != WEX4_DT_F8_E8M0) return WEX4_E_EXPERT;
++            e->scale_shapes[m][0] = (uint16_t)t.shape[0]; e->scale_shapes[m][1] = (uint16_t)t.shape[1];
++            e->scale_offsets[m] = (uint32_t)t.offset; e->scale_bytes += (uint32_t)t.nbytes;
++        } else {
++            if (t.dtype != WEX4_DT_U8 && t.dtype != WEX4_DT_I8) return WEX4_E_EXPERT;
++            e->weight_shapes[m - 3u][0] = (uint16_t)t.shape[0]; e->weight_shapes[m - 3u][1] = (uint16_t)t.shape[1];
++            e->weight_offsets[m - 3u] = (uint32_t)t.offset; e->weight_bytes += (uint32_t)t.nbytes;
++        }
++    }
++    if (wex_entry_raw_sizes(e, &raw, &aligned) || raw != rec.decoded) return WEX4_E_EXPERT;
++    return WEX4_OK;
++}
++
++/* Validate the whole index (index_len = index_bytes rounded up to 4096, as read
++ * from disk). On success every offset, size and name in the view is in bounds. */
++static inline int wex4_open(const Wex4Header *h, const unsigned char *index, size_t index_len, Wex4View *v) {
++    unsigned char digest[32];
++    uint64_t pos, total = 0, pending_bytes = 0, name_at = 0, i64;
++    uint32_t r, t = 0, pending = 0, maximum = 0, b = 0, i;
++    int64_t last_owner = -1;
++    int index_done;
++    Wex4Record rec;
++    Wex4Tensor ten;
++    Wex4Blob blob;
++    if (!h || !v || (!index && h->index_bytes) || index_len != wex4_align(h->index_bytes)) return WEX4_E_ARG;
++    wex4_sha256(index, (size_t)h->index_bytes, digest);
++    if (memcmp(digest, h->index_sha, 32u)) return WEX4_E_HASH;
++    for (i64 = h->index_bytes; i64 < index_len; i64++) if (index[i64]) return WEX4_E_INDEX;
++    v->h = *h;
++    v->blobs = index;
++    v->records = v->blobs + (size_t)h->blobs * WEX4_BLOB_BYTES;
++    v->tensors = v->records + (size_t)h->records * WEX4_RECORD_BYTES;
++    v->order = v->tensors + (size_t)h->tensors * WEX4_TENSOR_BYTES;
++    v->names = v->order + (size_t)h->tensors * 4u;
++    v->meta = v->names + (size_t)h->names_bytes;
++
++    /* tensors: canonical name pool, dtype/shape/size */
++    for (i = 0; i < h->tensors; i++) {
++        const unsigned char *p = v->tensors + (size_t)i * WEX4_TENSOR_BYTES;
++        uint64_t elements = 1;
++        unsigned int d, bits;
++        if (wex_nr_u32(p) != name_at || wex_nr_u16(p + 4u) > h->names_bytes - name_at) return WEX4_E_NAME;
++        wex4_get_tensor(v, i, &ten);
++        name_at += ten.name_len;
++        if (!wex4_utf8_ok(ten.name, ten.name_len)) return WEX4_E_NAME;
++        if (ten.rank > 8u) return WEX4_E_TENSOR;
++        for (d = 0; d < 8u; d++) {
++            if (d >= ten.rank) { if (ten.shape[d]) return WEX4_E_TENSOR; continue; }
++            if (ten.shape[d] && elements > UINT64_MAX / ten.shape[d]) return WEX4_E_TENSOR;
++            elements *= ten.shape[d];
++        }
++        bits = ten.dtype < 23u ? wex4_dtype_bits[ten.dtype] : 0u;
++        if (bits && (elements > UINT64_MAX / 64u || ten.nbytes > UINT64_MAX / 8u || elements * bits != ten.nbytes * 8u))
++            return WEX4_E_TENSOR;
++    }
++    if (name_at != h->names_bytes) return WEX4_E_NAME;
++    /* name order: strictly increasing names => a permutation and unique names */
++    for (i = 0; i < h->tensors; i++) {
++        uint32_t at = wex_nr_u32(v->order + (size_t)i * 4u);
++        Wex4Tensor prev;
++        int c;
++        if (at >= h->tensors) return WEX4_E_NAME;
++        wex4_get_tensor(v, at, &ten);
++        if (i) {
++            wex4_get_tensor(v, wex_nr_u32(v->order + (size_t)(i - 1u) * 4u), &prev);
++            c = memcmp(prev.name, ten.name, prev.name_len < ten.name_len ? prev.name_len : ten.name_len);
++            if (c > 0 || (!c && prev.name_len >= ten.name_len)) return WEX4_E_NAME;
++        }
++    }
++
++    /* blobs */
++    for (i = 0; i < h->blobs; i++) {
++        wex4_get_blob(v, i, &blob);
++        if (!blob.bytes || blob.bytes > WEX4_MAX_DECODED || wex4_u64(blob.sha + 32u)) return WEX4_E_BLOB;
++        if (blob.kind == WEX4_BLOB_WNM2 && (blob.bytes != WEX_NR2_MODEL_BYTES || !blob.id)) return WEX4_E_BLOB;
++    }
++
++    /* records and the tensors that tile them */
++    for (r = 0; r < h->records; r++) {
++        uint64_t cursor = 0;
++        uint32_t k;
++        wex4_get_record(v, r, &rec);
++        if (!rec.stored || (rec.stored & (WEX4_PAGE - 1u)) || !rec.decoded || rec.decoded > WEX4_MAX_DECODED ||
++            rec.stored > wex4_align(rec.decoded) || (rec.flags & ~(WEX4_REC_VALUE_EXACT | WEX4_REC_EXPERT)) ||
++            wex_nr_u32(rec.sha + 32u) || rec.blob > h->blobs) return WEX4_E_RECORD;
++        if (rec.codec == WEX4_CODEC_RAW ? rec.stored != wex4_align(rec.decoded) || rec.blob
++                                        : rec.stored == wex4_align(rec.decoded)) return WEX4_E_RECORD;
++        /* WBP1: every stream of at most 32768 bytes costs at least 6 bytes, which bounds the expansion (~5461x) */
++        if (rec.codec == WEX4_CODEC_WBP1 &&
++            (rec.blob || rec.flags || rec.stored < wex4_align(WEX4_BP_HEADER + 6u * (((uint64_t)rec.decoded + 32767u) >> 15))))
++            return WEX4_E_RECORD;
++        if ((rec.flags & WEX4_REC_VALUE_EXACT) &&
++            (rec.codec != WEX4_CODEC_WNR3 || !(h->required & WEX4_REQ_VALUE_EXACT))) return WEX4_E_RECORD;
++        if (rec.codec == WEX4_CODEC_WNR3) {
++            if (!(rec.flags & WEX4_REC_EXPERT) || !rec.blob) return WEX4_E_RECORD;
++            wex4_get_blob(v, rec.blob - 1u, &blob);
++            if (blob.kind != WEX4_BLOB_WNM2) return WEX4_E_RECORD;
++        }
++        total += rec.decoded;
++        if (rec.decoded > maximum) maximum = rec.decoded;
++        if (pending) {   /* continuation part of tensor t - 1 */
++            if (rec.tensor_count || rec.first_tensor != t - 1u || (rec.flags & WEX4_REC_EXPERT) ||
++                rec.owner != r || rec.decoded > pending_bytes) return WEX4_E_RECORD;
++            pending_bytes -= rec.decoded;
++            if (!--pending && pending_bytes) return WEX4_E_RECORD;
++            continue;
++        }
++        if (!rec.tensor_count || rec.first_tensor != t || rec.tensor_count > h->tensors - t) return WEX4_E_RECORD;
++        for (k = 0; k < rec.tensor_count; k++) {
++            wex4_get_tensor(v, t + k, &ten);
++            if (ten.record != r || !ten.nbytes) return WEX4_E_TENSOR;
++            if (ten.record_count == 1u) {
++                if (ten.offset != cursor || ten.nbytes > rec.decoded - cursor) return WEX4_E_TENSOR;
++                cursor += ten.nbytes;
++            } else {
++                if (ten.record_count < 2u || rec.tensor_count != 1u || ten.offset || (rec.flags & WEX4_REC_EXPERT) ||
++                    ten.record_count > h->records - r || ten.nbytes <= rec.decoded) return WEX4_E_TENSOR;
++                pending = ten.record_count - 1u; pending_bytes = ten.nbytes - rec.decoded; cursor = rec.decoded;
++            }
++        }
++        if (cursor != rec.decoded) return WEX4_E_TENSOR;
++        t += rec.tensor_count;
++        if (rec.flags & WEX4_REC_EXPERT) {
++            WexEntry e;
++            if (rec.codec != WEX4_CODEC_RAW && rec.codec != WEX4_CODEC_WNR3) return WEX4_E_EXPERT;
++            if ((rec.owner >> 16) >= h->layers || (rec.owner & 0xffffu) >= h->experts ||
++                (int64_t)rec.owner <= last_owner || wex4_expert_entry(v, r, &e)) return WEX4_E_EXPERT;
++            last_owner = rec.owner;
++            if (rec.codec == WEX4_CODEC_WNR3) {   /* smallest legal WNR3 record: longest chunks, 4-byte streams */
++                uint64_t streams = 0;
++                unsigned int m;
++                for (m = 0; m < 3u; m++)
++                    streams += wex_nr2_streams((uint32_t)e.scale_shapes[m][0] * e.scale_shapes[m][1], WEX_NR2_MAX_CHUNK) +
++                               wex_nr2_streams((uint32_t)e.weight_shapes[m][0] * e.weight_shapes[m][1] * 2u, WEX_NR2_MAX_CHUNK);
++                if (rec.stored < wex4_align(WEX_NR2_HEADER_BYTES + streams * 6u)) return WEX4_E_EXPERT;
++            }
++        } else if (rec.owner != r) return WEX4_E_RECORD;
++    }
++    if (pending || total != h->total_decoded || maximum != h->max_decoded) return WEX4_E_RECORD;
++    if (h->layers && last_owner < 0) return WEX4_E_EXPERT;   /* a grid needs at least one expert record */
++    for (; t < h->tensors; t++) {   /* zero-size tensors close the table */
++        wex4_get_tensor(v, t, &ten);
++        if (ten.nbytes || ten.record_count || ten.record || ten.offset) return WEX4_E_TENSOR;
++    }
++
++    /* header page, blobs, records and index tile the file exactly, in offset order */
++    pos = WEX4_PAGE; r = 0; index_done = !h->index_bytes;
++    for (;;) {
++        uint64_t size;
++        if (b < h->blobs && (wex4_get_blob(v, b, &blob), blob.offset == pos)) { size = wex4_align(blob.bytes); b++; }
++        else if (r < h->records && (wex4_get_record(v, r, &rec), rec.offset == pos)) { size = rec.stored; r++; }
++        else if (!index_done && h->index_offset == pos) { size = index_len; index_done = 1; }
++        else break;
++        if (size > h->file_bytes - pos) return WEX4_E_LAYOUT;
++        pos += size;
++    }
++    if (b != h->blobs || r != h->records || !index_done || pos != h->file_bytes) return WEX4_E_LAYOUT;
++    return WEX4_OK;
++}
++
++/* Tensor index by name (binary search over the name order), or -1. */
++static inline int64_t wex4_find(const Wex4View *v, const unsigned char *name, size_t len) {
++    uint32_t lo = 0, hi = v->h.tensors;
++    while (lo < hi) {
++        uint32_t mid = lo + (hi - lo) / 2u, at = wex_nr_u32(v->order + (size_t)mid * 4u);
++        Wex4Tensor t;
++        int c;
++        wex4_get_tensor(v, at, &t);
++        c = memcmp(t.name, name, t.name_len < len ? t.name_len : len);
++        if (!c && t.name_len == len) return at;
++        if (c < 0 || (!c && t.name_len < len)) lo = mid + 1u; else hi = mid;
++    }
++    return -1;
++}
++
++/* ---- WBP1: byte-plane rANS (codec 6) -------------------------------------
++ * Plane p holds byte p of every P-byte element. A plane is either order-0 rANS
++ * (the WNR3 scale-stream coder with a per-record CDF, x0 = L + h23) or raw with
++ * one MurmurHash3 word per chunk, so every chunk is verified where it is decoded.
++ * transform 1 (floats): every little-endian element is rotated left by one bit
++ * before the split, so the top plane is the whole exponent and the sign joins
++ * the incompressible mantissa bits. Hashes cover the coded (rotated) bytes. */
++typedef struct {
++    uint32_t planes, chunk, mask, transform, n[8], streams[8];
++    const unsigned char *cdf[8], *table[8], *payload[8];
++} Wex4Bp;
++static inline uint32_t wex4_bp_plane_bytes(uint32_t decoded, uint32_t planes, uint32_t p) {
++    return decoded > p ? (decoded - p + planes - 1u) / planes : 0u;
++}
++/* Rotate every little-endian `planes`-byte element by one bit: left (encode) or right (decode). */
++static inline void wex4_bp_rotate(unsigned char *data, size_t bytes, uint32_t planes, int left) {
++    size_t i;
++    uint32_t k;
++    for (i = 0; i + planes <= bytes; i += planes) {
++        if (left) {
++            unsigned int carry = data[i + planes - 1u] >> 7;
++            for (k = 0; k < planes; k++) {
++                unsigned int next = data[i + k] >> 7;
++                data[i + k] = (unsigned char)(data[i + k] << 1 | carry); carry = next;
++            }
++        } else {
++            unsigned int carry = data[i] & 1u;
++            for (k = planes; k-- > 0;) {
++                unsigned int next = data[i + k] & 1u;
++                data[i + k] = (unsigned char)(data[i + k] >> 1 | carry << 7); carry = next;
++            }
++        }
++    }
++}
++static inline int wex4_bp_parse(const unsigned char *rec, size_t total, uint32_t decoded, uint32_t owner, Wex4Bp *b) {
++    uint64_t at = WEX4_BP_HEADER;
++    uint32_t p, s;
++    if (!rec || !b || total < WEX4_PAGE || (total & (WEX4_PAGE - 1u)) || wex_nr_u32(rec) != WEX4_BP_MAGIC ||
++        wex_nr_u32(rec + 4u) != owner || wex_nr_u32(rec + 8u) != decoded || !decoded || decoded > WEX4_MAX_DECODED) return -1;
++    b->planes = rec[12]; b->mask = rec[14]; b->transform = rec[15];
++    if ((b->planes != 1u && b->planes != 2u && b->planes != 4u && b->planes != 8u) || rec[13] < 10u || rec[13] > 15u ||
++        b->mask >> b->planes || b->transform > 1u || (b->transform && (b->planes == 1u || decoded % b->planes))) return -1;
++    b->chunk = 1u << rec[13];
++    for (p = 0; p < b->planes; p++) {
++        b->n[p] = wex4_bp_plane_bytes(decoded, b->planes, p);
++        b->streams[p] = wex_nr2_streams(b->n[p], b->chunk);
++        b->cdf[p] = NULL;
++        if (!(b->mask >> p & 1u)) continue;
++        if (!b->n[p] || total - at < 514u) return -1;
++        b->cdf[p] = rec + at; at += 514u;
++        if (!wex_nr2_cdf_ok(b->cdf[p], 256u)) return -1;
++    }
++    for (p = 0; p < b->planes; p++) {
++        uint64_t bytes = (uint64_t)b->streams[p] * (b->mask >> p & 1u ? 2u : 4u);
++        if (total - at < bytes) return -1;
++        b->table[p] = rec + at; at += bytes;
++    }
++    for (p = 0; p < b->planes; p++) {
++        uint64_t bytes = b->n[p];
++        if (b->mask >> p & 1u)
++            for (s = 0, bytes = 0; s < b->streams[p]; s++) {
++                uint32_t length = wex_nr_u16(b->table[p] + (size_t)s * 2u);
++                if (length < 4u) return -1;
++                bytes += length;
++            }
++        if (total - at < bytes) return -1;
++        b->payload[p] = rec + at; at += bytes;
++    }
++    if (wex4_align(at) != total) return -1;
++    for (; at < total; at++) if (rec[at]) return -1;
++    return 0;
++}
++/* Decode into out[0..decoded); out is scratch until this returns 0. */
++static inline int wex4_bp_decode(const unsigned char *rec, size_t total, uint32_t decoded, uint32_t owner, unsigned char *out) {
++    Wex4Bp b;
++    uint32_t p, g = 0, ident[4];
++    unsigned char *tmp, *lut;
++    if (!out || wex4_bp_parse(rec, total, decoded, owner, &b)) return -1;
++    tmp = (unsigned char *)malloc((size_t)b.chunk + WEX_NR2_TOTAL);
++    if (!tmp) return -1;
++    lut = tmp + b.chunk;   /* slot -> symbol of the plane being decoded */
++    ident[0] = WEX4_BP_MAGIC; ident[1] = owner; ident[3] = wex_nr_u16(rec + 12u) | (uint32_t)rec[15] << 24;
++    for (p = 0; p < b.planes; p++) {
++        const unsigned char *payload = b.payload[p];
++        uint32_t first, s = 0, j;
++        if (b.cdf[p])
++            for (j = 0; j < 256u; j++)
++                memset(lut + wex_nr_u16(b.cdf[p] + j * 2u), (int)j,
++                       wex_nr_u16(b.cdf[p] + j * 2u + 2u) - wex_nr_u16(b.cdf[p] + j * 2u));
++        for (first = 0; first < b.n[p]; first += b.chunk, s++, g++) {
++            uint32_t count = b.n[p] - first < b.chunk ? b.n[p] - first : b.chunk;
++            ident[2] = g;
++            if (b.cdf[p]) {
++                uint32_t length = wex_nr_u16(b.table[p] + (size_t)s * 2u), state;
++                const unsigned char *ptr, *end;
++                if (wex_nr2_stream_open(payload, length, &ptr, &end, &state)) goto fail;
++                for (j = 0; j < count; j++) {   /* wex_nr2_decode_symbol with a table instead of the binary search */
++                    uint32_t slot = state & (WEX_NR2_TOTAL - 1u), symbol = lut[slot];
++                    uint32_t start = wex_nr_u16(b.cdf[p] + symbol * 2u);
++                    state = (wex_nr_u16(b.cdf[p] + symbol * 2u + 2u) - start) * (state >> WEX_NR2_PRECISION) + slot - start;
++                    while (state < WEX_NR_L) {
++                        if (ptr == end) goto fail;
++                        state = state << 8 | *ptr++;
++                    }
++                    tmp[j] = (unsigned char)symbol;
++                }
++                if (ptr != end || state != wex_nr3_stream_x0(ident, tmp, count)) goto fail;
++                payload += length;
++            } else {
++                if (wex_nr3_h32_bytes(wex_nr3_ident_hash(ident), payload, count, 16u) != wex_nr_u32(b.table[p] + (size_t)s * 4u))
++                    goto fail;
++                memcpy(tmp, payload, count);
++                payload += count;
++            }
++            for (j = 0; j < count; j++) out[(size_t)(first + j) * b.planes + p] = tmp[j];
++        }
++    }
++    if (b.transform) wex4_bp_rotate(out, decoded, b.planes, 0);
++    free(tmp);
++    return 0;
++fail:
++    free(tmp);
++    return -1;
++}
++/* Canonical encoder: writes the padded record, *written = its size (a multiple
++ * of 4096). The caller stores it only when it is smaller than the raw record. */
++static inline int wex4_bp_encode(const unsigned char *data, uint32_t decoded, uint32_t planes, uint32_t chunk_log2,
++                                 uint32_t transform, uint32_t owner, unsigned char *out, size_t capacity, size_t *written) {
++    uint32_t chunk, p, g = 0, mask = 0, n[8], streams[8], ident[4];
++    unsigned char *plane = NULL, *coded = NULL, *enc[8] = {0}, *lens[8] = {0}, cdf[8][514], tmp[65536 + 16];
++    uint64_t enc_bytes[8] = {0}, at;
++    int result = -1;
++    if (!data || !out || !written || !decoded || decoded > WEX4_MAX_DECODED ||
++        (planes != 1u && planes != 2u && planes != 4u && planes != 8u) || chunk_log2 < 10u || chunk_log2 > 15u ||
++        transform > 1u || (transform && (planes == 1u || decoded % planes))) return -1;
++    chunk = 1u << chunk_log2;
++    plane = (unsigned char *)malloc(wex4_bp_plane_bytes(decoded, planes, 0));
++    if (!plane) return -1;
++    if (transform) {
++        coded = (unsigned char *)malloc(decoded);
++        if (!coded) { free(plane); return -1; }
++        memcpy(coded, data, decoded);
++        wex4_bp_rotate(coded, decoded, planes, 1);
++        data = coded;
++    }
++    ident[0] = WEX4_BP_MAGIC; ident[1] = owner; ident[3] = planes | chunk_log2 << 8 | transform << 24;
++    for (p = 0; p < planes; p++) {
++        uint64_t counts[256] = {0};
++        uint32_t i, first, s = 0;
++        n[p] = wex4_bp_plane_bytes(decoded, planes, p);
++        streams[p] = wex_nr2_streams(n[p], chunk);
++        if (!n[p]) continue;
++        for (i = 0; i < n[p]; i++) counts[plane[i] = data[(size_t)i * planes + p]]++;
++        wex_nr2_quantize(counts, 256u, cdf[p]);
++        enc[p] = (unsigned char *)malloc((size_t)n[p] * 2u + (size_t)streams[p] * 8u);
++        lens[p] = (unsigned char *)malloc((size_t)streams[p] * 4u);
++        if (!enc[p] || !lens[p]) goto finish;
++        for (first = 0; first < n[p]; first += chunk, s++) {
++            uint32_t count = n[p] - first < chunk ? n[p] - first : chunk, j, state, length;
++            unsigned char *end = tmp + sizeof(tmp), *cursor = end;
++            ident[2] = g + s;
++            state = wex_nr3_stream_x0(ident, plane + first, count);
++            for (j = count; j-- > 0;)
++                if (wex_nr2_put(&state, &cursor, tmp, cdf[p], plane[first + j])) goto finish;
++            if (wex_nr2_flush(state, &cursor, tmp)) goto finish;
++            length = (uint32_t)(end - cursor);
++            if (length > 65535u) goto finish;
++            memcpy(enc[p] + enc_bytes[p], cursor, length); enc_bytes[p] += length;
++            lens[p][s * 2u] = (unsigned char)length; lens[p][s * 2u + 1u] = (unsigned char)(length >> 8);
++        }
++        if (514u + 2u * (uint64_t)streams[p] + enc_bytes[p] < 4u * (uint64_t)streams[p] + n[p]) mask |= 1u << p;
++        else {   /* raw plane: one MurmurHash3 word per chunk */
++            for (first = 0, s = 0; first < n[p]; first += chunk, s++) {
++                uint32_t count = n[p] - first < chunk ? n[p] - first : chunk, h;
++                ident[2] = g + s;
++                h = wex_nr3_h32_bytes(wex_nr3_ident_hash(ident), plane + first, count, 16u);
++                lens[p][s * 4u] = (unsigned char)h; lens[p][s * 4u + 1u] = (unsigned char)(h >> 8);
++                lens[p][s * 4u + 2u] = (unsigned char)(h >> 16); lens[p][s * 4u + 3u] = (unsigned char)(h >> 24);
++            }
++            memcpy(enc[p], plane, n[p]); enc_bytes[p] = n[p];
++        }
++        g += streams[p];
++    }
++    at = WEX4_BP_HEADER;
++    for (p = 0; p < planes; p++) at += (mask >> p & 1u ? 514u + 2u * (uint64_t)streams[p] : 4u * (uint64_t)streams[p]) + enc_bytes[p];
++    if (wex4_align(at) > capacity) goto finish;
++    memset(out, 0, (size_t)wex4_align(at));
++    {
++        uint32_t fields[3] = {WEX4_BP_MAGIC, owner, decoded}, i;
++        for (i = 0; i < 12u; i++) out[i] = (unsigned char)(fields[i / 4u] >> ((i % 4u) * 8u));
++        out[12] = (unsigned char)planes; out[13] = (unsigned char)chunk_log2; out[14] = (unsigned char)mask;
++        out[15] = (unsigned char)transform;
++    }
++    at = WEX4_BP_HEADER;
++    for (p = 0; p < planes; p++) if (mask >> p & 1u) { memcpy(out + at, cdf[p], 514u); at += 514u; }
++    for (p = 0; p < planes; p++) {
++        size_t bytes = (size_t)streams[p] * (mask >> p & 1u ? 2u : 4u);
++        if (bytes) memcpy(out + at, lens[p], bytes);
++        at += bytes;
++    }
++    for (p = 0; p < planes; p++) { if (enc_bytes[p]) memcpy(out + at, enc[p], (size_t)enc_bytes[p]); at += enc_bytes[p]; }
++    *written = (size_t)wex4_align(at);
++    result = 0;
++finish:
++    for (p = 0; p < 8u; p++) { free(enc[p]); free(lens[p]); }
++    free(plane); free(coded);
++    return result;
++}
++
++/* Decode record r from its stored bytes (rec.stored of them) into out
++ * (rec.decoded bytes; scratch until this returns 0). model: the opened WNM2
++ * blob of a codec-5 record, else NULL. check_sha also verifies the record's
++ * SHA-256 before decoding. */
++static inline int wex4_decode_record(const Wex4View *v, uint32_t r, const unsigned char *stored, unsigned char *out,
++                                     const WexNr2Model *model, int check_sha) {
++    Wex4Record rec;
++    uint32_t i;
++    if (!v || !stored || !out || r >= v->h.records) return WEX4_E_ARG;
++    wex4_get_record(v, r, &rec);
++    if (check_sha) {
++        unsigned char digest[32];
++        wex4_sha256(stored, rec.stored, digest);
++        if (memcmp(digest, rec.sha, 32u)) return WEX4_E_HASH;
++    }
++    if (rec.codec == WEX4_CODEC_RAW) {
++        for (i = rec.decoded; i < rec.stored; i++) if (stored[i]) return WEX4_E_DATA;
++        memcpy(out, stored, rec.decoded);
++        return WEX4_OK;
++    }
++    if (rec.codec == WEX4_CODEC_WBP1)
++        return wex4_bp_decode(stored, rec.stored, rec.decoded, rec.owner, out) ? WEX4_E_DATA : WEX4_OK;
++    if (rec.codec == WEX4_CODEC_WNR3) {
++        WexEntry e;
++        WexNr2Layout layout;
++        WexNr2Record view;
++        Wex4Blob blob;
++        unsigned char *scales[3], *weights[3];
++        if (!model || wex4_expert_entry(v, r, &e)) return WEX4_E_ARG;
++        wex4_get_blob(v, rec.blob - 1u, &blob);
++        /* the record names its owner and its value-exact (canonical zero) form; both must match the index */
++        if (model->id != blob.id || wex_nr_u32(stored + 28u) != rec.owner ||
++            !(stored[27] & WEX_NR3_FLAG_CZ) != !(rec.flags & WEX4_REC_VALUE_EXACT)) return WEX4_E_DATA;
++        wex_nr2_layout(&e, &layout);
++        if (wex_nrx_parse(stored, rec.stored, &layout, model->id, WEX_NR3_MAGIC, &view)) return WEX4_E_DATA;
++        for (i = 0; i < 3u; i++) { scales[i] = out + e.scale_offsets[i]; weights[i] = out + e.weight_offsets[i]; }
++        return WEX4_NR3_DECODE(&view, &layout, model, scales, weights) ? WEX4_E_DATA : WEX4_OK;
++    }
++    return WEX4_E_UNSUPPORTED;
++}
++
++#endif /* KAIRA_WEX4_H */
+-- 
+2.55.0.windows.1
+

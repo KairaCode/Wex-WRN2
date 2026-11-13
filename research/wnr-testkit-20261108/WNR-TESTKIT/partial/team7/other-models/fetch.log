@@ -1,0 +1,105 @@
+﻿kimi26 amd/Kimi-K2.6-MXFP4 18ecc30a67047bbf65bf55ad7643985288c7b8e0 items 20 planned bytes 467927040
+  L01_E165 [('w1', 'weight', 'U8', [2048, 3584]), ('w1', 'scale', 'U8', [2048, 224])]
+  L04_E260 
+  L07_E317 
+  L10_E004 
+  L13_E135 
+  L17_E079 
+  L20_E102 
+  L23_E134 
+  L26_E044 
+  L29_E102 
+  L32_E262 
+  L35_E028 
+  L38_E304 
+  L41_E099 
+  L44_E258 
+  L48_E012 
+  L51_E354 
+  L54_E269 
+  L57_E187 
+  L60_E234 
+  got L10_E004
+  got L04_E260
+  got L01_E165
+  got L07_E317
+  got L20_E102
+  got L13_E135
+  got L23_E134
+  got L17_E079
+  got L26_E044
+  got L35_E028
+  got L29_E102
+  got L32_E262
+  got L38_E304
+  got L41_E099
+  got L48_E012
+  got L44_E258
+  got L54_E269
+  got L51_E354
+  got L60_E234
+  got L57_E187
+kimi26 20 items 467927040 bytes 49.9 s
+minimax3 amd/MiniMax-M3-MXFP4 b83d14e3d64bf373a207f3c2a7e9f0b0f1e7fc3a items 16 planned bytes 481296384
+  L03_E018 [('w1', 'weight', 'U8', [3072, 3072]), ('w1', 'scale', 'U8', [3072, 192])]
+  L07_E047 
+  L10_E088 
+  L14_E095 
+  L18_E078 
+  L22_E033 
+  L25_E087 
+  L29_E059 
+  L33_E097 
+  L37_E036 
+  L40_E006 
+  L44_E056 
+  L48_E116 
+  L52_E003 
+  L55_E114 
+  L59_E017 
+  got L07_E047
+  got L10_E088
+  got L03_E018
+  got L14_E095
+  got L18_E078
+  got L22_E033
+  got L29_E059
+  got L25_E087
+  got L33_E097
+  got L37_E036
+  got L40_E006
+  got L44_E056
+  got L52_E003
+  got L55_E114
+  got L59_E017
+  got L48_E116
+minimax3 16 items 481296384 bytes 41.1 s
+r1x amd/DeepSeek-R1-0528-MXFP4 913fc83b2d3962dbc2682d6b97e9ef31acb4bf5a items 6 planned bytes 140378112
+  L09_E143 [('w1', 'weight', 'U8', [2048, 3584]), ('w1', 'scale', 'U8', [2048, 224])]
+  L20_E062 
+  L31_E245 
+  L42_E093 
+  L53_E236 
+  L60_E152 
+  got L09_E143
+  got L20_E062
+  got L42_E093
+  got L31_E245
+  got L53_E236
+  got L60_E152
+r1x 6 items 140378112 bytes 15.8 s
+glm53x RedHatAI/GLM-5.3-MXFP4 881184221de44698ee1334451e3d355eee657b45 items 6 planned bytes 120324096
+  L10_E058 [('w1', 'weight', 'U8', [2048, 3072]), ('w1', 'scale', 'U8', [2048, 192])]
+  L26_E163 
+  L41_E061 
+  L56_E158 
+  L70_E093 
+  L75_E110 
+  got L41_E061
+  got L10_E058
+  got L56_E158
+  got L26_E163
+  got L70_E093
+  got L75_E110
+glm53x 6 items 120324096 bytes 15.4 s
+DONE

@@ -1,0 +1,74 @@
+{
+ "f_stats": {
+  "mean": 0.3478150939941406,
+  "std": 0.19581919605496012,
+  "min": -0.497509765625,
+  "max": 0.499365234375,
+  "per_type_mean": [
+   0.3665707227918839,
+   0.3257864549424913,
+   0.35108810424804693
+  ],
+  "last3_layers_mean": -0.03951672212577159,
+  "others_mean": 0.37922037638224165
+ },
+ "base": 3.7824345546052385,
+ "variants": {
+  "f-bucket B=2 per type (0 side bits)": {
+   "bit_per_w": 3.7803884842106736,
+   "delta_pct": -0.05409400651953054
+  },
+  "f-bucket B=2 shared over types (0 side bits)": {
+   "bit_per_w": 3.7807614733426385,
+   "delta_pct": -0.04423292031749948
+  },
+  "f-bucket B=3 per type (0 side bits)": {
+   "bit_per_w": 3.77903401795006,
+   "delta_pct": -0.08990338381501835
+  },
+  "f-bucket B=3 shared over types (0 side bits)": {
+   "bit_per_w": 3.7796865413140335,
+   "delta_pct": -0.0726519719385301
+  },
+  "f-bucket B=4 per type (0 side bits)": {
+   "bit_per_w": 3.7779059684231564,
+   "delta_pct": -0.11972675578929909
+  },
+  "f-bucket B=4 shared over types (0 side bits)": {
+   "bit_per_w": 3.77873818048393,
+   "delta_pct": -0.09772473437267937
+  },
+  "f-bucket B=6 per type (0 side bits)": {
+   "bit_per_w": 3.777048201050239,
+   "delta_pct": -0.14240440851624736
+  },
+  "f-bucket B=6 shared over types (0 side bits)": {
+   "bit_per_w": 3.777769616200397,
+   "delta_pct": -0.12333163568321193
+  },
+  "f-bucket B=8 per type (0 side bits)": {
+   "bit_per_w": 3.776075713708011,
+   "delta_pct": -0.16811502764761516
+  },
+  "f-bucket B=8 shared over types (0 side bits)": {
+   "bit_per_w": 3.7768813050053276,
+   "delta_pct": -0.14681680594181404
+  },
+  "f-bucket B=4 per type + srel shift (1 B, float)": {
+   "bit_per_w": 3.7741248116801387,
+   "delta_pct": -0.2196929730081603
+  },
+  "f-bucket B=4 per type + srel shift + mag tilt (2 B, float)": {
+   "bit_per_w": 3.7738214620626134,
+   "delta_pct": -0.22771292981497065
+  },
+  "f-bucket B=4 per type + K=2 clusters inside (1 bit)": {
+   "bit_per_w": 3.7719834418367006,
+   "delta_pct": -0.2763065062371953
+  },
+  "f-bucket B=4 per type x (layer>=37) (0 side bits)": {
+   "bit_per_w": 3.777854599959244,
+   "delta_pct": -0.12108483517364116
+  }
+ }
+}

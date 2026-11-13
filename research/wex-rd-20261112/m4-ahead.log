@@ -1,0 +1,25 @@
+A1  ready    28 s  prompt   647  ttft  112.8 s
+    compute threads (the physical cores of 32 logical CPUs; the 3 expert-loader workers take the SMT siblings); OMP_NUM_THREADS=<n> overrides, COLI_NO_OMP_TUNE=1 disables
+    first-read SHA-256 of every record: on
+    GPU-direct Neural-rANS reconstruction enabled: VRAM-first misses outside RAM skip the host slab; the next-layer prefetcher loads them to VRAM too
+    v4_tier_prewarm vram_experts=963 frequency_high=4 frequency_low=1 order=VRAM-RAM-disk ram_excludes_vram=on
+B1  ready    18 s  prompt   647  ttft  111.6 s
+    compute threads (the physical cores of 32 logical CPUs; the 3 expert-loader workers take the SMT siblings); OMP_NUM_THREADS=<n> overrides, COLI_NO_OMP_TUNE=1 disables
+    first-read SHA-256 of every record: on
+    GPU-direct Neural-rANS reconstruction enabled: VRAM-first misses outside RAM skip the host slab; the next-layer prefetcher loads them to VRAM too
+    v4_tier_prewarm vram_experts=961 frequency_high=4 frequency_low=1 order=VRAM-RAM-disk ram_excludes_vram=on
+B2  ready    18 s  prompt   647  ttft  113.9 s
+    compute threads (the physical cores of 32 logical CPUs; the 3 expert-loader workers take the SMT siblings); OMP_NUM_THREADS=<n> overrides, COLI_NO_OMP_TUNE=1 disables
+    first-read SHA-256 of every record: on
+    GPU-direct Neural-rANS reconstruction enabled: VRAM-first misses outside RAM skip the host slab; the next-layer prefetcher loads them to VRAM too
+    v4_tier_prewarm vram_experts=960 frequency_high=4 frequency_low=1 order=VRAM-RAM-disk ram_excludes_vram=on
+A2  ready    26 s  prompt   647  ttft  112.9 s
+    compute threads (the physical cores of 32 logical CPUs; the 3 expert-loader workers take the SMT siblings); OMP_NUM_THREADS=<n> overrides, COLI_NO_OMP_TUNE=1 disables
+    first-read SHA-256 of every record: on
+    GPU-direct Neural-rANS reconstruction enabled: VRAM-first misses outside RAM skip the host slab; the next-layer prefetcher loads them to VRAM too
+    v4_tier_prewarm vram_experts=964 frequency_high=4 frequency_low=1 order=VRAM-RAM-disk ram_excludes_vram=on
+A1 ready 28.0 s  prewarm None s  ttft 112.8 s  (profile) 
+B1 ready 18.0 s  prewarm None s  ttft 111.6 s  COLI_V4_TIER_PREWARM_AHEAD=4 
+B2 ready 18.0 s  prewarm None s  ttft 113.9 s  COLI_V4_TIER_PREWARM_AHEAD=4 
+A2 ready 26.0 s  prewarm None s  ttft 112.9 s  (profile) 
+VERDICT ahead4: start-to-first-token B/A -6.5 % (A 140.9/138.9 s, B 129.6/132.0 s)

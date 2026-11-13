@@ -1,0 +1,65 @@
+container_v3_U: 1
+    [v4_wex] Container v3 active: U:\kaira_wex\v41-reap\v4_flash_experts.nr2.wex (40 layers, 192 experts, 18800640 decoded bytes/expert, direct_io=on)
+mirror_C: 1
+    [v4_wex] Matching mirror container active: C:\kaira_wex\v41-reap\v4_flash_experts.nr2.wex
+mirror_ignored: 0
+read_split: 1
+    [v4_wex] read split over 2 drives: 38% 62%
+gpu_direct_enabled: 1
+    [v4_wex] GPU-direct Neural-rANS reconstruction enabled: VRAM-first misses outside RAM skip the host slab; the next-layer prefetcher loads them to VRAM too
+gpu_direct_counters: 1
+    v4_wex_gpu_direct reads=41271 payload_bytes=698160816128 ram_skips=16668 failures=0 device_decodes=41271
+wex_batch: 1
+    [v4_wex] V4_WEX_BATCH=1: a layer's WNR2 misses are decoded in one batch call, the prefetcher's same-layer guesses too
+gpu_head: 1
+    v4_gpu head: exact bf16 head resident on device 0 (1.23 GiB)
+ram_tiers: 1
+    ram_tiers available=16.00GiB dense=resident(6.65GiB) target_slots=9 target_cache=6.30GiB head=resident-bf16 projected=15.54GiB
+v4_direct: 1
+    v4_direct reads=19797 flock_reads=19797 fallbacks=0 payload_bytes=334846332928
+wexprof: 2
+    wexprof demand batches=5546 reserved=8586 published=8586 per_batch=1.55 read_ms=25263.3 decode_ms=6451.3 decode_ms_per_record=0.751 | per-record loads=2 read_ms=13.4 decode_ms=12.4 read_ms_per_record=6.697 decode_ms_per_record=6.215
+    wexprof prefetch batches=17781 reserved=32494 published=32478 per_batch=1.83 read_ms=123811.5 decode_ms=32362.4 decode_ms_per_record=0.996 | per-record loads=205 read_ms=932.1 decode_ms=330.8 read_ms_per_record=4.547 decode_ms_per_record=1.614
+v4_mirror: 0
+dsv4_backend: 2
+    [wex] Neural CUDA reconstruction enabled: <KAIRA>\app\colibri-optimized\kaira_wex_cuda.dll
+    [DSV4 CUDA] backend=coli_cuda_dsv4_dg.dll (deepgemm-sm120)
+dense uploads: 40 | dense_resident: ['v4_dense_resident layers=40 bytes=6.650GiB']
+gpu-direct device_decodes 41271 failures 0
+errors/warnings: ['v4_ssd_io mode=wex-direct-aligned fallback=buffered-pread']
+reason1: 32 ids, identical to 8/8 W3 runs (first 32)
+code1: 128 ids, identical to 8/8 W3 runs (first 128)
+chat_it1: 128 ids, identical to 8/8 W3 runs (first 128)
+decprof steps: 284
+reason1 {'completion_tokens': None, 'tok_s_engine_style': None, 'tok_s_between_tokens': None, 'ttft': None, 'wall': None, 'finish': 'length', 'secs': 20.91, 'rows': [0, 32], 'usage': {'prompt_tokens': 41, 'completion_tokens': 32, 'total_tokens': 73}}
+code1 {'completion_tokens': 128, 'tok_s_engine_style': 3.039, 'tok_s_between_tokens': 3.016, 'ttft': 7.96867823600769, 'wall': 50.08121967315674, 'finish': 'length', 'secs': None, 'rows': [32, 160], 'usage': {'prompt_tokens': 29, 'completion_tokens': 128, 'total_tokens': 157}}
+chat_it1 {'completion_tokens': 128, 'tok_s_engine_style': 2.659, 'tok_s_between_tokens': 2.638, 'ttft': 7.203808307647705, 'wall': 55.34143328666687, 'finish': 'length', 'secs': None, 'rows': [160, 288], 'usage': {'prompt_tokens': 30, 'completion_tokens': 128, 'total_tokens': 158}}
+snap deltas GiB: {
+"before_launch->ready": {
+"C": 12.296,
+"U": 14.92,
+"secs": 19.4
+},
+"ready->after_reason1": {
+"C": 70.849,
+"U": 41.754,
+"secs": 21.1
+},
+"after_reason1->after_code1": {
+"C": 232.103,
+"U": 143.348,
+"secs": 50.3
+},
+"after_code1->after_chat_it1": {
+"C": 272.668,
+"U": 181.869,
+"secs": 55.6
+},
+"after_chat_it1->after_stop": {
+"C": 0.045,
+"U": 0.001,
+"secs": 5.3
+}
+}
+prompt phase (ready -> after chat_it1): C: 575.620 GiB  U: 366.971 GiB  split C 61.1% / U 38.9%
+samples: 149 peak MiB/s: {'C': 6484, 'U': 4117}

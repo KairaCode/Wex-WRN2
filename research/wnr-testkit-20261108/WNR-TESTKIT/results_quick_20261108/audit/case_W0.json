@@ -1,0 +1,438 @@
+{
+ "case": "W0",
+ "seed": 20261108,
+ "trials": 6000,
+ "by_kind": {
+  "R0": {
+   "w1": {
+    "trials": 2000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 2000,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 2000,
+    "accepted_ceilref": 2000,
+    "accepted_identical_output": 2000,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.0018427397934059368
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "w2": {
+    "trials": 2000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 2000,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 2000,
+    "accepted_ceilref": 2000,
+    "accepted_identical_output": 2000,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.0018427397934059368
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "w3": {
+    "trials": 2000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 2000,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 2000,
+    "accepted_ceilref": 2000,
+    "accepted_identical_output": 2000,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.0018427397934059368
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "all": {
+    "trials": 6000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 6000,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 6000,
+    "accepted_ceilref": 6000,
+    "accepted_identical_output": 6000,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.0006146242834176392
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "silent_damage": {
+    "trial": [],
+    "mat": [],
+    "coded_sym_diff": [],
+    "coded_scale_diff": [],
+    "nib_diff": [],
+    "val_diff": [],
+    "scale_diff": [],
+    "block_flips": [],
+    "err_units": [],
+    "err_abs": [],
+    "sign_only": [],
+    "nan_scale": []
+   },
+   "seconds_decode": 0.6,
+   "seconds_total": 1.0
+  },
+  "HASH": {
+   "w1": {
+    "trials": 2000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 2000,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 2000,
+    "accepted_ceilref": 2000,
+    "accepted_identical_output": 2000,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.0018427397934059368
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "w2": {
+    "trials": 2000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 2000,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 2000,
+    "accepted_ceilref": 2000,
+    "accepted_identical_output": 2000,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.0018427397934059368
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "w3": {
+    "trials": 2000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 2000,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 2000,
+    "accepted_ceilref": 2000,
+    "accepted_identical_output": 2000,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.0018427397934059368
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "all": {
+    "trials": 6000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 6000,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 6000,
+    "accepted_ceilref": 6000,
+    "accepted_identical_output": 6000,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.0006146242834176392
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "silent_damage": {
+    "trial": [],
+    "mat": [],
+    "coded_sym_diff": [],
+    "coded_scale_diff": [],
+    "nib_diff": [],
+    "val_diff": [],
+    "scale_diff": [],
+    "block_flips": [],
+    "err_units": [],
+    "err_abs": [],
+    "sign_only": [],
+    "nan_scale": []
+   },
+   "seconds_decode": 0.6,
+   "seconds_total": 1.1
+  },
+  "HASH32": {
+   "w1": {
+    "trials": 2000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 2000,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 2000,
+    "accepted_ceilref": 2000,
+    "accepted_identical_output": 2000,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.0018427397934059368
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "w2": {
+    "trials": 2000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 2000,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 2000,
+    "accepted_ceilref": 2000,
+    "accepted_identical_output": 2000,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.0018427397934059368
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "w3": {
+    "trials": 2000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 2000,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 2000,
+    "accepted_ceilref": 2000,
+    "accepted_identical_output": 2000,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.0018427397934059368
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "all": {
+    "trials": 6000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 6000,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 6000,
+    "accepted_ceilref": 6000,
+    "accepted_identical_output": 6000,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.0006146242834176392
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "silent_damage": {
+    "trial": [],
+    "mat": [],
+    "coded_sym_diff": [],
+    "coded_scale_diff": [],
+    "nib_diff": [],
+    "val_diff": [],
+    "scale_diff": [],
+    "block_flips": [],
+    "err_units": [],
+    "err_abs": [],
+    "sign_only": [],
+    "nan_scale": []
+   },
+   "seconds_decode": 0.6,
+   "seconds_total": 1.1
+  },
+  "TAIL": {
+   "w1": {
+    "trials": 2000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 2000,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 2000,
+    "accepted_ceilref": 2000,
+    "accepted_identical_output": 2000,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.0018427397934059368
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "w2": {
+    "trials": 2000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 2000,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 2000,
+    "accepted_ceilref": 2000,
+    "accepted_identical_output": 2000,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.0018427397934059368
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "w3": {
+    "trials": 2000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 2000,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 2000,
+    "accepted_ceilref": 2000,
+    "accepted_identical_output": 2000,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.0018427397934059368
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "all": {
+    "trials": 6000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 6000,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 6000,
+    "accepted_ceilref": 6000,
+    "accepted_identical_output": 6000,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.0006146242834176392
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "silent_damage": {
+    "trial": [],
+    "mat": [],
+    "coded_sym_diff": [],
+    "coded_scale_diff": [],
+    "nib_diff": [],
+    "val_diff": [],
+    "scale_diff": [],
+    "block_flips": [],
+    "err_units": [],
+    "err_abs": [],
+    "sign_only": [],
+    "nan_scale": []
+   },
+   "seconds_decode": 0.6,
+   "seconds_total": 1.4
+  },
+  "TAILD": {
+   "w1": {
+    "trials": 2000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 2000,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 2000,
+    "accepted_ceilref": 2000,
+    "accepted_identical_output": 2000,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.0018427397934059368
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "w2": {
+    "trials": 2000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 2000,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 2000,
+    "accepted_ceilref": 2000,
+    "accepted_identical_output": 2000,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.0018427397934059368
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "w3": {
+    "trials": 2000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 2000,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 2000,
+    "accepted_ceilref": 2000,
+    "accepted_identical_output": 2000,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.0018427397934059368
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "all": {
+    "trials": 6000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 6000,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 6000,
+    "accepted_ceilref": 6000,
+    "accepted_identical_output": 6000,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.0006146242834176392
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "silent_damage": {
+    "trial": [],
+    "mat": [],
+    "coded_sym_diff": [],
+    "coded_scale_diff": [],
+    "nib_diff": [],
+    "val_diff": [],
+    "scale_diff": [],
+    "block_flips": [],
+    "err_units": [],
+    "err_abs": [],
+    "sign_only": [],
+    "nan_scale": []
+   },
+   "seconds_decode": 0.6,
+   "seconds_total": 1.4
+  }
+ },
+ "seconds": 1.1
+}

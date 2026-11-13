@@ -1,0 +1,73 @@
+﻿P2_train_even80_test_odd80 {"best_non_ceil": "V4b_clsh_pair", "best_ceil": "c_fixed120", "best_orig_base_anchor_rule": "o_pair", "ceil_on_top_of_best_non_ceil_rec_pct_raw": -0.05692384317132043, "ceil_on_top_of_best_non_ceil_w_pct": -0.4721730898092906, "ceil_best_vs_orig_best_anchor_base_rec_pct_raw": -1.591998386775627, "ceil_best_vs_orig_best_anchor_base_w_pct": -1.7163990502661217, "anchor_fix_alone_rec_pct_raw": -0.2715426489335573}
+   o_med                    bpw 3.7844 bps 1.0090 dW +0.000% dRec +0.000%
+   o_pair                   bpw 3.7728 bps 1.0090 dW -0.305% dRec -0.272%
+   o_mode                   bpw 3.7844 bps 1.0090 dW +0.000% dRec +0.000%
+   o_fixed120               bpw 3.7728 bps 1.0090 dW -0.305% dRec -0.272%
+   o_fixed121               bpw 3.7728 bps 1.0090 dW -0.305% dRec -0.272%
+   o_search                 bpw 3.7728 bps 1.0090 dW -0.305% dRec -0.272%
+   c_med                    bpw 3.7088 bps 0.9161 dW -1.996% dRec -1.846%
+   c_pair                   bpw 3.7086 bps 0.9161 dW -2.001% dRec -1.850%
+   c_mode                   bpw 3.7088 bps 0.9161 dW -1.996% dRec -1.846%
+   c_fixed120               bpw 3.7081 bps 0.9161 dW -2.016% dRec -1.864%
+   c_fixed121               bpw 3.7081 bps 0.9161 dW -2.016% dRec -1.863%
+   c_fixed122               bpw 3.7081 bps 0.9161 dW -2.016% dRec -1.863%
+   c_med+1o                 bpw 3.7181 bps 0.9161 dW -1.752% dRec -1.628%
+   c_pair+1o                bpw 3.7081 bps 0.9161 dW -2.016% dRec -1.863%
+   c_search                 bpw 3.7081 bps 0.9161 dW -2.016% dRec -1.863%
+   V6b_clsh_pm2b_med        bpw 3.7304 bps 0.4306 dW -1.425% dRec -1.694%
+   V4b_clsh_med             bpw 3.7305 bps 0.4306 dW -1.423% dRec -1.692%
+   V3b_cls_med              bpw 3.7324 bps 0.4306 dW -1.374% dRec -1.649%
+   V6b_clsh_pm2b_pair       bpw 3.7258 bps 0.4306 dW -1.547% dRec -1.803%
+   V4b_clsh_pair            bpw 3.7257 bps 0.4306 dW -1.551% dRec -1.807%
+   V3b_cls_pair             bpw 3.7275 bps 0.4306 dW -1.503% dRec -1.763%
+P3_train_even80_test_odd40 {"best_non_ceil": "V4b_clsh_pair", "best_ceil": "c_fixed122", "best_orig_base_anchor_rule": "o_pair", "ceil_on_top_of_best_non_ceil_rec_pct_raw": -0.05557657052522779, "ceil_on_top_of_best_non_ceil_w_pct": -0.4745783835571645, "ceil_best_vs_orig_best_anchor_base_rec_pct_raw": -1.6005594764866407, "ceil_best_vs_orig_best_anchor_base_w_pct": -1.7310708333578444, "anchor_fix_alone_rec_pct_raw": -0.23486870125987694}
+   o_med                    bpw 3.7831 bps 1.0049 dW +0.000% dRec +0.000%
+   o_pair                   bpw 3.7731 bps 1.0049 dW -0.264% dRec -0.235%
+   o_mode                   bpw 3.7831 bps 1.0049 dW +0.000% dRec +0.000%
+   o_fixed120               bpw 3.7731 bps 1.0049 dW -0.264% dRec -0.235%
+   o_fixed121               bpw 3.7731 bps 1.0049 dW -0.264% dRec -0.235%
+   o_search                 bpw 3.7731 bps 1.0049 dW -0.264% dRec -0.235%
+   c_med                    bpw 3.7092 bps 0.9182 dW -1.954% dRec -1.803%
+   c_pair                   bpw 3.7078 bps 0.9182 dW -1.990% dRec -1.835%
+   c_mode                   bpw 3.7092 bps 0.9182 dW -1.954% dRec -1.803%
+   c_fixed120               bpw 3.7078 bps 0.9182 dW -1.990% dRec -1.835%
+   c_fixed121               bpw 3.7078 bps 0.9182 dW -1.990% dRec -1.835%
+   c_fixed122               bpw 3.7078 bps 0.9182 dW -1.990% dRec -1.835%
+   c_med+1o                 bpw 3.7167 bps 0.9182 dW -1.755% dRec -1.626%
+   c_pair+1o                bpw 3.7078 bps 0.9182 dW -1.990% dRec -1.835%
+   c_search                 bpw 3.7078 bps 0.9182 dW -1.990% dRec -1.835%
+   V6b_clsh_pm2b_med        bpw 3.7298 bps 0.4281 dW -1.408% dRec -1.678%
+   V4b_clsh_med             bpw 3.7299 bps 0.4281 dW -1.405% dRec -1.675%
+   V3b_cls_med              bpw 3.7318 bps 0.4281 dW -1.356% dRec -1.631%
+   V6b_clsh_pm2b_pair       bpw 3.7255 bps 0.4281 dW -1.521% dRec -1.778%
+   V4b_clsh_pair            bpw 3.7255 bps 0.4281 dW -1.523% dRec -1.780%
+   V3b_cls_pair             bpw 3.7273 bps 0.4281 dW -1.474% dRec -1.736%
+P4_train_sample160_test_extra70 {"best_non_ceil": "V4b_clsh_pair", "best_ceil": "c_fixed122", "best_orig_base_anchor_rule": "o_fixed121", "ceil_on_top_of_best_non_ceil_rec_pct_raw": -0.05518977701306427, "ceil_on_top_of_best_non_ceil_w_pct": -0.47665617792281895, "ceil_best_vs_orig_best_anchor_base_rec_pct_raw": -1.5924962598597028, "ceil_best_vs_orig_best_anchor_base_w_pct": -1.7169371759442231, "anchor_fix_alone_rec_pct_raw": -0.2898928796304005}
+   o_med                    bpw 3.7845 bps 1.0041 dW +0.000% dRec +0.000%
+   o_pair                   bpw 3.7721 bps 1.0041 dW -0.326% dRec -0.290%
+   o_mode                   bpw 3.7845 bps 1.0041 dW +0.000% dRec +0.000%
+   o_fixed120               bpw 3.7721 bps 1.0041 dW -0.326% dRec -0.290%
+   o_fixed121               bpw 3.7721 bps 1.0041 dW -0.326% dRec -0.290%
+   o_search                 bpw 3.7721 bps 1.0041 dW -0.326% dRec -0.290%
+   c_med                    bpw 3.7075 bps 0.9108 dW -2.033% dRec -1.879%
+   c_pair                   bpw 3.7074 bps 0.9108 dW -2.037% dRec -1.882%
+   c_mode                   bpw 3.7075 bps 0.9108 dW -2.033% dRec -1.879%
+   c_fixed120               bpw 3.7074 bps 0.9108 dW -2.037% dRec -1.882%
+   c_fixed121               bpw 3.7074 bps 0.9108 dW -2.037% dRec -1.882%
+   c_fixed122               bpw 3.7074 bps 0.9108 dW -2.037% dRec -1.882%
+   c_med+1o                 bpw 3.7181 bps 0.9108 dW -1.754% dRec -1.630%
+   c_pair+1o                bpw 3.7074 bps 0.9108 dW -2.037% dRec -1.882%
+   c_search                 bpw 3.7074 bps 0.9108 dW -2.037% dRec -1.882%
+   V6b_clsh_pm2b_med        bpw 3.7301 bps 0.4176 dW -1.437% dRec -1.711%
+   V4b_clsh_med             bpw 3.7302 bps 0.4176 dW -1.433% dRec -1.707%
+   V3b_cls_med              bpw 3.7321 bps 0.4176 dW -1.383% dRec -1.663%
+   V6b_clsh_pm2b_pair       bpw 3.7251 bps 0.4176 dW -1.568% dRec -1.827%
+   V4b_clsh_pair            bpw 3.7251 bps 0.4176 dW -1.568% dRec -1.827%
+   V3b_cls_pair             bpw 3.7270 bps 0.4176 dW -1.518% dRec -1.783%
+today: o_med vs c_med {"n": 230, "mean": -1.8281579270714785, "median": -1.6641161771551944, "std": 0.6159695651961651, "min": -4.933478904296678, "max": -0.5314857765226252, "p5": -3.5507438095087758, "p95": -1.5457299655168935, "n_worse_than_orig": 0, "n_gain_below_1pct": 1}
+fixed anchors: o_pair vs c_fixed121 {"n": 230, "mean": -1.5974971876815411, "median": -1.6168383975246048, "std": 0.10279371812788331, "min": -1.8232534924516106, "max": -1.1786899273545135, "p5": -1.7306807814883236, "p95": -1.3735518019681099, "n_worse_than_orig": 0, "n_gain_below_1pct": 0}
+o_pair vs c_med+1o {"n": 230, "mean": -1.5974971876815411, "median": -1.6168383975246048, "std": 0.10279371812788331, "min": -1.8232534924516106, "max": -1.1786899273545135, "p5": -1.7306807814883236, "p95": -1.3735518019681099, "n_worse_than_orig": 0, "n_gain_below_1pct": 0}
+MTP own med med {"per_layer": [{"test_mtp_layer": 0, "orig_ratio": 0.876199595273248, "ceil_ratio": 0.877578791060431, "orig_bpw": 3.605925462641144, "ceil_bpw": 3.616231602465526, "orig_bps": 3.7735301526451, "ceil_bps": 3.6313043053217844, "d_rec_pct_raw": 0.13791957871830826}, {"test_mtp_layer": 1, "orig_ratio": 0.9432175555063089, "ceil_ratio": 0.9285816707539747, "orig_bpw": 3.9496100084440506, "ceil_bpw": 3.8809195767216336, "orig_bps": 1.8900672786483905, "ceil_bps": 2.0976807674482667, "d_rec_pct_raw": -1.4635884752334318}, {"test_mtp_layer": 2, "orig_ratio": 0.8716149304254308, "ceil_ratio": 0.8622011699915295, "orig_bpw": 3.6134276326345987, "ceil_bpw": 3.5694055037048686, "orig_bps": 2.9099462935514264, "ceil_bps": 3.038383000292212, "d_rec_pct_raw": -0.9413760433901291}], "mean_d_rec_pct_raw": -0.755681646635081, "mean_orig_ratio": 0.8970106937349958, "mean_ceil_ratio": 0.889453877268645}
+MTP own pair fixed121 {"per_layer": [{"test_mtp_layer": 0, "orig_ratio": 0.8618800652659426, "ceil_ratio": 0.8739164418524523, "orig_bpw": 3.5450674601100967, "ceil_bpw": 3.6006666183316165, "orig_bps": 3.7735301526451, "ceil_bps": 3.6313043053217844, "d_rec_pct_raw": 1.2036376586509658}, {"test_mtp_layer": 1, "orig_ratio": 0.942092230406132, "ceil_ratio": 0.9211661520107057, "orig_bpw": 3.9448273767682984, "ceil_bpw": 3.8494036220627406, "orig_bps": 1.8900672786483905, "ceil_bps": 2.0976807674482667, "d_rec_pct_raw": -2.0926078395426257}, {"test_mtp_layer": 2, "orig_ratio": 0.8716646167895898, "ceil_ratio": 0.8508426781595884, "orig_bpw": 3.6136387996822745, "ceil_bpw": 3.521131913419119, "orig_bps": 2.9099462935514264, "ceil_bps": 3.038383000292212, "d_rec_pct_raw": -2.082193863000142}], "mean_d_rec_pct_raw": -0.990388014630594, "mean_orig_ratio": 0.8918789708205548, "mean_ceil_ratio": 0.8819750906742488}
+MTP own pair pair+1o {"per_layer": [{"test_mtp_layer": 0, "orig_ratio": 0.8618800652659426, "ceil_ratio": 0.8494277083637899, "orig_bpw": 3.5450674601100967, "ceil_bpw": 3.4965895010048014, "orig_bps": 3.7735301526451, "ceil_bps": 3.6313043053217844, "d_rec_pct_raw": -1.2452356902152732}, {"test_mtp_layer": 1, "orig_ratio": 0.942092230406132, "ceil_ratio": 0.9268247901978554, "orig_bpw": 3.9448273767682984, "ceil_bpw": 3.873452834358127, "orig_bps": 1.8900672786483905, "ceil_bps": 2.0976807674482667, "d_rec_pct_raw": -1.526744020827659}, {"test_mtp_layer": 2, "orig_ratio": 0.8716646167895898, "ceil_ratio": 0.8576601972912808, "orig_bpw": 3.6136387996822745, "ceil_bpw": 3.550106369728812, "orig_bps": 2.9099462935514264, "ceil_bps": 3.038383000292212, "d_rec_pct_raw": -1.40044194983089}], "mean_d_rec_pct_raw": -1.390807220291271, "mean_orig_ratio": 0.8918789708205548, "mean_ceil_ratio": 0.877970898617642}
+MTP routed model {"orig_ratio": 1.1099474432621337, "ceil_ratio": 1.07896141779693, "orig_bpw": 4.37610508902992, "ceil_bpw": 4.2660648944052095, "orig_bps": 10.917489434692731, "ceil_bps": 10.22467619941578}

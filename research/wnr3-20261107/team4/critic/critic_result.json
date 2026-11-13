@@ -1,0 +1,222 @@
+{
+ "member": "critic",
+ "verdict": "The measured byte numbers hold. I re-derived every ceil-ref config (ratio = total/18,800,640, bit/w = WP*8/35,389,440, bit/scale = SP*8/1,105,920, parts sum to total) for both summaries: 0 mismatches. The spec section-10 table matches heldout_summary(_g0).json, including capacity = 1/ratio - 1 and GB = 7680 x mean + 618,496. capacity-update's ratios and containers reproduce exactly from production WNR2 16,914,680 B plus the paired deltas. ceil-gpu's bytes (A259 0.90227, CF 0.88155, CFDB2 0.88477; A259/D/DB2 identical to team 2) and its 352 clean GPU checks are confirmed. The problems are in what was built on those numbers. (1) The spec's v1 default, TAIL+DIGEST, is unmeasured on the integrity side. DIGEST is implemented nowhere, and the acceptance rate of TAIL alone was never measured. Under TAIL the per-stream check becomes a 2^20 window, so corruption that lands in the tail bits (magnitudes too, not only signs) passes it. With ceil-form, one changed tail magnitude can flip the M'==5 decision for a whole 32-weight block (inferred). All of this is to save 41.5 KB/record, worth +0.16% (U:) / +0.25% (E:) tok/s, below the +-0.85% A/B resolution. HASH is the measured alternative (+1,352 B, 104/104 caught). (2) The spec's tok/s figures are computed wrongly. It multiplies the elasticity by pp of raw instead of % fewer bytes vs WNR2, giving +1.4/+2.3% (v1) and +3.2/+5.3% (v1z). The correct values are about +1.6/+2.6% and +3.7/+6.2%, which capacity-update's own simulation gives (WNR3t_g0 +1.61/+2.63, WNR3zt_est +3.65/+6.23). The spec also garbles the G2/W2 assumption. (3) The spec cites two fallback penalties as one fact: +397,312 B = +2.11% of raw (CR, anchor 120 aligned) and +11.7..12.7% (RF, median anchors misaligned 121 vs 120). They differ about 6x, and the gap is the anchor misalignment. (4) The spec calls the codecs \"two independent NumPy reference codecs\", but ceil-ref's wnr_common.py is a self-declared copy of team 3's (740/934 lines verbatim). The refuter also used a copy. No independent decoder has ever decoded a WNR3/ceil-ref record, and conformance to KAIRA's C codec is unverified. (5) About 0.24-0.29 pp of the f-vs-WNR2 gain is the anchor fix. WNR2 decoders already read the median byte per record (REF:200, 225), so a plain re-encode with anchor 120 ('WNR2-g0') might capture it without a decoder change, but it was never encoded. The spec's \"transfer cost +4.19% -> +0.30%\" for ceil-form is also an anchor-alignment effect. (6) The spec layout (WNM3 K=2/259 rows, 64-B header, base offsets, per-matrix max-5 gate, skip-255 with coded 255 legal, DIGEST) and fg0cdt were never encoded. The v1 GPU path was tested only for CEIL, not TAIL/LENC/DIGEST, and nothing on the 5090. Smaller issues: the g0-over-g choice rests on one near-tie matrix. The refuter's 'P3 = team 3's 40' is a different set (manifest index % 4 == 1, shares 20 of 40 experts), which is why it gives -1.803% vs CR's -1.761%. ceil-gpu's in-sample -2.07% is confounded with expert choice and anchor flips. The spec's same-config D/A259 0.708 is picked at D's best config (median over configs 1.069 for 1 record).",
+ "findings": [
+  {
+   "claim": "MOST SERIOUS. The v1 default integrity design (TAIL + DIGEST, flags 0xB4) has no measurement behind it, yet the spec marks it 'ADOPT as default'. It is chosen over the measured HASH for a gain below what an A/B can resolve.",
+   "evidence": "No codec on this PC implements DIGEST: ceil-ref measured TAIL only, with the 2^20/2^16 window check (wnr_common.py:398-405). The spec itself lists 'TAIL-alone silent acceptance rate: not measured' and 'GPU cost of per-lane H32 and digest atomics: not measured' (WNR3-DRAFT-v2.md 13.2), and its residual rates 2^-11 / 2^-32 are tagged [I]. Today's rule catches every last-byte flip: team 2 corrupt_audit.json case 'B bitflip in last byte' 0/12,000 accepted for w1 and w2. With TAIL, the low bits of the final state hold the tail symbols, so a corruption that ends there passes the window (inferred). The refuter's 'no damage amplification' result (flip_ceil_big.json: all accepted flips are single sign flips) was measured only under x == L. With TAIL alone, a changed tail magnitude can turn coded max 5 into 6/7 or the reverse, so T^-1 is skipped or misapplied for a whole block: 32 weights x2 or /2 and scale +-1 (inferred). What TAIL buys: fgdt vs fgde -41,548 B (heldout_summary.json pairwise), i.e. +0.16% U: / +0.25% E: tok/s (capacity_update_output.txt:41,60), against the +-0.85% ABBA resolution (RIC:186). The HASH alternative is measured: +1,351.6 B (fge vs fg), and the hash rule caught 104/104 (MV:77).",
+   "kind": "inferred",
+   "impact": "The default profile's protection against silent corruption rests on code that does not exist yet (DIGEST in the CPU decoder, the GPU commit kernel, and tools like check_container/sample_records). A missing or buggy digest path would be worse than today's WNR2. Keeping HASH as the v1 default, or making TAIL+DIGEST conditional on a passing T3 audit, costs about 0.2% tok/s.",
+   "confidence": "high"
+  },
+  {
+   "claim": "The spec's tok/s figures are arithmetically wrong. The elasticity was multiplied by pp of raw instead of % fewer bytes vs WNR2, which understates the gains by 12-15% relative.",
+   "evidence": "WNR3-DRAFT-v2.md:472: 'elasticity +0.65% ... +1.09% -> v1 about +1.4% (U:) / +2.3% (E:) vs WNR2, v1z about +3.2% / +5.3%'. 0.6473 x 2.144 = 1.39 and 1.0853 x 2.144 = 2.33 (pp of raw); 0.6473 x 4.87 = 3.15 and 1.0853 x 4.87 = 5.29. The elasticity is defined per 1% fewer bytes (RIC:185; capacity_update_output.txt:164-202 'bytes_vs_WNR2_%'). Correct values (consistency_out.txt section 4): v1 2.43-2.44% fewer bytes -> U +1.57..1.58, E +2.63..2.65. v1z 5.72% -> U +3.71, E +6.21. capacity-update simulated WNR3t_g0 U +1.61 / E +2.63 and WNR3zt_est U +3.65 / E +6.23 (output.txt:36,38,55,57). R5 repeats '~+1.4% on U:' (spec:511). The spec also says 'assumes G2 + W2 not yet built', which reads as the opposite of RIC:182 (the model assumes G2 and W2, which are not yet built). It cites RIC, not capacity-update.",
+   "kind": "measured",
+   "impact": "A decision document gives wrong (pessimistic) speed expectations and misstates the model's key assumption. Replace with capacity-update's simulated medians and say they assume G2+W2.",
+   "confidence": "high"
+  },
+  {
+   "claim": "The spec quotes two fallback penalties as if they agree. They differ about 6x because they use different anchor setups, and the gap shows that a mismatch between the anchor byte and the set's training anchor costs about 10% of raw.",
+   "evidence": "Spec 5.2: '+397,312 B vs the plain WNR2 model ... [M CR test_ceil.json], +11.7..+12.7% of raw in the estimate [M RF]'. CR: test_ceil.json a_block_max0/fg 17,285,120 B vs heldout WNR2 for L00_E113 16,887,808 B = +2.113% of raw (+3.79% vs the same expert in ceil form, 16,572,416). In fg the anchor is 120 in both forms (heldout_A.jsonl anchors [120,120,120]). RF: refute_an.json fallback_record_coded_with_ceil_model P2 +12.65%, P4 +11.73%, with median anchors (ceil model at 121, plain record at 120; anchor_an.json anchor_hist c_med 121 x688).",
+   "kind": "measured",
+   "impact": "State the condition (aligned vs misaligned anchor). The same fact argues for checking anchor0 against the set's form in the encoder and build report, because a wrong anchor0 silently costs ~10% of raw. That is relevant to g0 on other checkpoints and to MTP (anchors 113-114).",
+   "confidence": "high"
+  },
+  {
+   "claim": "'Two independent NumPy reference codecs' is false. Every real-record number comes from one code lineage (team 3's wnr_common.py), and no independent decoder has decoded a ceil-ref/WNR3 record.",
+   "evidence": "<RESEARCH-PC>\\team4\\ceil-ref\\wnr_common.py:3 'team4 / ceil-ref copy of team3/ref-impl/wnr_common.py ... extended'. 740 of its 934 lines appear verbatim in team 3's 804-line file. The refuter's e2e_real.json used 'team 3 coder copy wnr_common_t3copy.py'. ceil-gpu's GPU decoder reads its own team-2-format streams (wnr2fmt/ceilenc), not ceil-ref records. Spec status line 5 claims independence. decode_record gets the encoder's in-memory tables (run_ceil.py:107), not a re-parsed model blob. KAIRA's C encoder is not on this PC, so the Python WNR2 encoder was never byte-compared to it (only size-level: MV:17 0.8999 vs production 0.8997).",
+   "kind": "read-in-code",
+   "impact": "Byte-exactness vs the source still proves this encoder/decoder pair is lossless. It does not prove conformance to WNR2/KAIRA or catch symmetric bugs. A cross-decode test is missing: ceil-ref records through an independently written decoder, ideally the GPU prototype.",
+   "confidence": "high"
+  },
+  {
+   "claim": "A decoder-compatible baseline is missing. About 0.24-0.29 pp of the measured f-vs-WNR2 gain is the srel anchor fix, which plain WNR2 records could already carry, because WNR2 stores and reads the median byte per record. The ceil-origin 'transfer robustness' result cited by the spec is the same anchor effect.",
+   "evidence": "REF:200 (u8 median[3] in the WNR2 record header), REF:225 ('lower median ... stored per record'). anchor_an.json anchor_fix_alone_rec_pct_raw P2 -0.272, P3 -0.235, P4 -0.290; team 3 -0.257% (T3S densest pair 3.77290 vs 3.78243 held-out). Real records with plain form plus a fixed anchor ('WNR2-g0') were never encoded, and capacity-update compares against median-anchor WNR2. Spec 5.2 cites 'transfer: cost of reusing a V4.1 model on V4-Flash drops from +4.19% (plain) to +0.30% (ceil)'. ceil-origin's own verdict explains it as the median being 120 on V4.1 and 121 on V4/V4-Pro, which ceil-form happens to shift to 121. Under the spec's own g0 (constant anchor from training), that alignment would not happen automatically.",
+   "kind": "read-in-code",
+   "impact": "Part of WNR3's gain may be available with no decoder change, subject to OPEN-K item 10 (does anything re-derive median[m]?). The format change's incremental value vs WNR2-g0 is about -1.9% of raw for v1, not -2.14%. The transfer claim should be credited to anchor alignment, not to ceil-form.",
+   "confidence": "medium"
+  },
+  {
+   "claim": "The rules the spec makes normative were never run in any codec: per-matrix gate 'no max-5 block', blocks with max 0..4 allowed, skip-255, coded scale 255 legal, per-matrix ceil_mask/set_id, WNM3 K=2 259-row blob, 64-B header, LENC base offsets, DIGEST. fg0cdt was not run either.",
+   "evidence": "ceil-ref's gate is record-level and stricter: a block with max 0 or an even block with scale 254 clears F for the whole record (test_ceil.json a/b; wnr_common.py:217-265). The spec instead allows max 0..4 blocks and coded 255 (spec 5.2). The exhaustive check is on the transform only (edge_tests2.json, 4-nibble blocks), not on a codec with ceil_mask/set selection. The spec's v1 size of ~0.8781 and v1z of ~0.8507 are [I] (fgdt g0 + 2,452 B; fgcd - 40,199 + 2,452). The tail saving was measured only without CZ.",
+   "kind": "read-in-code",
+   "impact": "Sizes and correctness of the spec as written are untested. Test T9 (reproduce CR within +-0.02 pp with the spec layout) and T1/T3 must run before R1 counts as done.",
+   "confidence": "high"
+  },
+  {
+   "claim": "The GPU evidence covers only the CEIL part of the v1 profile, and several GPU statements in the spec or results overstate what was measured.",
+   "evidence": "ceil-gpu streams are WNR2-style (u16 lengths, x0 = L, 4-B flush): no TAIL, LENC, HASH/DIGEST or CZ on the GPU (ceil-gpu open questions). Of the '352 checks', 128 are m1/m3 rechecks covering 5,760/17,280 weight streams, not 138,240 (bench_final.json). The spec repeats '352 checks of 138,240 weight streams ... each'. CF5 patch-mode timing excludes the pre-fill of the output scales (ceilbench.py:256 d_osc[:] = d_scdec['ceil'] before the kernel); CF6 full-write includes it and costs about the same, so the conclusion holds. The PIPE timings use the in-place variant that the spec forbids (ceilbench.py:313-321). The spec's 'same launch config D/A259 0.708 (1 record, nt64/out4)' is at D's best config, where A259 takes 739 us vs its best 590.8 us. Over the 8 configs D/A259 is median 0.856 (m1), 1.069 (m3), 1.120 (m24) (ratios_final.json). CF0/A259, the same work on different stream bytes, ranges 0.9415-1.003, so same-config differences of +-3-6% are within the noise of stream content and config.",
+   "kind": "measured",
+   "impact": "Sign-plane speed claims hold only best-vs-best. Decode cost of the v1 profile (TAIL completion of the last block, LENC warp scan, H32 per lane, digest atomics) is unknown on any GPU.",
+   "confidence": "high"
+  },
+  {
+   "claim": "The choice of g0 (constant anchor) over the densest-pair rule rests on one near-tie test matrix and was made after seeing the test results.",
+   "evidence": "heldout_summary_g0.json fg vs f -6,028 B (CI -16,967..-459). heldout_summary.json fg vs f -853 B (CI -16,952..+15,062). The whole g0-vs-g difference (~5.2 KB/record mean) is L39_E156 w2, where the pair sums are 349,985 vs 350,076 (0.026% apart). The refuter's census over 690 routed matrices: c_pair 121 in 1/690, c_med 120 in 2/690 (anchor_an.json). The spec states 'g0 ... is better than the densest-pair rule' [M].",
+   "kind": "measured",
+   "impact": "On V4.1 both rules are almost always 120; the evidence for g0 is n=1. Since misalignment costs ~10% of raw (fallback finding), the robustness of a stored constant on other checkpoints/MTP is the real question, and it is unmeasured.",
+   "confidence": "medium"
+  },
+  {
+   "claim": "ceil-gpu attributes its in-sample -2.07% vs held-out -1.81% to in-sample training, but the gap is confounded with the choice of the 8 experts and with anchor flips. Its record bytes are also not on the same basis as CR's.",
+   "evidence": "encode_report.json pick [17,0,40,80,120,159,60,100]. Original-form medians 121 on 4 of 24 matrices (indices 15-17 = expert idx 159, an L39 expert; 20). Population rate is 43/690 = 6.2% (anchor_an.json). L37-39 per-layer mean gain -2.67/-3.56/-3.73% vs about -1.65% elsewhere (per_expert_an.json). per_record_bytes = record_total_bytes_all8/8 excludes the record header and the 4096 padding.",
+   "kind": "measured",
+   "impact": "Do not read -2.07% vs -1.81% as an in-sample bonus. Compare GPU sizes only as deltas.",
+   "confidence": "medium"
+  },
+  {
+   "claim": "The refuter's split 'P3 (team 3's 40)' is not team 3's/CR's test set, so the spec's P3 numbers are on a different 40 experts.",
+   "evidence": "anchor_an.py:7,136: P3 tests group 1, and refute_count.py:5 defines group = manifest index % 4, i.e. experts 4l+1 for every layer. CR/team 3's set is [1,7,9,15,17,...] = 4l+1 for even l, 4l+3 for odd l (heldout_summary.json experts), which shares 20 of 40. That is why refuter P3 c_med vs o_med gives -1.803% while CR's same-model estimate on its own set gives -1.761% (f_entropy_crosscheck). P2 (odd80) does reproduce CR's odd80 -1.846%.",
+   "kind": "read-in-code",
+   "impact": "A small labeling error. The spec's '-1.60% (P3)' clean gain is not on CR's experts, and the anchor-fix share on CR's exact set is unmeasured.",
+   "confidence": "high"
+  },
+  {
+   "claim": "capacity-update describes some differences as estimate-vs-real errors when they come from a format change, and calls a median the 'worst' penalty.",
+   "evidence": "'The real records gain about 1.1 pp more tok/s vs WNR2 than team 3's entropy estimates did' and 'the real WNR3 saves 4.3x more bytes vs WNR2 than estimated'. Team 3's WNR3 had no ceil-form, and ceil-ref showed real = estimate within 5.1 B for the same configuration. On E: the gap is 1.76-2.0 pp, not 1.1 (output.txt:65-66). 'Even the worst measured ceil-form decode penalties cost at most 0.4 pp': dk 0.157 is the CF/CF0 m3 median; the measured worst is 1.213 (m24) and 1.205 (m3) (ratios_final.json).",
+   "kind": "measured",
+   "impact": "Wording only. The numbers in the tables are correct.",
+   "confidence": "high"
+  },
+  {
+   "claim": "Some refuter statistics are weaker or more mixed than stated.",
+   "evidence": "w1 sign-flip acceptance 63 vs 82 of 24,000: z = 1.58, not significant; w2 69 vs 139: z = 4.85 (flip_ceil_big.json). The refuter's original-form w2 rate of 0.288% disagrees with team 2's 62/12,000 = 0.517% (z = 3.1), so acceptance rates depend on the model; the spec's '0.26-0.58%' mixes models. The verdict's 'per-expert spread -0.53..-5.10% (std 0.616)' combines per_expert_an.json (min -5.10) with anchor_an.json (min -4.93, std 0.616).",
+   "kind": "measured",
+   "impact": "These do not change conclusions. The case for a hash/digest rests on w2 and on the mechanism, not on w1.",
+   "confidence": "high"
+  },
+  {
+   "claim": "Minor numeric and basis inconsistencies in the spec and in MV.",
+   "evidence": "Spec A.3/5.9 '+0.36% of the record' for CFDB2 vs CF: computed +0.366% of record (0.32 pp of raw). In the spec's section-10 table the v1 row is in ref-impl layout (0.87800) while the v1z row (~0.8507) includes +2,452 B of spec layout. The spec says the residual std is 3.80/7.20 'on fg0dt' while ceil-ref quotes them for fgd; recomputed: fgdt 3.79/7.19, the same to rounding. MV:46 gives the per-expert even share as 22.8-30.9% on the 160 sample; the refuter measured 22.78-31.88% (refute_an.json invariants.sample). The task brief's '-1.81%' is the all-160/odd-80 estimate; the measured test-40 figure is -1.761%.",
+   "kind": "measured",
+   "impact": "Cosmetic. Use one basis per table.",
+   "confidence": "high"
+  },
+  {
+   "claim": "These numbers were checked against their files and are correct.",
+   "evidence": "consistency_out.txt: 0 internal mismatches across the 36 ceil-ref config rows. Spec section-10 ratios, pp, capacities and GB all OK. capacity-update ratios (0.88074/0.87853/0.85335; g0 0.88047/0.87825/0.85307; F 0.88207) and containers (127,169,363,968 / 126,850,072,576 / 123,214,397,440 B) reproduce exactly from 16,914,680 + paired delta and 618,496 + 7680 x rec. WNR2 129,905,360,896 reproduces. (My WEX1 formula check fails only because WEX1 has no model region: 557,056 = 4096 + 552,960.) ceil-gpu per-record bytes, ratios and bit/w match encode_report*.json; A259/D/DB2 payloads equal team 2 enc8 (134,186,379 / 98,796,815 / 99,280,529). best_final.txt times match all quoted best configs. HASH cost: expected 19,440 x 0.5573/8 = 1,354 B vs measured 1,351.6. TAIL saving 2.068 B/stream. WNM3 sizes 29,468/57,736/32,872 B recomputed. Wire struct '<8I8B2H5I' = 64 B. Flags 0xB4/0xA4/0xB6 and header flags 37/101 consistent. T2Z counts (350,208; 3,112,960; 14,008,320; 56,033,280; 2,560,000), signent 1.034e-6, T2A 31/62 of 12,000 and 392/69,120, T3S 3.78243/3.77290, and T2G final_table lines 11/13 all present in the cited files.",
+   "kind": "measured",
+   "impact": "Inputs to the decisions are sound. The problems are interpretation, omitted baselines and unmeasured design parts.",
+   "confidence": "high"
+  },
+  {
+   "claim": "Configurations not measured and risks not discussed.",
+   "evidence": "Not measured: real records in the spec layout; fg0cdt; WNR2-g0; DIGEST anywhere; TAIL-alone and TAIL+DIGEST corruption audit (team 2 cases A-J on ceil-form records); GPU TAIL/LENC/H32/digest/CZ; RTX 5090 and KAIRA's 567-row cp.async kernel; CPU-side T^-1 in C (the NumPy reference shows f decode 3.10 s vs WNR2 2.78 s, +11%, not representative); maximum record over 7680 (slot sizing); production-like training on all 7680 (all deltas are held-out with 80 training experts; bootstrap CIs resample test experts only, not model training); MTP and shared experts; any token/logprob check (CZ). Not discussed: TAIL changing which corruption classes pass the per-stream check (magnitudes, last-byte flips); amplification of a single symbol error to a 32-weight error through the M'==5 decision when the check is weaker than x == L; the anchor-byte/anchor0 consistency check needed in the builder given the ~10%-of-raw misalignment cost.",
+   "kind": "inferred",
+   "impact": "These are the items to close before R1/R2. The integrity ones (DIGEST, T3 audit) block the proposed default.",
+   "confidence": "medium"
+  }
+ ],
+ "numbers": [
+  {
+   "what": "spec v1 tok/s vs WNR2, corrected (elasticity x % fewer bytes)",
+   "value": "U +1.57..1.58%, E +2.63..2.65% (spec says +1.4 / +2.3); capacity-update simulated WNR3t_g0 +1.61 / +2.63",
+   "conditions": "v1 ratio 0.87813 (spec layout) or 0.87800 (ref layout) vs WNR2 0.89943; team 3 median elasticities 0.6473 / 1.0853"
+  },
+  {
+   "what": "spec v1z tok/s vs WNR2, corrected",
+   "value": "U +3.71%, E +6.21% (spec says +3.2 / +5.3); capacity-update WNR3zt_est +3.65 / +6.23",
+   "conditions": "v1z est 0.85074, 5.724% fewer bytes than WNR2"
+  },
+  {
+   "what": "fallback penalty, ceil model on a plain record",
+   "value": "CR measured +397,312 B = +2.113% of raw vs WNR2 (+3.791% vs the same expert in ceil form); RF estimate +12.65% (P2) / +11.73% (P4)",
+   "conditions": "CR fg with anchor 120 in both forms (aligned); RF median anchors 121 (ceil) vs 120 (plain)"
+  },
+  {
+   "what": "TAIL instead of HASH",
+   "value": "-41,548 B/record (-0.221% of raw) = +0.16% U: / +0.25% E: tok/s",
+   "conditions": "ceil-ref fgdt vs fgde; capacity-update WNR3t vs WNR3; A/B resolution +-0.85%"
+  },
+  {
+   "what": "TAIL window false-accept per random end state",
+   "value": "2^-10.99 (weights), 2^-14.99 (scales) vs ~2^-31 for x == L",
+   "conditions": "final state in [2^23, 2^31); arithmetic"
+  },
+  {
+   "what": "HASH cost expected vs measured",
+   "value": "1,354.3 B vs 1,351.6 B per record",
+   "conditions": "19,440 streams x E[log2(1+U)] = 0.5573 bit"
+  },
+  {
+   "what": "tail saving per stream",
+   "value": "2.068 B",
+   "conditions": "40,199.3 B / 19,440 streams"
+  },
+  {
+   "what": "anchor-fix share of the ceil gain",
+   "value": "-0.272 (P2) / -0.235 (P3, group 1) / -0.290 (P4) pp of raw",
+   "conditions": "refuter anchor_an.json estimates; not measured on real WNR2 records"
+  },
+  {
+   "what": "overlap of refuter P3 with CR test set",
+   "value": "20 of 40 experts",
+   "conditions": "P3 = manifest index % 4 == 1; CR = 4l+1 (even l), 4l+3 (odd l)"
+  },
+  {
+   "what": "codec lineage",
+   "value": "740 of 934 ceil-ref wnr_common.py lines verbatim in team 3's 804-line file",
+   "conditions": "line-set comparison"
+  },
+  {
+   "what": "GPU checks",
+   "value": "352 non-diagnostic, 0 bad; 224 full (138,240 streams), 128 m1/m3 subsets (5,760 / 17,280 streams)",
+   "conditions": "bench_final.json"
+  },
+  {
+   "what": "D/A259 over 8 configs (min/median/max)",
+   "value": "m1 0.783/0.856/0.935; m3 0.708/1.069/1.205; m24 0.812/1.120/1.646",
+   "conditions": "ratios_final.json; the spec quotes only the best-config values"
+  },
+  {
+   "what": "CF0/A259 same-config noise floor",
+   "value": "min 0.9415 (m24), median 0.998",
+   "conditions": "same kernel work on ceil vs plain streams, inverse off"
+  },
+  {
+   "what": "sign-flip acceptance significance",
+   "value": "w1 z = 1.58 (63 vs 82 / 24,000); w2 z = 4.85 (69 vs 139); team 2 vs refuter w2 original z = 3.09",
+   "conditions": "Poisson approximation"
+  },
+  {
+   "what": "g0 vs g decided by",
+   "value": "1 matrix: L39_E156 w2, pair sums 349,985 vs 350,076 (0.026% apart)",
+   "conditions": "census: c_pair flips 1/690, c_med 2/690 routed matrices"
+  },
+  {
+   "what": "ceil-gpu expert set anchor flips",
+   "value": "4/24 original-form matrices at median 121 (16.7%) vs population 43/690 (6.2%)",
+   "conditions": "encode_report.json medians; anchor_an.json"
+  },
+  {
+   "what": "CFDB2 vs CF",
+   "value": "+0.366% of record (+0.32 pp of raw); spec says +0.36%",
+   "conditions": "encode_report*.json"
+  },
+  {
+   "what": "spec container sizes anchored on production WNR2",
+   "value": "f 127.362, fg0 127.319, fg0d 127.115, fg0de 127.130, fg0dt 126.810, fg0c 123.361, fg0cd 123.164, fg0cde 123.175 GB",
+   "conditions": "16,914,680 + paired delta, x 7680 + 618,496; the spec uses held-out means (126.8 GB for v1)"
+  },
+  {
+   "what": "ceil-ref internal arithmetic mismatches",
+   "value": "0 of 36 config rows",
+   "conditions": "ratio, bit/w, bit/scale, all-in bit/w, parts sum; both summaries"
+  }
+ ],
+ "files_written": [
+  "<RESEARCH-PC>\\team4\\critic\\dump_cr.py",
+  "<RESEARCH-PC>\\team4\\critic\\dump_cr.txt",
+  "<RESEARCH-PC>\\team4\\critic\\consistency.py",
+  "<RESEARCH-PC>\\team4\\critic\\consistency_out.txt"
+ ],
+ "open_questions": [
+  "Does any KAIRA decoder, checker or CUDA plan re-derive median[m] from the decoded scales? If not, a WNR2 re-encode with anchor 120 (WNR2-g0) is a no-decoder-change option worth about -0.25% of raw, and it should be measured on real records before WNR3's incremental value is quoted.",
+  "Should v1 keep HASH (measured) as the default until a DIGEST implementation passes team 2's A-J corruption audit on ceil-form records, including case B (last-byte flips) and magnitude changes in tail symbols?",
+  "What fraction of single-bit and last-byte corruptions does TAIL alone accept, and how many of them flip a block's M'==5 decision (whole-block damage)?",
+  "Can a ceil-ref record be decoded by an independently written decoder (e.g. the GPU prototype extended to the 48-B header / LENC / TAIL), to rule out symmetric bugs in the shared team 3 code lineage?",
+  "What are the real sizes of the spec layout (WNM3 K=2/259 rows, 64-B header, base offsets, per-matrix gate, coded scale 255 legal) and of fg0cdt? Does the tail saving hold under CZ?",
+  "Which anchor check should the builder enforce so a set's anchor0 can never be misaligned with the coded scales (misalignment measured at about +10% of raw)?"
+ ]
+}

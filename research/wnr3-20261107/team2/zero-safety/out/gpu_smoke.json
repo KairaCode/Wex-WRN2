@@ -1,0 +1,336 @@
+{
+ "meta": {
+  "device": "NVIDIA GeForce RTX 3070",
+  "arch": "--gpu-architecture=compute_86",
+  "nvrtc": "12.9 (nvidia-cuda-nvrtc-cu12 12.9.86)",
+  "files": [
+   "L00_E097.bin"
+  ]
+ },
+ "act_sets": [
+  "gauss",
+  "gauss_25pct+0_25pct-0",
+  "all-0",
+  "all+0",
+  "one_nonzero_rest-0",
+  "denormals_10pct",
+  "inf_at_100",
+  "nan_at_200",
+  "huge_1e30"
+ ],
+ "batch4_rows": [
+  "x",
+  "-x",
+  "x with odd entries -0",
+  "x*1e-30"
+ ],
+ "results": {
+  "real_matrices": {
+   "mv_fp4_grouped<1>": {
+    "compared": 87552,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 20687,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 10793,
+    "rerun_nondeterministic": 0
+   },
+   "mv_fp4_grouped<2>": {
+    "compared": 87552,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 20687,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 10793,
+    "rerun_nondeterministic": 0
+   },
+   "mv_fp4_grouped<4>": {
+    "compared": 87552,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 20687,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 10793,
+    "rerun_nondeterministic": 0
+   },
+   "mv_fp4_grouped<8>": {
+    "compared": 87552,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 20687,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 10793,
+    "rerun_nondeterministic": 0
+   },
+   "mv_fp4_expert_major<4>_T4": {
+    "compared": 350208,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 91245,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 43172,
+    "rerun_nondeterministic": 0
+   },
+   "mv<4>": {
+    "compared": 87552,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 20687,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 10793,
+    "rerun_nondeterministic": 0
+   },
+   "mv_rows<4,4>": {
+    "compared": 87552,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 20687,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 10793,
+    "rerun_nondeterministic": 0
+   },
+   "mv_rows<4,16>": {
+    "compared": 87552,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 20687,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 10793,
+    "rerun_nondeterministic": 0
+   },
+   "mm_batch<4>_T4": {
+    "compared": 350208,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 91245,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 43172,
+    "rerun_nondeterministic": 0
+   },
+   "v4f_dot_fp4(warp/row)": {
+    "compared": 87552,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 20687,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 10793,
+    "rerun_nondeterministic": 0
+   }
+  },
+  "synthetic_zero_rows": {
+   "mv_fp4_grouped<1>": {
+    "compared": 1152,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 585,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 198,
+    "rerun_nondeterministic": 0
+   },
+   "mv_fp4_grouped<2>": {
+    "compared": 1152,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 585,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 198,
+    "rerun_nondeterministic": 0
+   },
+   "mv_fp4_grouped<4>": {
+    "compared": 1152,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 585,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 198,
+    "rerun_nondeterministic": 0
+   },
+   "mv_fp4_grouped<8>": {
+    "compared": 1152,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 585,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 198,
+    "rerun_nondeterministic": 0
+   },
+   "mv_fp4_expert_major<4>_T4": {
+    "compared": 4608,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 2395,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 792,
+    "rerun_nondeterministic": 0
+   },
+   "mv<4>": {
+    "compared": 1152,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 585,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 198,
+    "rerun_nondeterministic": 0
+   },
+   "mv_rows<4,4>": {
+    "compared": 1152,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 585,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 198,
+    "rerun_nondeterministic": 0
+   },
+   "mv_rows<4,16>": {
+    "compared": 1152,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 585,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 198,
+    "rerun_nondeterministic": 0
+   },
+   "mm_batch<4>_T4": {
+    "compared": 4608,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 2395,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 792,
+    "rerun_nondeterministic": 0
+   },
+   "v4f_dot_fp4(warp/row)": {
+    "compared": 1152,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 585,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 198,
+    "rerun_nondeterministic": 0
+   }
+  },
+  "positive_control": {
+   "mv_fp4_grouped<1>": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0,
+    "rerun_nondeterministic": 0
+   },
+   "mv_fp4_grouped<2>": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0,
+    "rerun_nondeterministic": 0
+   },
+   "mv_fp4_grouped<4>": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0,
+    "rerun_nondeterministic": 0
+   },
+   "mv_fp4_grouped<8>": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0,
+    "rerun_nondeterministic": 0
+   },
+   "mv_fp4_expert_major<4>_T4": {
+    "compared": 9216,
+    "mismatch_value": 4,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0,
+    "rerun_nondeterministic": 0
+   },
+   "mv<4>": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0,
+    "rerun_nondeterministic": 0
+   },
+   "mv_rows<4,4>": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0,
+    "rerun_nondeterministic": 0
+   },
+   "mv_rows<4,16>": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0,
+    "rerun_nondeterministic": 0
+   },
+   "mm_batch<4>_T4": {
+    "compared": 9216,
+    "mismatch_value": 4,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0,
+    "rerun_nondeterministic": 0
+   },
+   "v4f_dot_fp4(warp/row)": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0,
+    "rerun_nondeterministic": 0
+   }
+  }
+ },
+ "seconds": 1.2
+}

@@ -1,0 +1,606 @@
+{
+ "records": [
+  {
+   "idx": 1,
+   "file": "L00_E113.bin",
+   "layer": 0,
+   "expert": 113,
+   "config": "wnr2",
+   "rec": "L00_E113.wnr2.rec",
+   "rec_bytes": 16887808,
+   "raw_bytes": 18800640,
+   "ratio": 0.8982570806100217,
+   "model_id": 4237896291,
+   "rec_flags": 0,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "shapes": [
+    [
+     2304,
+     5120
+    ],
+    [
+     5120,
+     2304
+    ],
+    [
+     2304,
+     5120
+    ]
+   ],
+   "ceil_applied": null,
+   "source_sha256_ok": true,
+   "py_decode_byte_exact": true,
+   "py_enc_s": 3.931,
+   "py_dec_s": 4.277
+  },
+  {
+   "idx": 1,
+   "file": "L00_E113.bin",
+   "layer": 0,
+   "expert": 113,
+   "config": "fge",
+   "rec": "L00_E113.fge.rec",
+   "rec_bytes": 16572416,
+   "raw_bytes": 18800640,
+   "ratio": 0.8814814814814815,
+   "model_id": 2694569643,
+   "rec_flags": 24,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "shapes": [
+    [
+     2304,
+     5120
+    ],
+    [
+     5120,
+     2304
+    ],
+    [
+     2304,
+     5120
+    ]
+   ],
+   "ceil_applied": true,
+   "source_sha256_ok": true,
+   "py_decode_byte_exact": true,
+   "py_enc_s": 5.243,
+   "py_dec_s": 5.631
+  },
+  {
+   "idx": 23,
+   "file": "L05_E084.bin",
+   "layer": 5,
+   "expert": 84,
+   "config": "wnr2",
+   "rec": "L05_E084.wnr2.rec",
+   "rec_bytes": 16838656,
+   "raw_bytes": 18800640,
+   "ratio": 0.8956427015250544,
+   "model_id": 4237896291,
+   "rec_flags": 0,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "shapes": [
+    [
+     2304,
+     5120
+    ],
+    [
+     5120,
+     2304
+    ],
+    [
+     2304,
+     5120
+    ]
+   ],
+   "ceil_applied": null,
+   "source_sha256_ok": true,
+   "py_decode_byte_exact": true,
+   "py_enc_s": 4.101,
+   "py_dec_s": 5.315
+  },
+  {
+   "idx": 23,
+   "file": "L05_E084.bin",
+   "layer": 5,
+   "expert": 84,
+   "config": "fge",
+   "rec": "L05_E084.fge.rec",
+   "rec_bytes": 16543744,
+   "raw_bytes": 18800640,
+   "ratio": 0.8799564270152506,
+   "model_id": 2694569643,
+   "rec_flags": 24,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "shapes": [
+    [
+     2304,
+     5120
+    ],
+    [
+     5120,
+     2304
+    ],
+    [
+     2304,
+     5120
+    ]
+   ],
+   "ceil_applied": true,
+   "source_sha256_ok": true,
+   "py_decode_byte_exact": true,
+   "py_enc_s": 6.134,
+   "py_dec_s": 6.898
+  },
+  {
+   "idx": 41,
+   "file": "L10_E060.bin",
+   "layer": 10,
+   "expert": 60,
+   "config": "wnr2",
+   "rec": "L10_E060.wnr2.rec",
+   "rec_bytes": 16908288,
+   "raw_bytes": 18800640,
+   "ratio": 0.8993464052287582,
+   "model_id": 4237896291,
+   "rec_flags": 0,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "shapes": [
+    [
+     2304,
+     5120
+    ],
+    [
+     5120,
+     2304
+    ],
+    [
+     2304,
+     5120
+    ]
+   ],
+   "ceil_applied": null,
+   "source_sha256_ok": true,
+   "py_decode_byte_exact": true,
+   "py_enc_s": 5.499,
+   "py_dec_s": 5.803
+  },
+  {
+   "idx": 41,
+   "file": "L10_E060.bin",
+   "layer": 10,
+   "expert": 60,
+   "config": "fge",
+   "rec": "L10_E060.fge.rec",
+   "rec_bytes": 16588800,
+   "raw_bytes": 18800640,
+   "ratio": 0.8823529411764706,
+   "model_id": 2694569643,
+   "rec_flags": 24,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "shapes": [
+    [
+     2304,
+     5120
+    ],
+    [
+     5120,
+     2304
+    ],
+    [
+     2304,
+     5120
+    ]
+   ],
+   "ceil_applied": true,
+   "source_sha256_ok": true,
+   "py_decode_byte_exact": true,
+   "py_enc_s": 5.256,
+   "py_dec_s": 6.252
+  },
+  {
+   "idx": 63,
+   "file": "L15_E156.bin",
+   "layer": 15,
+   "expert": 156,
+   "config": "wnr2",
+   "rec": "L15_E156.wnr2.rec",
+   "rec_bytes": 16867328,
+   "raw_bytes": 18800640,
+   "ratio": 0.8971677559912854,
+   "model_id": 4237896291,
+   "rec_flags": 0,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "shapes": [
+    [
+     2304,
+     5120
+    ],
+    [
+     5120,
+     2304
+    ],
+    [
+     2304,
+     5120
+    ]
+   ],
+   "ceil_applied": null,
+   "source_sha256_ok": true,
+   "py_decode_byte_exact": true,
+   "py_enc_s": 5.516,
+   "py_dec_s": 6.343
+  },
+  {
+   "idx": 63,
+   "file": "L15_E156.bin",
+   "layer": 15,
+   "expert": 156,
+   "config": "fge",
+   "rec": "L15_E156.fge.rec",
+   "rec_bytes": 16580608,
+   "raw_bytes": 18800640,
+   "ratio": 0.881917211328976,
+   "model_id": 2694569643,
+   "rec_flags": 24,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "shapes": [
+    [
+     2304,
+     5120
+    ],
+    [
+     5120,
+     2304
+    ],
+    [
+     2304,
+     5120
+    ]
+   ],
+   "ceil_applied": true,
+   "source_sha256_ok": true,
+   "py_decode_byte_exact": true,
+   "py_enc_s": 5.95,
+   "py_dec_s": 6.17
+  },
+  {
+   "idx": 81,
+   "file": "L20_E074.bin",
+   "layer": 20,
+   "expert": 74,
+   "config": "wnr2",
+   "rec": "L20_E074.wnr2.rec",
+   "rec_bytes": 16920576,
+   "raw_bytes": 18800640,
+   "ratio": 0.9,
+   "model_id": 4237896291,
+   "rec_flags": 0,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "shapes": [
+    [
+     2304,
+     5120
+    ],
+    [
+     5120,
+     2304
+    ],
+    [
+     2304,
+     5120
+    ]
+   ],
+   "ceil_applied": null,
+   "source_sha256_ok": true,
+   "py_decode_byte_exact": true,
+   "py_enc_s": 4.252,
+   "py_dec_s": 5.004
+  },
+  {
+   "idx": 81,
+   "file": "L20_E074.bin",
+   "layer": 20,
+   "expert": 74,
+   "config": "fge",
+   "rec": "L20_E074.fge.rec",
+   "rec_bytes": 16592896,
+   "raw_bytes": 18800640,
+   "ratio": 0.8825708061002179,
+   "model_id": 2694569643,
+   "rec_flags": 24,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "shapes": [
+    [
+     2304,
+     5120
+    ],
+    [
+     5120,
+     2304
+    ],
+    [
+     2304,
+     5120
+    ]
+   ],
+   "ceil_applied": true,
+   "source_sha256_ok": true,
+   "py_decode_byte_exact": true,
+   "py_enc_s": 5.158,
+   "py_dec_s": 5.253
+  },
+  {
+   "idx": 103,
+   "file": "L25_E166.bin",
+   "layer": 25,
+   "expert": 166,
+   "config": "wnr2",
+   "rec": "L25_E166.wnr2.rec",
+   "rec_bytes": 16879616,
+   "raw_bytes": 18800640,
+   "ratio": 0.8978213507625272,
+   "model_id": 4237896291,
+   "rec_flags": 0,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "shapes": [
+    [
+     2304,
+     5120
+    ],
+    [
+     5120,
+     2304
+    ],
+    [
+     2304,
+     5120
+    ]
+   ],
+   "ceil_applied": null,
+   "source_sha256_ok": true,
+   "py_decode_byte_exact": true,
+   "py_enc_s": 4.637,
+   "py_dec_s": 5.138
+  },
+  {
+   "idx": 103,
+   "file": "L25_E166.bin",
+   "layer": 25,
+   "expert": 166,
+   "config": "fge",
+   "rec": "L25_E166.fge.rec",
+   "rec_bytes": 16564224,
+   "raw_bytes": 18800640,
+   "ratio": 0.8810457516339869,
+   "model_id": 2694569643,
+   "rec_flags": 24,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "shapes": [
+    [
+     2304,
+     5120
+    ],
+    [
+     5120,
+     2304
+    ],
+    [
+     2304,
+     5120
+    ]
+   ],
+   "ceil_applied": true,
+   "source_sha256_ok": true,
+   "py_decode_byte_exact": true,
+   "py_enc_s": 5.599,
+   "py_dec_s": 5.94
+  },
+  {
+   "idx": 121,
+   "file": "L30_E054.bin",
+   "layer": 30,
+   "expert": 54,
+   "config": "wnr2",
+   "rec": "L30_E054.wnr2.rec",
+   "rec_bytes": 16846848,
+   "raw_bytes": 18800640,
+   "ratio": 0.8960784313725491,
+   "model_id": 4237896291,
+   "rec_flags": 0,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "shapes": [
+    [
+     2304,
+     5120
+    ],
+    [
+     5120,
+     2304
+    ],
+    [
+     2304,
+     5120
+    ]
+   ],
+   "ceil_applied": null,
+   "source_sha256_ok": true,
+   "py_decode_byte_exact": true,
+   "py_enc_s": 4.423,
+   "py_dec_s": 5.106
+  },
+  {
+   "idx": 121,
+   "file": "L30_E054.bin",
+   "layer": 30,
+   "expert": 54,
+   "config": "fge",
+   "rec": "L30_E054.fge.rec",
+   "rec_bytes": 16539648,
+   "raw_bytes": 18800640,
+   "ratio": 0.8797385620915033,
+   "model_id": 2694569643,
+   "rec_flags": 24,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "shapes": [
+    [
+     2304,
+     5120
+    ],
+    [
+     5120,
+     2304
+    ],
+    [
+     2304,
+     5120
+    ]
+   ],
+   "ceil_applied": true,
+   "source_sha256_ok": true,
+   "py_decode_byte_exact": true,
+   "py_enc_s": 5.708,
+   "py_dec_s": 6.34
+  },
+  {
+   "idx": 143,
+   "file": "L35_E173.bin",
+   "layer": 35,
+   "expert": 173,
+   "config": "wnr2",
+   "rec": "L35_E173.wnr2.rec",
+   "rec_bytes": 16859136,
+   "raw_bytes": 18800640,
+   "ratio": 0.8967320261437909,
+   "model_id": 4237896291,
+   "rec_flags": 0,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "shapes": [
+    [
+     2304,
+     5120
+    ],
+    [
+     5120,
+     2304
+    ],
+    [
+     2304,
+     5120
+    ]
+   ],
+   "ceil_applied": null,
+   "source_sha256_ok": true,
+   "py_decode_byte_exact": true,
+   "py_enc_s": 4.505,
+   "py_dec_s": 5.371
+  },
+  {
+   "idx": 143,
+   "file": "L35_E173.bin",
+   "layer": 35,
+   "expert": 173,
+   "config": "fge",
+   "rec": "L35_E173.fge.rec",
+   "rec_bytes": 16556032,
+   "raw_bytes": 18800640,
+   "ratio": 0.8806100217864924,
+   "model_id": 2694569643,
+   "rec_flags": 24,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "shapes": [
+    [
+     2304,
+     5120
+    ],
+    [
+     5120,
+     2304
+    ],
+    [
+     2304,
+     5120
+    ]
+   ],
+   "ceil_applied": true,
+   "source_sha256_ok": true,
+   "py_decode_byte_exact": true,
+   "py_enc_s": 5.706,
+   "py_dec_s": 5.79
+  }
+ ],
+ "models": {
+  "wnr2": {
+   "model_id": 4237896291,
+   "wf_rows": 1701
+  },
+  "fge": {
+   "model_id": 2694569643,
+   "wf_rows": 1701
+  }
+ }
+}

@@ -1,0 +1,414 @@
+{
+ "experts": 160,
+ "layers": [
+  0,
+  1,
+  2,
+  "..."
+ ],
+ "weights": 5662310400,
+ "scales": 176947200,
+ "baseline": {
+  "weights_bit_per_w_insample": 3.78214480957582,
+  "weights_bit_per_w_heldout": 3.7824345546052385,
+  "weights_ideal_entropy_insample": 3.7665159318616794,
+  "scales_bit_per_scale_insample": 1.0671651991022775,
+  "scales_bit_per_scale_heldout": 1.0675304602850049,
+  "record_bytes_est_insample": 16919483.26834826,
+  "ratio_insample": 0.8999418779545942,
+  "order0_weights_bit_per_w": 3.895154790702302,
+  "reference_measured": {
+   "weights": 3.781,
+   "scales": 1.066,
+   "ratio": 0.8997,
+   "record_bytes": 16914680
+  }
+ },
+ "baseline_per_matrix_bit_per_w": {
+  "w1 gate": 3.767466455630062,
+  "w2 down": 3.7656560615370074,
+  "w3 up": 3.7664369115603895
+ },
+ "weight_contexts": {
+  "w_srel15": {
+   "insample_bit_per_w": 3.782144784680282,
+   "heldout_bit_per_w": 3.782434669758158,
+   "delta_vs_base_heldout_pct_of_weight_bits": 3.044412743670059e-06,
+   "side_bits_per_w": 0.0
+  },
+  "w_pos": {
+   "insample_bit_per_w": 3.776449940381963,
+   "heldout_bit_per_w": 3.776829022864296,
+   "delta_vs_base_heldout_pct_of_weight_bits": -0.14819904112069565,
+   "side_bits_per_w": 0.0
+  },
+  "w_pm2": {
+   "insample_bit_per_w": 3.7713744196242205,
+   "heldout_bit_per_w": 3.7716859444099122,
+   "delta_vs_base_heldout_pct_of_weight_bits": -0.2841717428326653,
+   "side_bits_per_w": 0.0
+  },
+  "w_psign": {
+   "insample_bit_per_w": 3.7821433615239246,
+   "heldout_bit_per_w": 3.782439384374871,
+   "delta_vs_base_heldout_pct_of_weight_bits": 0.0001276894434718156,
+   "side_bits_per_w": 0.0
+  },
+  "w_up": {
+   "insample_bit_per_w": 3.782126327273112,
+   "heldout_bit_per_w": 3.7824549686874005,
+   "delta_vs_base_heldout_pct_of_weight_bits": 0.0005397074785356634,
+   "side_bits_per_w": 0.0
+  },
+  "w_upsort": {
+   "insample_bit_per_w": 3.7821132476278607,
+   "heldout_bit_per_w": 3.7824389772817333,
+   "delta_vs_base_heldout_pct_of_weight_bits": 0.00011692671560832279,
+   "side_bits_per_w": 0.0
+  },
+  "w_bm": {
+   "insample_bit_per_w": 3.776108402381726,
+   "heldout_bit_per_w": 3.776349718872881,
+   "delta_vs_base_heldout_pct_of_weight_bits": -0.16087087944321765,
+   "side_bits_per_w": 0.01548512361418836
+  },
+  "w_bmpos": {
+   "insample_bit_per_w": 3.7725837565431903,
+   "heldout_bit_per_w": 3.7728538139171204,
+   "delta_vs_base_heldout_pct_of_weight_bits": -0.25329561026914077,
+   "side_bits_per_w": 0.01548512361418836
+  },
+  "w_part (w3 | w1 same position)": {
+   "w3_insample_bit_per_w": 3.765040761355152,
+   "w3_base_insample_bit_per_w": 3.7664369115603895,
+   "w3_heldout_bit_per_w": 3.76553757792452,
+   "w3_base_heldout_bit_per_w": 3.7668843377042687
+  }
+ },
+ "block_max_hist": {
+  "m0": [
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.44271,
+   0.55729
+  ],
+  "m1": [
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.44579,
+   0.55421
+  ],
+  "m2": [
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.45669,
+   0.54331
+  ]
+ },
+ "block_max_entropy_bits_per_block": 175585234.92089635,
+ "neg_zero_fraction": 0.058263309090225784,
+ "wnr2z_insample_bit_per_w": 3.6657149476989366,
+ "model_granularity": {
+  "shared_insample": 3.78214480957582,
+  "shared_loo": 3.7823962455406406,
+  "per_layer_insample": 3.7754159874427655,
+  "per_layer_loo": 3.7849948510653864,
+  "layer_groups (G models, layer*G//40)": {
+   "2": {
+    "insample_bit_per_w": 3.781053956122921,
+    "loo_bit_per_w": 3.7816614898529886
+   },
+   "4": {
+    "insample_bit_per_w": 3.779452767050145,
+    "loo_bit_per_w": 3.780560230893272
+   },
+   "5": {
+    "insample_bit_per_w": 3.7790645953545687,
+    "loo_bit_per_w": 3.7807821896138942
+   },
+   "8": {
+    "insample_bit_per_w": 3.778447636990349,
+    "loo_bit_per_w": 3.7800801381393487
+   },
+   "10": {
+    "insample_bit_per_w": 3.777843817468551,
+    "loo_bit_per_w": 3.78032721416188
+   },
+   "13": {
+    "insample_bit_per_w": 3.776866553149391,
+    "loo_bit_per_w": 3.7816562433947647
+   },
+   "20": {
+    "insample_bit_per_w": 3.7767066073524567,
+    "loo_bit_per_w": 3.783008762585575
+   }
+  },
+  "per_expert_own_model_payload_only": 3.7714110012495716,
+  "per_expert_own_model_incl_57834B_table": 3.7844847317183214
+ },
+ "per_layer_curve": [
+  {
+   "layer": 0,
+   "shared_loo": 3.770477107784811,
+   "layer_loo": 3.768692690125845
+  },
+  {
+   "layer": 1,
+   "shared_loo": 3.7697523510381825,
+   "layer_loo": 3.768491369675031
+  },
+  {
+   "layer": 2,
+   "shared_loo": 3.7588734356976676,
+   "layer_loo": 3.7573378527900836
+  },
+  {
+   "layer": 3,
+   "shared_loo": 3.751929335669469,
+   "layer_loo": 3.7497234224699
+  },
+  {
+   "layer": 4,
+   "shared_loo": 3.7530121056533114,
+   "layer_loo": 3.750969589446523
+  },
+  {
+   "layer": 5,
+   "shared_loo": 3.754405075767637,
+   "layer_loo": 3.752489106648108
+  },
+  {
+   "layer": 6,
+   "shared_loo": 3.7556078662903576,
+   "layer_loo": 3.7537656898542004
+  },
+  {
+   "layer": 7,
+   "shared_loo": 3.75174751261943,
+   "layer_loo": 3.7493857166840776
+  },
+  {
+   "layer": 8,
+   "shared_loo": 3.757728031909908,
+   "layer_loo": 3.7562075697834763
+  },
+  {
+   "layer": 9,
+   "shared_loo": 3.755101262881098,
+   "layer_loo": 3.753452126874006
+  },
+  {
+   "layer": 10,
+   "shared_loo": 3.7625644784102126,
+   "layer_loo": 3.7612350388147244
+  },
+  {
+   "layer": 11,
+   "shared_loo": 3.7599002206131247,
+   "layer_loo": 3.7584409680045807
+  },
+  {
+   "layer": 12,
+   "shared_loo": 3.767450052134065,
+   "layer_loo": 3.7660584996099646
+  },
+  {
+   "layer": 13,
+   "shared_loo": 3.7694161653757745,
+   "layer_loo": 3.7679613238961736
+  },
+  {
+   "layer": 14,
+   "shared_loo": 3.767866010942778,
+   "layer_loo": 3.766480228711367
+  },
+  {
+   "layer": 15,
+   "shared_loo": 3.765438895338084,
+   "layer_loo": 3.796141008333313
+  },
+  {
+   "layer": 16,
+   "shared_loo": 3.768671118988658,
+   "layer_loo": 3.767283467059501
+  },
+  {
+   "layer": 17,
+   "shared_loo": 3.76795143184143,
+   "layer_loo": 3.7665700635507426
+  },
+  {
+   "layer": 18,
+   "shared_loo": 3.768979837268755,
+   "layer_loo": 3.7671832031505
+  },
+  {
+   "layer": 19,
+   "shared_loo": 3.7626901666824932,
+   "layer_loo": 3.7618074624958604
+  },
+  {
+   "layer": 20,
+   "shared_loo": 3.7599769541381414,
+   "layer_loo": 3.758812873096549
+  },
+  {
+   "layer": 21,
+   "shared_loo": 3.7579009848505383,
+   "layer_loo": 3.7568557955087827
+  },
+  {
+   "layer": 22,
+   "shared_loo": 3.7664009612580074,
+   "layer_loo": 3.765197114087398
+  },
+  {
+   "layer": 23,
+   "shared_loo": 3.757553548687685,
+   "layer_loo": 3.7559602085417994
+  },
+  {
+   "layer": 24,
+   "shared_loo": 3.7820832370656556,
+   "layer_loo": 3.8224469234336986
+  },
+  {
+   "layer": 25,
+   "shared_loo": 3.7550655918282763,
+   "layer_loo": 3.7532022971336394
+  },
+  {
+   "layer": 26,
+   "shared_loo": 3.7494515362110916,
+   "layer_loo": 3.7466165158750315
+  },
+  {
+   "layer": 27,
+   "shared_loo": 3.7585773302179457,
+   "layer_loo": 3.7570326147449595
+  },
+  {
+   "layer": 28,
+   "shared_loo": 3.7553846528267614,
+   "layer_loo": 3.753360678636707
+  },
+  {
+   "layer": 29,
+   "shared_loo": 3.7518866281565417,
+   "layer_loo": 3.749588818964842
+  },
+  {
+   "layer": 30,
+   "shared_loo": 3.7645381965980103,
+   "layer_loo": 3.8085001473780866
+  },
+  {
+   "layer": 31,
+   "shared_loo": 3.7599405875934506,
+   "layer_loo": 3.7585150977891097
+  },
+  {
+   "layer": 32,
+   "shared_loo": 3.770721500253118,
+   "layer_loo": 3.8628522959670355
+  },
+  {
+   "layer": 33,
+   "shared_loo": 3.747437463617765,
+   "layer_loo": 3.7440596235903043
+  },
+  {
+   "layer": 34,
+   "shared_loo": 3.777195418460978,
+   "layer_loo": 3.8525817359241104
+  },
+  {
+   "layer": 35,
+   "shared_loo": 3.762209315079917,
+   "layer_loo": 3.760993907623526
+  },
+  {
+   "layer": 36,
+   "shared_loo": 3.7633408743043666,
+   "layer_loo": 3.763493476432545
+  },
+  {
+   "layer": 37,
+   "shared_loo": 3.825137063514811,
+   "layer_loo": 3.805763616700014
+  },
+  {
+   "layer": 38,
+   "shared_loo": 3.814860150053009,
+   "layer_loo": 3.760856580069608
+  },
+  {
+   "layer": 39,
+   "shared_loo": 3.8516253640023117,
+   "layer_loo": 3.7984273231398142
+  }
+ ],
+ "clustered_models": {
+  "2": {
+   "insample_bit_per_w": 3.7725896411112005,
+   "iterations": 3,
+   "note": "one model id per matrix (2-4 bits side info per record, negligible); models shared across matrix types"
+  },
+  "4": {
+   "insample_bit_per_w": 3.7719737549268677,
+   "iterations": 12,
+   "note": "one model id per matrix (2-4 bits side info per record, negligible); models shared across matrix types"
+  },
+  "8": {
+   "insample_bit_per_w": 3.7718410789327645,
+   "iterations": 12,
+   "note": "one model id per matrix (2-4 bits side info per record, negligible); models shared across matrix types"
+  },
+  "16": {
+   "insample_bit_per_w": 3.771700667905705,
+   "iterations": 12,
+   "note": "one model id per matrix (2-4 bits side info per record, negligible); models shared across matrix types"
+  }
+ },
+ "scale_contexts": {
+  "s_o0": {
+   "insample_bit_per_scale": 1.0671651991022775,
+   "heldout_bit_per_scale": 1.0675304602850049
+  },
+  "s_left": {
+   "insample_bit_per_scale": 1.0648821456697213,
+   "heldout_bit_per_scale": 1.0653052408642119
+  },
+  "s_up": {
+   "insample_bit_per_scale": 1.0668063338814844,
+   "heldout_bit_per_scale": 1.0673226954439803
+  },
+  "s_lu": {
+   "insample_bit_per_scale": 1.063020564665202,
+   "heldout_bit_per_scale": 1.0635595304865053
+  },
+  "s_lusort": {
+   "insample_bit_per_scale": 1.061706862482515,
+   "heldout_bit_per_scale": 1.062251118119576
+  }
+ },
+ "bytes_note": {
+  "weights_bits_share_of_record": 0.8899164257825458,
+  "scales_bits_share_of_record": 0.00784680293457557,
+  "lengths_table_share": 0.002068014705882353,
+  "flush_share": 0.004136029411764706,
+  "padding_share_avg": 0.00010893246187363834
+ }
+}

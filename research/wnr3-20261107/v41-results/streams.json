@@ -1,0 +1,72 @@
+{
+ "experts_used": 24,
+ "m0": {
+  "weight_len_residual_bits": 4.758863459382707,
+  "residual_mean": -0.4740813078703704,
+  "residual_std": 7.43151950522795,
+  "residual_range": [
+   -25,
+   121
+  ],
+  "weight_len_raw_entropy_bits": 5.128375495921925,
+  "weight_len_mean_bytes": 967.4378182870371,
+  "weight_len_std": 8.766256181472375,
+  "weight_len_range": [
+   942,
+   1051
+  ],
+  "scale_len_residual_bits": 3.786386183678107,
+  "scale_len_std": 3.3718033987351967,
+  "scale_len_range": [
+   -11,
+   25
+  ]
+ },
+ "m1": {
+  "weight_len_residual_bits": 4.4914867586971345,
+  "residual_mean": -0.9517288773148148,
+  "residual_std": 5.466729710689311,
+  "residual_range": [
+   -24,
+   140
+  ],
+  "weight_len_raw_entropy_bits": 4.79371507956894,
+  "weight_len_mean_bytes": 965.3088831018518,
+  "weight_len_std": 6.730787930097481,
+  "weight_len_range": [
+   939,
+   1007
+  ],
+  "scale_len_residual_bits": 2.8101635420422437,
+  "scale_len_std": 1.7458821909874385,
+  "scale_len_range": [
+   -6,
+   41
+  ]
+ },
+ "m2": {
+  "weight_len_residual_bits": 4.7702558570855444,
+  "residual_mean": -0.5405671296296296,
+  "residual_std": 6.960902978796346,
+  "residual_range": [
+   -24,
+   128
+  ],
+  "weight_len_raw_entropy_bits": 5.173812213675505,
+  "weight_len_mean_bytes": 967.2418185763889,
+  "weight_len_std": 9.932136351990904,
+  "weight_len_range": [
+   941,
+   1060
+  ],
+  "scale_len_residual_bits": 3.1552176294751897,
+  "scale_len_std": 2.169328922149443,
+  "scale_len_range": [
+   -7,
+   13
+  ]
+ },
+ "length_table_bytes_now": 38880,
+ "length_table_bytes_coded_est": 10972.495436086676,
+ "saving_pct_of_raw_record": 0.14843911996566778
+}

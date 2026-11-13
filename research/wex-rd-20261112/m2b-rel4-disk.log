@@ -1,0 +1,18 @@
+== q38_disk_check 16:26:50 exe=<KAIRA>\lab\gpu-miss-20261112\rel4\qwen38.exe vram0=1459MiB
+r1  prompt  2191  ttft   61.5 s  
+    [PREFIX] store: up to 1887 MiB of the prompts read, kept by content for any later request (blocks of 256 tokens; COLI_PREFIX_STORE=0 off)
+    [PREFIX] no reuse: held=0 prompt=2191
+    [PREFIX] store: checkpoint at 2164 kept (227 MiB held in 1 checkpoints; 11115 MiB of RAM free, 1536 kept free)
+    [PREFIX] store: checkpoint at 2186 kept (347 MiB held in 2 checkpoints; 10860 MiB of RAM free, 1536 kept free)
+    [PREFIX] store: checkpoint at 2210 kept (468 MiB held in 3 checkpoints; 10151 MiB of RAM free, 1536 kept free)
+    [PREFIX] disk: checkpoint at 2186 written (227.9 MiB, <HOME>\kaira-night2\q38disk-ckpt-162651/q38_ac9e471a2663e959_c623996903f10898.bin)
+    [PREFIX] disk: checkpoint at 2164 written (226.7 MiB, <HOME>\kaira-night2\q38disk-ckpt-162651/q38_ac9e471a2663e959_89630162e36a6d0b.bin)
+r2  prompt  2184  ttft    1.8 s  
+    [PREFIX] store: up to [api] 127.0.0.1 - "POST /v1/chat/completions HTTP/1.1" 200 -
+    [PREFIX] 2164 of 2184 prompt tokens from disk (<HOME>\kaira-night2\q38disk-ckpt-162651/q38_ac9e471a2663e959_89630162e36a6d0b.bin; the slot held 0)
+    [PREFIX] store: checkpoint at 2164 kept (227 MiB held in 1 checkpoints; 14745 MiB of RAM free, 1536 kept free)
+    [PREFIX] reusing 2164 of 2184 prompt tokens (99%) from the store
+    [PREFIX] store: checkpoint at 2179 kept (346 MiB held in 2 checkpoints; 12924 MiB of RAM free, 1536 kept free)
+    [PREFIX] store: checkpoint at 2220 kept (468 MiB held in 3 checkpoints; 12250 MiB of RAM free, 1536 kept free)
+files after run 1: q38_ac9e471a2663e959_89630162e36a6d0b.bin, q38_ac9e471a2663e959_c623996903f10898.bin
+VERDICT q38disk: PASS (r1 cold ttft 61.5s, r2 after a restart ttft 1.8s, 2164 of 2184 prompt tokens from disk); logs <HOME>\kaira-night2\q38disk-162651-r1.stderr.log, <HOME>\kaira-night2\q38disk-162819-r2.stderr.log

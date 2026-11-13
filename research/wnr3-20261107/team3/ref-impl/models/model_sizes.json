@@ -1,0 +1,118 @@
+{
+ "even/a0_K0_c0": {
+  "blob_bytes_full_rows": 59708,
+  "model_id": 3863535815,
+  "models": 3,
+  "reachable_rows_per_model": 259,
+  "compacted_blob_bytes": 28292,
+  "shared_mem_per_matrix_bytes (one model, reachable rows, 17 u16)": 8806
+ },
+ "even/a0_K0_c1": {
+  "blob_bytes_full_rows": 59708,
+  "model_id": 439268735,
+  "models": 3,
+  "reachable_rows_per_model": 259,
+  "compacted_blob_bytes": 28292,
+  "shared_mem_per_matrix_bytes (one model, reachable rows, 17 u16)": 8806
+ },
+ "even/a1_K0_c0": {
+  "blob_bytes_full_rows": 233336,
+  "model_id": 954357800,
+  "models": 3,
+  "reachable_rows_per_model": 910,
+  "compacted_blob_bytes": 94820,
+  "shared_mem_per_matrix_bytes (one model, reachable rows, 17 u16)": 30940
+ },
+ "even/a1_K2_c0": {
+  "blob_bytes_full_rows": 156182,
+  "model_id": 3819743545,
+  "models": 2,
+  "reachable_rows_per_model": 910,
+  "compacted_blob_bytes": 63838,
+  "shared_mem_per_matrix_bytes (one model, reachable rows, 17 u16)": 30940
+ },
+ "even/a1_K2_c1": {
+  "blob_bytes_full_rows": 156182,
+  "model_id": 3377812390,
+  "models": 2,
+  "reachable_rows_per_model": 910,
+  "compacted_blob_bytes": 63838,
+  "shared_mem_per_matrix_bytes (one model, reachable rows, 17 u16)": 30940
+ },
+ "even/a1_K4_c0": {
+  "blob_bytes_full_rows": 310490,
+  "model_id": 2304072299,
+  "models": 4,
+  "reachable_rows_per_model": 910,
+  "compacted_blob_bytes": 125802,
+  "shared_mem_per_matrix_bytes (one model, reachable rows, 17 u16)": 30940
+ },
+ "even/a1_K4_c1": {
+  "blob_bytes_full_rows": 310490,
+  "model_id": 105678280,
+  "models": 4,
+  "reachable_rows_per_model": 910,
+  "compacted_blob_bytes": 125802,
+  "shared_mem_per_matrix_bytes (one model, reachable rows, 17 u16)": 30940
+ },
+ "even/WNM2 (exact WNR2 blob)": {
+  "blob_bytes": 59408,
+  "model_id": 4237896291
+ },
+ "all/a0_K0_c0": {
+  "blob_bytes_full_rows": 59708,
+  "model_id": 3199267132,
+  "models": 3,
+  "reachable_rows_per_model": 259,
+  "compacted_blob_bytes": 28292,
+  "shared_mem_per_matrix_bytes (one model, reachable rows, 17 u16)": 8806
+ },
+ "all/a0_K0_c1": {
+  "blob_bytes_full_rows": 59708,
+  "model_id": 3086553615,
+  "models": 3,
+  "reachable_rows_per_model": 259,
+  "compacted_blob_bytes": 28292,
+  "shared_mem_per_matrix_bytes (one model, reachable rows, 17 u16)": 8806
+ },
+ "all/a1_K0_c0": {
+  "blob_bytes_full_rows": 233336,
+  "model_id": 3717137573,
+  "models": 3,
+  "reachable_rows_per_model": 910,
+  "compacted_blob_bytes": 94820,
+  "shared_mem_per_matrix_bytes (one model, reachable rows, 17 u16)": 30940
+ },
+ "all/a1_K2_c0": {
+  "blob_bytes_full_rows": 156182,
+  "model_id": 1331149028,
+  "models": 2,
+  "reachable_rows_per_model": 910,
+  "compacted_blob_bytes": 63838,
+  "shared_mem_per_matrix_bytes (one model, reachable rows, 17 u16)": 30940
+ },
+ "all/a1_K2_c1": {
+  "blob_bytes_full_rows": 156182,
+  "model_id": 1107672024,
+  "models": 2,
+  "reachable_rows_per_model": 910,
+  "compacted_blob_bytes": 63838,
+  "shared_mem_per_matrix_bytes (one model, reachable rows, 17 u16)": 30940
+ },
+ "all/a1_K4_c0": {
+  "blob_bytes_full_rows": 310490,
+  "model_id": 4022296753,
+  "models": 4,
+  "reachable_rows_per_model": 910,
+  "compacted_blob_bytes": 125802,
+  "shared_mem_per_matrix_bytes (one model, reachable rows, 17 u16)": 30940
+ },
+ "all/a1_K4_c1": {
+  "blob_bytes_full_rows": 310490,
+  "model_id": 3451498631,
+  "models": 4,
+  "reachable_rows_per_model": 910,
+  "compacted_blob_bytes": 125802,
+  "shared_mem_per_matrix_bytes (one model, reachable rows, 17 u16)": 30940
+ }
+}

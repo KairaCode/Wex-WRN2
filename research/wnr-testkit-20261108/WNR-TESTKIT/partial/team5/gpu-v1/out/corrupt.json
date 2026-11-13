@@ -1,0 +1,251 @@
+{
+ "info": {
+  "gpu": "NVIDIA GeForce RTX 3070",
+  "sms": 46,
+  "clock_khz_max": 1755000,
+  "smem_per_sm": 102400,
+  "regs_per_sm": 65536,
+  "driver": 13050,
+  "runtime": 12090,
+  "cupy": "14.2.0",
+  "rounds": 5,
+  "nts": [
+   32
+  ],
+  "opts": [
+   "lb"
+  ]
+ },
+ "nvsmi_start": "210 MHz, 405 MHz, 16 %, 18.64 W, 39.38",
+ "original_bytes": {
+  "files": [
+   "L04_E038.bin",
+   "L00_E097.bin",
+   "L10_E015.bin",
+   "L20_E005.bin",
+   "L30_E002.bin",
+   "L39_E156.bin",
+   "L15_E025.bin",
+   "L25_E000.bin"
+  ],
+  "sha256_ok": 8,
+  "eq_encoder_raw": true,
+  "eq_encoder_scales": true,
+  "eq_team4_common_raw": true,
+  "eq_team4_common_scales": true
+ },
+ "compile_s": 0.11192893981933594,
+ "h32_gpu": {
+  "empty_seed0": "0x00000000",
+  "empty_seedWNR3": "0xE7F741F1",
+  "bytes00_0F": "0x31CE0919",
+  "weight_vector_h23": "0x0C48D3",
+  "random_4096x528B_gpu_eq_numpy": 4096,
+  "pass": true
+ },
+ "corruption": {
+  "G5": {
+   "A_random_bit": {
+    "trials": 1382400,
+    "flagged": 1376151,
+    "accepted_exact": 0,
+    "accepted_wrong": 6249,
+    "structural_pass": 6249,
+    "structural_pass_but_hash_reject": 0,
+    "status_bits_hist": {
+     "0": 6249,
+     "4": 163361,
+     "6": 1212737,
+     "7": 52,
+     "5": 1
+    },
+    "accepted_wrong_sign_only_one_nibble": 6245,
+    "accepted_wrong_other": 4,
+    "structural_pass_output_wrong": 6249,
+    "structural_pass_one_sign_nibble": 6245,
+    "structural_pass_wrong_nibbles_hist": {
+     "1": 6247,
+     "2": 1,
+     "3": 1
+    },
+    "accepted_wrong_rate": 0.004520399305555555,
+    "structural_pass_rate": 0.004520399305555555
+   },
+   "B_last_byte": {
+    "trials": 1382400,
+    "flagged": 1382400,
+    "accepted_exact": 0,
+    "accepted_wrong": 0,
+    "structural_pass": 0,
+    "structural_pass_but_hash_reject": 0,
+    "status_bits_hist": {
+     "4": 697145,
+     "6": 685255
+    },
+    "accepted_wrong_sign_only_one_nibble": 0,
+    "accepted_wrong_other": 0,
+    "structural_pass_output_wrong": 0,
+    "structural_pass_one_sign_nibble": 0,
+    "accepted_wrong_rate": 0.0,
+    "structural_pass_rate": 0.0
+   }
+  },
+  "G5H": {
+   "A_random_bit": {
+    "trials": 1382400,
+    "flagged": 1382400,
+    "accepted_exact": 0,
+    "accepted_wrong": 0,
+    "structural_pass": 5674,
+    "structural_pass_but_hash_reject": 5674,
+    "status_bits_hist": {
+     "4": 161393,
+     "5": 2,
+     "6": 1220941,
+     "7": 64
+    },
+    "accepted_wrong_sign_only_one_nibble": 0,
+    "accepted_wrong_other": 0,
+    "structural_pass_output_wrong": 5674,
+    "structural_pass_one_sign_nibble": 5671,
+    "structural_pass_wrong_nibbles_hist": {
+     "1": 5672,
+     "64": 1,
+     "2": 1
+    },
+    "accepted_wrong_rate": 0.0,
+    "structural_pass_rate": 0.0041044560185185186
+   },
+   "B_last_byte": {
+    "trials": 1382400,
+    "flagged": 1382400,
+    "accepted_exact": 0,
+    "accepted_wrong": 0,
+    "structural_pass": 0,
+    "structural_pass_but_hash_reject": 0,
+    "status_bits_hist": {
+     "4": 1363938,
+     "6": 18462
+    },
+    "accepted_wrong_sign_only_one_nibble": 0,
+    "accepted_wrong_other": 0,
+    "structural_pass_output_wrong": 0,
+    "structural_pass_one_sign_nibble": 0,
+    "accepted_wrong_rate": 0.0,
+    "structural_pass_rate": 0.0
+   }
+  },
+  "G5HL": {
+   "A_random_bit": {
+    "trials": 1382400,
+    "flagged": 1382400,
+    "accepted_exact": 0,
+    "accepted_wrong": 0,
+    "structural_pass": 6176,
+    "structural_pass_but_hash_reject": 6176,
+    "status_bits_hist": {
+     "4": 174490,
+     "6": 1207864,
+     "7": 46
+    },
+    "accepted_wrong_sign_only_one_nibble": 0,
+    "accepted_wrong_other": 0,
+    "structural_pass_output_wrong": 6176,
+    "structural_pass_one_sign_nibble": 6171,
+    "structural_pass_wrong_nibbles_hist": {
+     "1": 6173,
+     "2": 1,
+     "5": 1,
+     "23": 1
+    },
+    "accepted_wrong_rate": 0.0,
+    "structural_pass_rate": 0.0044675925925925924
+   },
+   "B_last_byte": {
+    "trials": 1382400,
+    "flagged": 1382400,
+    "accepted_exact": 0,
+    "accepted_wrong": 0,
+    "structural_pass": 0,
+    "structural_pass_but_hash_reject": 0,
+    "status_bits_hist": {
+     "4": 1363947,
+     "6": 18453
+    },
+    "accepted_wrong_sign_only_one_nibble": 0,
+    "accepted_wrong_other": 0,
+    "structural_pass_output_wrong": 0,
+    "structural_pass_one_sign_nibble": 0,
+    "accepted_wrong_rate": 0.0,
+    "structural_pass_rate": 0.0
+   }
+  },
+  "SG": {
+   "A_random_bit": {
+    "trials": 172800,
+    "flagged": 172726,
+    "accepted_exact": 0,
+    "accepted_wrong": 74,
+    "structural_pass": 74,
+    "structural_pass_but_hash_reject": 0,
+    "structural_pass_output_wrong": 74,
+    "accepted_wrong_rate": 0.00042824074074074075
+   },
+   "B_last_byte": {
+    "trials": 172800,
+    "flagged": 172800,
+    "accepted_exact": 0,
+    "accepted_wrong": 0,
+    "structural_pass": 0,
+    "structural_pass_but_hash_reject": 0,
+    "structural_pass_output_wrong": 0,
+    "accepted_wrong_rate": 0.0
+   }
+  },
+  "SH": {
+   "A_random_bit": {
+    "trials": 172800,
+    "flagged": 172800,
+    "accepted_exact": 0,
+    "accepted_wrong": 0,
+    "structural_pass": 77,
+    "structural_pass_but_hash_reject": 77,
+    "structural_pass_output_wrong": 77,
+    "accepted_wrong_rate": 0.0
+   },
+   "B_last_byte": {
+    "trials": 172800,
+    "flagged": 172800,
+    "accepted_exact": 0,
+    "accepted_wrong": 0,
+    "structural_pass": 0,
+    "structural_pass_but_hash_reject": 0,
+    "structural_pass_output_wrong": 0,
+    "accepted_wrong_rate": 0.0
+   }
+  },
+  "SHL": {
+   "A_random_bit": {
+    "trials": 172800,
+    "flagged": 172800,
+    "accepted_exact": 0,
+    "accepted_wrong": 0,
+    "structural_pass": 76,
+    "structural_pass_but_hash_reject": 76,
+    "structural_pass_output_wrong": 76,
+    "accepted_wrong_rate": 0.0
+   },
+   "B_last_byte": {
+    "trials": 172800,
+    "flagged": 172800,
+    "accepted_exact": 0,
+    "accepted_wrong": 0,
+    "structural_pass": 0,
+    "structural_pass_but_hash_reject": 0,
+    "structural_pass_output_wrong": 0,
+    "accepted_wrong_rate": 0.0
+   }
+  }
+ },
+ "nvsmi_end": "2055 MHz, 6801 MHz, 1 %, 87.99 W, 43.75"
+}

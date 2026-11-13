@@ -1,0 +1,438 @@
+{
+ "case": "M2",
+ "seed": 20261312,
+ "trials": 72000,
+ "by_kind": {
+  "R0": {
+   "w1": {
+    "trials": 24000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.00015369149883941386
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "w2": {
+    "trials": 24000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.00015369149883941386
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "w3": {
+    "trials": 24000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.00015369149883941386
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "all": {
+    "trials": 72000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     5.1233124401347746e-05
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "silent_damage": {
+    "trial": [],
+    "mat": [],
+    "coded_sym_diff": [],
+    "coded_scale_diff": [],
+    "nib_diff": [],
+    "val_diff": [],
+    "scale_diff": [],
+    "block_flips": [],
+    "err_units": [],
+    "err_abs": [],
+    "sign_only": [],
+    "nan_scale": []
+   },
+   "seconds_decode": 11.6,
+   "seconds_total": 11.8
+  },
+  "HASH": {
+   "w1": {
+    "trials": 24000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.00015369149883941386
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "w2": {
+    "trials": 24000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.00015369149883941386
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "w3": {
+    "trials": 24000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.00015369149883941386
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "all": {
+    "trials": 72000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     5.1233124401347746e-05
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "silent_damage": {
+    "trial": [],
+    "mat": [],
+    "coded_sym_diff": [],
+    "coded_scale_diff": [],
+    "nib_diff": [],
+    "val_diff": [],
+    "scale_diff": [],
+    "block_flips": [],
+    "err_units": [],
+    "err_abs": [],
+    "sign_only": [],
+    "nan_scale": []
+   },
+   "seconds_decode": 11.5,
+   "seconds_total": 11.7
+  },
+  "HASH32": {
+   "w1": {
+    "trials": 24000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.00015369149883941386
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "w2": {
+    "trials": 24000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.00015369149883941386
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "w3": {
+    "trials": 24000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.00015369149883941386
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "all": {
+    "trials": 72000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     5.1233124401347746e-05
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "silent_damage": {
+    "trial": [],
+    "mat": [],
+    "coded_sym_diff": [],
+    "coded_scale_diff": [],
+    "nib_diff": [],
+    "val_diff": [],
+    "scale_diff": [],
+    "block_flips": [],
+    "err_units": [],
+    "err_abs": [],
+    "sign_only": [],
+    "nan_scale": []
+   },
+   "seconds_decode": 10.7,
+   "seconds_total": 10.9
+  },
+  "TAIL": {
+   "w1": {
+    "trials": 24000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.00015369149883941386
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "w2": {
+    "trials": 24000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.00015369149883941386
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "w3": {
+    "trials": 24000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.00015369149883941386
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "all": {
+    "trials": 72000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     5.1233124401347746e-05
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "silent_damage": {
+    "trial": [],
+    "mat": [],
+    "coded_sym_diff": [],
+    "coded_scale_diff": [],
+    "nib_diff": [],
+    "val_diff": [],
+    "scale_diff": [],
+    "block_flips": [],
+    "err_units": [],
+    "err_abs": [],
+    "sign_only": [],
+    "nan_scale": []
+   },
+   "seconds_decode": 10.5,
+   "seconds_total": 10.8
+  },
+  "TAILD": {
+   "w1": {
+    "trials": 24000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.00015369149883941386
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "w2": {
+    "trials": 24000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.00015369149883941386
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "w3": {
+    "trials": 24000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.00015369149883941386
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "all": {
+    "trials": 72000,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     5.1233124401347746e-05
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0
+   },
+   "silent_damage": {
+    "trial": [],
+    "mat": [],
+    "coded_sym_diff": [],
+    "coded_scale_diff": [],
+    "nib_diff": [],
+    "val_diff": [],
+    "scale_diff": [],
+    "block_flips": [],
+    "err_units": [],
+    "err_abs": [],
+    "sign_only": [],
+    "nan_scale": []
+   },
+   "seconds_decode": 10.5,
+   "seconds_total": 10.8
+  }
+ },
+ "seconds": 11.9
+}

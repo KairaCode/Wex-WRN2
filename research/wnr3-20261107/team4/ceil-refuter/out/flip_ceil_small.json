@@ -1,0 +1,547 @@
+{
+ "experts": [
+  "L00_E113.bin",
+  "L13_E117.bin",
+  "L26_E077.bin",
+  "L39_E156.bin"
+ ],
+ "streams_per_expert": 1500,
+ "w1": {
+  "orig": {
+   "trials": 6000,
+   "clean_accepted": 6000,
+   "clean_symbols_ok": true,
+   "flip_accepted": 11,
+   "accepted_rate": 0.0018333333333333333,
+   "accepted_damage": [
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    }
+   ],
+   "all_accepted_are_single_sign_flips_in_orig_domain": true,
+   "max_weights_changed": 1,
+   "seconds": 2.792371988296509
+  },
+  "ceil": {
+   "trials": 6000,
+   "clean_accepted": 6000,
+   "clean_symbols_ok": true,
+   "flip_accepted": 21,
+   "accepted_rate": 0.0035,
+   "accepted_damage": [
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    }
+   ],
+   "all_accepted_are_single_sign_flips_in_orig_domain": true,
+   "max_weights_changed": 1,
+   "seconds": 2.682095527648926
+  }
+ },
+ "w2": {
+  "orig": {
+   "trials": 6000,
+   "clean_accepted": 6000,
+   "clean_symbols_ok": true,
+   "flip_accepted": 17,
+   "accepted_rate": 0.0028333333333333335,
+   "accepted_damage": [
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    }
+   ],
+   "all_accepted_are_single_sign_flips_in_orig_domain": true,
+   "max_weights_changed": 1,
+   "seconds": 2.775101661682129
+  },
+  "ceil": {
+   "trials": 6000,
+   "clean_accepted": 6000,
+   "clean_symbols_ok": true,
+   "flip_accepted": 32,
+   "accepted_rate": 0.005333333333333333,
+   "accepted_damage": [
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    },
+    {
+     "coded_symbols_changed": 1,
+     "orig_domain_weights_changed": 1,
+     "orig_domain_scales_changed": 0,
+     "single_sign_flip": true
+    }
+   ],
+   "all_accepted_are_single_sign_flips_in_orig_domain": true,
+   "max_weights_changed": 1,
+   "seconds": 2.750039577484131
+  }
+ }
+}

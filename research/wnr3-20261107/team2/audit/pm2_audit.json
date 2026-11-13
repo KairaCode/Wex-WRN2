@@ -1,0 +1,167 @@
+{
+ "full9": {
+  "rows": 5103,
+  "rows_used_max": 1371,
+  "in_delta_pct": -0.2847693701290936,
+  "ho_S1_delta_pct": -0.2841717428326653,
+  "table_KB_32B_rows": 42.84375
+ },
+ "full9 x bm7 x half": {
+  "rows": 20412,
+  "rows_used_max": 4031,
+  "in_delta_pct": -0.48371913580657433,
+  "ho_S1_delta_pct": -0.4827886989112059,
+  "table_KB_32B_rows": 125.96875
+ },
+ "P2B_theirs {none,0-3,4-5,6-7}": {
+  "rows": 2268,
+  "rows_used_max": 572,
+  "in_delta_pct": -0.022867330929163748,
+  "ho_S1_delta_pct": -0.022659979165655406,
+  "table_KB_32B_rows": 17.875
+ },
+ "P2B_theirs {none,0-3,4-5,6-7} x bm7 x half": {
+  "rows": 9072,
+  "rows_used_max": 1674,
+  "in_delta_pct": -0.22507890985189047,
+  "ho_S1_delta_pct": -0.22558402549304665,
+  "table_KB_32B_rows": 52.3125
+ },
+ "{none,0,1-3,4-5,6-7}": {
+  "rows": 2835,
+  "rows_used_max": 802,
+  "in_delta_pct": -0.058299597968750824,
+  "ho_S1_delta_pct": -0.057946657007696925,
+  "table_KB_32B_rows": 25.0625
+ },
+ "{none,0,1-3,4-5,6-7} x bm7 x half": {
+  "rows": 11340,
+  "rows_used_max": 2374,
+  "in_delta_pct": -0.25894771162936997,
+  "ho_S1_delta_pct": -0.25892828818691144,
+  "table_KB_32B_rows": 74.1875
+ },
+ "{none,0-1,2-3,4-5,6-7}": {
+  "rows": 2835,
+  "rows_used_max": 788,
+  "in_delta_pct": -0.032357373569157535,
+  "ho_S1_delta_pct": -0.032087668857024104,
+  "table_KB_32B_rows": 24.625
+ },
+ "{none,0-1,2-3,4-5,6-7} x bm7 x half": {
+  "rows": 11340,
+  "rows_used_max": 2345,
+  "in_delta_pct": -0.23308124367908292,
+  "ho_S1_delta_pct": -0.23304467081905372,
+  "table_KB_32B_rows": 73.28125
+ },
+ "{none,0,1,2,3,4-7}": {
+  "rows": 3402,
+  "rows_used_max": 1103,
+  "in_delta_pct": -0.2793583732826071,
+  "ho_S1_delta_pct": -0.279000880500883,
+  "table_KB_32B_rows": 34.46875
+ },
+ "{none,0,1,2,3,4-7} x bm7 x half": {
+  "rows": 13608,
+  "rows_used_max": 3320,
+  "in_delta_pct": -0.4783998630595703,
+  "ho_S1_delta_pct": -0.477822964161894,
+  "table_KB_32B_rows": 103.75
+ },
+ "{none,0,1,2,3+}": {
+  "rows": 2835,
+  "rows_used_max": 943,
+  "in_delta_pct": -0.17183231314611955,
+  "ho_S1_delta_pct": -0.17142317493729786,
+  "table_KB_32B_rows": 29.46875
+ },
+ "{none,0,1,2,3+} x bm7 x half": {
+  "rows": 11340,
+  "rows_used_max": 2843,
+  "in_delta_pct": -0.3775200704478248,
+  "ho_S1_delta_pct": -0.3771342464483564,
+  "table_KB_32B_rows": 88.84375
+ },
+ "{none,0,1,2-3,4+}": {
+  "rows": 2835,
+  "rows_used_max": 918,
+  "in_delta_pct": -0.14992829858065562,
+  "ho_S1_delta_pct": -0.14965549568528932,
+  "table_KB_32B_rows": 28.6875
+ },
+ "{none,0,1,2-3,4+} x bm7 x half": {
+  "rows": 11340,
+  "rows_used_max": 2767,
+  "in_delta_pct": -0.35007632941189004,
+  "ho_S1_delta_pct": -0.34975821755165126,
+  "table_KB_32B_rows": 86.46875
+ },
+ "{none,0,1+}": {
+  "rows": 1701,
+  "rows_used_max": 540,
+  "in_delta_pct": -0.01969035804854893,
+  "ho_S1_delta_pct": -0.01938151918996638,
+  "table_KB_32B_rows": 16.875
+ },
+ "{none,0,1+} x bm7 x half": {
+  "rows": 6804,
+  "rows_used_max": 1599,
+  "in_delta_pct": -0.23151968067198714,
+  "ho_S1_delta_pct": -0.23183742846372862,
+  "table_KB_32B_rows": 49.96875
+ },
+ "{none,0-1,2+}": {
+  "rows": 1701,
+  "rows_used_max": 527,
+  "in_delta_pct": -0.025663830577384594,
+  "ho_S1_delta_pct": -0.0256279726061685,
+  "table_KB_32B_rows": 16.46875
+ },
+ "{none,0-1,2+} x bm7 x half": {
+  "rows": 6804,
+  "rows_used_max": 1577,
+  "in_delta_pct": -0.22972144076323256,
+  "ho_S1_delta_pct": -0.23004267864218475,
+  "table_KB_32B_rows": 49.28125
+ },
+ "{none,0,1,2+}": {
+  "rows": 2268,
+  "rows_used_max": 753,
+  "in_delta_pct": -0.1437033374001927,
+  "ho_S1_delta_pct": -0.14356842406985232,
+  "table_KB_32B_rows": 23.53125
+ },
+ "{none,0,1,2+} x bm7 x half": {
+  "rows": 9072,
+  "rows_used_max": 2258,
+  "in_delta_pct": -0.3471928756589345,
+  "ho_S1_delta_pct": -0.3470986139262982,
+  "table_KB_32B_rows": 70.5625
+ },
+ "{0-7 merged, none} (= position 1 flag)": {
+  "rows": 1134,
+  "rows_used_max": 309,
+  "in_delta_pct": -0.002137227478716543,
+  "ho_S1_delta_pct": -0.00207584580670364,
+  "table_KB_32B_rows": 9.65625
+ },
+ "{0-7 merged, none} (= position 1 flag) x bm7 x half": {
+  "rows": 4536,
+  "rows_used_max": 897,
+  "in_delta_pct": -0.21296764271312882,
+  "ho_S1_delta_pct": -0.21379614214709752,
+  "table_KB_32B_rows": 28.03125
+ },
+ "_ideal_gain_bit_per_w_by_pm": [
+  0.001426224392901666,
+  6.179397323750083e-05,
+  0.0027207321021912186,
+  4.0395460910581784e-05,
+  0.002352771714854077,
+  0.0017140045373893102,
+  0.0015057388904448612,
+  0.0009487715022556729,
+  0.0
+ ]
+}

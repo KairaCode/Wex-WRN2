@@ -1,0 +1,6 @@
+﻿mutant 0 (deepseek_v4.c: 'coli_v4_wex_crc_done(f->store, slot, status != -1)'): rc=3 -> KILLED
+mutant 1 (wex_format.h: '!(record[27] & WEX_NR3_FLAG_CZ) == !(header_flags '): rc=3 -> KILLED
+mutant 2 (wex_decode.c: 'if (masked && atoi(masked) != 0) {'): rc=3 -> KILLED
+mutant 3 (expert_store_wex.c: 'if (coli_wex_container_refused(header_flags, "wex"'): rc=3 -> KILLED
+mutant 4 (deepseek_v4.c: 'wex_nr3_owner_ok(entry, slot->slab + read_offset, '): rc=3 -> KILLED
+mutant 5 (deepseek_v4.c: '        if (slot >= 0) coli_v4_wex_crc_done(f->sto'): rc=3 -> KILLED

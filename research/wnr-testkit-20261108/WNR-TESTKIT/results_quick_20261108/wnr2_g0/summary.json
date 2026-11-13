@@ -1,0 +1,961 @@
+{
+ "test": "wnr2_g0",
+ "mode": "quick",
+ "started": "2026-11-08 02:36:38",
+ "args": {
+  "root": "<KAIRA>\\lab\\wnr-testkit-20261108\\WNR-TESTKIT",
+  "data": "<KAIRA>\\lab\\wnr-testkit-20261108\\WNR-TESTKIT\\data",
+  "out": "<KAIRA>\\lab\\wnr-testkit-20261108\\WNR-TESTKIT\\results\\wnr2_g0",
+  "quick": true,
+  "sample_dir": null,
+  "extra_dir": null,
+  "cache": "<KAIRA>\\lab\\wnr-testkit-20261108\\WNR-TESTKIT\\results\\_cache\\cpu_counts",
+  "jobs": 15,
+  "limit_test": 0,
+  "limit_train": 0,
+  "models": null,
+  "rules": "med,c120,pair"
+ },
+ "environment": {
+  "os": "Windows-11-10.0.26300-SP0",
+  "system": "Windows",
+  "machine": "AMD64",
+  "cpu": "AMD Ryzen 9 7950X3D 16-Core Processor",
+  "logical_cpus": 32,
+  "ram_gb": 31.2,
+  "gpu": [
+   "NVIDIA GeForce RTX 5090, 621.01, 32607 MiB, 12.0"
+  ],
+  "python": "3.14.8",
+  "python_impl": "CPython",
+  "numpy": "2.5.4",
+  "cupy": {
+   "cupy-cuda12x": "14.2.0"
+  },
+  "nvrtc": {
+   "nvidia-cuda-nvrtc-cu12": "12.9.86"
+  }
+ },
+ "checks": {
+  "model_ids_equal_team5": {
+   "ok": true,
+   "hard": true,
+   "detail": {
+    "here": {
+     "med": 4237896291,
+     "c120": 1963723111,
+     "pair": 1963723111
+    },
+    "ref": {
+     "med": 4237896291,
+     "c120": 1963723111,
+     "pair": 1963723111,
+     "c119": 1638005140,
+     "c121": 3267482558
+    }
+   }
+  },
+  "sources_sha256": {
+   "ok": true,
+   "hard": true,
+   "detail": null
+  },
+  "headers_carry_rule_anchors": {
+   "ok": true,
+   "hard": true,
+   "detail": null
+  },
+  "plain_wnr2_decoders_byte_exact": {
+   "ok": true,
+   "hard": true,
+   "detail": []
+  },
+  "rederive_never_silent_wrong (R1)": {
+   "ok": true,
+   "hard": false,
+   "detail": []
+  },
+  "records_identical_to_team5 (sha256)": {
+   "ok": true,
+   "hard": true,
+   "detail": {
+    "compared": 12,
+    "mismatch": []
+   }
+  }
+ },
+ "models": {
+  "mode": "ref",
+  "model_ids": {
+   "med": 4237896291,
+   "c120": 1963723111,
+   "pair": 1963723111
+  }
+ },
+ "experts": [
+  1,
+  97,
+  153,
+  159
+ ],
+ "rules": {
+  "med": {
+   "n": 4,
+   "mean_total_B": 17250304.0,
+   "ratio_total_to_raw": 0.9175381263616558,
+   "mean_used_B": 17247779.75,
+   "ratio_used_to_raw": 0.9174038623153254,
+   "mean_weight_payload_B": 17050087.0,
+   "mean_scale_payload_B": 158780.75,
+   "bit_per_w_weight_payload": 3.854276756004051,
+   "matrices_anchor_differs_from_lower_median": 0,
+   "matrices_total": 12,
+   "records_with_any_differing_anchor": 0,
+   "anchor_values_stored": {
+    "120": 6,
+    "121": 6
+   },
+   "decode_D1_exact": "4/4",
+   "decode_D2_exact": "4/4"
+  },
+  "c120": {
+   "n": 4,
+   "mean_total_B": 16928768.0,
+   "ratio_total_to_raw": 0.9004357298474945,
+   "mean_used_B": 16926532.25,
+   "ratio_used_to_raw": 0.9003168110234545,
+   "mean_weight_payload_B": 16728839.5,
+   "mean_scale_payload_B": 158780.75,
+   "bit_per_w_weight_payload": 3.7816567880135996,
+   "matrices_anchor_differs_from_lower_median": 6,
+   "matrices_total": 12,
+   "records_with_any_differing_anchor": 3,
+   "anchor_values_stored": {
+    "120": 12
+   },
+   "decode_D1_exact": "4/4",
+   "decode_D2_exact": "4/4",
+   "rederive_R1": {
+    "D1": {
+     "rejected": 3,
+     "silent_wrong": 0,
+     "exact": 0
+    },
+    "D2": {
+     "rejected": 3,
+     "silent_wrong": 0,
+     "exact": 0
+    }
+   },
+   "rederive_R2_streams_total": {
+    "streams": 51840,
+    "srel_unchanged_streams": 17280,
+    "structural_fail": 34560,
+    "SILENT_ok_but_wrong": 0,
+    "ok_and_correct": 17280
+   },
+   "vs_med_total": {
+    "mean_bytes": -321536.0,
+    "CI95_bytes": [
+     -520192.0,
+     -116736.0
+    ],
+    "mean_pct_of_raw": -1.710239651416122,
+    "CI95_pct_of_raw": [
+     -2.766884531590414,
+     -0.6209150326797386
+    ],
+    "median_bytes": -348160.0,
+    "min_bytes": -585728.0,
+    "max_bytes": -4096.0,
+    "n_smaller": 4,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 4,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   },
+   "vs_med_used": {
+    "mean_bytes": -321247.5,
+    "CI95_bytes": [
+     -520879.0,
+     -115242.5
+    ],
+    "mean_pct_of_raw": -1.7087051291870916,
+    "CI95_pct_of_raw": [
+     -2.7705386625136166,
+     -0.6129711541734749
+    ],
+    "median_bytes": -348261.0,
+    "min_bytes": -586548.0,
+    "max_bytes": -1920.0,
+    "n_smaller": 4,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 4,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   },
+   "split": {
+    "experts_anchor_equal_to_median": {
+     "n": 1,
+     "mean_delta_used_B": -1920.0
+    },
+    "experts_anchor_differs": [
+     {
+      "file": "L24_E058.bin",
+      "anchors": [
+       120,
+       120,
+       120
+      ],
+      "median": [
+       120,
+       121,
+       120
+      ],
+      "delta_total_B": -241664,
+      "delta_pct_raw": -1.2854030501089324
+     },
+     {
+      "file": "L38_E005.bin",
+      "anchors": [
+       120,
+       120,
+       120
+      ],
+      "median": [
+       120,
+       121,
+       121
+      ],
+      "delta_total_B": -454656,
+      "delta_pct_raw": -2.418300653594771
+     },
+     {
+      "file": "L39_E156.bin",
+      "anchors": [
+       120,
+       120,
+       120
+      ],
+      "median": [
+       121,
+       121,
+       121
+      ],
+      "delta_total_B": -585728,
+      "delta_pct_raw": -3.1154684095860565
+     }
+    ],
+    "share_of_total_gain_from_differing_experts": 0.9968152866242038
+   },
+   "records_identical_to_med_record": 0
+  },
+  "pair": {
+   "n": 4,
+   "mean_total_B": 16928768.0,
+   "ratio_total_to_raw": 0.9004357298474945,
+   "mean_used_B": 16926532.25,
+   "ratio_used_to_raw": 0.9003168110234545,
+   "mean_weight_payload_B": 16728839.5,
+   "mean_scale_payload_B": 158780.75,
+   "bit_per_w_weight_payload": 3.7816567880135996,
+   "matrices_anchor_differs_from_lower_median": 6,
+   "matrices_total": 12,
+   "records_with_any_differing_anchor": 3,
+   "anchor_values_stored": {
+    "120": 12
+   },
+   "decode_D1_exact": "4/4",
+   "decode_D2_exact": "4/4",
+   "rederive_R1": {
+    "D1": {
+     "rejected": 3,
+     "silent_wrong": 0,
+     "exact": 0
+    },
+    "D2": {
+     "rejected": 3,
+     "silent_wrong": 0,
+     "exact": 0
+    }
+   },
+   "rederive_R2_streams_total": {
+    "streams": 51840,
+    "srel_unchanged_streams": 17280,
+    "structural_fail": 34560,
+    "SILENT_ok_but_wrong": 0,
+    "ok_and_correct": 17280
+   },
+   "vs_med_total": {
+    "mean_bytes": -321536.0,
+    "CI95_bytes": [
+     -520192.0,
+     -116736.0
+    ],
+    "mean_pct_of_raw": -1.710239651416122,
+    "CI95_pct_of_raw": [
+     -2.766884531590414,
+     -0.6209150326797386
+    ],
+    "median_bytes": -348160.0,
+    "min_bytes": -585728.0,
+    "max_bytes": -4096.0,
+    "n_smaller": 4,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 4,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   },
+   "vs_med_used": {
+    "mean_bytes": -321247.5,
+    "CI95_bytes": [
+     -520879.0,
+     -115242.5
+    ],
+    "mean_pct_of_raw": -1.7087051291870916,
+    "CI95_pct_of_raw": [
+     -2.7705386625136166,
+     -0.6129711541734749
+    ],
+    "median_bytes": -348261.0,
+    "min_bytes": -586548.0,
+    "max_bytes": -1920.0,
+    "n_smaller": 4,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 4,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   },
+   "split": {
+    "experts_anchor_equal_to_median": {
+     "n": 1,
+     "mean_delta_used_B": -1920.0
+    },
+    "experts_anchor_differs": [
+     {
+      "file": "L24_E058.bin",
+      "anchors": [
+       120,
+       120,
+       120
+      ],
+      "median": [
+       120,
+       121,
+       120
+      ],
+      "delta_total_B": -241664,
+      "delta_pct_raw": -1.2854030501089324
+     },
+     {
+      "file": "L38_E005.bin",
+      "anchors": [
+       120,
+       120,
+       120
+      ],
+      "median": [
+       120,
+       121,
+       121
+      ],
+      "delta_total_B": -454656,
+      "delta_pct_raw": -2.418300653594771
+     },
+     {
+      "file": "L39_E156.bin",
+      "anchors": [
+       120,
+       120,
+       120
+      ],
+      "median": [
+       121,
+       121,
+       121
+      ],
+      "delta_total_B": -585728,
+      "delta_pct_raw": -3.1154684095860565
+     }
+    ],
+    "share_of_total_gain_from_differing_experts": 0.9968152866242038
+   },
+   "records_identical_to_med_record": 0
+  }
+ },
+ "reference": {
+  "source": "team5 wnr2-g0 results/heldout_A.jsonl + heldout_B.jsonl + summary.json (plain WNR2 records, anchor rule med / c120 / pair; models trained on the 80 even-indexed sample experts)",
+  "summary_rules": {
+   "med": {
+    "mean_total_B": 16909926.4,
+    "ratio_total_to_raw": 0.899433551198257,
+    "mean_used_B": 16907739.325,
+    "ratio_used_to_raw": 0.8993172213818252,
+    "mean_weight_payload_B": 16722151.725,
+    "mean_scale_payload_B": 146675.6,
+    "matrices_anchor_differs_from_lower_median": 0,
+    "matrices_total": 120,
+    "records_with_any_differing_anchor": 0,
+    "records_identical_to_med_record": 40,
+    "count_estimate_test40_weight_bits_per_w": 3.7664709627902617,
+    "count_estimate_mean_payload_B": 16878548.32207856
+   },
+   "c120": {
+    "mean_total_B": 16873369.6,
+    "ratio_total_to_raw": 0.8974891067538128,
+    "mean_used_B": 16871513.325,
+    "ratio_used_to_raw": 0.897390372083078,
+    "mean_weight_payload_B": 16685925.725,
+    "mean_scale_payload_B": 146675.6,
+    "matrices_anchor_differs_from_lower_median": 6,
+    "matrices_total": 120,
+    "records_with_any_differing_anchor": 3,
+    "records_identical_to_med_record": 0,
+    "vs_med_total": {
+     "mean_delta_B": -36556.8,
+     "mean_delta_pct_raw": -0.19444444444444445,
+     "ratio_change_pct": -0.2161854471465996,
+     "median_expert_delta_pct_raw": -0.021786492374727667,
+     "worst_expert": {
+      "file": "L14_E135.bin",
+      "delta_B": 0.0,
+      "delta_pct_raw": 0.0
+     },
+     "best_expert": {
+      "file": "L39_E156.bin",
+      "delta_B": -585728.0,
+      "delta_pct_raw": -3.115468409586057
+     },
+     "experts_smaller": 36,
+     "experts_equal": 4,
+     "experts_larger": 0,
+     "mean_delta_B_ci95": [
+      -77004.8,
+      -4812.8
+     ],
+     "mean_delta_pct_raw_ci95": [
+      -0.4095860566448802,
+      -0.02559912854030501
+     ],
+     "record_ratio_change_pct_ci95": [
+      -0.45378735648671065,
+      -0.028536729123168073
+     ],
+     "resamples": 10000,
+     "seed": 20261107
+    },
+    "vs_med_used": {
+     "mean_delta_B": -36226.0,
+     "mean_delta_pct_raw": -0.19268492987472768,
+     "median_expert_delta_pct_raw": -0.0267091971337146,
+     "mean_delta_B_ci95": [
+      -76765.30437499999,
+      -4486.538750000001
+     ],
+     "mean_delta_pct_raw_ci95": [
+      -0.40831218711171524,
+      -0.02386375543598516
+     ],
+     "record_ratio_change_pct_ci95": [
+      -0.45272421422673903,
+      -0.026590498996038603
+     ],
+     "resamples": 10000,
+     "seed": 20261107
+    },
+    "split": {
+     "experts_anchor_equal_to_median": {
+      "n": 37,
+      "mean_delta_total_B": -4870.918918918919,
+      "mean_delta_used_B": -4485.675675675676,
+      "mean_delta_used_pct_raw": -0.023859164771389038
+     },
+     "experts_anchor_differs": {
+      "n": 3,
+      "rows": [
+       {
+        "file": "L24_E058.bin",
+        "anchors": [
+         120,
+         120,
+         120
+        ],
+        "median": [
+         120,
+         121,
+         120
+        ],
+        "delta_total_B": -241664.0,
+        "delta_pct_raw": -1.2854030501089326
+       },
+       {
+        "file": "L38_E005.bin",
+        "anchors": [
+         120,
+         120,
+         120
+        ],
+        "median": [
+         120,
+         121,
+         121
+        ],
+        "delta_total_B": -454656.0,
+        "delta_pct_raw": -2.4183006535947715
+       },
+       {
+        "file": "L39_E156.bin",
+        "anchors": [
+         120,
+         120,
+         120
+        ],
+        "median": [
+         121,
+         121,
+         121
+        ],
+        "delta_total_B": -585728.0,
+        "delta_pct_raw": -3.115468409586057
+       }
+      ],
+      "sum_delta_total_B": -1282048.0
+     },
+     "share_of_total_gain_from_differing_experts": 0.876750700280112
+    },
+    "rederive": [
+     {
+      "file": "L24_E058.bin",
+      "stored": [
+       120,
+       120,
+       120
+      ],
+      "rederived": [
+       120,
+       121,
+       120
+      ],
+      "R1_D1_error": "weight streams failed: 5760",
+      "R1_D2_error": "weight streams failed: 5760",
+      "R1_any_byte_exact": false,
+      "R2": {
+       "w1": {
+        "streams": 5760,
+        "srel_unchanged_streams": 5760,
+        "structural_fail": 0,
+        "SILENT_ok_but_wrong": 0,
+        "srel_changed_but_ok_and_correct": 0
+       },
+       "w2": {
+        "streams": 5760,
+        "srel_unchanged_streams": 0,
+        "structural_fail": 5760,
+        "SILENT_ok_but_wrong": 0,
+        "srel_changed_but_ok_and_correct": 0
+       },
+       "w3": {
+        "streams": 5760,
+        "srel_unchanged_streams": 5760,
+        "structural_fail": 0,
+        "SILENT_ok_but_wrong": 0,
+        "srel_changed_but_ok_and_correct": 0
+       }
+      },
+      "R2_record_rejected": true,
+      "R2_record_silent_wrong": false,
+      "R3_reencode_total": 17539072,
+      "R3_byte_identical": false,
+      "R3_reencode_minus_stored_B": 483328
+     },
+     {
+      "file": "L38_E005.bin",
+      "stored": [
+       120,
+       120,
+       120
+      ],
+      "rederived": [
+       120,
+       121,
+       121
+      ],
+      "R1_D1_error": "weight streams failed: 11520",
+      "R1_D2_error": "weight streams failed: 11520",
+      "R1_any_byte_exact": false,
+      "R2": {
+       "w1": {
+        "streams": 5760,
+        "srel_unchanged_streams": 5760,
+        "structural_fail": 0,
+        "SILENT_ok_but_wrong": 0,
+        "srel_changed_but_ok_and_correct": 0
+       },
+       "w2": {
+        "streams": 5760,
+        "srel_unchanged_streams": 0,
+        "structural_fail": 5760,
+        "SILENT_ok_but_wrong": 0,
+        "srel_changed_but_ok_and_correct": 0
+       },
+       "w3": {
+        "streams": 5760,
+        "srel_unchanged_streams": 0,
+        "structural_fail": 5760,
+        "SILENT_ok_but_wrong": 0,
+        "srel_changed_but_ok_and_correct": 0
+       }
+      },
+      "R2_record_rejected": true,
+      "R2_record_silent_wrong": false,
+      "R3_reencode_total": 17702912,
+      "R3_byte_identical": false,
+      "R3_reencode_minus_stored_B": 905216
+     },
+     {
+      "file": "L39_E156.bin",
+      "stored": [
+       120,
+       120,
+       120
+      ],
+      "rederived": [
+       121,
+       121,
+       121
+      ],
+      "R1_D1_error": "weight streams failed: 17280",
+      "R1_D2_error": "weight streams failed: 17280",
+      "R1_any_byte_exact": false,
+      "R2": {
+       "w1": {
+        "streams": 5760,
+        "srel_unchanged_streams": 0,
+        "structural_fail": 5760,
+        "SILENT_ok_but_wrong": 0,
+        "srel_changed_but_ok_and_correct": 0
+       },
+       "w2": {
+        "streams": 5760,
+        "srel_unchanged_streams": 0,
+        "structural_fail": 5760,
+        "SILENT_ok_but_wrong": 0,
+        "srel_changed_but_ok_and_correct": 0
+       },
+       "w3": {
+        "streams": 5760,
+        "srel_unchanged_streams": 0,
+        "structural_fail": 5760,
+        "SILENT_ok_but_wrong": 0,
+        "srel_changed_but_ok_and_correct": 0
+       }
+      },
+      "R2_record_rejected": true,
+      "R2_record_silent_wrong": false,
+      "R3_reencode_total": 17960960,
+      "R3_byte_identical": false,
+      "R3_reencode_minus_stored_B": 983040
+     }
+    ],
+    "rederive_totals": {
+     "records_tested": 3,
+     "records_rejected_R1": 3,
+     "records_silent_R1": 0,
+     "streams_in_tested_records": 51840,
+     "streams_srel_unchanged": 17280,
+     "streams_structural_fail": 34560,
+     "streams_SILENT_ok_but_wrong": 0,
+     "streams_srel_changed_but_ok_and_correct": 0
+    },
+    "count_estimate_test40_weight_bits_per_w": 3.7582842233179266,
+    "count_estimate_mean_payload_B": 16842332.806409582
+   },
+   "pair": {
+    "mean_total_B": 16873369.6,
+    "ratio_total_to_raw": 0.8974891067538128,
+    "mean_used_B": 16871513.325,
+    "ratio_used_to_raw": 0.897390372083078,
+    "mean_weight_payload_B": 16685925.725,
+    "mean_scale_payload_B": 146675.6,
+    "matrices_anchor_differs_from_lower_median": 6,
+    "matrices_total": 120,
+    "records_with_any_differing_anchor": 3,
+    "records_identical_to_med_record": 0,
+    "vs_med_total": {
+     "mean_delta_B": -36556.8,
+     "mean_delta_pct_raw": -0.19444444444444445,
+     "ratio_change_pct": -0.2161854471465996,
+     "median_expert_delta_pct_raw": -0.021786492374727667,
+     "worst_expert": {
+      "file": "L14_E135.bin",
+      "delta_B": 0.0,
+      "delta_pct_raw": 0.0
+     },
+     "best_expert": {
+      "file": "L39_E156.bin",
+      "delta_B": -585728.0,
+      "delta_pct_raw": -3.115468409586057
+     },
+     "experts_smaller": 36,
+     "experts_equal": 4,
+     "experts_larger": 0,
+     "mean_delta_B_ci95": [
+      -77004.8,
+      -4812.8
+     ],
+     "mean_delta_pct_raw_ci95": [
+      -0.4095860566448802,
+      -0.02559912854030501
+     ],
+     "record_ratio_change_pct_ci95": [
+      -0.45378735648671065,
+      -0.028536729123168073
+     ],
+     "resamples": 10000,
+     "seed": 20261107
+    },
+    "vs_med_used": {
+     "mean_delta_B": -36226.0,
+     "mean_delta_pct_raw": -0.19268492987472768,
+     "median_expert_delta_pct_raw": -0.0267091971337146,
+     "mean_delta_B_ci95": [
+      -76765.30437499999,
+      -4486.538750000001
+     ],
+     "mean_delta_pct_raw_ci95": [
+      -0.40831218711171524,
+      -0.02386375543598516
+     ],
+     "record_ratio_change_pct_ci95": [
+      -0.45272421422673903,
+      -0.026590498996038603
+     ],
+     "resamples": 10000,
+     "seed": 20261107
+    },
+    "split": {
+     "experts_anchor_equal_to_median": {
+      "n": 37,
+      "mean_delta_total_B": -4870.918918918919,
+      "mean_delta_used_B": -4485.675675675676,
+      "mean_delta_used_pct_raw": -0.023859164771389038
+     },
+     "experts_anchor_differs": {
+      "n": 3,
+      "rows": [
+       {
+        "file": "L24_E058.bin",
+        "anchors": [
+         120,
+         120,
+         120
+        ],
+        "median": [
+         120,
+         121,
+         120
+        ],
+        "delta_total_B": -241664.0,
+        "delta_pct_raw": -1.2854030501089326
+       },
+       {
+        "file": "L38_E005.bin",
+        "anchors": [
+         120,
+         120,
+         120
+        ],
+        "median": [
+         120,
+         121,
+         121
+        ],
+        "delta_total_B": -454656.0,
+        "delta_pct_raw": -2.4183006535947715
+       },
+       {
+        "file": "L39_E156.bin",
+        "anchors": [
+         120,
+         120,
+         120
+        ],
+        "median": [
+         121,
+         121,
+         121
+        ],
+        "delta_total_B": -585728.0,
+        "delta_pct_raw": -3.115468409586057
+       }
+      ],
+      "sum_delta_total_B": -1282048.0
+     },
+     "share_of_total_gain_from_differing_experts": 0.876750700280112
+    },
+    "rederive": [
+     {
+      "file": "L24_E058.bin",
+      "stored": [
+       120,
+       120,
+       120
+      ],
+      "rederived": [
+       120,
+       121,
+       120
+      ],
+      "R1_D1_error": "weight streams failed: 5760",
+      "R1_D2_error": "weight streams failed: 5760",
+      "R1_any_byte_exact": false,
+      "R2": {
+       "w1": {
+        "streams": 5760,
+        "srel_unchanged_streams": 5760,
+        "structural_fail": 0,
+        "SILENT_ok_but_wrong": 0,
+        "srel_changed_but_ok_and_correct": 0
+       },
+       "w2": {
+        "streams": 5760,
+        "srel_unchanged_streams": 0,
+        "structural_fail": 5760,
+        "SILENT_ok_but_wrong": 0,
+        "srel_changed_but_ok_and_correct": 0
+       },
+       "w3": {
+        "streams": 5760,
+        "srel_unchanged_streams": 5760,
+        "structural_fail": 0,
+        "SILENT_ok_but_wrong": 0,
+        "srel_changed_but_ok_and_correct": 0
+       }
+      },
+      "R2_record_rejected": true,
+      "R2_record_silent_wrong": false,
+      "R3_reencode_total": 17539072,
+      "R3_byte_identical": false,
+      "R3_reencode_minus_stored_B": 483328
+     },
+     {
+      "file": "L38_E005.bin",
+      "stored": [
+       120,
+       120,
+       120
+      ],
+      "rederived": [
+       120,
+       121,
+       121
+      ],
+      "R1_D1_error": "weight streams failed: 11520",
+      "R1_D2_error": "weight streams failed: 11520",
+      "R1_any_byte_exact": false,
+      "R2": {
+       "w1": {
+        "streams": 5760,
+        "srel_unchanged_streams": 5760,
+        "structural_fail": 0,
+        "SILENT_ok_but_wrong": 0,
+        "srel_changed_but_ok_and_correct": 0
+       },
+       "w2": {
+        "streams": 5760,
+        "srel_unchanged_streams": 0,
+        "structural_fail": 5760,
+        "SILENT_ok_but_wrong": 0,
+        "srel_changed_but_ok_and_correct": 0
+       },
+       "w3": {
+        "streams": 5760,
+        "srel_unchanged_streams": 0,
+        "structural_fail": 5760,
+        "SILENT_ok_but_wrong": 0,
+        "srel_changed_but_ok_and_correct": 0
+       }
+      },
+      "R2_record_rejected": true,
+      "R2_record_silent_wrong": false,
+      "R3_reencode_total": 17702912,
+      "R3_byte_identical": false,
+      "R3_reencode_minus_stored_B": 905216
+     },
+     {
+      "file": "L39_E156.bin",
+      "stored": [
+       120,
+       120,
+       120
+      ],
+      "rederived": [
+       121,
+       121,
+       121
+      ],
+      "R1_D1_error": "weight streams failed: 17280",
+      "R1_D2_error": "weight streams failed: 17280",
+      "R1_any_byte_exact": false,
+      "R2": {
+       "w1": {
+        "streams": 5760,
+        "srel_unchanged_streams": 0,
+        "structural_fail": 5760,
+        "SILENT_ok_but_wrong": 0,
+        "srel_changed_but_ok_and_correct": 0
+       },
+       "w2": {
+        "streams": 5760,
+        "srel_unchanged_streams": 0,
+        "structural_fail": 5760,
+        "SILENT_ok_but_wrong": 0,
+        "srel_changed_but_ok_and_correct": 0
+       },
+       "w3": {
+        "streams": 5760,
+        "srel_unchanged_streams": 0,
+        "structural_fail": 5760,
+        "SILENT_ok_but_wrong": 0,
+        "srel_changed_but_ok_and_correct": 0
+       }
+      },
+      "R2_record_rejected": true,
+      "R2_record_silent_wrong": false,
+      "R3_reencode_total": 17960960,
+      "R3_byte_identical": false,
+      "R3_reencode_minus_stored_B": 983040
+     }
+    ],
+    "rederive_totals": {
+     "records_tested": 3,
+     "records_rejected_R1": 3,
+     "records_silent_R1": 0,
+     "streams_in_tested_records": 51840,
+     "streams_srel_unchanged": 17280,
+     "streams_structural_fail": 34560,
+     "streams_SILENT_ok_but_wrong": 0,
+     "streams_srel_changed_but_ok_and_correct": 0
+    },
+    "count_estimate_test40_weight_bits_per_w": 3.7582842233179266,
+    "count_estimate_mean_payload_B": 16842332.806409582
+   }
+  }
+ },
+ "result": "PASS",
+ "result_line": "RESULT wnr2_g0 PASS 4 experts; c120 -1.710%raw vs med (6 anchor mismatches); pair -1.710%raw vs med (6 anchor mismatches)",
+ "elapsed_s": 15.1,
+ "finished": "2026-11-08 02:36:53"
+}

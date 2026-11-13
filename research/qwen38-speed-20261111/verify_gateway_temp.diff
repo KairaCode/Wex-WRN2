@@ -1,0 +1,28 @@
+--- "a/<KAIRA>\\lab\\qwen38-ramfix-20261109\\verify_gateway.py"
++++ "b/<KAIRA>\\lab\\q38-speed-research-20261111\\ab\\verify_gateway_t.py"
+@@ -48,6 +48,7 @@ BUILDS = {   # runtime dir (its coli + openai_server.py), engine override
+ }
+ PORT = 8779          # not KAIRA's 8766: KAIRA adopts whatever listens there
+ RAM_GB_MAX = int(os.environ.get('VERIFY_RAM_GB_MAX', '17'))   # 17 = the 17:08 value; 13 when commit cannot hold 16 + the card
++TEMP = float(os.environ['VERIFY_TEMP']) if os.environ.get('VERIFY_TEMP') else 0   # request temperature; unset: the original's 0, the same request bytes
+ 
+ 
+ def job_cap(ram_gb, vram_total_mib):
+@@ -227,7 +228,7 @@ CHAT = ['I have three drives: C: is 1 TB, U: is 2 TB and E: is 4 TB. Which one i
+ 
+ 
+ def chat(port, messages, max_tokens, timeout=900):
+-    body = json.dumps({'model': 'kaira', 'messages': messages, 'max_tokens': max_tokens, 'temperature': 0,
++    body = json.dumps({'model': 'kaira', 'messages': messages, 'max_tokens': max_tokens, 'temperature': TEMP,
+                        'stream': True, 'stream_options': {'include_usage': True},
+                        'chat_template_kwargs': {'enable_thinking': False}})
+     r = {'sent': time.time(), 'text': '', 'reasoning': '', 'usage': None, 'error': None, 'chunks': 0}
+@@ -265,7 +266,7 @@ def run(label):
+     runtime, engine = BUILDS[label]
+     out = os.path.join(LAB, 'verify-' + os.environ.get('VERIFY_TAG', '') + label)   # round 4: VERIFY_TAG keeps earlier runs
+     rec = {'label': label, 'runtime': runtime, 'engine': engine or os.path.join(runtime, 'qwen38.exe'),
+-           'requests': [], 'kill': None, 'error': None}
++           'temperature': TEMP, 'requests': [], 'kill': None, 'error': None}
+     why = machine_ok()
+     if why: rec['error'] = 'not started: ' + why; print(rec['error']); return rec
+     p0 = perf()

@@ -1,0 +1,4 @@
+# Forwarder: the kit has ONE GPU requirements file, setup\requirements-gpu.txt (exact pins of the venv the RTX 3070
+# reference runs used, python_version markers, CPU set included). pip resolves this -r relative to this file.
+# Preferred:  .\venv\Scripts\python.exe -m pip install -r setup\requirements-gpu.txt
+-r ../../setup/requirements-gpu.txt

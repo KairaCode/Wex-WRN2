@@ -1,0 +1,206 @@
+{
+ "label": "r1x",
+ "data_dir": "<orig-pc>/team7-data\\other-models\\r1x",
+ "repo": "amd/DeepSeek-R1-0528-MXFP4",
+ "revision": "913fc83b2d3962dbc2682d6b97e9ef31acb4bf5a",
+ "items": [
+  {
+   "tag": "L09_E143",
+   "layer": 9,
+   "expert": 143,
+   "kind": null,
+   "npz": "L09_E143.npz",
+   "raw_bytes": 23396352,
+   "gate_up_diag": {},
+   "shapes": [
+    [
+     2048,
+     7168
+    ],
+    [
+     7168,
+     2048
+    ],
+    [
+     2048,
+     7168
+    ]
+   ],
+   "even_pct": [
+    0.0011,
+    0.0039,
+    0.0031
+   ],
+   "gate_ok": [
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "tag": "L20_E062",
+   "layer": 20,
+   "expert": 62,
+   "kind": null,
+   "npz": "L20_E062.npz",
+   "raw_bytes": 23396352,
+   "gate_up_diag": {},
+   "shapes": [
+    [
+     2048,
+     7168
+    ],
+    [
+     7168,
+     2048
+    ],
+    [
+     2048,
+     7168
+    ]
+   ],
+   "even_pct": [
+    0.0057,
+    0.0076,
+    0.0044
+   ],
+   "gate_ok": [
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "tag": "L31_E245",
+   "layer": 31,
+   "expert": 245,
+   "kind": null,
+   "npz": "L31_E245.npz",
+   "raw_bytes": 23396352,
+   "gate_up_diag": {},
+   "shapes": [
+    [
+     2048,
+     7168
+    ],
+    [
+     7168,
+     2048
+    ],
+    [
+     2048,
+     7168
+    ]
+   ],
+   "even_pct": [
+    0.0039,
+    0.0072,
+    0.0041
+   ],
+   "gate_ok": [
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "tag": "L42_E093",
+   "layer": 42,
+   "expert": 93,
+   "kind": null,
+   "npz": "L42_E093.npz",
+   "raw_bytes": 23396352,
+   "gate_up_diag": {},
+   "shapes": [
+    [
+     2048,
+     7168
+    ],
+    [
+     7168,
+     2048
+    ],
+    [
+     2048,
+     7168
+    ]
+   ],
+   "even_pct": [
+    0.0072,
+    0.0063,
+    0.0048
+   ],
+   "gate_ok": [
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "tag": "L53_E236",
+   "layer": 53,
+   "expert": 236,
+   "kind": null,
+   "npz": "L53_E236.npz",
+   "raw_bytes": 23396352,
+   "gate_up_diag": {},
+   "shapes": [
+    [
+     2048,
+     7168
+    ],
+    [
+     7168,
+     2048
+    ],
+    [
+     2048,
+     7168
+    ]
+   ],
+   "even_pct": [
+    0.0063,
+    0.0054,
+    0.0063
+   ],
+   "gate_ok": [
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "tag": "L60_E152",
+   "layer": 60,
+   "expert": 152,
+   "kind": null,
+   "npz": "L60_E152.npz",
+   "raw_bytes": 23396352,
+   "gate_up_diag": {},
+   "shapes": [
+    [
+     2048,
+     7168
+    ],
+    [
+     7168,
+     2048
+    ],
+    [
+     2048,
+     7168
+    ]
+   ],
+   "even_pct": [
+    0.0035,
+    0.0013,
+    0.0057
+   ],
+   "gate_ok": [
+    1,
+    1,
+    1
+   ]
+  }
+ ]
+}

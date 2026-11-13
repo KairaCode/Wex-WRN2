@@ -1,0 +1,470 @@
+{
+ "source": "team4 ceil-gpu enc (ceilenc.py, 8 experts PICK=[17,0,40,80,120,159,60,100]); DB2/CFDB2 from the second run",
+ "pick": [
+  17,
+  0,
+  40,
+  80,
+  120,
+  159,
+  60,
+  100
+ ],
+ "pick_files": [
+  "L04_E038.bin",
+  "L00_E097.bin",
+  "L10_E015.bin",
+  "L20_E005.bin",
+  "L30_E002.bin",
+  "L39_E156.bin",
+  "L15_E025.bin",
+  "L25_E000.bin"
+ ],
+ "pick_w_ceil_counts_sha256": {
+  "L00_E097.bin": "9d8fd4d03805527193828b5793f04f5ea3c5db92e6ec78d22813ce11ef127c45",
+  "L04_E038.bin": "eab5344939ca96876ac31f010a2b92ecead8ec60685e6374660d4b6acba7f841",
+  "L10_E015.bin": "d53bfceae9d0845917c2729a347e5b086f70263f2cab3ef612e0cfa9bc1b311f",
+  "L15_E025.bin": "49365189fb1885e8a28021d3e65052b5bdfb15bb1fc3d8dad481e6a63e2b9a55",
+  "L20_E005.bin": "b62b2887775e941767cc11887a8cda47a4b5b9e7052e9eaf4620f6267a04c612",
+  "L25_E000.bin": "5d442cc2e975f0fb45781eced2533ca753d3652be9c114f432bf288ee5cc9a0b",
+  "L30_E002.bin": "a1e509e0bd22e595d6ba433793a7e8204006ce8eea2ceeb693f4c1c94fb62f7c",
+  "L39_E156.bin": "32b76dd18dd4e4c1bee9e33802ded3439f1945bc530cde38d7cf9ac625c0b212"
+ },
+ "files": {
+  "common.npz": {
+   "raw": {
+    "sha256": "ec71fb2aa042ae3d1b2dfb9c10a135f9cc4d6a2139bbb4cfa7cd785a1b9416fd",
+    "dtype": "uint8",
+    "shape": [
+     141557760
+    ]
+   },
+   "scales": {
+    "sha256": "ba5778d307d230ee15ea24737b28a8fb7bb06bbc2bb50d6a9a11e1966b2f94f3",
+    "dtype": "uint8",
+    "shape": [
+     8847360
+    ]
+   },
+   "scales_ceil": {
+    "sha256": "c174d2287c00d545fc4d04debb37141a3148322a32db571db5478d52c985db7d",
+    "dtype": "uint8",
+    "shape": [
+     8847360
+    ]
+   },
+   "med": {
+    "sha256": "82e1aeb3d1efbc3089f19f3545958b0565fa68e0003707f71506484eb0318287",
+    "dtype": "uint8",
+    "shape": [
+     24
+    ]
+   },
+   "med_ceil": {
+    "sha256": "1b7aa45a7b4467734c6df7fb23674271e5fb2af0d91d4b0a89a5aec66357a88f",
+    "dtype": "uint8",
+    "shape": [
+     24
+    ]
+   },
+   "mtype": {
+    "sha256": "5f335e718cb7a66dd58227c2eb64f78298eeb077ba1c4f5e902f28e2106a2243",
+    "dtype": "uint8",
+    "shape": [
+     24
+    ]
+   },
+   "spm": {
+    "sha256": "3f649b1568f3c073d23cdb155c89d234ac305c942bca85ecfcb50c205cc0f102",
+    "dtype": "int64",
+    "shape": []
+   },
+   "sspm": {
+    "sha256": "f6ee4c46df2539f5130368ee45b5b766cfc41d34da012c0e24545dc310444642",
+    "dtype": "int64",
+    "shape": []
+   },
+   "names": {
+    "sha256": "f3f87a97791ce892da97f3df9dc78067097281cbae75024b038a3d9de6e9589b",
+    "dtype": "<U11",
+    "shape": [
+     24
+    ]
+   }
+  },
+  "scl_ceil.npz": {
+   "payload": {
+    "sha256": "7d17fb41a292fe4a7038b2970a40dd7c1b650900bf02954e61c3536fe071a3b1",
+    "dtype": "uint8",
+    "shape": [
+     1058668
+    ]
+   },
+   "lengths": {
+    "sha256": "d481319cea02050170fec2b620d6e43f80e61a256e8af21a193c0aaa67302f13",
+    "dtype": "uint16",
+    "shape": [
+     17280
+    ]
+   },
+   "cum": {
+    "sha256": "6e5c21b47347cff9791e6050cf8aa6e91734aef541088f115c898c437ee263b4",
+    "dtype": "uint16",
+    "shape": [
+     3,
+     257
+    ]
+   },
+   "lut": {
+    "sha256": "3f85585626cfce1ecbcde506f624df8ee0d9959f0977a24d2f382bdb03263be3",
+    "dtype": "uint8",
+    "shape": [
+     3,
+     16384
+    ]
+   }
+  },
+  "scl_orig.npz": {
+   "payload": {
+    "sha256": "27b0feb6437769d08a25edda4d62fd14603f165d2ad0686845f4facafdd47115",
+    "dtype": "uint8",
+    "shape": [
+     1208328
+    ]
+   },
+   "lengths": {
+    "sha256": "66424fb8ce4897cfad2c434d014bc45f25e71eb41bc7d1297d0c69e9d9f57bf5",
+    "dtype": "uint16",
+    "shape": [
+     17280
+    ]
+   },
+   "cum": {
+    "sha256": "c38e385fecebe280aa1ad3940e638d216a7ed964cc081f2676520257b77bfd7d",
+    "dtype": "uint16",
+    "shape": [
+     3,
+     257
+    ]
+   },
+   "lut": {
+    "sha256": "b60a8306704bf42c00ce618cf240823e2b1c51bc981987cb9fa35deb070283a5",
+    "dtype": "uint8",
+    "shape": [
+     3,
+     16384
+    ]
+   }
+  },
+  "var_A259.npz": {
+   "payload": {
+    "sha256": "242dbfdde1eba9ca7d295b0ece2bd4486b5be7f568db5f2faf7c3f6b68bdce84",
+    "dtype": "uint8",
+    "shape": [
+     134186379
+    ]
+   },
+   "lengths": {
+    "sha256": "c3f36f7fab69d2475a36655e1a75c345eb5a6e07aa58618e42fcb2f9af629c8b",
+    "dtype": "uint16",
+    "shape": [
+     138240
+    ]
+   },
+   "tables": {
+    "sha256": "d62d4d4d6278df7b96dad0d0c9dce096eab35a8defe5da1b6c5a8ce3d42363c8",
+    "dtype": "uint16",
+    "shape": [
+     3,
+     259,
+     16
+    ]
+   }
+  },
+  "var_CF.npz": {
+   "payload": {
+    "sha256": "f0e466ce284fbecd7066adf82eb5a92eb12d01945286cb240932450977c54b1a",
+    "dtype": "uint8",
+    "shape": [
+     131219845
+    ]
+   },
+   "lengths": {
+    "sha256": "3766503ac23cd0a41fa8e0bbf05221ba9f6b21181bc03885fa679d13bad5171a",
+    "dtype": "uint16",
+    "shape": [
+     138240
+    ]
+   },
+   "tables": {
+    "sha256": "573f5104d3913d47799ff1de62f8b9db5d392f137b591ffa61350474ffe01d15",
+    "dtype": "uint16",
+    "shape": [
+     3,
+     259,
+     16
+    ]
+   }
+  },
+  "var_CFD.npz": {
+   "payload": {
+    "sha256": "39d494a03621a09116aab9c0c141346a271a485119aa1134c310fcfcef6466d5",
+    "dtype": "uint8",
+    "shape": [
+     95831366
+    ]
+   },
+   "lengths": {
+    "sha256": "9d7b6520e4b677d96035c9ca1405ed83a06f05720dba782557d6ed9d6aac9a91",
+    "dtype": "uint16",
+    "shape": [
+     138240
+    ]
+   },
+   "tables": {
+    "sha256": "d44c6aa6694432ec6c0aacfeb6437066a5f677739628cdab7d8d38b38c9339b7",
+    "dtype": "uint16",
+    "shape": [
+     3,
+     259,
+     8
+    ]
+   },
+   "signs": {
+    "sha256": "8653a52de8c19a89f664f042a423d67775b0a1bc793baf8a87d42e2df98538db",
+    "dtype": "uint32",
+    "shape": [
+     8847360
+    ]
+   }
+  },
+  "var_CFDB2.npz": {
+   "payload": {
+    "sha256": "3a421258029c112e7017e8b019a5835bb5660756de76e292ff68a00eb2aaeb6f",
+    "dtype": "uint8",
+    "shape": [
+     96315220
+    ]
+   },
+   "lengths": {
+    "sha256": "3cb033f291c3de1117b04c4b872e2dc58f460ff8f670a094278bb7952ba438eb",
+    "dtype": "uint16",
+    "shape": [
+     138240
+    ]
+   },
+   "tables": {
+    "sha256": "d44c6aa6694432ec6c0aacfeb6437066a5f677739628cdab7d8d38b38c9339b7",
+    "dtype": "uint16",
+    "shape": [
+     3,
+     259,
+     8
+    ]
+   },
+   "signs": {
+    "sha256": "8653a52de8c19a89f664f042a423d67775b0a1bc793baf8a87d42e2df98538db",
+    "dtype": "uint32",
+    "shape": [
+     8847360
+    ]
+   }
+  },
+  "var_D.npz": {
+   "payload": {
+    "sha256": "eb8849c04ef1a2fd772e01e49a09637c8f6aa3be711b5463d0c5823c244e7ee6",
+    "dtype": "uint8",
+    "shape": [
+     98796815
+    ]
+   },
+   "lengths": {
+    "sha256": "0e93165899c9fd4462787a79e8f6cfc77402cff3ee5bb290afcc892364bedbce",
+    "dtype": "uint16",
+    "shape": [
+     138240
+    ]
+   },
+   "tables": {
+    "sha256": "a9c34c398134fdec3f78c8aab4a2f1f0994f33b439850e0859db65a2f6136430",
+    "dtype": "uint16",
+    "shape": [
+     3,
+     259,
+     8
+    ]
+   },
+   "signs": {
+    "sha256": "8653a52de8c19a89f664f042a423d67775b0a1bc793baf8a87d42e2df98538db",
+    "dtype": "uint32",
+    "shape": [
+     8847360
+    ]
+   }
+  },
+  "var_DB2.npz": {
+   "payload": {
+    "sha256": "7b3d1a2c43a7cc9ed7cc6624247622348ba07bb268e2ed28f33bcde3b7088563",
+    "dtype": "uint8",
+    "shape": [
+     99280529
+    ]
+   },
+   "lengths": {
+    "sha256": "89e006f21c9cffc0b140d985393076bfa7c50cb263d688d52891d2b5dc562aeb",
+    "dtype": "uint16",
+    "shape": [
+     138240
+    ]
+   },
+   "tables": {
+    "sha256": "a9c34c398134fdec3f78c8aab4a2f1f0994f33b439850e0859db65a2f6136430",
+    "dtype": "uint16",
+    "shape": [
+     3,
+     259,
+     8
+    ]
+   },
+   "signs": {
+    "sha256": "8653a52de8c19a89f664f042a423d67775b0a1bc793baf8a87d42e2df98538db",
+    "dtype": "uint32",
+    "shape": [
+     8847360
+    ]
+   }
+  }
+ },
+ "tables_from_counts_eq_team4": {
+  "A259": true,
+  "D": true,
+  "DB2": true,
+  "CF": true,
+  "CFD": true,
+  "CFDB2": true
+ },
+ "sizes": {
+  "scales_orig": {
+   "payload_bytes": 1208328,
+   "length_table_bytes": 34560,
+   "bits_per_scale_payload": 1.092599826388889,
+   "bits_per_scale_incl_lengths": 1.123849826388889,
+   "streams": 17280,
+   "mean_stream_bytes": 69.9263888888889,
+   "max_stream_bytes": 242
+  },
+  "scales_ceil": {
+   "payload_bytes": 1058668,
+   "length_table_bytes": 34560,
+   "bits_per_scale_payload": 0.957273582175926,
+   "bits_per_scale_incl_lengths": 0.988523582175926,
+   "streams": 17280,
+   "mean_stream_bytes": 61.26550925925926,
+   "max_stream_bytes": 209
+  },
+  "A259": {
+   "weight_payload_bytes": 134186379,
+   "weight_length_table_bytes": 276480,
+   "sign_plane_bytes": 0,
+   "weight_total_bytes": 134462859,
+   "scale_streams_bytes": 1242888,
+   "record_total_bytes_all8": 135705747,
+   "per_record_bytes": 16963218.375,
+   "ratio_of_raw_record_18800640": 0.9022681342230903,
+   "weight_bits_per_w_rans_only": 3.791706763373481,
+   "weight_bits_per_w_total": 3.799519263373481,
+   "mean_stream_bytes": 970.6769314236111,
+   "max_stream_bytes": 1042,
+   "encode_s": 21.073991537094116,
+   "delta_vs_A259_pct": 0.0,
+   "delta_vs_same_alphabet_baseline_pct": 0.0,
+   "delta_vs_A259_pct_of_raw": 0.0
+  },
+  "D": {
+   "weight_payload_bytes": 98796815,
+   "weight_length_table_bytes": 276480,
+   "sign_plane_bytes": 35389440,
+   "weight_total_bytes": 134462735,
+   "scale_streams_bytes": 1242888,
+   "record_total_bytes_all8": 135705623,
+   "per_record_bytes": 16963202.875,
+   "ratio_of_raw_record_18800640": 0.9022673097830712,
+   "weight_bits_per_w_rans_only": 2.7917032595033997,
+   "weight_bits_per_w_total": 3.7995157595033997,
+   "mean_stream_bytes": 714.6760344328703,
+   "max_stream_bytes": 787,
+   "encode_s": 21.982163906097412,
+   "delta_vs_A259_pct": -9.137417003035608e-05,
+   "delta_vs_same_alphabet_baseline_pct": 0.0,
+   "delta_vs_A259_pct_of_raw": -8.244400190631808e-05
+  },
+  "CF": {
+   "weight_payload_bytes": 131219845,
+   "weight_length_table_bytes": 276480,
+   "sign_plane_bytes": 0,
+   "weight_total_bytes": 131496325,
+   "scale_streams_bytes": 1093228,
+   "record_total_bytes_all8": 132589553,
+   "per_record_bytes": 16573694.125,
+   "ratio_of_raw_record_18800640": 0.881549464539505,
+   "weight_bits_per_w_rans_only": 3.7078813623498985,
+   "weight_bits_per_w_total": 3.7156938623498985,
+   "mean_stream_bytes": 949.217628761574,
+   "max_stream_bytes": 1094,
+   "encode_s": 21.67332696914673,
+   "delta_vs_A259_pct": -2.2962874225216146,
+   "delta_vs_same_alphabet_baseline_pct": -2.2962874225216146,
+   "delta_vs_A259_pct_of_raw": -2.071866968358524
+  },
+  "CFD": {
+   "weight_payload_bytes": 95831366,
+   "weight_length_table_bytes": 276480,
+   "sign_plane_bytes": 35389440,
+   "weight_total_bytes": 131497286,
+   "scale_streams_bytes": 1093228,
+   "record_total_bytes_all8": 132590514,
+   "per_record_bytes": 16573814.25,
+   "ratio_of_raw_record_18800640": 0.8815558539496527,
+   "weight_bits_per_w_rans_only": 2.7079085173430264,
+   "weight_bits_per_w_total": 3.7157210173430264,
+   "mean_stream_bytes": 693.2245804398148,
+   "max_stream_bytes": 840,
+   "encode_s": 22.535638093948364,
+   "delta_vs_A259_pct": -2.295579272703907,
+   "delta_vs_same_alphabet_baseline_pct": -2.295489996018807,
+   "delta_vs_A259_pct_of_raw": -2.07122802734375
+  },
+  "DB2": {
+   "weight_payload_bytes": 99280529,
+   "weight_length_table_bytes": 276480,
+   "sign_plane_bytes": 35389440,
+   "weight_total_bytes": 134946449,
+   "scale_streams_bytes": 1242888,
+   "record_total_bytes_all8": 136189337,
+   "per_record_bytes": 17023667.125,
+   "ratio_of_raw_record_18800640": 0.9054833838103383,
+   "weight_bits_per_w_rans_only": 2.8053715741192855,
+   "weight_bits_per_w_total": 3.8131840741192855,
+   "mean_stream_bytes": 718.1751229745371,
+   "max_stream_bytes": 791,
+   "encode_s": 40.79731607437134,
+   "delta_vs_same_alphabet_baseline_pct": 0.0
+  },
+  "CFDB2": {
+   "weight_payload_bytes": 96315220,
+   "weight_length_table_bytes": 276480,
+   "sign_plane_bytes": 35389440,
+   "weight_total_bytes": 131981140,
+   "scale_streams_bytes": 1093228,
+   "record_total_bytes_all8": 133074368,
+   "per_record_bytes": 16634296.0,
+   "ratio_of_raw_record_18800640": 0.8847728587962963,
+   "weight_bits_per_w_rans_only": 2.7215807879412615,
+   "weight_bits_per_w_total": 3.7293932879412615,
+   "mean_stream_bytes": 696.7246817129629,
+   "max_stream_bytes": 844,
+   "encode_s": 40.11298060417175,
+   "delta_vs_same_alphabet_baseline_pct": -2.287234131993754
+  }
+ }
+}

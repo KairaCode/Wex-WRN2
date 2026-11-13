@@ -1,0 +1,31 @@
+lock: taken 2026-11-09T01:50:04
+quiet: no build/encode/copy/python process at 01:50:04
+GUID combinazione risparmio energia: 381b4222-f694-41f0-9685-ff5bb260df2e  (Bilanciato)RAM: 15.5 GB available at 01:50:06, RAM_GB=16 for every arm
+7a6f3e3f30e608c900af35f7d2ea13a0d81a6432c295693e465f6351a9b7459f *<KAIRA>/lab/v41-port-20261106/ws-ab/bin/deepseek_v4.exe
+b1b7cdb518d2f309371602efbe58c48736574962caa1ef9b7a12af81f12e404b *<KAIRA>/lab/v41-port-20261106/ws-ab/dll-out/coli_cuda_dsv4_dg.dll
+5483b6a774c2bab892809d7561a434936d1bc3803ac46e9877c03e3b5320fc52 *<KAIRA>/lab/v41-port-20261106/ws-ab/dll-out/coli_cuda_dsv4.dll
+cceb4fb573b3b3e7b71843bf85a2b87cf9efdd94155bfc5deec717cce949e782 *<KAIRA>/lab/v41-gpu-20261107/w1/build/kaira_wex_cuda.dll
+d26fd1c2629594759af569a5252f94e4568d4ebeca67dc323834deb141aa278a *<KAIRA>/lab/v41-port-20261106/ws-ab/bin/cudart64_13.dll
+cad63434448e7141629e240ea093ad596a7ef6a0f67b468ba9bc1df6e1eeee33 *<KAIRA>/lab/v41-port-20261106/ws-ab/bin/cublasLt64_13.dll
+== w3-smoke-A-wex1 01:50:08 available RAM 15.5 GB, GPU 1562 MiB, 3 %, COLI_WEX_PATH=U:\kaira_wex\v41-reap\v4_flash_experts.wex
+READY after 16.8 s
+w0 ttft 4.21 DONE w0 STAT 16 2.130 33.9 0.00 9 1 0 PROF 11.694 9 16 54.091 6.185 1.800 3.684 0.022 24 TIERS 949 240 6491 17.84 4.51
+rc=0 01:50:40 logits sha256 \c6e4044f8f956e6
+   checks: ready=1 container=1 dense_uploads=40 dense_gpu=1 next_prefetch=1 gpu_direct=1 batch=1 moe_gpu=1
+[    0.922] ram_tiers available=15.49GiB dense=resident(6.65GiB) target_slots=6 target_cache=4.20GiB head=resident-bf16 projected=15.20GiB
+[   29.826] v4_direct reads=4868 flock_reads=4868 fallbacks=0 payload_bytes=91521515520
+[   30.702] wexprof demand batches=0 reserved=0 published=0 per_batch=0.00 read_ms=0.0 decode_ms=0.0 decode_ms_per_record=0.000 | per-record loads=0 read_ms=0.0 decode_ms=0.0 read_ms_per_record=0.000 decode_ms_per_record=0.000
+[   30.702] wexprof prefetch batches=0 reserved=0 published=0 per_batch=0.00 read_ms=0.0 decode_ms=0.0 decode_ms_per_record=0.000 | per-record loads=0 read_ms=0.0 decode_ms=0.0 read_ms_per_record=0.000 decode_ms_per_record=0.000
+== w3-smoke-B-wnr2 01:50:51 available RAM 19.2 GB, GPU 1559 MiB, 4 %, COLI_WEX_PATH=U:\kaira_wex\v41-reap\v4_flash_experts.nr2.wex
+READY after 18.3 s
+w0 ttft 4.46 DONE w0 STAT 16 2.231 33.2 0.00 9 1 0 PROF 11.608 9 16 56.626 5.200 2.580 3.806 0.020 24 TIERS 931 360 6389 17.50 6.77
+rc=0 01:51:24 logits sha256 \c6e4044f8f956e6
+   checks: ready=1 container=1 dense_uploads=40 dense_gpu=1 next_prefetch=1 gpu_direct=1 batch=1 moe_gpu=1
+[    0.659] ram_tiers available=16.00GiB dense=resident(6.65GiB) target_slots=9 target_cache=6.30GiB head=resident-bf16 projected=15.37GiB
+[   30.651] v4_direct reads=2954 flock_reads=2954 fallbacks=0 payload_bytes=49968201728
+[   30.651] v4_wex_gpu_direct reads=2040 payload_bytes=34512625664 ram_skips=744 failures=0 device_decodes=2040
+[   31.141] wexprof demand batches=272 reserved=417 published=417 per_batch=1.53 read_ms=2678.7 decode_ms=322.9 decode_ms_per_record=0.774 | per-record loads=0 read_ms=0.0 decode_ms=0.0 read_ms_per_record=0.000 decode_ms_per_record=0.000
+[   31.142] wexprof prefetch batches=918 reserved=1620 published=1620 per_batch=1.76 read_ms=14835.5 decode_ms=1373.9 decode_ms_per_record=0.848 | per-record loads=3 read_ms=43.7 decode_ms=19.0 read_ms_per_record=14.574 decode_ms_per_record=6.343
+== STOP file found before A1 at 01:51:34: sequence ended
+== done 01:51:34
+lock: released 2026-11-09T01:51:34

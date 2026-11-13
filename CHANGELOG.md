@@ -1,0 +1,50 @@
+# Changelog
+
+Format-level changes only, newest first: container versions, record codecs, flags and ids, the helper's feature bits, the tools that write or convert files, and the date a format went into or out of production. Engine tuning is in [STATUS.md](STATUS.md), its measurements in [docs/BENCHMARKS.md](docs/BENCHMARKS.md).
+
+Every commit id on this page is KAIRA's, where the code lives (`c/` mirrors it). The history of this repository starts on 2026-11-12, when the earlier work (from 2026-11-09) was gathered into one commit; an entry is identified by its date. There are no release tags yet. Specification versions: WEX4 4.0 ([docs/WEX4-SPEC.md](docs/WEX4-SPEC.md)) and WNR3 v1 ([docs/WNR3-SPEC.md](docs/WNR3-SPEC.md)); WEX1 to WEX3 and WNR2 are described in [docs/WNR2-REFERENCE.md](docs/WNR2-REFERENCE.md). The entries before 2026-11-09 come from the timeline and measurement sections of [docs/reports/wnr2-history-20261110.md](docs/reports/wnr2-history-20261110.md) and were not re-verified.
+
+## 2026-11-13
+
+- **2026-11-13** Licence, no format byte changed: the repository is under the Apache License 2.0 (`LICENSE`, `NOTICE`, `THIRD_PARTY_NOTICES.md`). Source files outside `research/` start with an SPDX header; the files derived from colibri (listed in `NOTICE`) name their source and their modification; `check_repo.py` gains the `licence` check. The headers of the files under `c/` (37 after the sync below) still have to reach KAIRA `src/colibri/c`.
+- **2026-11-13** Sync with KAIRA master 940275a (2026-11-13), 37 mirrored files. New checker `c/tools/wex4_verify.c`: one read-only pass over a WEX4 file on N threads (OpenMP, 8 by default) that checks the header page, the index and every blob and record against its SHA-256, and that padding is zero, then prints `COLI_WEX_ROOT=<root>`; exit 0 pass, 1 mismatch, 2 not WEX4. Its test `c/tests/test_wex4_verify.c` and the in-memory WEX4 fixture `c/tests/wex4_fixture.h` come with it. `c/qwen38_wex.h` hashes each WEX4 record at its first read with `COLI_WEX_VERIFY=1` (default 0, and independent of the root, unlike the DeepSeek store) and, under a pinned `COLI_WEX_ROOT`, refuses a container that is not WEX4; the DeepSeek store refuses it too and reads the safetensors instead (W06). New read-only drive probe `c/tools/wexio_probe.py` (Windows). The CPU stand-in helper `c/tests/fake_wex_cuda.c` reports feature 8 with `FAKE_WEX_BATCH_DEVICE=1`. The four new files carry the same licence header as the other mirrored files. WEX4 4.0, no format byte changed.
+- **2026-11-13** Read path of the DeepSeek store, in KAIRA master since the merge of branch rd2-integ-20261112 (048d4fe); no format byte changed, every switch off by default: `V4_WEX_SUBREADS=N` reads each drive's part of a record as N overlapped sub-reads and, with a mirror, cuts host reads and batches across both drives (65913dd); `V4_PREWARM_BATCH=1` fills the VRAM tier through the batched GPU-direct decode, two batches deep (d53f846); `V4_WEX_SHA_ASYNC=1` runs the first-read SHA-256 on a pool of 4 threads, a record being published only after its hash passes (ef3df71, edcfc38); a RAM record-cache hit in the GPU-direct fill is hashed before it is served, as the batch path does (cfac79f). The first two are installed in the `v41gpu` profile; the hash pool is not ([STATUS.md](STATUS.md)). WEX4 4.0.
+- **2026-11-13** WEX4 conformance vectors: `wex4/vectors/` with `MANIFEST.tsv` (7 valid files with their roots, 46 invalid, one legacy WEX3 file whose upgrade must give a valid one byte for byte); WEX4-SPEC section 17 (conformance). WEX4 4.0, no format change.
+- **2026-11-13** Repository layout, no format byte changed: `nr2/` and `bench/` moved to `archive/`; the `next/` stub removed (no mirrored file names it any more); the integration guide of 2026-11-09 became a dated report and `docs/COLIBRI-INTEGRATION.md` a guide for WEX4; the measurements moved from `STATUS.md` to `docs/BENCHMARKS.md`; `scripts/check_all.sh` runs every CPU check.
+- **2026-11-13** Sync with KAIRA master 05d25e3 (2026-11-12): `qwen38_wex.h` names a WEX4 container WEX4 in its log and unpins an MXFP4 record slab before it resizes it (for `QT_GPU_MISS=2`); `test_qwen38_mxfp4.py` checks the WEX1 log name; comments only in `wex4.h` and `build_nr3.py`. No format byte changed.
+
+## 2026-11-12
+
+- **2026-11-12** Repository layout, no format byte changed: the 33 files mirrored from KAIRA are in `c/` at their KAIRA paths, `next/` became `wex4/`, the WEX4 spec is `docs/WEX4-SPEC.md` (stubs stay at `next/` and `docs/NEXT-FORMAT-SPEC.md`), dated reports are in `docs/reports/`; `check_repo.py` and `kaira-sync.tsv` added.
+- **2026-11-12** WEX4 test tools: `wex4_tools.dll` holds the fast WNR3 CPU decoder again, and `wex4/build_and_test.sh` stops if the two test DLLs call the same decoder. Since the sync of 2026-11-11 with KAIRA 7aa9bee both had held the reference decoder, so the fast-against-reference comparison could not fail.
+
+## 2026-11-11
+
+- **2026-11-11** Qwen3.8 containers upgraded in place from WEX1 to WEX4 with `upgrade --names qwen38`: 24,576 RAW records, both copies, same root. WEX4 4.0.
+- **2026-11-11** Sync with KAIRA master 6e793f8: WNR3 tests only (real helper switch, I/O gate, 120 mutations).
+- **2026-11-11** Sync with KAIRA master 7aa9bee: the first-read SHA-256 of WEX4 records is hashed in parallel and a failed record stays refused; striped demand reads (`V4_WEX_STRIPE`, `COLI_WEX_STRIPE`, default off); `wex_cuda.cuh` builds below sm_80 with a plain load in place of `cp.async`; the `WEX4_FAST_NR3` hook leaves `wex4.h`.
+- **2026-11-11** Sync with KAIRA master 485e80b: `qwen38_wex.h` opens WEX4 files (header, index, pinned root); `test_v4_wex_nr3.c` covers WEX4 and the first-read SHA-256. A segment-build guard in `qwen38_wex.h` followed (KAIRA fba32e7).
+- **2026-11-11** Qwen3.8 MXFP4 experts go into WEX1 and WNR3 with no codec change: `qwen38_wex.h`, `repack_q38_mxfp4_wex.py`, tests. CUDA helper feature bit 32, batched decode into host memory.
+- **2026-11-11** WEX4 first-read SHA-256 of every record in the DeepSeek store (KAIRA 4ba5568; `COLI_WEX_VERIFY`, on by default when `COLI_WEX_ROOT` pins the root); SHA-NI path in `wex4.h`. Installed with the root pinned. WEX4 4.0.
+- **2026-11-11** WEX4 converter gets the Qwen3.8 naming profile (`--names qwen38`); loader patch for the qwen38 store (KAIRA de17198).
+- **2026-11-11** WEX4 in production for DeepSeek V4.1: both copies upgraded in place from WEX3 with WNR3 records and verified, same root (gate M4 and installation), after gates M1, M2 and M3 (WEX4-SPEC section 13.5). WEX4 4.0.
+- **2026-11-11** WEX4 `downgrade` recovers a file whose header page is destroyed; engine-side loader prototype `wex4_store.h`.
+- **2026-11-11** WEX4 after the adversarial review: expert grid capped at 2^24 slots and refused without expert records, WBP1 decoded size capped inside the codec, `upgrade` validates the new header and index before it touches the file; the format was then frozen as WEX4 4.0.
+- **2026-11-11** WEX4 introduced: magic `0x57455834`, version 4.0, hashed header page and binary index, SHA-256 per record and blob, record codec 6 (WBP1), in-place upgrade and downgrade of WEX1 and WEX3/WNR3 files; spec, C reader, Python reference, converters, tests (KAIRA loader 75932c1).
+
+## 2026-11-10
+
+- **2026-11-10** WNR3 in production for DeepSeek V4.1 (canonical zero, WEX3 header flags 97); the V4.1 WEX1 file and every WNR2 copy deleted. WNR3 v1.
+- **2026-11-10** Whole V4.1 WNR3 container built and read back: 7,680 of 7,680 records, 123,306,192,896 B.
+- **2026-11-10** WNR3 introduced: entry codec 5, record magic `WNR3`, WEX3 header flags 32 (WNR3 records) and 64 (canonical zero), ceil form, rule-g anchors, a MurmurHash3 per stream, the record's owner; header flags 32 with 4 are invalid. CUDA helper feature bit 16. Builder `build_nr3.py` and its encoder DLL (KAIRA merge 89bdc30). WNR3 v1, frozen that day.
+
+## 2026-11-09 and earlier
+
+- **2026-11-09** This repository starts with WEX1 and WNR2: formats, CPU and CUDA decoders, the helper, the WNR2 encoder, WNM2 models, fixtures.
+- **2026-11-09** DeepSeek V4.1 in production on WNR2 read from two drives (`COLI_WEX_EXTRA_MIRRORS`, `COLI_WEX_WEIGHTS=38,62`); before that it read WEX1 ([docs/BENCHMARKS.md](docs/BENCHMARKS.md), "Earlier results").
+- **2026-11-07** DeepSeek V4.1 REAP-192 containers built: WEX1 144,389,472,256 B and WNR2 129,905,360,896 B, chunks 2048 and 512 stored in each record ([report](docs/reports/v41-reap-wnr2-build-20261107.md)).
+- **2026-11-05** CUDA helper feature bit 8: one batched decode of a layer's WNR2 records into VRAM (installed 2026-11-07).
+- **2026-10-20** WNR2 introduced: entry codec 4, record magic `WNR2`, WEX3 header flag 16, one WNM2 model per container found through the `WNMD` descriptor at header byte 64 and identified by an FNV-1a id; DeepSeek V4 streams of 4096 weight and 2048 scale symbols. Whole DeepSeek V4 container built: 11,008 records, -12.775% against WEX1.
+- **2026-10-19** The CUDA helper decodes records straight into VRAM (GPU-direct modes 1 and 2).
+- **2026-10-18** WEX2 (magic `0x57455832`, scale tiles, header flag 1, entry codec 1) and WEX3 (magic `0x57455833`) with palette3 (codec 2, lossy) and WNR1 (codec 3), tried on samples. WEX2 and WNR1 were never built for a whole model; palette3 was never used in production.
+- **2026-10-17** WEX1 (magic `0x57455831`): first container, DeepSeek V4, 147,170,537,472 B, in production.

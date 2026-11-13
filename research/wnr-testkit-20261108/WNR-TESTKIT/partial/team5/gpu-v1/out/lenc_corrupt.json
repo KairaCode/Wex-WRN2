@@ -1,0 +1,296 @@
+{
+ "info": {
+  "gpu": "NVIDIA GeForce RTX 3070",
+  "sms": 46,
+  "clock_khz_max": 1755000,
+  "smem_per_sm": 102400,
+  "regs_per_sm": 65536,
+  "driver": 13050,
+  "runtime": 12090,
+  "cupy": "14.2.0",
+  "rounds": 5,
+  "nts": [
+   32
+  ],
+  "opts": [
+   "lb"
+  ]
+ },
+ "nvsmi_start": "210 MHz, 405 MHz, 0 %, 16.63 W, 38.53",
+ "original_bytes": {
+  "files": [
+   "L04_E038.bin",
+   "L00_E097.bin",
+   "L10_E015.bin",
+   "L20_E005.bin",
+   "L30_E002.bin",
+   "L39_E156.bin",
+   "L15_E025.bin",
+   "L25_E000.bin"
+  ],
+  "sha256_ok": 8,
+  "eq_encoder_raw": true,
+  "eq_encoder_scales": true,
+  "eq_team4_common_raw": true,
+  "eq_team4_common_scales": true
+ },
+ "compile_s": 0.10557079315185547,
+ "lenc_corruption": {
+  "H1C": {
+   "clean_records_exact": 8,
+   "by_field": {
+    "header_sbase_alpha": {
+     "trials": 800,
+     "rejected": 798,
+     "accepted_exact": 2,
+     "accepted_wrong": 0,
+     "weight_status_or_hist": {
+      "15": 789,
+      "14": 9
+     },
+     "scale_status_or_hist": {
+      "0": 400,
+      "15": 186,
+      "14": 212
+     },
+     "rejected_by_lenc_bit_any": 798
+    },
+    "s_base_off": {
+     "trials": 800,
+     "rejected": 800,
+     "accepted_exact": 0,
+     "accepted_wrong": 0,
+     "weight_status_or_hist": {
+      "14": 501,
+      "15": 299
+     },
+     "scale_status_or_hist": {
+      "14": 768,
+      "15": 32
+     },
+     "rejected_by_lenc_bit_any": 800
+    },
+    "s_width": {
+     "trials": 800,
+     "rejected": 800,
+     "accepted_exact": 0,
+     "accepted_wrong": 0,
+     "weight_status_or_hist": {
+      "14": 800
+     },
+     "scale_status_or_hist": {
+      "14": 800
+     },
+     "rejected_by_lenc_bit_any": 800
+    },
+    "s_pad": {
+     "trials": 800,
+     "rejected": 800,
+     "accepted_exact": 0,
+     "accepted_wrong": 0,
+     "weight_status_or_hist": {
+      "14": 800
+     },
+     "scale_status_or_hist": {
+      "14": 800
+     },
+     "rejected_by_lenc_bit_any": 800
+    },
+    "s_words": {
+     "trials": 800,
+     "rejected": 800,
+     "accepted_exact": 0,
+     "accepted_wrong": 0,
+     "weight_status_or_hist": {
+      "14": 636,
+      "15": 150,
+      "0": 14
+     },
+     "scale_status_or_hist": {
+      "14": 754,
+      "15": 17,
+      "6": 15,
+      "0": 14
+     },
+     "rejected_by_lenc_bit_any": 800
+    },
+    "w_base_off": {
+     "trials": 800,
+     "rejected": 800,
+     "accepted_exact": 0,
+     "accepted_wrong": 0,
+     "weight_status_or_hist": {
+      "14": 767,
+      "15": 33
+     },
+     "scale_status_or_hist": {
+      "0": 800
+     },
+     "rejected_by_lenc_bit_any": 800
+    },
+    "w_width": {
+     "trials": 800,
+     "rejected": 800,
+     "accepted_exact": 0,
+     "accepted_wrong": 0,
+     "weight_status_or_hist": {
+      "14": 800
+     },
+     "scale_status_or_hist": {
+      "14": 800
+     },
+     "rejected_by_lenc_bit_any": 800
+    },
+    "w_words": {
+     "trials": 800,
+     "rejected": 800,
+     "accepted_exact": 0,
+     "accepted_wrong": 0,
+     "weight_status_or_hist": {
+      "14": 775,
+      "15": 25
+     },
+     "scale_status_or_hist": {
+      "0": 800
+     },
+     "rejected_by_lenc_bit_any": 800
+    }
+   },
+   "trials": 6400,
+   "seconds": 62.01984524726868,
+   "variant": "G5HL + SHLd, section H1C"
+  },
+  "G14": {
+   "clean_records_exact": 8,
+   "by_field": {
+    "header_sbase_alpha": {
+     "trials": 800,
+     "rejected": 800,
+     "accepted_exact": 0,
+     "accepted_wrong": 0,
+     "weight_status_or_hist": {
+      "15": 793,
+      "14": 4,
+      "31": 3
+     },
+     "scale_status_or_hist": {
+      "0": 402,
+      "14": 187,
+      "10": 51,
+      "15": 160
+     },
+     "rejected_by_lenc_bit_any": 800
+    },
+    "s_base_off": {
+     "trials": 800,
+     "rejected": 800,
+     "accepted_exact": 0,
+     "accepted_wrong": 0,
+     "weight_status_or_hist": {
+      "14": 509,
+      "15": 290,
+      "31": 1
+     },
+     "scale_status_or_hist": {
+      "14": 665,
+      "10": 110,
+      "15": 25
+     },
+     "rejected_by_lenc_bit_any": 800
+    },
+    "s_width": {
+     "trials": 800,
+     "rejected": 800,
+     "accepted_exact": 0,
+     "accepted_wrong": 0,
+     "weight_status_or_hist": {
+      "14": 800
+     },
+     "scale_status_or_hist": {
+      "14": 800
+     },
+     "rejected_by_lenc_bit_any": 800
+    },
+    "s_pad": {
+     "trials": 800,
+     "rejected": 800,
+     "accepted_exact": 0,
+     "accepted_wrong": 0,
+     "weight_status_or_hist": {
+      "14": 800
+     },
+     "scale_status_or_hist": {
+      "14": 800
+     },
+     "rejected_by_lenc_bit_any": 800
+    },
+    "s_words": {
+     "trials": 800,
+     "rejected": 800,
+     "accepted_exact": 0,
+     "accepted_wrong": 0,
+     "weight_status_or_hist": {
+      "14": 639,
+      "15": 141,
+      "0": 17,
+      "6": 3
+     },
+     "scale_status_or_hist": {
+      "14": 735,
+      "10": 15,
+      "15": 21,
+      "6": 12,
+      "0": 16,
+      "2": 1
+     },
+     "rejected_by_lenc_bit_any": 799
+    },
+    "w_base_off": {
+     "trials": 800,
+     "rejected": 800,
+     "accepted_exact": 0,
+     "accepted_wrong": 0,
+     "weight_status_or_hist": {
+      "14": 754,
+      "15": 46
+     },
+     "scale_status_or_hist": {
+      "0": 800
+     },
+     "rejected_by_lenc_bit_any": 800
+    },
+    "w_width": {
+     "trials": 800,
+     "rejected": 800,
+     "accepted_exact": 0,
+     "accepted_wrong": 0,
+     "weight_status_or_hist": {
+      "14": 800
+     },
+     "scale_status_or_hist": {
+      "14": 800
+     },
+     "rejected_by_lenc_bit_any": 800
+    },
+    "w_words": {
+     "trials": 800,
+     "rejected": 800,
+     "accepted_exact": 0,
+     "accepted_wrong": 0,
+     "weight_status_or_hist": {
+      "14": 757,
+      "15": 43
+     },
+     "scale_status_or_hist": {
+      "0": 800
+     },
+     "rejected_by_lenc_bit_any": 800
+    }
+   },
+   "trials": 6400,
+   "seconds": 50.56379747390747,
+   "variant": "G5L + SLd, section G14"
+  }
+ },
+ "nvsmi_end": "1620 MHz, 6801 MHz, 0 %, 59.90 W, 48.38"
+}

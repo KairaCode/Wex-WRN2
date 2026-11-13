@@ -1,0 +1,28 @@
+# WNR test kit, GPU runners (CuPy + NVRTC from pip wheels, no CUDA Toolkit install needed).
+# This is the ONLY GPU requirements file of the kit (tests\gpu\requirements-gpu.txt forwards here); it includes the
+# CPU set. One venv named "venv" in the kit root for everything:
+#   python -m venv venv
+#   .\venv\Scripts\python.exe -m pip install -r setup\requirements-gpu.txt
+# run_all.ps1 picks up <kit>\venv\Scripts\python.exe automatically.
+#
+# Requirements:
+#   * Python >= 3.11 for the GPU part (cuda-pathfinder 1.8.6, a CuPy 14 dependency, needs 3.11+; numpy 2.5.4 needs
+#     3.12+, older Pythons get numpy 2.0-2.5 from requirements-cpu.txt). Python 3.12+ reproduces the reference pins
+#     exactly. A Python 3.10 fallback is given below but was NEVER tested; prefer installing Python 3.12+.
+#   * NVIDIA driver with CUDA >= 12.8 support. RTX 5090 / RTX 50xx (Blackwell, sm_120) needs CUDA 12.8+
+#     runtime and NVRTC (driver R570 or newer); the 12.9 wheels below satisfy this. Check: nvidia-smi
+#     shows "CUDA Version: 12.8" or higher. CUDA 13.x drivers also run these 12.9 wheels.
+#   * The CuPy wheel is cupy-cuda12x (CUDA 12.x build; NOT cupy-cuda11x, NOT the source package "cupy").
+#     Its NVRTC must know sm_120: check_env.py compiles a test kernel for the local arch and for sm_120.
+#
+# Exact versions used on the reference PC (RTX 3070 sm_86, Windows 10, CPython 3.14.7):
+-r requirements-cpu.txt
+cupy-cuda12x==14.2.0; python_version >= "3.11"
+cuda-pathfinder==1.8.6; python_version >= "3.11"
+cuda-toolkit[nvrtc,cudart]==12.9.2.0; python_version >= "3.11"
+nvidia-cuda-nvrtc-cu12==12.9.86
+nvidia-cuda-runtime-cu12==12.9.79
+# Python 3.10 only (UNTESTED fallback: pip picks whatever CuPy 13/14 and cuda-pathfinder still support 3.10; the
+# versions are recorded in every summary.json, report them):
+cupy-cuda12x>=13.3,<15; python_version < "3.11"
+# Equivalent one-liner: python -m pip install "cupy-cuda12x[ctk]==14.2.0"  (pulls more CUDA libraries).

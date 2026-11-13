@@ -1,0 +1,50 @@
+{
+  "id": "v41gpu",
+  "name": "DeepSeek V4.1 Flash REAP-192 (Colibri, GPU)",
+  "engine": "colibri",
+  "colibri": {
+    "python": "C:\\Python314\\python.exe",
+    "runtime_dir": "<KAIRA>\\app\\colibri-optimized",
+    "model_dir": "U:\\models\\DeepSeek-V4.1-Flash-1017-REAP192-MXFP4",
+    "mirror_dir": null,
+    "ram_gib": 0,
+    "path_prepend": [
+      "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v13.4\\bin\\x64"
+    ],
+    "extra_args": [],
+    "env": {
+      "COLI_FAMILY_ENGINE": "deepseek_v4",
+      "COLI_WEX_PATH": "U:\\kaira_wex\\v41-reap\\v4_flash_experts.wex",
+      "COLI_MODEL_DIRS": "C:\\models\\DeepSeek-V4.1-Flash-1017-engram;E:\\models\\DeepSeek-V4.1-Flash-1017-engram",
+      "COLI_V4_SAVE_USAGE": "0",
+      "DSV4_CUDA": "1",
+      "DSV4_CUDA_VRAM_RESERVE_MB": "4096",
+      "DSV4_CUDA_EXPERT_MIRRORS": "5500",
+      "DSV4_CUDA_STREAM_PRIORITY": "1",
+      "DSV4_DECODE_PROF": "1",
+      "V4_PREDICT_STATS": "1",
+      "V4_COPY_WORKER": "1",
+      "V4_PROMOTE_VRAM": "2",
+      "V4_ASYNC_ATTACH": "1",
+      "V4_VRAM_FIRST": "1",
+      "V4_GPU_HOT_CACHE": "1",
+      "COLI_V4_TIER_PREWARM": "1",
+      "V4_LOADER_LANES": "8",
+      "COLI_DIRECT_OVERLAPPED": "1",
+      "V4_NEXT_PREFETCH": "1",
+      "V4_NEXT_PREFETCH_K": "8",
+      "V4_NEXT_PREFETCH_DEPTH": "2",
+      "V4_NEXT_PREFETCH_K2": "4",
+      "V4_NEXT_PREFETCH_THREADS": "8",
+      "V4_NEXT_PREFETCH_KEEP": "1",
+      "V4_NEXT_PREFETCH_TOKSTART": "1",
+      "V4_NEXT_PREFETCH_AVX2": "1",
+      "V4_PREFETCH_NO_CREDIT": "1",
+      "V4_ROUTER_AVX2": "1",
+      "V4_NP_ONLINE": "1",
+      "COLI_WEX_GPU_DIRECT": "2",
+      "V4_GPU_HEAD": "1"
+    },
+    "ctx": 32768
+  }
+}

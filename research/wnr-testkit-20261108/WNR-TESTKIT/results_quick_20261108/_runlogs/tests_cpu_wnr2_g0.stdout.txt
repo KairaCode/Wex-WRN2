@@ -1,0 +1,42 @@
+[     0.2s] == wnr2_g0 (quick) root=<KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT out=<KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\results\wnr2_g0 jobs=15
+[     0.2s] environment {"os": "Windows-11-10.0.26300-SP0", "system": "Windows", "machine": "AMD64", "cpu": "AMD Ryzen 9 7950X3D 16-Core Processor", "logical_cpus": 32, "ram_gb": 31.2, "gpu": ["NVIDIA GeForce RTX 5090, 621.01, 32607 MiB, 12.0"], "python": "3.14.8", "python_impl": "CPython", "numpy": "2.5.4", "cupy": {"cupy-cuda12x": "14.2.0"}, "nvrtc": {"nvidia-cuda-nvrtc-cu12": "12.9.86"}}
+[     0.2s] sample dir <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\data\v41-sample: 160/160 experts present, manifest = kit
+[     0.2s] model med: id 0xfc992a63, blob <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\results\wnr2_g0\med.wnm2
+[     0.2s] model c120: id 0x750c0967, blob <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\results\wnr2_g0\c120.wnm2
+[     0.2s] model pair: id 0x750c0967, blob <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\results\wnr2_g0\pair.wnm2
+[     0.3s] check model_ids_equal_team5: ok {'here': {'med': 4237896291, 'c120': 1963723111, 'pair': 1963723111}, 'ref': {'med': 4237896291, 'c120': 1963723111, 'pair': 1963723111, 'c119': 1638005140, 'c121': 3267482558}}
+[     0.3s] 4 experts x 3 rules = 12 records on 15 workers
+[     7.3s] record 1/12 done (7s)
+[     7.3s] L00_E113.bin med   anchors [120, 120, 120] med [120, 120, 120] total 16887808 D1 True D2 True
+[     7.4s] record 2/12 done (7s)
+[     7.4s] L00_E113.bin c120  anchors [120, 120, 120] med [120, 120, 120] total 16883712 D1 True D2 True
+[     7.7s] record 3/12 done (7s)
+[     7.7s] L00_E113.bin pair  anchors [120, 120, 120] med [120, 120, 120] total 16883712 D1 True D2 True
+[     8.4s] record 4/12 done (8s)
+[     8.4s] L24_E058.bin med   anchors [120, 121, 120] med [120, 121, 120] total 17297408 D1 True D2 True
+[     8.6s] record 5/12 done (8s)
+[     8.6s] L38_E005.bin med   anchors [120, 121, 121] med [120, 121, 121] total 17252352 D1 True D2 True
+[     9.3s] record 6/12 done (9s)
+[     9.3s] L39_E156.bin med   anchors [121, 121, 121] med [121, 121, 121] total 17563648 D1 True D2 True
+[    13.7s] record 7/12 done (13s)
+[    13.7s] L24_E058.bin c120  anchors [120, 120, 120] med [120, 121, 120] total 17055744 D1 True D2 True R1 weight streams failed: 5760
+[    14.2s] record 8/12 done (14s)
+[    14.2s] L38_E005.bin c120  anchors [120, 120, 120] med [120, 121, 121] total 16797696 D1 True D2 True R1 weight streams failed: 11520
+[    14.3s] record 9/12 done (14s)
+[    14.3s] L24_E058.bin pair  anchors [120, 120, 120] med [120, 121, 120] total 17055744 D1 True D2 True R1 weight streams failed: 5760
+[    14.4s] record 10/12 done (14s)
+[    14.4s] L38_E005.bin pair  anchors [120, 120, 120] med [120, 121, 121] total 16797696 D1 True D2 True R1 weight streams failed: 11520
+[    14.9s] record 11/12 done (15s)
+[    14.9s] L39_E156.bin c120  anchors [120, 120, 120] med [121, 121, 121] total 16977920 D1 True D2 True R1 weight streams failed: 17280
+[    15.0s] record 12/12 done (15s)
+[    15.0s] L39_E156.bin pair  anchors [120, 120, 120] med [121, 121, 121] total 16977920 D1 True D2 True R1 weight streams failed: 17280
+[    15.1s] med   total   17250304.0 ratio 0.91754 anchors!=med 0 D1 4/4 D2 4/4
+[    15.1s] c120  total   16928768.0 ratio 0.90044 anchors!=med 6 D1 4/4 D2 4/4 vs med -1.7102% CI -2.7669..-0.6209
+[    15.1s] pair  total   16928768.0 ratio 0.90044 anchors!=med 6 D1 4/4 D2 4/4 vs med -1.7102% CI -2.7669..-0.6209
+[    15.1s] check sources_sha256: ok
+[    15.1s] check headers_carry_rule_anchors: ok
+[    15.1s] check plain_wnr2_decoders_byte_exact: ok []
+[    15.1s] check rederive_never_silent_wrong (R1): ok []
+[    15.1s] check records_identical_to_team5 (sha256): ok {'compared': 12, 'mismatch': []}
+[    15.1s] summary <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\results\wnr2_g0\summary.json
+RESULT wnr2_g0 PASS 4 experts; c120 -1.710%raw vs med (6 anchor mismatches); pair -1.710%raw vs med (6 anchor mismatches)

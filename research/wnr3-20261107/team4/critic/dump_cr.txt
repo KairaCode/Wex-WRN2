@@ -1,0 +1,548 @@
+﻿===== <RESEARCH-PC>\team4\ceil-ref\results\heldout_summary.json n_experts 40 raw 18800640
+experts [1, 7, 9, 15, 17] ... 40
+wnr2      tot     16909926.4 ratio 0.89943 chk 0.89943 sumparts   16909926.4 bw 3.7801/3.7801 bs 1.0610/1.0610 LT 38880.0 SP 146675.6 WP 16722151.7 pad 2187.1 hdr 32 dpct 0.0 CI [0.0, 0.0] med 0.0 dec 40/40 equal to reference (byte-exact) bx 40/40 fb n/a (no F) flags [0] blob 59408 rows 655 comp 24144 t {'enc_total_median': 3.0, 'dec_total_median': 2.7805} side 0.0 hist None
+f         tot     16578764.8 ratio 0.88182 chk 0.88182 sumparts   16578764.8 bw 3.7080/3.7080 bs 0.9755/0.9755 LT 38880.0 SP 134849.5 WP 16402894.8 pad 2092.6 hdr 48 dpct -1.7614379084967318 CI [-1.948257080610022, -1.6318082788671027] med -1.6557734204793029 dec 40/40 equal to reference (byte-exact) bx 40/40 fb [] flags [16] blob 59708 rows 637 comp 23532 t {'enc_total_median': 3.351, 'dec_total_median': 3.0985} side 0.0 hist None
+fg        tot     16578252.8 ratio 0.88179 chk 0.88179 sumparts   16578252.8 bw 3.7078/3.7078 bs 0.9755/0.9755 LT 38880.0 SP 134849.5 WP 16402041.6 pad 2433.7 hdr 48 dpct -1.7641612200435728 CI [-1.9270288671023965, -1.6399782135076255] med -1.6557734204793029 dec 40/40 equal to reference (byte-exact) bx 40/40 fb [] flags [16] blob 59708 rows 572 comp 21322 t {'enc_total_median': 3.357, 'dec_total_median': 3.0934999999999997} side 0.0 hist None
+fgd       tot     16551833.6 ratio 0.88039 chk 0.88039 sumparts   16551833.6 bw 3.7078/3.7078 bs 0.9755/0.9755 LT 13088.8 SP 134849.5 WP 16402041.6 pad 1805.7 hdr 48 dpct -1.9046840958605664 CI [-2.059381808278867, -1.7810457516339868] med -1.8082788671023966 dec 40/40 equal to reference (byte-exact) bx 40/40 fb [] flags [20] blob 59708 rows 572 comp 21322 t {'enc_total_median': 3.388, 'dec_total_median': 3.0380000000000003} side 0.0 hist None
+fge       tot     16579174.4 ratio 0.88184 chk 0.88184 sumparts   16579174.4 bw 3.7081/3.7081 bs 0.9765/0.9765 LT 38880.0 SP 134994.7 WP 16403247.9 pad 2003.8 hdr 48 dpct -1.7592592592592593 CI [-1.9161220043572984, -1.635607298474946] med -1.6557734204793029 dec 40/40 equal to reference (byte-exact) bx 40/40 fb [] flags [24] blob 59708 rows 572 comp 21322 t {'enc_total_median': 3.6559999999999997, 'dec_total_median': 3.2085} side 0.0 hist None
+fgde      tot     16553676.8 ratio 0.88048 chk 0.88048 sumparts   16553676.8 bw 3.7081/3.7081 bs 0.9765/0.9765 LT 13091.0 SP 134994.7 WP 16403247.9 pad 2295.2 hdr 48 dpct -1.894880174291939 CI [-2.049019607843137, -1.772875816993464] med -1.7864923747276689 dec 40/40 equal to reference (byte-exact) bx 40/40 fb [] flags [28] blob 59708 rows 572 comp 21322 t {'enc_total_median': 3.6865, 'dec_total_median': 3.197} side 0.0 hist None
+fgt       tot     16537804.8 ratio 0.87964 chk 0.87964 sumparts   16537804.8 bw 3.6988/3.6988 bs 0.9719/0.9719 LT 38880.0 SP 134356.1 WP 16362335.7 pad 2185.1 hdr 48 dpct -1.9793028322440087 CI [-2.1340005446623094, -1.8540305010893245] med -1.8736383442265796 dec 40/40 equal to reference (byte-exact) bx 40/40 fb [] flags [48] blob 59708 rows 572 comp 21322 t {'enc_total_median': 3.605, 'dec_total_median': 3.0995} side 0.0 hist None
+fgdt      tot     16512102.4 ratio 0.87827 chk 0.87827 sumparts   16512102.4 bw 3.6988/3.6988 bs 0.9719/0.9719 LT 13094.1 SP 134356.1 WP 16362335.7 pad 2268.6 hdr 48 dpct -2.116013071895425 CI [-2.271800108932462, -1.9918300653594772] med -2.0043572984749454 dec 40/40 equal to reference (byte-exact) bx 40/40 fb [] flags [52] blob 59708 rows 572 comp 21322 t {'enc_total_median': 3.6325000000000003, 'dec_total_median': 3.0925000000000002} side 0.0 hist None
+fga       tot     16588185.6 ratio 0.88232 chk 0.88232 sumparts   16588185.6 bw 3.7102/3.7102 bs 0.9755/0.9755 LT 38880.0 SP 134849.5 WP 16412683.6 pad 1724.5 hdr 48 dpct -1.7113289760348585 CI [-1.869281045751634, -1.5909586056644882] med -1.6122004357298474 dec 40/40 equal to reference (byte-exact) bx 40/40 fb [] flags [17] blob 349046 rows 2189 comp 76468 t {'enc_total_median': 3.183, 'dec_total_median': 2.697} side 0.0332184065002111 hist None
+fgad      tot     16562688.0 ratio 0.88096 chk 0.88096 sumparts   16562688.0 bw 3.7102/3.7102 bs 0.9755/0.9755 LT 13158.4 SP 134849.5 WP 16412683.6 pad 1948.5 hdr 48 dpct -1.8469498910675382 CI [-2.003267973856209, -1.7244008714596952] med -1.7429193899782136 dec 40/40 equal to reference (byte-exact) bx 40/40 fb [] flags [21] blob 349046 rows 2189 comp 76468 t {'enc_total_median': 3.2110000000000003, 'dec_total_median': 2.715} side 0.0332184065002111 hist None
+fgaK2     tot     16586137.6 ratio 0.88221 chk 0.88221 sumparts   16586137.6 bw 3.7097/3.7097 bs 0.9755/0.9755 LT 38880.0 SP 134849.5 WP 16410596.9 pad 1763.2 hdr 48 dpct -1.7222222222222223 CI [-1.886165577342048, -1.5920479302832244] med -1.6122004357298474 dec 40/40 equal to reference (byte-exact) bx 40/40 fb [] flags [17] blob 233322 rows 1573 comp 55468 t {'enc_total_median': 3.62, 'dec_total_median': 2.5255} side 0.03310221851308053 hist [74, 46]
+fgaK2d    tot     16560640.0 ratio 0.88086 chk 0.88086 sumparts   16560640.0 bw 3.7097/3.7097 bs 0.9755/0.9755 LT 13157.5 SP 134849.5 WP 16410596.9 pad 1988.1 hdr 48 dpct -1.857843137254902 CI [-2.0190767973856207, -1.7287581699346404] med -1.7429193899782136 dec 40/40 equal to reference (byte-exact) bx 40/40 fb [] flags [21] blob 233322 rows 1573 comp 55468 t {'enc_total_median': 3.6455, 'dec_total_median': 2.4975} side 0.03310221851308053 hist [74, 46]
+fgc       tot     16063078.4 ratio 0.85439 chk 0.85439 sumparts   16063078.4 bw 3.5914/3.5914 bs 0.9755/0.9755 LT 38880.0 SP 134849.5 WP 15887193.6 pad 2107.4 hdr 48 dpct -4.504357298474946 CI [-4.65796568627451, -4.380718954248366] med -4.400871459694989 dec 40/40 equal to reference (value-exact (8->0)) bx 0/40 fb [] flags [18] blob 59708 rows 572 comp 21322 t {'enc_total_median': 3.3475, 'dec_total_median': 3.1125} side 0.0 hist None
+fgcd      tot     16037273.6 ratio 0.85302 chk 0.85302 sumparts   16037273.6 bw 3.5914/3.5914 bs 0.9755/0.9755 LT 13366.1 SP 134849.5 WP 15887193.6 pad 1816.5 hdr 48 dpct -4.64161220043573 CI [-4.7973856209150325, -4.51797385620915] med -4.531590413943355 dec 40/40 equal to reference (value-exact (8->0)) bx 0/40 fb [] flags [22] blob 59708 rows 572 comp 21322 t {'enc_total_median': 3.3785, 'dec_total_median': 3.093} side 0.0 hist None
+fgce      tot     16064307.2 ratio 0.85446 chk 0.85446 sumparts   16064307.2 bw 3.5917/3.5917 bs 0.9765/0.9765 LT 38880.0 SP 134995.5 WP 15888400.4 pad 1983.2 hdr 48 dpct -4.4978213507625275 CI [-4.655228758169935, -4.372549019607843] med -4.389978213507625 dec 40/40 equal to reference (value-exact (8->0)) bx 0/40 fb [] flags [26] blob 59708 rows 572 comp 21322 t {'enc_total_median': 3.6825, 'dec_total_median': 3.1135} side 0.0 hist None
+fgcde     tot     16038707.2 ratio 0.85309 chk 0.85309 sumparts   16038707.2 bw 3.5917/3.5917 bs 0.9765/0.9765 LT 13366.8 SP 134995.5 WP 15888400.4 pad 1896.4 hdr 48 dpct -4.633986928104576 CI [-4.789760348583878, -4.5119825708061] med -4.531590413943355 dec 40/40 equal to reference (value-exact (8->0)) bx 0/40 fb [] flags [30] blob 59708 rows 572 comp 21322 t {'enc_total_median': 3.7095000000000002, 'dec_total_median': 3.1265} side 0.0 hist None
+fgaK2ce   tot     16073318.4 ratio 0.85493 chk 0.85493 sumparts   16073318.4 bw 3.5936/3.5936 bs 0.9765/0.9765 LT 38880.0 SP 134994.9 WP 15896916.8 pad 2478.8 hdr 48 dpct -4.449891067538126 CI [-4.613289760348584, -4.320806100217865] med -4.335511982570806 dec 40/40 equal to reference (value-exact (8->0)) bx 0/40 fb [] flags [27] blob 233322 rows 1573 comp 55468 t {'enc_total_median': 3.9139999999999997, 'dec_total_median': 2.6559999999999997} side 0.03310174325202799 hist [76, 44]
+fgaK2cde  tot     16047718.4 ratio 0.85357 chk 0.85357 sumparts   16047718.4 bw 3.5936/3.5936 bs 0.9765/0.9765 LT 13436.2 SP 134994.9 WP 15896916.8 pad 2322.6 hdr 48 dpct -4.586056644880174 CI [-4.745656318082789, -4.458605664488018] med -4.466230936819172 dec 40/40 equal to reference (value-exact (8->0)) bx 0/40 fb [] flags [31] blob 233322 rows 1573 comp 55468 t {'enc_total_median': 3.941, 'dec_total_median': 2.5815} side 0.03310174325202799 hist [76, 44]
+--- pairwise
+{
+"f vs wnr2": {
+"delta_total_bytes": -331161.6,
+"total_CI95": [
+-366796.8,
+-306892.8
+],
+"delta_used_bytes": -331067.125,
+"used_CI95": [
+-365808.205625,
+-306883.11562500003
+],
+"delta_used_pct_of_raw": -1.7609353990076932,
+"median_used_bytes": -310655.0,
+"experts_improved_used": 40
+},
+"fg vs f (g on ceil-form)": {
+"delta_total_bytes": -512.0,
+"total_CI95": [
+-16588.8,
+15360.0
+],
+"delta_used_bytes": -853.125,
+"used_CI95": [
+-16952.530625000003,
+15061.531874999999
+],
+"delta_used_pct_of_raw": -0.004537744459763072,
+"median_used_bytes": -742.5,
+"experts_improved_used": 38
+},
+"fgd vs fg (d)": {
+"delta_total_bytes": -26419.2,
+"total_CI95": [
+-27136.0,
+-25702.4
+],
+"delta_used_bytes": -25791.2,
+"used_CI95": [
+-26080.2125,
+-25483.1
+],
+"delta_used_pct_of_raw": -0.13718256399782136,
+"median_used_bytes": -25872.0,
+"experts_improved_used": 40
+},
+"fge vs fg (e)": {
+"delta_total_bytes": 921.6,
+"total_CI95": [
+409.6,
+1433.6
+],
+"delta_used_bytes": 1351.575,
+"used_CI95": [
+1339.3,
+1362.925
+],
+"delta_used_pct_of_raw": 0.0071889839920343136,
+"median_used_bytes": 1358.5,
+"experts_improved_used": 0
+},
+"fgde vs fgd (e on d)": {
+"delta_total_bytes": 1843.2,
+"total_CI95": [
+1228.8,
+2457.6
+],
+"delta_used_bytes": 1353.775,
+"used_CI95": [
+1339.85,
+1367.7
+],
+"delta_used_pct_of_raw": 0.007200685721337146,
+"median_used_bytes": 1360.5,
+"experts_improved_used": 0
+},
+"fgt vs fg (tail seeding)": {
+"delta_total_bytes": -40448.0,
+"total_CI95": [
+-40857.6,
+-40038.4
+],
+"delta_used_bytes": -40199.325,
+"used_CI95": [
+-40264.576875,
+-40149.674375
+],
+"delta_used_pct_of_raw": -0.2138189178666258,
+"median_used_bytes": -40168.0,
+"experts_improved_used": 40
+},
+"fgdt vs fgd (tail seeding on d)": {
+"delta_total_bytes": -39731.2,
+"total_CI95": [
+-40243.2,
+-39116.8
+],
+"delta_used_bytes": -40194.025,
+"used_CI95": [
+-40261.57625,
+-40141.474375
+],
+"delta_used_pct_of_raw": -0.2137907273369417,
+"median_used_bytes": -40170.0,
+"experts_improved_used": 40
+},
+"fgdt vs fgde (tail instead of hash)": {
+"delta_total_bytes": -41574.4,
+"total_CI95": [
+-42086.4,
+-41164.8
+],
+"delta_used_bytes": -41547.8,
+"used_CI95": [
+-41617.8275,
+-41495.198124999995
+],
+"delta_used_pct_of_raw": -0.22099141305827888,
+"median_used_bytes": -41530.5,
+"experts_improved_used": 40
+},
+"fga vs fg (a, 3-valued)": {
+"delta_total_bytes": 9932.8,
+"total_CI95": [
+9011.2,
+11161.6
+],
+"delta_used_bytes": 10642.0,
+"used_CI95": [
+10134.77375,
+11524.14125
+],
+"delta_used_pct_of_raw": 0.05660445601851852,
+"median_used_bytes": 10158.0,
+"experts_improved_used": 0
+},
+"fgad vs fgd": {
+"delta_total_bytes": 10854.4,
+"total_CI95": [
+10035.2,
+11878.4
+],
+"delta_used_bytes": 10711.6,
+"used_CI95": [
+10190.570625,
+11625.1675
+],
+"delta_used_pct_of_raw": 0.05697465618191721,
+"median_used_bytes": 10201.5,
+"experts_improved_used": 0
+},
+"fgaK2 vs fga (b K=2)": {
+"delta_total_bytes": -2048.0,
+"total_CI95": [
+-4710.4,
+-409.6
+],
+"delta_used_bytes": -2086.7,
+"used_CI95": [
+-4564.213125,
+-600.6193750000001
+],
+"delta_used_pct_of_raw": -0.011099090243736382,
+"median_used_bytes": -642.0,
+"experts_improved_used": 27
+},
+"fgc vs fg (c)": {
+"delta_total_bytes": -515174.4,
+"total_CI95": [
+-515993.6,
+-514457.6
+],
+"delta_used_bytes": -514848.075,
+"used_CI95": [
+-515456.22562499996,
+-514248.6675
+],
+"delta_used_pct_of_raw": -2.7384603662428515,
+"median_used_bytes": -515144.5,
+"experts_improved_used": 40
+},
+"fgcde vs fgde (c on d+e)": {
+"delta_total_bytes": -514969.6,
+"total_CI95": [
+-515686.4,
+-514252.8
+],
+"delta_used_bytes": -514570.85,
+"used_CI95": [
+-515173.516875,
+-513955.82125000004
+],
+"delta_used_pct_of_raw": -2.7369858153764977,
+"median_used_bytes": -514781.0,
+"experts_improved_used": 40
+},
+"fgaK2cde vs fgcde (a+b on c+d+e)": {
+"delta_total_bytes": 9011.2,
+"total_CI95": [
+7270.4,
+10342.4
+],
+"delta_used_bytes": 8585.05,
+"used_CI95": [
+6900.264375,
+9624.933125
+],
+"delta_used_pct_of_raw": 0.04566360506876361,
+"median_used_bytes": 9411.0,
+"experts_improved_used": 1
+},
+"fgcd vs fgd (c on d)": {
+"delta_total_bytes": -514560.0,
+"total_CI95": [
+-515276.8,
+-513843.2
+],
+"delta_used_bytes": -514570.775,
+"used_CI95": [
+-515182.40125,
+-513937.22
+],
+"delta_used_pct_of_raw": -2.736985416453908,
+"median_used_bytes": -514798.5,
+"experts_improved_used": 40
+}
+}
+--- crosscheck
+{
+"real_used_delta_bytes": -331067.125,
+"real_used_delta_pct_of_raw": -1.7609353990076932,
+"est_delta_same_models_same_experts_bytes": -331072.17837961164,
+"est_delta_pct_of_raw": -1.7609622777714569,
+"real_minus_est_delta_bytes": 5.053379611636046,
+"real_minus_est_delta_CI95": [
+-16.646888581857784,
+26.18780743304873
+],
+"weight_payload_delta_real_vs_est": [
+-319256.975,
+-319246.3943401628
+],
+"scale_payload_delta_real_vs_est": [
+-11826.15,
+-11841.784039448485
+],
+"quoted_entropy_estimate (mxceil_an, two-way half split, 160 experts)": {
+"bytes": -339507.8,
+"pct_of_raw": -1.8058
+},
+"real_minus_quoted_pct_points": 0.044864600992306825,
+"flush_note": "est assumes 4 B flush per stream; real-minus-est per stream for wnr2 and f in the config table"
+}
+===== <RESEARCH-PC>\team4\ceil-ref\results\heldout_summary_g0.json n_experts 40 raw 18800640
+experts [1, 7, 9, 15, 17] ... 40
+wnr2      tot     16909926.4 ratio 0.89943 chk 0.89943 sumparts   16909926.4 bw 3.7801/3.7801 bs 1.0610/1.0610 LT 38880.0 SP 146675.6 WP 16722151.7 pad 2187.1 hdr 32 dpct 0.0 CI [0.0, 0.0] med 0.0 dec 40/40 equal to reference (byte-exact) bx 40/40 fb n/a (no F) flags [0] blob 59408 rows 655 comp 24144 t {'enc_total_median': 3.0, 'dec_total_median': 2.7805} side 0.0 hist None
+f         tot     16578764.8 ratio 0.88182 chk 0.88182 sumparts   16578764.8 bw 3.7080/3.7080 bs 0.9755/0.9755 LT 38880.0 SP 134849.5 WP 16402894.8 pad 2092.6 hdr 48 dpct -1.7614379084967318 CI [-1.948257080610022, -1.6318082788671027] med -1.6557734204793029 dec 40/40 equal to reference (byte-exact) bx 40/40 fb [] flags [16] blob 59708 rows 637 comp 23532 t {'enc_total_median': 3.351, 'dec_total_median': 3.0985} side 0.0 hist None
+fg        tot     16573132.8 ratio 0.88152 chk 0.88152 sumparts   16573132.8 bw 3.7066/3.7066 bs 0.9755/0.9755 LT 38880.0 SP 134849.5 WP 16396866.3 pad 2489.0 hdr 48 dpct -1.7913943355119826 CI [-1.9923747276688453, -1.6399782135076255] med -1.6557734204793029 dec 40/40 equal to reference (byte-exact) bx 40/40 fb [] flags [16] blob 59708 rows 572 comp 21322 t {'enc_total_median': 3.357, 'dec_total_median': 3.0934999999999997} side 0.0 hist None
+fgd       tot     16546611.2 ratio 0.88011 chk 0.88011 sumparts   16546611.2 bw 3.7066/3.7066 bs 0.9755/0.9755 LT 13116.4 SP 134849.5 WP 16396866.3 pad 1731.0 hdr 48 dpct -1.9324618736383443 CI [-2.125272331154684, -1.7810457516339868] med -1.8082788671023966 dec 40/40 equal to reference (byte-exact) bx 40/40 fb [] flags [20] blob 59708 rows 572 comp 21322 t {'enc_total_median': 3.388, 'dec_total_median': 3.0380000000000003} side 0.0 hist None
+fge       tot     16574054.4 ratio 0.88157 chk 0.88157 sumparts   16574054.4 bw 3.7069/3.7069 bs 0.9765/0.9765 LT 38880.0 SP 134994.7 WP 16398072.8 pad 2058.9 hdr 48 dpct -1.7864923747276689 CI [-1.9814814814814814, -1.635607298474946] med -1.6557734204793029 dec 40/40 equal to reference (byte-exact) bx 40/40 fb [] flags [24] blob 59708 rows 572 comp 21322 t {'enc_total_median': 3.6559999999999997, 'dec_total_median': 3.2085} side 0.0 hist None
+fgde      tot     16548556.8 ratio 0.88021 chk 0.88021 sumparts   16548556.8 bw 3.7069/3.7069 bs 0.9765/0.9765 LT 13118.6 SP 134994.7 WP 16398072.8 pad 2322.8 hdr 48 dpct -1.9221132897603486 CI [-2.1143790849673203, -1.772875816993464] med -1.7864923747276689 dec 40/40 equal to reference (byte-exact) bx 40/40 fb [] flags [28] blob 59708 rows 572 comp 21322 t {'enc_total_median': 3.6865, 'dec_total_median': 3.197} side 0.0 hist None
+fgt       tot     16532684.8 ratio 0.87937 chk 0.87937 sumparts   16532684.8 bw 3.6976/3.6976 bs 0.9719/0.9719 LT 38880.0 SP 134356.1 WP 16357171.3 pad 2229.4 hdr 48 dpct -2.0065359477124183 CI [-2.1998910675381262, -1.8540305010893245] med -1.8736383442265796 dec 40/40 equal to reference (byte-exact) bx 40/40 fb [] flags [48] blob 59708 rows 572 comp 21322 t {'enc_total_median': 3.605, 'dec_total_median': 3.0995} side 0.0 hist None
+fgdt      tot     16506880.0 ratio 0.87800 chk 0.87800 sumparts   16506880.0 bw 3.6976/3.6976 bs 0.9719/0.9719 LT 13121.2 SP 134356.1 WP 16357171.3 pad 2183.4 hdr 48 dpct -2.1437908496732025 CI [-2.3338779956427014, -1.9918300653594772] med -2.0043572984749454 dec 40/40 equal to reference (byte-exact) bx 40/40 fb [] flags [52] blob 59708 rows 572 comp 21322 t {'enc_total_median': 3.6325000000000003, 'dec_total_median': 3.0925000000000002} side 0.0 hist None
+fga       tot     16582860.8 ratio 0.88204 chk 0.88204 sumparts   16582860.8 bw 3.7090/3.7090 bs 0.9755/0.9755 LT 38880.0 SP 134849.5 WP 16407395.3 pad 1688.0 hdr 48 dpct -1.7396514161220042 CI [-1.9357434640522875, -1.5909586056644882] med -1.6122004357298474 dec 40/40 equal to reference (byte-exact) bx 40/40 fb [] flags [17] blob 349046 rows 2189 comp 76468 t {'enc_total_median': 3.183, 'dec_total_median': 2.668} side 0.03285435284971723 hist None
+fgad      tot     16557465.6 ratio 0.88069 chk 0.88069 sumparts   16557465.6 bw 3.7090/3.7090 bs 0.9755/0.9755 LT 13173.3 SP 134849.5 WP 16407395.3 pad 1999.5 hdr 48 dpct -1.8747276688453158 CI [-2.0691721132897603, -1.7244008714596952] med -1.7429193899782136 dec 40/40 equal to reference (byte-exact) bx 40/40 fb [] flags [21] blob 349046 rows 2189 comp 76468 t {'enc_total_median': 3.2110000000000003, 'dec_total_median': 2.7045000000000003} side 0.03285435284971723 hist None
+fgaK2     tot     16581017.6 ratio 0.88194 chk 0.88194 sumparts   16581017.6 bw 3.7086/3.7086 bs 0.9755/0.9755 LT 38880.0 SP 134849.5 WP 16405467.1 pad 1773.0 hdr 48 dpct -1.7494553376906319 CI [-1.951538671023965, -1.5920479302832244] med -1.6122004357298474 dec 40/40 equal to reference (byte-exact) bx 40/40 fb [] flags [17] blob 233322 rows 1573 comp 55468 t {'enc_total_median': 3.6189999999999998, 'dec_total_median': 2.521} side 0.03276539592122097 hist [73, 47]
+fgaK2d    tot     16555520.0 ratio 0.88058 chk 0.88058 sumparts   16555520.0 bw 3.7086/3.7086 bs 0.9755/0.9755 LT 13169.0 SP 134849.5 WP 16405467.1 pad 1986.5 hdr 48 dpct -1.8850762527233116 CI [-2.085511982570806, -1.7287581699346404] med -1.7429193899782136 dec 40/40 equal to reference (byte-exact) bx 40/40 fb [] flags [21] blob 233322 rows 1573 comp 55468 t {'enc_total_median': 3.6445, 'dec_total_median': 2.49} side 0.03276539592122097 hist [73, 47]
+fgc       tot     16057856.0 ratio 0.85411 chk 0.85411 sumparts   16057856.0 bw 3.5902/3.5902 bs 0.9755/0.9755 LT 38880.0 SP 134849.5 WP 15882021.1 pad 2057.5 hdr 48 dpct -4.5321350762527235 CI [-4.728227124183007, -4.380718954248366] med -4.400871459694989 dec 40/40 equal to reference (value-exact (8->0)) bx 0/40 fb [] flags [18] blob 59708 rows 572 comp 21322 t {'enc_total_median': 3.3475, 'dec_total_median': 3.1125} side 0.0 hist None
+fgcd      tot     16032153.6 ratio 0.85275 chk 0.85275 sumparts   16032153.6 bw 3.5902/3.5902 bs 0.9755/0.9755 LT 13396.6 SP 134849.5 WP 15882021.1 pad 1838.5 hdr 48 dpct -4.668845315904139 CI [-4.859477124183006, -4.51797385620915] med -4.531590413943355 dec 40/40 equal to reference (value-exact (8->0)) bx 0/40 fb [] flags [22] blob 59708 rows 572 comp 21322 t {'enc_total_median': 3.3785, 'dec_total_median': 3.093} side 0.0 hist None
+fgce      tot     16059187.2 ratio 0.85418 chk 0.85418 sumparts   16059187.2 bw 3.5905/3.5905 bs 0.9765/0.9765 LT 38880.0 SP 134995.5 WP 15883227.1 pad 2036.6 hdr 48 dpct -4.525054466230936 CI [-4.718954248366013, -4.372549019607843] med -4.389978213507625 dec 40/40 equal to reference (value-exact (8->0)) bx 0/40 fb [] flags [26] blob 59708 rows 572 comp 21322 t {'enc_total_median': 3.6825, 'dec_total_median': 3.1135} side 0.0 hist None
+fgcde     tot     16033587.2 ratio 0.85282 chk 0.85282 sumparts   16033587.2 bw 3.5905/3.5905 bs 0.9765/0.9765 LT 13398.0 SP 134995.5 WP 15883227.1 pad 1918.6 hdr 48 dpct -4.6612200435729845 CI [-4.855119825708061, -4.5119825708061] med -4.531590413943355 dec 40/40 equal to reference (value-exact (8->0)) bx 0/40 fb [] flags [30] blob 59708 rows 572 comp 21322 t {'enc_total_median': 3.7095000000000002, 'dec_total_median': 3.1265} side 0.0 hist None
+fgaK2ce   tot     16068198.4 ratio 0.85466 chk 0.85466 sumparts   16068198.4 bw 3.5924/3.5924 bs 0.9765/0.9765 LT 38880.0 SP 134994.9 WP 15891784.2 pad 2491.3 hdr 48 dpct -4.477124183006536 CI [-4.680283224400871, -4.320806100217865] med -4.335511982570806 dec 40/40 equal to reference (value-exact (8->0)) bx 0/40 fb [] flags [27] blob 233322 rows 1573 comp 55468 t {'enc_total_median': 3.9139999999999997, 'dec_total_median': 2.6174999999999997} side 0.03276445360276411 hist [75, 45]
+fgaK2cde  tot     16042598.4 ratio 0.85330 chk 0.85330 sumparts   16042598.4 bw 3.5924/3.5924 bs 0.9765/0.9765 LT 13450.9 SP 134994.9 WP 15891784.2 pad 2320.4 hdr 48 dpct -4.613289760348584 CI [-4.814270152505447, -4.458605664488018] med -4.466230936819172 dec 40/40 equal to reference (value-exact (8->0)) bx 0/40 fb [] flags [31] blob 233322 rows 1573 comp 55468 t {'enc_total_median': 3.941, 'dec_total_median': 2.561} side 0.03276445360276411 hist [75, 45]
+--- pairwise
+{
+"f vs wnr2": {
+"delta_total_bytes": -331161.6,
+"total_CI95": [
+-366796.8,
+-306892.8
+],
+"delta_used_bytes": -331067.125,
+"used_CI95": [
+-365808.205625,
+-306883.11562500003
+],
+"delta_used_pct_of_raw": -1.7609353990076932,
+"median_used_bytes": -310655.0,
+"experts_improved_used": 40
+},
+"fg vs f (g on ceil-form)": {
+"delta_total_bytes": -5632.0,
+"total_CI95": [
+-16691.2,
+102.4
+],
+"delta_used_bytes": -6028.4,
+"used_CI95": [
+-16967.028125,
+-459.34625000000005
+],
+"delta_used_pct_of_raw": -0.032064865876906316,
+"median_used_bytes": -742.5,
+"experts_improved_used": 38
+},
+"fgd vs fg (d)": {
+"delta_total_bytes": -26521.6,
+"total_CI95": [
+-27136.0,
+-25907.2
+],
+"delta_used_bytes": -25763.6,
+"used_CI95": [
+-26074.5025,
+-25417.0975
+],
+"delta_used_pct_of_raw": -0.13703576048474944,
+"median_used_bytes": -25872.0,
+"experts_improved_used": 40
+},
+"fge vs fg (e)": {
+"delta_total_bytes": 921.6,
+"total_CI95": [
+409.6,
+1433.6
+],
+"delta_used_bytes": 1351.65,
+"used_CI95": [
+1339.375,
+1363.05
+],
+"delta_used_pct_of_raw": 0.007189382914624183,
+"median_used_bytes": 1358.5,
+"experts_improved_used": 0
+},
+"fgde vs fgd (e on d)": {
+"delta_total_bytes": 1945.6,
+"total_CI95": [
+1331.2,
+2560.0
+],
+"delta_used_bytes": 1353.85,
+"used_CI95": [
+1339.925,
+1367.8006249999999
+],
+"delta_used_pct_of_raw": 0.007201084643927015,
+"median_used_bytes": 1360.5,
+"experts_improved_used": 0
+},
+"fgt vs fg (tail seeding)": {
+"delta_total_bytes": -40448.0,
+"total_CI95": [
+-40857.6,
+-40038.4
+],
+"delta_used_bytes": -40188.375,
+"used_CI95": [
+-40233.428125000006,
+-40149.174375
+],
+"delta_used_pct_of_raw": -0.21376067516850492,
+"median_used_bytes": -40168.0,
+"experts_improved_used": 40
+},
+"fgdt vs fgd (tail seeding on d)": {
+"delta_total_bytes": -39731.2,
+"total_CI95": [
+-40243.2,
+-39116.8
+],
+"delta_used_bytes": -40183.575,
+"used_CI95": [
+-40232.000625,
+-40141.075
+],
+"delta_used_pct_of_raw": -0.21373514412275324,
+"median_used_bytes": -40170.0,
+"experts_improved_used": 40
+},
+"fgdt vs fgde (tail instead of hash)": {
+"delta_total_bytes": -41676.8,
+"total_CI95": [
+-42188.8,
+-41267.2
+],
+"delta_used_bytes": -41537.425,
+"used_CI95": [
+-41588.2275,
+-41494.725
+],
+"delta_used_pct_of_raw": -0.22093622876668031,
+"median_used_bytes": -41530.5,
+"experts_improved_used": 40
+},
+"fga vs fg (a, 3-valued)": {
+"delta_total_bytes": 9728.0,
+"total_CI95": [
+9011.2,
+10547.2
+],
+"delta_used_bytes": 10528.975,
+"used_CI95": [
+10134.77375,
+11185.711875
+],
+"delta_used_pct_of_raw": 0.056003279675585514,
+"median_used_bytes": 10158.0,
+"experts_improved_used": 0
+},
+"fgad vs fgd": {
+"delta_total_bytes": 10854.4,
+"total_CI95": [
+10035.2,
+11878.4
+],
+"delta_used_bytes": 10585.875,
+"used_CI95": [
+10190.570625,
+11247.9925
+],
+"delta_used_pct_of_raw": 0.056305928947099675,
+"median_used_bytes": 10201.5,
+"experts_improved_used": 0
+},
+"fgaK2 vs fga (b K=2)": {
+"delta_total_bytes": -1843.2,
+"total_CI95": [
+-4096.0,
+-409.6
+],
+"delta_used_bytes": -1928.225,
+"used_CI95": [
+-4087.044375,
+-600.6193750000001
+],
+"delta_used_pct_of_raw": -0.010256166811342593,
+"median_used_bytes": -642.0,
+"experts_improved_used": 27
+},
+"fgc vs fg (c)": {
+"delta_total_bytes": -515276.8,
+"total_CI95": [
+-515993.6,
+-514560.0
+],
+"delta_used_bytes": -514845.3,
+"used_CI95": [
+-515454.766875,
+-514243.8075
+],
+"delta_used_pct_of_raw": -2.7384456061070264,
+"median_used_bytes": -515144.5,
+"experts_improved_used": 40
+},
+"fgcde vs fgde (c on d+e)": {
+"delta_total_bytes": -514969.6,
+"total_CI95": [
+-515686.4,
+-514252.8
+],
+"delta_used_bytes": -514565.45,
+"used_CI95": [
+-515169.684375,
+-513949.59062499995
+],
+"delta_used_pct_of_raw": -2.736957092950027,
+"median_used_bytes": -514781.0,
+"experts_improved_used": 40
+},
+"fgaK2cde vs fgcde (a+b on c+d+e)": {
+"delta_total_bytes": 9011.2,
+"total_CI95": [
+7270.4,
+10342.4
+],
+"delta_used_bytes": 8609.375,
+"used_CI95": [
+6977.181875,
+9624.933125
+],
+"delta_used_pct_of_raw": 0.04579298896207789,
+"median_used_bytes": 9411.0,
+"experts_improved_used": 1
+},
+"fgcd vs fgd (c on d)": {
+"delta_total_bytes": -514457.6,
+"total_CI95": [
+-515174.4,
+-513740.8
+],
+"delta_used_bytes": -514565.1,
+"used_CI95": [
+-515179.10624999995,
+-513929.96562499995
+],
+"delta_used_pct_of_raw": -2.7369552313112746,
+"median_used_bytes": -514798.5,
+"experts_improved_used": 40
+}
+}
+--- crosscheck
+{
+"real_used_delta_bytes": -331067.125,
+"real_used_delta_pct_of_raw": -1.7609353990076932,
+"est_delta_same_models_same_experts_bytes": -331072.17837961164,
+"est_delta_pct_of_raw": -1.7609622777714569,
+"real_minus_est_delta_bytes": 5.053379611636046,
+"real_minus_est_delta_CI95": [
+-16.646888581857784,
+26.18780743304873
+],
+"weight_payload_delta_real_vs_est": [
+-319256.975,
+-319246.3943401628
+],
+"scale_payload_delta_real_vs_est": [
+-11826.15,
+-11841.784039448485
+],
+"quoted_entropy_estimate (mxceil_an, two-way half split, 160 experts)": {
+"bytes": -339507.8,
+"pct_of_raw": -1.8058
+},
+"real_minus_quoted_pct_points": 0.044864600992306825,
+"flush_note": "est assumes 4 B flush per stream; real-minus-est per stream for wnr2 and f in the config table"
+}

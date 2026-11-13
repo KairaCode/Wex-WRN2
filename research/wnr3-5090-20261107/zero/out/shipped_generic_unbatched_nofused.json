@@ -1,0 +1,99 @@
+{
+ "meta": {
+  "mode": "shipped",
+  "dll": "<KAIRA>\\app\\colibri-optimized\\coli_cuda_dsv4.dll",
+  "flavour": "shipped app DLL",
+  "process_env": {
+   "DSV4_CUDA_BATCHED": "0",
+   "DSV4_CUDA_MOE_FUSED6": "0",
+   "DSV4_CUDA_PIN_HOST": "0"
+  },
+  "act_sets_T16": [
+   "gauss",
+   "gauss*0.01",
+   "laplace",
+   "gauss_25%+0_25%-0",
+   "all-0",
+   "all+0",
+   "one_nonzero_rest-0",
+   "denormals_10%",
+   "inf_at_100",
+   "nan_at_200",
+   "gauss*1e30",
+   "-row0",
+   "row0*1e-30",
+   "adv_all_products-0(row r0)",
+   "adv_exact_cancel_then-0(row r0)",
+   "adv_all_products-0(row r1)"
+  ],
+  "started": "2026-11-08T01:43:11",
+  "env_argument": []
+ },
+ "results": {
+  "dsv4_cuda_expert_group(4 experts, H=5120, I=2304)": {
+   "canon": {
+    "compared": 3276800,
+    "diff_values": 0,
+    "diff_bits": 0,
+    "diff_signzero_only": 0,
+    "diff_nan_payload": 0
+   },
+   "rerun": {
+    "compared": 3276800,
+    "diff_values": 0,
+    "diff_bits": 0,
+    "diff_signzero_only": 0,
+    "diff_nan_payload": 0
+   },
+   "posctl": {
+    "compared": 3276800,
+    "diff_values": 2638053,
+    "diff_bits": 13892247,
+    "diff_signzero_only": 0,
+    "diff_nan_payload": 0
+   },
+   "obs": {
+    "zero_A": 614802,
+    "neg_zero_A": 0,
+    "zero_B": 614802,
+    "neg_zero_B": 0,
+    "nan_A": 0,
+    "unwritten_A": 0
+   },
+   "canon_by_act": {}
+  },
+  "dsv4_cuda_moe launches path (FUSED6=0, mv_fp4_grouped<8>; 6 x 4096/2048, cropped)": {
+   "canon": {
+    "compared": 2621440,
+    "diff_values": 0,
+    "diff_bits": 0,
+    "diff_signzero_only": 0,
+    "diff_nan_payload": 0
+   },
+   "rerun": {
+    "compared": 2621440,
+    "diff_values": 0,
+    "diff_bits": 0,
+    "diff_signzero_only": 0,
+    "diff_nan_payload": 0
+   },
+   "posctl": {
+    "compared": 2621440,
+    "diff_values": 228428,
+    "diff_bits": 519714,
+    "diff_signzero_only": 0,
+    "diff_nan_payload": 0
+   },
+   "obs": {
+    "zero_A": 491520,
+    "neg_zero_A": 0,
+    "zero_B": 491520,
+    "neg_zero_B": 0,
+    "nan_A": 0,
+    "unwritten_A": 0
+   },
+   "canon_by_act": {}
+  }
+ },
+ "seconds": 52.5
+}

@@ -1,0 +1,100 @@
+# Comprimere conviene solo dove il disco strozza
+
+> Report del 5/11 su DeepSeek V4. Poi fatti per V4.1: decode a batch (W2, V4_WEX_BATCH=1), ricodifica 2048:512 (W1), A/B a 32 GB (W3: WNR2 -1,80%). Il container V4 non esiste più; i dati su spazio libero (E: 111 GB) sono di quella data.
+
+**Risposta breve.** WNR2 diventa più veloce di WEX1 solo quando la compressione riduce un collo di bottiglia reale e il decode esce dal percorso critico. Oggi non succede. Sul link PCIe 5.0 x16 il risparmio è di circa **0,03 ms per record da 11 MiB**, e il decode batch da 8 record costa **0,281 ms per record**, contro i circa 0,26 ms del raw WEX1: siamo a pari, non sotto (misura locale: KAIRA `lab\wex-prod-20261105\research_notes\Sfruttare WNR2 e WEX3\local_measurements.md`, non in questo repo). Il guadagno vero sta sul disco: a circa **6,6 GiB/s** un miss NVMe costa 1,63 ms in WNR2 contro 1,89 ms in WEX1, cioè **circa 0,25 ms risparmiati per miss**, e il decode si nasconde sotto la latenza del disco. Il tetto sul solo trasferimento è circa −13%, raggiungibile con una pipeline batch per layer su stream separati, senza kernel GEMV fusi, che per un formato a lunghezza variabile e per MXFP4 non sono né misurati né probabili. Il primo passo è misurare dove finiscono i miss per token e sostituire l'helper singolo da 1,0 ms con il percorso batch. Va inoltre corretto un errore aritmetico nella nota ZipMoE sul break-even seriale (vedi sezione 2).
+
+Legenda: **[misurato]** = nostri bench; **[dichiarato]** = dato pubblicato, spesso self-reported e non riprodotto; **[inferenza]** = nostro calcolo o ipotesi.
+
+## Il collo di bottiglia è il miss path, non il GEMV
+
+Un GEMV batch-1 su esperti già in VRAM non è il problema. Per una fusione GEMV che non rallenti il raw servirebbe un decoder che emetta circa **2,07 TB/s** di pesi decodificati, cioè 1,16 volte la banda GDDR7 di 1,79 TB/s dichiarata da NVIDIA (rapporto 4,25/3,67 bit, [inferenza, nostro calcolo]). Il nostro massimo misurato è **102,8 GiB/s** di output (circa 110 GB/s), cioè circa 19 volte meno (misurato: KAIRA `lab\wex-prod-20261105\research_notes\Sfruttare WNR2 e WEX3\local_measurements.md`, non in questo repo). Il lavoro più vicino, [arXiv 2606.15789](https://arxiv.org/abs/2606.15789), fa decode ANS per tile in shared memory con un producer warp, ma su A100 e H200 e con risultati a batch grande; il decoder open source per rANS in GEMV, [vram-compression](https://github.com/snuri00/vram-compression), è **2-3 volte più lento** di cuBLAS bf16 su una RTX 3050 Laptop [dichiarato]. Le fusioni che funzionano, come [ZipServ](https://arxiv.org/abs/2603.17435), usano codici a lunghezza fissa su BF16 e riportano 1,34x e 1,87x sulla 5090 solo con un port non ottimizzato [dichiarato].
+
+Il dato più importante è però un altro. Nell'A/B di ottobre, WNR2 con GPU-direct e cache RAM compressa ha ridotto il tempo MoE da 129,8 a 113,5 ms per token (−16,3 ms, circa il taglio dei byte), ma ha alzato `hc` da 14,4 a 27,9 ms e l'attenzione da 34,6 a 43,0 ms, con un risultato netto di −3% (misurato, macchina a 64 GB: KAIRA `lab\wex-prod-20261105\research_notes\Sfruttare WNR2 e WEX3\local_measurements.md`, non in questo repo). Il codec ha guadagnato nel MoE e ha perso nel resto per contesa. La causa è il volume di submission: circa 118 decode per token, cioè circa 650 al secondo a 5,5 tok/s. Il benchmark `bench_nr2_batch-contend` riproduce questo carico. Con batch da 6 il p50 del percorso foreground cresce solo dell'1%, ma il p90 cresce del 53%; con un record per batch cresce del 20% sul p90 [misurato]. Il benchmark `bench_prio` mostra che la contesa è soprattutto PCIe e command fetch, non SM: la priorità stream migliora il p90 del 18% ma il p50 solo del 2% [misurato]. Ne segue che partizionare gli SM con green context non è la leva giusta. La leva è ridurre submission e burst. Il prefetch non va eliminato, perché senza prefetch diretto in VRAM la velocità era 3,94 tok/s (run C6: WNR2 + cache, modo 1, prefetch RAM attivo; run contaminata, non misura l'assenza di prefetch), e con prefetch di rango 3 a 4,31, contro circa 5,5 con la configurazione attuale. Va tagliato lo spreco speculativo, non il prefetch.
+
+## Il link è già veloce, il risparmio vero è sul disco
+
+Sul link il numero è netto. Con H2D pinned a 48,6 GiB/s, un record WNR2 da 11,04 MiB costa circa 0,222 ms e lo slab WEX1 da 12,75 MiB circa 0,256 ms, quindi il risparmio di trasferimento è di circa 0,034 ms [misurato, calcolo nostro]. Con il decode seriale, cioè prima copia e poi decode, la compressione vince solo se la banda di decode D supera B/(1−r), con r = 0,867: servono circa **380 GiB/s**, mai raggiungibili [inferenza]. La nota `zipmoe_lossless_offload.md` riporta invece 55,7 GiB/s, calcolando B/r invece di B/(1−r). Va corretta. Con decode completamente pipelined la condizione è D > B, cioè circa 49 GiB/s di output raw. Il decode a 8 stream (102,8 GiB/s) la supera, quello a singolo stream (32,2 GiB/s) no [misurato]. Anche il dato "103 GiB/s contro 89 GiB/s" è risolto: 102,8 GiB/s è il rate sull'output da 12,75 MiB, mentre il 89 è il rate sull'input compresso da 11 MiB, e non c'è nessun errore.
+
+Il disco ha un'aritmetica diversa. Sui file da 4,69 MiB di Qwen, C: da solo fa 3,34 GiB/s, U: 2,23 GiB/s, e C:+U: alternati **6,60 GiB/s**. Aggiungere O: fa crollare lo striping (U:+O: 1,81 GiB/s contro 4,06 di U: solo) [misurato]. Un record WNR2 da 11,04 MiB a 6,6 GiB/s costa 1,63 ms, uno WEX1 da 12,75 MiB 1,89 ms [inferenza, da estrapolare: il dato è su file Qwen, non sui record WNR2]. Il risparmio per miss NVMe è quindi di 0,25 ms, circa il 13%, e il decode da 0,12 a 0,28 ms si nasconde sotto questa latenza. Qui il codec paga davvero.
+
+Il vincolo è il numero di miss. Un token dura circa 182 ms a 5,5 tok/s, quindi ogni miss NVMe evitato vale 0,25 ms, cioè circa +0,14% di velocità. Per +10% servono circa 70 miss NVMe evitati per token, che è più della metà dei 118 decode attuali. Con 118 decode per token e 6,6 GiB/s, il disco può servire al massimo circa 111 letture da 11 MiB in 182 ms, quindi una quota non piccola dei decode deve venire dalla cache RAM [inferenza]. Lo split RAM/NVMe non è misurato nei note e va misurato. Un altro punto: il 5,5 tok/s di ottobre era su una macchina a 64 GB con 12,86 GiB di cache RAM. Oggi la RAM è 32 GB, con circa 8,8 GB disponibili [misurato]. La cache sarà più esposta al disco, e il beneficio di circa il 14% in più di esperti per GB, che la compressione dà a parità di byte, diventa il meccanismo principale. Con la formula ΔT ≈ 0,25 ms × N_miss_NVMe_evitati + (da +0,034 a −0,02 ms) × N_hit_RAM, un tier RAM compresso conviene se riduce i miss NVMe più di quanto il decode pesi sugli hit. A parità di byte, la capacità è il vero beneficio della compressione in RAM [inferenza].
+
+## Dal decode batch alla pipeline: 0,28 ms oggi, 0,22 ms possibili
+
+La curva batch misurata è 0,625 ms (batch 1), 0,497 (2), 0,349 (4), 0,303 (6), 0,281 (8), tutti wall-clock e con PCIe incluso, e i 105 slab verificati sono byte-identici al decoder CPU [misurato]. A batch 8 il pavimento PCIe è 0,22 ms, quindi restano circa 0,06 ms di non sovrapposizione. Il design attuale fa prima tutte le H2D, poi i kernel, con una sincronizzazione per batch. La versione giusta è una catena per lane: evento dopo la copia i, kernel i che parte su stream separato, un anello di buffer pinned registrati, e nessun sync intermedio. Con questo il target è 0,22 ms per record, cioè circa il 13% in meno del raw sul trasferimento (circa il 15–18% in meno rispetto ai 0,26–0,27 misurati). Il top-10 per layer dà già batch naturali di fino a 10 miss, quindi il batch non dipende da nuova logica di scheduling.
+
+Il singolo passo più grande è però dismettere l'helper `wex_cuda_decode_to_device`, che costa circa 1,0 ms per expert: 0,22 di copia, 0,39 di kernel e circa 0,4 di launch e sync, con 14 chiamate CUDA e 2 sync per decode [misurato]. Passare dal helper al batch da 8 riduce il costo per record da 1,0 a 0,28 ms, cioè −72%. Non è un guadagno contro il raw, ma è la condizione necessaria perché il formato compresso non perda terreno. Va notato che l'A/B di ottobre e i benchmark di novembre non sono direttamente confrontabili: non è chiaro se l'A/B usasse l'helper, e il codice di decode è cambiato. Va verificato.
+
+Il kernel stesso è sotto-occupato. Un record singolo lancia 12 blocchi di scala e 192 blocchi di pesi da 32 thread, circa un warp per SM, e a 8 concorrenti il tempo per record scende da 0,387 a 0,121 ms [misurato]. È un segnale che un singolo record può riempire la GPU con più thread per record.
+
+**Aggiornamento, misurato dopo la stesura** (`bench_nr2_rechunk-1.json` e `-2.json`). Il formato accetta già la lunghezza degli stream per record (`weight_chunk` da 512 a 16384, `scale_chunk` da 256 in su). Abbiamo ricodificato 16 esperti reali con l'encoder GPU del lab. Ogni record è stato verificato dal riferimento CPU, e ogni decode GPU è byte-identico al raw.
+- Con `weight:scale` = **2048:512** un record singolo scende da **0,437 a 0,200 ms (−54%)** con **+0,34%** di byte; a 8 concorrenti va a 0,125 ms per record (99 GiB/s).
+- Con 1024 o 512 non si guadagna altro: il pavimento è ~0,19–0,22 ms tra lancio e kernel delle scale, e i byte crescono fino a +2%.
+
+Ricodificare il container completo richiede ~13–16 minuti sulla GPU e nessuna modifica a kernel o lettori. Il decode su CPU è l'alternativa: per tenere il passo del disco servono circa 7,6 GiB/s di output sui 16 core del 7950X3D (12,75 MiB ogni 1,63 ms). Recoil dichiara 11+ GB/s su un Xeon W-3245 per la sua variante di rANS, non per la nostra [dichiarato], quindi la soglia è plausibile ma non misurata. Il vantaggio è zero contesa sulla GPU. Il costo è banda RAM su una macchina a 32 GB. È un'opzione per la tratta NVMe→RAM, non per il PCIe.
+
+Un ultimo punto riguarda WDDM. La letteratura forum riporta 5–25 µs per launch su WDDM e CUDA Graphs con risultati contrastanti [dichiarato, forum su hardware vecchio]. Non esiste una misura su RTX 50 in Windows. Il piano deve misurare il jitter del launch con e senza copie in parallelo.
+
+## Cosa dicono ZipServ, DFloat11, ECF8 e nvCOMP sul nostro caso
+
+La letteratura riguarda quasi sempre BF16 o FP8 su GPU da datacenter, e i suoi numeri vanno letti con questo filtro. La tabella sintetizza il verdetto per il nostro caso.
+
+| Sistema | Formato e decode | Dato dichiarato | Verdetto per WNR2 |
+|---|---|---|---|
+| [ZipServ](https://arxiv.org/abs/2603.17435), ASPLOS 2026 | BF16, codice fisso a 3 bit, ZipGEMM fuso in registri; codice [Apache-2.0](https://github.com/HPMLL/ZipServ_ASPLOS26) | Kernel 1,31x (4090), 1,34–1,87x (5090 port); 1,22x end-to-end vs vLLM | Non applicabile a MXFP4. Lo schema a codice fisso per FP8 dà solo 6–7% (nostra stima) |
+| [DFloat11](https://arxiv.org/abs/2504.11651), NeurIPS 2025 | BF16, Huffman sull'esponente, decode a blocco in SRAM poi buffer | Overhead 4,1–5,5% su modelli immagine; 2,3–46,2x vs offload CPU | Il confronto è con offload CPU, non con VRAM. Non porta velocità |
+| [ECF8](https://arxiv.org/html/2510.02676v1), ICLR 2026 | FP8, Huffman sull'esponente, buffer di layer con hook | Risparmio 9,8–14,8% su LLM; +11–150% di throughput a memoria fissa | Il guadagno viene da più batch in memoria, non da decode più veloce |
+| [ZipMoE](https://arxiv.org/html/2601.21198), ICML 2026 | BF16, LZ4/ZSTD su esponente, decode su CPU, Jetson con SSD | Dimensione 68–74% del BF16; TPOT −63–98% su Jetson | Pattern utile per la tratta NVMe→RAM. I numeri no: link a 3,5 GB/s e UMA |
+| [nvCOMP](https://docs.nvidia.com/cuda/nvcomp/decompression_engine_faq.html) ANS/GDeflate | Byte-level, senza modello di contesto | Motore hardware DE solo su B200/B300/GB200/GB300 | Baseline economica da provare su un record. Supporto Windows non confermato |
+| [DirectStorage GDeflate](https://developer.nvidia.com/blog/accelerating-load-times-for-directx-games-and-apps-with-gdeflate-for-directstorage) | Decompressione GPU per NVMe→VRAM su D3D12 | Snippet 3DMark: da 5,85 a circa 13 GB/s (non verificato) | Il rapporto su pesi a 4 bit è probabilmente basso. Interop D3D12→CUDA non dimostrata |
+| [Recoil](https://arxiv.org/abs/2306.12141), ICPP 2023 | rANS interlacciato, split point | Oltre 90 GB/s su RTX 2080 Ti | Riferimento per il kernel rANS, non target |
+| [HOBBIT](https://arxiv.org/html/2411.01433v2), [SpecMD](https://arxiv.org/html/2602.03921v1) | Policy di offload: sostituzione low-precision, prefetch | HOBBIT ≤1% di perdita di accuratezza; SpecMD: su Qwen senza prefetch 3,50 tok/s, con prefetch 2,11 | Il prefetch va gated per confidenza, non rimosso. La sostituzione low-precision è un'altra strada |
+
+Il primo verdetto è che la fusione in GEMV non porta guadagno con MXFP4. Il secondo è che ZipMoE e DFloat11 confermano il pattern "decodifica fuori dal percorso critico" che abbiamo dovuto ricostruire. Il terzo è che ECF8 spiega perché i loro guadagni di throughput non sono velocità di decode: il beneficio viene dal liberare memoria per batch più grandi. Il numero più sospetto è quello di ZipMoE, la cui abstract riporta 6,76x e il corpo 42,49x, senza spiegazione [dichiarato].
+
+Sulla comprimibilità c'è un conflitto da chiarire. La letteratura su FP4 dice che i bit degli elementi E2M1 sono quasi uniformi e che i guadagni stanno negli scale ([ZipNN FP8/FP4](https://arxiv.org/html/2508.19263v1)). Il nostro WNR2 però arriva a 3,67 bit per peso, cioè −12,8% sul contenitore, e questo implica un'entropia dei codici FP4 sotto i 4 bit [misurato sul contenitore]. La ripartizione tra scale ed elementi non è nei note, e va misurata. Per FP8 di Qwen, il quadro è più chiaro: l'entropia order-0 è di 6,53–6,55 bit per byte, quindi il tetto del lossless è circa **18,3%**. Il segno e l'esponente portano 3,6 bit su 5, la mantissa è quasi uniforme [misurato]. Un codice a lunghezza fissa con finestra di 7 esponenti e tile da 128 dà un risparmio di 5,9–6,7% con escape al 2,3–2,9%. Con k=2 gli escape salgono al 26% e il codice perde [misurato]. Il rANS sul solo segno più esponente può avvicinarsi al 17% [inferenza]. Quindi per Qwen FP8 la strada a lunghezza variabile ha più spazio, ma il decode costa e i 4,69 MiB per expert rendono il tempo di decode per byte il vincolo.
+
+## Piano d'azione prioritario
+
+Ordinato per guadagno misurabile e costo. Le stime sono nostre e vanno confermate sulla macchina.
+
+| Priorità | Azione | Guadagno atteso | Come misurare | Rischio |
+|---|---|---|---|---|
+| 1 | Contatori per token: hit VRAM, hit RAM, miss NVMe, decode on-demand e speculativi | Nessun guadagno diretto; decide tutto il resto | Log per token sul run di riferimento a 5,5 tok/s | Overhead di logging |
+| 2 | Sostituire l'helper da 1,0 ms con il batch per layer, pipeline a eventi, anello pinned, commit diretto nel buffer finale | Da 1,0 a circa 0,28 ms per record (misurato), target 0,22 | `bench_nr2_batch` a batch 6–10; Nsight Systems per l'overlap; ms/token del MoE | WDDM; p90 del foreground |
+| 3 | Cache a due livelli: esperti caldi raw in VRAM, il resto compresso in RAM; policy LFU con decadimento o least-stale; prefetch con soglia di confidenza e cap per layer | Meno decode per token; ogni hit evitato vale 0,28–1,0 ms | Decode/token, tok/s a parità di byte RAM (non di esperti) | Budget VRAM 31 GB; il prefetch non va tolto |
+| 4 | Pacing dei burst di decode nelle attese del disco; priorità stream | p90 entro +10% a 650/s (oggi +20–53%) | `bench_nr2_batch-contend` con il profilo di 650 record/s | La priorità non preempta blocchi già in esecuzione |
+| 5 | Misura del disco sul record reale: 11 MiB, unbuffered allineato, 8 thread, striping C:+U:, nessun O: | 0,25 ms per miss NVMe (−13%) se il disco è il collo | Bench su un record WNR2 vero, non su file Qwen | Il 6,6 GiB/s è su file da 4,69 MiB |
+| 6 | Più parallelismo per record: **ricodifica del container con chunk 2048:512** (già misurata su 16 esperti) | Da 0,437 a 0,200 ms a record singolo (−54%) con +0,34% di byte, misurato; il batch 1 della pipeline scende di conseguenza | `bench_nr2_rechunk` sul container completo; confronto byte-identico | Serve spazio per il nuovo container (~129 GB); E: ha 111 GB liberi |
+| 7 | Decode rANS su CPU per la tratta NVMe→RAM | Zero contesa GPU; raw in VRAM | Soglia da 7,6 GiB/s di output su 16 core | Banda RAM su 32 GB |
+| 8 | Test di rapporto rapido: zstd, LZ4, GDeflate, nvCOMP ANS su un record raw | Scartare DirectStorage se il rapporto è sotto il 5% | Un'ora di lavoro | Nessuno |
+| 9 | FP8 Qwen: rANS sul segno più esponente, non codice fisso | Fino a circa 17% di byte sul disco, se il disco è il collo | Entropia misurata; decode per 4,69 MiB | Seconda priorità: prima la pipeline DS4 |
+
+Da non fare, per ora: fusione GEMV rANS (19 volte sotto il necessario), green context per isolare il decode (la contesa non è sugli SM), GDS su Windows (non disponibile per le GeForce secondo le fonti, [inferenza](https://docs.rs/baracuda-cufile/latest/src/baracuda_cufile/lib.rs.html)), e IoRing come leva di throughput (non ci sono dati, e il collo non è la submission CPU).
+
+## Conclusione
+
+La domanda giusta cambia direzione. Non è se il decode sia abbastanza veloce, perché a batch 8 lo è per il regime da disco: 102,8 GiB/s di output contro i circa 49 necessari. La domanda è dove una compressione risparmia tempo, e la risposta è sul disco e nella capacità RAM, non sul bus PCIe, che è già veloce. Con questa lettura i prossimi due terzi del guadagno possibile vengono da pipeline e cache, non da un decoder più rapido. Il tetto misurato è circa +13% sul trasferimento e circa +1,4% di velocità per ogni 10 miss NVMe evitati per token.
+
+Serve anche una regola di decisione esplicita. Se i contatori mostrano meno di circa 70 miss NVMe evitabili per token, e la pipeline batch non scende sotto 0,22 ms, WEX1 resta il formato di produzione e WNR2 è un formato di capacità, utile per la RAM e il disco ma non per la velocità. Questo è il risultato più onesto che le misure permettono oggi.
+
+**Correzioni alle note della cartella.** La nota `zipmoe_lossless_offload.md` sbaglia il break-even seriale: il valore è circa 380 GiB/s, non 55,7. La nota `gpu_entropy_decoders.md` riporta 0,6 ms e 19 GB/s per record, che è il decode a batch 1 in wall-clock e non è più il dato di riferimento (0,281 ms a batch 8). I 102,8 e 89 GiB/s sono rispettivamente output e input, non un conflitto.
+
+**Stato di verifica.** In questa passata non ho fatto nuove ricerche web: tutti i dati esterni vengono dalle fonti citate nelle note, molte a livello di snippet o self-reported. Le incoerenze interne note sono: ZipServ 11,18 contro 10,83 GB per Llama 8B, ECF8 con tabella 1 non coerente con le sue colonne GB, DFloat11 con 2,3–46,2x nell'abstract e 1,9–38,8x in un riassunto, e 2606.15789 con 11x nell'abstract e 10x o 6–7x nel corpo. Non ho usato questi dati senza il riscontro. Non ho misurato il disco sui record WNR2 reali né il decode su CPU.
+
+## Fonti principali
+
+- Misure locali: KAIRA `lab\wex-prod-20261105\research_notes\Sfruttare WNR2 e WEX3\local_measurements.md`, non in questo repo
+- [ZipServ, arXiv 2603.17435](https://arxiv.org/html/2603.17435v1)
+- [DFloat11, arXiv 2504.11651](https://arxiv.org/html/2504.11651v3)
+- [ECF8, arXiv 2510.02676](https://arxiv.org/html/2510.02676v1)
+- [ZipMoE, arXiv 2601.21198](https://arxiv.org/html/2601.21198)
+- [Approaching Shannon Bound, arXiv 2606.15789](https://arxiv.org/abs/2606.15789)
+- [Recoil, arXiv 2306.12141](https://arxiv.org/abs/2306.12141)
+- [nvCOMP Decompression Engine FAQ](https://docs.nvidia.com/cuda/nvcomp/decompression_engine_faq.html)
+- [GDeflate, NVIDIA](https://developer.nvidia.com/blog/accelerating-load-times-for-directx-games-and-apps-with-gdeflate-for-directstorage)
+- [HOBBIT, arXiv 2411.01433](https://arxiv.org/html/2411.01433v2)
+- [SpecMD, arXiv 2602.03921](https://arxiv.org/html/2602.03921v1)
+- [ZipNN FP8/FP4, arXiv 2508.19263](https://arxiv.org/html/2508.19263v1)
+- [CUDA green contexts](https://docs.nvidia.com/cuda/cuda-programming-guide/04-special-topics/green-contexts.html)

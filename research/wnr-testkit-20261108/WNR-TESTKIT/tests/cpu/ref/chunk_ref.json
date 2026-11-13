@@ -1,0 +1,2428 @@
+{
+ "source": "team6 chunk-size results/heldout.jsonl (PARTIAL run, stopped; config names fg* = ceil-form + anchor 120, models = ceil-ref even.npz fg_a0_K0_c0)",
+ "experts_present": [
+  1,
+  7,
+  9,
+  15,
+  17,
+  23,
+  25,
+  31,
+  33,
+  39,
+  41
+ ],
+ "rows": {
+  "1:1024:256:fge": {
+   "file": "L00_E113.bin",
+   "total": 16683008,
+   "used": 16679101,
+   "length_table": 77760,
+   "weight_payload": 16454526,
+   "scale_payload": 146767,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "1:1024:256:fgde": {
+   "file": "L00_E113.bin",
+   "total": 16625664,
+   "used": 16624257,
+   "length_table": 22916,
+   "weight_payload": 16454526,
+   "scale_payload": 146767,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "1:1024:256:fgt": {
+   "file": "L00_E113.bin",
+   "total": 16596992,
+   "used": 16596011,
+   "length_table": 77760,
+   "weight_payload": 16372716,
+   "scale_payload": 145487,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "1:1024:256:fgdt": {
+   "file": "L00_E113.bin",
+   "total": 16543744,
+   "used": 16541199,
+   "length_table": 22948,
+   "weight_payload": 16372716,
+   "scale_payload": 145487,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "1:1024:256:fg": {
+   "file": "L00_E113.bin",
+   "total": 16678912,
+   "used": 16676514,
+   "length_table": 77760,
+   "weight_payload": 16452242,
+   "scale_payload": 146464,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "1:1024:256:fgd": {
+   "file": "L00_E113.bin",
+   "total": 16625664,
+   "used": 16621674,
+   "length_table": 22920,
+   "weight_payload": 16452242,
+   "scale_payload": 146464,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "1:2048:512:fge": {
+   "file": "L00_E113.bin",
+   "total": 16572416,
+   "used": 16570932,
+   "length_table": 38880,
+   "weight_payload": 16392907,
+   "scale_payload": 139097,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "1:2048:512:fgde": {
+   "file": "L00_E113.bin",
+   "total": 16547840,
+   "used": 16545412,
+   "length_table": 13360,
+   "weight_payload": 16392907,
+   "scale_payload": 139097,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "1:2048:512:fgt": {
+   "file": "L00_E113.bin",
+   "total": 16531456,
+   "used": 16529309,
+   "length_table": 38880,
+   "weight_payload": 16351943,
+   "scale_payload": 138438,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "1:2048:512:fgdt": {
+   "file": "L00_E113.bin",
+   "total": 16506880,
+   "used": 16503849,
+   "length_table": 13420,
+   "weight_payload": 16351943,
+   "scale_payload": 138438,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "1:2048:512:fg": {
+   "file": "L00_E113.bin",
+   "total": 16572416,
+   "used": 16569576,
+   "length_table": 38880,
+   "weight_payload": 16391699,
+   "scale_payload": 138949,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "1:2048:512:fgd": {
+   "file": "L00_E113.bin",
+   "total": 16547840,
+   "used": 16544052,
+   "length_table": 13356,
+   "weight_payload": 16391699,
+   "scale_payload": 138949,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "1:4096:1024:fge": {
+   "file": "L00_E113.bin",
+   "total": 16519168,
+   "used": 16516815,
+   "length_table": 19440,
+   "weight_payload": 16362086,
+   "scale_payload": 135241,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "1:4096:1024:fgde": {
+   "file": "L00_E113.bin",
+   "total": 16506880,
+   "used": 16505095,
+   "length_table": 7720,
+   "weight_payload": 16362086,
+   "scale_payload": 135241,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "1:4096:1024:fgt": {
+   "file": "L00_E113.bin",
+   "total": 16498688,
+   "used": 16495914,
+   "length_table": 19440,
+   "weight_payload": 16341540,
+   "scale_payload": 134886,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "1:4096:1024:fgdt": {
+   "file": "L00_E113.bin",
+   "total": 16486400,
+   "used": 16484198,
+   "length_table": 7724,
+   "weight_payload": 16341540,
+   "scale_payload": 134886,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "1:4096:1024:fg": {
+   "file": "L00_E113.bin",
+   "total": 16519168,
+   "used": 16516063,
+   "length_table": 19440,
+   "weight_payload": 16361416,
+   "scale_payload": 135159,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "1:4096:1024:fgd": {
+   "file": "L00_E113.bin",
+   "total": 16506880,
+   "used": 16504355,
+   "length_table": 7732,
+   "weight_payload": 16361416,
+   "scale_payload": 135159,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "1:8192:2048:fge": {
+   "file": "L00_E113.bin",
+   "total": 16490496,
+   "used": 16489757,
+   "length_table": 9720,
+   "weight_payload": 16346682,
+   "scale_payload": 133307,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "1:8192:2048:fgde": {
+   "file": "L00_E113.bin",
+   "total": 16486400,
+   "used": 16484301,
+   "length_table": 4264,
+   "weight_payload": 16346682,
+   "scale_payload": 133307,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "1:8192:2048:fgt": {
+   "file": "L00_E113.bin",
+   "total": 16482304,
+   "used": 16479291,
+   "length_table": 9720,
+   "weight_payload": 16336397,
+   "scale_payload": 133126,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "1:8192:2048:fgdt": {
+   "file": "L00_E113.bin",
+   "total": 16474112,
+   "used": 16473839,
+   "length_table": 4268,
+   "weight_payload": 16336397,
+   "scale_payload": 133126,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "1:8192:2048:fg": {
+   "file": "L00_E113.bin",
+   "total": 16490496,
+   "used": 16489383,
+   "length_table": 9720,
+   "weight_payload": 16346345,
+   "scale_payload": 133270,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "1:8192:2048:fgd": {
+   "file": "L00_E113.bin",
+   "total": 16486400,
+   "used": 16483931,
+   "length_table": 4268,
+   "weight_payload": 16346345,
+   "scale_payload": 133270,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "7:1024:256:fge": {
+   "file": "L01_E187.bin",
+   "total": 16683008,
+   "used": 16680753,
+   "length_table": 77760,
+   "weight_payload": 16456274,
+   "scale_payload": 146671,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "7:1024:256:fgde": {
+   "file": "L01_E187.bin",
+   "total": 16625664,
+   "used": 16625445,
+   "length_table": 22452,
+   "weight_payload": 16456274,
+   "scale_payload": 146671,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "7:1024:256:fgt": {
+   "file": "L01_E187.bin",
+   "total": 16601088,
+   "used": 16597597,
+   "length_table": 77760,
+   "weight_payload": 16374428,
+   "scale_payload": 145361,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "7:1024:256:fgdt": {
+   "file": "L01_E187.bin",
+   "total": 16543744,
+   "used": 16542201,
+   "length_table": 22364,
+   "weight_payload": 16374428,
+   "scale_payload": 145361,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "7:1024:256:fg": {
+   "file": "L01_E187.bin",
+   "total": 16678912,
+   "used": 16678129,
+   "length_table": 77760,
+   "weight_payload": 16453967,
+   "scale_payload": 146354,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "7:1024:256:fgd": {
+   "file": "L01_E187.bin",
+   "total": 16625664,
+   "used": 16622813,
+   "length_table": 22444,
+   "weight_payload": 16453967,
+   "scale_payload": 146354,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "7:2048:512:fge": {
+   "file": "L01_E187.bin",
+   "total": 16576512,
+   "used": 16572479,
+   "length_table": 38880,
+   "weight_payload": 16394567,
+   "scale_payload": 138984,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "7:2048:512:fgde": {
+   "file": "L01_E187.bin",
+   "total": 16547840,
+   "used": 16546691,
+   "length_table": 13092,
+   "weight_payload": 16394567,
+   "scale_payload": 138984,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "7:2048:512:fgt": {
+   "file": "L01_E187.bin",
+   "total": 16531456,
+   "used": 16530983,
+   "length_table": 38880,
+   "weight_payload": 16353743,
+   "scale_payload": 138312,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "7:2048:512:fgdt": {
+   "file": "L01_E187.bin",
+   "total": 16506880,
+   "used": 16505219,
+   "length_table": 13116,
+   "weight_payload": 16353743,
+   "scale_payload": 138312,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "7:2048:512:fg": {
+   "file": "L01_E187.bin",
+   "total": 16572416,
+   "used": 16571240,
+   "length_table": 38880,
+   "weight_payload": 16393445,
+   "scale_payload": 138867,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "7:2048:512:fgd": {
+   "file": "L01_E187.bin",
+   "total": 16547840,
+   "used": 16545460,
+   "length_table": 13100,
+   "weight_payload": 16393445,
+   "scale_payload": 138867,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "7:4096:1024:fge": {
+   "file": "L01_E187.bin",
+   "total": 16519168,
+   "used": 16518467,
+   "length_table": 19440,
+   "weight_payload": 16363848,
+   "scale_payload": 135131,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "7:4096:1024:fgde": {
+   "file": "L01_E187.bin",
+   "total": 16506880,
+   "used": 16506595,
+   "length_table": 7568,
+   "weight_payload": 16363848,
+   "scale_payload": 135131,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "7:4096:1024:fgt": {
+   "file": "L01_E187.bin",
+   "total": 16498688,
+   "used": 16497575,
+   "length_table": 19440,
+   "weight_payload": 16343310,
+   "scale_payload": 134777,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "7:4096:1024:fgdt": {
+   "file": "L01_E187.bin",
+   "total": 16486400,
+   "used": 16485727,
+   "length_table": 7592,
+   "weight_payload": 16343310,
+   "scale_payload": 134777,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "7:4096:1024:fg": {
+   "file": "L01_E187.bin",
+   "total": 16519168,
+   "used": 16517731,
+   "length_table": 19440,
+   "weight_payload": 16363204,
+   "scale_payload": 135039,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "7:4096:1024:fgd": {
+   "file": "L01_E187.bin",
+   "total": 16506880,
+   "used": 16505867,
+   "length_table": 7576,
+   "weight_payload": 16363204,
+   "scale_payload": 135039,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "7:8192:2048:fge": {
+   "file": "L01_E187.bin",
+   "total": 16494592,
+   "used": 16491330,
+   "length_table": 9720,
+   "weight_payload": 16348363,
+   "scale_payload": 133199,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "7:8192:2048:fgde": {
+   "file": "L01_E187.bin",
+   "total": 16486400,
+   "used": 16485754,
+   "length_table": 4144,
+   "weight_payload": 16348363,
+   "scale_payload": 133199,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "7:8192:2048:fgt": {
+   "file": "L01_E187.bin",
+   "total": 16482304,
+   "used": 16480910,
+   "length_table": 9720,
+   "weight_payload": 16338114,
+   "scale_payload": 133028,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "7:8192:2048:fgdt": {
+   "file": "L01_E187.bin",
+   "total": 16478208,
+   "used": 16475314,
+   "length_table": 4124,
+   "weight_payload": 16338114,
+   "scale_payload": 133028,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "7:8192:2048:fg": {
+   "file": "L01_E187.bin",
+   "total": 16494592,
+   "used": 16490968,
+   "length_table": 9720,
+   "weight_payload": 16348052,
+   "scale_payload": 133148,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "7:8192:2048:fgd": {
+   "file": "L01_E187.bin",
+   "total": 16486400,
+   "used": 16485388,
+   "length_table": 4140,
+   "weight_payload": 16348052,
+   "scale_payload": 133148,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "9:1024:256:fge": {
+   "file": "L02_E062.bin",
+   "total": 16666624,
+   "used": 16662632,
+   "length_table": 77760,
+   "weight_payload": 16442916,
+   "scale_payload": 141908,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "9:1024:256:fgde": {
+   "file": "L02_E062.bin",
+   "total": 16609280,
+   "used": 16607288,
+   "length_table": 22416,
+   "weight_payload": 16442916,
+   "scale_payload": 141908,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "9:1024:256:fgt": {
+   "file": "L02_E062.bin",
+   "total": 16580608,
+   "used": 16579471,
+   "length_table": 77760,
+   "weight_payload": 16361122,
+   "scale_payload": 140541,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "9:1024:256:fgdt": {
+   "file": "L02_E062.bin",
+   "total": 16527360,
+   "used": 16524019,
+   "length_table": 22308,
+   "weight_payload": 16361122,
+   "scale_payload": 140541,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "9:1024:256:fg": {
+   "file": "L02_E062.bin",
+   "total": 16662528,
+   "used": 16659915,
+   "length_table": 77760,
+   "weight_payload": 16440508,
+   "scale_payload": 141599,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "9:1024:256:fgd": {
+   "file": "L02_E062.bin",
+   "total": 16605184,
+   "used": 16604523,
+   "length_table": 22368,
+   "weight_payload": 16440508,
+   "scale_payload": 141599,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "9:2048:512:fge": {
+   "file": "L02_E062.bin",
+   "total": 16556032,
+   "used": 16554390,
+   "length_table": 38880,
+   "weight_payload": 16381295,
+   "scale_payload": 134167,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "9:2048:512:fgde": {
+   "file": "L02_E062.bin",
+   "total": 16531456,
+   "used": 16528578,
+   "length_table": 13068,
+   "weight_payload": 16381295,
+   "scale_payload": 134167,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "9:2048:512:fgt": {
+   "file": "L02_E062.bin",
+   "total": 16515072,
+   "used": 16512836,
+   "length_table": 38880,
+   "weight_payload": 16340382,
+   "scale_payload": 133526,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "9:2048:512:fgdt": {
+   "file": "L02_E062.bin",
+   "total": 16490496,
+   "used": 16487012,
+   "length_table": 13056,
+   "weight_payload": 16340382,
+   "scale_payload": 133526,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "9:2048:512:fg": {
+   "file": "L02_E062.bin",
+   "total": 16556032,
+   "used": 16553031,
+   "length_table": 38880,
+   "weight_payload": 16380077,
+   "scale_payload": 134026,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "9:2048:512:fgd": {
+   "file": "L02_E062.bin",
+   "total": 16527360,
+   "used": 16527207,
+   "length_table": 13056,
+   "weight_payload": 16380077,
+   "scale_payload": 134026,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "9:4096:1024:fge": {
+   "file": "L02_E062.bin",
+   "total": 16502784,
+   "used": 16500163,
+   "length_table": 19440,
+   "weight_payload": 16350344,
+   "scale_payload": 130331,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "9:4096:1024:fgde": {
+   "file": "L02_E062.bin",
+   "total": 16490496,
+   "used": 16488283,
+   "length_table": 7560,
+   "weight_payload": 16350344,
+   "scale_payload": 130331,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "9:4096:1024:fgt": {
+   "file": "L02_E062.bin",
+   "total": 16482304,
+   "used": 16479450,
+   "length_table": 19440,
+   "weight_payload": 16329942,
+   "scale_payload": 130020,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "9:4096:1024:fgdt": {
+   "file": "L02_E062.bin",
+   "total": 16470016,
+   "used": 16467570,
+   "length_table": 7560,
+   "weight_payload": 16329942,
+   "scale_payload": 130020,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "9:4096:1024:fg": {
+   "file": "L02_E062.bin",
+   "total": 16502784,
+   "used": 16499493,
+   "length_table": 19440,
+   "weight_payload": 16349751,
+   "scale_payload": 130254,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "9:4096:1024:fgd": {
+   "file": "L02_E062.bin",
+   "total": 16490496,
+   "used": 16487609,
+   "length_table": 7556,
+   "weight_payload": 16349751,
+   "scale_payload": 130254,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "9:8192:2048:fge": {
+   "file": "L02_E062.bin",
+   "total": 16474112,
+   "used": 16473110,
+   "length_table": 9720,
+   "weight_payload": 16334950,
+   "scale_payload": 128392,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "9:8192:2048:fgde": {
+   "file": "L02_E062.bin",
+   "total": 16470016,
+   "used": 16467586,
+   "length_table": 4196,
+   "weight_payload": 16334950,
+   "scale_payload": 128392,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "9:8192:2048:fgt": {
+   "file": "L02_E062.bin",
+   "total": 16465920,
+   "used": 16462722,
+   "length_table": 9720,
+   "weight_payload": 16324722,
+   "scale_payload": 128232,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "9:8192:2048:fgdt": {
+   "file": "L02_E062.bin",
+   "total": 16457728,
+   "used": 16457206,
+   "length_table": 4204,
+   "weight_payload": 16324722,
+   "scale_payload": 128232,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "9:8192:2048:fg": {
+   "file": "L02_E062.bin",
+   "total": 16474112,
+   "used": 16472802,
+   "length_table": 9720,
+   "weight_payload": 16334676,
+   "scale_payload": 128358,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "9:8192:2048:fgd": {
+   "file": "L02_E062.bin",
+   "total": 16470016,
+   "used": 16467282,
+   "length_table": 4200,
+   "weight_payload": 16334676,
+   "scale_payload": 128358,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "15:1024:256:fge": {
+   "file": "L03_E142.bin",
+   "total": 16646144,
+   "used": 16645227,
+   "length_table": 77760,
+   "weight_payload": 16434378,
+   "scale_payload": 133041,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "15:1024:256:fgde": {
+   "file": "L03_E142.bin",
+   "total": 16592896,
+   "used": 16589543,
+   "length_table": 22076,
+   "weight_payload": 16434378,
+   "scale_payload": 133041,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "15:1024:256:fgt": {
+   "file": "L03_E142.bin",
+   "total": 16564224,
+   "used": 16562259,
+   "length_table": 77760,
+   "weight_payload": 16352638,
+   "scale_payload": 131813,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "15:1024:256:fgdt": {
+   "file": "L03_E142.bin",
+   "total": 16506880,
+   "used": 16506543,
+   "length_table": 22044,
+   "weight_payload": 16352638,
+   "scale_payload": 131813,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "15:1024:256:fg": {
+   "file": "L03_E142.bin",
+   "total": 16646144,
+   "used": 16642523,
+   "length_table": 77760,
+   "weight_payload": 16431983,
+   "scale_payload": 132732,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "15:1024:256:fgd": {
+   "file": "L03_E142.bin",
+   "total": 16588800,
+   "used": 16586855,
+   "length_table": 22092,
+   "weight_payload": 16431983,
+   "scale_payload": 132732,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "15:2048:512:fge": {
+   "file": "L03_E142.bin",
+   "total": 16539648,
+   "used": 16536998,
+   "length_table": 38880,
+   "weight_payload": 16372757,
+   "scale_payload": 125313,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "15:2048:512:fgde": {
+   "file": "L03_E142.bin",
+   "total": 16510976,
+   "used": 16510870,
+   "length_table": 12752,
+   "weight_payload": 16372757,
+   "scale_payload": 125313,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "15:2048:512:fgt": {
+   "file": "L03_E142.bin",
+   "total": 16498688,
+   "used": 16495404,
+   "length_table": 38880,
+   "weight_payload": 16331789,
+   "scale_payload": 124687,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "15:2048:512:fgdt": {
+   "file": "L03_E142.bin",
+   "total": 16470016,
+   "used": 16469284,
+   "length_table": 12760,
+   "weight_payload": 16331789,
+   "scale_payload": 124687,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "15:2048:512:fg": {
+   "file": "L03_E142.bin",
+   "total": 16539648,
+   "used": 16535625,
+   "length_table": 38880,
+   "weight_payload": 16371543,
+   "scale_payload": 125154,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "15:2048:512:fgd": {
+   "file": "L03_E142.bin",
+   "total": 16510976,
+   "used": 16509469,
+   "length_table": 12724,
+   "weight_payload": 16371543,
+   "scale_payload": 125154,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "15:4096:1024:fge": {
+   "file": "L03_E142.bin",
+   "total": 16486400,
+   "used": 16482836,
+   "length_table": 19440,
+   "weight_payload": 16341901,
+   "scale_payload": 121447,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "15:4096:1024:fgde": {
+   "file": "L03_E142.bin",
+   "total": 16474112,
+   "used": 16470672,
+   "length_table": 7276,
+   "weight_payload": 16341901,
+   "scale_payload": 121447,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "15:4096:1024:fgt": {
+   "file": "L03_E142.bin",
+   "total": 16465920,
+   "used": 16462054,
+   "length_table": 19440,
+   "weight_payload": 16321400,
+   "scale_payload": 121166,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "15:4096:1024:fgdt": {
+   "file": "L03_E142.bin",
+   "total": 16453632,
+   "used": 16449906,
+   "length_table": 7292,
+   "weight_payload": 16321400,
+   "scale_payload": 121166,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "15:4096:1024:fg": {
+   "file": "L03_E142.bin",
+   "total": 16482304,
+   "used": 16482174,
+   "length_table": 19440,
+   "weight_payload": 16341296,
+   "scale_payload": 121390,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "15:4096:1024:fgd": {
+   "file": "L03_E142.bin",
+   "total": 16470016,
+   "used": 16470014,
+   "length_table": 7280,
+   "weight_payload": 16341296,
+   "scale_payload": 121390,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "15:8192:2048:fge": {
+   "file": "L03_E142.bin",
+   "total": 16457728,
+   "used": 16455803,
+   "length_table": 9720,
+   "weight_payload": 16326484,
+   "scale_payload": 119551,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "15:8192:2048:fgde": {
+   "file": "L03_E142.bin",
+   "total": 16453632,
+   "used": 16450051,
+   "length_table": 3968,
+   "weight_payload": 16326484,
+   "scale_payload": 119551,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "15:8192:2048:fgt": {
+   "file": "L03_E142.bin",
+   "total": 16445440,
+   "used": 16445369,
+   "length_table": 9720,
+   "weight_payload": 16316218,
+   "scale_payload": 119383,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "15:8192:2048:fgdt": {
+   "file": "L03_E142.bin",
+   "total": 16441344,
+   "used": 16439629,
+   "length_table": 3980,
+   "weight_payload": 16316218,
+   "scale_payload": 119383,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "15:8192:2048:fg": {
+   "file": "L03_E142.bin",
+   "total": 16457728,
+   "used": 16455439,
+   "length_table": 9720,
+   "weight_payload": 16326168,
+   "scale_payload": 119503,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "15:8192:2048:fgd": {
+   "file": "L03_E142.bin",
+   "total": 16453632,
+   "used": 16449695,
+   "length_table": 3976,
+   "weight_payload": 16326168,
+   "scale_payload": 119503,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "17:1024:256:fge": {
+   "file": "L04_E038.bin",
+   "total": 16658432,
+   "used": 16657859,
+   "length_table": 77760,
+   "weight_payload": 16437175,
+   "scale_payload": 142876,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "17:1024:256:fgde": {
+   "file": "L04_E038.bin",
+   "total": 16601088,
+   "used": 16600835,
+   "length_table": 20736,
+   "weight_payload": 16437175,
+   "scale_payload": 142876,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "17:1024:256:fgt": {
+   "file": "L04_E038.bin",
+   "total": 16576512,
+   "used": 16574841,
+   "length_table": 77760,
+   "weight_payload": 16355485,
+   "scale_payload": 141548,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "17:1024:256:fgdt": {
+   "file": "L04_E038.bin",
+   "total": 16519168,
+   "used": 16517873,
+   "length_table": 20792,
+   "weight_payload": 16355485,
+   "scale_payload": 141548,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "17:1024:256:fg": {
+   "file": "L04_E038.bin",
+   "total": 16658432,
+   "used": 16655107,
+   "length_table": 77760,
+   "weight_payload": 16434775,
+   "scale_payload": 142524,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "17:1024:256:fgd": {
+   "file": "L04_E038.bin",
+   "total": 16601088,
+   "used": 16598159,
+   "length_table": 20812,
+   "weight_payload": 16434775,
+   "scale_payload": 142524,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "17:2048:512:fge": {
+   "file": "L04_E038.bin",
+   "total": 16551936,
+   "used": 16549595,
+   "length_table": 38880,
+   "weight_payload": 16375514,
+   "scale_payload": 135153,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "17:2048:512:fgde": {
+   "file": "L04_E038.bin",
+   "total": 16523264,
+   "used": 16522579,
+   "length_table": 11864,
+   "weight_payload": 16375514,
+   "scale_payload": 135153,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "17:2048:512:fgt": {
+   "file": "L04_E038.bin",
+   "total": 16510976,
+   "used": 16508112,
+   "length_table": 38880,
+   "weight_payload": 16334674,
+   "scale_payload": 134510,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "17:2048:512:fgdt": {
+   "file": "L04_E038.bin",
+   "total": 16482304,
+   "used": 16481096,
+   "length_table": 11864,
+   "weight_payload": 16334674,
+   "scale_payload": 134510,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "17:2048:512:fg": {
+   "file": "L04_E038.bin",
+   "total": 16551936,
+   "used": 16548249,
+   "length_table": 38880,
+   "weight_payload": 16374327,
+   "scale_payload": 134994,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "17:2048:512:fgd": {
+   "file": "L04_E038.bin",
+   "total": 16523264,
+   "used": 16521245,
+   "length_table": 11876,
+   "weight_payload": 16374327,
+   "scale_payload": 134994,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "17:4096:1024:fge": {
+   "file": "L04_E038.bin",
+   "total": 16498688,
+   "used": 16495451,
+   "length_table": 19440,
+   "weight_payload": 16344684,
+   "scale_payload": 131279,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "17:4096:1024:fgde": {
+   "file": "L04_E038.bin",
+   "total": 16486400,
+   "used": 16482799,
+   "length_table": 6788,
+   "weight_payload": 16344684,
+   "scale_payload": 131279,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "17:4096:1024:fgt": {
+   "file": "L04_E038.bin",
+   "total": 16478208,
+   "used": 16474777,
+   "length_table": 19440,
+   "weight_payload": 16324327,
+   "scale_payload": 130962,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "17:4096:1024:fgdt": {
+   "file": "L04_E038.bin",
+   "total": 16465920,
+   "used": 16462145,
+   "length_table": 6808,
+   "weight_payload": 16324327,
+   "scale_payload": 130962,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "17:4096:1024:fg": {
+   "file": "L04_E038.bin",
+   "total": 16498688,
+   "used": 16494801,
+   "length_table": 19440,
+   "weight_payload": 16344100,
+   "scale_payload": 131213,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "17:4096:1024:fgd": {
+   "file": "L04_E038.bin",
+   "total": 16482304,
+   "used": 16482145,
+   "length_table": 6784,
+   "weight_payload": 16344100,
+   "scale_payload": 131213,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "17:8192:2048:fge": {
+   "file": "L04_E038.bin",
+   "total": 16470016,
+   "used": 16468386,
+   "length_table": 9720,
+   "weight_payload": 16329266,
+   "scale_payload": 129352,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "17:8192:2048:fgde": {
+   "file": "L04_E038.bin",
+   "total": 16465920,
+   "used": 16462490,
+   "length_table": 3824,
+   "weight_payload": 16329266,
+   "scale_payload": 129352,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "17:8192:2048:fgt": {
+   "file": "L04_E038.bin",
+   "total": 16461824,
+   "used": 16458035,
+   "length_table": 9720,
+   "weight_payload": 16319072,
+   "scale_payload": 129195,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "17:8192:2048:fgdt": {
+   "file": "L04_E038.bin",
+   "total": 16453632,
+   "used": 16452147,
+   "length_table": 3832,
+   "weight_payload": 16319072,
+   "scale_payload": 129195,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "17:8192:2048:fg": {
+   "file": "L04_E038.bin",
+   "total": 16470016,
+   "used": 16468059,
+   "length_table": 9720,
+   "weight_payload": 16328971,
+   "scale_payload": 129320,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "17:8192:2048:fgd": {
+   "file": "L04_E038.bin",
+   "total": 16465920,
+   "used": 16462151,
+   "length_table": 3812,
+   "weight_payload": 16328971,
+   "scale_payload": 129320,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "23:1024:256:fge": {
+   "file": "L05_E084.bin",
+   "total": 16650240,
+   "used": 16648372,
+   "length_table": 77760,
+   "weight_payload": 16433637,
+   "scale_payload": 136927,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "23:1024:256:fgde": {
+   "file": "L05_E084.bin",
+   "total": 16592896,
+   "used": 16592572,
+   "length_table": 21960,
+   "weight_payload": 16433637,
+   "scale_payload": 136927,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "23:1024:256:fgt": {
+   "file": "L05_E084.bin",
+   "total": 16568320,
+   "used": 16565484,
+   "length_table": 77760,
+   "weight_payload": 16351974,
+   "scale_payload": 135702,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "23:1024:256:fgdt": {
+   "file": "L05_E084.bin",
+   "total": 16510976,
+   "used": 16509676,
+   "length_table": 21952,
+   "weight_payload": 16351974,
+   "scale_payload": 135702,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "23:1024:256:fg": {
+   "file": "L05_E084.bin",
+   "total": 16646144,
+   "used": 16645666,
+   "length_table": 77760,
+   "weight_payload": 16431231,
+   "scale_payload": 136627,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "23:1024:256:fgd": {
+   "file": "L05_E084.bin",
+   "total": 16592896,
+   "used": 16589826,
+   "length_table": 21920,
+   "weight_payload": 16431231,
+   "scale_payload": 136627,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "23:2048:512:fge": {
+   "file": "L05_E084.bin",
+   "total": 16543744,
+   "used": 16540127,
+   "length_table": 38880,
+   "weight_payload": 16371928,
+   "scale_payload": 129271,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "23:2048:512:fgde": {
+   "file": "L05_E084.bin",
+   "total": 16515072,
+   "used": 16513887,
+   "length_table": 12640,
+   "weight_payload": 16371928,
+   "scale_payload": 129271,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "23:2048:512:fgt": {
+   "file": "L05_E084.bin",
+   "total": 16498688,
+   "used": 16498678,
+   "length_table": 38880,
+   "weight_payload": 16331094,
+   "scale_payload": 128656,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "23:2048:512:fgdt": {
+   "file": "L05_E084.bin",
+   "total": 16474112,
+   "used": 16472426,
+   "length_table": 12628,
+   "weight_payload": 16331094,
+   "scale_payload": 128656,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "23:2048:512:fg": {
+   "file": "L05_E084.bin",
+   "total": 16539648,
+   "used": 16538797,
+   "length_table": 38880,
+   "weight_payload": 16370754,
+   "scale_payload": 129115,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "23:2048:512:fgd": {
+   "file": "L05_E084.bin",
+   "total": 16515072,
+   "used": 16512569,
+   "length_table": 12652,
+   "weight_payload": 16370754,
+   "scale_payload": 129115,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "23:4096:1024:fge": {
+   "file": "L05_E084.bin",
+   "total": 16486400,
+   "used": 16486013,
+   "length_table": 19440,
+   "weight_payload": 16341118,
+   "scale_payload": 125407,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "23:4096:1024:fgde": {
+   "file": "L05_E084.bin",
+   "total": 16474112,
+   "used": 16473809,
+   "length_table": 7236,
+   "weight_payload": 16341118,
+   "scale_payload": 125407,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "23:4096:1024:fgt": {
+   "file": "L05_E084.bin",
+   "total": 16465920,
+   "used": 16465261,
+   "length_table": 19440,
+   "weight_payload": 16320677,
+   "scale_payload": 125096,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "23:4096:1024:fgdt": {
+   "file": "L05_E084.bin",
+   "total": 16453632,
+   "used": 16453061,
+   "length_table": 7240,
+   "weight_payload": 16320677,
+   "scale_payload": 125096,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "23:4096:1024:fg": {
+   "file": "L05_E084.bin",
+   "total": 16486400,
+   "used": 16485322,
+   "length_table": 19440,
+   "weight_payload": 16340505,
+   "scale_payload": 125329,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "23:4096:1024:fgd": {
+   "file": "L05_E084.bin",
+   "total": 16474112,
+   "used": 16473126,
+   "length_table": 7244,
+   "weight_payload": 16340505,
+   "scale_payload": 125329,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "23:8192:2048:fge": {
+   "file": "L05_E084.bin",
+   "total": 16461824,
+   "used": 16458907,
+   "length_table": 9720,
+   "weight_payload": 16325661,
+   "scale_payload": 123478,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "23:8192:2048:fgde": {
+   "file": "L05_E084.bin",
+   "total": 16453632,
+   "used": 16453183,
+   "length_table": 3996,
+   "weight_payload": 16325661,
+   "scale_payload": 123478,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "23:8192:2048:fgt": {
+   "file": "L05_E084.bin",
+   "total": 16449536,
+   "used": 16448534,
+   "length_table": 9720,
+   "weight_payload": 16315442,
+   "scale_payload": 123324,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "23:8192:2048:fgdt": {
+   "file": "L05_E084.bin",
+   "total": 16445440,
+   "used": 16442798,
+   "length_table": 3984,
+   "weight_payload": 16315442,
+   "scale_payload": 123324,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "23:8192:2048:fg": {
+   "file": "L05_E084.bin",
+   "total": 16461824,
+   "used": 16458535,
+   "length_table": 9720,
+   "weight_payload": 16325327,
+   "scale_payload": 123440,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "23:8192:2048:fgd": {
+   "file": "L05_E084.bin",
+   "total": 16453632,
+   "used": 16452807,
+   "length_table": 3992,
+   "weight_payload": 16325327,
+   "scale_payload": 123440,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "25:1024:256:fge": {
+   "file": "L06_E073.bin",
+   "total": 16658432,
+   "used": 16658397,
+   "length_table": 77760,
+   "weight_payload": 16441987,
+   "scale_payload": 138602,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "25:1024:256:fgde": {
+   "file": "L06_E073.bin",
+   "total": 16605184,
+   "used": 16603297,
+   "length_table": 22660,
+   "weight_payload": 16441987,
+   "scale_payload": 138602,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "25:1024:256:fgt": {
+   "file": "L06_E073.bin",
+   "total": 16576512,
+   "used": 16575429,
+   "length_table": 77760,
+   "weight_payload": 16360308,
+   "scale_payload": 137313,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "25:1024:256:fgdt": {
+   "file": "L06_E073.bin",
+   "total": 16523264,
+   "used": 16520305,
+   "length_table": 22636,
+   "weight_payload": 16360308,
+   "scale_payload": 137313,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "25:1024:256:fg": {
+   "file": "L06_E073.bin",
+   "total": 16658432,
+   "used": 16655775,
+   "length_table": 77760,
+   "weight_payload": 16439645,
+   "scale_payload": 138322,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "25:1024:256:fgd": {
+   "file": "L06_E073.bin",
+   "total": 16601088,
+   "used": 16600775,
+   "length_table": 22760,
+   "weight_payload": 16439645,
+   "scale_payload": 138322,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "25:2048:512:fge": {
+   "file": "L06_E073.bin",
+   "total": 16551936,
+   "used": 16550139,
+   "length_table": 38880,
+   "weight_payload": 16380322,
+   "scale_payload": 130889,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "25:2048:512:fgde": {
+   "file": "L06_E073.bin",
+   "total": 16527360,
+   "used": 16524311,
+   "length_table": 13052,
+   "weight_payload": 16380322,
+   "scale_payload": 130889,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "25:2048:512:fgt": {
+   "file": "L06_E073.bin",
+   "total": 16510976,
+   "used": 16508724,
+   "length_table": 38880,
+   "weight_payload": 16339491,
+   "scale_payload": 130305,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "25:2048:512:fgdt": {
+   "file": "L06_E073.bin",
+   "total": 16486400,
+   "used": 16482936,
+   "length_table": 13092,
+   "weight_payload": 16339491,
+   "scale_payload": 130305,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "25:2048:512:fg": {
+   "file": "L06_E073.bin",
+   "total": 16551936,
+   "used": 16548826,
+   "length_table": 38880,
+   "weight_payload": 16379147,
+   "scale_payload": 130751,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "25:2048:512:fgd": {
+   "file": "L06_E073.bin",
+   "total": 16523264,
+   "used": 16522962,
+   "length_table": 13016,
+   "weight_payload": 16379147,
+   "scale_payload": 130751,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "25:4096:1024:fge": {
+   "file": "L06_E073.bin",
+   "total": 16498688,
+   "used": 16496039,
+   "length_table": 19440,
+   "weight_payload": 16349486,
+   "scale_payload": 127065,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "25:4096:1024:fgde": {
+   "file": "L06_E073.bin",
+   "total": 16486400,
+   "used": 16484087,
+   "length_table": 7488,
+   "weight_payload": 16349486,
+   "scale_payload": 127065,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "25:4096:1024:fgt": {
+   "file": "L06_E073.bin",
+   "total": 16478208,
+   "used": 16475311,
+   "length_table": 19440,
+   "weight_payload": 16329084,
+   "scale_payload": 126739,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "25:4096:1024:fgdt": {
+   "file": "L06_E073.bin",
+   "total": 16465920,
+   "used": 16463347,
+   "length_table": 7476,
+   "weight_payload": 16329084,
+   "scale_payload": 126739,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "25:4096:1024:fg": {
+   "file": "L06_E073.bin",
+   "total": 16498688,
+   "used": 16495367,
+   "length_table": 19440,
+   "weight_payload": 16348899,
+   "scale_payload": 126980,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "25:4096:1024:fgd": {
+   "file": "L06_E073.bin",
+   "total": 16486400,
+   "used": 16483415,
+   "length_table": 7488,
+   "weight_payload": 16348899,
+   "scale_payload": 126980,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "25:8192:2048:fge": {
+   "file": "L06_E073.bin",
+   "total": 16470016,
+   "used": 16468997,
+   "length_table": 9720,
+   "weight_payload": 16334098,
+   "scale_payload": 125131,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "25:8192:2048:fgde": {
+   "file": "L06_E073.bin",
+   "total": 16465920,
+   "used": 16463413,
+   "length_table": 4136,
+   "weight_payload": 16334098,
+   "scale_payload": 125131,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "25:8192:2048:fgt": {
+   "file": "L06_E073.bin",
+   "total": 16461824,
+   "used": 16458624,
+   "length_table": 9720,
+   "weight_payload": 16323871,
+   "scale_payload": 124985,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "25:8192:2048:fgdt": {
+   "file": "L06_E073.bin",
+   "total": 16453632,
+   "used": 16453028,
+   "length_table": 4124,
+   "weight_payload": 16323871,
+   "scale_payload": 124985,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "25:8192:2048:fg": {
+   "file": "L06_E073.bin",
+   "total": 16470016,
+   "used": 16468665,
+   "length_table": 9720,
+   "weight_payload": 16333809,
+   "scale_payload": 125088,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "25:8192:2048:fgd": {
+   "file": "L06_E073.bin",
+   "total": 16465920,
+   "used": 16463085,
+   "length_table": 4140,
+   "weight_payload": 16333809,
+   "scale_payload": 125088,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "31:1024:256:fge": {
+   "file": "L07_E167.bin",
+   "total": 16662528,
+   "used": 16659105,
+   "length_table": 77760,
+   "weight_payload": 16439771,
+   "scale_payload": 141526,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "31:1024:256:fgde": {
+   "file": "L07_E167.bin",
+   "total": 16605184,
+   "used": 16603157,
+   "length_table": 21812,
+   "weight_payload": 16439771,
+   "scale_payload": 141526,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "31:1024:256:fgt": {
+   "file": "L07_E167.bin",
+   "total": 16576512,
+   "used": 16575948,
+   "length_table": 77760,
+   "weight_payload": 16357949,
+   "scale_payload": 140191,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "31:1024:256:fgdt": {
+   "file": "L07_E167.bin",
+   "total": 16523264,
+   "used": 16519928,
+   "length_table": 21740,
+   "weight_payload": 16357949,
+   "scale_payload": 140191,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "31:1024:256:fg": {
+   "file": "L07_E167.bin",
+   "total": 16658432,
+   "used": 16656363,
+   "length_table": 77760,
+   "weight_payload": 16437336,
+   "scale_payload": 141219,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "31:1024:256:fgd": {
+   "file": "L07_E167.bin",
+   "total": 16601088,
+   "used": 16600375,
+   "length_table": 21772,
+   "weight_payload": 16437336,
+   "scale_payload": 141219,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "31:2048:512:fge": {
+   "file": "L07_E167.bin",
+   "total": 16551936,
+   "used": 16550756,
+   "length_table": 38880,
+   "weight_payload": 16378030,
+   "scale_payload": 133798,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "31:2048:512:fgde": {
+   "file": "L07_E167.bin",
+   "total": 16527360,
+   "used": 16524472,
+   "length_table": 12596,
+   "weight_payload": 16378030,
+   "scale_payload": 133798,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "31:2048:512:fgt": {
+   "file": "L07_E167.bin",
+   "total": 16510976,
+   "used": 16509342,
+   "length_table": 38880,
+   "weight_payload": 16337193,
+   "scale_payload": 133221,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "31:2048:512:fgdt": {
+   "file": "L07_E167.bin",
+   "total": 16486400,
+   "used": 16483082,
+   "length_table": 12620,
+   "weight_payload": 16337193,
+   "scale_payload": 133221,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "31:2048:512:fg": {
+   "file": "L07_E167.bin",
+   "total": 16551936,
+   "used": 16549435,
+   "length_table": 38880,
+   "weight_payload": 16376834,
+   "scale_payload": 133673,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "31:2048:512:fgd": {
+   "file": "L07_E167.bin",
+   "total": 16523264,
+   "used": 16523155,
+   "length_table": 12600,
+   "weight_payload": 16376834,
+   "scale_payload": 133673,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "31:4096:1024:fge": {
+   "file": "L07_E167.bin",
+   "total": 16498688,
+   "used": 16496636,
+   "length_table": 19440,
+   "weight_payload": 16347175,
+   "scale_payload": 129973,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "31:4096:1024:fgde": {
+   "file": "L07_E167.bin",
+   "total": 16486400,
+   "used": 16484412,
+   "length_table": 7216,
+   "weight_payload": 16347175,
+   "scale_payload": 129973,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "31:4096:1024:fgt": {
+   "file": "L07_E167.bin",
+   "total": 16478208,
+   "used": 16475864,
+   "length_table": 19440,
+   "weight_payload": 16326734,
+   "scale_payload": 129642,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "31:4096:1024:fgdt": {
+   "file": "L07_E167.bin",
+   "total": 16465920,
+   "used": 16463636,
+   "length_table": 7212,
+   "weight_payload": 16326734,
+   "scale_payload": 129642,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "31:4096:1024:fg": {
+   "file": "L07_E167.bin",
+   "total": 16498688,
+   "used": 16495946,
+   "length_table": 19440,
+   "weight_payload": 16346571,
+   "scale_payload": 129887,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "31:4096:1024:fgd": {
+   "file": "L07_E167.bin",
+   "total": 16486400,
+   "used": 16483734,
+   "length_table": 7228,
+   "weight_payload": 16346571,
+   "scale_payload": 129887,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "31:8192:2048:fge": {
+   "file": "L07_E167.bin",
+   "total": 16470016,
+   "used": 16469568,
+   "length_table": 9720,
+   "weight_payload": 16331763,
+   "scale_payload": 128037,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "31:8192:2048:fgde": {
+   "file": "L07_E167.bin",
+   "total": 16465920,
+   "used": 16463824,
+   "length_table": 3976,
+   "weight_payload": 16331763,
+   "scale_payload": 128037,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "31:8192:2048:fgt": {
+   "file": "L07_E167.bin",
+   "total": 16461824,
+   "used": 16459196,
+   "length_table": 9720,
+   "weight_payload": 16321549,
+   "scale_payload": 127879,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "31:8192:2048:fgdt": {
+   "file": "L07_E167.bin",
+   "total": 16453632,
+   "used": 16453452,
+   "length_table": 3976,
+   "weight_payload": 16321549,
+   "scale_payload": 127879,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "31:8192:2048:fg": {
+   "file": "L07_E167.bin",
+   "total": 16470016,
+   "used": 16469235,
+   "length_table": 9720,
+   "weight_payload": 16331473,
+   "scale_payload": 127994,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "31:8192:2048:fgd": {
+   "file": "L07_E167.bin",
+   "total": 16465920,
+   "used": 16463487,
+   "length_table": 3972,
+   "weight_payload": 16331473,
+   "scale_payload": 127994,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "33:1024:256:fge": {
+   "file": "L08_E019.bin",
+   "total": 16646144,
+   "used": 16642946,
+   "length_table": 77760,
+   "weight_payload": 16430340,
+   "scale_payload": 134798,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "33:1024:256:fgde": {
+   "file": "L08_E019.bin",
+   "total": 16588800,
+   "used": 16586898,
+   "length_table": 21712,
+   "weight_payload": 16430340,
+   "scale_payload": 134798,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "33:1024:256:fgt": {
+   "file": "L08_E019.bin",
+   "total": 16560128,
+   "used": 16559834,
+   "length_table": 77760,
+   "weight_payload": 16348562,
+   "scale_payload": 133464,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "33:1024:256:fgdt": {
+   "file": "L08_E019.bin",
+   "total": 16506880,
+   "used": 16503734,
+   "length_table": 21660,
+   "weight_payload": 16348562,
+   "scale_payload": 133464,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "33:1024:256:fg": {
+   "file": "L08_E019.bin",
+   "total": 16642048,
+   "used": 16640212,
+   "length_table": 77760,
+   "weight_payload": 16427927,
+   "scale_payload": 134477,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "33:1024:256:fgd": {
+   "file": "L08_E019.bin",
+   "total": 16584704,
+   "used": 16584128,
+   "length_table": 21676,
+   "weight_payload": 16427927,
+   "scale_payload": 134477,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "33:2048:512:fge": {
+   "file": "L08_E019.bin",
+   "total": 16535552,
+   "used": 16534652,
+   "length_table": 38880,
+   "weight_payload": 16368674,
+   "scale_payload": 127050,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "33:2048:512:fgde": {
+   "file": "L08_E019.bin",
+   "total": 16510976,
+   "used": 16508152,
+   "length_table": 12380,
+   "weight_payload": 16368674,
+   "scale_payload": 127050,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "33:2048:512:fgt": {
+   "file": "L08_E019.bin",
+   "total": 16494592,
+   "used": 16493082,
+   "length_table": 38880,
+   "weight_payload": 16327708,
+   "scale_payload": 126446,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "33:2048:512:fgdt": {
+   "file": "L08_E019.bin",
+   "total": 16470016,
+   "used": 16466558,
+   "length_table": 12356,
+   "weight_payload": 16327708,
+   "scale_payload": 126446,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "33:2048:512:fg": {
+   "file": "L08_E019.bin",
+   "total": 16535552,
+   "used": 16533303,
+   "length_table": 38880,
+   "weight_payload": 16367450,
+   "scale_payload": 126925,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "33:2048:512:fgd": {
+   "file": "L08_E019.bin",
+   "total": 16506880,
+   "used": 16506827,
+   "length_table": 12404,
+   "weight_payload": 16367450,
+   "scale_payload": 126925,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "33:4096:1024:fge": {
+   "file": "L08_E019.bin",
+   "total": 16482304,
+   "used": 16480453,
+   "length_table": 19440,
+   "weight_payload": 16337781,
+   "scale_payload": 123184,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "33:4096:1024:fgde": {
+   "file": "L08_E019.bin",
+   "total": 16470016,
+   "used": 16468049,
+   "length_table": 7036,
+   "weight_payload": 16337781,
+   "scale_payload": 123184,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "33:4096:1024:fgt": {
+   "file": "L08_E019.bin",
+   "total": 16461824,
+   "used": 16459684,
+   "length_table": 19440,
+   "weight_payload": 16317329,
+   "scale_payload": 122867,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "33:4096:1024:fgdt": {
+   "file": "L08_E019.bin",
+   "total": 16449536,
+   "used": 16447264,
+   "length_table": 7020,
+   "weight_payload": 16317329,
+   "scale_payload": 122867,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "33:4096:1024:fg": {
+   "file": "L08_E019.bin",
+   "total": 16482304,
+   "used": 16479762,
+   "length_table": 19440,
+   "weight_payload": 16337168,
+   "scale_payload": 123106,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "33:4096:1024:fgd": {
+   "file": "L08_E019.bin",
+   "total": 16470016,
+   "used": 16467358,
+   "length_table": 7036,
+   "weight_payload": 16337168,
+   "scale_payload": 123106,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "33:8192:2048:fge": {
+   "file": "L08_E019.bin",
+   "total": 16453632,
+   "used": 16453349,
+   "length_table": 9720,
+   "weight_payload": 16322329,
+   "scale_payload": 121252,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "33:8192:2048:fgde": {
+   "file": "L08_E019.bin",
+   "total": 16449536,
+   "used": 16447489,
+   "length_table": 3860,
+   "weight_payload": 16322329,
+   "scale_payload": 121252,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "33:8192:2048:fgt": {
+   "file": "L08_E019.bin",
+   "total": 16445440,
+   "used": 16442963,
+   "length_table": 9720,
+   "weight_payload": 16312098,
+   "scale_payload": 121097,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "33:8192:2048:fgdt": {
+   "file": "L08_E019.bin",
+   "total": 16437248,
+   "used": 16437115,
+   "length_table": 3872,
+   "weight_payload": 16312098,
+   "scale_payload": 121097,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "33:8192:2048:fg": {
+   "file": "L08_E019.bin",
+   "total": 16453632,
+   "used": 16453004,
+   "length_table": 9720,
+   "weight_payload": 16322025,
+   "scale_payload": 121211,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "33:8192:2048:fgd": {
+   "file": "L08_E019.bin",
+   "total": 16449536,
+   "used": 16447148,
+   "length_table": 3864,
+   "weight_payload": 16322025,
+   "scale_payload": 121211,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "39:1024:256:fge": {
+   "file": "L09_E160.bin",
+   "total": 16683008,
+   "used": 16683008,
+   "length_table": 77760,
+   "weight_payload": 16458737,
+   "scale_payload": 146463,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "39:1024:256:fgde": {
+   "file": "L09_E160.bin",
+   "total": 16629760,
+   "used": 16627648,
+   "length_table": 22400,
+   "weight_payload": 16458737,
+   "scale_payload": 146463,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "39:1024:256:fgt": {
+   "file": "L09_E160.bin",
+   "total": 16601088,
+   "used": 16599851,
+   "length_table": 77760,
+   "weight_payload": 16376893,
+   "scale_payload": 145150,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "39:1024:256:fgdt": {
+   "file": "L09_E160.bin",
+   "total": 16547840,
+   "used": 16544459,
+   "length_table": 22368,
+   "weight_payload": 16376893,
+   "scale_payload": 145150,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "39:1024:256:fg": {
+   "file": "L09_E160.bin",
+   "total": 16683008,
+   "used": 16680246,
+   "length_table": 77760,
+   "weight_payload": 16456304,
+   "scale_payload": 146134,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "39:1024:256:fgd": {
+   "file": "L09_E160.bin",
+   "total": 16625664,
+   "used": 16624830,
+   "length_table": 22344,
+   "weight_payload": 16456304,
+   "scale_payload": 146134,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "39:2048:512:fge": {
+   "file": "L09_E160.bin",
+   "total": 16576512,
+   "used": 16574695,
+   "length_table": 38880,
+   "weight_payload": 16397024,
+   "scale_payload": 138743,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "39:2048:512:fgde": {
+   "file": "L09_E160.bin",
+   "total": 16551936,
+   "used": 16548771,
+   "length_table": 12956,
+   "weight_payload": 16397024,
+   "scale_payload": 138743,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "39:2048:512:fgt": {
+   "file": "L09_E160.bin",
+   "total": 16535552,
+   "used": 16533247,
+   "length_table": 38880,
+   "weight_payload": 16356173,
+   "scale_payload": 138146,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "39:2048:512:fgdt": {
+   "file": "L09_E160.bin",
+   "total": 16510976,
+   "used": 16507287,
+   "length_table": 12920,
+   "weight_payload": 16356173,
+   "scale_payload": 138146,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "39:2048:512:fg": {
+   "file": "L09_E160.bin",
+   "total": 16576512,
+   "used": 16573291,
+   "length_table": 38880,
+   "weight_payload": 16395755,
+   "scale_payload": 138608,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "39:2048:512:fgd": {
+   "file": "L09_E160.bin",
+   "total": 16547840,
+   "used": 16547331,
+   "length_table": 12920,
+   "weight_payload": 16395755,
+   "scale_payload": 138608,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "39:4096:1024:fge": {
+   "file": "L09_E160.bin",
+   "total": 16523264,
+   "used": 16520631,
+   "length_table": 19440,
+   "weight_payload": 16366232,
+   "scale_payload": 134911,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "39:4096:1024:fgde": {
+   "file": "L09_E160.bin",
+   "total": 16510976,
+   "used": 16508583,
+   "length_table": 7392,
+   "weight_payload": 16366232,
+   "scale_payload": 134911,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "39:4096:1024:fgt": {
+   "file": "L09_E160.bin",
+   "total": 16502784,
+   "used": 16499784,
+   "length_table": 19440,
+   "weight_payload": 16345720,
+   "scale_payload": 134576,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "39:4096:1024:fgdt": {
+   "file": "L09_E160.bin",
+   "total": 16490496,
+   "used": 16487728,
+   "length_table": 7384,
+   "weight_payload": 16345720,
+   "scale_payload": 134576,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "39:4096:1024:fg": {
+   "file": "L09_E160.bin",
+   "total": 16523264,
+   "used": 16519905,
+   "length_table": 19440,
+   "weight_payload": 16365592,
+   "scale_payload": 134825,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "39:4096:1024:fgd": {
+   "file": "L09_E160.bin",
+   "total": 16510976,
+   "used": 16507841,
+   "length_table": 7376,
+   "weight_payload": 16365592,
+   "scale_payload": 134825,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "39:8192:2048:fge": {
+   "file": "L09_E160.bin",
+   "total": 16494592,
+   "used": 16493485,
+   "length_table": 9720,
+   "weight_payload": 16350743,
+   "scale_payload": 132974,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "39:8192:2048:fgde": {
+   "file": "L09_E160.bin",
+   "total": 16490496,
+   "used": 16487837,
+   "length_table": 4072,
+   "weight_payload": 16350743,
+   "scale_payload": 132974,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "39:8192:2048:fgt": {
+   "file": "L09_E160.bin",
+   "total": 16486400,
+   "used": 16483126,
+   "length_table": 9720,
+   "weight_payload": 16340538,
+   "scale_payload": 132820,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "39:8192:2048:fgdt": {
+   "file": "L09_E160.bin",
+   "total": 16478208,
+   "used": 16477474,
+   "length_table": 4068,
+   "weight_payload": 16340538,
+   "scale_payload": 132820,
+   "decoded": true,
+   "byte_exact": true
+  },
+  "39:8192:2048:fg": {
+   "file": "L09_E160.bin",
+   "total": 16494592,
+   "used": 16493140,
+   "length_table": 9720,
+   "weight_payload": 16350429,
+   "scale_payload": 132943,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "39:8192:2048:fgd": {
+   "file": "L09_E160.bin",
+   "total": 16490496,
+   "used": 16487488,
+   "length_table": 4068,
+   "weight_payload": 16350429,
+   "scale_payload": 132943,
+   "decoded": false,
+   "byte_exact": null
+  },
+  "41:1024:256:fge": {
+   "file": "L10_E060.bin",
+   "total": 16695296,
+   "used": 16693557,
+   "length_table": 77760,
+   "weight_payload": 16466675,
+   "scale_payload": 149074,
+   "decoded": false,
+   "byte_exact": null
+  }
+ }
+}

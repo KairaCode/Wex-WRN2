@@ -1,0 +1,71 @@
+lock: taken 03:41:24
+lock: holding 'short ABBA (wnr2-fastbench) A1 A2 x code1,code2,chat_it1,chat_it2,reason1,reason2,short1 at 64 tok, ~25 min 2026-11-11T03:41:24'
+VRAM: memory.used 1357 MiB at 03:41:25, no engine running (gate < 4096 MiB, 0 = off)
+RAM: RAM_GB=16 for every run (given with --memory-gb (18.9 GB available at 03:41:26))
+1657b634d5e754caa8644494881b9288ace322b5c9c6cb37b737295a2ff76c87 *<path>
+b45eb5d2cc6c22d956faa3b98ffdd5a5ef2c4cd69778cd0df18d7166abd4fb08 *<KAIRA>/app/colibri-optimized/coli_cuda_dsv4_dg.dll
+602e3f4d2550226c463e881e550629ab31105f34b8dac638e60f652430e73c80 *<KAIRA>/app/colibri-optimized/kaira_wex_cuda.dll
+== A1 03:41:27 available RAM 18.8 GB, GPU 1377 MiB, 2 %, container U:\kaira_wex\v41-reap\v4_flash_experts.nr3.wex, env COLI_WEX_ROOT=f0f78a84d040a3b336f3abef3cf8b0a36c649deb38586c813e94d35dea3beeb1
+READY after 22.5 s
+w0 ttft 4.54 DONE w0 STAT 16 2.332 32.5 0.00 9 1 0 PROF 11.369 9 16 53.001 4.874 2.627 3.845 0.020 24 TIERS 966 320 6394 18.16 6.02
+code1 ttft 9.79 DONE code1 STAT 64 2.235 41.9 0.00 29 1 0 PROF 38.430 29 64 193.757 17.471 5.661 15.214 0.077 92 TIERS 966 320 6394 18.16 6.02
+code2 ttft 10.22 DONE code2 STAT 64 2.325 39.0 0.00 34 1 0 PROF 37.747 34 64 187.774 17.324 5.430 14.909 0.078 97 TIERS 966 320 6394 18.16 6.02
+chat_it1 ttft 9.21 DONE chat_it1 STAT 64 1.740 47.2 0.00 30 1 0 PROF 46.002 30 64 298.254 25.680 4.709 15.528 0.077 93 TIERS 966 320 6394 18.16 6.02
+chat_it2 ttft 9.71 DONE chat_it2 STAT 64 2.009 47.6 0.00 31 1 0 PROF 41.568 31 64 237.271 21.751 5.031 14.701 0.078 94 TIERS 966 320 6394 18.16 6.02
+reason1 ttft 11.42 DONE reason1 STAT 64 2.000 43.2 0.00 41 1 0 PROF 43.424 41 64 244.264 21.488 5.827 16.026 0.076 104 TIERS 966 320 6394 18.16 6.02
+reason2 ttft 10.75 DONE reason2 STAT 64 2.022 42.7 0.00 39 1 0 PROF 42.408 39 64 236.142 20.961 5.494 15.865 0.082 102 TIERS 965 320 6395 18.14 6.02
+short1 ttft 4.09 DONE short1 STAT 8 2.216 25.9 0.00 11 0 0 PROF 7.703 11 8 38.350 3.197 2.177 2.316 0.011 19 TIERS 965 320 6395 18.14 6.02
+rc=0 03:46:23 logits sha256 a14761eb37afa76c
+[    1.348] ram_tiers available=16.00GiB dense=resident(6.65GiB) target_slots=8 target_cache=5.60GiB head=resident-bf16 projected=15.66GiB
+[  292.374] v4_direct reads=35025 flock_reads=35025 fallbacks=0 payload_bytes=562223243264
+[  292.374] v4_wex_gpu_direct reads=60833 payload_bytes=976606113792 ram_skips=23086 failures=0 device_decodes=60833
+== A2 03:46:35 available RAM 19.4 GB, GPU 1329 MiB, 1 %, container U:\kaira_wex\v41-reap\v4_flash_experts.nr3.wex, env COLI_WEX_ROOT=f0f78a84d040a3b336f3abef3cf8b0a36c649deb38586c813e94d35dea3beeb1
+READY after 17.9 s
+w0 ttft 4.42 DONE w0 STAT 16 2.348 32.6 0.00 9 1 0 PROF 11.197 9 16 52.643 4.881 2.507 3.784 0.021 24 TIERS 968 320 6392 18.20 6.02
+code1 ttft 9.78 DONE code1 STAT 64 2.220 40.9 0.00 29 1 0 PROF 38.604 29 64 200.519 18.197 5.321 15.003 0.076 92 TIERS 968 320 6392 18.20 6.02
+code2 ttft 10.22 DONE code2 STAT 64 2.323 39.0 0.00 34 1 0 PROF 37.761 34 64 188.802 17.356 5.291 15.029 0.079 97 TIERS 968 320 6392 18.20 6.02
+chat_it1 ttft 9.15 DONE chat_it1 STAT 64 1.745 47.2 0.00 30 1 0 PROF 45.817 30 64 295.277 25.499 4.656 15.577 0.078 93 TIERS 968 320 6392 18.20 6.02
+chat_it2 ttft 9.74 DONE chat_it2 STAT 64 2.018 47.2 0.00 31 1 0 PROF 41.453 31 64 238.251 21.868 4.955 14.545 0.078 94 TIERS 968 320 6392 18.20 6.02
+reason1 ttft 11.24 DONE reason1 STAT 64 2.010 43.7 0.00 41 1 0 PROF 43.078 41 64 241.106 21.147 5.658 16.187 0.079 104 TIERS 968 320 6392 18.20 6.02
+reason2 ttft 10.67 DONE reason2 STAT 64 2.025 42.5 0.00 39 1 0 PROF 42.284 39 64 236.650 21.066 5.356 15.778 0.079 102 TIERS 967 320 6393 18.18 6.02
+short1 ttft 4.18 DONE short1 STAT 8 2.185 25.5 0.00 11 0 0 PROF 7.840 11 8 38.598 3.285 2.281 2.260 0.012 19 TIERS 967 320 6393 18.18 6.02
+rc=0 03:51:25 logits sha256 a14761eb37afa76c
+[    0.865] ram_tiers available=16.00GiB dense=resident(6.65GiB) target_slots=8 target_cache=5.60GiB head=resident-bf16 projected=15.66GiB
+[  287.081] v4_direct reads=35045 flock_reads=35045 fallbacks=0 payload_bytes=562546929664
+[  287.081] v4_wex_gpu_direct reads=60758 payload_bytes=975404814336 ram_skips=22938 failures=0 device_decodes=60758
+== runs done 03:51:36, 10 min
+A1: no container (safetensors), READY 22.45 s, run 291 s, RAM_GB 16 (budget 16.0 GiB, 8 slots, OS available 18.8), VRAM experts 966 (GPU memory used before start 1362 MiB), logits a14761eb37afa76c
+   read path: edisk 1489 s / 95858 reads = 15.53 ms per read, 5.54 outstanding; token median 466 ms, stall limit 2000 ms
+   OS read bytes per drive: U: 100% (1441 GiB)
+   w0          16 tok  2.332 tok/s TTFT    4.54 s wait  244.2 ms/tok wall   11.4 s
+   code1       64 tok  2.235 tok/s TTFT    9.79 s wait  250.1 ms/tok wall   38.5 s
+   code2       64 tok  2.325 tok/s TTFT   10.22 s wait  241.8 ms/tok wall   37.8 s
+   chat_it1    64 tok  1.740 tok/s TTFT    9.21 s wait  372.6 ms/tok wall   46.0 s
+   chat_it2    64 tok  2.009 tok/s TTFT    9.71 s wait  310.0 ms/tok wall   41.6 s
+   reason1     64 tok  2.000 tok/s TTFT   11.42 s wait  306.7 ms/tok wall   43.5 s
+   reason2     64 tok  2.022 tok/s TTFT   10.75 s wait  299.1 ms/tok wall   42.5 s
+   short1       8 tok  2.216 tok/s TTFT    4.09 s wait  268.9 ms/tok wall    7.8 s
+A2: no container (safetensors), READY 17.95 s, run 286 s, RAM_GB 16 (budget 16.0 GiB, 8 slots, OS available 19.4), VRAM experts 968 (GPU memory used before start 1329 MiB), logits a14761eb37afa76c
+   read path: edisk 1492 s / 95803 reads = 15.57 ms per read, 5.57 outstanding; token median 468 ms, stall limit 2000 ms
+   OS read bytes per drive: U: 100% (1440 GiB)
+   w0          16 tok  2.348 tok/s TTFT    4.42 s wait  242.7 ms/tok wall   11.3 s
+   code1       64 tok  2.220 tok/s TTFT    9.78 s wait  255.3 ms/tok wall   38.6 s
+   code2       64 tok  2.323 tok/s TTFT   10.22 s wait  241.2 ms/tok wall   37.8 s
+   chat_it1    64 tok  1.745 tok/s TTFT    9.15 s wait  369.8 ms/tok wall   45.9 s
+   chat_it2    64 tok  2.018 tok/s TTFT    9.74 s wait  310.5 ms/tok wall   41.5 s
+   reason1     64 tok  2.010 tok/s TTFT   11.24 s wait  301.4 ms/tok wall   43.1 s
+   reason2     64 tok  2.025 tok/s TTFT   10.67 s wait  299.9 ms/tok wall   42.3 s
+   short1       8 tok  2.185 tok/s TTFT    4.18 s wait  282.5 ms/tok wall    7.9 s
+arm A (2 runs, 0 run x prompt): mean nan tok/s, TTFT nan s, wait nan ms/tok (means only: the prompt mix dominates their spread); read path 15.55 ms per read, 5.55 outstanding, edisk 1490 s, 95830 reads
+arm B (0 runs, 0 run x prompt): mean nan tok/s, TTFT nan s, wait nan ms/tok (means only: the prompt mix dominates their spread); read path nan ms per read, nan outstanding, edisk nan s, nan reads
+paired B vs A over pairs [] x [] (prompts fixed, df=0):
+   tok/s +nan +- nan % (n=0); per prompt {}
+   cross-check, pair means []: +- nan % (df=-1; not the verdict's interval)
+   TTFT  +nan +- nan %
+   wait  +nan +- nan ms/tok
+   validity: per-prompt means ; SD between prompts nan points. The interval is pair noise for this prompt set only; another set can move the mean by about SD/sqrt(n_prompts) = nan points.
+   same-arm spread between runs, %: run means {} (guard > 2%); per prompt {} (warning > 3.5%)
+identity (token ids (logits argmax)) over ['w0', 'code1', 'code2', 'chat_it1', 'chat_it2', 'reason1', 'reason2', 'short1']: identical in every run; logits bit-identical: True
+verdict: INVALID: no A<i>/B<i> pair
+dumps: deleted 2 logits files (all in tokens.json with the same sha256)
+lock: released 03:51:37

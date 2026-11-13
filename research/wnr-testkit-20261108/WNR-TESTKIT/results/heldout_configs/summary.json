@@ -1,0 +1,2421 @@
+{
+ "test": "heldout_configs",
+ "mode": "full",
+ "started": "2026-11-08 02:52:59",
+ "args": {
+  "root": "<KAIRA>\\lab\\wnr-testkit-20261108\\WNR-TESTKIT",
+  "data": "<KAIRA>\\lab\\wnr-testkit-20261108\\WNR-TESTKIT\\data",
+  "out": "<KAIRA>\\lab\\wnr-testkit-20261108\\WNR-TESTKIT\\results\\heldout_configs",
+  "quick": false,
+  "sample_dir": null,
+  "extra_dir": null,
+  "cache": "<KAIRA>\\lab\\wnr-testkit-20261108\\WNR-TESTKIT\\results\\_cache\\cpu_counts",
+  "jobs": 15,
+  "limit_test": 0,
+  "limit_train": 0,
+  "models": null,
+  "configs": null
+ },
+ "environment": {
+  "os": "Windows-11-10.0.26300-SP0",
+  "system": "Windows",
+  "machine": "AMD64",
+  "cpu": "AMD Ryzen 9 7950X3D 16-Core Processor",
+  "logical_cpus": 32,
+  "ram_gb": 31.2,
+  "gpu": [
+   "NVIDIA GeForce RTX 5090, 621.01, 32607 MiB, 12.0"
+  ],
+  "python": "3.14.8",
+  "python_impl": "CPython",
+  "numpy": "2.5.4",
+  "cupy": {
+   "cupy-cuda12x": "14.2.0"
+  },
+  "nvrtc": {
+   "nvidia-cuda-nvrtc-cu12": "12.9.86"
+  }
+ },
+ "checks": {
+  "test_set_matches_reference": {
+   "ok": true,
+   "hard": true,
+   "detail": {
+    "n_test_run": 40,
+    "test_run": [
+     1,
+     7,
+     9,
+     15,
+     17,
+     23,
+     25,
+     31,
+     33,
+     39,
+     41,
+     47,
+     49,
+     55,
+     57,
+     63,
+     65,
+     71,
+     73,
+     79,
+     81,
+     87,
+     89,
+     95,
+     97,
+     103,
+     105,
+     111,
+     113,
+     119,
+     121,
+     127,
+     129,
+     135,
+     137,
+     143,
+     145,
+     151,
+     153,
+     159
+    ]
+   }
+  },
+  "train_sources_sha256": {
+   "ok": true,
+   "hard": true,
+   "detail": "80/80"
+  },
+  "train_ceil_applicable": {
+   "ok": true,
+   "hard": true,
+   "detail": null
+  },
+  "models_equal_ceilref_even80": {
+   "ok": true,
+   "hard": true,
+   "detail": {
+    "wnr2": {
+     "wf": true,
+     "scf": true
+    },
+    "f": {
+     "wf": true,
+     "scf": true,
+     "etab": true
+    },
+    "fg0": {
+     "wf": true,
+     "scf": true,
+     "etab": true
+    },
+    "fg0c": {
+     "wf": true,
+     "scf": true,
+     "etab": true
+    }
+   }
+  },
+  "sources_sha256": {
+   "ok": true,
+   "hard": true,
+   "detail": "480/480"
+  },
+  "all_records_decode_exact": {
+   "ok": true,
+   "hard": true,
+   "detail": {
+    "decoded": 480,
+    "records": 480,
+    "bad": []
+   }
+  },
+  "no_ceil_fallback": {
+   "ok": true,
+   "hard": false,
+   "detail": []
+  },
+  "record_sizes_equal_reference": {
+   "ok": true,
+   "hard": true,
+   "detail": {
+    "compared": 480,
+    "mismatch": 0,
+    "first": []
+   }
+  },
+  "mean_totals_equal_reference": {
+   "ok": true,
+   "hard": true,
+   "detail": {
+    "wnr2": {
+     "here": 16909926.4,
+     "ref": 16909926.4
+    },
+    "f": {
+     "here": 16578764.8,
+     "ref": 16578764.8
+    },
+    "fg0": {
+     "here": 16573132.8,
+     "ref": 16573132.8
+    },
+    "fg0d": {
+     "here": 16546611.2,
+     "ref": 16546611.2
+    },
+    "fg0de": {
+     "here": 16548556.8,
+     "ref": 16548556.8
+    },
+    "fg0dt": {
+     "here": 16506880.0,
+     "ref": 16506880.0
+    },
+    "fg0c": {
+     "here": 16057856.0,
+     "ref": 16057856.0
+    },
+    "fg0cde": {
+     "here": 16033587.2,
+     "ref": 16033587.2
+    },
+    "fg0cd": {
+     "here": 16032153.6,
+     "ref": 16032153.6
+    },
+    "fg0ce": {
+     "here": 16059187.2,
+     "ref": 16059187.2
+    },
+    "fg0e": {
+     "here": 16574054.4,
+     "ref": 16574054.4
+    },
+    "fg0t": {
+     "here": 16532684.8,
+     "ref": 16532684.8
+    }
+   }
+  }
+ },
+ "models": {
+  "mode": "train",
+  "model_id_and_blob_bytes": {
+   "wnr2": [
+    4237896291,
+    59408
+   ],
+   "f": [
+    2741950301,
+    59708
+   ],
+   "fg0": [
+    2694569643,
+    59708
+   ],
+   "fg0c": [
+    4249498236,
+    59708
+   ]
+  }
+ },
+ "experts": [
+  1,
+  7,
+  9,
+  15,
+  17,
+  23,
+  25,
+  31,
+  33,
+  39,
+  41,
+  47,
+  49,
+  55,
+  57,
+  63,
+  65,
+  71,
+  73,
+  79,
+  81,
+  87,
+  89,
+  95,
+  97,
+  103,
+  105,
+  111,
+  113,
+  119,
+  121,
+  127,
+  129,
+  135,
+  137,
+  143,
+  145,
+  151,
+  153,
+  159
+ ],
+ "configs": {
+  "wnr2": {
+   "n_experts": 40,
+   "decoded": 40,
+   "decode_ok": 40,
+   "decode_check": "40/40 equal to reference (byte-exact)",
+   "decode_errors": [],
+   "source_sha256_ok": "40/40",
+   "ceil_fallback_records": [],
+   "record_flags_seen": [
+    0
+   ],
+   "mean_total_bytes": 16909926.4,
+   "ratio_of_raw": 0.899433551198257,
+   "mean_used_bytes_unpadded": 16907739.325,
+   "ratio_used_of_raw": 0.8993172213818252,
+   "mean_parts": {
+    "header": 32,
+    "length_table": 38880.0,
+    "scale_payload": 146675.6,
+    "weight_payload": 16722151.725,
+    "padding": 2187.075
+   },
+   "bit_per_w_weight_payload": 3.7801449754503036,
+   "bit_per_scale_scale_payload": 1.0610214120370371,
+   "all_in_bit_per_w_used": 3.822098190872757,
+   "mean_weight_stream_bytes": 967.7171137152776,
+   "max_weight_stream_bytes": 1084,
+   "timing_s_median": {
+    "encode": 2.5735,
+    "decode": 2.0614999999999997
+   },
+   "model_id": 4237896291,
+   "model_blob_bytes": 59408
+  },
+  "f": {
+   "n_experts": 40,
+   "decoded": 40,
+   "decode_ok": 40,
+   "decode_check": "40/40 equal to reference (byte-exact)",
+   "decode_errors": [],
+   "source_sha256_ok": "40/40",
+   "ceil_fallback_records": [],
+   "record_flags_seen": [
+    16
+   ],
+   "mean_total_bytes": 16578764.8,
+   "ratio_of_raw": 0.8818191721132898,
+   "mean_used_bytes_unpadded": 16576672.2,
+   "ratio_used_of_raw": 0.8817078673917483,
+   "mean_parts": {
+    "header": 48,
+    "length_table": 38880.0,
+    "scale_payload": 134849.45,
+    "weight_payload": 16402894.75,
+    "padding": 2092.6
+   },
+   "bit_per_w_weight_payload": 3.707974977846499,
+   "bit_per_scale_scale_payload": 0.9754734519675927,
+   "all_in_bit_per_w_used": 3.7472584364149304,
+   "mean_weight_stream_bytes": 949.2415943287036,
+   "max_weight_stream_bytes": 1127,
+   "timing_s_median": {
+    "encode": 2.863,
+    "decode": 2.3415
+   },
+   "model_id": 2741950301,
+   "model_blob_bytes": 59708,
+   "delta_total_vs_wnr2": {
+    "mean_bytes": -331161.6,
+    "CI95_bytes": [
+     -365977.6,
+     -306688.0
+    ],
+    "mean_pct_of_raw": -1.7614379084967318,
+    "CI95_pct_of_raw": [
+     -1.946623093681917,
+     -1.631263616557734
+    ],
+    "median_bytes": -311296.0,
+    "min_bytes": -811008.0,
+    "max_bytes": -286720.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   },
+   "delta_used_vs_wnr2": {
+    "mean_bytes": -331067.125,
+    "CI95_bytes": [
+     -367351.89187500003,
+     -306766.53625
+    ],
+    "mean_pct_of_raw": -1.7609353990076932,
+    "CI95_pct_of_raw": [
+     -1.953932908002068,
+     -1.6316813483477157
+    ],
+    "median_bytes": -310655.0,
+    "min_bytes": -811283.0,
+    "max_bytes": -286650.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   }
+  },
+  "fg0": {
+   "n_experts": 40,
+   "decoded": 40,
+   "decode_ok": 40,
+   "decode_check": "40/40 equal to reference (byte-exact)",
+   "decode_errors": [],
+   "source_sha256_ok": "40/40",
+   "ceil_fallback_records": [],
+   "record_flags_seen": [
+    16
+   ],
+   "mean_total_bytes": 16573132.8,
+   "ratio_of_raw": 0.8815196078431373,
+   "mean_used_bytes_unpadded": 16570643.8,
+   "ratio_used_of_raw": 0.8813872187329793,
+   "mean_parts": {
+    "header": 48,
+    "length_table": 38880.0,
+    "scale_payload": 134849.45,
+    "weight_payload": 16396866.35,
+    "padding": 2489.0
+   },
+   "bit_per_w_weight_payload": 3.70661222104673,
+   "bit_per_scale_scale_payload": 0.9754734519675927,
+   "all_in_bit_per_w_used": 3.7458956796151623,
+   "mean_weight_stream_bytes": 948.892728587963,
+   "max_weight_stream_bytes": 1127,
+   "timing_s_median": {
+    "encode": 2.8810000000000002,
+    "decode": 2.269
+   },
+   "model_id": 2694569643,
+   "model_blob_bytes": 59708,
+   "delta_total_vs_wnr2": {
+    "mean_bytes": -336793.6,
+    "CI95_bytes": [
+     -372838.4,
+     -308224.0
+    ],
+    "mean_pct_of_raw": -1.7913943355119826,
+    "CI95_pct_of_raw": [
+     -1.983115468409586,
+     -1.6394335511982572
+    ],
+    "median_bytes": -311296.0,
+    "min_bytes": -806912.0,
+    "max_bytes": -286720.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   },
+   "delta_used_vs_wnr2": {
+    "mean_bytes": -337095.525,
+    "CI95_bytes": [
+     -373991.856875,
+     -308246.9425
+    ],
+    "mean_pct_of_raw": -1.7930002648845997,
+    "CI95_pct_of_raw": [
+     -1.9892506684612865,
+     -1.6395555816184981
+    ],
+    "median_bytes": -311320.5,
+    "min_bytes": -808534.0,
+    "max_bytes": -287244.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   }
+  },
+  "fg0d": {
+   "n_experts": 40,
+   "decoded": 40,
+   "decode_ok": 40,
+   "decode_check": "40/40 equal to reference (byte-exact)",
+   "decode_errors": [],
+   "source_sha256_ok": "40/40",
+   "ceil_fallback_records": [],
+   "record_flags_seen": [
+    20
+   ],
+   "mean_total_bytes": 16546611.2,
+   "ratio_of_raw": 0.8801089324618736,
+   "mean_used_bytes_unpadded": 16544880.2,
+   "ratio_used_of_raw": 0.8800168611281318,
+   "mean_parts": {
+    "header": 48,
+    "length_table": 13116.4,
+    "scale_payload": 134849.45,
+    "weight_payload": 16396866.35,
+    "padding": 1731.0
+   },
+   "bit_per_w_weight_payload": 3.70661222104673,
+   "bit_per_scale_scale_payload": 0.9754734519675927,
+   "all_in_bit_per_w_used": 3.74007165979456,
+   "mean_weight_stream_bytes": 948.892728587963,
+   "max_weight_stream_bytes": 1127,
+   "timing_s_median": {
+    "encode": 2.9080000000000004,
+    "decode": 2.242
+   },
+   "model_id": 2694569643,
+   "model_blob_bytes": 59708,
+   "delta_total_vs_wnr2": {
+    "mean_bytes": -363315.2,
+    "CI95_bytes": [
+     -399360.0,
+     -334950.4
+    ],
+    "mean_pct_of_raw": -1.9324618736383443,
+    "CI95_pct_of_raw": [
+     -2.1241830065359477,
+     -1.7815904139433554
+    ],
+    "median_bytes": -339968.0,
+    "min_bytes": -831488.0,
+    "max_bytes": -311296.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   },
+   "delta_used_vs_wnr2": {
+    "mean_bytes": -362859.125,
+    "CI95_bytes": [
+     -399421.47,
+     -334760.129375
+    ],
+    "mean_pct_of_raw": -1.9300360253693492,
+    "CI95_pct_of_raw": [
+     -2.1245099634906044,
+     -1.7805783706033411
+    ],
+    "median_bytes": -336894.5,
+    "min_bytes": -830046.0,
+    "max_bytes": -312321.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   }
+  },
+  "fg0de": {
+   "n_experts": 40,
+   "decoded": 40,
+   "decode_ok": 40,
+   "decode_check": "40/40 equal to reference (byte-exact)",
+   "decode_errors": [],
+   "source_sha256_ok": "40/40",
+   "ceil_fallback_records": [],
+   "record_flags_seen": [
+    28
+   ],
+   "mean_total_bytes": 16548556.8,
+   "ratio_of_raw": 0.8802124183006537,
+   "mean_used_bytes_unpadded": 16546234.05,
+   "ratio_used_of_raw": 0.8800888719745711,
+   "mean_parts": {
+    "header": 48,
+    "length_table": 13118.6,
+    "scale_payload": 134994.7,
+    "weight_payload": 16398072.75,
+    "padding": 2322.75
+   },
+   "bit_per_w_weight_payload": 3.7068849351671007,
+   "bit_per_scale_scale_payload": 0.9765241608796297,
+   "all_in_bit_per_w_used": 3.740377705891927,
+   "mean_weight_stream_bytes": 948.9625434027778,
+   "max_weight_stream_bytes": 1127,
+   "timing_s_median": {
+    "encode": 3.1225,
+    "decode": 2.3890000000000002
+   },
+   "model_id": 2694569643,
+   "model_blob_bytes": 59708,
+   "delta_total_vs_wnr2": {
+    "mean_bytes": -361369.6,
+    "CI95_bytes": [
+     -399567.36,
+     -332902.4
+    ],
+    "mean_pct_of_raw": -1.9221132897603486,
+    "CI95_pct_of_raw": [
+     -2.125285947712418,
+     -1.7706971677559915
+    ],
+    "median_bytes": -335872.0,
+    "min_bytes": -827392.0,
+    "max_bytes": -311296.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   },
+   "delta_used_vs_wnr2": {
+    "mean_bytes": -361505.275,
+    "CI95_bytes": [
+     -399140.6825,
+     -333139.37374999997
+    ],
+    "mean_pct_of_raw": -1.9228349407254222,
+    "CI95_pct_of_raw": [
+     -2.1230164638012323,
+     -1.7719576235170715
+    ],
+    "median_bytes": -335541.5,
+    "min_bytes": -828662.0,
+    "max_bytes": -310945.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   }
+  },
+  "fg0dt": {
+   "n_experts": 40,
+   "decoded": 40,
+   "decode_ok": 40,
+   "decode_check": "40/40 equal to reference (byte-exact)",
+   "decode_errors": [],
+   "source_sha256_ok": "40/40",
+   "ceil_fallback_records": [],
+   "record_flags_seen": [
+    52
+   ],
+   "mean_total_bytes": 16506880.0,
+   "ratio_of_raw": 0.8779956427015251,
+   "mean_used_bytes_unpadded": 16504696.625,
+   "ratio_used_of_raw": 0.8778795096869043,
+   "mean_parts": {
+    "header": 48,
+    "length_table": 13121.2,
+    "scale_payload": 134356.075,
+    "weight_payload": 16357171.35,
+    "padding": 2183.375
+   },
+   "bit_per_w_weight_payload": 3.6976389227973088,
+   "bit_per_scale_scale_payload": 0.9719044777199075,
+   "all_in_bit_per_w_used": 3.7309879161693433,
+   "mean_weight_stream_bytes": 946.595564236111,
+   "max_weight_stream_bytes": 1125,
+   "timing_s_median": {
+    "encode": 3.048,
+    "decode": 2.2915
+   },
+   "model_id": 2694569643,
+   "model_blob_bytes": 59708,
+   "delta_total_vs_wnr2": {
+    "mean_bytes": -403046.4,
+    "CI95_bytes": [
+     -440320.0,
+     -374374.4
+    ],
+    "mean_pct_of_raw": -2.1437908496732025,
+    "CI95_pct_of_raw": [
+     -2.342047930283224,
+     -1.991285403050109
+    ],
+    "median_bytes": -376832.0,
+    "min_bytes": -872448.0,
+    "max_bytes": -352256.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   },
+   "delta_used_vs_wnr2": {
+    "mean_bytes": -403042.7,
+    "CI95_bytes": [
+     -440100.478125,
+     -374534.453125
+    ],
+    "mean_pct_of_raw": -2.1437711694921022,
+    "CI95_pct_of_raw": [
+     -2.3408803004844514,
+     -1.9921367204786646
+    ],
+    "median_bytes": -376979.0,
+    "min_bytes": -870841.0,
+    "max_bytes": -352488.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   }
+  },
+  "fg0c": {
+   "n_experts": 40,
+   "decoded": 40,
+   "decode_ok": 40,
+   "decode_check": "40/40 equal to reference (value-exact (8->0))",
+   "decode_errors": [],
+   "source_sha256_ok": "40/40",
+   "ceil_fallback_records": [],
+   "record_flags_seen": [
+    18
+   ],
+   "mean_total_bytes": 16057856.0,
+   "ratio_of_raw": 0.8541122004357299,
+   "mean_used_bytes_unpadded": 16055798.5,
+   "ratio_used_of_raw": 0.854002762671909,
+   "mean_parts": {
+    "header": 48,
+    "length_table": 38880.0,
+    "scale_payload": 134849.45,
+    "weight_payload": 15882021.05,
+    "padding": 2057.5
+   },
+   "bit_per_w_weight_payload": 3.590228282787182,
+   "bit_per_scale_scale_payload": 0.9754734519675927,
+   "all_in_bit_per_w_used": 3.6295117413556133,
+   "mean_weight_stream_bytes": 919.0984403935184,
+   "max_weight_stream_bytes": 1094,
+   "timing_s_median": {
+    "encode": 2.9219999999999997,
+    "decode": 2.355
+   },
+   "model_id": 4249498236,
+   "model_blob_bytes": 59708,
+   "delta_total_vs_wnr2": {
+    "mean_bytes": -852070.4,
+    "CI95_bytes": [
+     -888217.6,
+     -823603.2
+    ],
+    "mean_pct_of_raw": -4.5321350762527235,
+    "CI95_pct_of_raw": [
+     -4.724400871459695,
+     -4.380718954248366
+    ],
+    "median_bytes": -827392.0,
+    "min_bytes": -1323008.0,
+    "max_bytes": -802816.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   },
+   "delta_used_vs_wnr2": {
+    "mean_bytes": -851940.825,
+    "CI95_bytes": [
+     -889020.743125,
+     -823430.088125
+    ],
+    "mean_pct_of_raw": -4.531445870991626,
+    "CI95_pct_of_raw": [
+     -4.728672763932504,
+     -4.379798177748205
+    ],
+    "median_bytes": -825774.0,
+    "min_bytes": -1321176.0,
+    "max_bytes": -803668.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   }
+  },
+  "fg0cde": {
+   "n_experts": 40,
+   "decoded": 40,
+   "decode_ok": 40,
+   "decode_check": "40/40 equal to reference (value-exact (8->0))",
+   "decode_errors": [],
+   "source_sha256_ok": "40/40",
+   "ceil_fallback_records": [],
+   "record_flags_seen": [
+    30
+   ],
+   "mean_total_bytes": 16033587.2,
+   "ratio_of_raw": 0.8528213507625272,
+   "mean_used_bytes_unpadded": 16031668.6,
+   "ratio_used_of_raw": 0.8527193010450708,
+   "mean_parts": {
+    "header": 48,
+    "length_table": 13398.0,
+    "scale_payload": 134995.55,
+    "weight_payload": 15883227.05,
+    "padding": 1918.6
+   },
+   "bit_per_w_weight_payload": 3.5905009064850986,
+   "bit_per_scale_scale_payload": 0.9765303096064814,
+   "all_in_bit_per_w_used": 3.624057029441551,
+   "mean_weight_stream_bytes": 919.1682320601852,
+   "max_weight_stream_bytes": 1094,
+   "timing_s_median": {
+    "encode": 3.1485,
+    "decode": 2.4539999999999997
+   },
+   "model_id": 4249498236,
+   "model_blob_bytes": 59708,
+   "delta_total_vs_wnr2": {
+    "mean_bytes": -876339.2,
+    "CI95_bytes": [
+     -913510.4,
+     -848076.8
+    ],
+    "mean_pct_of_raw": -4.6612200435729845,
+    "CI95_pct_of_raw": [
+     -4.858932461873638,
+     -4.510893246187364
+    ],
+    "median_bytes": -851968.0,
+    "min_bytes": -1339392.0,
+    "max_bytes": -823296.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   },
+   "delta_used_vs_wnr2": {
+    "mean_bytes": -876070.725,
+    "CI95_bytes": [
+     -912217.2837500001,
+     -847904.384375
+    ],
+    "mean_pct_of_raw": -4.6597920336754495,
+    "CI95_pct_of_raw": [
+     -4.852054418094277,
+     -4.509976173018578
+    ],
+    "median_bytes": -849663.0,
+    "min_bytes": -1341067.0,
+    "max_bytes": -826234.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   }
+  },
+  "fg0cd": {
+   "n_experts": 40,
+   "decoded": 40,
+   "decode_ok": 40,
+   "decode_check": "40/40 equal to reference (value-exact (8->0))",
+   "decode_errors": [],
+   "source_sha256_ok": "40/40",
+   "ceil_fallback_records": [],
+   "record_flags_seen": [
+    22
+   ],
+   "mean_total_bytes": 16032153.6,
+   "ratio_of_raw": 0.8527450980392157,
+   "mean_used_bytes_unpadded": 16030315.1,
+   "ratio_used_of_raw": 0.852647308815019,
+   "mean_parts": {
+    "header": 48,
+    "length_table": 13396.6,
+    "scale_payload": 134849.45,
+    "weight_payload": 15882021.05,
+    "padding": 1838.5
+   },
+   "bit_per_w_weight_payload": 3.590228282787182,
+   "bit_per_scale_scale_payload": 0.9754734519675927,
+   "all_in_bit_per_w_used": 3.623751062463831,
+   "mean_weight_stream_bytes": 919.0984403935184,
+   "max_weight_stream_bytes": 1094,
+   "timing_s_median": {
+    "encode": 2.9525,
+    "decode": 2.3600000000000003
+   },
+   "model_id": 4249498236,
+   "model_blob_bytes": 59708,
+   "delta_total_vs_wnr2": {
+    "mean_bytes": -877772.8,
+    "CI95_bytes": [
+     -913510.4,
+     -849203.2
+    ],
+    "mean_pct_of_raw": -4.668845315904139,
+    "CI95_pct_of_raw": [
+     -4.858932461873638,
+     -4.516884531590414
+    ],
+    "median_bytes": -851968.0,
+    "min_bytes": -1343488.0,
+    "max_bytes": -827392.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   },
+   "delta_used_vs_wnr2": {
+    "mean_bytes": -877424.225,
+    "CI95_bytes": [
+     -914590.0375,
+     -849192.6125
+    ],
+    "mean_pct_of_raw": -4.666991256680624,
+    "CI95_pct_of_raw": [
+     -4.864675019041905,
+     -4.516828217018144
+    ],
+    "median_bytes": -851006.0,
+    "min_bytes": -1342392.0,
+    "max_bytes": -827658.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   }
+  },
+  "fg0ce": {
+   "n_experts": 40,
+   "decoded": 40,
+   "decode_ok": 40,
+   "decode_check": "40/40 equal to reference (value-exact (8->0))",
+   "decode_errors": [],
+   "source_sha256_ok": "40/40",
+   "ceil_fallback_records": [],
+   "record_flags_seen": [
+    26
+   ],
+   "mean_total_bytes": 16059187.2,
+   "ratio_of_raw": 0.8541830065359477,
+   "mean_used_bytes_unpadded": 16057150.6,
+   "ratio_used_of_raw": 0.8540746804364107,
+   "mean_parts": {
+    "header": 48,
+    "length_table": 38880.0,
+    "scale_payload": 134995.55,
+    "weight_payload": 15883227.05,
+    "padding": 2036.6
+   },
+   "bit_per_w_weight_payload": 3.5905009064850986,
+   "bit_per_scale_scale_payload": 0.9765303096064814,
+   "all_in_bit_per_w_used": 3.629817391854745,
+   "mean_weight_stream_bytes": 919.1682320601852,
+   "max_weight_stream_bytes": 1094,
+   "timing_s_median": {
+    "encode": 3.12,
+    "decode": 2.3685
+   },
+   "model_id": 4249498236,
+   "model_blob_bytes": 59708,
+   "delta_total_vs_wnr2": {
+    "mean_bytes": -850739.2,
+    "CI95_bytes": [
+     -886886.4,
+     -822681.6
+    ],
+    "mean_pct_of_raw": -4.525054466230936,
+    "CI95_pct_of_raw": [
+     -4.717320261437909,
+     -4.375816993464053
+    ],
+    "median_bytes": -825344.0,
+    "min_bytes": -1318912.0,
+    "max_bytes": -802816.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   },
+   "delta_used_vs_wnr2": {
+    "mean_bytes": -850588.725,
+    "CI95_bytes": [
+     -886670.663125,
+     -822127.6325000001
+    ],
+    "mean_pct_of_raw": -4.524254094541463,
+    "CI95_pct_of_raw": [
+     -4.716172763932504,
+     -4.37287045813334
+    ],
+    "median_bytes": -824462.0,
+    "min_bytes": -1319855.0,
+    "max_bytes": -802265.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   }
+  },
+  "fg0e": {
+   "n_experts": 40,
+   "decoded": 40,
+   "decode_ok": 40,
+   "decode_check": "40/40 equal to reference (byte-exact)",
+   "decode_errors": [],
+   "source_sha256_ok": "40/40",
+   "ceil_fallback_records": [],
+   "record_flags_seen": [
+    24
+   ],
+   "mean_total_bytes": 16574054.4,
+   "ratio_of_raw": 0.8815686274509804,
+   "mean_used_bytes_unpadded": 16571995.45,
+   "ratio_used_of_raw": 0.8814591125621255,
+   "mean_parts": {
+    "header": 48,
+    "length_table": 38880.0,
+    "scale_payload": 134994.7,
+    "weight_payload": 16398072.75,
+    "padding": 2058.95
+   },
+   "bit_per_w_weight_payload": 3.7068849351671007,
+   "bit_per_scale_scale_payload": 0.9765241608796297,
+   "all_in_bit_per_w_used": 3.7462012283890336,
+   "mean_weight_stream_bytes": 948.9625434027778,
+   "max_weight_stream_bytes": 1127,
+   "timing_s_median": {
+    "encode": 3.096,
+    "decode": 2.413
+   },
+   "model_id": 2694569643,
+   "model_blob_bytes": 59708,
+   "delta_total_vs_wnr2": {
+    "mean_bytes": -335872.0,
+    "CI95_bytes": [
+     -372431.36,
+     -307302.4
+    ],
+    "mean_pct_of_raw": -1.7864923747276689,
+    "CI95_pct_of_raw": [
+     -1.9809504357298475,
+     -1.6345315904139435
+    ],
+    "median_bytes": -311296.0,
+    "min_bytes": -806912.0,
+    "max_bytes": -286720.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   },
+   "delta_used_vs_wnr2": {
+    "mean_bytes": -335743.875,
+    "CI95_bytes": [
+     -371916.500625,
+     -307143.67624999996
+    ],
+    "mean_pct_of_raw": -1.7858108819699754,
+    "CI95_pct_of_raw": [
+     -1.9782119152592679,
+     -1.633687343888293
+    ],
+    "median_bytes": -309969.5,
+    "min_bytes": -807138.0,
+    "max_bytes": -285871.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   }
+  },
+  "fg0t": {
+   "n_experts": 40,
+   "decoded": 40,
+   "decode_ok": 40,
+   "decode_check": "40/40 equal to reference (byte-exact)",
+   "decode_errors": [],
+   "source_sha256_ok": "40/40",
+   "ceil_fallback_records": [],
+   "record_flags_seen": [
+    48
+   ],
+   "mean_total_bytes": 16532684.8,
+   "ratio_of_raw": 0.8793681917211329,
+   "mean_used_bytes_unpadded": 16530455.425,
+   "ratio_used_of_raw": 0.8792496119812943,
+   "mean_parts": {
+    "header": 48,
+    "length_table": 38880.0,
+    "scale_payload": 134356.075,
+    "weight_payload": 16357171.35,
+    "padding": 2229.375
+   },
+   "bit_per_w_weight_payload": 3.6976389227973088,
+   "bit_per_scale_scale_payload": 0.9719044777199075,
+   "all_in_bit_per_w_used": 3.736810850920501,
+   "mean_weight_stream_bytes": 946.595564236111,
+   "max_weight_stream_bytes": 1125,
+   "timing_s_median": {
+    "encode": 3.0275,
+    "decode": 2.317
+   },
+   "model_id": 2694569643,
+   "model_blob_bytes": 59708,
+   "delta_total_vs_wnr2": {
+    "mean_bytes": -377241.6,
+    "CI95_bytes": [
+     -413286.4,
+     -348774.4
+    ],
+    "mean_pct_of_raw": -2.0065359477124183,
+    "CI95_pct_of_raw": [
+     -2.1982570806100217,
+     -1.855119825708061
+    ],
+    "median_bytes": -352256.0,
+    "min_bytes": -847872.0,
+    "max_bytes": -327680.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   },
+   "delta_used_vs_wnr2": {
+    "mean_bytes": -377283.9,
+    "CI95_bytes": [
+     -413831.65625,
+     -348932.666875
+    ],
+    "mean_pct_of_raw": -2.0067609400531046,
+    "CI95_pct_of_raw": [
+     -2.2011572810819207,
+     -1.8559616421302678
+    ],
+    "median_bytes": -351413.0,
+    "min_bytes": -849297.0,
+    "max_bytes": -327465.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   }
+  }
+ },
+ "pairwise": {
+  "f vs wnr2": {
+   "used": {
+    "mean_bytes": -331067.125,
+    "CI95_bytes": [
+     -365711.01187499997,
+     -306783.334375
+    ],
+    "mean_pct_of_raw": -1.7609353990076932,
+    "CI95_pct_of_raw": [
+     -1.9452051200118718,
+     -1.6317706970347816
+    ],
+    "median_bytes": -310655.0,
+    "min_bytes": -811283.0,
+    "max_bytes": -286650.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   },
+   "total": {
+    "mean_bytes": -331161.6,
+    "CI95_bytes": [
+     -367206.4,
+     -306995.2
+    ],
+    "mean_pct_of_raw": -1.7614379084967318,
+    "CI95_pct_of_raw": [
+     -1.9531590413943356,
+     -1.6328976034858387
+    ],
+    "median_bytes": -311296.0,
+    "min_bytes": -811008.0,
+    "max_bytes": -286720.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   }
+  },
+  "fg0 vs f (g0 on ceil form)": {
+   "used": {
+    "mean_bytes": -6028.4,
+    "CI95_bytes": [
+     -16963.25375,
+     -459.64750000000004
+    ],
+    "mean_pct_of_raw": -0.032064865876906316,
+    "CI95_pct_of_raw": [
+     -0.09022700158079724,
+     -0.002444850281692538
+    ],
+    "median_bytes": -742.5,
+    "min_bytes": -217350.0,
+    "max_bytes": 2749.0,
+    "n_smaller": 38,
+    "n_equal": 0,
+    "n_larger": 2,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   },
+   "total": {
+    "mean_bytes": -5632.0,
+    "CI95_bytes": [
+     -16691.2,
+     102.4
+    ],
+    "mean_pct_of_raw": -0.029956427015250545,
+    "CI95_pct_of_raw": [
+     -0.08877995642701525,
+     0.0005446623093681918
+    ],
+    "median_bytes": 0.0,
+    "min_bytes": -217088.0,
+    "max_bytes": 4096.0,
+    "n_smaller": 4,
+    "n_equal": 35,
+    "n_larger": 1,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   }
+  },
+  "fg0d vs fg0 (d)": {
+   "used": {
+    "mean_bytes": -25763.6,
+    "CI95_bytes": [
+     -26072.102499999997,
+     -25408.1925
+    ],
+    "mean_pct_of_raw": -0.13703576048474944,
+    "CI95_pct_of_raw": [
+     -0.13867667536849806,
+     -0.13514535941329656
+    ],
+    "median_bytes": -25872.0,
+    "min_bytes": -27692.0,
+    "max_bytes": -21512.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   },
+   "total": {
+    "mean_bytes": -26521.6,
+    "CI95_bytes": [
+     -27136.0,
+     -25907.2
+    ],
+    "mean_pct_of_raw": -0.14106753812636166,
+    "CI95_pct_of_raw": [
+     -0.1443355119825708,
+     -0.1377995642701525
+    ],
+    "median_bytes": -24576.0,
+    "min_bytes": -28672.0,
+    "max_bytes": -24576.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   }
+  },
+  "fg0e vs fg0 (e)": {
+   "used": {
+    "mean_bytes": 1351.65,
+    "CI95_bytes": [
+     1339.2,
+     1363.000625
+    ],
+    "mean_pct_of_raw": 0.007189382914624183,
+    "CI95_pct_of_raw": [
+     0.007123161764705882,
+     0.007249756524245983
+    ],
+    "median_bytes": 1358.5,
+    "min_bytes": 1239.0,
+    "max_bytes": 1411.0,
+    "n_smaller": 0,
+    "n_equal": 0,
+    "n_larger": 40,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   },
+   "total": {
+    "mean_bytes": 921.6,
+    "CI95_bytes": [
+     409.6,
+     1436.1599999999626
+    ],
+    "mean_pct_of_raw": 0.004901960784313725,
+    "CI95_pct_of_raw": [
+     0.002178649237472767,
+     0.007638888888888689
+    ],
+    "median_bytes": 0.0,
+    "min_bytes": 0.0,
+    "max_bytes": 4096.0,
+    "n_smaller": 0,
+    "n_equal": 31,
+    "n_larger": 9,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   }
+  },
+  "fg0de vs fg0d (e on d)": {
+   "used": {
+    "mean_bytes": 1353.85,
+    "CI95_bytes": [
+     1339.799375,
+     1367.425
+    ],
+    "mean_pct_of_raw": 0.007201084643927015,
+    "CI95_pct_of_raw": [
+     0.007126349821069921,
+     0.007273289632693355
+    ],
+    "median_bytes": 1360.5,
+    "min_bytes": 1231.0,
+    "max_bytes": 1452.0,
+    "n_smaller": 0,
+    "n_equal": 0,
+    "n_larger": 40,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   },
+   "total": {
+    "mean_bytes": 1945.6,
+    "CI95_bytes": [
+     1331.2,
+     2560.0
+    ],
+    "mean_pct_of_raw": 0.010348583877995643,
+    "CI95_pct_of_raw": [
+     0.007080610021786492,
+     0.013616557734204794
+    ],
+    "median_bytes": 0.0,
+    "min_bytes": 0.0,
+    "max_bytes": 4096.0,
+    "n_smaller": 0,
+    "n_equal": 21,
+    "n_larger": 19,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   }
+  },
+  "fg0t vs fg0 (t)": {
+   "used": {
+    "mean_bytes": -40188.375,
+    "CI95_bytes": [
+     -40233.925625,
+     -40150.724375
+    ],
+    "mean_pct_of_raw": -0.21376067516850492,
+    "CI95_pct_of_raw": [
+     -0.2140029574791071,
+     -0.2135604127040356
+    ],
+    "median_bytes": -40168.0,
+    "min_bytes": -40763.0,
+    "max_bytes": -40014.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   },
+   "total": {
+    "mean_bytes": -40448.0,
+    "CI95_bytes": [
+     -40857.6,
+     -40038.4
+    ],
+    "mean_pct_of_raw": -0.21514161220043573,
+    "CI95_pct_of_raw": [
+     -0.2173202614379085,
+     -0.21296296296296297
+    ],
+    "median_bytes": -40960.0,
+    "min_bytes": -40960.0,
+    "max_bytes": -36864.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   }
+  },
+  "fg0dt vs fg0d (t on d)": {
+   "used": {
+    "mean_bytes": -40183.575,
+    "CI95_bytes": [
+     -40231.575625,
+     -40140.175
+    ],
+    "mean_pct_of_raw": -0.21373514412275324,
+    "CI95_pct_of_raw": [
+     -0.21399045790462454,
+     -0.2135043009174156
+    ],
+    "median_bytes": -40170.0,
+    "min_bytes": -40795.0,
+    "max_bytes": -39922.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   },
+   "total": {
+    "mean_bytes": -39731.2,
+    "CI95_bytes": [
+     -40243.2,
+     -39116.8
+    ],
+    "mean_pct_of_raw": -0.21132897603485837,
+    "CI95_pct_of_raw": [
+     -0.21405228758169934,
+     -0.20806100217864926
+    ],
+    "median_bytes": -40960.0,
+    "min_bytes": -40960.0,
+    "max_bytes": -36864.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   }
+  },
+  "fg0dt vs fg0de (tail instead of hash)": {
+   "used": {
+    "mean_bytes": -41537.425,
+    "CI95_bytes": [
+     -41586.65,
+     -41495.025
+    ],
+    "mean_pct_of_raw": -0.22093622876668031,
+    "CI95_pct_of_raw": [
+     -0.22119805495983116,
+     -0.22071070452920752
+    ],
+    "median_bytes": -41530.5,
+    "min_bytes": -42179.0,
+    "max_bytes": -41268.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   },
+   "total": {
+    "mean_bytes": -41676.8,
+    "CI95_bytes": [
+     -42188.8,
+     -41267.2
+    ],
+    "mean_pct_of_raw": -0.22167755991285407,
+    "CI95_pct_of_raw": [
+     -0.22440087145969498,
+     -0.21949891067538124
+    ],
+    "median_bytes": -40960.0,
+    "min_bytes": -45056.0,
+    "max_bytes": -40960.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   }
+  },
+  "fg0c vs fg0 (c)": {
+   "used": {
+    "mean_bytes": -514845.3,
+    "CI95_bytes": [
+     -515442.06875,
+     -514218.724375
+    ],
+    "mean_pct_of_raw": -2.7384456061070264,
+    "CI95_pct_of_raw": [
+     -2.7416197999110667,
+     -2.735112870492707
+    ],
+    "median_bytes": -515144.5,
+    "min_bytes": -518507.0,
+    "max_bytes": -510513.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   },
+   "total": {
+    "mean_bytes": -515276.8,
+    "CI95_bytes": [
+     -515993.6,
+     -514560.0
+    ],
+    "mean_pct_of_raw": -2.740740740740741,
+    "CI95_pct_of_raw": [
+     -2.744553376906318,
+     -2.7369281045751634
+    ],
+    "median_bytes": -516096.0,
+    "min_bytes": -520192.0,
+    "max_bytes": -512000.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   }
+  },
+  "fg0cd vs fg0d (c on d)": {
+   "used": {
+    "mean_bytes": -514565.1,
+    "CI95_bytes": [
+     -515178.22875,
+     -513913.229375
+    ],
+    "mean_pct_of_raw": -2.7369552313112746,
+    "CI95_pct_of_raw": [
+     -2.7402164434295853,
+     -2.7334879524048117
+    ],
+    "median_bytes": -514798.5,
+    "min_bytes": -518131.0,
+    "max_bytes": -510185.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   },
+   "total": {
+    "mean_bytes": -514457.6,
+    "CI95_bytes": [
+     -515174.4,
+     -513740.8
+    ],
+    "mean_pct_of_raw": -2.736383442265795,
+    "CI95_pct_of_raw": [
+     -2.7401960784313726,
+     -2.732570806100218
+    ],
+    "median_bytes": -516096.0,
+    "min_bytes": -520192.0,
+    "max_bytes": -512000.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   }
+  },
+  "fg0cde vs fg0de (c on d+e)": {
+   "used": {
+    "mean_bytes": -514565.45,
+    "CI95_bytes": [
+     -515170.27625,
+     -513933.929375
+    ],
+    "mean_pct_of_raw": -2.736957092950027,
+    "CI95_pct_of_raw": [
+     -2.7401741443376397,
+     -2.7335980550396157
+    ],
+    "median_bytes": -514781.0,
+    "min_bytes": -518155.0,
+    "max_bytes": -510221.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   },
+   "total": {
+    "mean_bytes": -514969.6,
+    "CI95_bytes": [
+     -515686.4,
+     -514252.8
+    ],
+    "mean_pct_of_raw": -2.7391067538126364,
+    "CI95_pct_of_raw": [
+     -2.7429193899782134,
+     -2.735294117647059
+    ],
+    "median_bytes": -516096.0,
+    "min_bytes": -520192.0,
+    "max_bytes": -512000.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   }
+  },
+  "fg0 vs wnr2": {
+   "used": {
+    "mean_bytes": -337095.525,
+    "CI95_bytes": [
+     -373223.209375,
+     -308520.960625
+    ],
+    "mean_pct_of_raw": -1.7930002648845997,
+    "CI95_pct_of_raw": [
+     -1.9851622571093324,
+     -1.6410130752197798
+    ],
+    "median_bytes": -311320.5,
+    "min_bytes": -808534.0,
+    "max_bytes": -287244.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   },
+   "total": {
+    "mean_bytes": -336793.6,
+    "CI95_bytes": [
+     -372533.76,
+     -308121.6
+    ],
+    "mean_pct_of_raw": -1.7913943355119826,
+    "CI95_pct_of_raw": [
+     -1.9814950980392156,
+     -1.6388888888888886
+    ],
+    "median_bytes": -311296.0,
+    "min_bytes": -806912.0,
+    "max_bytes": -286720.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   }
+  },
+  "fg0de vs wnr2": {
+   "used": {
+    "mean_bytes": -361505.275,
+    "CI95_bytes": [
+     -398289.32875,
+     -333334.015625
+    ],
+    "mean_pct_of_raw": -1.9228349407254222,
+    "CI95_pct_of_raw": [
+     -2.1184881405633,
+     -1.7729929173953654
+    ],
+    "median_bytes": -335541.5,
+    "min_bytes": -828662.0,
+    "max_bytes": -310945.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   },
+   "total": {
+    "mean_bytes": -361369.6,
+    "CI95_bytes": [
+     -398438.4,
+     -333107.2
+    ],
+    "mean_pct_of_raw": -1.9221132897603486,
+    "CI95_pct_of_raw": [
+     -2.119281045751634,
+     -1.7717864923747277
+    ],
+    "median_bytes": -335872.0,
+    "min_bytes": -827392.0,
+    "max_bytes": -311296.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   }
+  },
+  "fg0dt vs wnr2": {
+   "used": {
+    "mean_bytes": -403042.7,
+    "CI95_bytes": [
+     -440173.40125,
+     -374703.035625
+    ],
+    "mean_pct_of_raw": -2.1437711694921022,
+    "CI95_pct_of_raw": [
+     -2.3412681762429366,
+     -1.993033405378753
+    ],
+    "median_bytes": -376979.0,
+    "min_bytes": -870841.0,
+    "max_bytes": -352488.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   },
+   "total": {
+    "mean_bytes": -403046.4,
+    "CI95_bytes": [
+     -440217.6,
+     -374476.8
+    ],
+    "mean_pct_of_raw": -2.1437908496732025,
+    "CI95_pct_of_raw": [
+     -2.3415032679738563,
+     -1.9918300653594772
+    ],
+    "median_bytes": -376832.0,
+    "min_bytes": -872448.0,
+    "max_bytes": -352256.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   }
+  },
+  "fg0cde vs wnr2": {
+   "used": {
+    "mean_bytes": -876070.725,
+    "CI95_bytes": [
+     -912714.7525000001,
+     -848059.5487500001
+    ],
+    "mean_pct_of_raw": -4.6597920336754495,
+    "CI95_pct_of_raw": [
+     -4.854700438389331,
+     -4.5108014873429845
+    ],
+    "median_bytes": -849663.0,
+    "min_bytes": -1341067.0,
+    "max_bytes": -826234.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   },
+   "total": {
+    "mean_bytes": -876339.2,
+    "CI95_bytes": [
+     -911976.9600000001,
+     -848179.2
+    ],
+    "mean_pct_of_raw": -4.6612200435729845,
+    "CI95_pct_of_raw": [
+     -4.85077614379085,
+     -4.511437908496732
+    ],
+    "median_bytes": -851968.0,
+    "min_bytes": -1339392.0,
+    "max_bytes": -823296.0,
+    "n_smaller": 40,
+    "n_equal": 0,
+    "n_larger": 0,
+    "n": 40,
+    "bootstrap": {
+     "resamples": 10000,
+     "seed": 20261107
+    }
+   }
+  }
+ },
+ "reference": {
+  "source": "team4 ceil-ref results/heldout_g0.jsonl + heldout_summary_g0.json (fg* = ceil-form, constant anchor 120); models = ceil-ref models/even.npz (train = 80 even-indexed sample experts); config names renamed fg* -> fg0*",
+  "summary_g0": {
+   "wnr2": {
+    "mean_total_bytes": 16909926.4,
+    "ratio_of_raw": 0.899433551198257,
+    "mean_used_bytes_unpadded": 16907739.325,
+    "ratio_used_of_raw": 0.8993172213818252,
+    "delta_total_pct_of_raw": 0.0,
+    "delta_total_pct_of_raw_CI95": [
+     0.0,
+     0.0
+    ],
+    "delta_used_vs_wnr2_bytes": 0.0,
+    "delta_used_vs_wnr2_bytes_CI95": [
+     0.0,
+     0.0
+    ],
+    "delta_used_pct_of_raw": 0.0,
+    "bit_per_w (weight payload incl. flush and side symbols)": 3.7801449754503036,
+    "bit_per_scale (scale payload incl. flush)": 1.0610214120370371,
+    "decode_check": "40/40 equal to reference (byte-exact)",
+    "mean_parts": {
+     "header": 32,
+     "length_table": 38880.0,
+     "scale_payload": 146675.6,
+     "weight_payload": 16722151.725,
+     "padding": 2187.075
+    },
+    "model_blob_bytes": 59408
+   },
+   "f": {
+    "mean_total_bytes": 16578764.8,
+    "ratio_of_raw": 0.8818191721132898,
+    "mean_used_bytes_unpadded": 16576672.2,
+    "ratio_used_of_raw": 0.8817078673917483,
+    "delta_total_pct_of_raw": -1.7614379084967318,
+    "delta_total_pct_of_raw_CI95": [
+     -1.948257080610022,
+     -1.6318082788671027
+    ],
+    "delta_used_vs_wnr2_bytes": -331067.125,
+    "delta_used_vs_wnr2_bytes_CI95": [
+     -366361.1925,
+     -306821.465
+    ],
+    "delta_used_pct_of_raw": -1.7609353990076932,
+    "bit_per_w (weight payload incl. flush and side symbols)": 3.707974977846499,
+    "bit_per_scale (scale payload incl. flush)": 0.9754734519675927,
+    "decode_check": "40/40 equal to reference (byte-exact)",
+    "mean_parts": {
+     "header": 48,
+     "length_table": 38880.0,
+     "scale_payload": 134849.45,
+     "weight_payload": 16402894.75,
+     "padding": 2092.6
+    },
+    "model_blob_bytes": 59708
+   },
+   "fg0": {
+    "mean_total_bytes": 16573132.8,
+    "ratio_of_raw": 0.8815196078431373,
+    "mean_used_bytes_unpadded": 16570643.8,
+    "ratio_used_of_raw": 0.8813872187329793,
+    "delta_total_pct_of_raw": -1.7913943355119826,
+    "delta_total_pct_of_raw_CI95": [
+     -1.9923747276688453,
+     -1.6399782135076255
+    ],
+    "delta_used_vs_wnr2_bytes": -337095.525,
+    "delta_used_vs_wnr2_bytes_CI95": [
+     -374296.43125,
+     -308403.020625
+    ],
+    "delta_used_pct_of_raw": -1.7930002648845997,
+    "bit_per_w (weight payload incl. flush and side symbols)": 3.70661222104673,
+    "bit_per_scale (scale payload incl. flush)": 0.9754734519675927,
+    "decode_check": "40/40 equal to reference (byte-exact)",
+    "mean_parts": {
+     "header": 48,
+     "length_table": 38880.0,
+     "scale_payload": 134849.45,
+     "weight_payload": 16396866.35,
+     "padding": 2489.0
+    },
+    "model_blob_bytes": 59708
+   },
+   "fg0d": {
+    "mean_total_bytes": 16546611.2,
+    "ratio_of_raw": 0.8801089324618736,
+    "mean_used_bytes_unpadded": 16544880.2,
+    "ratio_used_of_raw": 0.8800168611281318,
+    "delta_total_pct_of_raw": -1.9324618736383443,
+    "delta_total_pct_of_raw_CI95": [
+     -2.125272331154684,
+     -1.7810457516339868
+    ],
+    "delta_used_vs_wnr2_bytes": -362859.125,
+    "delta_used_vs_wnr2_bytes_CI95": [
+     -399939.00999999995,
+     -334312.070625
+    ],
+    "delta_used_pct_of_raw": -1.9300360253693492,
+    "bit_per_w (weight payload incl. flush and side symbols)": 3.70661222104673,
+    "bit_per_scale (scale payload incl. flush)": 0.9754734519675927,
+    "decode_check": "40/40 equal to reference (byte-exact)",
+    "mean_parts": {
+     "header": 48,
+     "length_table": 13116.4,
+     "scale_payload": 134849.45,
+     "weight_payload": 16396866.35,
+     "padding": 1731.0
+    },
+    "model_blob_bytes": 59708
+   },
+   "fg0e": {
+    "mean_total_bytes": 16574054.4,
+    "ratio_of_raw": 0.8815686274509804,
+    "mean_used_bytes_unpadded": 16571995.45,
+    "ratio_used_of_raw": 0.8814591125621255,
+    "delta_total_pct_of_raw": -1.7864923747276689,
+    "delta_total_pct_of_raw_CI95": [
+     -1.9814814814814814,
+     -1.635607298474946
+    ],
+    "delta_used_vs_wnr2_bytes": -335743.875,
+    "delta_used_vs_wnr2_bytes_CI95": [
+     -371729.53375,
+     -307063.808125
+    ],
+    "delta_used_pct_of_raw": -1.7858108819699754,
+    "bit_per_w (weight payload incl. flush and side symbols)": 3.7068849351671007,
+    "bit_per_scale (scale payload incl. flush)": 0.9765241608796297,
+    "decode_check": "40/40 equal to reference (byte-exact)",
+    "mean_parts": {
+     "header": 48,
+     "length_table": 38880.0,
+     "scale_payload": 134994.7,
+     "weight_payload": 16398072.75,
+     "padding": 2058.95
+    },
+    "model_blob_bytes": 59708
+   },
+   "fg0de": {
+    "mean_total_bytes": 16548556.8,
+    "ratio_of_raw": 0.8802124183006537,
+    "mean_used_bytes_unpadded": 16546234.05,
+    "ratio_used_of_raw": 0.8800888719745711,
+    "delta_total_pct_of_raw": -1.9221132897603486,
+    "delta_total_pct_of_raw_CI95": [
+     -2.1143790849673203,
+     -1.772875816993464
+    ],
+    "delta_used_vs_wnr2_bytes": -361505.275,
+    "delta_used_vs_wnr2_bytes_CI95": [
+     -397547.2025,
+     -333151.97750000004
+    ],
+    "delta_used_pct_of_raw": -1.9228349407254222,
+    "bit_per_w (weight payload incl. flush and side symbols)": 3.7068849351671007,
+    "bit_per_scale (scale payload incl. flush)": 0.9765241608796297,
+    "decode_check": "40/40 equal to reference (byte-exact)",
+    "mean_parts": {
+     "header": 48,
+     "length_table": 13118.6,
+     "scale_payload": 134994.7,
+     "weight_payload": 16398072.75,
+     "padding": 2322.75
+    },
+    "model_blob_bytes": 59708
+   },
+   "fg0t": {
+    "mean_total_bytes": 16532684.8,
+    "ratio_of_raw": 0.8793681917211329,
+    "mean_used_bytes_unpadded": 16530455.425,
+    "ratio_used_of_raw": 0.8792496119812943,
+    "delta_total_pct_of_raw": -2.0065359477124183,
+    "delta_total_pct_of_raw_CI95": [
+     -2.1998910675381262,
+     -1.8540305010893245
+    ],
+    "delta_used_vs_wnr2_bytes": -377283.9,
+    "delta_used_vs_wnr2_bytes_CI95": [
+     -413490.566875,
+     -348703.335625
+    ],
+    "delta_used_pct_of_raw": -2.0067609400531046,
+    "bit_per_w (weight payload incl. flush and side symbols)": 3.6976389227973088,
+    "bit_per_scale (scale payload incl. flush)": 0.9719044777199075,
+    "decode_check": "40/40 equal to reference (byte-exact)",
+    "mean_parts": {
+     "header": 48,
+     "length_table": 38880.0,
+     "scale_payload": 134356.075,
+     "weight_payload": 16357171.35,
+     "padding": 2229.375
+    },
+    "model_blob_bytes": 59708
+   },
+   "fg0dt": {
+    "mean_total_bytes": 16506880.0,
+    "ratio_of_raw": 0.8779956427015251,
+    "mean_used_bytes_unpadded": 16504696.625,
+    "ratio_used_of_raw": 0.8778795096869043,
+    "delta_total_pct_of_raw": -2.1437908496732025,
+    "delta_total_pct_of_raw_CI95": [
+     -2.3338779956427014,
+     -1.9918300653594772
+    ],
+    "delta_used_vs_wnr2_bytes": -403042.7,
+    "delta_used_vs_wnr2_bytes_CI95": [
+     -440555.521875,
+     -374599.565
+    ],
+    "delta_used_pct_of_raw": -2.1437711694921022,
+    "bit_per_w (weight payload incl. flush and side symbols)": 3.6976389227973088,
+    "bit_per_scale (scale payload incl. flush)": 0.9719044777199075,
+    "decode_check": "40/40 equal to reference (byte-exact)",
+    "mean_parts": {
+     "header": 48,
+     "length_table": 13121.2,
+     "scale_payload": 134356.075,
+     "weight_payload": 16357171.35,
+     "padding": 2183.375
+    },
+    "model_blob_bytes": 59708
+   },
+   "fg0a": {
+    "mean_total_bytes": 16582860.8,
+    "ratio_of_raw": 0.8820370370370371,
+    "mean_used_bytes_unpadded": 16581172.775,
+    "ratio_used_of_raw": 0.8819472515297352,
+    "delta_total_pct_of_raw": -1.7396514161220042,
+    "delta_total_pct_of_raw_CI95": [
+     -1.9357434640522875,
+     -1.5909586056644882
+    ],
+    "delta_used_vs_wnr2_bytes": -326566.55,
+    "delta_used_vs_wnr2_bytes_CI95": [
+     -362858.05875,
+     -298412.04124999995
+    ],
+    "delta_used_pct_of_raw": -1.7369969852090141,
+    "bit_per_w (weight payload incl. flush and side symbols)": 3.7089923604329424,
+    "bit_per_scale (scale payload incl. flush)": 0.9754734519675927,
+    "decode_check": "40/40 equal to reference (byte-exact)",
+    "mean_parts": {
+     "header": 48,
+     "length_table": 38880.0,
+     "scale_payload": 134849.45,
+     "weight_payload": 16407395.325,
+     "padding": 1688.025
+    },
+    "model_blob_bytes": 349046
+   },
+   "fg0ad": {
+    "mean_total_bytes": 16557465.6,
+    "ratio_of_raw": 0.8806862745098039,
+    "mean_used_bytes_unpadded": 16555466.075,
+    "ratio_used_of_raw": 0.8805799204176028,
+    "delta_total_pct_of_raw": -1.8747276688453158,
+    "delta_total_pct_of_raw_CI95": [
+     -2.0691721132897603,
+     -1.7244008714596952
+    ],
+    "delta_used_vs_wnr2_bytes": -352273.25,
+    "delta_used_vs_wnr2_bytes_CI95": [
+     -388829.02187500003,
+     -324296.429375
+    ],
+    "delta_used_pct_of_raw": -1.8737300964222494,
+    "bit_per_w (weight payload incl. flush and side symbols)": 3.7089923604329424,
+    "bit_per_scale (scale payload incl. flush)": 0.9754734519675927,
+    "decode_check": "40/40 equal to reference (byte-exact)",
+    "mean_parts": {
+     "header": 48,
+     "length_table": 13173.3,
+     "scale_payload": 134849.45,
+     "weight_payload": 16407395.325,
+     "padding": 1999.525
+    },
+    "model_blob_bytes": 349046
+   },
+   "fg0aK2": {
+    "mean_total_bytes": 16581017.6,
+    "ratio_of_raw": 0.8819389978213508,
+    "mean_used_bytes_unpadded": 16579244.55,
+    "ratio_used_of_raw": 0.8818446898616218,
+    "delta_total_pct_of_raw": -1.7494553376906319,
+    "delta_total_pct_of_raw_CI95": [
+     -1.951538671023965,
+     -1.5920479302832244
+    ],
+    "delta_used_vs_wnr2_bytes": -328494.775,
+    "delta_used_vs_wnr2_bytes_CI95": [
+     -367123.714375,
+     -299027.676875
+    ],
+    "delta_used_pct_of_raw": -1.747253152020357,
+    "bit_per_w (weight payload incl. flush and side symbols)": 3.7085564733434606,
+    "bit_per_scale (scale payload incl. flush)": 0.9754734519675927,
+    "decode_check": "40/40 equal to reference (byte-exact)",
+    "mean_parts": {
+     "header": 48,
+     "length_table": 38880.0,
+     "scale_payload": 134849.45,
+     "weight_payload": 16405467.1,
+     "padding": 1773.05
+    },
+    "model_blob_bytes": 233322
+   },
+   "fg0aK2d": {
+    "mean_total_bytes": 16555520.0,
+    "ratio_of_raw": 0.880582788671024,
+    "mean_used_bytes_unpadded": 16553533.55,
+    "ratio_used_of_raw": 0.8804771300338712,
+    "delta_total_pct_of_raw": -1.8850762527233116,
+    "delta_total_pct_of_raw_CI95": [
+     -2.085511982570806,
+     -1.7287581699346404
+    ],
+    "delta_used_vs_wnr2_bytes": -354205.775,
+    "delta_used_vs_wnr2_bytes_CI95": [
+     -392664.81625,
+     -325163.375625
+    ],
+    "delta_used_pct_of_raw": -1.8840091347954113,
+    "bit_per_w (weight payload incl. flush and side symbols)": 3.7085564733434606,
+    "bit_per_scale (scale payload incl. flush)": 0.9754734519675927,
+    "decode_check": "40/40 equal to reference (byte-exact)",
+    "mean_parts": {
+     "header": 48,
+     "length_table": 13169.0,
+     "scale_payload": 134849.45,
+     "weight_payload": 16405467.1,
+     "padding": 1986.45
+    },
+    "model_blob_bytes": 233322
+   },
+   "fg0c": {
+    "mean_total_bytes": 16057856.0,
+    "ratio_of_raw": 0.8541122004357299,
+    "mean_used_bytes_unpadded": 16055798.5,
+    "ratio_used_of_raw": 0.854002762671909,
+    "delta_total_pct_of_raw": -4.5321350762527235,
+    "delta_total_pct_of_raw_CI95": [
+     -4.728227124183007,
+     -4.380718954248366
+    ],
+    "delta_used_vs_wnr2_bytes": -851940.825,
+    "delta_used_vs_wnr2_bytes_CI95": [
+     -888484.9525,
+     -823369.063125
+    ],
+    "delta_used_pct_of_raw": -4.531445870991626,
+    "bit_per_w (weight payload incl. flush and side symbols)": 3.590228282787182,
+    "bit_per_scale (scale payload incl. flush)": 0.9754734519675927,
+    "decode_check": "40/40 equal to reference (value-exact (8->0))",
+    "mean_parts": {
+     "header": 48,
+     "length_table": 38880.0,
+     "scale_payload": 134849.45,
+     "weight_payload": 15882021.05,
+     "padding": 2057.5
+    },
+    "model_blob_bytes": 59708
+   },
+   "fg0cd": {
+    "mean_total_bytes": 16032153.6,
+    "ratio_of_raw": 0.8527450980392157,
+    "mean_used_bytes_unpadded": 16030315.1,
+    "ratio_used_of_raw": 0.852647308815019,
+    "delta_total_pct_of_raw": -4.668845315904139,
+    "delta_total_pct_of_raw_CI95": [
+     -4.859477124183006,
+     -4.51797385620915
+    ],
+    "delta_used_vs_wnr2_bytes": -877424.225,
+    "delta_used_vs_wnr2_bytes_CI95": [
+     -914096.693125,
+     -849414.99375
+    ],
+    "delta_used_pct_of_raw": -4.666991256680624,
+    "bit_per_w (weight payload incl. flush and side symbols)": 3.590228282787182,
+    "bit_per_scale (scale payload incl. flush)": 0.9754734519675927,
+    "decode_check": "40/40 equal to reference (value-exact (8->0))",
+    "mean_parts": {
+     "header": 48,
+     "length_table": 13396.6,
+     "scale_payload": 134849.45,
+     "weight_payload": 15882021.05,
+     "padding": 1838.5
+    },
+    "model_blob_bytes": 59708
+   },
+   "fg0ce": {
+    "mean_total_bytes": 16059187.2,
+    "ratio_of_raw": 0.8541830065359477,
+    "mean_used_bytes_unpadded": 16057150.6,
+    "ratio_used_of_raw": 0.8540746804364107,
+    "delta_total_pct_of_raw": -4.525054466230936,
+    "delta_total_pct_of_raw_CI95": [
+     -4.718954248366013,
+     -4.372549019607843
+    ],
+    "delta_used_vs_wnr2_bytes": -850588.725,
+    "delta_used_vs_wnr2_bytes_CI95": [
+     -886513.034375,
+     -822156.751875
+    ],
+    "delta_used_pct_of_raw": -4.524254094541463,
+    "bit_per_w (weight payload incl. flush and side symbols)": 3.5905009064850986,
+    "bit_per_scale (scale payload incl. flush)": 0.9765303096064814,
+    "decode_check": "40/40 equal to reference (value-exact (8->0))",
+    "mean_parts": {
+     "header": 48,
+     "length_table": 38880.0,
+     "scale_payload": 134995.55,
+     "weight_payload": 15883227.05,
+     "padding": 2036.6
+    },
+    "model_blob_bytes": 59708
+   },
+   "fg0cde": {
+    "mean_total_bytes": 16033587.2,
+    "ratio_of_raw": 0.8528213507625272,
+    "mean_used_bytes_unpadded": 16031668.6,
+    "ratio_used_of_raw": 0.8527193010450708,
+    "delta_total_pct_of_raw": -4.6612200435729845,
+    "delta_total_pct_of_raw_CI95": [
+     -4.855119825708061,
+     -4.5119825708061
+    ],
+    "delta_used_vs_wnr2_bytes": -876070.725,
+    "delta_used_vs_wnr2_bytes_CI95": [
+     -912874.448125,
+     -847997.12375
+    ],
+    "delta_used_pct_of_raw": -4.6597920336754495,
+    "bit_per_w (weight payload incl. flush and side symbols)": 3.5905009064850986,
+    "bit_per_scale (scale payload incl. flush)": 0.9765303096064814,
+    "decode_check": "40/40 equal to reference (value-exact (8->0))",
+    "mean_parts": {
+     "header": 48,
+     "length_table": 13398.0,
+     "scale_payload": 134995.55,
+     "weight_payload": 15883227.05,
+     "padding": 1918.6
+    },
+    "model_blob_bytes": 59708
+   },
+   "fg0aK2ce": {
+    "mean_total_bytes": 16068198.4,
+    "ratio_of_raw": 0.8546623093681918,
+    "mean_used_bytes_unpadded": 16065707.075,
+    "ratio_used_of_raw": 0.8545297965920309,
+    "delta_total_pct_of_raw": -4.477124183006536,
+    "delta_total_pct_of_raw_CI95": [
+     -4.680283224400871,
+     -4.320806100217865
+    ],
+    "delta_used_vs_wnr2_bytes": -842032.25,
+    "delta_used_vs_wnr2_bytes_CI95": [
+     -880149.0768749999,
+     -812969.3362499999
+    ],
+    "delta_used_pct_of_raw": -4.478742478979439,
+    "bit_per_w (weight payload incl. flush and side symbols)": 3.592435302734375,
+    "bit_per_scale (scale payload incl. flush)": 0.9765254267939815,
+    "decode_check": "40/40 equal to reference (value-exact (8->0))",
+    "mean_parts": {
+     "header": 48,
+     "length_table": 38880.0,
+     "scale_payload": 134994.875,
+     "weight_payload": 15891784.2,
+     "padding": 2491.325
+    },
+    "model_blob_bytes": 233322
+   },
+   "fg0aK2cde": {
+    "mean_total_bytes": 16042598.4,
+    "ratio_of_raw": 0.8533006535947713,
+    "mean_used_bytes_unpadded": 16040277.975,
+    "ratio_used_of_raw": 0.8531772309346916,
+    "delta_total_pct_of_raw": -4.613289760348584,
+    "delta_total_pct_of_raw_CI95": [
+     -4.814270152505447,
+     -4.458605664488018
+    ],
+    "delta_used_vs_wnr2_bytes": -867461.35,
+    "delta_used_vs_wnr2_bytes_CI95": [
+     -906330.77125,
+     -838259.37125
+    ],
+    "delta_used_pct_of_raw": -4.613999044713371,
+    "bit_per_w (weight payload incl. flush and side symbols)": 3.592435302734375,
+    "bit_per_scale (scale payload incl. flush)": 0.9765254267939815,
+    "decode_check": "40/40 equal to reference (value-exact (8->0))",
+    "mean_parts": {
+     "header": 48,
+     "length_table": 13450.9,
+     "scale_payload": 134994.875,
+     "weight_payload": 15891784.2,
+     "padding": 2320.425
+    },
+    "model_blob_bytes": 233322
+   }
+  }
+ },
+ "result": "PASS",
+ "result_line": "RESULT heldout_configs PASS 40 experts, 480 records decoded; d%raw vs WNR2: f -1.761, fg0 -1.791, fg0de -1.922, fg0dt -2.144, fg0cde -4.661",
+ "elapsed_s": 165.5,
+ "finished": "2026-11-08 02:55:45"
+}

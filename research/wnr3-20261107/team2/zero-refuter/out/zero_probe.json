@@ -1,0 +1,797 @@
+{
+ "experts_used": 40,
+ "stride": 4,
+ "struct": {
+  "w1.n": 471859200,
+  "w1.code0": 27320587,
+  "w1.code8": 27319348,
+  "w1.zero_blocks32": 0,
+  "w1.blocks32": 14745600,
+  "w1.zero_rows": 0,
+  "w1.zero_groups4": 29042,
+  "w1.zero_groups4_with_neg0": 27171,
+  "w1.groups4": 117964800,
+  "w1.zero_groups8": 13,
+  "w1.zero_groups8_with_neg0": 13,
+  "w1.groups8": 58982400,
+  "w1.zero_strided256_partials": 0,
+  "w1.strided256_partials": 23592960,
+  "w2.n": 471859200,
+  "w2.code0": 27653395,
+  "w2.code8": 27671210,
+  "w2.zero_blocks32": 0,
+  "w2.blocks32": 14745600,
+  "w2.zero_rows": 0,
+  "w2.zero_groups4": 29511,
+  "w2.zero_groups4_with_neg0": 27692,
+  "w2.groups4": 117964800,
+  "w2.zero_groups8": 5,
+  "w2.zero_groups8_with_neg0": 5,
+  "w2.groups8": 58982400,
+  "w2.zero_strided256_partials": 0,
+  "w2.strided256_partials": 52428800,
+  "w3.n": 471859200,
+  "w3.code0": 27444303,
+  "w3.code8": 27451725,
+  "w3.zero_blocks32": 0,
+  "w3.blocks32": 14745600,
+  "w3.zero_rows": 0,
+  "w3.zero_groups4": 28492,
+  "w3.zero_groups4_with_neg0": 26666,
+  "w3.groups4": 117964800,
+  "w3.zero_groups8": 7,
+  "w3.zero_groups8_with_neg0": 7,
+  "w3.groups8": 58982400,
+  "w3.zero_strided256_partials": 0,
+  "w3.strided256_partials": 23592960
+ },
+ "arith": [
+  {
+   "expert": "L00_E097.bin",
+   "matrix": "w1",
+   "gauss": {
+    "A_blas": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "B_seq_pos0": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "C_seq_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "D_vec4_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    }
+   },
+   "sparse90": {
+    "A_blas": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "B_seq_pos0": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "C_seq_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "D_vec4_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    }
+   },
+   "adversarial_row": 1083,
+   "adversarial": {
+    "A_blas": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "B_seq_pos0": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "C_seq_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "D_vec4_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    }
+   }
+  },
+  {
+   "expert": "L00_E097.bin",
+   "matrix": "w2",
+   "gauss": {
+    "A_blas": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "B_seq_pos0": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "C_seq_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "D_vec4_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    }
+   },
+   "sparse90": {
+    "A_blas": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "B_seq_pos0": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "C_seq_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "D_vec4_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    }
+   },
+   "adversarial_row": 1233,
+   "adversarial": {
+    "A_blas": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "B_seq_pos0": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "C_seq_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "D_vec4_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    }
+   }
+  },
+  {
+   "expert": "L00_E097.bin",
+   "matrix": "w3",
+   "gauss": {
+    "A_blas": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "B_seq_pos0": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "C_seq_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "D_vec4_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    }
+   },
+   "sparse90": {
+    "A_blas": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "B_seq_pos0": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "C_seq_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "D_vec4_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    }
+   },
+   "adversarial_row": 886,
+   "adversarial": {
+    "A_blas": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "B_seq_pos0": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "C_seq_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "D_vec4_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    }
+   }
+  },
+  {
+   "expert": "L01_E008.bin",
+   "matrix": "w1",
+   "gauss": {
+    "A_blas": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "B_seq_pos0": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "C_seq_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "D_vec4_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    }
+   },
+   "sparse90": {
+    "A_blas": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "B_seq_pos0": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "C_seq_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "D_vec4_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    }
+   },
+   "adversarial_row": 1486,
+   "adversarial": {
+    "A_blas": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "B_seq_pos0": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "C_seq_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "D_vec4_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    }
+   }
+  },
+  {
+   "expert": "L01_E008.bin",
+   "matrix": "w2",
+   "gauss": {
+    "A_blas": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "B_seq_pos0": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "C_seq_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "D_vec4_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    }
+   },
+   "sparse90": {
+    "A_blas": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "B_seq_pos0": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "C_seq_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "D_vec4_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    }
+   },
+   "adversarial_row": 1976,
+   "adversarial": {
+    "A_blas": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "B_seq_pos0": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "C_seq_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "D_vec4_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    }
+   }
+  },
+  {
+   "expert": "L01_E008.bin",
+   "matrix": "w3",
+   "gauss": {
+    "A_blas": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "B_seq_pos0": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "C_seq_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "D_vec4_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    }
+   },
+   "sparse90": {
+    "A_blas": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "B_seq_pos0": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "C_seq_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "D_vec4_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    }
+   },
+   "adversarial_row": 257,
+   "adversarial": {
+    "A_blas": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "B_seq_pos0": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "C_seq_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "D_vec4_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    }
+   }
+  },
+  {
+   "expert": "L02_E055.bin",
+   "matrix": "w1",
+   "gauss": {
+    "A_blas": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "B_seq_pos0": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "C_seq_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "D_vec4_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    }
+   },
+   "sparse90": {
+    "A_blas": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "B_seq_pos0": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "C_seq_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "D_vec4_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    }
+   },
+   "adversarial_row": 95,
+   "adversarial": {
+    "A_blas": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "B_seq_pos0": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "C_seq_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "D_vec4_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    }
+   }
+  },
+  {
+   "expert": "L02_E055.bin",
+   "matrix": "w2",
+   "gauss": {
+    "A_blas": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "B_seq_pos0": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "C_seq_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "D_vec4_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    }
+   },
+   "sparse90": {
+    "A_blas": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "B_seq_pos0": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "C_seq_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "D_vec4_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    }
+   },
+   "adversarial_row": 4925,
+   "adversarial": {
+    "A_blas": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "B_seq_pos0": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "C_seq_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "D_vec4_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    }
+   }
+  },
+  {
+   "expert": "L02_E055.bin",
+   "matrix": "w3",
+   "gauss": {
+    "A_blas": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "B_seq_pos0": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "C_seq_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "D_vec4_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    }
+   },
+   "sparse90": {
+    "A_blas": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "B_seq_pos0": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "C_seq_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "D_vec4_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 0,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    }
+   },
+   "adversarial_row": 1764,
+   "adversarial": {
+    "A_blas": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "B_seq_pos0": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "C_seq_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    },
+    "D_vec4_first": {
+     "bit_diffs": 0,
+     "exact_zero_outputs": 1,
+     "neg_zero_outputs_orig": 0,
+     "neg_zero_outputs_canon": 0
+    }
+   }
+  }
+ ]
+}

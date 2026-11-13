@@ -1,0 +1,428 @@
+{
+ "counts_dir": "<orig-pc>/team7\\nvfp4\\counts\\qwen36_rh",
+ "repo": "RedHatAI/Qwen3.6-35B-A3B-NVFP4",
+ "revision": "e94a930c8e9b8a7d3763e449289c261c9c7d3e5e",
+ "items": 80,
+ "weights": 251658240,
+ "scales": 15728640,
+ "weight_streams": 122880,
+ "scale_streams": 15360,
+ "raw_bytes_total": 141559680,
+ "weights_payload_bit_per_w (no flush)": {
+  "w_o0": {
+   "insample_bit_per_w": 3.97830034605271,
+   "heldout_bit_per_w": 3.97835747408668,
+   "ideal_insample_bit_per_w": 3.9783002828944647,
+   "rows": 16
+  },
+  "w_b1": {
+   "insample_bit_per_w": 3.9144789634018275,
+   "heldout_bit_per_w": 3.914684079762812,
+   "ideal_insample_bit_per_w": 3.914468533323062,
+   "rows": 648
+  },
+  "w_b2": {
+   "insample_bit_per_w": 3.913351694779882,
+   "heldout_bit_per_w": 3.913562290294834,
+   "ideal_insample_bit_per_w": 3.913341259647111,
+   "rows": 648
+  },
+  "w_b4": {
+   "insample_bit_per_w": 3.9156599407826875,
+   "heldout_bit_per_w": 3.915986280298664,
+   "ideal_insample_bit_per_w": 3.915649511942082,
+   "rows": 648
+  },
+  "w_b8": {
+   "insample_bit_per_w": 3.9209507939883905,
+   "heldout_bit_per_w": 3.9211947291630187,
+   "ideal_insample_bit_per_w": 3.920940365475986,
+   "rows": 648
+  },
+  "w_b1p": {
+   "insample_bit_per_w": 3.903926600262143,
+   "heldout_bit_per_w": 3.9057577636643397,
+   "ideal_insample_bit_per_w": 3.9039138196453194,
+   "rows": 10368
+  },
+  "w_b2p": {
+   "insample_bit_per_w": 3.902813075889699,
+   "heldout_bit_per_w": 3.9046721601044654,
+   "ideal_insample_bit_per_w": 3.902800283434392,
+   "rows": 10368
+  },
+  "w_b4p": {
+   "insample_bit_per_w": 3.9051808883632835,
+   "heldout_bit_per_w": 3.907754539324414,
+   "ideal_insample_bit_per_w": 3.905168010113479,
+   "rows": 10368
+  },
+  "w_b8p": {
+   "insample_bit_per_w": 3.91064176014598,
+   "heldout_bit_per_w": 3.9122370497822043,
+   "ideal_insample_bit_per_w": 3.9106289343881904,
+   "rows": 10368
+  },
+  "w_s15": {
+   "insample_bit_per_w": 3.9124378598151237,
+   "heldout_bit_per_w": 3.912774832958689,
+   "ideal_insample_bit_per_w": 3.9124274192607476,
+   "rows": 1296
+  },
+  "w_b2pm2": {
+   "insample_bit_per_w": 3.911761244320614,
+   "heldout_bit_per_w": 3.9125085479927812,
+   "ideal_insample_bit_per_w": 3.911750802443451,
+   "rows": 5832
+  },
+  "w_b2lm": {
+   "insample_bit_per_w": 3.9133028807299994,
+   "heldout_bit_per_w": 3.9136391269078588,
+   "ideal_insample_bit_per_w": 3.9132924413006465,
+   "rows": 5832
+  },
+  "w_b2ls": {
+   "insample_bit_per_w": 3.9128497618860845,
+   "heldout_bit_per_w": 3.9132784132770713,
+   "ideal_insample_bit_per_w": 3.912839321198417,
+   "rows": 1944
+  },
+  "w_b2par": {
+   "insample_bit_per_w": 3.9133090141460563,
+   "heldout_bit_per_w": 3.913647842553188,
+   "ideal_insample_bit_per_w": 3.913298574332975,
+   "rows": 1296
+  },
+  "v_o0": {
+   "insample_bit_per_w": 3.8972617464814694,
+   "heldout_bit_per_w": 3.8973192483066357,
+   "ideal_insample_bit_per_w": 3.897173633319117,
+   "rows": 16
+  },
+  "v_b2": {
+   "insample_bit_per_w": 3.832315259972703,
+   "heldout_bit_per_w": 3.8325189093046834,
+   "ideal_insample_bit_per_w": 3.832216807897993,
+   "rows": 648
+  },
+  "v_b2p": {
+   "insample_bit_per_w": 3.821802046609362,
+   "heldout_bit_per_w": 3.823554498245504,
+   "ideal_insample_bit_per_w": 3.8217014071260307,
+   "rows": 10368
+  }
+ },
+ "w_b2_heldout_per_matrix_bit_per_w": {
+  "w1": 3.8978602689409456,
+  "w2": 3.945460592757251,
+  "w3": 3.8973660091863054
+ },
+ "w_b2_by_srel_bin_insample": {
+  "srel-3": {
+   "weights_share": 0.07265612284342447,
+   "bit_per_w_in_bin": 3.918970717231843
+  },
+  "srel-2": {
+   "weights_share": 0.1211392084757487,
+   "bit_per_w_in_bin": 3.935557615918477
+  },
+  "srel-1": {
+   "weights_share": 0.22881221771240234,
+   "bit_per_w_in_bin": 3.94991199275666
+  },
+  "srel0": {
+   "weights_share": 0.2760878245035807,
+   "bit_per_w_in_bin": 3.955781490042047
+  },
+  "srel1": {
+   "weights_share": 0.18326536814371744,
+   "bit_per_w_in_bin": 3.9405411823688405
+  },
+  "srel2": {
+   "weights_share": 0.0798550287882487,
+   "bit_per_w_in_bin": 3.9000604990620085
+  },
+  "srel3": {
+   "weights_share": 0.029850896199544272,
+   "bit_per_w_in_bin": 3.81848383495489
+  },
+  "srelfar": {
+   "weights_share": 0.008333333333333333,
+   "bit_per_w_in_bin": 1.0012290359322797
+  }
+ },
+ "scales_payload_bit_per_scale (no flush)": {
+  "s_o0": {
+   "insample_bit_per_scale": 4.307151967278447,
+   "heldout_bit_per_scale": 4.3415420593825385,
+   "ideal_insample": 4.287862248562046
+  },
+  "s_left": {
+   "insample_bit_per_scale": 3.8324644558537413,
+   "heldout_bit_per_scale": 3.8549793275992656,
+   "ideal_insample": 3.8124766223080626
+  },
+  "s_up": {
+   "insample_bit_per_scale": 3.9412624133404988,
+   "heldout_bit_per_scale": 3.994209866701572,
+   "ideal_insample": 3.9214471818492456
+  },
+  "s_lu": {
+   "insample_bit_per_scale": 4.240228252600009,
+   "heldout_bit_per_scale": 4.289608841960464,
+   "ideal_insample": 4.22074118432862
+  },
+  "s_par": {
+   "insample_bit_per_scale": 3.832282233665171,
+   "heldout_bit_per_scale": 3.8568814348008753,
+   "ideal_insample": 3.8122759359832146
+  }
+ },
+ "scale_bytes": {
+  "distinct": 50,
+  "min": 32,
+  "max": 126,
+  "pow2_share": 0.1407803217569987,
+  "top10": [
+   [
+    113,
+    0.11232,
+    144.0
+   ],
+   [
+    114,
+    0.09365,
+    160.0
+   ],
+   [
+    112,
+    0.09322,
+    128.0
+   ],
+   [
+    115,
+    0.07107,
+    176.0
+   ],
+   [
+    111,
+    0.06338,
+    120.0
+   ],
+   [
+    110,
+    0.06249,
+    112.0
+   ],
+   [
+    109,
+    0.0606,
+    104.0
+   ],
+   [
+    108,
+    0.05626,
+    96.0
+   ],
+   [
+    107,
+    0.05223,
+    88.0
+   ],
+   [
+    116,
+    0.05072,
+    192.0
+   ]
+  ],
+  "order0_entropy_bits": 4.300171443851906
+ },
+ "blockmax16_hist_per_matrix": {
+  "w1": [
+   0.0125,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.9875
+  ],
+  "w2": [
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ],
+  "w3": [
+   0.0125,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.9875
+  ]
+ },
+ "blockmax16_hist_all": [
+  0.008333,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.991667
+ ],
+ "blockmax16_hist_live": [
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  1.0
+ ],
+ "doubled16": {
+  "max7_blocks": 15597568,
+  "no_1_or_3": 199558,
+  "share_of_max7_blocks": 0.01279417406611082,
+  "share_of_all_blocks": 0.01268755594889323,
+  "q13_nonmax": 0.2696717077944459,
+  "iid_expected_share_of_max7": 0.008969575228463846,
+  "n13_hist": [
+   199558,
+   912962,
+   2087302,
+   3103425,
+   3325984,
+   2722054,
+   1758890,
+   915129,
+   388994,
+   134955,
+   37967,
+   8589,
+   1531,
+   209,
+   18,
+   1,
+   0
+  ]
+ },
+ "zero_sign": {
+  "live_plus0": 10209767,
+  "live_minus0": 10206425,
+  "dead_plus0": 0,
+  "dead_minus0": 0,
+  "minus0_share_of_weights": 0.04055668910344442,
+  "minus0_share_of_zeros_live": 0.4999181531991862
+ },
+ "dead": {
+  "zero_value_scale_blocks_share": 0.0,
+  "max0_blocks_share": 0.008333333333333333,
+  "per_matrix_zero_scale_share": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "per_matrix_max0_share": [
+   0.0125,
+   0.0,
+   0.0125
+  ]
+ },
+ "anchor_bytes_by_matrix": {
+  "w1": [
+   99,
+   100,
+   101,
+   102,
+   103,
+   104,
+   105,
+   106,
+   107,
+   108,
+   109,
+   110,
+   111,
+   112,
+   113,
+   114,
+   115,
+   116
+  ],
+  "w2": [
+   93,
+   103,
+   104,
+   105,
+   106,
+   107,
+   108,
+   109,
+   110,
+   111,
+   112,
+   113,
+   114,
+   115,
+   116
+  ],
+  "w3": [
+   98,
+   100,
+   102,
+   103,
+   105,
+   106,
+   107,
+   108,
+   109,
+   110,
+   111,
+   112,
+   113,
+   114,
+   115
+  ]
+ },
+ "record_estimate_heldout": {
+  "raw_bytes_per_item": 1769496.0,
+  "overhead_bytes_per_item": 7466.56,
+  "variants": {
+   "order0 both": {
+    "record_bytes": 1678518.1101818534,
+    "ratio_vs_raw": 0.948585422166455,
+    "bit_per_w_total": 4.2686922968085055
+   },
+   "WNR-style b2 + scale o0": {
+    "record_bytes": 1653039.607191959,
+    "ratio_vs_raw": 0.9341866877302684,
+    "bit_per_w_total": 4.20389711301666
+   },
+   "b2 + best scale ctx": {
+    "record_bytes": 1641081.8414956531,
+    "ratio_vs_raw": 0.9274289636685549,
+    "bit_per_w_total": 4.1734869422802054
+   },
+   "best byte-exact (w_b2p, s_left)": {
+    "record_bytes": 1637586.100062717,
+    "ratio_vs_raw": 0.9254534059770223,
+    "bit_per_w_total": 4.164596812089836
+   },
+   "value-exact (v_b2p, s_left)": {
+    "record_bytes": 1605689.3375371837,
+    "ratio_vs_raw": 0.9074275033892044,
+    "bit_per_w_total": 4.0834791502308745
+   }
+  }
+ }
+}

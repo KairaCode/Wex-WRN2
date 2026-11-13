@@ -1,0 +1,145 @@
+GPU NVIDIA GeForce RTX 5090  nvsmi start/end: 1980 MHz, 7001 MHz, 3 %, 78.26 W, 35.93 | 3037 MHz, 16801 MHz, 93 %, 483.01 W, 57.14  rounds 41  compile 37.9 s
+== nt32/lb
+A259   regs  76 lmem 0 smem   8304 occW 10 exact T | m1   169.0 D1.037 | m3   261.3 D1.095 | m24   893.0 D1.376 | 8streams   957.2 D1.361 |
+       PIPE (sdec<32> + wdec) | m1   204.0 | m3   296.2 | m24   949.5 | 8streams  1023.6 |
+D      regs  77 lmem 0 smem   4160 occW 19 exact T | m1   163.0 A0.964 | m3   238.8 A0.913 | m24   651.3 A0.727 | 8streams   708.6 A0.735 |
+       PIPE (sdec<32> + wdec) | m1   197.9 A0.970 | m3   273.4 A0.920 | m24   706.8 A0.747 | 8streams   782.5 A0.753 |
+CF0    regs  76 lmem 0 smem   8304 occW 10 exact F | m1   167.1 A0.998 D1.025 | m3   261.3 A1.000 D1.095 | m24   891.0 A0.999 D1.371 | 8streams   994.6 A1.021 D1.371 |
+CF5    regs  78 lmem 0 smem   8304 occW 10 exact T | m1   167.1 A0.989 D1.024 own1.000 | m3   177.3 A0.679 D0.743 own0.679 | m24   885.9 A0.992 D1.360 own0.993 | 8streams   983.1 A0.999 D1.369 own0.949 |
+       PIPE (sdec<32> + wdec) | m1   202.0 A0.990 | m3   293.9 A0.987 | m24   940.1 A0.990 | 8streams  1016.5 A0.989 |
+CF6    regs  78 lmem 0 smem   8304 occW 10 exact T | m1   173.2 A1.031 D1.062 own1.037 | m3   185.5 A0.710 D0.777 own0.710 | m24   903.2 A1.011 D1.388 own1.012 | 8streams   977.7 A1.017 D1.395 own0.956 |
+       PIPE (sdec<32> + wdec) | m1   208.1 A1.020 | m3   220.4 A0.745 | m24   958.5 A1.009 | 8streams  1044.3 A1.015 |
+CFD0   regs  77 lmem 0 smem   4160 occW 19 exact F | m1   163.0 A0.969 D1.000 | m3   236.7 A0.906 D0.999 | m24   642.3 A0.720 D0.986 | 8streams   745.9 A0.749 D1.023 |
+CFD5   regs  78 lmem 0 smem   4160 occW 19 exact T | m1   163.0 A0.964 D0.999 own1.000 | m3   173.2 A0.663 D0.726 own0.731 | m24   650.3 A0.726 D0.997 own1.011 | 8streams   737.5 A0.780 D1.029 own1.012 |
+       PIPE (sdec<32> + wdec) | m1   197.9 A0.970 | m3   272.4 A0.921 | m24   698.5 A0.737 | 8streams   771.3 A0.748 |
+DB2    regs  80 lmem 0 smem   4160 occW 19 exact T | m1   163.0 A0.970 D1.000 | m3   244.9 A0.937 D1.034 | m24   627.9 A0.703 D0.964 | 8streams   703.4 A0.724 D0.996 |
+       PIPE (sdec<32> + wdec) | m1   199.9 A0.980 | m3   281.7 A0.951 | m24   681.1 A0.718 | 8streams   750.2 A0.736 |
+CFDB20 regs  80 lmem 0 smem   4160 occW 19 exact F | m1   165.1 A0.987 D1.013 | m3   244.8 A0.937 D1.026 | m24   622.7 A0.697 D0.956 | 8streams   685.7 A0.715 D0.973 |
+CFDB2  regs  80 lmem 0 smem   4160 occW 19 exact T | m1   167.1 A0.994 D1.025 own1.012 | m3   179.4 A0.686 D0.752 own0.733 | m24   634.0 A0.708 D0.973 own1.015 | 8streams   696.5 A0.725 D0.989 own1.004 |
+       PIPE (sdec<32> + wdec) | m1   201.9 A0.990 | m3   281.8 A0.955 | m24   685.2 A0.722 | 8streams   773.2 A0.747 |
+== nt64/lb
+A259   regs  48 lmem 0 smem   8304 occW 20 exact T | m1   210.1 D1.132 | m3   302.2 D1.156 | m24   832.6 D1.267 | 8streams   878.9 D1.234 |
+       PIPE (sdec<32> + wdec) | m1   245.0 | m3   338.0 | m24   882.9 | 8streams   940.6 |
+D      regs  50 lmem 0 smem   4160 occW 36 exact T | m1   185.5 A0.883 | m3   261.3 A0.865 | m24   661.6 A0.789 | 8streams   715.9 A0.810 |
+       PIPE (sdec<32> + wdec) | m1   220.4 A0.899 | m3   296.1 A0.876 | m24   716.9 A0.809 | 8streams   797.2 A0.840 |
+CF0    regs  48 lmem 0 smem   8304 occW 20 exact F | m1   208.1 A0.990 D1.121 | m3   302.2 A1.000 D1.157 | m24   816.3 A0.982 D1.238 | 8streams   883.2 A1.014 D1.243 |
+CF5    regs  48 lmem 0 smem   8304 occW 20 exact T | m1   212.1 A1.010 D1.143 own1.019 | m3   222.4 A0.736 D0.851 own0.736 | m24   817.3 A0.983 D1.247 own1.001 | 8streams   901.8 A1.024 D1.242 own0.997 |
+       PIPE (sdec<32> + wdec) | m1   247.0 A1.008 | m3   341.2 A1.012 | m24   873.7 A0.992 | 8streams   948.5 A1.001 |
+CF6    regs  48 lmem 0 smem   8304 occW 20 exact T | m1   214.2 A1.019 D1.154 own1.029 | m3   222.4 A0.738 D0.851 own0.736 | m24   820.4 A0.988 D1.248 own1.006 | 8streams   909.0 A1.008 D1.258 own1.014 |
+       PIPE (sdec<32> + wdec) | m1   249.0 A1.017 | m3   257.2 A0.763 | m24   871.9 A0.988 | 8streams   959.7 A1.012 |
+CFD0   regs  50 lmem 0 smem   4160 occW 36 exact F | m1   185.5 A0.883 D1.000 | m3   260.1 A0.861 D0.997 | m24   662.7 A0.795 D1.006 | 8streams   771.6 A0.839 D1.054 |
+CFD5   regs  48 lmem 0 smem   4160 occW 38 exact T | m1   191.6 A0.912 D1.029 own1.033 | m3   204.0 A0.675 D0.781 own0.787 | m24   675.0 A0.809 D1.015 own1.008 | 8streams   741.3 A0.833 D1.039 own1.005 |
+       PIPE (sdec<32> + wdec) | m1   226.5 A0.925 | m3   306.3 A0.906 | m24   728.6 A0.825 | 8streams   802.0 A0.856 |
+DB2    regs  56 lmem 0 smem   4160 occW 36 exact T | m1   173.3 A0.824 D0.934 | m3   257.1 A0.850 D0.984 | m24   569.4 A0.686 D0.859 | 8streams   668.3 A0.733 D0.898 |
+       PIPE (sdec<32> + wdec) | m1   209.0 A0.850 | m3   292.2 A0.867 | m24   622.7 A0.706 | 8streams   723.0 A0.758 |
+CFDB20 regs  56 lmem 0 smem   4160 occW 36 exact F | m1   175.3 A0.834 D0.944 | m3   258.1 A0.851 D0.985 | m24   568.5 A0.685 D0.862 | 8streams   630.9 A0.706 D0.886 |
+CFDB2  regs  64 lmem 0 smem   4160 occW 32 exact T | m1   172.0 A0.815 D0.923 own0.977 | m3   181.3 A0.598 D0.693 own0.703 | m24   599.2 A0.721 D0.908 own1.052 | 8streams   659.1 A0.751 D0.919 own1.046 |
+       PIPE (sdec<32> + wdec) | m1   206.1 A0.841 | m3   285.9 A0.848 | m24   653.3 A0.741 | 8streams   740.8 A0.778 |
+== nt128/lb
+A259   regs  48 lmem 0 smem   8304 occW 40 exact T | m1   220.4 D1.138 | m3   300.2 D1.157 | m24   949.9 D1.384 | 8streams   786.4 D1.051 |
+       PIPE (sdec<32> + wdec) | m1   255.2 | m3   336.0 | m24   775.4 | 8streams  1007.0 |
+D      regs  50 lmem 0 smem   4160 occW 36 exact T | m1   195.6 A0.879 | m3   261.2 A0.864 | m24   680.0 A0.723 | 8streams   756.8 A0.952 |
+       PIPE (sdec<32> + wdec) | m1   230.5 A0.896 | m3   296.2 A0.879 | m24   737.3 A0.949 | 8streams   926.0 A0.899 |
+CF0    regs  48 lmem 0 smem   8304 occW 40 exact F | m1   220.3 A0.990 D1.126 | m3   302.2 A1.007 D1.158 | m24   732.4 A0.985 D1.080 | 8streams   797.5 A1.002 D1.051 |
+CF5    regs  48 lmem 0 smem   8304 occW 40 exact T | m1   220.3 A1.000 D1.132 own1.001 | m3   222.3 A0.741 D0.853 own0.736 | m24   735.3 A0.983 D1.083 own1.006 | 8streams   789.0 A1.000 D1.045 own1.004 |
+       PIPE (sdec<32> + wdec) | m1   257.2 A1.008 | m3   341.0 A1.010 | m24   777.4 A1.003 | 8streams  1011.2 A1.003 |
+CF6    regs  48 lmem 0 smem   8304 occW 40 exact T | m1   222.2 A1.000 D1.136 own1.009 | m3   222.4 A0.741 D0.854 own0.737 | m24   732.4 A0.980 D1.085 own0.999 | 8streams   778.3 A0.995 D1.042 own1.006 |
+       PIPE (sdec<32> + wdec) | m1   257.2 A1.008 | m3   257.2 A0.766 | m24   772.2 A0.995 | 8streams   978.3 A0.995 |
+CFD0   regs  50 lmem 0 smem   4160 occW 36 exact F | m1   195.6 A0.880 D1.000 | m3   259.2 A0.863 D1.000 | m24   690.2 A0.921 D1.012 | 8streams   741.5 A0.945 D0.993 |
+CFD5   regs  48 lmem 0 smem   4160 occW 40 exact T | m1   203.9 A0.921 D1.043 own1.042 | m3   203.9 A0.679 D0.784 own0.787 | m24   688.2 A0.921 D1.012 own1.000 | 8streams   746.7 A0.948 D0.988 own0.989 |
+       PIPE (sdec<32> + wdec) | m1   238.8 A0.935 | m3   306.1 A0.908 | m24   741.5 A0.958 | 8streams   913.3 A0.960 |
+DB2    regs  56 lmem 0 smem   4160 occW 36 exact T | m1   183.5 A0.828 D0.947 | m3   255.2 A0.850 D0.984 | m24   581.6 A0.779 D0.857 | 8streams   643.6 A0.814 D0.866 |
+       PIPE (sdec<32> + wdec) | m1   218.3 A0.855 | m3   292.1 A0.870 | m24   629.6 A0.811 | 8streams   853.7 A0.898 |
+CFDB20 regs  56 lmem 0 smem   4160 occW 36 exact F | m1   185.5 A0.833 D0.948 | m3   255.1 A0.850 D0.980 | m24   582.7 A0.784 D0.859 | 8streams   656.6 A0.834 D0.869 |
+CFDB2  regs  64 lmem 0 smem   4160 occW 32 exact T | m1   179.4 A0.814 D0.922 own0.967 | m3   179.4 A0.598 D0.692 own0.703 | m24   610.3 A0.637 D0.899 own1.049 | 8streams   667.2 A0.848 D0.898 own1.014 |
+       PIPE (sdec<32> + wdec) | m1   214.2 A0.839 | m3   285.7 A0.847 | m24   659.6 A0.852 | 8streams   846.4 A0.856 |
+== nt256/lb
+A259   regs  48 lmem 0 smem   8304 occW 40 exact T | m1   240.8 D1.208 | m3   316.2 D1.203 | m24   802.8 D1.194 | 8streams   918.0 D1.119 |
+       PIPE (sdec<32> + wdec) | m1   275.7 | m3   351.4 | m24  1033.7 | 8streams  1162.4 |
+D      regs  50 lmem 0 smem   4160 occW 32 exact T | m1   199.9 A0.828 | m3   262.4 A0.831 | m24   683.1 A0.837 | 8streams   787.6 A0.894 |
+       PIPE (sdec<32> + wdec) | m1   234.8 A0.851 | m3   298.1 A0.844 | m24   738.4 A0.717 | 8streams  1101.3 A0.937 |
+CF0    regs  48 lmem 0 smem   8304 occW 40 exact F | m1   240.9 A1.000 D1.205 | m3   314.5 A1.000 D1.202 | m24   798.8 A0.998 D1.180 | 8streams   994.5 A0.996 D1.117 |
+CF5    regs  48 lmem 0 smem   8304 occW 40 exact T | m1   242.8 A1.008 D1.215 own1.008 | m3   242.8 A0.772 D0.926 own0.772 | m24   963.2 A0.997 D1.171 own1.001 | 8streams   984.7 A1.015 D1.133 own0.989 |
+       PIPE (sdec<32> + wdec) | m1   277.8 A1.007 | m3   355.5 A1.001 | m24   860.3 A1.001 | 8streams  1180.1 A1.007 |
+CF6    regs  48 lmem 0 smem   8304 occW 40 exact T | m1   242.9 A1.009 D1.216 own1.009 | m3   242.8 A0.772 D0.929 own0.772 | m24   796.7 A0.997 D1.168 own1.001 | 8streams  1007.3 A1.024 D1.144 own1.024 |
+       PIPE (sdec<32> + wdec) | m1   279.7 A1.011 | m3   279.8 A0.796 | m24   860.3 A0.990 | 8streams  1152.7 A0.972 |
+CFD0   regs  50 lmem 0 smem   4160 occW 32 exact F | m1   199.9 A0.830 D1.000 | m3   263.2 A0.832 D1.000 | m24   695.4 A0.861 D1.016 | 8streams   971.1 A0.932 D1.037 |
+CFD5   regs  48 lmem 0 smem   4160 occW 40 exact T | m1   208.0 A0.864 D1.041 own1.041 | m3   208.0 A0.661 D0.795 own0.794 | m24   699.5 A0.851 D1.003 own1.001 | 8streams   875.2 A0.871 D0.990 own0.951 |
+       PIPE (sdec<32> + wdec) | m1   242.9 A0.881 | m3   307.2 A0.872 | m24   755.8 A0.874 | 8streams  1083.4 A0.908 |
+DB2    regs  59 lmem 0 smem   4160 occW 32 exact T | m1   189.6 A0.779 D0.948 | m3   258.8 A0.818 D0.984 | m24   600.1 A0.749 D0.888 | 8streams   809.2 A0.807 D0.902 |
+       PIPE (sdec<32> + wdec) | m1   224.4 A0.814 | m3   294.1 A0.836 | m24   661.6 A0.770 | 8streams  1022.0 A0.859 |
+CFDB20 regs  59 lmem 0 smem   4160 occW 32 exact F | m1   189.6 A0.787 D0.949 | m3   257.2 A0.813 D0.977 | m24   600.1 A0.748 D0.884 | 8streams   777.7 A0.777 D0.879 |
+CFDB2  regs  64 lmem 0 smem   4160 occW 32 exact T | m1   183.5 A0.761 D0.917 own0.968 | m3   183.5 A0.580 D0.700 own0.714 | m24   603.2 A0.750 D0.881 own1.002 | 8streams   712.6 A0.788 D0.873 own0.986 |
+       PIPE (sdec<32> + wdec) | m1   218.4 A0.792 | m3   283.9 A0.808 | m24   665.6 A0.644 | 8streams   968.7 A0.822 |
+== nt32/out4
+A259   regs  80 lmem 0 smem  12912 occW  7 exact T | m1   169.2 D1.051 | m3   261.3 D1.075 | m24  1091.7 D1.366 | 8streams  1168.2 D1.318 |
+       PIPE (sdec<32> + wdec) | m1   204.0 | m3   296.2 | m24  1151.1 | 8streams  1245.2 |
+D      regs  80 lmem 0 smem   8768 occW 10 exact T | m1   162.9 A0.952 | m3   243.7 A0.930 | m24   802.0 A0.732 | 8streams   880.2 A0.759 |
+       PIPE (sdec<32> + wdec) | m1   195.8 A0.959 | m3   277.7 A0.932 | m24   858.3 A0.745 | 8streams   951.7 A0.756 |
+CF0    regs  80 lmem 0 smem  12912 occW  7 exact F | m1   169.1 A1.000 D1.044 | m3   261.3 A1.000 D1.075 | m24  1090.7 A1.000 D1.360 | 8streams  1170.0 A0.997 D1.322 |
+CF5    regs  80 lmem 0 smem  12912 occW  7 exact T | m1   177.3 A1.048 D1.100 own1.048 | m3   193.5 A0.734 D0.791 own0.735 | m24  1142.8 A1.046 D1.429 own1.048 | 8streams  1285.9 A1.043 D1.372 own1.019 |
+       PIPE (sdec<32> + wdec) | m1   214.2 A1.040 | m3   308.5 A1.042 | m24  1199.1 A1.041 | 8streams  1294.9 A1.039 |
+CF6    regs  80 lmem 0 smem  12912 occW  7 exact T | m1   175.2 A1.036 D1.077 own1.036 | m3   188.6 A0.718 D0.774 own0.720 | m24  1126.6 A1.030 D1.408 own1.034 | 8streams  1325.4 A1.062 D1.366 own1.047 |
+       PIPE (sdec<32> + wdec) | m1   210.1 A1.030 | m3   224.4 A0.758 | m24  1393.1 A1.029 | 8streams  1273.1 A1.017 |
+CFD0   regs  80 lmem 0 smem   8768 occW 10 exact F | m1   160.9 A0.951 D0.999 | m3   240.8 A0.921 D0.991 | m24   796.7 A0.728 D0.996 | 8streams   877.2 A0.755 D0.963 |
+CFD5   regs  80 lmem 0 smem   8768 occW 10 exact T | m1   167.1 A0.988 D1.025 own1.038 | m3   181.4 A0.692 D0.744 own0.753 | m24   811.1 A0.744 D1.013 own1.019 | 8streams   879.5 A0.753 D0.973 own1.005 |
+       PIPE (sdec<32> + wdec) | m1   201.9 A0.990 | m3   281.8 A0.949 | m24   872.5 A0.757 | 8streams   948.8 A0.774 |
+DB2    regs  80 lmem 0 smem   8768 occW 10 exact T | m1   163.9 A0.964 D1.012 | m3   247.0 A0.945 D1.016 | m24   813.1 A0.744 D1.015 | 8streams   883.9 A0.758 D0.977 |
+       PIPE (sdec<32> + wdec) | m1   199.8 A0.979 | m3   282.6 A0.958 | m24   872.5 A0.758 | 8streams   934.2 A0.761 |
+CFDB20 regs  80 lmem 0 smem   8768 occW 10 exact F | m1   165.0 A0.976 D1.025 | m3   244.9 A0.933 D1.004 | m24   806.9 A0.740 D1.009 | 8streams   872.3 A0.755 D1.009 |
+CFDB2  regs  80 lmem 0 smem   8768 occW 10 exact T | m1   169.2 A1.000 D1.050 own1.025 | m3   183.4 A0.698 D0.750 own0.749 | m24   826.5 A0.757 D1.035 own1.023 | 8streams   894.6 A0.763 D1.018 own1.003 |
+       PIPE (sdec<32> + wdec) | m1   206.0 A1.001 | m3   283.8 A0.952 | m24   880.7 A0.764 | 8streams   971.6 A0.784 |
+== nt64/out4
+A259   regs  48 lmem 0 smem  17520 occW 10 exact T | m1   208.0 D1.147 | m3   300.2 D1.140 | m24  1009.7 D1.501 | 8streams  1059.0 D1.472 |
+       PIPE (sdec<32> + wdec) | m1   243.0 | m3   337.2 | m24  1060.1 | 8streams  1318.2 |
+D      regs  56 lmem 0 smem  13376 occW 14 exact T | m1   181.5 A0.872 | m3   263.4 A0.877 | m24   671.8 A0.666 | 8streams   732.9 A0.679 |
+       PIPE (sdec<32> + wdec) | m1   216.3 A0.890 | m3   298.3 A0.883 | m24   726.2 A0.681 | 8streams   963.1 A0.706 |
+CF0    regs  48 lmem 0 smem  17520 occW 10 exact F | m1   208.1 A1.000 D1.146 | m3   301.1 A1.000 D1.140 | m24  1002.8 A0.994 D1.490 | 8streams  1109.9 A0.998 D1.475 |
+CF5    regs  48 lmem 0 smem  17520 occW 10 exact T | m1   219.2 A1.049 D1.204 own1.050 | m3   230.6 A0.768 D0.875 own0.766 | m24  1033.4 A1.024 D1.538 own1.033 | 8streams  1110.2 A1.035 D1.521 own1.020 |
+       PIPE (sdec<32> + wdec) | m1   255.2 A1.043 | m3   349.4 A1.030 | m24  1085.6 A1.025 | 8streams  1198.7 A0.944 |
+CF6    regs  48 lmem 0 smem  17520 occW 10 exact T | m1   218.3 A1.049 D1.202 own1.049 | m3   230.5 A0.768 D0.875 own0.765 | m24  1032.2 A1.023 D1.538 own1.029 | 8streams  1090.1 A1.029 D1.496 own1.018 |
+       PIPE (sdec<32> + wdec) | m1   253.1 A1.042 | m3   265.4 A0.787 | m24  1083.6 A1.022 | 8streams  1234.5 A0.941 |
+CFD0   regs  56 lmem 0 smem  13376 occW 14 exact F | m1   181.4 A0.872 D0.999 | m3   263.3 A0.875 D0.997 | m24   660.5 A0.654 D0.982 | 8streams   720.0 A0.681 D0.990 |
+CFD5   regs  48 lmem 0 smem  13376 occW 14 exact T | m1   187.5 A0.901 D1.033 own1.034 | m3   208.0 A0.689 D0.786 own0.790 | m24   688.2 A0.681 D1.021 own1.040 | 8streams   746.5 A0.701 D1.029 own1.021 |
+       PIPE (sdec<32> + wdec) | m1   223.2 A0.915 | m3   308.5 A0.915 | m24   738.4 A0.696 | 8streams   992.7 A0.757 |
+DB2    regs  66 lmem 0 smem  13376 occW 14 exact T | m1   171.2 A0.823 D0.944 | m3   251.1 A0.836 D0.953 | m24   651.3 A0.646 D0.968 | 8streams   718.6 A0.666 D0.980 |
+       PIPE (sdec<32> + wdec) | m1   208.0 A0.849 | m3   287.9 A0.850 | m24   704.6 A0.665 | 8streams   946.4 A0.719 |
+CFDB20 regs  66 lmem 0 smem  13376 occW 14 exact F | m1   173.2 A0.827 D0.944 | m3   251.1 A0.837 D0.953 | m24   650.3 A0.644 D0.968 | 8streams   714.5 A0.673 D0.973 |
+CFDB2  regs  64 lmem 0 smem  13376 occW 14 exact T | m1   171.1 A0.822 D0.943 own0.989 | m3   181.8 A0.604 D0.689 own0.723 | m24   656.6 A0.649 D0.976 own1.006 | 8streams   711.1 A0.673 D0.987 own0.995 |
+       PIPE (sdec<32> + wdec) | m1   206.0 A0.848 | m3   287.9 A0.849 | m24   705.6 A0.665 | 8streams   944.2 A0.733 |
+== nt128/out4
+A259   regs  48 lmem 0 smem  26736 occW 12 exact T | m1   219.2 D1.107 | m3   300.1 D1.140 | m24  1019.9 D1.531 | 8streams  1064.8 D1.471 |
+       PIPE (sdec<32> + wdec) | m1   253.2 | m3   335.1 | m24  1080.5 | 8streams  1119.3 |
+D      regs  56 lmem 0 smem  22592 occW 16 exact T | m1   198.7 A0.903 | m3   263.3 A0.877 | m24   665.7 A0.653 | 8streams   724.2 A0.680 |
+       PIPE (sdec<32> + wdec) | m1   232.6 A0.919 | m3   298.5 A0.890 | m24   721.0 A0.669 | 8streams   826.2 A0.708 |
+CF0    regs  48 lmem 0 smem  26736 occW 12 exact F | m1   218.3 A0.996 D1.103 | m3   300.2 A1.000 D1.140 | m24  1018.0 A0.999 D1.531 | 8streams  1052.8 A0.993 D1.453 |
+CF5    regs  48 lmem 0 smem  26736 occW 12 exact T | m1   230.5 A1.052 D1.164 own1.056 | m3   230.6 A0.768 D0.876 own0.768 | m24  1058.0 A1.037 D1.587 own1.040 | 8streams  1087.7 A1.023 D1.508 own1.036 |
+       PIPE (sdec<32> + wdec) | m1   265.4 A1.048 | m3   349.3 A1.037 | m24  1107.7 A1.025 | 8streams  1134.8 A1.015 |
+CF6    regs  48 lmem 0 smem  26736 occW 12 exact T | m1   228.5 A1.043 D1.154 own1.047 | m3   230.4 A0.767 D0.875 own0.766 | m24  1054.8 A1.035 D1.587 own1.036 | 8streams  1090.0 A1.026 D1.499 own1.034 |
+       PIPE (sdec<32> + wdec) | m1   264.3 A1.040 | m3   265.4 A0.792 | m24  1110.3 A1.025 | 8streams  1129.5 A1.007 |
+CFD0   regs  56 lmem 0 smem  22592 occW 16 exact F | m1   197.8 A0.903 D1.000 | m3   261.4 A0.874 D0.996 | m24   661.5 A0.649 D0.994 | 8streams   727.6 A0.674 D0.997 |
+CFD5   regs  48 lmem 0 smem  22592 occW 16 exact T | m1   206.0 A0.935 D1.036 own1.041 | m3   206.0 A0.686 D0.782 own0.788 | m24   680.0 A0.666 D1.022 own1.026 | 8streams   748.8 A0.690 D1.022 own1.029 |
+       PIPE (sdec<32> + wdec) | m1   240.9 A0.951 | m3   308.4 A0.920 | m24   741.6 A0.687 | 8streams   852.6 A0.733 |
+DB2    regs  66 lmem 0 smem  22592 occW 16 exact T | m1   181.4 A0.821 D0.907 | m3   251.1 A0.839 D0.954 | m24   641.1 A0.629 D0.965 | 8streams   707.4 A0.667 D0.976 |
+       PIPE (sdec<32> + wdec) | m1   216.1 A0.847 | m3   288.0 A0.859 | m24   703.8 A0.651 | 8streams   807.2 A0.689 |
+CFDB20 regs  66 lmem 0 smem  22592 occW 16 exact F | m1   181.5 A0.828 D0.917 | m3   251.9 A0.837 D0.956 | m24   637.0 A0.625 D0.956 | 8streams   698.9 A0.655 D0.970 |
+CFDB2  regs  64 lmem 0 smem  22592 occW 16 exact T | m1   181.4 A0.830 D0.912 own0.999 | m3   181.4 A0.604 D0.689 own0.723 | m24   644.2 A0.632 D0.968 own1.010 | 8streams   714.2 A0.672 D0.982 own1.011 |
+       PIPE (sdec<32> + wdec) | m1   216.3 A0.854 | m3   285.9 A0.852 | m24   702.6 A0.650 | 8streams   791.1 A0.708 |
+== nt256/out4
+A259   regs  48 lmem 0 smem  45168 occW 16 exact T | m1   244.9 D1.133 | m3   318.6 D1.156 | m24   828.6 D1.202 | 8streams   893.7 D1.194 |
+       PIPE (sdec<32> + wdec) | m1   279.8 | m3   353.5 | m24   884.8 | 8streams   957.6 |
+D      regs  60 lmem 0 smem  41024 occW 16 exact T | m1   216.2 A0.883 | m3   275.6 A0.865 | m24   690.2 A0.832 | 8streams   750.6 A0.838 |
+       PIPE (sdec<32> + wdec) | m1   251.1 A0.897 | m3   312.4 A0.879 | m24   741.4 A0.840 | 8streams   868.2 A0.849 |
+CF0    regs  48 lmem 0 smem  45168 occW 16 exact F | m1   244.9 A1.000 D1.133 | m3   317.5 A0.996 D1.148 | m24   826.7 A0.999 D1.199 | 8streams   886.0 A0.992 D1.174 |
+CF5    regs  48 lmem 0 smem  45168 occW 16 exact T | m1   257.1 A1.042 D1.181 own1.043 | m3   257.1 A0.807 D0.930 own0.808 | m24   848.0 A1.022 D1.226 own1.024 | 8streams   906.1 A1.019 D1.210 own1.022 |
+       PIPE (sdec<32> + wdec) | m1   292.0 A1.044 | m3   365.7 A1.030 | m24   896.2 A1.017 | 8streams  1044.9 A1.013 |
+CF6    regs  48 lmem 0 smem  45168 occW 16 exact T | m1   255.1 A1.042 D1.180 own1.042 | m3   255.1 A0.801 D0.926 own0.804 | m24   846.9 A1.023 D1.227 own1.023 | 8streams   904.9 A1.005 D1.202 own1.025 |
+       PIPE (sdec<32> + wdec) | m1   290.0 A1.037 | m3   290.1 A0.821 | m24   895.0 A1.013 | 8streams  1010.3 A1.020 |
+CFD0   regs  60 lmem 0 smem  41024 occW 16 exact F | m1   216.3 A0.884 D1.000 | m3   275.6 A0.865 D1.000 | m24   689.2 A0.830 D0.997 | 8streams   758.7 A0.840 D1.000 |
+CFD5   regs  48 lmem 0 smem  41024 occW 16 exact T | m1   224.4 A0.917 D1.038 own1.038 | m3   224.4 A0.704 D0.814 own0.814 | m24   710.8 A0.858 D1.029 own1.031 | 8streams   776.4 A0.859 D1.027 own1.031 |
+       PIPE (sdec<32> + wdec) | m1   259.3 A0.927 | m3   322.7 A0.913 | m24   761.1 A0.863 | 8streams   854.6 A0.885 |
+DB2    regs  64 lmem 0 smem  41024 occW 16 exact T | m1   201.9 A0.824 D0.934 | m3   267.5 A0.839 D0.970 | m24   662.6 A0.798 D0.958 | 8streams   753.7 A0.817 D0.980 |
+       PIPE (sdec<32> + wdec) | m1   236.7 A0.846 | m3   308.4 A0.872 | m24   714.0 A0.808 | 8streams   791.3 A0.826 |
+CFDB20 regs  64 lmem 0 smem  41024 occW 16 exact F | m1   201.9 A0.824 D0.934 | m3   267.4 A0.839 D0.966 | m24   657.5 A0.793 D0.952 | 8streams   865.2 A0.899 D1.071 |
+CFDB2  regs  64 lmem 0 smem  41024 occW 16 exact T | m1   203.9 A0.832 D0.943 own1.010 | m3   201.9 A0.634 D0.733 own0.755 | m24   679.4 A0.822 D0.985 own1.034 | 8streams   747.4 A0.836 D1.002 own1.006 |
+       PIPE (sdec<32> + wdec) | m1   238.8 A0.854 | m3   304.2 A0.857 | m24   731.2 A0.829 | 8streams   825.9 A0.839 |

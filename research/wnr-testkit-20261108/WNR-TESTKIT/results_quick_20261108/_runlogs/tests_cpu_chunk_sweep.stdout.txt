@@ -1,0 +1,58 @@
+[     0.2s] == chunk_sweep (quick) root=<KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT out=<KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\results\chunk_sweep jobs=15
+[     0.2s] environment {"os": "Windows-11-10.0.26300-SP0", "system": "Windows", "machine": "AMD64", "cpu": "AMD Ryzen 9 7950X3D 16-Core Processor", "logical_cpus": 32, "ram_gb": 31.2, "gpu": ["NVIDIA GeForce RTX 5090, 621.01, 32607 MiB, 12.0"], "python": "3.14.8", "python_impl": "CPython", "numpy": "2.5.4", "cupy": {"cupy-cuda12x": "14.2.0"}, "nvrtc": {"nvidia-cuda-nvrtc-cu12": "12.9.86"}}
+[     0.2s] sample dir <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\data\v41-sample: 160/160 experts present, manifest = kit
+[     0.2s] 2 experts, plan [(1024, 256, ['fg0e']), (2048, 512, ['fg0e', 'fg0t']), (4096, 1024, ['fg0e', 'fg0t']), (8192, 2048, ['fg0e'])]: 12 payload jobs on 15 workers
+[     5.8s] payload 1/12 done (6s)
+[     5.8s] L00_E113.bin 1024:256 fg0e   used 16679101 total 16683008 lt 77760 dec False ok None
+[     5.8s] L00_E113.bin 1024:256 fg0de  used 16624257 total 16625664 lt 22916 dec True ok True
+[     6.1s] payload 2/12 done (6s)
+[     6.1s] L00_E113.bin 2048:512 fg0e   used 16570932 total 16572416 lt 38880 dec False ok None
+[     6.1s] L00_E113.bin 2048:512 fg0de  used 16545412 total 16547840 lt 13360 dec True ok True
+[     6.1s] payload 3/12 done (6s)
+[     6.1s] L00_E113.bin 2048:512 fg0t   used 16529309 total 16531456 lt 38880 dec False ok None
+[     6.1s] L00_E113.bin 2048:512 fg0dt  used 16503849 total 16506880 lt 13420 dec True ok True
+[     6.5s] payload 4/12 done (6s)
+[     6.5s] L00_E113.bin 4096:1024 fg0e   used 16516815 total 16519168 lt 19440 dec False ok None
+[     6.5s] L00_E113.bin 4096:1024 fg0de  used 16505095 total 16506880 lt 7720 dec True ok True
+[     6.6s] payload 5/12 done (6s)
+[     6.6s] L00_E113.bin 4096:1024 fg0t   used 16495914 total 16498688 lt 19440 dec False ok None
+[     6.6s] L00_E113.bin 4096:1024 fg0dt  used 16484198 total 16486400 lt 7724 dec True ok True
+[     7.1s] payload 6/12 done (7s)
+[     7.1s] L00_E113.bin 8192:2048 fg0e   used 16489757 total 16490496 lt 9720 dec False ok None
+[     7.1s] L00_E113.bin 8192:2048 fg0de  used 16484301 total 16486400 lt 4264 dec True ok True
+[     7.3s] payload 7/12 done (7s)
+[     7.3s] L01_E187.bin 1024:256 fg0e   used 16680753 total 16683008 lt 77760 dec False ok None
+[     7.3s] L01_E187.bin 1024:256 fg0de  used 16625445 total 16625664 lt 22452 dec True ok True
+[     7.4s] payload 8/12 done (7s)
+[     7.4s] L01_E187.bin 2048:512 fg0e   used 16572479 total 16576512 lt 38880 dec False ok None
+[     7.4s] L01_E187.bin 2048:512 fg0de  used 16546691 total 16547840 lt 13092 dec True ok True
+[     7.7s] payload 9/12 done (7s)
+[     7.7s] L01_E187.bin 2048:512 fg0t   used 16530983 total 16531456 lt 38880 dec False ok None
+[     7.7s] L01_E187.bin 2048:512 fg0dt  used 16505219 total 16506880 lt 13116 dec True ok True
+[     7.9s] payload 10/12 done (8s)
+[     7.9s] L01_E187.bin 4096:1024 fg0e   used 16518467 total 16519168 lt 19440 dec False ok None
+[     7.9s] L01_E187.bin 4096:1024 fg0de  used 16506595 total 16506880 lt 7568 dec True ok True
+[     8.0s] payload 11/12 done (8s)
+[     8.0s] L01_E187.bin 4096:1024 fg0t   used 16497575 total 16498688 lt 19440 dec False ok None
+[     8.0s] L01_E187.bin 4096:1024 fg0dt  used 16485727 total 16486400 lt 7592 dec True ok True
+[     8.3s] payload 12/12 done (8s)
+[     8.3s] L01_E187.bin 8192:2048 fg0e   used 16491330 total 16494592 lt 9720 dec False ok None
+[     8.3s] L01_E187.bin 8192:2048 fg0de  used 16485754 total 16486400 lt 4144 dec True ok True
+[     8.4s] fg0de@1024:256     total   16625664.0 ratio 0.88431 lt  22684.0 2/2 equal to reference (byte-exact) vs 2048 +0.4139% CI +0.4139..+0.4139
+[     8.4s] fg0e@1024:256      total   16683008.0 ratio 0.88736 lt  77760.0 not decoded vs 2048 +0.5773% CI +0.5664..+0.5882
+[     8.4s] fg0de@2048:512     total   16547840.0 ratio 0.88017 lt  13226.0 2/2 equal to reference (byte-exact)
+[     8.4s] fg0dt@2048:512     total   16506880.0 ratio 0.87800 lt  13268.0 2/2 equal to reference (byte-exact)
+[     8.4s] fg0e@2048:512      total   16574464.0 ratio 0.88159 lt  38880.0 not decoded
+[     8.4s] fg0t@2048:512      total   16531456.0 ratio 0.87930 lt  38880.0 not decoded
+[     8.4s] fg0de@4096:1024    total   16506880.0 ratio 0.87800 lt   7644.0 2/2 equal to reference (byte-exact) vs 2048 -0.2179% CI -0.2179..-0.2179
+[     8.4s] fg0dt@4096:1024    total   16486400.0 ratio 0.87691 lt   7658.0 2/2 equal to reference (byte-exact) vs 2048 -0.1089% CI -0.1089..-0.1089
+[     8.4s] fg0e@4096:1024     total   16519168.0 ratio 0.87865 lt  19440.0 not decoded vs 2048 -0.2941% CI -0.3050..-0.2832
+[     8.4s] fg0t@4096:1024     total   16498688.0 ratio 0.87756 lt  19440.0 not decoded vs 2048 -0.1743% CI -0.1743..-0.1743
+[     8.4s] fg0de@8192:2048    total   16486400.0 ratio 0.87691 lt   4204.0 2/2 equal to reference (byte-exact) vs 2048 -0.3268% CI -0.3268..-0.3268
+[     8.4s] fg0e@8192:2048     total   16492544.0 ratio 0.87723 lt   9720.0 not decoded vs 2048 -0.4357% CI -0.4357..-0.4357
+[     8.4s] check sources_sha256: ok
+[     8.4s] check records_decode_byte_exact: ok {'decoded': 12, 'bad': []}
+[     8.4s] check 2048_equals_ceilref_heldout: ok {'compared': 8, 'mismatch': []}
+[     8.4s] check equals_team6_partial_rows: ok {'compared': 24, 'mismatch': []}
+[     8.4s] summary <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\results\chunk_sweep\summary.json
+RESULT chunk_sweep PASS 2 experts; total vs same config @2048:512: fg0de@1024:256 +0.414%, fg0de@4096:1024 -0.218%, fg0dt@4096:1024 -0.109%, fg0de@8192:2048 -0.327%

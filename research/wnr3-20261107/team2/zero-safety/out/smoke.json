@@ -1,0 +1,424 @@
+{
+ "meta": {
+  "full_files": [
+   "L00_E097.bin"
+  ],
+  "quick_files": 0,
+  "code8": 2069142,
+  "code0": 2069114,
+  "nibbles": 35389440,
+  "scale_codes_seen_min": 119,
+  "scale_codes_seen_max": 123
+ },
+ "act_sets_full": [
+  "gauss",
+  "gauss_25pct+0_25pct-0",
+  "all-0",
+  "all+0",
+  "one_nonzero_rest-0",
+  "denormals_10pct",
+  "inf_at_100",
+  "nan_at_200",
+  "huge_1e30"
+ ],
+ "quick_kernels": [
+  "K1_mxfp4_avx2",
+  "K5_rows16order_avx2",
+  "K8_rows16_v10_avx2",
+  "K9a_cuda_grouped_fma_emul",
+  "K10_cuda_v4f_dot_fp4_emul",
+  "K11_vk_chain_moe_gv_acc0_emul"
+ ],
+ "quick_act_sets": [
+  "gauss",
+  "gauss_25pct+0_25pct-0"
+ ],
+ "results": {
+  "real_full_suite": {
+   "K1_mxfp4_avx2": {
+    "compared": 87552,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 20687,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 10793
+   },
+   "K2_mxfp4_scalar": {
+    "compared": 87552,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 20687,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 10793
+   },
+   "K2c_mxfp4_scalar_fma": {
+    "compared": 87552,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 20687,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 10793
+   },
+   "K3_idot_avx2": {
+    "compared": 87552,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 20687,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 9728
+   },
+   "K4_idot_scalar": {
+    "compared": 87552,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 20687,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 1065
+   },
+   "K5_rows16order_avx2": {
+    "compared": 87552,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 20687,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 10793
+   },
+   "K6_rows16order_scalar": {
+    "compared": 87552,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 20687,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 10793
+   },
+   "K7_batch_rows16order_avx2_S4": {
+    "compared": 350208,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 91245,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 43172
+   },
+   "K8_rows16_v10_avx2": {
+    "compared": 87552,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 20687,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 10793
+   },
+   "K9a_cuda_grouped_fma_emul": {
+    "compared": 87552,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 20687,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 10793
+   },
+   "K9b_cuda_grouped_nofma_emul": {
+    "compared": 87552,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 20687,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 10793
+   },
+   "K10_cuda_v4f_dot_fp4_emul": {
+    "compared": 87552,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 20687,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 10793
+   },
+   "K11_vk_chain_moe_gv_acc0_emul": {
+    "compared": 87552,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 20687,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 10793
+   },
+   "K12_NEGCTRL_vk_firstterm_emul": {
+    "compared": 87552,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 20687,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 10793
+   }
+  },
+  "synthetic_zero_rows": {
+   "K1_mxfp4_avx2": {
+    "compared": 1152,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 585,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 198
+   },
+   "K2_mxfp4_scalar": {
+    "compared": 1152,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 585,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 198
+   },
+   "K2c_mxfp4_scalar_fma": {
+    "compared": 1152,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 585,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 198
+   },
+   "K3_idot_avx2": {
+    "compared": 1152,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 649,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 128
+   },
+   "K4_idot_scalar": {
+    "compared": 1152,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 649,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 70
+   },
+   "K5_rows16order_avx2": {
+    "compared": 1152,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 585,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 198
+   },
+   "K6_rows16order_scalar": {
+    "compared": 1152,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 585,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 198
+   },
+   "K7_batch_rows16order_avx2_S4": {
+    "compared": 4608,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 2395,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 792
+   },
+   "K8_rows16_v10_avx2": {
+    "compared": 1152,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 585,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 198
+   },
+   "K9a_cuda_grouped_fma_emul": {
+    "compared": 1152,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 585,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 198
+   },
+   "K9b_cuda_grouped_nofma_emul": {
+    "compared": 1152,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 585,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 198
+   },
+   "K10_cuda_v4f_dot_fp4_emul": {
+    "compared": 1152,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 585,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 198
+   },
+   "K11_vk_chain_moe_gv_acc0_emul": {
+    "compared": 1152,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 585,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 198
+   },
+   "K12_NEGCTRL_vk_firstterm_emul": {
+    "compared": 1152,
+    "mismatch_value": 0,
+    "mismatch_signzero_only": 64,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 585,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 198
+   }
+  },
+  "real_quick_all_experts": {},
+  "positive_control_one_flipped_weight": {
+   "K1_mxfp4_avx2": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   },
+   "K2_mxfp4_scalar": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   },
+   "K2c_mxfp4_scalar_fma": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   },
+   "K3_idot_avx2": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   },
+   "K4_idot_scalar": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   },
+   "K5_rows16order_avx2": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   },
+   "K6_rows16order_scalar": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   },
+   "K7_batch_rows16order_avx2_S4": {
+    "compared": 9216,
+    "mismatch_value": 4,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   },
+   "K8_rows16_v10_avx2": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   },
+   "K9a_cuda_grouped_fma_emul": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   },
+   "K9b_cuda_grouped_nofma_emul": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   },
+   "K10_cuda_v4f_dot_fp4_emul": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   },
+   "K11_vk_chain_moe_gv_acc0_emul": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   },
+   "K12_NEGCTRL_vk_firstterm_emul": {
+    "compared": 2304,
+    "mismatch_value": 1,
+    "mismatch_signzero_only": 0,
+    "mismatch_nan_payload": 0,
+    "zero_outputs": 0,
+    "neg_zero_outputs": 0,
+    "nan_outputs": 0
+   }
+  }
+ },
+ "seconds": 48.4
+}

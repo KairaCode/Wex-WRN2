@@ -1,0 +1,13 @@
+lock: taken 02:03:14
+== real helper
+synthetic cz=0: 4 chunk pairs x 3 entry points equal to the CPU decode, crafted records rejected
+synthetic cz=1: 4 chunk pairs x 3 entry points equal to the CPU decode, crafted records rejected
+{"bin":"D:\kaira_wnr3_lab\g3_cfg_noncz.bin","records":52,"clean_ok":52,"mutations":304,"cpu_gpu_same_status":304,"accepted":0}
+{"bin":"D:\kaira_wnr3_lab\g4_cz.bin","records":52,"clean_ok":52,"mutations":304,"cpu_gpu_same_status":304,"accepted":0}
+compared 14 (rejected by both 6)
+ALL OK
+KILLED   m1_weight_hash (rc 1): mutation 2: cpu -1 gpu 0
+KILLED   m2_scale_hash (rc 1): FAIL <SCRATCH>\gmut\m2_scale_hash\src\tests\test_wex_nr3_gpu.cu:156: st[0] == cs
+KILLED   m3_cz_check (rc 1): FAIL <SCRATCH>\gmut\m3_cz_check\src\tests\test_wex_nr3_gpu.cu:156: st[0] == cs
+KILLED   m4_ceil_zero (rc 1): FAIL <SCRATCH>\gmut\m4_ceil_zero\src\tests\test_wex_nr3_gpu.cu:156: st[0] == cs
+lock: released 02:04:01

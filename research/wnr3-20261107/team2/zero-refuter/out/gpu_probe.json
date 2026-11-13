@@ -1,0 +1,155 @@
+{
+ "device": "NVIDIA GeForce RTX 3070",
+ "runs": [
+  {
+   "expert": "L00_E097.bin",
+   "matrix": "w1",
+   "x": "gauss",
+   "mv_fp4_grouped_bitdiff": 0,
+   "mv_exact_zero_outputs": 0,
+   "fused6_dot_bitdiff": 0,
+   "mv_vs_fused_bitdiff": 0,
+   "outputs": 2304
+  },
+  {
+   "expert": "L00_E097.bin",
+   "matrix": "w1",
+   "x": "sparse90",
+   "mv_fp4_grouped_bitdiff": 0,
+   "mv_exact_zero_outputs": 0,
+   "fused6_dot_bitdiff": 0,
+   "mv_vs_fused_bitdiff": 0,
+   "outputs": 2304
+  },
+  {
+   "expert": "L00_E097.bin",
+   "matrix": "w1",
+   "tc_fp16_gemm_bitdiff": 0,
+   "tc_outputs": 4096,
+   "tc_layout_max_rel_err_vs_fp32": 2.1573268895735964e-06
+  },
+  {
+   "expert": "L00_E097.bin",
+   "matrix": "w2",
+   "x": "gauss",
+   "mv_fp4_grouped_bitdiff": 0,
+   "mv_exact_zero_outputs": 0,
+   "fused6_dot_bitdiff": 0,
+   "mv_vs_fused_bitdiff": 0,
+   "outputs": 5120
+  },
+  {
+   "expert": "L00_E097.bin",
+   "matrix": "w2",
+   "x": "sparse90",
+   "mv_fp4_grouped_bitdiff": 0,
+   "mv_exact_zero_outputs": 0,
+   "fused6_dot_bitdiff": 0,
+   "mv_vs_fused_bitdiff": 0,
+   "outputs": 5120
+  },
+  {
+   "expert": "L00_E097.bin",
+   "matrix": "w2",
+   "tc_fp16_gemm_bitdiff": 0,
+   "tc_outputs": 4096,
+   "tc_layout_max_rel_err_vs_fp32": 7.032294888631441e-07
+  },
+  {
+   "expert": "L10_E015.bin",
+   "matrix": "w1",
+   "x": "gauss",
+   "mv_fp4_grouped_bitdiff": 0,
+   "mv_exact_zero_outputs": 0,
+   "fused6_dot_bitdiff": 0,
+   "mv_vs_fused_bitdiff": 0,
+   "outputs": 2304
+  },
+  {
+   "expert": "L10_E015.bin",
+   "matrix": "w1",
+   "x": "sparse90",
+   "mv_fp4_grouped_bitdiff": 0,
+   "mv_exact_zero_outputs": 0,
+   "fused6_dot_bitdiff": 0,
+   "mv_vs_fused_bitdiff": 0,
+   "outputs": 2304
+  },
+  {
+   "expert": "L10_E015.bin",
+   "matrix": "w1",
+   "tc_fp16_gemm_bitdiff": 0,
+   "tc_outputs": 4096,
+   "tc_layout_max_rel_err_vs_fp32": 2.213466814282583e-06
+  },
+  {
+   "expert": "L10_E015.bin",
+   "matrix": "w2",
+   "x": "gauss",
+   "mv_fp4_grouped_bitdiff": 0,
+   "mv_exact_zero_outputs": 0,
+   "fused6_dot_bitdiff": 0,
+   "mv_vs_fused_bitdiff": 0,
+   "outputs": 5120
+  },
+  {
+   "expert": "L10_E015.bin",
+   "matrix": "w2",
+   "x": "sparse90",
+   "mv_fp4_grouped_bitdiff": 0,
+   "mv_exact_zero_outputs": 0,
+   "fused6_dot_bitdiff": 0,
+   "mv_vs_fused_bitdiff": 0,
+   "outputs": 5120
+  },
+  {
+   "expert": "L10_E015.bin",
+   "matrix": "w2",
+   "tc_fp16_gemm_bitdiff": 0,
+   "tc_outputs": 4096,
+   "tc_layout_max_rel_err_vs_fp32": 7.557934509350162e-07
+  }
+ ],
+ "tc_signed_zero": {
+  "B_mixed_A_all_neg0_C_pos0": {
+   "all_zero": true,
+   "neg_zero_count": 0,
+   "n": 128
+  },
+  "B_mixed_A_all_pos0_C_pos0": {
+   "all_zero": true,
+   "neg_zero_count": 0,
+   "n": 128
+  },
+  "B_mixed_A_all_neg0_C_neg0": {
+   "all_zero": true,
+   "neg_zero_count": 0,
+   "n": 128
+  },
+  "B_mixed_A_all_pos0_C_neg0": {
+   "all_zero": true,
+   "neg_zero_count": 0,
+   "n": 128
+  },
+  "B_positive_A_all_neg0_C_pos0": {
+   "all_zero": true,
+   "neg_zero_count": 0,
+   "n": 128
+  },
+  "B_positive_A_all_pos0_C_pos0": {
+   "all_zero": true,
+   "neg_zero_count": 0,
+   "n": 128
+  },
+  "B_positive_A_all_neg0_C_neg0": {
+   "all_zero": true,
+   "neg_zero_count": 0,
+   "n": 128
+  },
+  "B_positive_A_all_pos0_C_neg0": {
+   "all_zero": true,
+   "neg_zero_count": 0,
+   "n": 128
+  }
+ }
+}

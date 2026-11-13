@@ -1,0 +1,48 @@
+A259    8streams  best   4226.0 us @ bench_final:nt64/out4    regs  64 smem  17520 occW 10 | same-config ratios D=0.882 CF0=1.004 CFD0=0.889 DB2=1.284 CFDB20=1.290
+A259    m1        best    300.0 us @ bench_final:nt32/lb      regs  74 smem   8304 occW 10 | same-config ratios D=1.070 CF0=1.003 CFD0=1.070 DB2=1.106 CFDB20=1.122
+A259    m24       best   4171.8 us @ bench_final:nt64/out4    regs  64 smem  17520 occW 10 | same-config ratios D=0.893 CF0=1.001 CFD0=0.885 DB2=1.293 CFDB20=1.297
+A259    m3        best    590.8 us @ bench_final:nt128/out4   regs  40 smem  26736 occW 12 | same-config ratios D=0.935 CF0=1.032 CFD0=0.914 DB2=1.319 CFDB20=1.311
+CF      8streams  best   4357.1 us @ bench_final:nt64/out4    regs  64 smem  17520 occW 10 | same-config ratios A259=1.033 D=0.908 CF0=1.030 CFD0=0.919 DB2=1.328 CFDB20=1.330
+CF      m1        best    302.1 us @ bench_final:nt32/lb      regs  73 smem   8304 occW 10 | same-config ratios A259=1.007 D=1.077 CF0=1.010 CFD0=1.077 DB2=1.113 CFDB20=1.130
+CF      m24       best   4317.2 us @ bench_final:nt64/out4    regs  64 smem  17520 occW 10 | same-config ratios A259=1.031 D=0.922 CF0=1.032 CFD0=0.914 DB2=1.334 CFDB20=1.338
+CF      m3        best    616.4 us @ bench_final:nt128/out4   regs  40 smem  26736 occW 12 | same-config ratios A259=1.045 D=0.977 CF0=1.076 CFD0=0.954 DB2=1.376 CFDB20=1.367
+CF0     8streams  best   4222.0 us @ bench_final:nt64/out4    regs  64 smem  17520 occW 10 | same-config ratios A259=0.996 D=0.882 CFD0=0.891 DB2=1.285 CFDB20=1.292
+CF0     m1        best    299.0 us @ bench_final:nt32/lb      regs  74 smem   8304 occW 10 | same-config ratios A259=0.997 D=1.069 CFD0=1.066 DB2=1.102 CFDB20=1.118
+CF0     m24       best   4166.7 us @ bench_final:nt64/out4    regs  64 smem  17520 occW 10 | same-config ratios A259=0.999 D=0.893 CFD0=0.883 DB2=1.292 CFDB20=1.295
+CF0     m3        best    573.4 us @ bench_final:nt128/out4   regs  40 smem  26736 occW 12 | same-config ratios A259=0.969 D=0.909 CFD0=0.887 DB2=1.281 CFDB20=1.272
+CF3     8streams  best   4205.6 us @ bench_final:nt64/out4    regs  64 smem  17520 occW 10 | same-config ratios A259=0.996 D=0.878 CF0=0.997 CFD0=0.888 DB2=1.279 CFDB20=1.285
+CF3     m1        best    299.0 us @ bench_final:nt32/lb      regs  72 smem   8304 occW 10 | same-config ratios A259=0.997 D=1.069 CF0=1.000 CFD0=1.066 DB2=1.102 CFDB20=1.118
+CF3     m24       best   4157.4 us @ bench_final:nt64/out4    regs  64 smem  17520 occW 10 | same-config ratios A259=0.996 D=0.891 CF0=0.998 CFD0=0.883 DB2=1.288 CFDB20=1.292
+CF3     m3        best    568.3 us @ bench_final:nt128/out4   regs  40 smem  26736 occW 12 | same-config ratios A259=0.962 D=0.901 CF0=0.991 CFD0=0.878 DB2=1.270 CFDB20=1.260
+CF5     8streams  best   4234.2 us @ bench_final:nt64/out4    regs  64 smem  17520 occW 10 | same-config ratios A259=1.004 D=0.885 CF0=1.002 CFD0=0.893 DB2=1.293 CFDB20=1.292
+CF5     m1        best    304.1 us @ bench_final:nt32/lb      regs  76 smem   8304 occW 10 | same-config ratios A259=1.014 D=1.084 CF0=1.017 CFD0=1.084 DB2=1.121 CFDB20=1.134
+CF5     m24       best   4185.1 us @ bench_final:nt64/out4    regs  64 smem  17520 occW 10 | same-config ratios A259=1.000 D=0.894 CF0=1.001 CFD0=0.887 DB2=1.295 CFDB20=1.299
+CF5     m3        best    565.2 us @ bench_final:nt128/out4   regs  44 smem  26736 occW 12 | same-config ratios A259=0.958 D=0.897 CF0=0.986 CFD0=0.875 DB2=1.263 CFDB20=1.256
+CF6     8streams  best   4231.2 us @ bench_final:nt64/out4    regs  64 smem  17520 occW 10 | same-config ratios A259=1.000 D=0.883 CF0=1.001 CFD0=0.893 DB2=1.291 CFDB20=1.293
+CF6     m1        best    303.1 us @ bench_final:nt32/lb      regs  76 smem   8304 occW 10 | same-config ratios A259=1.010 D=1.084 CF0=1.014 CFD0=1.084 DB2=1.117 CFDB20=1.134
+CF6     m24       best   4190.2 us @ bench_final:nt64/out4    regs  64 smem  17520 occW 10 | same-config ratios A259=1.001 D=0.895 CF0=1.003 CFD0=0.887 DB2=1.296 CFDB20=1.300
+CF6     m3        best    565.2 us @ bench_final:nt128/out4   regs  44 smem  26736 occW 12 | same-config ratios A259=0.958 D=0.896 CF0=0.986 CFD0=0.876 DB2=1.263 CFDB20=1.254
+CFD0    8streams  best   3921.9 us @ bench_final:nt32/out4    regs  73 smem   8768 occW 10 | same-config ratios A259=0.821 D=1.008 CF0=0.818 DB2=1.153 CFDB20=1.161
+CFD0    m1        best    280.6 us @ bench_final:nt32/lb      regs  76 smem   4160 occW 16 | same-config ratios A259=0.935 D=1.000 CF0=0.938 DB2=1.034 CFDB20=1.050
+CFD0    m24       best   3864.6 us @ bench_final:nt32/out4    regs  73 smem   8768 occW 10 | same-config ratios A259=0.819 D=1.009 CF0=0.816 DB2=1.151 CFDB20=1.156
+CFD0    m3        best    525.3 us @ bench_final:nt64/out4    regs  66 smem  13376 occW 14 | same-config ratios A259=0.712 D=1.004 CF0=0.712 DB2=1.262 CFDB20=1.261
+CFD5    8streams  best   3908.6 us @ bench_final:nt32/out4    regs  78 smem   8768 occW 10 | same-config ratios A259=0.820 D=1.005 CF0=0.816 CFD0=0.995 DB2=1.150 CFDB20=1.158
+CFD5    m1        best    276.5 us @ bench_final:nt32/lb      regs  76 smem   4160 occW 16 | same-config ratios A259=0.922 D=0.985 CF0=0.925 CFD0=0.985 DB2=1.019 CFDB20=1.031
+CFD5    m24       best   3848.2 us @ bench_final:nt32/out4    regs  78 smem   8768 occW 10 | same-config ratios A259=0.815 D=1.003 CF0=0.813 CFD0=0.995 DB2=1.145 CFDB20=1.150
+CFD5    m3        best    540.7 us @ bench_final:nt64/out4    regs  64 smem  13376 occW 14 | same-config ratios A259=0.732 D=1.035 CF0=0.732 CFD0=1.029 DB2=1.300 CFDB20=1.299
+CFDB2   8streams  best   3360.0 us @ bench_final:nt64/out4    regs  64 smem  13376 occW 14 | same-config ratios A259=0.796 D=0.700 CF0=0.796 CFD0=0.708 DB2=1.022 CFDB20=1.025
+CFDB2   m1        best    270.3 us @ bench_final:nt32/lb      regs 113 smem   4160 occW 16 | same-config ratios A259=0.901 D=0.967 CF0=0.904 CFD0=0.964 DB2=0.996 CFDB20=1.011
+CFDB2   m24       best   3307.5 us @ bench_final:nt64/out4    regs  64 smem  13376 occW 14 | same-config ratios A259=0.793 D=0.707 CF0=0.793 CFD0=0.702 DB2=1.024 CFDB20=1.027
+CFDB2   m3        best    431.1 us @ bench_final:nt64/out4    regs  64 smem  13376 occW 14 | same-config ratios A259=0.583 D=0.822 CF0=0.584 CFD0=0.818 DB2=1.032 CFDB20=1.034
+CFDB20  8streams  best   3276.5 us @ bench_final:nt64/out4    regs  64 smem  13376 occW 14 | same-config ratios A259=0.775 D=0.681 CF0=0.774 CFD0=0.692 DB2=0.997
+CFDB20  m1        best    267.3 us @ bench_final:nt32/lb      regs 112 smem   4160 occW 16 | same-config ratios A259=0.891 D=0.956 CF0=0.894 CFD0=0.953 DB2=0.988
+CFDB20  m24       best   3220.5 us @ bench_final:nt64/out4    regs  64 smem  13376 occW 14 | same-config ratios A259=0.771 D=0.688 CF0=0.772 CFD0=0.683 DB2=0.997
+CFDB20  m3        best    416.8 us @ bench_final:nt64/out4    regs  64 smem  13376 occW 14 | same-config ratios A259=0.564 D=0.796 CF0=0.564 CFD0=0.793 DB2=1.000
+D       8streams  best   3894.2 us @ bench_final:nt32/out4    regs  73 smem   8768 occW 10 | same-config ratios A259=0.816 CF0=0.812 CFD0=0.992 DB2=1.144 CFDB20=1.150
+D       m1        best    280.6 us @ bench_final:nt32/lb      regs  76 smem   4160 occW 16 | same-config ratios A259=0.935 CF0=0.935 CFD0=1.000 DB2=1.030 CFDB20=1.046
+D       m24       best   3835.9 us @ bench_final:nt32/out4    regs  73 smem   8768 occW 10 | same-config ratios A259=0.812 CF0=0.811 CFD0=0.992 DB2=1.142 CFDB20=1.146
+D       m3        best    523.3 us @ bench_final:nt64/out4    regs  66 smem  13376 occW 14 | same-config ratios A259=0.708 CF0=0.709 CFD0=0.996 DB2=1.259 CFDB20=1.256
+DB2     8streams  best   3287.4 us @ bench_final:nt64/out4    regs  64 smem  13376 occW 14 | same-config ratios A259=0.779 D=0.685 CF0=0.778 CFD0=0.694 CFDB20=1.003
+DB2     m1        best    271.4 us @ bench_final:nt32/lb      regs 112 smem   4160 occW 16 | same-config ratios A259=0.904 D=0.971 CF0=0.908 CFD0=0.967 CFDB20=1.012
+DB2     m24       best   3230.7 us @ bench_final:nt64/out4    regs  64 smem  13376 occW 14 | same-config ratios A259=0.774 D=0.690 CF0=0.774 CFD0=0.685 CFDB20=1.003
+DB2     m3        best    415.7 us @ bench_final:nt64/out4    regs  64 smem  13376 occW 14 | same-config ratios A259=0.563 D=0.795 CF0=0.564 CFD0=0.792 CFDB20=1.000

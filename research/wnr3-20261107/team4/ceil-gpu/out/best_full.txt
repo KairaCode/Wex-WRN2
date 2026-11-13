@@ -1,0 +1,48 @@
+A259    8streams  best   4215.8 us @ bench_full:nt64/out4     regs  64 smem  17520 occW 10 | same-config ratios D=0.878 CF0=1.001 CFD0=0.881
+A259    m1        best    299.0 us @ bench_full:nt32/lb       regs  74 smem   8304 occW 10 | same-config ratios D=1.074 CF0=1.003 CFD0=1.070
+A259    m24       best   4161.5 us @ bench_full:nt64/out4     regs  64 smem  17520 occW 10 | same-config ratios D=0.899 CF0=1.006 CFD0=0.883
+A259    m3        best    588.8 us @ bench_full:nt128/out4    regs  40 smem  26736 occW 12 | same-config ratios D=0.943 CF0=1.025 CFD0=0.926
+CF      8streams  best   4334.5 us @ bench_full:nt64/out4     regs  64 smem  17520 occW 10 | same-config ratios A259=1.029 D=0.902 CF0=1.029 CFD0=0.901
+CF      m1        best    301.1 us @ bench_full:nt32/lb       regs  73 smem   8304 occW 10 | same-config ratios A259=1.007 D=1.081 CF0=1.010 CFD0=1.077
+CF      m24       best   4255.7 us @ bench_full:nt64/out4     regs  64 smem  17520 occW 10 | same-config ratios A259=1.027 D=0.923 CF0=1.031 CFD0=0.905
+CF      m3        best    613.4 us @ bench_full:nt128/out4    regs  40 smem  26736 occW 12 | same-config ratios A259=1.042 D=0.982 CF0=1.068 CFD0=0.965
+CF0     8streams  best   4201.5 us @ bench_full:nt64/out4     regs  64 smem  17520 occW 10 | same-config ratios A259=0.999 D=0.875 CFD0=0.880
+CF0     m1        best    298.0 us @ bench_full:nt32/lb       regs  74 smem   8304 occW 10 | same-config ratios A259=0.997 D=1.070 CFD0=1.066
+CF0     m24       best   4122.6 us @ bench_full:nt64/out4     regs  64 smem  17520 occW 10 | same-config ratios A259=0.995 D=0.896 CFD0=0.878
+CF0     m3        best    574.5 us @ bench_full:nt128/out4    regs  40 smem  26736 occW 12 | same-config ratios A259=0.976 D=0.920 CFD0=0.904
+CF3     8streams  best   4190.2 us @ bench_full:nt64/out4     regs  64 smem  17520 occW 10 | same-config ratios A259=0.992 D=0.872 CF0=0.997 CFD0=0.878
+CF3     m1        best    298.0 us @ bench_full:nt32/lb       regs  72 smem   8304 occW 10 | same-config ratios A259=1.000 D=1.070 CF0=1.003 CFD0=1.070
+CF3     m24       best   4111.4 us @ bench_full:nt64/out4     regs  64 smem  17520 occW 10 | same-config ratios A259=0.993 D=0.898 CF0=0.997 CFD0=0.875
+CF3     m3        best    569.3 us @ bench_full:nt128/out4    regs  40 smem  26736 occW 12 | same-config ratios A259=0.965 D=0.911 CF0=0.991 CFD0=0.895
+CF5     8streams  best   4202.8 us @ bench_full:nt64/out4     regs  64 smem  17520 occW 10 | same-config ratios A259=0.992 D=0.877 CF0=0.994 CFD0=0.875
+CF5     m1        best    302.1 us @ bench_full:nt32/lb       regs  76 smem   8304 occW 10 | same-config ratios A259=1.014 D=1.085 CF0=1.017 CFD0=1.084
+CF5     m24       best   4119.6 us @ bench_full:nt64/out4     regs  64 smem  17520 occW 10 | same-config ratios A259=0.993 D=0.893 CF0=0.996 CFD0=0.875
+CF5     m3        best    566.3 us @ bench_full:nt128/out4    regs  44 smem  26736 occW 12 | same-config ratios A259=0.961 D=0.905 CF0=0.986 CFD0=0.890
+CF6     8streams  best   4206.6 us @ bench_full:nt64/out4     regs  64 smem  17520 occW 10 | same-config ratios A259=0.997 D=0.877 CF0=0.997 CFD0=0.883
+CF6     m1        best    302.1 us @ bench_full:nt32/lb       regs  76 smem   8304 occW 10 | same-config ratios A259=1.014 D=1.085 CF0=1.017 CFD0=1.085
+CF6     m24       best   4121.6 us @ bench_full:nt64/out4     regs  64 smem  17520 occW 10 | same-config ratios A259=0.998 D=0.896 CF0=0.999 CFD0=0.877
+CF6     m3        best    566.3 us @ bench_full:nt128/out4    regs  44 smem  26736 occW 12 | same-config ratios A259=0.962 D=0.908 CF0=0.986 CFD0=0.891
+CFD     8streams  best   4364.6 us @ bench_full:nt32/out4     regs  76 smem   8768 occW 10 | same-config ratios A259=0.919 D=1.128 CF0=0.920 CFD0=1.113
+CFD     m1        best    276.5 us @ bench_full:nt32/lb       regs  76 smem   4160 occW 16 | same-config ratios A259=0.925 D=0.993 CF0=0.928 CFD0=0.989
+CFD     m24       best   4311.0 us @ bench_full:nt32/out4     regs  76 smem   8768 occW 10 | same-config ratios A259=0.917 D=1.127 CF0=0.916 CFD0=1.117
+CFD     m3        best    608.3 us @ bench_full:nt64/out4     regs  64 smem  13376 occW 14 | same-config ratios A259=0.828 D=1.188 CF0=0.829 CFD0=1.174
+CFD0    8streams  best   3931.1 us @ bench_full:nt32/out4     regs  73 smem   8768 occW 10 | same-config ratios A259=0.826 D=1.014 CF0=0.826
+CFD0    m1        best    279.6 us @ bench_full:nt32/lb       regs  76 smem   4160 occW 16 | same-config ratios A259=0.935 D=1.000 CF0=0.938
+CFD0    m24       best   3864.6 us @ bench_full:nt32/out4     regs  73 smem   8768 occW 10 | same-config ratios A259=0.820 D=1.008 CF0=0.822
+CFD0    m3        best    516.1 us @ bench_full:nt64/out4     regs  66 smem  13376 occW 14 | same-config ratios A259=0.703 D=1.010 CF0=0.704
+CFD5    8streams  best   3901.4 us @ bench_full:nt32/out4     regs  78 smem   8768 occW 10 | same-config ratios A259=0.820 D=1.005 CF0=0.820 CFD0=0.994
+CFD5    m1        best    275.5 us @ bench_full:nt32/lb       regs  76 smem   4160 occW 16 | same-config ratios A259=0.921 D=0.989 CF0=0.924 CFD0=0.985
+CFD5    m24       best   3838.0 us @ bench_full:nt32/out4     regs  78 smem   8768 occW 10 | same-config ratios A259=0.816 D=1.003 CF0=0.817 CFD0=0.994
+CFD5    m3        best    527.4 us @ bench_full:nt64/out4     regs  64 smem  13376 occW 14 | same-config ratios A259=0.717 D=1.030 CF0=0.718 CFD0=1.020
+CFD6    8streams  best   3902.5 us @ bench_full:nt32/out4     regs  78 smem   8768 occW 10 | same-config ratios A259=0.819 D=1.008 CF0=0.820 CFD0=0.995
+CFD6    m1        best    275.5 us @ bench_full:nt32/lb       regs  76 smem   4160 occW 16 | same-config ratios A259=0.921 D=0.989 CF0=0.924 CFD0=0.989
+CFD6    m24       best   3834.9 us @ bench_full:nt32/out4     regs  78 smem   8768 occW 10 | same-config ratios A259=0.817 D=1.003 CF0=0.816 CFD0=0.994
+CFD6    m3        best    529.4 us @ bench_full:nt64/out4     regs  64 smem  13376 occW 14 | same-config ratios A259=0.719 D=1.034 CF0=0.720 CFD0=1.024
+CFw     8streams  best   4288.5 us @ bench_full:nt64/out4     regs  64 smem  17520 occW 10 | same-config ratios A259=1.018 D=0.894 CF0=1.019 CFD0=0.899
+CFw     m1        best    298.0 us @ bench_full:nt32/lb       regs  76 smem   8304 occW 10 | same-config ratios A259=0.997 D=1.070 CF0=1.000 CFD0=1.066
+CFw     m24       best   4214.8 us @ bench_full:nt64/out4     regs  64 smem  17520 occW 10 | same-config ratios A259=1.015 D=0.913 CF0=1.021 CFD0=0.897
+CFw     m3        best    593.9 us @ bench_full:nt128/out4    regs  40 smem  26736 occW 12 | same-config ratios A259=1.009 D=0.949 CF0=1.034 CFD0=0.935
+D       8streams  best   3880.0 us @ bench_full:nt32/out4     regs  73 smem   8768 occW 10 | same-config ratios A259=0.815 CF0=0.816 CFD0=0.986
+D       m1        best    278.5 us @ bench_full:nt32/lb       regs  76 smem   4160 occW 16 | same-config ratios A259=0.932 CF0=0.935 CFD0=1.000
+D       m24       best   3830.8 us @ bench_full:nt32/out4     regs  73 smem   8768 occW 10 | same-config ratios A259=0.814 CF0=0.815 CFD0=0.992
+D       m3        best    512.0 us @ bench_full:nt64/out4     regs  66 smem  13376 occW 14 | same-config ratios A259=0.697 CF0=0.697 CFD0=0.990

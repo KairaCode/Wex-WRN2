@@ -1,0 +1,191 @@
+{
+ "experts": 160,
+ "base": {
+  "base_heldout_q14": 3.7824345546052385,
+  "base_heldout_ideal": 3.7829318111558927,
+  "base_insample_ideal": 3.7821409318616794
+ },
+ "variants": {
+  "tilt_mag per matrix (1 B)": {
+   "bit_per_w": 3.779282770234553,
+   "delta_vs_base_q14_pct": -0.083326871230291,
+   "side_bits_total": 3840,
+   "note": "ideal float probs, grid 241"
+  },
+  "tilt_mag per record (1 B)": {
+   "bit_per_w": 3.7803106384974363,
+   "delta_vs_base_q14_pct": -0.05615209138824611,
+   "side_bits_total": 1280,
+   "note": "one theta shared by w1,w2,w3"
+  },
+  "tilt_value per matrix (1 B)": {
+   "bit_per_w": 3.7790971998621514,
+   "delta_vs_base_q14_pct": -0.08823298050256746,
+   "side_bits_total": 3840,
+   "note": "ideal float probs, grid 241"
+  },
+  "tilt_value per record (1 B)": {
+   "bit_per_w": 3.7801553344271235,
+   "delta_vs_base_q14_pct": -0.06025802020394757,
+   "side_bits_total": 1280,
+   "note": "one theta shared by w1,w2,w3"
+  },
+  "tilt_log2v per matrix (1 B)": {
+   "bit_per_w": 3.7797170831526086,
+   "delta_vs_base_q14_pct": -0.07184450684868131,
+   "side_bits_total": 3840,
+   "note": "ideal float probs, grid 241"
+  },
+  "tilt_log2v per record (1 B)": {
+   "bit_per_w": 3.7806171440535015,
+   "delta_vs_base_q14_pct": -0.048048697882277426,
+   "side_bits_total": 1280,
+   "note": "one theta shared by w1,w2,w3"
+  },
+  "tilt_zero per matrix (1 B)": {
+   "bit_per_w": 3.7823112184310923,
+   "delta_vs_base_q14_pct": -0.003260761617041891,
+   "side_bits_total": 3840,
+   "note": "ideal float probs, grid 241"
+  },
+  "tilt_zero per record (1 B)": {
+   "bit_per_w": 3.782359374533005,
+   "delta_vs_base_q14_pct": -0.001987610655205396,
+   "side_bits_total": 1280,
+   "note": "one theta shared by w1,w2,w3"
+  },
+  "tilt mag+zero per matrix (2 B)": {
+   "bit_per_w": 3.778593289771829,
+   "delta_vs_base_q14_pct": -0.10155535483707427,
+   "side_bits_total": 7680,
+   "note": "41x41 grid"
+  },
+  "tilt_mag per (matrix, srel) (7 B)": {
+   "bit_per_w": 3.7768057883268504,
+   "delta_vs_base_q14_pct": -0.14881331579247514,
+   "side_bits_total": 26880,
+   "note": ""
+  },
+  "temperature per matrix (1 B)": {
+   "bit_per_w": 3.782250481244997,
+   "delta_vs_base_q14_pct": -0.004866531266685299,
+   "side_bits_total": 3840,
+   "note": ""
+  },
+  "srel half-step shift per matrix (1 B)": {
+   "bit_per_w": 3.7741013422814325,
+   "delta_vs_base_q14_pct": -0.22031345694164564,
+   "side_bits_total": 3840,
+   "note": "mix with srel+-1 row"
+  },
+  "K=2 clusters (shared over types, q14)": {
+   "bit_per_w": 3.7726209353516134,
+   "delta_vs_base_q14_pct": -0.25945245349128004,
+   "side_bits_total": 0,
+   "note": "reproduces mxcombo_an clusters_heldout"
+  },
+  "K=2 soft mixture alpha (33 levels)": {
+   "bit_per_w": 3.7722391335996575,
+   "delta_vs_base_q14_pct": -0.26954652772955146,
+   "side_bits_total": 2880,
+   "note": ""
+  },
+  "K=2 hard + mag tilt (61 levels)": {
+   "bit_per_w": 3.7722593586645505,
+   "delta_vs_base_q14_pct": -0.26901181748933767,
+   "side_bits_total": 3360,
+   "note": ""
+  },
+  "K=4 clusters (shared over types, q14)": {
+   "bit_per_w": 3.7720803491729558,
+   "delta_vs_base_q14_pct": -0.27374447020309056,
+   "side_bits_total": 0,
+   "note": "reproduces mxcombo_an clusters_heldout"
+  },
+  "K=8 clusters (shared over types, q14)": {
+   "bit_per_w": 3.771852707640467,
+   "delta_vs_base_q14_pct": -0.27976285675287876,
+   "side_bits_total": 0,
+   "note": "reproduces mxcombo_an clusters_heldout"
+  },
+  "4 prebuilt mag-tilted q14 tables, select per matrix": {
+   "bit_per_w": 3.788382270083191,
+   "delta_vs_base_q14_pct": 0.15724569432961552,
+   "side_bits_total": 960.0,
+   "note": "levels -0.30..0.30"
+  },
+  "8 prebuilt mag-tilted q14 tables, select per matrix": {
+   "bit_per_w": 3.780400804669104,
+   "delta_vs_base_q14_pct": -0.05376827825503612,
+   "side_bits_total": 1440.0,
+   "note": "levels -0.30..0.30"
+  },
+  "16 prebuilt mag-tilted q14 tables, select per matrix": {
+   "bit_per_w": 3.779460794545055,
+   "delta_vs_base_q14_pct": -0.07862026473302317,
+   "side_bits_total": 1920.0,
+   "note": "levels -0.30..0.30"
+  }
+ },
+ "theta_mag_stats": {
+  "mean": 0.001614583333333347,
+  "std": 0.046630723462752766,
+  "min": -0.20499999999999996,
+  "max": 0.05500000000000005,
+  "corr_with": {
+   "layer": -0.2603310711818284,
+   "m": 0.010396468442379597,
+   "mean_mag": 0.5673572969263673,
+   "zero_frac": -0.024312719393772202,
+   "srel_mean": 0.9778652336720333,
+   "srel_spread": 0.10964046458588866
+  },
+  "by_matrix_type_mean": [
+   0.000656250000000011,
+   0.002343750000000017,
+   0.0018437500000000142
+  ],
+  "by_layer_mean": [
+   -0.010416666666666657,
+   -0.0012499999999999827,
+   0.010416666666666676,
+   0.022916666666666686,
+   0.019583333333333352,
+   0.017500000000000016,
+   0.016250000000000014,
+   0.020833333333333353,
+   0.013333333333333345,
+   0.01583333333333335,
+   0.00708333333333334,
+   0.01125000000000001,
+   0.0025000000000000022,
+   0.000416666666666667,
+   0.0012500000000000011,
+   0.008333333333333354,
+   0.0004166666666666763,
+   0.0012500000000000104,
+   0.0008333333333333526,
+   0.006666666666666672,
+   0.009166666666666675,
+   0.014583333333333346,
+   0.0058333333333333475,
+   0.014583333333333346,
+   -0.00874999999999998,
+   0.01708333333333335,
+   0.025416666666666688,
+   0.010416666666666676,
+   0.01583333333333335,
+   0.021666666666666685,
+   0.003750000000000017,
+   0.010000000000000009,
+   -0.007916666666666647,
+   0.027500000000000024,
+   -0.012499999999999983,
+   0.009166666666666675,
+   0.010416666666666685,
+   -0.08041666666666665,
+   -0.07291666666666664,
+   -0.1133333333333333
+  ]
+ }
+}

@@ -1,0 +1,38 @@
+02:00:18 lock taken after 9 min
+02:00:18 V4 copy U: -> H: start
+02:23:12 V4 verified: 152 files, sizes equal, 107 hashed
+02:23:12 V4 original removed from U:, junction U: -> H: created
+02:23:12 WEX1 copy D: -> U: start
+02:34:10 WEX1 verified on U: sha256 4C055238D9011CE25D5C53A5EA61EC32BD8D1CF2886247194A13E7F53E7FA549
+02:34:10 lock released
+02:34:11 U: free 279 GB
+02:34:11 H: free 433 GB
+02:34:11 D: free 57 GB
+2026-11-08T15:17:50 main session: moved stale heavy.lock (lane G G2 review 3, 04:47, agent died at usage limit; no holder process) to heavy.lock.stale-0447
+2026-11-08T17:45:11 lock taken
+2026-11-08T17:45:11 U: free before 112,7 GB
+2026-11-08T17:45:11 move U:\models\lfm2.5-24b-a2b -> H:\models\lfm2.5-24b-a2b start
+2026-11-08T17:48:19 verified 1 files sha256 identical: H:\models\lfm2.5-24b-a2b
+2026-11-08T17:48:19 junction U:\models\lfm2.5-24b-a2b -> H:\models\lfm2.5-24b-a2b
+2026-11-08T17:48:19 move U:\models\mellum2.1-12b-a2.5b -> H:\models\mellum2.1-12b-a2.5b start
+2026-11-08T17:51:12 verified 1 files sha256 identical: H:\models\mellum2.1-12b-a2.5b
+2026-11-08T17:51:12 junction U:\models\mellum2.1-12b-a2.5b -> H:\models\mellum2.1-12b-a2.5b
+2026-11-08T17:51:12 move U:\kaira_lab\wnr2-samples -> H:\kaira_lab\wnr2-samples start
+2026-11-08T17:52:44 verified 9 files sha256 identical: H:\kaira_lab\wnr2-samples
+2026-11-08T17:52:44 junction U:\kaira_lab\wnr2-samples -> H:\kaira_lab\wnr2-samples
+2026-11-08T17:52:44 U: free after moves 144,5 GB
+2026-11-08T17:52:44 WNR2 copy E: -> U: start
+2026-11-08T17:58:49 WNR2 verified on U: sha256 3F703FA4D993ED46D2873676C71BE07CF11C11C7BAEF3E0BCE6428C30921EB9D
+2026-11-08T17:58:49 U: free at end 14,6 GB
+2026-11-08T17:58:49 lock released
+2026-11-09T05:00:36 lock taken (mirror setup)
+2026-11-09T05:00:36 free before: C: 63,3 GB, D: 61,4 GB
+2026-11-09T05:02:30 WEX1 on U: re-verified sha256 4C055238D9011CE25D5C53A5EA61EC32BD8D1CF2886247194A13E7F53E7FA549; deleting duplicate D:\kaira_wex\v41-reap\v4_flash_experts.wex
+2026-11-09T05:02:30 deleted D:\kaira_wex\v41-reap\v4_flash_experts.wex; D: free 205,8 GB
+2026-11-09T05:02:30 move C:\models\DeepSeek-V4.1-Flash-1017-engram -> D:\models\DeepSeek-V4.1-Flash-1017-engram start
+2026-11-09T05:10:03 engram verified (4 files sha256 identical)
+2026-11-09T05:10:03 junction C:\models\DeepSeek-V4.1-Flash-1017-engram -> D:\models\DeepSeek-V4.1-Flash-1017-engram; C: free 164,5 GB
+2026-11-09T05:10:03 WNR2 copy E: -> C: start
+2026-11-09T05:20:12 WNR2 verified on C: sha256 3F703FA4D993ED46D2873676C71BE07CF11C11C7BAEF3E0BCE6428C30921EB9D
+2026-11-09T05:20:12 free after: C: 34,5 GB, D: 104,3 GB, U: 14,6 GB
+2026-11-09T05:20:12 lock released (mirror setup)

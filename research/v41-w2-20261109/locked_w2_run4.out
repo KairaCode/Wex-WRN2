@@ -1,0 +1,31 @@
+lock: taken 2026-11-09T00:49:27
+RAM: 20.1 GB available at 00:49:28, RAM_GB=16 for every arm
+cf775788928b2b2348c7a41da0f537bdaa341cb681d6c7f0e1fe42a7f98812bc *<KAIRA>/lab/v41-port-20261106/ws-w/bin/deepseek_v4.exe
+868ac2a0fad382965fe9d50ea15ae66519b8f20e4c8f8f1734cf5ca7f36b09e1 *<KAIRA>/lab/v41-port-20261106/ws-w/bin-diag/deepseek_v4.exe
+e765175df1fb54df6c690f3c1a99b8ab1e21bae3113938e1d337d0348839a283 *<KAIRA>/lab/v41-port-20261106/ws-integ/dll-out/coli_cuda_dsv4_dg.dll
+cceb4fb573b3b3e7b71843bf85a2b87cf9efdd94155bfc5deec717cce949e782 *<KAIRA>/lab/v41-gpu-20261107/w1/build/kaira_wex_cuda.dll
+(nvidia-smi --query-compute-apps: 22 desktop processes with a GPU context and no reported memory, none of them an inference engine; list trimmed 2026-11-09)
+== w2-R7-wnr2-record 00:49:29 available RAM 20.1 GB, GPU 1454 MiB, 2 %, COLI_WEX_PATH=U:\kaira_wex\v41-reap\v4_flash_experts.nr2.wex V4_WEX_BATCH=0
+READY after 17.2 s
+w0 ttft 4.49 DONE w0 STAT 16 2.218 33.5 0.00 9 1 0 PROF 11.680 9 16 54.145 5.465 2.627 3.565 0.020 24 TIERS 944 360 6376 17.75 6.77
+code1 ttft 10.07 DONE code1 STAT 128 2.182 51.2 0.00 29 1 0 PROF 68.733 29 128 337.165 35.740 5.554 27.270 0.157 156 TIERS 944 360 6376 17.75 6.77
+chat_it1 ttft 9.57 DONE chat_it1 STAT 128 1.760 52.8 0.00 30 1 0 PROF 82.281 30 128 470.647 48.974 4.901 28.236 0.158 157 TIERS 944 360 6376 17.75 6.77
+reason1 ttft 11.65 DONE reason1 STAT 128 2.074 52.1 0.00 41 1 0 PROF 73.374 41 128 367.318 38.671 5.922 28.609 0.159 168 TIERS 944 360 6376 17.75 6.77
+rc=0 00:53:46 logits sha256 \0a3eb3359c84483
+   checks: container=1 dense_uploads=40 gpu_direct=1 batch_on=0
+[  254.104] v4_wex_gpu_direct reads=57271 payload_bytes=968860069888 ram_skips=20770 failures=0 device_decodes=57271
+[  254.652] wexprof demand batches=0 reserved=0 published=0 per_batch=0.00 read_ms=0.0 decode_ms=0.0 decode_ms_per_record=0.000 | per-record loads=12133 read_ms=145961.4 decode_ms=10014.7 read_ms_per_record=12.030 decode_ms_per_record=0.825
+[  254.652] wexprof prefetch batches=0 reserved=0 published=0 per_batch=0.00 read_ms=0.0 decode_ms=0.0 decode_ms_per_record=0.000 | per-record loads=45138 read_ms=688402.0 decode_ms=47605.4 read_ms_per_record=15.251 decode_ms_per_record=1.055
+== w2-B7-wnr2-batch 00:53:57 available RAM 20.2 GB, GPU 1504 MiB, 2 %, COLI_WEX_PATH=U:\kaira_wex\v41-reap\v4_flash_experts.nr2.wex V4_WEX_BATCH=1
+READY after 17.5 s
+w0 ttft 4.3 DONE w0 STAT 16 2.122 33.9 0.00 9 1 0 PROF 11.814 9 16 45.849 5.619 2.486 3.684 0.021 24 TIERS 937 360 6383 17.62 6.77
+code1 ttft 10.04 DONE code1 STAT 128 2.070 51.8 0.00 29 1 0 PROF 71.866 29 128 279.518 38.468 5.415 27.815 0.156 156 TIERS 937 360 6383 17.62 6.77
+chat_it1 ttft 9.33 DONE chat_it1 STAT 128 1.659 54.0 0.00 30 1 0 PROF 86.484 30 128 374.863 53.312 4.559 28.448 0.154 157 TIERS 937 360 6383 17.62 6.77
+reason1 ttft 11.64 DONE reason1 STAT 128 1.982 53.8 0.00 41 1 0 PROF 76.217 41 128 303.653 41.176 5.816 29.057 0.156 168 TIERS 937 360 6383 17.62 6.77
+rc=0 00:58:24 logits sha256 \0a3eb3359c84483
+   checks: container=1 dense_uploads=40 gpu_direct=1 batch_on=1
+[  264.638] v4_wex_gpu_direct reads=57699 payload_bytes=976105623552 ram_skips=24042 failures=0 device_decodes=57699
+[  265.177] wexprof demand batches=7644 reserved=11901 published=11901 per_batch=1.56 read_ms=86632.8 decode_ms=7480.7 decode_ms_per_record=0.629 | per-record loads=0 read_ms=0.0 decode_ms=0.0 read_ms_per_record=0.000 decode_ms_per_record=0.000
+[  265.177] wexprof prefetch batches=24939 reserved=45555 published=45554 per_batch=1.83 read_ms=317418.2 decode_ms=31479.8 decode_ms_per_record=0.691 | per-record loads=244 read_ms=2745.9 decode_ms=306.6 read_ms_per_record=11.254 decode_ms_per_record=1.257
+== done 00:58:35
+lock: released 2026-11-09T00:58:35

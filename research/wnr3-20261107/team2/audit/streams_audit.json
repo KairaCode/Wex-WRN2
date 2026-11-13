@@ -1,0 +1,92 @@
+{
+ "experts": 160,
+ "weight_stream": {
+  "exact_bytes_mean": 967.7289019097223,
+  "exact_minus_idealbits_over_8_mean_B": 3.499830658312446,
+  "std_B": 0.28868838792803203,
+  "final_state_log2_minus_23_mean": 4.001404762273301,
+  "exact_minus_est_round_bits8_plus4": {
+   "mean": -0.5001537181712963,
+   "frac_equal": 0.4998462818287037
+  },
+  "bit_per_w_exact_incl_state_bytes": 3.7801910230848526,
+  "bit_per_w_est_bits_plus_4B": 3.782144809575819,
+  "bit_per_w_ideal_payload_only": 3.766519809575819
+ },
+ "scale_stream": {
+  "exact_minus_idealbits_over_8_mean_B": 3.4966847806023886,
+  "bit_per_scale_exact": 1.0593008987991899,
+  "bit_per_scale_est_bits_plus_4B": 1.0671651991022775
+ },
+ "record": {
+  "exact_bytes_mean": 16909670.4,
+  "exact_ratio": 0.8994199346405228,
+  "padding_mean": 1965.21875,
+  "est_like_mxanalyze_bytes_mean": 16919483.268348258
+ },
+ "hash_rule_extra_bytes_per_stream": {
+  "streams": 345600,
+  "mean": 0.06955150462962963,
+  "theory_E_log2(1+U)/8": 0.06966311988887956
+ },
+ "length_table": {
+  "all_160": {
+   "m0": {
+    "w_resid_bits_exact": 4.8601748918264915,
+    "w_resid_bits_est": 4.860216007120029,
+    "w_resid_std_exact": 8.366852066612307,
+    "s_resid_bits_exact": 3.8708258186328273,
+    "s_resid_bits_est": 3.869487963493002,
+    "w_raw_len_entropy_exact": 5.277689724121712
+   },
+   "m1": {
+    "w_resid_bits_exact": 4.701187370419409,
+    "w_resid_bits_est": 4.701129063202049,
+    "w_resid_std_exact": 6.449926725819895,
+    "s_resid_bits_exact": 3.2127875742700507,
+    "s_resid_bits_est": 3.2147750533979345,
+    "w_raw_len_entropy_exact": 5.169350221475425
+   },
+   "m2": {
+    "w_resid_bits_exact": 4.851787529112392,
+    "w_resid_bits_est": 4.851729333513747,
+    "w_resid_std_exact": 8.049967819581006,
+    "s_resid_bits_exact": 3.3225728827418064,
+    "s_resid_bits_est": 3.3166047785272794,
+    "w_raw_len_entropy_exact": 5.29086839432539
+   },
+   "coded_table_bytes_exact": 11314.024614585993,
+   "coded_table_bytes_est": 11313.491672349433,
+   "saving_pct_of_raw_exact": 0.1466225372402961
+  },
+  "their_24 (manifest[::6][:24])": {
+   "m0": {
+    "w_resid_bits_exact": 4.75863606218666,
+    "w_resid_bits_est": 4.758863459382707,
+    "w_resid_std_exact": 7.431947912690125,
+    "s_resid_bits_exact": 3.786628769178141,
+    "s_resid_bits_est": 3.786386183678107,
+    "w_raw_len_entropy_exact": 5.1280257228193316
+   },
+   "m1": {
+    "w_resid_bits_exact": 4.491585335850832,
+    "w_resid_bits_est": 4.4914867586971345,
+    "w_resid_std_exact": 5.4668040555907815,
+    "s_resid_bits_exact": 2.810134672416597,
+    "s_resid_bits_est": 2.810163542042244,
+    "w_raw_len_entropy_exact": 4.793695944173015
+   },
+   "m2": {
+    "w_resid_bits_exact": 4.770396346197718,
+    "w_resid_bits_est": 4.7702558570855444,
+    "w_resid_std_exact": 6.9604238427179315,
+    "s_resid_bits_exact": 3.1630403394221154,
+    "s_resid_bits_est": 3.1552176294751897,
+    "w_raw_len_entropy_exact": 5.173717264208298
+   },
+   "coded_table_bytes_exact": 10973.227116140868,
+   "coded_table_bytes_est": 10972.495436086676,
+   "saving_pct_of_raw_exact": 0.14843522818297214
+  }
+ }
+}

@@ -1,0 +1,28 @@
+{
+ "experts": 160,
+ "result": {
+  "can": {
+   "weights_bpw_heldout": 3.7824345546052385,
+   "weights_bpw_insample": 3.78214480957582,
+   "scales_bit_per_scale_heldout": 1.0675304602850049,
+   "record_payload_bytes_heldout": 16879855.501345903,
+   "blockmax_side_bits_per_w (if coded as side info, not used here)": 0.015533569861801695,
+   "record_bytes_est": 16920815.501345903,
+   "ratio_vs_raw": 0.9000127389996246
+  },
+  "ceil": {
+   "weights_bpw_heldout": 3.7084476474201167,
+   "weights_bpw_insample": 3.708369147284164,
+   "scales_bit_per_scale_heldout": 0.9791811721500293,
+   "record_payload_bytes_heldout": 16540347.694177443,
+   "blockmax_side_bits_per_w (if coded as side info, not used here)": 0.03291180631155059,
+   "record_bytes_est": 16581307.694177443,
+   "ratio_vs_raw": 0.881954427837427
+  },
+  "delta_weights_pct": -1.9560657591561004,
+  "delta_scales_pct": -8.276043768473684,
+  "delta_record_pct": -2.006450617828992,
+  "even_blocks_fraction": 0.30646829110604745,
+  "median_changed_matrices": 451
+ }
+}

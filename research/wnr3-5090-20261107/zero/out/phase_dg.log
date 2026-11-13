@@ -1,0 +1,91 @@
+[DSV4 CUDA] device 0: NVIDIA GeForce RTX 5090 34.2 GB sm_120
+mxf8f6f4 e4m3 x e2m1 (DeepGEMM fp8_fp4_mixed_mma_block_scaled) done
+mxf8f6f4 e4m3 x e4m3 (fp8_mma_block_scaled; B = tc_expand bytes) done
+wrote <KAIRA>\lab\wnr3-5090-20261107\zero\out\dg_mma.json 1.0 s
+[DSV4 CUDA] device 0: NVIDIA GeForce RTX 5090 34.2 GB sm_120
+dg L00 slots [97, 113, 144, 169, 8, 38, 155, 187] 0.9s
+wrote <KAIRA>\lab\wnr3-5090-20261107\zero\out\smoke_dg_moe.json 1.0 s
+[DSV4 CUDA] device 0: NVIDIA GeForce RTX 5090 34.2 GB sm_120
+dg L00 slots [97, 113, 144, 169, 8, 38, 155, 187] 0.9s
+dg L01 slots [8, 38, 155, 187, 55, 62, 79, 176] 1.9s
+dg L02 slots [55, 62, 79, 176, 16, 18, 143, 142] 2.9s
+dg L03 slots [16, 18, 79, 142, 19, 38, 54, 102] 3.8s
+dg L04 slots [19, 38, 54, 102, 42, 47, 72, 84] 4.8s
+dg L05 slots [42, 47, 72, 84, 60, 73, 140, 175] 5.7s
+dg L06 slots [60, 73, 140, 175, 44, 109, 161, 167] 6.7s
+dg L07 slots [44, 109, 161, 167, 6, 19, 154, 231] 7.6s
+dg L08 slots [6, 19, 154, 167, 59, 131, 132, 160] 8.7s
+dg L09 slots [59, 131, 132, 160, 15, 60, 109, 159] 9.6s
+dg L10 slots [15, 60, 109, 159, 12, 39, 114, 132] 10.6s
+dg L11 slots [12, 39, 114, 132, 33, 34, 157, 190] 11.7s
+dg L12 slots [33, 34, 157, 190, 18, 117, 132, 167] 12.7s
+dg L13 slots [18, 117, 132, 167, 105, 135, 157, 186] 13.7s
+dg L14 slots [105, 135, 157, 186, 25, 110, 118, 156] 14.6s
+dg L15 slots [25, 110, 118, 156, 16, 34, 52, 157] 15.5s
+dg L16 slots [16, 34, 52, 157, 2, 27, 56, 123] 16.4s
+dg L17 slots [2, 27, 56, 123, 66, 81, 89, 183] 17.5s
+dg L18 slots [66, 81, 89, 183, 92, 119, 146, 180] 18.5s
+dg L19 slots [92, 119, 146, 180, 5, 74, 95, 244] 19.4s
+dg L20 slots [5, 74, 95, 180, 1, 2, 63, 72] 20.4s
+dg L21 slots [1, 2, 63, 72, 49, 59, 166, 178] 21.3s
+dg L22 slots [49, 59, 166, 178, 41, 108, 115, 242] 22.3s
+dg L23 slots [41, 108, 115, 178, 33, 58, 65, 175] 23.3s
+dg L24 slots [33, 58, 65, 175, 0, 25, 114, 166] 24.2s
+dg L25 slots [0, 25, 114, 166, 2, 77, 151, 160] 25.2s
+dg L26 slots [2, 77, 151, 160, 16, 67, 85, 152] 26.1s
+dg L27 slots [16, 67, 85, 152, 52, 89, 108, 112] 27.0s
+dg L28 slots [52, 89, 108, 112, 20, 144, 152, 190] 28.1s
+dg L29 slots [20, 144, 152, 190, 2, 54, 110, 184] 29.1s
+dg L30 slots [2, 54, 110, 184, 80, 145, 146, 171] 30.1s
+dg L31 slots [80, 145, 146, 171, 30, 148, 172, 180] 31.0s
+dg L32 slots [30, 148, 172, 180, 78, 135, 181, 188] 32.0s
+dg L33 slots [78, 135, 181, 188, 3, 142, 80, 146] 32.9s
+dg L34 slots [3, 78, 80, 146, 8, 157, 158, 173] 34.0s
+dg L35 slots [8, 157, 158, 173, 66, 107, 127, 237] 34.9s
+dg L36 slots [66, 107, 127, 173, 12, 155, 158, 177] 35.8s
+dg L37 slots [12, 155, 158, 177, 3, 5, 48, 137] 36.8s
+dg L38 slots [3, 5, 48, 137, 32, 132, 201, 156] 37.7s
+dg L39 slots [32, 132, 137, 156, 97, 113, 144, 169] 38.8s
+wrote <KAIRA>\lab\wnr3-5090-20261107\zero\out\dg_moe.json 38.8 s
+[DSV4 CUDA] device 0: NVIDIA GeForce RTX 5090 34.2 GB sm_120
+L00_E097 done 0.6s
+L01_E008 done 1.2s
+L02_E055 done 1.7s
+L03_E016 done 2.3s
+L04_E019 done 2.9s
+L05_E042 done 3.4s
+L06_E060 done 4.0s
+L07_E044 done 4.6s
+L08_E006 done 5.1s
+L09_E059 done 5.7s
+L10_E015 done 6.3s
+L11_E012 done 6.9s
+L12_E033 done 7.4s
+L13_E018 done 8.0s
+L14_E105 done 8.6s
+L15_E025 done 9.1s
+L16_E016 done 9.7s
+L17_E002 done 10.3s
+L18_E066 done 10.8s
+L19_E092 done 11.4s
+L20_E005 done 12.0s
+L21_E001 done 12.5s
+L22_E049 done 13.1s
+L23_E041 done 13.7s
+L24_E033 done 14.3s
+L25_E000 done 14.9s
+L26_E002 done 15.5s
+L27_E016 done 16.1s
+L28_E052 done 16.7s
+L29_E020 done 17.2s
+L30_E002 done 17.8s
+L31_E080 done 18.3s
+L32_E030 done 19.0s
+L33_E078 done 19.7s
+L34_E003 done 20.3s
+L35_E008 done 20.9s
+L36_E066 done 21.5s
+L37_E012 done 22.0s
+L38_E003 done 22.6s
+L39_E032 done 23.2s
+wrote <KAIRA>\lab\wnr3-5090-20261107\zero\out\dg_kernels.json 23.3 s

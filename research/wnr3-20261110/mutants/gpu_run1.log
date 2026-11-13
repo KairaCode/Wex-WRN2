@@ -1,0 +1,36 @@
+lock: taken 01:52:34
+NVIDIA GeForce RTX 5090, 1136 MiB, 1 %
+== G2b round 1: deployed helper
+{"corruption_statuses":[0,0,-1,0,-1,0],"failed":2}
+{"records":64,"verified":512,"record_mib":16.14,"timing":[{"api":"single","ms_per_record_p50":0.753},{"api":"batch","batch":1,"ms_per_record_p50":0.728},{"api":"batch","batch":2,"ms_per_record_p50":0.543},{"api":"batch","batch":4,"ms_per_record_p50":0.445},{"api":"batch","batch":6,"ms_per_record_p50":0.415},{"api":"batch","batch":8,"ms_per_record_p50":0.405},{"api":"batch","batch":10,"ms_per_record_p50":0.387},{"api":"batch","batch":16,"ms_per_record_p50":0.377}]}
+ALL OK
+== G2b round 1: WNR3 helper
+{"corruption_statuses":[0,0,-1,0,-1,0],"failed":2}
+{"records":64,"verified":512,"record_mib":16.14,"timing":[{"api":"single","ms_per_record_p50":0.750},{"api":"batch","batch":1,"ms_per_record_p50":0.722},{"api":"batch","batch":2,"ms_per_record_p50":0.555},{"api":"batch","batch":4,"ms_per_record_p50":0.451},{"api":"batch","batch":6,"ms_per_record_p50":0.418},{"api":"batch","batch":8,"ms_per_record_p50":0.402},{"api":"batch","batch":10,"ms_per_record_p50":0.391},{"api":"batch","batch":16,"ms_per_record_p50":0.379}]}
+ALL OK
+== G2b round 2: deployed helper
+{"corruption_statuses":[0,0,-1,0,-1,0],"failed":2}
+{"records":64,"verified":512,"record_mib":16.14,"timing":[{"api":"single","ms_per_record_p50":0.744},{"api":"batch","batch":1,"ms_per_record_p50":0.724},{"api":"batch","batch":2,"ms_per_record_p50":0.539},{"api":"batch","batch":4,"ms_per_record_p50":0.446},{"api":"batch","batch":6,"ms_per_record_p50":0.414},{"api":"batch","batch":8,"ms_per_record_p50":0.403},{"api":"batch","batch":10,"ms_per_record_p50":0.387},{"api":"batch","batch":16,"ms_per_record_p50":0.377}]}
+ALL OK
+== G2b round 2: WNR3 helper
+{"corruption_statuses":[0,0,-1,0,-1,0],"failed":2}
+{"records":64,"verified":512,"record_mib":16.14,"timing":[{"api":"single","ms_per_record_p50":0.742},{"api":"batch","batch":1,"ms_per_record_p50":0.716},{"api":"batch","batch":2,"ms_per_record_p50":0.537},{"api":"batch","batch":4,"ms_per_record_p50":0.444},{"api":"batch","batch":6,"ms_per_record_p50":0.422},{"api":"batch","batch":8,"ms_per_record_p50":0.402},{"api":"batch","batch":10,"ms_per_record_p50":0.392},{"api":"batch","batch":16,"ms_per_record_p50":0.377}]}
+ALL OK
+== G4 WNR3 non-CZ (lab CFG model), 52 records
+{"corruption_statuses":[0,0,-1,0,-1,0],"failed":2}
+{"records":52,"verified":416,"record_mib":15.80,"timing":[{"api":"single","ms_per_record_p50":0.778},{"api":"batch","batch":1,"ms_per_record_p50":0.751},{"api":"batch","batch":2,"ms_per_record_p50":0.548},{"api":"batch","batch":4,"ms_per_record_p50":0.446},{"api":"batch","batch":6,"ms_per_record_p50":0.426},{"api":"batch","batch":8,"ms_per_record_p50":0.404},{"api":"batch","batch":10,"ms_per_record_p50":0.397},{"api":"batch","batch":16,"ms_per_record_p50":0.376}]}
+ALL OK
+== G4 WNR3 CZ (lab-80 CZ model), 52 records
+[wex] WNR3 record failed its integrity check (error 0x3); rejected
+{"corruption_statuses":[0,0,-1,0,-1,0],"failed":2}
+{"records":52,"verified":416,"record_mib":15.31,"timing":[{"api":"single","ms_per_record_p50":0.756},{"api":"batch","batch":1,"ms_per_record_p50":0.741},{"api":"batch","batch":2,"ms_per_record_p50":0.539},{"api":"batch","batch":4,"ms_per_record_p50":0.439},{"api":"batch","batch":6,"ms_per_record_p50":0.413},{"api":"batch","batch":8,"ms_per_record_p50":0.399},{"api":"batch","batch":10,"ms_per_record_p50":0.390},{"api":"batch","batch":16,"ms_per_record_p50":0.367}]}
+ALL OK
+== CPU/GPU differential
+[wex] WNR3 record failed its integrity check (error 0x8); rejected
+synthetic cz=0: 4 chunk pairs x 3 entry points equal to the CPU decode, crafted records rejected
+synthetic cz=1: 4 chunk pairs x 3 entry points equal to the CPU decode, crafted records rejected
+{"bin":"D:\kaira_wnr3_lab\g3_cfg_noncz.bin","records":52,"clean_ok":52,"mutations":304,"cpu_gpu_same_status":304,"accepted":0}
+{"bin":"D:\kaira_wnr3_lab\g4_cz.bin","records":52,"clean_ok":52,"mutations":304,"cpu_gpu_same_status":304,"accepted":0}
+compared 12 (rejected by both 4)
+ALL OK
+lock: released 01:53:27

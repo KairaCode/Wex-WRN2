@@ -1,0 +1,13 @@
+[    0.5 s] env {"os": "Windows-11-10.0.26300-SP0", "machine": "AMD64", "cpu": "AMD Ryzen 9 7950X3D 16-Core Processor", "cpu_count": 32, "python": "3.14.8", "numpy": "2.5.4", "time": "2026-11-08T02:39:33", "cupy": "14.2.0", "gpu": {"name": "NVIDIA GeForce RTX 5090", "cc": "12.0", "sms": 170, "clock_khz_max": 2467000, "mem_bytes": 34162343936, "smem_per_sm": 102400, "smem_per_block_optin": 101376, "regs_per_sm": 65536, "l2_bytes": 100663296}, "cuda_driver": 13050, "cuda_runtime": 12090, "nvrtc": "12.9", "nvidia_smi": "NVIDIA GeForce RTX 5090, 621.01, 00000000:01:00.0, 600.00 W, 3090 MHz, 14001 MHz"}
+[    0.6 s] experts ok (sha256 verified): 8  
+[    1.6 s] compiled ('-arch=compute_120', '-std=c++17', '--ftz=false', '--fmad=true')
+[    2.7 s] expert 1 / 8 L04_E038.bin 1.1 s
+[    3.4 s] expert 2 / 8 L00_E097.bin 1.8 s
+[    4.0 s] expert 3 / 8 L10_E015.bin 2.4 s
+[    4.7 s] expert 4 / 8 L20_E005.bin 3.1 s
+[    5.3 s] expert 5 / 8 L30_E002.bin 3.7 s
+[    6.0 s] expert 6 / 8 L39_E156.bin 4.4 s
+[    6.5 s] expert 7 / 8 L15_E025.bin 5.0 s
+[    7.1 s] expert 8 / 8 L25_E000.bin 5.6 s
+[    7.7 s] mma micro {"mma_f16": {"random A (20000 tiles), C=+0: differing D": 0, "random A (20000 tiles), C=-0: differing D": 0, "random A (20000 tiles), C=random: differing D": 0, "all-zero A (random signs vs +0), C=+0: differing D": 0, "all-zero A (random signs), C=+0: D==-0 count / D==+0 count": [0, 2560000], "all-zero A (+0), C=+0: D==-0 count / D==+0 count": [0, 2560000], "all-zero A (random signs vs +0), C=-0: differing D": 0, "all-zero A (random signs), C=-0: D==-0 count / D==+0 count": [0, 2560000], "all-zero A (+0), C=-0: D==-0 count / D==+0 count": [0, 2560000]}, "mma_bf16": {"random A (20000 tiles), C=+0: differing D": 0, "random A (20000 tiles), C=-0: differing D": 0, "random A (20000 tiles), C=random: differing D": 0, "all-zero A (random signs vs +0), C=+0: differing D": 0, "all-zero A (random signs), C=+0: D==-0 count / D==+0 count": [0, 2560000], "all-zero A (+0), C=+0: D==-0 count / D==+0 count": [0, 2560000], "all-zero A (random signs vs +0), C=-0: differing D": 0, "all-zero A (random signs), C=-0: D==-0 count / D==+0 count": [0, 2560000], "all-zero A (+0), C=-0: D==-0 count / D==+0 count": [0, 2560000]}}
+[    7.7 s] RESULT zero_bittest PASS 8 experts, 10 real kernels: 0 differing bits; pos/neg controls True/True; tc f16 diff 0; mxf4 0 (NVIDIA GeForce RTX 5090)

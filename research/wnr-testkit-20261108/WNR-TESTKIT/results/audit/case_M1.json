@@ -1,0 +1,7 @@
+{
+ "case": "M1",
+ "error": "TypeError: 'NoneType' object is not subscriptable | TypeError: 'NoneType' object is not subscriptable | TypeError: 'NoneType' object is not subscriptable | TypeError: 'NoneType' object is not subscriptable",
+ "traceback": "Traceback (most recent call last):\n  File \"<KAIRA>\\lab\\wnr-testkit-20261108\\WNR-TESTKIT\\tests\\audit\\run_audit.py\", line 251, in run_cases_worker\n    res = CS.run_case(case, Es, dks, tab, P, log=lambda s: log(f\"[{','.join(dks)}] {s}\"))\n  File \"<KAIRA>\\lab\\wnr-testkit-20261108\\WNR-TESTKIT\\tests\\audit\\cases.py\", line 650, in run_case\n    return run_rcase(case, Es, rk, tab, P, log)\n  File \"<KAIRA>\\lab\\wnr-testkit-20261108\\WNR-TESTKIT\\tests\\audit\\cases.py\", line 600, in run_rcase\n    silent = sum(1 for x in rows if x['status'] == 'accepted' and x['damage']['coded_sym_diff'] + x['damage']['coded_scale_diff']\n                 + x['damage'].get('nib_diff', 0) > 0)\n  File \"<KAIRA>\\lab\\wnr-testkit-20261108\\WNR-TESTKIT\\tests\\audit\\cases.py\", line 600, in <genexpr>\n    silent = sum(1 for x in rows if x['status'] == 'accepted' and x['damage']['coded_sym_diff'] + x['damage']['coded_scale_diff']\n                                                                  ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^\nTypeError: 'NoneType' object is not subscriptable\n",
+ "by_kind": {},
+ "seconds": 46.9
+}

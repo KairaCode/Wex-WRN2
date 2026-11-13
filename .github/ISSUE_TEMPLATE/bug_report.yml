@@ -1,0 +1,49 @@
+name: Bug report
+description: A reader, writer, converter or test does something wrong.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Never attach real containers or third-party model weights. Build the smallest file that shows the problem from `fixtures/`, or paste the script that builds it. A security problem goes through SECURITY.md, not here.
+  - type: input
+    id: container
+    attributes:
+      label: Container version and record codec
+      description: For example "WEX4 4.0, codec 5 (WNR3) with canonical zero" or "WEX1, codec 0".
+    validations:
+      required: true
+  - type: input
+    id: tool
+    attributes:
+      label: Tool and commit
+      description: The file you ran (for example `wex4/wex4_convert.py upgrade`) and `git rev-parse --short HEAD`.
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: OS, compiler and Python
+      description: For example "Windows 11, MSYS2 UCRT64 gcc 16.2, Python 3.14".
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal reproduction
+      description: The commands, and the file built from `fixtures/` (or the script that builds it).
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: What happened, and what you expected
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: "`bash scripts/check_all.sh` passes on this commit, or its failure is part of the report."

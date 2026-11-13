@@ -1,0 +1,78 @@
+{
+ "base_fix": {
+  "insample": 3.772844982276704,
+  "heldout": 3.7728995013022675,
+  "rows_used_max": 221,
+  "delta_vs_base_fix_pct": 0.0
+ },
+ "row8 merged to 1": {
+  "insample": 3.772844982276704,
+  "heldout": 3.7728995013022675,
+  "rows_used_max": 221,
+  "delta_vs_base_fix_pct": 0.0
+ },
+ "row8 merged to 2": {
+  "insample": 3.771225597237135,
+  "heldout": 3.7712859720423944,
+  "rows_used_max": 378,
+  "delta_vs_base_fix_pct": -0.04276629312061437
+ },
+ "row8 merged to 4": {
+  "insample": 3.7706435984135824,
+  "heldout": 3.770707620350701,
+  "rows_used_max": 675,
+  "delta_vs_base_fix_pct": -0.05809539720870065
+ },
+ "row8 merged to 8": {
+  "insample": 3.769777519684448,
+  "heldout": 3.769853670458169,
+  "rows_used_max": 1269,
+  "delta_vs_base_fix_pct": -0.0807291803836091
+ },
+ "col8 merged to 1": {
+  "insample": 3.772844982276704,
+  "heldout": 3.7728995013022675,
+  "rows_used_max": 221,
+  "delta_vs_base_fix_pct": 0.0
+ },
+ "col8 merged to 2": {
+  "insample": 3.7722811939833836,
+  "heldout": 3.772349998555429,
+  "rows_used_max": 403,
+  "delta_vs_base_fix_pct": -0.014564468166952886
+ },
+ "col8 merged to 4": {
+  "insample": 3.7719750916933688,
+  "heldout": 3.772068770442355,
+  "rows_used_max": 743,
+  "delta_vs_base_fix_pct": -0.022018367031137732
+ },
+ "col8 merged to 8": {
+  "insample": 3.7717815004125548,
+  "heldout": 3.773244531993862,
+  "rows_used_max": 1281,
+  "delta_vs_base_fix_pct": 0.009144974348649488
+ },
+ "rowbin_hist_total": [
+  33087,
+  181015,
+  259529,
+  293100,
+  331246,
+  198681,
+  187981,
+  71841
+ ],
+ "colbin_hist_total": [
+  160,
+  842,
+  8336,
+  23409,
+  18851,
+  7771,
+  2750,
+  601
+ ],
+ "row_phase_std_median": 0.08040547039885229,
+ "col_phase_std_median": 0.010786547665718415
+}

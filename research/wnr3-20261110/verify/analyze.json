@@ -1,0 +1,2870 @@
+{
+ "test40": {
+  "n": 40,
+  "raw": 18800640,
+  "wnr2_mean": 16910131.2,
+  "nr3_mean": 16579174.4,
+  "nr3cz_mean": 16064307.2,
+  "wnr2_ratio": 0.8994444444444444,
+  "nr3_ratio": 0.8818409586056645,
+  "nr3cz_ratio": 0.8544553376906318,
+  "nr3cz_vs_wnr2": 0.9499812278215796,
+  "nr3_vs_wnr2": 0.980428490111301,
+  "cz_gain_pct_raw": 2.738562091503274,
+  "nr3cz_used_ratio": 0.854349129870047,
+  "max_wnr2": 17485824,
+  "max_nr3": 16961536,
+  "max_nr3cz": 16449536,
+  "argmax_nr3cz": 39156,
+  "nr3cz_worse_than_wnr2": 0,
+  "cpu_exact_noncz": 40,
+  "cpu_value_exact_cz": 40
+ },
+ "tail64": {
+  "n": 64,
+  "raw": 18800640,
+  "wnr2_mean": 17538944.0,
+  "nr3_mean": 16926400.0,
+  "nr3cz_mean": 16401216.0,
+  "wnr2_ratio": 0.9328907952069717,
+  "nr3_ratio": 0.9003097766884531,
+  "nr3cz_ratio": 0.872375408496732,
+  "nr3cz_vs_wnr2": 0.9351313283171439,
+  "nr3_vs_wnr2": 0.9650752063522182,
+  "cz_gain_pct_raw": 2.7934368191721135,
+  "nr3cz_used_ratio": 0.8722624194907727,
+  "max_wnr2": 18321408,
+  "max_nr3": 17985536,
+  "max_nr3cz": 17420288,
+  "argmax_nr3cz": 37150,
+  "nr3cz_worse_than_wnr2": 0,
+  "cpu_exact_noncz": 64,
+  "cpu_value_exact_cz": 64
+ },
+ "all": {
+  "n": 103,
+  "raw": 18800640,
+  "wnr2_mean": 17295260.582524274,
+  "nr3_mean": 16791213.980582524,
+  "nr3cz_mean": 16269908.504854368,
+  "wnr2_ratio": 0.9199293525392898,
+  "nr3_ratio": 0.8931192757577681,
+  "nr3cz_ratio": 0.8653912050256996,
+  "nr3cz_vs_wnr2": 0.9407148523274661,
+  "nr3_vs_wnr2": 0.9708563742340456,
+  "cz_gain_pct_raw": 2.772807073206849,
+  "nr3cz_used_ratio": 0.8652802053960237,
+  "max_wnr2": 18321408,
+  "max_nr3": 17985536,
+  "max_nr3cz": 17420288,
+  "argmax_nr3cz": 37150,
+  "nr3cz_worse_than_wnr2": 0,
+  "cpu_exact_noncz": 103,
+  "cpu_value_exact_cz": 103
+ },
+ "models": {
+  "noncz": {
+   "model_id": "0x299dc586",
+   "model": "trained on 80",
+   "cz": false,
+   "records": 103,
+   "in_bin": 103,
+   "mean_total": 16791213.980582524,
+   "max_total": 17985536,
+   "gate_failures": 0
+  },
+  "cz": {
+   "model_id": "0x27e8a1e0",
+   "model": "trained on 80",
+   "cz": true,
+   "records": 103,
+   "in_bin": 103,
+   "mean_total": 16269908.504854368,
+   "max_total": 17420288,
+   "gate_failures": 0
+  }
+ },
+ "rows": [
+  {
+   "layer": 0,
+   "expert": 113,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16891904,
+   "wnr2_used": 16888884,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16572416,
+   "nr3_used": 16570929,
+   "nr3cz_total": 16056320,
+   "nr3cz_used": 16052351,
+   "cz_count": 2077419,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 1,
+   "expert": 187,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16896000,
+   "wnr2_used": 16893536,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16576512,
+   "nr3_used": 16572486,
+   "nr3cz_total": 16060416,
+   "nr3cz_used": 16058291,
+   "cz_count": 2058566,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 2,
+   "expert": 62,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16867328,
+   "wnr2_used": 16867086,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16556032,
+   "nr3_used": 16554358,
+   "nr3cz_total": 16039936,
+   "nr3cz_used": 16038602,
+   "cz_count": 2064030,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 3,
+   "expert": 142,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16830464,
+   "wnr2_used": 16827864,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16539648,
+   "nr3_used": 16537014,
+   "nr3cz_total": 16023552,
+   "nr3cz_used": 16019659,
+   "cz_count": 2068925,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 4,
+   "expert": 38,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16867328,
+   "wnr2_used": 16866470,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16551936,
+   "nr3_used": 16549579,
+   "nr3cz_total": 16035840,
+   "nr3cz_used": 16033524,
+   "cz_count": 2066477,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 5,
+   "expert": 84,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16842752,
+   "wnr2_used": 16841336,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16543744,
+   "nr3_used": 16540135,
+   "nr3cz_total": 16027648,
+   "nr3cz_used": 16023674,
+   "cz_count": 2067722,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 6,
+   "expert": 73,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16855040,
+   "wnr2_used": 16854061,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16551936,
+   "nr3_used": 16550184,
+   "nr3cz_total": 16035840,
+   "nr3cz_used": 16033816,
+   "cz_count": 2067168,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 7,
+   "expert": 167,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16867328,
+   "wnr2_used": 16864069,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16551936,
+   "nr3_used": 16550731,
+   "nr3cz_total": 16035840,
+   "nr3cz_used": 16034713,
+   "cz_count": 2064546,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 8,
+   "expert": 19,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16834560,
+   "wnr2_used": 16831448,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16535552,
+   "nr3_used": 16534631,
+   "nr3cz_total": 16019456,
+   "nr3cz_used": 16017191,
+   "cz_count": 2070608,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 9,
+   "expert": 160,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16896000,
+   "wnr2_used": 16894303,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16576512,
+   "nr3_used": 16574660,
+   "nr3cz_total": 16064512,
+   "nr3cz_used": 16061378,
+   "cz_count": 2055783,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 10,
+   "expert": 60,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16912384,
+   "wnr2_used": 16909452,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16588800,
+   "nr3_used": 16585284,
+   "nr3cz_total": 16072704,
+   "nr3cz_used": 16072386,
+   "cz_count": 2051770,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 11,
+   "expert": 132,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16879616,
+   "wnr2_used": 16878929,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16568320,
+   "nr3_used": 16567279,
+   "nr3cz_total": 16056320,
+   "nr3cz_used": 16053244,
+   "cz_count": 2057635,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 12,
+   "expert": 34,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16900096,
+   "wnr2_used": 16897011,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16584704,
+   "nr3_used": 16581777,
+   "nr3cz_total": 16068608,
+   "nr3cz_used": 16068263,
+   "cz_count": 2056134,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 13,
+   "expert": 167,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16908288,
+   "wnr2_used": 16904991,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16592896,
+   "nr3_used": 16589869,
+   "nr3cz_total": 16080896,
+   "nr3cz_used": 16076839,
+   "cz_count": 2054364,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 14,
+   "expert": 135,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16904192,
+   "wnr2_used": 16903163,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16580608,
+   "nr3_used": 16578277,
+   "nr3cz_total": 16064512,
+   "nr3cz_used": 16064468,
+   "cz_count": 2056601,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 15,
+   "expert": 156,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16871424,
+   "wnr2_used": 16870120,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16580608,
+   "nr3_used": 16578423,
+   "nr3cz_total": 16064512,
+   "nr3cz_used": 16063923,
+   "cz_count": 2060684,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 16,
+   "expert": 34,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16945152,
+   "wnr2_used": 16941141,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16613376,
+   "nr3_used": 16611588,
+   "nr3cz_total": 16101376,
+   "nr3cz_used": 16101100,
+   "cz_count": 2044773,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 17,
+   "expert": 123,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16936960,
+   "wnr2_used": 16935510,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16617472,
+   "nr3_used": 16615586,
+   "nr3cz_total": 16105472,
+   "nr3cz_used": 16104832,
+   "cz_count": 2045291,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 18,
+   "expert": 81,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16928768,
+   "wnr2_used": 16927073,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16613376,
+   "nr3_used": 16609737,
+   "nr3cz_total": 16101376,
+   "nr3cz_used": 16098007,
+   "cz_count": 2051569,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 19,
+   "expert": 180,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16920576,
+   "wnr2_used": 16918658,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16592896,
+   "nr3_used": 16589228,
+   "nr3cz_total": 16080896,
+   "nr3cz_used": 16077157,
+   "cz_count": 2051056,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 20,
+   "expert": 74,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16924672,
+   "wnr2_used": 16920935,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16592896,
+   "nr3_used": 16590891,
+   "nr3cz_total": 16080896,
+   "nr3cz_used": 16078699,
+   "cz_count": 2051203,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 21,
+   "expert": 72,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16908288,
+   "wnr2_used": 16905225,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16584704,
+   "nr3_used": 16583909,
+   "nr3cz_total": 16072704,
+   "nr3cz_used": 16070126,
+   "cz_count": 2056540,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 22,
+   "expert": 59,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16879616,
+   "wnr2_used": 16876459,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16580608,
+   "nr3_used": 16577325,
+   "nr3cz_total": 16064512,
+   "nr3cz_used": 16063349,
+   "cz_count": 2056818,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 23,
+   "expert": 178,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16838656,
+   "wnr2_used": 16838301,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16535552,
+   "nr3_used": 16535424,
+   "nr3cz_total": 16019456,
+   "nr3cz_used": 16018979,
+   "cz_count": 2065835,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 24,
+   "expert": 58,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 17276928,
+   "wnr2_used": 17275074,
+   "wnr2_median": [
+    120,
+    121,
+    120
+   ],
+   "nr3_total": 16740352,
+   "nr3_used": 16738741,
+   "nr3cz_total": 16228352,
+   "nr3cz_used": 16226895,
+   "cz_count": 2048904,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 25,
+   "expert": 166,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16883712,
+   "wnr2_used": 16883301,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16564224,
+   "nr3_used": 16562831,
+   "nr3cz_total": 16052224,
+   "nr3cz_used": 16048179,
+   "cz_count": 2061416,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 26,
+   "expert": 77,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16842752,
+   "wnr2_used": 16840180,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16535552,
+   "nr3_used": 16534457,
+   "nr3cz_total": 16019456,
+   "nr3cz_used": 16017541,
+   "cz_count": 2071223,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 27,
+   "expert": 152,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16896000,
+   "wnr2_used": 16892325,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16576512,
+   "nr3_used": 16574625,
+   "nr3cz_total": 16060416,
+   "nr3cz_used": 16060134,
+   "cz_count": 2059030,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 28,
+   "expert": 89,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16871424,
+   "wnr2_used": 16870101,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16556032,
+   "nr3_used": 16553684,
+   "nr3cz_total": 16039936,
+   "nr3cz_used": 16038650,
+   "cz_count": 2060678,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 29,
+   "expert": 190,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16830464,
+   "wnr2_used": 16828866,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16535552,
+   "nr3_used": 16533817,
+   "nr3cz_total": 16019456,
+   "nr3cz_used": 16016721,
+   "cz_count": 2069256,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 30,
+   "expert": 54,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16850944,
+   "wnr2_used": 16848600,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16539648,
+   "nr3_used": 16538048,
+   "nr3cz_total": 16023552,
+   "nr3cz_used": 16021317,
+   "cz_count": 2067598,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 31,
+   "expert": 171,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16855040,
+   "wnr2_used": 16851630,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16543744,
+   "nr3_used": 16540716,
+   "nr3cz_total": 16027648,
+   "nr3cz_used": 16024354,
+   "cz_count": 2068347,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 32,
+   "expert": 148,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16855040,
+   "wnr2_used": 16852045,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16543744,
+   "nr3_used": 16543094,
+   "nr3cz_total": 16027648,
+   "nr3cz_used": 16026754,
+   "cz_count": 2067832,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 33,
+   "expert": 188,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16818176,
+   "wnr2_used": 16817184,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16527360,
+   "nr3_used": 16525400,
+   "nr3cz_total": 16011264,
+   "nr3cz_used": 16008410,
+   "cz_count": 2069812,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 34,
+   "expert": 78,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16846848,
+   "wnr2_used": 16843743,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16556032,
+   "nr3_used": 16553411,
+   "nr3cz_total": 16039936,
+   "nr3cz_used": 16037115,
+   "cz_count": 2065238,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 35,
+   "expert": 173,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16863232,
+   "wnr2_used": 16863099,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16556032,
+   "nr3_used": 16553655,
+   "nr3cz_total": 16039936,
+   "nr3cz_used": 16037745,
+   "cz_count": 2065978,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 36,
+   "expert": 107,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16838656,
+   "wnr2_used": 16834914,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16535552,
+   "nr3_used": 16535082,
+   "nr3cz_total": 16019456,
+   "nr3cz_used": 16018460,
+   "cz_count": 2067886,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 37,
+   "expert": 177,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 16879616,
+   "wnr2_used": 16876582,
+   "wnr2_median": [
+    120,
+    120,
+    120
+   ],
+   "nr3_total": 16568320,
+   "nr3_used": 16566736,
+   "nr3cz_total": 16052224,
+   "nr3cz_used": 16051587,
+   "cz_count": 2061039,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 38,
+   "expert": 5,
+   "set": "test",
+   "in_tail64": false,
+   "raw": 18800640,
+   "wnr2_total": 17203200,
+   "wnr2_used": 17201023,
+   "wnr2_median": [
+    120,
+    121,
+    121
+   ],
+   "nr3_total": 16543744,
+   "nr3_used": 16541179,
+   "nr3cz_total": 16027648,
+   "nr3cz_used": 16025325,
+   "cz_count": 2065297,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 156,
+   "set": "test",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17485824,
+   "wnr2_used": 17481951,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16961536,
+   "nr3_used": 16961441,
+   "nr3cz_total": 16449536,
+   "nr3cz_used": 16448659,
+   "cz_count": 2050131,
+   "anchors": [
+    120,
+    121,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 120,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 18321408,
+   "wnr2_used": 18319818,
+   "wnr2_median": [
+    121,
+    123,
+    122
+   ],
+   "nr3_total": 17985536,
+   "nr3_used": 17983355,
+   "nr3cz_total": 17358848,
+   "nr3cz_used": 17355764,
+   "cz_count": 2511507,
+   "anchors": [
+    121,
+    122,
+    121
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 37,
+   "expert": 150,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 18079744,
+   "wnr2_used": 18076599,
+   "wnr2_median": [
+    121,
+    122,
+    122
+   ],
+   "nr3_total": 17973248,
+   "nr3_used": 17972484,
+   "nr3cz_total": 17420288,
+   "nr3cz_used": 17418816,
+   "cz_count": 2216605,
+   "anchors": [
+    121,
+    122,
+    121
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 38,
+   "expert": 191,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 18067456,
+   "wnr2_used": 18065129,
+   "wnr2_median": [
+    121,
+    122,
+    121
+   ],
+   "nr3_total": 17973248,
+   "nr3_used": 17971714,
+   "nr3cz_total": 17412096,
+   "nr3cz_used": 17408356,
+   "cz_count": 2251604,
+   "anchors": [
+    121,
+    122,
+    121
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 36,
+   "expert": 184,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 18030592,
+   "wnr2_used": 18029553,
+   "wnr2_median": [
+    121,
+    122,
+    122
+   ],
+   "nr3_total": 17911808,
+   "nr3_used": 17910647,
+   "nr3cz_total": 17375232,
+   "nr3cz_used": 17372413,
+   "cz_count": 2152450,
+   "anchors": [
+    121,
+    122,
+    121
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 105,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17879040,
+   "wnr2_used": 17876803,
+   "wnr2_median": [
+    121,
+    122,
+    121
+   ],
+   "nr3_total": 17879040,
+   "nr3_used": 17877315,
+   "nr3cz_total": 17166336,
+   "nr3cz_used": 17162715,
+   "cz_count": 2848577,
+   "anchors": [
+    121,
+    122,
+    121
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 191,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17772544,
+   "wnr2_used": 17772220,
+   "wnr2_median": [
+    121,
+    122,
+    121
+   ],
+   "nr3_total": 17133568,
+   "nr3_used": 17131623,
+   "nr3cz_total": 16506880,
+   "nr3cz_used": 16503897,
+   "cz_count": 2512759,
+   "anchors": [
+    120,
+    121,
+    121
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 37,
+   "expert": 59,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17743872,
+   "wnr2_used": 17742917,
+   "wnr2_median": [
+    121,
+    122,
+    121
+   ],
+   "nr3_total": 17059840,
+   "nr3_used": 17057701,
+   "nr3cz_total": 16420864,
+   "nr3cz_used": 16417283,
+   "cz_count": 2559781,
+   "anchors": [
+    120,
+    121,
+    121
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 15,
+   "expert": 29,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17653760,
+   "wnr2_used": 17651622,
+   "wnr2_median": [
+    120,
+    121,
+    121
+   ],
+   "nr3_total": 17244160,
+   "nr3_used": 17242876,
+   "nr3cz_total": 16760832,
+   "nr3cz_used": 16758793,
+   "cz_count": 1936459,
+   "anchors": [
+    119,
+    121,
+    121
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 32,
+   "expert": 49,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17534976,
+   "wnr2_used": 17534265,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 17125376,
+   "nr3_used": 17124407,
+   "nr3cz_total": 16629760,
+   "nr3cz_used": 16628631,
+   "cz_count": 1983554,
+   "anchors": [
+    120,
+    121,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 60,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17530880,
+   "wnr2_used": 17529191,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 17321984,
+   "nr3_used": 17319857,
+   "nr3cz_total": 16818176,
+   "nr3cz_used": 16818049,
+   "cz_count": 2008220,
+   "anchors": [
+    121,
+    121,
+    121
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 37,
+   "expert": 149,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17522688,
+   "wnr2_used": 17519547,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 17170432,
+   "nr3_used": 17167922,
+   "nr3cz_total": 16646144,
+   "nr3cz_used": 16644211,
+   "cz_count": 2095975,
+   "anchors": [
+    120,
+    121,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 36,
+   "expert": 162,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17518592,
+   "wnr2_used": 17514570,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 17424384,
+   "nr3_used": 17421491,
+   "nr3cz_total": 16908288,
+   "nr3cz_used": 16904862,
+   "cz_count": 2064532,
+   "anchors": [
+    120,
+    121,
+    121
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 19,
+   "expert": 143,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17514496,
+   "wnr2_used": 17510510,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16769024,
+   "nr3_used": 16767204,
+   "nr3cz_total": 16261120,
+   "nr3cz_used": 16257507,
+   "cz_count": 2040576,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 35,
+   "expert": 190,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17510400,
+   "wnr2_used": 17506909,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16805888,
+   "nr3_used": 16802482,
+   "nr3cz_total": 16302080,
+   "nr3cz_used": 16299427,
+   "cz_count": 2012839,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 15,
+   "expert": 24,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17502208,
+   "wnr2_used": 17500955,
+   "wnr2_median": [
+    120,
+    121,
+    121
+   ],
+   "nr3_total": 17326080,
+   "nr3_used": 17322854,
+   "nr3cz_total": 16830464,
+   "nr3cz_used": 16827023,
+   "cz_count": 1983045,
+   "anchors": [
+    120,
+    121,
+    121
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 20,
+   "expert": 182,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17502208,
+   "wnr2_used": 17498437,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16801792,
+   "nr3_used": 16798484,
+   "nr3cz_total": 16297984,
+   "nr3cz_used": 16295330,
+   "cz_count": 2014356,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 36,
+   "expert": 166,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17502208,
+   "wnr2_used": 17500524,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16773120,
+   "nr3_used": 16769309,
+   "nr3cz_total": 16261120,
+   "nr3cz_used": 16259892,
+   "cz_count": 2038595,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 38,
+   "expert": 169,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17502208,
+   "wnr2_used": 17498126,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16777216,
+   "nr3_used": 16775394,
+   "nr3cz_total": 16273408,
+   "nr3cz_used": 16271362,
+   "cz_count": 2017840,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 19,
+   "expert": 140,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17498112,
+   "wnr2_used": 17495609,
+   "wnr2_median": [
+    120,
+    121,
+    121
+   ],
+   "nr3_total": 16867328,
+   "nr3_used": 16867032,
+   "nr3cz_total": 16359424,
+   "nr3cz_used": 16358594,
+   "cz_count": 2034881,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 26,
+   "expert": 16,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17498112,
+   "wnr2_used": 17496570,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16764928,
+   "nr3_used": 16764172,
+   "nr3cz_total": 16261120,
+   "nr3cz_used": 16258482,
+   "cz_count": 2023231,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 36,
+   "expert": 168,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17498112,
+   "wnr2_used": 17495250,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16711680,
+   "nr3_used": 16710704,
+   "nr3cz_total": 16187392,
+   "nr3cz_used": 16186610,
+   "cz_count": 2096342,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 19,
+   "expert": 99,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17494016,
+   "wnr2_used": 17491446,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16715776,
+   "nr3_used": 16712914,
+   "nr3cz_total": 16203776,
+   "nr3cz_used": 16201319,
+   "cz_count": 2046652,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 38,
+   "expert": 63,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17494016,
+   "wnr2_used": 17491211,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 17264640,
+   "nr3_used": 17262389,
+   "nr3cz_total": 16719872,
+   "nr3cz_used": 16718030,
+   "cz_count": 2170884,
+   "anchors": [
+    120,
+    121,
+    121
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 22,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17494016,
+   "wnr2_used": 17493516,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16920576,
+   "nr3_used": 16918587,
+   "nr3cz_total": 16408576,
+   "nr3cz_used": 16405194,
+   "cz_count": 2053406,
+   "anchors": [
+    120,
+    121,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 52,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17494016,
+   "wnr2_used": 17493065,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 17022976,
+   "nr3_used": 17021737,
+   "nr3cz_total": 16502784,
+   "nr3cz_used": 16501627,
+   "cz_count": 2079844,
+   "anchors": [
+    120,
+    121,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 17,
+   "expert": 13,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17485824,
+   "wnr2_used": 17482214,
+   "wnr2_median": [
+    120,
+    121,
+    121
+   ],
+   "nr3_total": 16953344,
+   "nr3_used": 16951673,
+   "nr3cz_total": 16453632,
+   "nr3cz_used": 16451597,
+   "cz_count": 2001418,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 23,
+   "expert": 47,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17485824,
+   "wnr2_used": 17484447,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16695296,
+   "nr3_used": 16695028,
+   "nr3cz_total": 16187392,
+   "nr3cz_used": 16187160,
+   "cz_count": 2032636,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 24,
+   "expert": 5,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17485824,
+   "wnr2_used": 17484348,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16715776,
+   "nr3_used": 16712741,
+   "nr3cz_total": 16207872,
+   "nr3cz_used": 16205819,
+   "cz_count": 2028771,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 38,
+   "expert": 13,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17485824,
+   "wnr2_used": 17482796,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16715776,
+   "nr3_used": 16712361,
+   "nr3cz_total": 16203776,
+   "nr3cz_used": 16203447,
+   "cz_count": 2037520,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 25,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17485824,
+   "wnr2_used": 17485701,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16728064,
+   "nr3_used": 16728059,
+   "nr3cz_total": 16216064,
+   "nr3cz_used": 16213920,
+   "cz_count": 2056683,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 184,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17485824,
+   "wnr2_used": 17484635,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16756736,
+   "nr3_used": 16753476,
+   "nr3cz_total": 16244736,
+   "nr3cz_used": 16241146,
+   "cz_count": 2050835,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 21,
+   "expert": 179,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17481728,
+   "wnr2_used": 17480906,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16683008,
+   "nr3_used": 16681463,
+   "nr3cz_total": 16175104,
+   "nr3cz_used": 16171676,
+   "cz_count": 2041520,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 38,
+   "expert": 51,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17481728,
+   "wnr2_used": 17479180,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16887808,
+   "nr3_used": 16887134,
+   "nr3cz_total": 16363520,
+   "nr3cz_used": 16359819,
+   "cz_count": 2109054,
+   "anchors": [
+    120,
+    121,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 19,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17481728,
+   "wnr2_used": 17479058,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16932864,
+   "nr3_used": 16929343,
+   "nr3cz_total": 16412672,
+   "nr3cz_used": 16412370,
+   "cz_count": 2068434,
+   "anchors": [
+    120,
+    121,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 35,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17481728,
+   "wnr2_used": 17479778,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16670720,
+   "nr3_used": 16666816,
+   "nr3cz_total": 16154624,
+   "nr3cz_used": 16154583,
+   "cz_count": 2050085,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 155,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17481728,
+   "wnr2_used": 17481112,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16666624,
+   "nr3_used": 16664981,
+   "nr3cz_total": 16154624,
+   "nr3cz_used": 16152437,
+   "cz_count": 2052285,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 174,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17481728,
+   "wnr2_used": 17479652,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 17149952,
+   "nr3_used": 17147655,
+   "nr3cz_total": 16596992,
+   "nr3cz_used": 16593723,
+   "cz_count": 2214759,
+   "anchors": [
+    120,
+    121,
+    121
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 107,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17477632,
+   "wnr2_used": 17476966,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16941056,
+   "nr3_used": 16937787,
+   "nr3cz_total": 16408576,
+   "nr3cz_used": 16406125,
+   "cz_count": 2127279,
+   "anchors": [
+    120,
+    121,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 162,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17477632,
+   "wnr2_used": 17473806,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16695296,
+   "nr3_used": 16695014,
+   "nr3cz_total": 16183296,
+   "nr3cz_used": 16182494,
+   "cz_count": 2053362,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 23,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17469440,
+   "wnr2_used": 17468756,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16666624,
+   "nr3_used": 16664139,
+   "nr3cz_total": 16150528,
+   "nr3cz_used": 16147515,
+   "cz_count": 2066591,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 38,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17469440,
+   "wnr2_used": 17466112,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16654336,
+   "nr3_used": 16651215,
+   "nr3cz_total": 16138240,
+   "nr3cz_used": 16136806,
+   "cz_count": 2057695,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 98,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17469440,
+   "wnr2_used": 17468122,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16986112,
+   "nr3_used": 16984028,
+   "nr3cz_total": 16457728,
+   "nr3cz_used": 16455026,
+   "cz_count": 2113629,
+   "anchors": [
+    120,
+    121,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 38,
+   "expert": 26,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17465344,
+   "wnr2_used": 17464950,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16633856,
+   "nr3_used": 16631354,
+   "nr3cz_total": 16121856,
+   "nr3cz_used": 16118903,
+   "cz_count": 2049935,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 38,
+   "expert": 85,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17465344,
+   "wnr2_used": 17465266,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16642048,
+   "nr3_used": 16641185,
+   "nr3cz_total": 16130048,
+   "nr3cz_used": 16127798,
+   "cz_count": 2053801,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 3,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17465344,
+   "wnr2_used": 17461383,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16633856,
+   "nr3_used": 16633274,
+   "nr3cz_total": 16121856,
+   "nr3cz_used": 16118855,
+   "cz_count": 2058212,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 9,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17465344,
+   "wnr2_used": 17464231,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16658432,
+   "nr3_used": 16657750,
+   "nr3cz_total": 16146432,
+   "nr3cz_used": 16143938,
+   "cz_count": 2056706,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 76,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17465344,
+   "wnr2_used": 17464710,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16654336,
+   "nr3_used": 16652627,
+   "nr3cz_total": 16146432,
+   "nr3cz_used": 16143840,
+   "cz_count": 2037602,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 176,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17465344,
+   "wnr2_used": 17461392,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16891904,
+   "nr3_used": 16891650,
+   "nr3cz_total": 16371712,
+   "nr3cz_used": 16370609,
+   "cz_count": 2084883,
+   "anchors": [
+    120,
+    121,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 189,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17465344,
+   "wnr2_used": 17463085,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 17170432,
+   "nr3_used": 17169103,
+   "nr3cz_total": 16609280,
+   "nr3cz_used": 16605218,
+   "cz_count": 2254486,
+   "anchors": [
+    120,
+    121,
+    121
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 2,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17461248,
+   "wnr2_used": 17460832,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16928768,
+   "nr3_used": 16926266,
+   "nr3cz_total": 16404480,
+   "nr3cz_used": 16400717,
+   "cz_count": 2101910,
+   "anchors": [
+    120,
+    121,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 46,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17461248,
+   "wnr2_used": 17458864,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16629760,
+   "nr3_used": 16628583,
+   "nr3cz_total": 16117760,
+   "nr3cz_used": 16117277,
+   "cz_count": 2045165,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 101,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17461248,
+   "wnr2_used": 17460441,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16650240,
+   "nr3_used": 16649243,
+   "nr3cz_total": 16138240,
+   "nr3cz_used": 16136254,
+   "cz_count": 2053386,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 124,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17461248,
+   "wnr2_used": 17457720,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16625664,
+   "nr3_used": 16625242,
+   "nr3cz_total": 16117760,
+   "nr3cz_used": 16114313,
+   "cz_count": 2042991,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 128,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17461248,
+   "wnr2_used": 17457927,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16637952,
+   "nr3_used": 16635194,
+   "nr3cz_total": 16125952,
+   "nr3cz_used": 16124121,
+   "cz_count": 2046228,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 21,
+   "expert": 28,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17457152,
+   "wnr2_used": 17457102,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16633856,
+   "nr3_used": 16631855,
+   "nr3cz_total": 16121856,
+   "nr3cz_used": 16121006,
+   "cz_count": 2044303,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 36,
+   "expert": 2,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17457152,
+   "wnr2_used": 17454645,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16973824,
+   "nr3_used": 16971607,
+   "nr3cz_total": 16445440,
+   "nr3cz_used": 16444855,
+   "cz_count": 2108631,
+   "anchors": [
+    120,
+    121,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 37,
+   "expert": 110,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17457152,
+   "wnr2_used": 17455318,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16654336,
+   "nr3_used": 16653209,
+   "nr3cz_total": 16134144,
+   "nr3cz_used": 16133484,
+   "cz_count": 2082312,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 38,
+   "expert": 134,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17457152,
+   "wnr2_used": 17455859,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16625664,
+   "nr3_used": 16622256,
+   "nr3cz_total": 16105472,
+   "nr3cz_used": 16105214,
+   "cz_count": 2069240,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 11,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17457152,
+   "wnr2_used": 17454631,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16642048,
+   "nr3_used": 16639415,
+   "nr3cz_total": 16121856,
+   "nr3cz_used": 16117853,
+   "cz_count": 2087687,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 27,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17457152,
+   "wnr2_used": 17454374,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16621568,
+   "nr3_used": 16619555,
+   "nr3cz_total": 16105472,
+   "nr3cz_used": 16105427,
+   "cz_count": 2057032,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 58,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17457152,
+   "wnr2_used": 17454696,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16949248,
+   "nr3_used": 16946012,
+   "nr3cz_total": 16420864,
+   "nr3cz_used": 16417475,
+   "cz_count": 2113502,
+   "anchors": [
+    120,
+    121,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 109,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17457152,
+   "wnr2_used": 17454390,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16617472,
+   "nr3_used": 16614525,
+   "nr3cz_total": 16101376,
+   "nr3cz_used": 16100718,
+   "cz_count": 2056855,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  },
+  {
+   "layer": 39,
+   "expert": 175,
+   "set": "tail",
+   "in_tail64": true,
+   "raw": 18800640,
+   "wnr2_total": 17457152,
+   "wnr2_used": 17455350,
+   "wnr2_median": [
+    121,
+    121,
+    121
+   ],
+   "nr3_total": 16629760,
+   "nr3_used": 16629047,
+   "nr3cz_total": 16117760,
+   "nr3cz_used": 16115487,
+   "cz_count": 2057159,
+   "anchors": [
+    120,
+    120,
+    120
+   ],
+   "ceil_mask": 7,
+   "cpu_exact_noncz": true,
+   "cpu_value_exact_cz": true
+  }
+ ]
+}

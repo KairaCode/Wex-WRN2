@@ -1,0 +1,37 @@
+{
+ "set0_w1": {
+  "matrices": 40,
+  "anchor0": 120,
+  "mode_densest_pair": 120,
+  "differ": 0,
+  "differ_frac": 0.0,
+  "stop_condition": false,
+  "differing": []
+ },
+ "set0_w2": {
+  "matrices": 40,
+  "anchor0": 120,
+  "mode_densest_pair": 120,
+  "differ": 1,
+  "differ_frac": 0.025,
+  "stop_condition": true,
+  "differing": [
+   [
+    "L39_E156.bin",
+    121
+   ]
+  ]
+ },
+ "set0_w3": {
+  "matrices": 40,
+  "anchor0": 120,
+  "mode_densest_pair": 120,
+  "differ": 0,
+  "differ_frac": 0.0,
+  "stop_condition": false,
+  "differing": []
+ },
+ "stop": true,
+ "override_used": false,
+ "seconds": 40.09011650085449
+}

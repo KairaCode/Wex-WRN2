@@ -1,0 +1,189 @@
+== r10q38root A1 07:30:51 VERIFY_SET='QT_ARENA=1 Q38_KEEP_FREE_GB=0 CUDA_RESERVE_GB=2 COLI_WEX_ROOT=' vram0=239MiB
+lock: taken 07:30:51
+{
+ "label": "new",
+ "runtime": "<KAIRA>\\app\\colibri-optimized",
+ "engine": "<KAIRA>\\app\\colibri-q38mx\\qwen38.exe",
+ "kill": null,
+ "error": null,
+ "ram_gb_host": 16,
+ "ram_gb": 13,
+ "avail_start": 19003830272,
+ "commit_limit_start": 83000778752,
+ "c_free_start": 55173611520,
+ "pagefile_c_start": 33447325696,
+ "vram_start": 239,
+ "vram_total": 32607,
+ "job_cap": 50690917632.0,
+ "launched": 1794551451.8500187,
+ "ready_s": 14.524895668029785,
+ "alive_at_end": true,
+ "peak_job_commit_os": 41809522688,
+ "exit": 9,
+ "peaks": {
+  "engine_commit": 41772658688,
+  "gw_commit": 36904960,
+  "job_commit": 41809522688,
+  "engine_ws": 12155248640,
+  "vram": 29650,
+  "engine_host_est": 13141639168.0,
+  "engine_host_est_stable": 13141639168.0,
+  "avail_min": 6728781824,
+  "c_free_min": 54880686080,
+  "pagefile_c_max": 33447325696,
+  "limit_max": 83000778752
+ },
+ "avail_end": 19150671872,
+ "commit_limit_end": 83000778752,
+ "c_free_end": 55150686208,
+ "pagefile_c_end": 33447325696,
+ "wall": 93.93611979484558
+}
+p1-258 253 200 ttft 9.1 tok/s 16.59 None 'This is a classic resource management failure in high-performance computing: **static allocation without dynamic feedback**. The engine treated memory as an infinite, static pool rather than a finite,'
+p2-2k 1990 30 ttft 34.4 tok/s 11.83 None 'Run 23 had the highest decode speed of 11.84 tok/s with an RSS of 13.07 GB.'
+p3-turn1 50 8 ttft 1.7 tok/s 8.88 None 'The E: drive is the largest.'
+p3-turn2 89 8 ttft 1.3 tok/s 9.26 None 'The total capacity is 7 TB.'
+p3-turn3 130 14 ttft 1.3 tok/s 8.96 None 'You mentioned the C: drive first, which is 1 TB.'
+lock: released
+== r10q38root B1 07:32:46 VERIFY_SET='QT_ARENA=1 Q38_KEEP_FREE_GB=0 CUDA_RESERVE_GB=2 COLI_WEX_ROOT=db5389f699abb49a164a9e73d925b5b629b0ce6de430a553388ba3e1cae5c0df' vram0=208MiB
+lock: taken 07:32:46
+{
+ "label": "new",
+ "runtime": "<KAIRA>\\app\\colibri-optimized",
+ "engine": "<KAIRA>\\app\\colibri-q38mx\\qwen38.exe",
+ "kill": null,
+ "error": null,
+ "ram_gb_host": 17,
+ "ram_gb": 13,
+ "avail_start": 19250393088,
+ "commit_limit_start": 83000778752,
+ "c_free_start": 55150653440,
+ "pagefile_c_start": 33447325696,
+ "vram_start": 208,
+ "vram_total": 32607,
+ "job_cap": 50690917632.0,
+ "launched": 1794551566.6951778,
+ "ready_s": 12.336898565292358,
+ "alive_at_end": true,
+ "peak_job_commit_os": 41920184320,
+ "exit": 9,
+ "peaks": {
+  "engine_commit": 41881833472,
+  "gw_commit": 38395904,
+  "job_commit": 41920184320,
+  "engine_ws": 11096342528,
+  "vram": 29639,
+  "engine_host_est": 12575166464.0,
+  "engine_host_est_stable": 12562370560.0,
+  "avail_min": 7943733248,
+  "c_free_min": 55150534656,
+  "pagefile_c_max": 33447325696,
+  "limit_max": 83000778752
+ },
+ "avail_end": 19024474112,
+ "commit_limit_end": 83000778752,
+ "c_free_end": 55150571520,
+ "pagefile_c_end": 33447325696,
+ "wall": 90.92181658744812
+}
+p1-258 253 200 ttft 8.5 tok/s 17.13 None 'This is a classic resource management failure in high-performance computing: **static allocation vs. dynamic reality**. The engine failed because it assumed it had infinite memory or ignored the opera'
+p2-2k 1990 30 ttft 34.3 tok/s 10.88 None 'Run 23 had the highest decode speed of 11.84 tok/s with an RSS of 13.07 GB.'
+p3-turn1 50 8 ttft 1.7 tok/s 8.24 None 'The E: drive is the largest.'
+p3-turn2 89 8 ttft 1.2 tok/s 8.72 None 'The total capacity is 7 TB.'
+p3-turn3 130 14 ttft 1.3 tok/s 8.84 None 'You mentioned the C: drive first, which is 1 TB.'
+lock: released
+== r10q38root B2 07:34:38 VERIFY_SET='QT_ARENA=1 Q38_KEEP_FREE_GB=0 CUDA_RESERVE_GB=2 COLI_WEX_ROOT=db5389f699abb49a164a9e73d925b5b629b0ce6de430a553388ba3e1cae5c0df' vram0=206MiB
+lock: taken 07:34:38
+{
+ "label": "new",
+ "runtime": "<KAIRA>\\app\\colibri-optimized",
+ "engine": "<KAIRA>\\app\\colibri-q38mx\\qwen38.exe",
+ "kill": null,
+ "error": null,
+ "ram_gb_host": 16,
+ "ram_gb": 13,
+ "avail_start": 18994618368,
+ "commit_limit_start": 83000778752,
+ "c_free_start": 55150456832,
+ "pagefile_c_start": 33447325696,
+ "vram_start": 206,
+ "vram_total": 32607,
+ "job_cap": 50690917632.0,
+ "launched": 1794551678.4861228,
+ "ready_s": 12.406538248062134,
+ "alive_at_end": true,
+ "peak_job_commit_os": 41803128832,
+ "exit": 9,
+ "peaks": {
+  "engine_commit": 41764204544,
+  "gw_commit": 38973440,
+  "job_commit": 41803128832,
+  "engine_ws": 11174510592,
+  "vram": 29621,
+  "engine_host_est": 12534091776.0,
+  "engine_host_est_stable": 12534091776.0,
+  "avail_min": 7822364672,
+  "c_free_min": 54747729920,
+  "pagefile_c_max": 33447325696,
+  "limit_max": 83000778752
+ },
+ "avail_end": 18998845440,
+ "commit_limit_end": 83000778752,
+ "c_free_end": 55147806720,
+ "pagefile_c_end": 33447325696,
+ "wall": 91.29529738426208
+}
+p1-258 253 200 ttft 8.5 tok/s 16.01 None 'This is a classic resource management failure in high-performance computing: **static allocation without dynamic feedback**. The engine treated memory as an infinite, static pool rather than a finite,'
+p2-2k 1990 30 ttft 33.8 tok/s 11.14 None 'Run 23 had the highest decode speed of 11.84 tok/s with an RSS of 13.07 GB.'
+p3-turn1 50 8 ttft 1.7 tok/s 7.88 None 'The E: drive is the largest.'
+p3-turn2 89 8 ttft 1.2 tok/s 8.67 None 'The total capacity is 7 TB.'
+p3-turn3 130 14 ttft 1.3 tok/s 8.69 None 'You mentioned the C: drive first, which is 1 TB.'
+lock: released
+== r10q38root A2 07:36:30 VERIFY_SET='QT_ARENA=1 Q38_KEEP_FREE_GB=0 CUDA_RESERVE_GB=2 COLI_WEX_ROOT=' vram0=202MiB
+lock: taken 07:36:30
+{
+ "label": "new",
+ "runtime": "<KAIRA>\\app\\colibri-optimized",
+ "engine": "<KAIRA>\\app\\colibri-q38mx\\qwen38.exe",
+ "kill": null,
+ "error": null,
+ "ram_gb_host": 16,
+ "ram_gb": 13,
+ "avail_start": 18926493696,
+ "commit_limit_start": 83000778752,
+ "c_free_start": 55147786240,
+ "pagefile_c_start": 33447325696,
+ "vram_start": 202,
+ "vram_total": 32607,
+ "job_cap": 50690917632.0,
+ "launched": 1794551790.6490793,
+ "ready_s": 14.562044858932495,
+ "alive_at_end": true,
+ "peak_job_commit_os": 41802338304,
+ "exit": 9,
+ "peaks": {
+  "engine_commit": 41764581376,
+  "gw_commit": 37793792,
+  "job_commit": 41802338304,
+  "engine_ws": 12451844096,
+  "vram": 29617,
+  "engine_host_est": 13140910080.0,
+  "engine_host_est_stable": 13140910080.0,
+  "avail_min": 6359269376,
+  "c_free_min": 55147810816,
+  "pagefile_c_max": 33447325696,
+  "limit_max": 83000778752
+ },
+ "avail_end": 19186192384,
+ "commit_limit_end": 83000778752,
+ "c_free_end": 55147880448,
+ "pagefile_c_end": 33447325696,
+ "wall": 92.46828985214233
+}
+p1-258 253 200 ttft 8.6 tok/s 16.38 None 'This is a classic resource management failure in high-performance computing: **static allocation vs. dynamic reality**. The engine failed because it assumed resources were infinite or fixed, rather th'
+p2-2k 1990 30 ttft 33.3 tok/s 11.92 None 'Run 23 had the highest decode speed of 11.84 tok/s with an RSS of 13.07 GB.'
+p3-turn1 50 8 ttft 1.7 tok/s 8.85 None 'The E: drive is the largest.'
+p3-turn2 89 8 ttft 1.2 tok/s 9.01 None 'The total capacity is 7 TB.'
+p3-turn3 130 14 ttft 1.3 tok/s 8.72 None 'You mentioned the C: drive first, which is 1 TB.'
+lock: released
+== done 07:38:23

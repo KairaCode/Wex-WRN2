@@ -1,0 +1,1584 @@
+{
+ "experts": [
+  1,
+  7,
+  9,
+  15,
+  17,
+  23,
+  25,
+  31,
+  33,
+  39,
+  41,
+  47,
+  49,
+  55,
+  57,
+  63,
+  65,
+  71,
+  73,
+  79,
+  81,
+  87,
+  89,
+  95,
+  97,
+  103,
+  105,
+  111,
+  113,
+  119,
+  121,
+  127,
+  129,
+  135,
+  137,
+  143,
+  145,
+  151,
+  153,
+  159
+ ],
+ "n_experts": 40,
+ "raw_record_bytes": 18800640,
+ "configs": {
+  "wnr2": {
+   "n_experts": 40,
+   "decode_check": "40/40 equal to reference (byte-exact)",
+   "byte_exact_vs_source": "40/40",
+   "decode_errors": [],
+   "source_sha256_ok": "40/40",
+   "ceil_fallback_records": "n/a (no F)",
+   "record_flags_seen": [
+    0
+   ],
+   "mean_total_bytes": 16909926.4,
+   "ratio_of_raw": 0.899433551198257,
+   "mean_used_bytes_unpadded": 16907739.325,
+   "ratio_used_of_raw": 0.8993172213818252,
+   "mean_parts": {
+    "header": 32,
+    "length_table": 38880.0,
+    "scale_payload": 146675.6,
+    "weight_payload": 16722151.725,
+    "padding": 2187.075
+   },
+   "bit_per_w (weight payload incl. flush and side symbols)": 3.7801449754503036,
+   "side_symbol_bit_per_w (est)": 0.0,
+   "bit_per_scale (scale payload incl. flush)": 1.0610214120370371,
+   "all_in_bit_per_w (used bytes)": 3.822098190872757,
+   "delta_total_vs_wnr2_bytes": 0.0,
+   "delta_total_vs_wnr2_bytes_CI95": [
+    0.0,
+    0.0
+   ],
+   "delta_total_pct_of_raw": 0.0,
+   "delta_total_pct_of_raw_CI95": [
+    0.0,
+    0.0
+   ],
+   "delta_total_pct_of_wnr2_record": 0.0,
+   "median_expert_delta_total_bytes": 0.0,
+   "median_expert_delta_total_pct_of_raw": 0.0,
+   "delta_used_vs_wnr2_bytes": 0.0,
+   "delta_used_vs_wnr2_bytes_CI95": [
+    0.0,
+    0.0
+   ],
+   "delta_used_pct_of_raw": 0.0,
+   "median_expert_delta_used_bytes": 0.0,
+   "delta_used_range_over_experts": [
+    0.0,
+    0.0
+   ],
+   "estimate_from_code_lengths": {
+    "est_total_unpadded (4 B flush/stream)": 16917460.322078556,
+    "real_minus_est_weight_payload_bytes": -8630.543676023372,
+    "real_minus_est_scale_payload_bytes": -1090.4534025347762,
+    "real_minus_est_per_stream_bytes": -0.5000512900492875
+   },
+   "model": "wnr2_a0_K0_c0",
+   "model_blob_bytes": 59408,
+   "model_rows_stored": 1701,
+   "model_rows_with_training_counts": 655,
+   "model_compacted_bytes_est": 24144,
+   "model_choice_hist": null,
+   "max_weight_stream_bytes": 1084,
+   "mean_weight_stream_bytes": 967.7171137152776,
+   "timing_s": {
+    "enc_total_median": 3.0,
+    "dec_total_median": 2.7805
+   }
+  },
+  "f": {
+   "n_experts": 40,
+   "decode_check": "40/40 equal to reference (byte-exact)",
+   "byte_exact_vs_source": "40/40",
+   "decode_errors": [],
+   "source_sha256_ok": "40/40",
+   "ceil_fallback_records": [],
+   "record_flags_seen": [
+    16
+   ],
+   "mean_total_bytes": 16578764.8,
+   "ratio_of_raw": 0.8818191721132898,
+   "mean_used_bytes_unpadded": 16576672.2,
+   "ratio_used_of_raw": 0.8817078673917483,
+   "mean_parts": {
+    "header": 48,
+    "length_table": 38880.0,
+    "scale_payload": 134849.45,
+    "weight_payload": 16402894.75,
+    "padding": 2092.6
+   },
+   "bit_per_w (weight payload incl. flush and side symbols)": 3.707974977846499,
+   "side_symbol_bit_per_w (est)": 0.0,
+   "bit_per_scale (scale payload incl. flush)": 0.9754734519675927,
+   "all_in_bit_per_w (used bytes)": 3.7472584364149304,
+   "delta_total_vs_wnr2_bytes": -331161.6,
+   "delta_total_vs_wnr2_bytes_CI95": [
+    -366901.76,
+    -306585.6
+   ],
+   "delta_total_pct_of_raw": -1.7614379084967318,
+   "delta_total_pct_of_raw_CI95": [
+    -1.948257080610022,
+    -1.6318082788671027
+   ],
+   "delta_total_pct_of_wnr2_record": -1.958385815327972,
+   "median_expert_delta_total_bytes": -311296.0,
+   "median_expert_delta_total_pct_of_raw": -1.6557734204793029,
+   "delta_used_vs_wnr2_bytes": -331067.125,
+   "delta_used_vs_wnr2_bytes_CI95": [
+    -366361.1925,
+    -306821.465
+   ],
+   "delta_used_pct_of_raw": -1.7609353990076932,
+   "median_expert_delta_used_bytes": -310655.0,
+   "delta_used_range_over_experts": [
+    -811283.0,
+    -286650.0
+   ],
+   "estimate_from_code_lengths": {
+    "est_total_unpadded (4 B flush/stream)": 16586388.143698946,
+    "real_minus_est_weight_payload_bytes": -8641.124335860553,
+    "real_minus_est_scale_payload_bytes": -1074.8193630862922,
+    "real_minus_est_per_stream_bytes": -0.49979134253841806
+   },
+   "model": "f_a0_K0_c0",
+   "model_blob_bytes": 59708,
+   "model_rows_stored": 1701,
+   "model_rows_with_training_counts": 637,
+   "model_compacted_bytes_est": 23532,
+   "model_choice_hist": null,
+   "max_weight_stream_bytes": 1127,
+   "mean_weight_stream_bytes": 949.2415943287036,
+   "timing_s": {
+    "enc_total_median": 3.351,
+    "dec_total_median": 3.0985
+   }
+  },
+  "fg": {
+   "n_experts": 40,
+   "decode_check": "40/40 equal to reference (byte-exact)",
+   "byte_exact_vs_source": "40/40",
+   "decode_errors": [],
+   "source_sha256_ok": "40/40",
+   "ceil_fallback_records": [],
+   "record_flags_seen": [
+    16
+   ],
+   "mean_total_bytes": 16573132.8,
+   "ratio_of_raw": 0.8815196078431373,
+   "mean_used_bytes_unpadded": 16570643.8,
+   "ratio_used_of_raw": 0.8813872187329793,
+   "mean_parts": {
+    "header": 48,
+    "length_table": 38880.0,
+    "scale_payload": 134849.45,
+    "weight_payload": 16396866.35,
+    "padding": 2489.0
+   },
+   "bit_per_w (weight payload incl. flush and side symbols)": 3.70661222104673,
+   "side_symbol_bit_per_w (est)": 0.0,
+   "bit_per_scale (scale payload incl. flush)": 0.9754734519675927,
+   "all_in_bit_per_w (used bytes)": 3.7458956796151623,
+   "delta_total_vs_wnr2_bytes": -336793.6,
+   "delta_total_vs_wnr2_bytes_CI95": [
+    -374784.0,
+    -308428.8
+   ],
+   "delta_total_pct_of_raw": -1.7913943355119826,
+   "delta_total_pct_of_raw_CI95": [
+    -1.9923747276688453,
+    -1.6399782135076255
+   ],
+   "delta_total_pct_of_wnr2_record": -1.991691696541033,
+   "median_expert_delta_total_bytes": -311296.0,
+   "median_expert_delta_total_pct_of_raw": -1.6557734204793029,
+   "delta_used_vs_wnr2_bytes": -337095.525,
+   "delta_used_vs_wnr2_bytes_CI95": [
+    -374296.43125,
+    -308403.020625
+   ],
+   "delta_used_pct_of_raw": -1.7930002648845997,
+   "median_expert_delta_used_bytes": -311320.5,
+   "delta_used_range_over_experts": [
+    -808534.0,
+    -287244.0
+   ],
+   "estimate_from_code_lengths": {
+    "est_total_unpadded (4 B flush/stream)": 16580362.954177326,
+    "real_minus_est_weight_payload_bytes": -8644.334814239479,
+    "real_minus_est_scale_payload_bytes": -1074.8193630862922,
+    "real_minus_est_per_stream_bytes": -0.4999564906031776
+   },
+   "model": "fg_a0_K0_c0",
+   "model_blob_bytes": 59708,
+   "model_rows_stored": 1701,
+   "model_rows_with_training_counts": 572,
+   "model_compacted_bytes_est": 21322,
+   "model_choice_hist": null,
+   "max_weight_stream_bytes": 1127,
+   "mean_weight_stream_bytes": 948.892728587963,
+   "timing_s": {
+    "enc_total_median": 3.357,
+    "dec_total_median": 3.0934999999999997
+   }
+  },
+  "fgd": {
+   "n_experts": 40,
+   "decode_check": "40/40 equal to reference (byte-exact)",
+   "byte_exact_vs_source": "40/40",
+   "decode_errors": [],
+   "source_sha256_ok": "40/40",
+   "ceil_fallback_records": [],
+   "record_flags_seen": [
+    20
+   ],
+   "mean_total_bytes": 16546611.2,
+   "ratio_of_raw": 0.8801089324618736,
+   "mean_used_bytes_unpadded": 16544880.2,
+   "ratio_used_of_raw": 0.8800168611281318,
+   "mean_parts": {
+    "header": 48,
+    "length_table": 13116.4,
+    "scale_payload": 134849.45,
+    "weight_payload": 16396866.35,
+    "padding": 1731.0
+   },
+   "bit_per_w (weight payload incl. flush and side symbols)": 3.70661222104673,
+   "side_symbol_bit_per_w (est)": 0.0,
+   "bit_per_scale (scale payload incl. flush)": 0.9754734519675927,
+   "all_in_bit_per_w (used bytes)": 3.74007165979456,
+   "delta_total_vs_wnr2_bytes": -363315.2,
+   "delta_total_vs_wnr2_bytes_CI95": [
+    -400384.0,
+    -334848.0
+   ],
+   "delta_total_pct_of_raw": -1.9324618736383443,
+   "delta_total_pct_of_raw_CI95": [
+    -2.125272331154684,
+    -1.7810457516339868
+   ],
+   "delta_total_pct_of_wnr2_record": -2.148532118980719,
+   "median_expert_delta_total_bytes": -339968.0,
+   "median_expert_delta_total_pct_of_raw": -1.8082788671023966,
+   "delta_used_vs_wnr2_bytes": -362859.125,
+   "delta_used_vs_wnr2_bytes_CI95": [
+    -399939.00999999995,
+    -334312.070625
+   ],
+   "delta_used_pct_of_raw": -1.9300360253693492,
+   "median_expert_delta_used_bytes": -336894.5,
+   "delta_used_range_over_experts": [
+    -830046.0,
+    -312321.0
+   ],
+   "estimate_from_code_lengths": {
+    "est_total_unpadded (4 B flush/stream)": 16554599.354177326,
+    "real_minus_est_weight_payload_bytes": -8644.334814239479,
+    "real_minus_est_scale_payload_bytes": -1074.8193630862922,
+    "real_minus_est_per_stream_bytes": -0.4999564906031776
+   },
+   "model": "fg_a0_K0_c0",
+   "model_blob_bytes": 59708,
+   "model_rows_stored": 1701,
+   "model_rows_with_training_counts": 572,
+   "model_compacted_bytes_est": 21322,
+   "model_choice_hist": null,
+   "max_weight_stream_bytes": 1127,
+   "mean_weight_stream_bytes": 948.892728587963,
+   "timing_s": {
+    "enc_total_median": 3.388,
+    "dec_total_median": 3.0380000000000003
+   },
+   "length_table_detail": {
+    "mean_bytes": 13116.4,
+    "resid_std_scale_streams": 3.8026376546064085,
+    "resid_std_weight_streams": 7.202881164094255,
+    "saving_vs_u16_table_pct_of_raw": 0.13703576048474944
+   }
+  },
+  "fge": {
+   "n_experts": 40,
+   "decode_check": "40/40 equal to reference (byte-exact)",
+   "byte_exact_vs_source": "40/40",
+   "decode_errors": [],
+   "source_sha256_ok": "40/40",
+   "ceil_fallback_records": [],
+   "record_flags_seen": [
+    24
+   ],
+   "mean_total_bytes": 16574054.4,
+   "ratio_of_raw": 0.8815686274509804,
+   "mean_used_bytes_unpadded": 16571995.45,
+   "ratio_used_of_raw": 0.8814591125621255,
+   "mean_parts": {
+    "header": 48,
+    "length_table": 38880.0,
+    "scale_payload": 134994.7,
+    "weight_payload": 16398072.75,
+    "padding": 2058.95
+   },
+   "bit_per_w (weight payload incl. flush and side symbols)": 3.7068849351671007,
+   "side_symbol_bit_per_w (est)": 0.0,
+   "bit_per_scale (scale payload incl. flush)": 0.9765241608796297,
+   "all_in_bit_per_w (used bytes)": 3.7462012283890336,
+   "delta_total_vs_wnr2_bytes": -335872.0,
+   "delta_total_vs_wnr2_bytes_CI95": [
+    -373452.8,
+    -307302.4
+   ],
+   "delta_total_pct_of_raw": -1.7864923747276689,
+   "delta_total_pct_of_raw_CI95": [
+    -1.9814814814814814,
+    -1.635607298474946
+   ],
+   "delta_total_pct_of_wnr2_record": -1.986241643251623,
+   "median_expert_delta_total_bytes": -311296.0,
+   "median_expert_delta_total_pct_of_raw": -1.6557734204793029,
+   "delta_used_vs_wnr2_bytes": -335743.875,
+   "delta_used_vs_wnr2_bytes_CI95": [
+    -371729.53375,
+    -307063.808125
+   ],
+   "delta_used_pct_of_raw": -1.7858108819699754,
+   "median_expert_delta_used_bytes": -309969.5,
+   "delta_used_range_over_experts": [
+    -807138.0,
+    -285871.0
+   ],
+   "estimate_from_code_lengths": {
+    "est_total_unpadded (4 B flush/stream)": 16580362.954177326,
+    "real_minus_est_weight_payload_bytes": -7437.934814239479,
+    "real_minus_est_scale_payload_bytes": -929.5693630862922,
+    "real_minus_est_per_stream_bytes": -0.4304271696155233
+   },
+   "model": "fg_a0_K0_c0",
+   "model_blob_bytes": 59708,
+   "model_rows_stored": 1701,
+   "model_rows_with_training_counts": 572,
+   "model_compacted_bytes_est": 21322,
+   "model_choice_hist": null,
+   "max_weight_stream_bytes": 1127,
+   "mean_weight_stream_bytes": 948.9625434027778,
+   "timing_s": {
+    "enc_total_median": 3.6559999999999997,
+    "dec_total_median": 3.2085
+   }
+  },
+  "fgde": {
+   "n_experts": 40,
+   "decode_check": "40/40 equal to reference (byte-exact)",
+   "byte_exact_vs_source": "40/40",
+   "decode_errors": [],
+   "source_sha256_ok": "40/40",
+   "ceil_fallback_records": [],
+   "record_flags_seen": [
+    28
+   ],
+   "mean_total_bytes": 16548556.8,
+   "ratio_of_raw": 0.8802124183006537,
+   "mean_used_bytes_unpadded": 16546234.05,
+   "ratio_used_of_raw": 0.8800888719745711,
+   "mean_parts": {
+    "header": 48,
+    "length_table": 13118.6,
+    "scale_payload": 134994.7,
+    "weight_payload": 16398072.75,
+    "padding": 2322.75
+   },
+   "bit_per_w (weight payload incl. flush and side symbols)": 3.7068849351671007,
+   "side_symbol_bit_per_w (est)": 0.0,
+   "bit_per_scale (scale payload incl. flush)": 0.9765241608796297,
+   "all_in_bit_per_w (used bytes)": 3.740377705891927,
+   "delta_total_vs_wnr2_bytes": -361369.6,
+   "delta_total_vs_wnr2_bytes_CI95": [
+    -398645.76,
+    -333004.8
+   ],
+   "delta_total_pct_of_raw": -1.9221132897603486,
+   "delta_total_pct_of_raw_CI95": [
+    -2.1143790849673203,
+    -1.772875816993464
+   ],
+   "delta_total_pct_of_wnr2_record": -2.137026450925298,
+   "median_expert_delta_total_bytes": -335872.0,
+   "median_expert_delta_total_pct_of_raw": -1.7864923747276689,
+   "delta_used_vs_wnr2_bytes": -361505.275,
+   "delta_used_vs_wnr2_bytes_CI95": [
+    -397547.2025,
+    -333151.97750000004
+   ],
+   "delta_used_pct_of_raw": -1.9228349407254222,
+   "median_expert_delta_used_bytes": -335541.5,
+   "delta_used_range_over_experts": [
+    -828662.0,
+    -310945.0
+   ],
+   "estimate_from_code_lengths": {
+    "est_total_unpadded (4 B flush/stream)": 16554601.554177325,
+    "real_minus_est_weight_payload_bytes": -7437.934814239479,
+    "real_minus_est_scale_payload_bytes": -929.5693630862922,
+    "real_minus_est_per_stream_bytes": -0.4304271696155233
+   },
+   "model": "fg_a0_K0_c0",
+   "model_blob_bytes": 59708,
+   "model_rows_stored": 1701,
+   "model_rows_with_training_counts": 572,
+   "model_compacted_bytes_est": 21322,
+   "model_choice_hist": null,
+   "max_weight_stream_bytes": 1127,
+   "mean_weight_stream_bytes": 948.9625434027778,
+   "timing_s": {
+    "enc_total_median": 3.6865,
+    "dec_total_median": 3.197
+   },
+   "length_table_detail": {
+    "mean_bytes": 13118.6,
+    "resid_std_scale_streams": 3.8033765710197103,
+    "resid_std_weight_streams": 7.205470730702426,
+    "saving_vs_u16_table_pct_of_raw": 0.13702405875544663
+   }
+  },
+  "fgt": {
+   "n_experts": 40,
+   "decode_check": "40/40 equal to reference (byte-exact)",
+   "byte_exact_vs_source": "40/40",
+   "decode_errors": [],
+   "source_sha256_ok": "40/40",
+   "ceil_fallback_records": [],
+   "record_flags_seen": [
+    48
+   ],
+   "mean_total_bytes": 16532684.8,
+   "ratio_of_raw": 0.8793681917211329,
+   "mean_used_bytes_unpadded": 16530455.425,
+   "ratio_used_of_raw": 0.8792496119812943,
+   "mean_parts": {
+    "header": 48,
+    "length_table": 38880.0,
+    "scale_payload": 134356.075,
+    "weight_payload": 16357171.35,
+    "padding": 2229.375
+   },
+   "bit_per_w (weight payload incl. flush and side symbols)": 3.6976389227973088,
+   "side_symbol_bit_per_w (est)": 0.0,
+   "bit_per_scale (scale payload incl. flush)": 0.9719044777199075,
+   "all_in_bit_per_w (used bytes)": 3.736810850920501,
+   "delta_total_vs_wnr2_bytes": -377241.6,
+   "delta_total_vs_wnr2_bytes_CI95": [
+    -413798.4,
+    -348774.4
+   ],
+   "delta_total_pct_of_raw": -2.0065359477124183,
+   "delta_total_pct_of_raw_CI95": [
+    -2.1998910675381262,
+    -1.8540305010893245
+   ],
+   "delta_total_pct_of_wnr2_record": -2.230888479798469,
+   "median_expert_delta_total_bytes": -352256.0,
+   "median_expert_delta_total_pct_of_raw": -1.8736383442265796,
+   "delta_used_vs_wnr2_bytes": -377283.9,
+   "delta_used_vs_wnr2_bytes_CI95": [
+    -413490.566875,
+    -348703.335625
+   ],
+   "delta_used_pct_of_raw": -2.0067609400531046,
+   "median_expert_delta_used_bytes": -351413.0,
+   "delta_used_range_over_experts": [
+    -849297.0,
+    -327465.0
+   ],
+   "estimate_from_code_lengths": {
+    "est_total_unpadded (4 B flush/stream)": 16539989.559320819,
+    "real_minus_est_weight_payload_bytes": -8462.301416627131,
+    "real_minus_est_scale_payload_bytes": -1071.8329041916775,
+    "real_minus_est_per_stream_bytes": -0.4904390082725724
+   },
+   "model": "fg_a0_K0_c0",
+   "model_blob_bytes": 59708,
+   "model_rows_stored": 1701,
+   "model_rows_with_training_counts": 572,
+   "model_compacted_bytes_est": 21322,
+   "model_choice_hist": null,
+   "max_weight_stream_bytes": 1125,
+   "mean_weight_stream_bytes": 946.595564236111,
+   "timing_s": {
+    "enc_total_median": 3.605,
+    "dec_total_median": 3.0995
+   }
+  },
+  "fgdt": {
+   "n_experts": 40,
+   "decode_check": "40/40 equal to reference (byte-exact)",
+   "byte_exact_vs_source": "40/40",
+   "decode_errors": [],
+   "source_sha256_ok": "40/40",
+   "ceil_fallback_records": [],
+   "record_flags_seen": [
+    52
+   ],
+   "mean_total_bytes": 16506880.0,
+   "ratio_of_raw": 0.8779956427015251,
+   "mean_used_bytes_unpadded": 16504696.625,
+   "ratio_used_of_raw": 0.8778795096869043,
+   "mean_parts": {
+    "header": 48,
+    "length_table": 13121.2,
+    "scale_payload": 134356.075,
+    "weight_payload": 16357171.35,
+    "padding": 2183.375
+   },
+   "bit_per_w (weight payload incl. flush and side symbols)": 3.6976389227973088,
+   "side_symbol_bit_per_w (est)": 0.0,
+   "bit_per_scale (scale payload incl. flush)": 0.9719044777199075,
+   "all_in_bit_per_w (used bytes)": 3.7309879161693433,
+   "delta_total_vs_wnr2_bytes": -403046.4,
+   "delta_total_vs_wnr2_bytes_CI95": [
+    -439603.2,
+    -374681.6
+   ],
+   "delta_total_pct_of_raw": -2.1437908496732025,
+   "delta_total_pct_of_raw_CI95": [
+    -2.3338779956427014,
+    -1.9918300653594772
+   ],
+   "delta_total_pct_of_wnr2_record": -2.383489971901948,
+   "median_expert_delta_total_bytes": -376832.0,
+   "median_expert_delta_total_pct_of_raw": -2.0043572984749454,
+   "delta_used_vs_wnr2_bytes": -403042.7,
+   "delta_used_vs_wnr2_bytes_CI95": [
+    -440555.521875,
+    -374599.565
+   ],
+   "delta_used_pct_of_raw": -2.1437711694921022,
+   "median_expert_delta_used_bytes": -376979.0,
+   "delta_used_range_over_experts": [
+    -870841.0,
+    -352488.0
+   ],
+   "estimate_from_code_lengths": {
+    "est_total_unpadded (4 B flush/stream)": 16514230.75932082,
+    "real_minus_est_weight_payload_bytes": -8462.301416627131,
+    "real_minus_est_scale_payload_bytes": -1071.8329041916775,
+    "real_minus_est_per_stream_bytes": -0.4904390082725724
+   },
+   "model": "fg_a0_K0_c0",
+   "model_blob_bytes": 59708,
+   "model_rows_stored": 1701,
+   "model_rows_with_training_counts": 572,
+   "model_compacted_bytes_est": 21322,
+   "model_choice_hist": null,
+   "max_weight_stream_bytes": 1125,
+   "mean_weight_stream_bytes": 946.595564236111,
+   "timing_s": {
+    "enc_total_median": 3.6325000000000003,
+    "dec_total_median": 3.0925000000000002
+   },
+   "length_table_detail": {
+    "mean_bytes": 13121.2,
+    "resid_std_scale_streams": 3.7923281169790366,
+    "resid_std_weight_streams": 7.191576157293914,
+    "saving_vs_u16_table_pct_of_raw": 0.13701022943899782
+   }
+  },
+  "fga": {
+   "n_experts": 40,
+   "decode_check": "40/40 equal to reference (byte-exact)",
+   "byte_exact_vs_source": "40/40",
+   "decode_errors": [],
+   "source_sha256_ok": "40/40",
+   "ceil_fallback_records": [],
+   "record_flags_seen": [
+    17
+   ],
+   "mean_total_bytes": 16582860.8,
+   "ratio_of_raw": 0.8820370370370371,
+   "mean_used_bytes_unpadded": 16581172.775,
+   "ratio_used_of_raw": 0.8819472515297352,
+   "mean_parts": {
+    "header": 48,
+    "length_table": 38880.0,
+    "scale_payload": 134849.45,
+    "weight_payload": 16407395.325,
+    "padding": 1688.025
+   },
+   "bit_per_w (weight payload incl. flush and side symbols)": 3.7089923604329424,
+   "side_symbol_bit_per_w (est)": 0.03285435284971723,
+   "bit_per_scale (scale payload incl. flush)": 0.9754734519675927,
+   "all_in_bit_per_w (used bytes)": 3.7482758190013743,
+   "delta_total_vs_wnr2_bytes": -327065.6,
+   "delta_total_vs_wnr2_bytes_CI95": [
+    -363932.16,
+    -298803.2
+   ],
+   "delta_total_pct_of_raw": -1.7396514161220042,
+   "delta_total_pct_of_raw_CI95": [
+    -1.9357434640522875,
+    -1.5909586056644882
+   ],
+   "delta_total_pct_of_wnr2_record": -1.9341633562639278,
+   "median_expert_delta_total_bytes": -303104.0,
+   "median_expert_delta_total_pct_of_raw": -1.6122004357298474,
+   "delta_used_vs_wnr2_bytes": -326566.55,
+   "delta_used_vs_wnr2_bytes_CI95": [
+    -362858.05875,
+    -298412.04124999995
+   ],
+   "delta_used_pct_of_raw": -1.7369969852090141,
+   "median_expert_delta_used_bytes": -301173.0,
+   "delta_used_range_over_experts": [
+    -786932.0,
+    -276281.0
+   ],
+   "estimate_from_code_lengths": {
+    "est_total_unpadded (4 B flush/stream)": 16590886.061380576,
+    "real_minus_est_weight_payload_bytes": -8638.467017489858,
+    "real_minus_est_scale_payload_bytes": -1074.8193630862922,
+    "real_minus_est_per_stream_bytes": -0.4996546492065921
+   },
+   "model": "fg_a1_K0_c0",
+   "model_blob_bytes": 349046,
+   "model_rows_stored": 10206,
+   "model_rows_with_training_counts": 2189,
+   "model_compacted_bytes_est": 76468,
+   "model_choice_hist": null,
+   "max_weight_stream_bytes": 1353,
+   "mean_weight_stream_bytes": 949.5020442708334,
+   "timing_s": {
+    "enc_total_median": 3.183,
+    "dec_total_median": 2.668
+   }
+  },
+  "fgad": {
+   "n_experts": 40,
+   "decode_check": "40/40 equal to reference (byte-exact)",
+   "byte_exact_vs_source": "40/40",
+   "decode_errors": [],
+   "source_sha256_ok": "40/40",
+   "ceil_fallback_records": [],
+   "record_flags_seen": [
+    21
+   ],
+   "mean_total_bytes": 16557465.6,
+   "ratio_of_raw": 0.8806862745098039,
+   "mean_used_bytes_unpadded": 16555466.075,
+   "ratio_used_of_raw": 0.8805799204176028,
+   "mean_parts": {
+    "header": 48,
+    "length_table": 13173.3,
+    "scale_payload": 134849.45,
+    "weight_payload": 16407395.325,
+    "padding": 1999.525
+   },
+   "bit_per_w (weight payload incl. flush and side symbols)": 3.7089923604329424,
+   "side_symbol_bit_per_w (est)": 0.03285435284971723,
+   "bit_per_scale (scale payload incl. flush)": 0.9754734519675927,
+   "all_in_bit_per_w (used bytes)": 3.742464661774812,
+   "delta_total_vs_wnr2_bytes": -352460.8,
+   "delta_total_vs_wnr2_bytes_CI95": [
+    -389122.56,
+    -324710.4
+   ],
+   "delta_total_pct_of_raw": -1.8747276688453158,
+   "delta_total_pct_of_raw_CI95": [
+    -2.0691721132897603,
+    -1.7244008714596952
+   ],
+   "delta_total_pct_of_wnr2_record": -2.084342602461002,
+   "median_expert_delta_total_bytes": -327680.0,
+   "median_expert_delta_total_pct_of_raw": -1.7429193899782136,
+   "delta_used_vs_wnr2_bytes": -352273.25,
+   "delta_used_vs_wnr2_bytes_CI95": [
+    -388829.02187500003,
+    -324296.429375
+   ],
+   "delta_used_pct_of_raw": -1.8737300964222494,
+   "median_expert_delta_used_bytes": -326693.0,
+   "delta_used_range_over_experts": [
+    -808312.0,
+    -301475.0
+   ],
+   "estimate_from_code_lengths": {
+    "est_total_unpadded (4 B flush/stream)": 16565179.361380577,
+    "real_minus_est_weight_payload_bytes": -8638.467017489858,
+    "real_minus_est_scale_payload_bytes": -1074.8193630862922,
+    "real_minus_est_per_stream_bytes": -0.4996546492065921
+   },
+   "model": "fg_a1_K0_c0",
+   "model_blob_bytes": 349046,
+   "model_rows_stored": 10206,
+   "model_rows_with_training_counts": 2189,
+   "model_compacted_bytes_est": 76468,
+   "model_choice_hist": null,
+   "max_weight_stream_bytes": 1353,
+   "mean_weight_stream_bytes": 949.5020442708334,
+   "timing_s": {
+    "enc_total_median": 3.2110000000000003,
+    "dec_total_median": 2.7045000000000003
+   },
+   "length_table_detail": {
+    "mean_bytes": 13173.3,
+    "resid_std_scale_streams": 3.8026376546064085,
+    "resid_std_weight_streams": 7.312438901667522,
+    "saving_vs_u16_table_pct_of_raw": 0.13673311121323528
+   }
+  },
+  "fgaK2": {
+   "n_experts": 40,
+   "decode_check": "40/40 equal to reference (byte-exact)",
+   "byte_exact_vs_source": "40/40",
+   "decode_errors": [],
+   "source_sha256_ok": "40/40",
+   "ceil_fallback_records": [],
+   "record_flags_seen": [
+    17
+   ],
+   "mean_total_bytes": 16581017.6,
+   "ratio_of_raw": 0.8819389978213508,
+   "mean_used_bytes_unpadded": 16579244.55,
+   "ratio_used_of_raw": 0.8818446898616218,
+   "mean_parts": {
+    "header": 48,
+    "length_table": 38880.0,
+    "scale_payload": 134849.45,
+    "weight_payload": 16405467.1,
+    "padding": 1773.05
+   },
+   "bit_per_w (weight payload incl. flush and side symbols)": 3.7085564733434606,
+   "side_symbol_bit_per_w (est)": 0.03276539592122097,
+   "bit_per_scale (scale payload incl. flush)": 0.9754734519675927,
+   "all_in_bit_per_w (used bytes)": 3.7478399319118925,
+   "delta_total_vs_wnr2_bytes": -328908.8,
+   "delta_total_vs_wnr2_bytes_CI95": [
+    -367720.96,
+    -299724.8
+   ],
+   "delta_total_pct_of_raw": -1.7494553376906319,
+   "delta_total_pct_of_raw_CI95": [
+    -1.951538671023965,
+    -1.5920479302832244
+   ],
+   "delta_total_pct_of_wnr2_record": -1.945063462842748,
+   "median_expert_delta_total_bytes": -303104.0,
+   "median_expert_delta_total_pct_of_raw": -1.6122004357298474,
+   "delta_used_vs_wnr2_bytes": -328494.775,
+   "delta_used_vs_wnr2_bytes_CI95": [
+    -367123.714375,
+    -299027.676875
+   ],
+   "delta_used_pct_of_raw": -1.747253152020357,
+   "median_expert_delta_used_bytes": -300708.0,
+   "delta_used_range_over_experts": [
+    -824487.0,
+    -278404.0
+   ],
+   "estimate_from_code_lengths": {
+    "est_total_unpadded (4 B flush/stream)": 16588951.850771863,
+    "real_minus_est_weight_payload_bytes": -8632.48140877653,
+    "real_minus_est_scale_payload_bytes": -1074.8193630862922,
+    "real_minus_est_per_stream_bytes": -0.4993467475238077
+   },
+   "model": "fg_a1_K2_c0",
+   "model_blob_bytes": 233322,
+   "model_rows_stored": 6804,
+   "model_rows_with_training_counts": 1573,
+   "model_compacted_bytes_est": 55468,
+   "model_choice_hist": [
+    73,
+    47
+   ],
+   "max_weight_stream_bytes": 1324,
+   "mean_weight_stream_bytes": 949.390457175926,
+   "timing_s": {
+    "enc_total_median": 3.6189999999999998,
+    "dec_total_median": 2.521
+   }
+  },
+  "fgaK2d": {
+   "n_experts": 40,
+   "decode_check": "40/40 equal to reference (byte-exact)",
+   "byte_exact_vs_source": "40/40",
+   "decode_errors": [],
+   "source_sha256_ok": "40/40",
+   "ceil_fallback_records": [],
+   "record_flags_seen": [
+    21
+   ],
+   "mean_total_bytes": 16555520.0,
+   "ratio_of_raw": 0.880582788671024,
+   "mean_used_bytes_unpadded": 16553533.55,
+   "ratio_used_of_raw": 0.8804771300338712,
+   "mean_parts": {
+    "header": 48,
+    "length_table": 13169.0,
+    "scale_payload": 134849.45,
+    "weight_payload": 16405467.1,
+    "padding": 1986.45
+   },
+   "bit_per_w (weight payload incl. flush and side symbols)": 3.7085564733434606,
+   "side_symbol_bit_per_w (est)": 0.03276539592122097,
+   "bit_per_scale (scale payload incl. flush)": 0.9754734519675927,
+   "all_in_bit_per_w (used bytes)": 3.742027802643953,
+   "delta_total_vs_wnr2_bytes": -354406.4,
+   "delta_total_vs_wnr2_bytes_CI95": [
+    -392704.0,
+    -325120.0
+   ],
+   "delta_total_pct_of_raw": -1.8850762527233116,
+   "delta_total_pct_of_raw_CI95": [
+    -2.085511982570806,
+    -1.7287581699346404
+   ],
+   "delta_total_pct_of_wnr2_record": -2.095848270516423,
+   "median_expert_delta_total_bytes": -327680.0,
+   "median_expert_delta_total_pct_of_raw": -1.7429193899782136,
+   "delta_used_vs_wnr2_bytes": -354205.775,
+   "delta_used_vs_wnr2_bytes_CI95": [
+    -392664.81625,
+    -325163.375625
+   ],
+   "delta_used_pct_of_raw": -1.8840091347954113,
+   "median_expert_delta_used_bytes": -326216.0,
+   "delta_used_range_over_experts": [
+    -846075.0,
+    -303504.0
+   ],
+   "estimate_from_code_lengths": {
+    "est_total_unpadded (4 B flush/stream)": 16563240.850771863,
+    "real_minus_est_weight_payload_bytes": -8632.48140877653,
+    "real_minus_est_scale_payload_bytes": -1074.8193630862922,
+    "real_minus_est_per_stream_bytes": -0.4993467475238077
+   },
+   "model": "fg_a1_K2_c0",
+   "model_blob_bytes": 233322,
+   "model_rows_stored": 6804,
+   "model_rows_with_training_counts": 1573,
+   "model_compacted_bytes_est": 55468,
+   "model_choice_hist": [
+    73,
+    47
+   ],
+   "max_weight_stream_bytes": 1324,
+   "mean_weight_stream_bytes": 949.390457175926,
+   "timing_s": {
+    "enc_total_median": 3.6445,
+    "dec_total_median": 2.49
+   },
+   "length_table_detail": {
+    "mean_bytes": 13169.0,
+    "resid_std_scale_streams": 3.8026376546064085,
+    "resid_std_weight_streams": 7.3579706886865095,
+    "saving_vs_u16_table_pct_of_raw": 0.13675598277505446
+   }
+  },
+  "fgc": {
+   "n_experts": 40,
+   "decode_check": "40/40 equal to reference (value-exact (8->0))",
+   "byte_exact_vs_source": "0/40",
+   "decode_errors": [],
+   "source_sha256_ok": "40/40",
+   "ceil_fallback_records": [],
+   "record_flags_seen": [
+    18
+   ],
+   "mean_total_bytes": 16057856.0,
+   "ratio_of_raw": 0.8541122004357299,
+   "mean_used_bytes_unpadded": 16055798.5,
+   "ratio_used_of_raw": 0.854002762671909,
+   "mean_parts": {
+    "header": 48,
+    "length_table": 38880.0,
+    "scale_payload": 134849.45,
+    "weight_payload": 15882021.05,
+    "padding": 2057.5
+   },
+   "bit_per_w (weight payload incl. flush and side symbols)": 3.590228282787182,
+   "side_symbol_bit_per_w (est)": 0.0,
+   "bit_per_scale (scale payload incl. flush)": 0.9754734519675927,
+   "all_in_bit_per_w (used bytes)": 3.6295117413556133,
+   "delta_total_vs_wnr2_bytes": -852070.4,
+   "delta_total_vs_wnr2_bytes_CI95": [
+    -888524.8,
+    -823808.0
+   ],
+   "delta_total_pct_of_raw": -4.5321350762527235,
+   "delta_total_pct_of_raw_CI95": [
+    -4.728227124183007,
+    -4.380718954248366
+   ],
+   "delta_total_pct_of_wnr2_record": -5.038877046797792,
+   "median_expert_delta_total_bytes": -827392.0,
+   "median_expert_delta_total_pct_of_raw": -4.400871459694989,
+   "delta_used_vs_wnr2_bytes": -851940.825,
+   "delta_used_vs_wnr2_bytes_CI95": [
+    -888484.9525,
+    -823369.063125
+   ],
+   "delta_used_pct_of_raw": -4.531445870991626,
+   "median_expert_delta_used_bytes": -825774.0,
+   "delta_used_range_over_experts": [
+    -1321176.0,
+    -803668.0
+   ],
+   "estimate_from_code_lengths": {
+    "est_total_unpadded (4 B flush/stream)": 16065509.367638096,
+    "real_minus_est_weight_payload_bytes": -8636.048275010986,
+    "real_minus_est_scale_payload_bytes": -1074.8193630862922,
+    "real_minus_est_per_stream_bytes": -0.49953022829718513
+   },
+   "model": "fg_a0_K0_c1",
+   "model_blob_bytes": 59708,
+   "model_rows_stored": 1701,
+   "model_rows_with_training_counts": 572,
+   "model_compacted_bytes_est": 21322,
+   "model_choice_hist": null,
+   "max_weight_stream_bytes": 1094,
+   "mean_weight_stream_bytes": 919.0984403935184,
+   "timing_s": {
+    "enc_total_median": 3.3475,
+    "dec_total_median": 3.1125
+   }
+  },
+  "fgcd": {
+   "n_experts": 40,
+   "decode_check": "40/40 equal to reference (value-exact (8->0))",
+   "byte_exact_vs_source": "0/40",
+   "decode_errors": [],
+   "source_sha256_ok": "40/40",
+   "ceil_fallback_records": [],
+   "record_flags_seen": [
+    22
+   ],
+   "mean_total_bytes": 16032153.6,
+   "ratio_of_raw": 0.8527450980392157,
+   "mean_used_bytes_unpadded": 16030315.1,
+   "ratio_used_of_raw": 0.852647308815019,
+   "mean_parts": {
+    "header": 48,
+    "length_table": 13396.6,
+    "scale_payload": 134849.45,
+    "weight_payload": 15882021.05,
+    "padding": 1838.5
+   },
+   "bit_per_w (weight payload incl. flush and side symbols)": 3.590228282787182,
+   "side_symbol_bit_per_w (est)": 0.0,
+   "bit_per_scale (scale payload incl. flush)": 0.9754734519675927,
+   "all_in_bit_per_w (used bytes)": 3.623751062463831,
+   "delta_total_vs_wnr2_bytes": -877772.8,
+   "delta_total_vs_wnr2_bytes_CI95": [
+    -914636.8,
+    -849612.8
+   ],
+   "delta_total_pct_of_raw": -4.668845315904139,
+   "delta_total_pct_of_raw_CI95": [
+    -4.859477124183006,
+    -4.51797385620915
+   ],
+   "delta_total_pct_of_wnr2_record": -5.190872977424669,
+   "median_expert_delta_total_bytes": -851968.0,
+   "median_expert_delta_total_pct_of_raw": -4.531590413943355,
+   "delta_used_vs_wnr2_bytes": -877424.225,
+   "delta_used_vs_wnr2_bytes_CI95": [
+    -914096.693125,
+    -849414.99375
+   ],
+   "delta_used_pct_of_raw": -4.666991256680624,
+   "median_expert_delta_used_bytes": -851006.0,
+   "delta_used_range_over_experts": [
+    -1342392.0,
+    -827658.0
+   ],
+   "estimate_from_code_lengths": {
+    "est_total_unpadded (4 B flush/stream)": 16040025.967638096,
+    "real_minus_est_weight_payload_bytes": -8636.048275010986,
+    "real_minus_est_scale_payload_bytes": -1074.8193630862922,
+    "real_minus_est_per_stream_bytes": -0.49953022829718513
+   },
+   "model": "fg_a0_K0_c1",
+   "model_blob_bytes": 59708,
+   "model_rows_stored": 1701,
+   "model_rows_with_training_counts": 572,
+   "model_compacted_bytes_est": 21322,
+   "model_choice_hist": null,
+   "max_weight_stream_bytes": 1094,
+   "mean_weight_stream_bytes": 919.0984403935184,
+   "timing_s": {
+    "enc_total_median": 3.3785,
+    "dec_total_median": 3.093
+   },
+   "length_table_detail": {
+    "mean_bytes": 13396.6,
+    "resid_std_scale_streams": 3.8026376546064085,
+    "resid_std_weight_streams": 8.117772297309592,
+    "saving_vs_u16_table_pct_of_raw": 0.13554538568899782
+   }
+  },
+  "fgce": {
+   "n_experts": 40,
+   "decode_check": "40/40 equal to reference (value-exact (8->0))",
+   "byte_exact_vs_source": "0/40",
+   "decode_errors": [],
+   "source_sha256_ok": "40/40",
+   "ceil_fallback_records": [],
+   "record_flags_seen": [
+    26
+   ],
+   "mean_total_bytes": 16059187.2,
+   "ratio_of_raw": 0.8541830065359477,
+   "mean_used_bytes_unpadded": 16057150.6,
+   "ratio_used_of_raw": 0.8540746804364107,
+   "mean_parts": {
+    "header": 48,
+    "length_table": 38880.0,
+    "scale_payload": 134995.55,
+    "weight_payload": 15883227.05,
+    "padding": 2036.6
+   },
+   "bit_per_w (weight payload incl. flush and side symbols)": 3.5905009064850986,
+   "side_symbol_bit_per_w (est)": 0.0,
+   "bit_per_scale (scale payload incl. flush)": 0.9765303096064814,
+   "all_in_bit_per_w (used bytes)": 3.629817391854745,
+   "delta_total_vs_wnr2_bytes": -850739.2,
+   "delta_total_vs_wnr2_bytes_CI95": [
+    -887808.0,
+    -822474.2400000001
+   ],
+   "delta_total_pct_of_raw": -4.525054466230936,
+   "delta_total_pct_of_raw_CI95": [
+    -4.718954248366013,
+    -4.372549019607843
+   ],
+   "delta_total_pct_of_wnr2_record": -5.031004747601977,
+   "median_expert_delta_total_bytes": -825344.0,
+   "median_expert_delta_total_pct_of_raw": -4.389978213507625,
+   "delta_used_vs_wnr2_bytes": -850588.725,
+   "delta_used_vs_wnr2_bytes_CI95": [
+    -886513.034375,
+    -822156.751875
+   ],
+   "delta_used_pct_of_raw": -4.524254094541463,
+   "median_expert_delta_used_bytes": -824462.0,
+   "delta_used_range_over_experts": [
+    -1319855.0,
+    -802265.0
+   ],
+   "estimate_from_code_lengths": {
+    "est_total_unpadded (4 B flush/stream)": 16065509.367638096,
+    "real_minus_est_weight_payload_bytes": -7430.048275010986,
+    "real_minus_est_scale_payload_bytes": -928.7193630862923,
+    "real_minus_est_per_stream_bytes": -0.42997775916138264
+   },
+   "model": "fg_a0_K0_c1",
+   "model_blob_bytes": 59708,
+   "model_rows_stored": 1701,
+   "model_rows_with_training_counts": 572,
+   "model_compacted_bytes_est": 21322,
+   "model_choice_hist": null,
+   "max_weight_stream_bytes": 1094,
+   "mean_weight_stream_bytes": 919.1682320601852,
+   "timing_s": {
+    "enc_total_median": 3.6825,
+    "dec_total_median": 3.1135
+   }
+  },
+  "fgcde": {
+   "n_experts": 40,
+   "decode_check": "40/40 equal to reference (value-exact (8->0))",
+   "byte_exact_vs_source": "0/40",
+   "decode_errors": [],
+   "source_sha256_ok": "40/40",
+   "ceil_fallback_records": [],
+   "record_flags_seen": [
+    30
+   ],
+   "mean_total_bytes": 16033587.2,
+   "ratio_of_raw": 0.8528213507625272,
+   "mean_used_bytes_unpadded": 16031668.6,
+   "ratio_used_of_raw": 0.8527193010450708,
+   "mean_parts": {
+    "header": 48,
+    "length_table": 13398.0,
+    "scale_payload": 134995.55,
+    "weight_payload": 15883227.05,
+    "padding": 1918.6
+   },
+   "bit_per_w (weight payload incl. flush and side symbols)": 3.5905009064850986,
+   "side_symbol_bit_per_w (est)": 0.0,
+   "bit_per_scale (scale payload incl. flush)": 0.9765303096064814,
+   "all_in_bit_per_w (used bytes)": 3.624057029441551,
+   "delta_total_vs_wnr2_bytes": -876339.2,
+   "delta_total_vs_wnr2_bytes_CI95": [
+    -911669.76,
+    -847974.4
+   ],
+   "delta_total_pct_of_raw": -4.6612200435729845,
+   "delta_total_pct_of_raw_CI95": [
+    -4.855119825708061,
+    -4.5119825708061
+   ],
+   "delta_total_pct_of_wnr2_record": -5.182395116752253,
+   "median_expert_delta_total_bytes": -851968.0,
+   "median_expert_delta_total_pct_of_raw": -4.531590413943355,
+   "delta_used_vs_wnr2_bytes": -876070.725,
+   "delta_used_vs_wnr2_bytes_CI95": [
+    -912874.448125,
+    -847997.12375
+   ],
+   "delta_used_pct_of_raw": -4.6597920336754495,
+   "median_expert_delta_used_bytes": -849663.0,
+   "delta_used_range_over_experts": [
+    -1341067.0,
+    -826234.0
+   ],
+   "estimate_from_code_lengths": {
+    "est_total_unpadded (4 B flush/stream)": 16040027.367638096,
+    "real_minus_est_weight_payload_bytes": -7430.048275010986,
+    "real_minus_est_scale_payload_bytes": -928.7193630862923,
+    "real_minus_est_per_stream_bytes": -0.42997775916138264
+   },
+   "model": "fg_a0_K0_c1",
+   "model_blob_bytes": 59708,
+   "model_rows_stored": 1701,
+   "model_rows_with_training_counts": 572,
+   "model_compacted_bytes_est": 21322,
+   "model_choice_hist": null,
+   "max_weight_stream_bytes": 1094,
+   "mean_weight_stream_bytes": 919.1682320601852,
+   "timing_s": {
+    "enc_total_median": 3.7095000000000002,
+    "dec_total_median": 3.1265
+   },
+   "length_table_detail": {
+    "mean_bytes": 13398.0,
+    "resid_std_scale_streams": 3.803721619497515,
+    "resid_std_weight_streams": 8.118977971869802,
+    "saving_vs_u16_table_pct_of_raw": 0.13553793913398693
+   }
+  },
+  "fgaK2ce": {
+   "n_experts": 40,
+   "decode_check": "40/40 equal to reference (value-exact (8->0))",
+   "byte_exact_vs_source": "0/40",
+   "decode_errors": [],
+   "source_sha256_ok": "40/40",
+   "ceil_fallback_records": [],
+   "record_flags_seen": [
+    27
+   ],
+   "mean_total_bytes": 16068198.4,
+   "ratio_of_raw": 0.8546623093681918,
+   "mean_used_bytes_unpadded": 16065707.075,
+   "ratio_used_of_raw": 0.8545297965920309,
+   "mean_parts": {
+    "header": 48,
+    "length_table": 38880.0,
+    "scale_payload": 134994.875,
+    "weight_payload": 15891784.2,
+    "padding": 2491.325
+   },
+   "bit_per_w (weight payload incl. flush and side symbols)": 3.592435302734375,
+   "side_symbol_bit_per_w (est)": 0.03276445360276411,
+   "bit_per_scale (scale payload incl. flush)": 0.9765254267939815,
+   "all_in_bit_per_w (used bytes)": 3.6317516355161312,
+   "delta_total_vs_wnr2_bytes": -841728.0,
+   "delta_total_vs_wnr2_bytes_CI95": [
+    -880332.8,
+    -812441.6
+   ],
+   "delta_total_pct_of_raw": -4.477124183006536,
+   "delta_total_pct_of_raw_CI95": [
+    -4.680283224400871,
+    -4.320806100217865
+   ],
+   "delta_total_pct_of_wnr2_record": -4.977715337661079,
+   "median_expert_delta_total_bytes": -815104.0,
+   "median_expert_delta_total_pct_of_raw": -4.335511982570806,
+   "delta_used_vs_wnr2_bytes": -842032.25,
+   "delta_used_vs_wnr2_bytes_CI95": [
+    -880149.0768749999,
+    -812969.3362499999
+   ],
+   "delta_used_pct_of_raw": -4.478742478979439,
+   "median_expert_delta_used_bytes": -813912.0,
+   "delta_used_range_over_experts": [
+    -1336424.0,
+    -793334.0
+   ],
+   "estimate_from_code_lengths": {
+    "est_total_unpadded (4 B flush/stream)": 16074079.194525624,
+    "real_minus_est_weight_payload_bytes": -7442.725162539398,
+    "real_minus_est_scale_payload_bytes": -929.3943630862923,
+    "real_minus_est_per_stream_bytes": -0.4306645846515273
+   },
+   "model": "fg_a1_K2_c1",
+   "model_blob_bytes": 233322,
+   "model_rows_stored": 6804,
+   "model_rows_with_training_counts": 1573,
+   "model_compacted_bytes_est": 55468,
+   "model_choice_hist": [
+    75,
+    45
+   ],
+   "max_weight_stream_bytes": 1283,
+   "mean_weight_stream_bytes": 919.6634375000001,
+   "timing_s": {
+    "enc_total_median": 3.9139999999999997,
+    "dec_total_median": 2.6174999999999997
+   }
+  },
+  "fgaK2cde": {
+   "n_experts": 40,
+   "decode_check": "40/40 equal to reference (value-exact (8->0))",
+   "byte_exact_vs_source": "0/40",
+   "decode_errors": [],
+   "source_sha256_ok": "40/40",
+   "ceil_fallback_records": [],
+   "record_flags_seen": [
+    31
+   ],
+   "mean_total_bytes": 16042598.4,
+   "ratio_of_raw": 0.8533006535947713,
+   "mean_used_bytes_unpadded": 16040277.975,
+   "ratio_used_of_raw": 0.8531772309346916,
+   "mean_parts": {
+    "header": 48,
+    "length_table": 13450.9,
+    "scale_payload": 134994.875,
+    "weight_payload": 15891784.2,
+    "padding": 2320.425
+   },
+   "bit_per_w (weight payload incl. flush and side symbols)": 3.592435302734375,
+   "side_symbol_bit_per_w (est)": 0.03276445360276411,
+   "bit_per_scale (scale payload incl. flush)": 0.9765254267939815,
+   "all_in_bit_per_w (used bytes)": 3.6260032314724393,
+   "delta_total_vs_wnr2_bytes": -867328.0,
+   "delta_total_vs_wnr2_bytes_CI95": [
+    -904294.4,
+    -838246.4
+   ],
+   "delta_total_pct_of_raw": -4.613289760348584,
+   "delta_total_pct_of_raw_CI95": [
+    -4.814270152505447,
+    -4.458605664488018
+   ],
+   "delta_total_pct_of_wnr2_record": -5.129105706811356,
+   "median_expert_delta_total_bytes": -839680.0,
+   "median_expert_delta_total_pct_of_raw": -4.466230936819172,
+   "delta_used_vs_wnr2_bytes": -867461.35,
+   "delta_used_vs_wnr2_bytes_CI95": [
+    -906330.77125,
+    -838259.37125
+   ],
+   "delta_used_pct_of_raw": -4.613999044713371,
+   "median_expert_delta_used_bytes": -839039.0,
+   "delta_used_range_over_experts": [
+    -1357736.0,
+    -817906.0
+   ],
+   "estimate_from_code_lengths": {
+    "est_total_unpadded (4 B flush/stream)": 16048650.094525624,
+    "real_minus_est_weight_payload_bytes": -7442.725162539398,
+    "real_minus_est_scale_payload_bytes": -929.3943630862923,
+    "real_minus_est_per_stream_bytes": -0.4306645846515273
+   },
+   "model": "fg_a1_K2_c1",
+   "model_blob_bytes": 233322,
+   "model_rows_stored": 6804,
+   "model_rows_with_training_counts": 1573,
+   "model_compacted_bytes_est": 55468,
+   "model_choice_hist": [
+    75,
+    45
+   ],
+   "max_weight_stream_bytes": 1283,
+   "mean_weight_stream_bytes": 919.6634375000001,
+   "timing_s": {
+    "enc_total_median": 3.941,
+    "dec_total_median": 2.561
+   },
+   "length_table_detail": {
+    "mean_bytes": 13450.9,
+    "resid_std_scale_streams": 3.804257747711875,
+    "resid_std_weight_streams": 8.282244989399874,
+    "saving_vs_u16_table_pct_of_raw": 0.13525656573393247
+   }
+  }
+ },
+ "pairwise": {
+  "f vs wnr2": {
+   "delta_total_bytes": -331161.6,
+   "total_CI95": [
+    -366796.8,
+    -306892.8
+   ],
+   "delta_used_bytes": -331067.125,
+   "used_CI95": [
+    -365808.205625,
+    -306883.11562500003
+   ],
+   "delta_used_pct_of_raw": -1.7609353990076932,
+   "median_used_bytes": -310655.0,
+   "experts_improved_used": 40
+  },
+  "fg vs f (g on ceil-form)": {
+   "delta_total_bytes": -5632.0,
+   "total_CI95": [
+    -16691.2,
+    102.4
+   ],
+   "delta_used_bytes": -6028.4,
+   "used_CI95": [
+    -16967.028125,
+    -459.34625000000005
+   ],
+   "delta_used_pct_of_raw": -0.032064865876906316,
+   "median_used_bytes": -742.5,
+   "experts_improved_used": 38
+  },
+  "fgd vs fg (d)": {
+   "delta_total_bytes": -26521.6,
+   "total_CI95": [
+    -27136.0,
+    -25907.2
+   ],
+   "delta_used_bytes": -25763.6,
+   "used_CI95": [
+    -26074.5025,
+    -25417.0975
+   ],
+   "delta_used_pct_of_raw": -0.13703576048474944,
+   "median_used_bytes": -25872.0,
+   "experts_improved_used": 40
+  },
+  "fge vs fg (e)": {
+   "delta_total_bytes": 921.6,
+   "total_CI95": [
+    409.6,
+    1433.6
+   ],
+   "delta_used_bytes": 1351.65,
+   "used_CI95": [
+    1339.375,
+    1363.05
+   ],
+   "delta_used_pct_of_raw": 0.007189382914624183,
+   "median_used_bytes": 1358.5,
+   "experts_improved_used": 0
+  },
+  "fgde vs fgd (e on d)": {
+   "delta_total_bytes": 1945.6,
+   "total_CI95": [
+    1331.2,
+    2560.0
+   ],
+   "delta_used_bytes": 1353.85,
+   "used_CI95": [
+    1339.925,
+    1367.8006249999999
+   ],
+   "delta_used_pct_of_raw": 0.007201084643927015,
+   "median_used_bytes": 1360.5,
+   "experts_improved_used": 0
+  },
+  "fgt vs fg (tail seeding)": {
+   "delta_total_bytes": -40448.0,
+   "total_CI95": [
+    -40857.6,
+    -40038.4
+   ],
+   "delta_used_bytes": -40188.375,
+   "used_CI95": [
+    -40233.428125000006,
+    -40149.174375
+   ],
+   "delta_used_pct_of_raw": -0.21376067516850492,
+   "median_used_bytes": -40168.0,
+   "experts_improved_used": 40
+  },
+  "fgdt vs fgd (tail seeding on d)": {
+   "delta_total_bytes": -39731.2,
+   "total_CI95": [
+    -40243.2,
+    -39116.8
+   ],
+   "delta_used_bytes": -40183.575,
+   "used_CI95": [
+    -40232.000625,
+    -40141.075
+   ],
+   "delta_used_pct_of_raw": -0.21373514412275324,
+   "median_used_bytes": -40170.0,
+   "experts_improved_used": 40
+  },
+  "fgdt vs fgde (tail instead of hash)": {
+   "delta_total_bytes": -41676.8,
+   "total_CI95": [
+    -42188.8,
+    -41267.2
+   ],
+   "delta_used_bytes": -41537.425,
+   "used_CI95": [
+    -41588.2275,
+    -41494.725
+   ],
+   "delta_used_pct_of_raw": -0.22093622876668031,
+   "median_used_bytes": -41530.5,
+   "experts_improved_used": 40
+  },
+  "fga vs fg (a, 3-valued)": {
+   "delta_total_bytes": 9728.0,
+   "total_CI95": [
+    9011.2,
+    10547.2
+   ],
+   "delta_used_bytes": 10528.975,
+   "used_CI95": [
+    10134.77375,
+    11185.711875
+   ],
+   "delta_used_pct_of_raw": 0.056003279675585514,
+   "median_used_bytes": 10158.0,
+   "experts_improved_used": 0
+  },
+  "fgad vs fgd": {
+   "delta_total_bytes": 10854.4,
+   "total_CI95": [
+    10035.2,
+    11878.4
+   ],
+   "delta_used_bytes": 10585.875,
+   "used_CI95": [
+    10190.570625,
+    11247.9925
+   ],
+   "delta_used_pct_of_raw": 0.056305928947099675,
+   "median_used_bytes": 10201.5,
+   "experts_improved_used": 0
+  },
+  "fgaK2 vs fga (b K=2)": {
+   "delta_total_bytes": -1843.2,
+   "total_CI95": [
+    -4096.0,
+    -409.6
+   ],
+   "delta_used_bytes": -1928.225,
+   "used_CI95": [
+    -4087.044375,
+    -600.6193750000001
+   ],
+   "delta_used_pct_of_raw": -0.010256166811342593,
+   "median_used_bytes": -642.0,
+   "experts_improved_used": 27
+  },
+  "fgc vs fg (c)": {
+   "delta_total_bytes": -515276.8,
+   "total_CI95": [
+    -515993.6,
+    -514560.0
+   ],
+   "delta_used_bytes": -514845.3,
+   "used_CI95": [
+    -515454.766875,
+    -514243.8075
+   ],
+   "delta_used_pct_of_raw": -2.7384456061070264,
+   "median_used_bytes": -515144.5,
+   "experts_improved_used": 40
+  },
+  "fgcde vs fgde (c on d+e)": {
+   "delta_total_bytes": -514969.6,
+   "total_CI95": [
+    -515686.4,
+    -514252.8
+   ],
+   "delta_used_bytes": -514565.45,
+   "used_CI95": [
+    -515169.684375,
+    -513949.59062499995
+   ],
+   "delta_used_pct_of_raw": -2.736957092950027,
+   "median_used_bytes": -514781.0,
+   "experts_improved_used": 40
+  },
+  "fgaK2cde vs fgcde (a+b on c+d+e)": {
+   "delta_total_bytes": 9011.2,
+   "total_CI95": [
+    7270.4,
+    10342.4
+   ],
+   "delta_used_bytes": 8609.375,
+   "used_CI95": [
+    6977.181875,
+    9624.933125
+   ],
+   "delta_used_pct_of_raw": 0.04579298896207789,
+   "median_used_bytes": 9411.0,
+   "experts_improved_used": 1
+  },
+  "fgcd vs fgd (c on d)": {
+   "delta_total_bytes": -514457.6,
+   "total_CI95": [
+    -515174.4,
+    -513740.8
+   ],
+   "delta_used_bytes": -514565.1,
+   "used_CI95": [
+    -515179.10624999995,
+    -513929.96562499995
+   ],
+   "delta_used_pct_of_raw": -2.7369552313112746,
+   "median_used_bytes": -514798.5,
+   "experts_improved_used": 40
+  }
+ },
+ "f_entropy_crosscheck": {
+  "real_used_delta_bytes": -331067.125,
+  "real_used_delta_pct_of_raw": -1.7609353990076932,
+  "est_delta_same_models_same_experts_bytes": -331072.17837961164,
+  "est_delta_pct_of_raw": -1.7609622777714569,
+  "real_minus_est_delta_bytes": 5.053379611636046,
+  "real_minus_est_delta_CI95": [
+   -16.646888581857784,
+   26.18780743304873
+  ],
+  "weight_payload_delta_real_vs_est": [
+   -319256.975,
+   -319246.3943401628
+  ],
+  "scale_payload_delta_real_vs_est": [
+   -11826.15,
+   -11841.784039448485
+  ],
+  "quoted_entropy_estimate (mxceil_an, two-way half split, 160 experts)": {
+   "bytes": -339507.8,
+   "pct_of_raw": -1.8058
+  },
+  "real_minus_quoted_pct_points": 0.044864600992306825,
+  "flush_note": "est assumes 4 B flush per stream; real-minus-est per stream for wnr2 and f in the config table"
+ }
+}

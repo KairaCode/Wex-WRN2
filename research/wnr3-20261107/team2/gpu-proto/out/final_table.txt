@@ -1,0 +1,50 @@
+﻿nvsmi start/end: 210 MHz, 0 %, 17.78 W | 1950 MHz, 98 %, 215.68 W
+all byte-exact: True 80 configs; multistream re-verify bad streams total: 0
+
+== same launch config as kernel A (32 threads/block, plain stores) ==
+A/wdec/nt32/lb           regs  72 smem  18160 occW  5 | size +0.000% | m1  302.1us x1.000 | rec(m3)  880.6us x0.999  18.7GiB/s | 8rec(m24)  5795.8us ( 724.5/rec) x1.000  22.7GiB/s | 8str x0.988  22.6GiB/s
+A259/wdec/nt32/lb        regs  74 smem   8304 occW 10 | size +0.000% | m1  299.0us x0.990 | rec(m3)  769.0us x0.865  21.4GiB/s | 8rec(m24)  4642.8us ( 580.4/rec) x0.785  28.4GiB/s | 8str x0.778  28.1GiB/s
+B1/wdec/nt32/lb          regs  80 smem  18160 occW  5 | size +0.360% | m1  304.1us x1.003 | rec(m3)  897.0us x1.008  18.4GiB/s | 8rec(m24)  5907.5us ( 738.4/rec) x1.009  22.3GiB/s | 8str x0.994  22.2GiB/s
+B1c/wdec/nt32/lb         regs  78 smem   8304 occW 10 | size +0.360% | m1  304.1us x1.000 | rec(m3)  776.2us x0.870  21.2GiB/s | 8rec(m24)  4676.6us ( 584.6/rec) x0.787  28.2GiB/s | 8str x0.778  27.9GiB/s
+B2/wdec/nt32/lb          regs 113 smem  18160 occW  5 | size +0.360% | m1  298.0us x0.980 | rec(m3)  875.5us x0.984  18.8GiB/s | 8rec(m24)  5781.5us ( 722.7/rec) x0.983  22.8GiB/s | 8str x0.971  22.6GiB/s
+B2c/wdec/nt32/lb         regs 112 smem   8304 occW 10 | size +0.360% | m1  303.1us x0.997 | rec(m3)  684.0us x0.769  24.1GiB/s | 8rec(m24)  3934.2us ( 491.8/rec) x0.658  33.5GiB/s | 8str x0.648  32.9GiB/s
+C/wdec/nt32/lb           regs  74 smem  33184 occW  2 | size -0.342% | m1  587.8us x1.933 | rec(m3) 1742.8us x1.956   9.5GiB/s | 8rec(m24) 13569.0us (1696.1/rec) x2.317   9.7GiB/s | 8str x2.276   9.7GiB/s
+CB2/wdec/nt32/lb         regs 112 smem  33184 occW  2 | size +0.018% | m1  593.1us x1.953 | rec(m3) 1759.2us x1.975   9.4GiB/s | 8rec(m24) 13682.7us (1710.3/rec) x2.335   9.6GiB/s | 8str x2.299   9.6GiB/s
+D/wdec/nt32/lb           regs  76 smem   4160 occW 16 | size -0.000% | m1  280.6us x0.926 | rec(m3)  831.5us x0.935  19.8GiB/s | 8rec(m24)  7663.6us ( 958.0/rec) x1.309  17.2GiB/s | 8str x1.285  17.1GiB/s
+DB2/wdec/nt32/lb         regs 112 smem   4160 occW 16 | size +0.360% | m1  269.5us x0.889 | rec(m3)  513.0us x0.575  32.1GiB/s | 8rec(m24)  5069.8us ( 633.7/rec) x0.857  26.0GiB/s | 8str x0.842  25.8GiB/s
+
+== best config per variant for 1 record in flight (m3) ==
+A/wdec/nt64/out4         regs  64 smem  27376 occW  6 | size +0.000% | m1  337.9us x1.122 | rec(m3)  720.9us x0.815  22.9GiB/s | 8rec(m24)  5574.9us ( 696.9/rec) x0.957  23.6GiB/s | 8str x0.943  23.4GiB/s
+A259/wdec/nt128/out4     regs  40 smem  26736 occW 12 | size +0.000% | m1  437.2us x1.446 | rec(m3)  580.6us x0.653  28.4GiB/s | 8rec(m24)  4327.4us ( 540.9/rec) x0.731  30.5GiB/s | 8str x0.727  29.9GiB/s
+B1/wdec/nt64/out4        regs  64 smem  27376 occW  6 | size +0.360% | m1  334.8us x1.105 | rec(m3)  721.9us x0.811  22.8GiB/s | 8rec(m24)  5589.0us ( 698.6/rec) x0.950  23.6GiB/s | 8str x0.939  23.4GiB/s
+B1c/wdec/nt128/out4      regs  40 smem  26736 occW 12 | size +0.360% | m1  378.9us x1.247 | rec(m3)  499.7us x0.558  33.0GiB/s | 8rec(m24)  3893.2us ( 486.7/rec) x0.651  33.9GiB/s | 8str x0.646  33.2GiB/s
+B2/wdec/nt128/lb         regs  48 smem  18160 occW 20 | size +0.360% | m1  408.6us x1.345 | rec(m3)  579.6us x0.649  28.4GiB/s | 8rec(m24)  5769.2us ( 721.2/rec) x0.971  22.9GiB/s | 8str x0.935  22.8GiB/s
+B2c/wdec/nt128/out4      regs  48 smem  26736 occW 12 | size +0.360% | m1  367.6us x1.210 | rec(m3)  485.4us x0.540  34.0GiB/s | 8rec(m24)  3775.5us ( 471.9/rec) x0.629  34.9GiB/s | 8str x0.622  34.2GiB/s
+C/wdec/nt256/lb          regs  40 smem  33184 occW 16 | size -0.342% | m1  449.5us x1.481 | rec(m3)  762.9us x0.858  21.6GiB/s | 8rec(m24)  6667.3us ( 833.4/rec) x1.131  19.8GiB/s | 8str x1.111  19.6GiB/s
+CB2/wdec/nt256/lb        regs  48 smem  33184 occW 16 | size +0.018% | m1  405.5us x1.334 | rec(m3)  583.7us x0.654  28.2GiB/s | 8rec(m24)  4253.7us ( 531.7/rec) x0.711  31.0GiB/s | 8str x0.697  30.7GiB/s
+D/wdec/nt64/out4         regs  66 smem  13376 occW 14 | size -0.000% | m1  292.9us x0.963 | rec(m3)  523.3us x0.586  31.5GiB/s | 8rec(m24)  4765.7us ( 595.7/rec) x0.803  27.7GiB/s | 8str x0.785  27.5GiB/s
+DB2/wdec/nt64/out4       regs  64 smem  13376 occW 14 | size +0.360% | m1  285.7us x0.943 | rec(m3)  419.8us x0.470  39.3GiB/s | 8rec(m24)  3180.5us ( 397.6/rec) x0.531  41.5GiB/s | 8str x0.528  40.7GiB/s
+
+== best config per variant for 8 records in flight (m24 single launch) ==
+A/wdec/nt64/lb           regs  64 smem  18160 occW 10 | size +0.000% | m1  316.4us x1.055 | rec(m3)  797.7us x0.905  20.7GiB/s | 8rec(m24)  4711.4us ( 588.9/rec) x0.805  28.0GiB/s | 8str x0.798  27.7GiB/s
+A259/wdec/nt64/out4      regs  64 smem  17520 occW 10 | size +0.000% | m1  340.0us x1.125 | rec(m3)  726.0us x0.818  22.7GiB/s | 8rec(m24)  4046.8us ( 505.9/rec) x0.681  32.6GiB/s | 8str x0.675  32.2GiB/s
+B1/wdec/nt64/lb          regs  64 smem  18160 occW 10 | size +0.360% | m1  321.5us x1.061 | rec(m3)  813.1us x0.914  20.3GiB/s | 8rec(m24)  4774.9us ( 596.9/rec) x0.803  27.6GiB/s | 8str x0.795  27.3GiB/s
+B1c/wdec/nt256/out4      regs  40 smem  45168 occW 16 | size +0.360% | m1  410.6us x1.351 | rec(m3)  572.4us x0.640  28.8GiB/s | 8rec(m24)  3744.8us ( 468.1/rec) x0.623  35.2GiB/s | 8str x0.617  34.6GiB/s
+B2/wdec/nt64/lb          regs  64 smem  18160 occW 10 | size +0.360% | m1  366.6us x1.206 | rec(m3)  788.5us x0.885  20.9GiB/s | 8rec(m24)  4346.9us ( 543.4/rec) x0.731  30.3GiB/s | 8str x0.723  29.9GiB/s
+B2c/wdec/nt256/out4      regs  48 smem  45168 occW 16 | size +0.360% | m1  394.2us x1.300 | rec(m3)  563.2us x0.631  29.3GiB/s | 8rec(m24)  3562.5us ( 445.3/rec) x0.593  37.0GiB/s | 8str x0.584  36.4GiB/s
+C/wdec/nt128/lb          regs  40 smem  33184 occW  8 | size -0.342% | m1  421.9us x1.389 | rec(m3)  906.2us x1.017  18.2GiB/s | 8rec(m24)  5636.1us ( 704.5/rec) x0.958  23.4GiB/s | 8str x0.943  23.1GiB/s
+CB2/wdec/nt256/lb        regs  48 smem  33184 occW 16 | size +0.018% | m1  405.5us x1.334 | rec(m3)  583.7us x0.654  28.2GiB/s | 8rec(m24)  4253.7us ( 531.7/rec) x0.711  31.0GiB/s | 8str x0.697  30.7GiB/s
+D/wdec/nt32/out4         regs  73 smem   8768 occW 10 | size -0.000% | m1  282.6us x0.932 | rec(m3)  657.4us x0.738  25.1GiB/s | 8rec(m24)  3813.4us ( 476.7/rec) x0.641  34.6GiB/s | 8str x0.635  34.2GiB/s
+DB2/wdec/nt64/out4       regs  64 smem  13376 occW 14 | size +0.360% | m1  285.7us x0.943 | rec(m3)  419.8us x0.470  39.3GiB/s | 8rec(m24)  3180.5us ( 397.6/rec) x0.531  41.5GiB/s | 8str x0.528  40.7GiB/s
+
+== best config per variant for one matrix (m1, latency-bound) ==
+A/wdec/nt32/lb           regs  72 smem  18160 occW  5 | size +0.000% | m1  302.1us x1.000 | rec(m3)  880.6us x0.999  18.7GiB/s | 8rec(m24)  5795.8us ( 724.5/rec) x1.000  22.7GiB/s | 8str x0.988  22.6GiB/s
+A259/wdec/nt32/lb        regs  74 smem   8304 occW 10 | size +0.000% | m1  299.0us x0.990 | rec(m3)  769.0us x0.865  21.4GiB/s | 8rec(m24)  4642.8us ( 580.4/rec) x0.785  28.4GiB/s | 8str x0.778  28.1GiB/s
+B1/wdec/nt32/lb          regs  80 smem  18160 occW  5 | size +0.360% | m1  304.1us x1.003 | rec(m3)  897.0us x1.008  18.4GiB/s | 8rec(m24)  5907.5us ( 738.4/rec) x1.009  22.3GiB/s | 8str x0.994  22.2GiB/s
+B1c/wdec/nt32/lb         regs  78 smem   8304 occW 10 | size +0.360% | m1  304.1us x1.000 | rec(m3)  776.2us x0.870  21.2GiB/s | 8rec(m24)  4676.6us ( 584.6/rec) x0.787  28.2GiB/s | 8str x0.778  27.9GiB/s
+B2/wdec/nt32/lb          regs 113 smem  18160 occW  5 | size +0.360% | m1  298.0us x0.980 | rec(m3)  875.5us x0.984  18.8GiB/s | 8rec(m24)  5781.5us ( 722.7/rec) x0.983  22.8GiB/s | 8str x0.971  22.6GiB/s
+B2c/wdec/nt32/lb         regs 112 smem   8304 occW 10 | size +0.360% | m1  303.1us x0.997 | rec(m3)  684.0us x0.769  24.1GiB/s | 8rec(m24)  3934.2us ( 491.8/rec) x0.658  33.5GiB/s | 8str x0.648  32.9GiB/s
+C/wdec/nt64/lb           regs  64 smem  33184 occW  4 | size -0.342% | m1  330.8us x1.091 | rec(m3)  974.8us x1.094  16.9GiB/s | 8rec(m24)  7633.9us ( 954.2/rec) x1.304  17.3GiB/s | 8str x1.281  17.1GiB/s
+CB2/wdec/nt64/lb         regs  64 smem  33184 occW  4 | size +0.018% | m1  364.5us x1.202 | rec(m3) 1074.2us x1.207  15.3GiB/s | 8rec(m24)  8412.2us (1051.5/rec) x1.437  15.7GiB/s | 8str x1.416  15.6GiB/s
+D/wdec/nt32/lb           regs  76 smem   4160 occW 16 | size -0.000% | m1  280.6us x0.926 | rec(m3)  831.5us x0.935  19.8GiB/s | 8rec(m24)  7663.6us ( 958.0/rec) x1.309  17.2GiB/s | 8str x1.285  17.1GiB/s
+DB2/wdec/nt32/lb         regs 112 smem   4160 occW 16 | size +0.360% | m1  269.5us x0.889 | rec(m3)  513.0us x0.575  32.1GiB/s | 8rec(m24)  5069.8us ( 633.7/rec) x0.857  26.0GiB/s | 8str x0.842  25.8GiB/s

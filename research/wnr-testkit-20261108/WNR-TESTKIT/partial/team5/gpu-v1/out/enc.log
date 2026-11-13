@@ -1,0 +1,73 @@
+﻿{
+ "pick": [
+  17,
+  0,
+  40,
+  80,
+  120,
+  159,
+  60,
+  100
+ ],
+ "anchor": 120,
+ "model": "<orig-pc>/team4\\ceil-ref\\models\\even.npz:fg_a0_K0_c0",
+ "wnm3": {
+  "bytes": 29468,
+  "index_sha256_ok": true,
+  "model_id": "0x08930756",
+  "blob_sha256": "1313b1ee46cb64ae626f87d63ff7f06d9cee0c32d899a2b37c3e2c134b67acee"
+ },
+ "h32_self_test": {
+  "smhasher_verification": "0xB0F57EE3",
+  "draft01_vectors": {
+   "H32(\"\",0)": "0x00000000",
+   "H32(\"\",seed)": "0xE7F741F1",
+   "H32(00..0F,seed)": "0x31CE0919",
+   "weight h23": "0x0C48D3",
+   "scale h23": "0x3C0999"
+  },
+  "vectorised_eq_scalar": "64/64",
+  "ceil_bit_vector_weight_h23": "0x038F11"
+ }
+}
+L04_E038.bin elapsed 14.7
+L00_E097.bin elapsed 32.4
+L10_E015.bin elapsed 48.0
+L20_E005.bin elapsed 63.6
+L30_E002.bin elapsed 79.2
+L39_E156.bin elapsed 94.5
+L15_E025.bin elapsed 108.9
+L25_E000.bin elapsed 124.1
+{
+ "record_sizes_spec_layout_64B_header": {
+  "CEIL 0x10 (u16 lengths, x0=L)": {
+   "used_mean": 16575113.25,
+   "total_mean_aligned4096": 16577536.0,
+   "of_raw_used": 0.8816249473422182
+  },
+  "CEIL|HASH 0x18 (u16)": {
+   "used_mean": 16576477.375,
+   "total_mean_aligned4096": 16578560.0,
+   "of_raw_used": 0.8816975047126056
+  },
+  "CEIL|LENC 0x14": {
+   "used_mean": 16551834.25,
+   "total_mean_aligned4096": 16553984.0,
+   "of_raw_used": 0.8803867448129425
+  },
+  "CEIL|LENC|HASH 0x1C (v1)": {
+   "used_mean": 16553174.625,
+   "total_mean_aligned4096": 16555520.0,
+   "of_raw_used": 0.880458038928462
+  }
+ },
+ "hash_cost_bytes_per_record": {
+  "H18_minus_G_payload": 1364.125,
+  "H1C_minus_G_payload": 1352.375,
+  "per_stream_H1C": 0.06956661522633745
+ },
+ "lenc_LS_mean": {
+  "G14": 15601.0,
+  "H1C": 15589.0
+ }
+}

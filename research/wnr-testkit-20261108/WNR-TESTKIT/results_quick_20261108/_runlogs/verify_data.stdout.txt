@@ -1,0 +1,7 @@
+fetch_data mode=verify data=<KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\data sets=['v41-sample', 'extra'] quick=True
+[v41-sample] 160 experts, 3,008,102,400 bytes -> <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\data\v41-sample
+[v41-sample] state: {'ok': 21, 'ok_size': 139}
+[extra] 76 experts, 1,428,848,640 bytes -> <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\data\extra
+[extra] state: {'ok': 11, 'ok_size': 65}
+total bytes in selected sets: 4,436,951,040; fetched/copied this run: 0; 0.2 s
+RESULT fetch_data PASS mode=verify v41-sample=160/160 extra=76/76 bytes=4436951040 failures=0

@@ -1,0 +1,47 @@
+﻿{
+ "m0 x0=L": {
+  "streams": 48,
+  "bytes_equal_to_scalar_ref": 48,
+  "vector_decode_symbols_equal": true,
+  "final_state_rule_as_expected": true,
+  "scalar_decode_of_vector_bytes_ok": "4/4",
+  "mean_len": 963.8541666666666
+ },
+ "m0 x0=L+h": {
+  "streams": 48,
+  "bytes_equal_to_scalar_ref": 48,
+  "vector_decode_symbols_equal": true,
+  "final_state_rule_as_expected": true,
+  "scalar_decode_of_vector_bytes_ok": "4/4",
+  "mean_len": 963.9375
+ },
+ "m1 x0=L": {
+  "streams": 48,
+  "bytes_equal_to_scalar_ref": 48,
+  "vector_decode_symbols_equal": true,
+  "final_state_rule_as_expected": true,
+  "scalar_decode_of_vector_bytes_ok": "4/4",
+  "mean_len": 965.5
+ },
+ "m1 x0=L+h": {
+  "streams": 48,
+  "bytes_equal_to_scalar_ref": 48,
+  "vector_decode_symbols_equal": true,
+  "final_state_rule_as_expected": true,
+  "scalar_decode_of_vector_bytes_ok": "4/4",
+  "mean_len": 965.5416666666666
+ },
+ "adversarial": {
+  "streams": 40,
+  "mean_len": 3362.275,
+  "max_len": 3393,
+  "bound_2n+8": 4104,
+  "bytes_equal_to_scalar_ref(first 8)": 8,
+  "decode_ok": true
+ },
+ "length_pack": {
+  "roundtrip": true,
+  "bytes": 7396,
+  "used": 7396
+ }
+}

@@ -1,0 +1,20 @@
+; SPDX-License-Identifier: Apache-2.0
+; Derived from colibri c/dsv4.def (https://github.com/JustVugg/colibri), Copyright 2026 Vincenzo Fornaro.
+; Modified by Ludovico Zanichelli, 2026.
+; REFERENCE EXCERPT, not compilable on its own.
+; Source: KAIRA src/colibri/c/dsv4.def at commit 88ddb07 (2026-11-07), as committed.
+; Line numbers are of that commit; the live tree moves them. Code between ranges is omitted.
+; Export list of coli_cuda_dsv4*.dll (nvcc -Xlinker /DEF:dsv4.def): the two WEX lines plus stream_drain.
+
+; ==== dsv4.def:55-64  dsv4_cuda_tensor_alloc_fp4, dsv4_cuda_tensor_fp4_buffers (WEX), dsv4_cuda_stream_drain (upstream) ====
+    dsv4_cuda_indexer_keycache_invalidate
+    dsv4_cuda_tensor_refill_fp4
+    dsv4_cuda_tensor_alloc_fp4
+    dsv4_cuda_tensor_fp4_buffers
+    dsv4_cuda_backend_arch_ok
+    dsv4_cuda_backend_name
+    dsv4_cuda_kv_ring_append
+    dsv4_cuda_mem_free_mb
+    dsv4_cuda_device_unified
+    dsv4_cuda_stream_drain
+

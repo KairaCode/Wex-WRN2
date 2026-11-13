@@ -1,0 +1,155 @@
+[    0.009] [OMP] deepseek-v4: 13 compute threads (16 logical CPUs minus 3 expert-loader workers); OMP_NUM_THREADS=<n> overrides, COLI_NO_OMP_TUNE=1 disables
+[    0.010] [SPLIT] +C:/models/DeepSeek-V4.1-Flash-1017-engram -> 1 shard(s)
+[    0.011] [SPLIT] +E:/models/DeepSeek-V4.1-Flash-1017-engram -> 1 shard(s)
+[    0.011] [SPLIT] model across 3 dir(s): 48 shard(s) total (primary U:\models\DeepSeek-V4.1-Flash-1017-REAP192-MXFP4 -> 46 shard(s)), no duplication
+[    0.111] v41_engram tables=2 ngram=4 heads=8 head_dim=256 cache_rows=65536 path=cpu
+[    0.112] ram_tiers available=13.00GiB dense=resident(6.65GiB) target_slots=7 target_cache=4.90GiB head=streamed-bf16 projected=12.74GiB
+[    0.112] v4_open index=0.08s plan=0.00s (index built once, reused by plan/inventory/head)
+[    0.112] [SPLIT] +C:/models/DeepSeek-V4.1-Flash-1017-engram -> 1 shard(s)
+[    0.112] [SPLIT] +E:/models/DeepSeek-V4.1-Flash-1017-engram -> 1 shard(s)
+[    0.113] [SPLIT] model across 3 dir(s): 48 shard(s) total (primary U:\models\DeepSeek-V4.1-Flash-1017-REAP192-MXFP4 -> 46 shard(s)), no duplication
+[    0.185] [v4_wex] Container v1 active: U:\kaira_wex\v41-reap\v4_flash_experts.wex (40 layers, 192 experts, 18800640 decoded bytes/expert, direct_io=on)
+[    0.191] v4_ssd_io mode=wex-direct-aligned fallback=buffered-pread
+[    0.192] v4_autopin history=U:\models\DeepSeek-V4.1-Flash-1017-REAP192-MXFP4/.coli_usage selections=1845
+[    0.192] v4_hot_policy pin_slots_per_layer=1 repin_interval=6 mode=resident-ram rows16=hot-pins
+[    0.296] [DSV4 CUDA] backend=<KAIRA>/lab/v41-port-20261106/ws-g/new-out3/coli_cuda_dsv4_dg.dll (deepgemm-sm120)
+[    0.353] [DSV4 CUDA] inference streams at priority -5 (range 0..-5)
+[    0.360] [DSV4 CUDA] device 0: NVIDIA GeForce RTX 5090 34.2 GB sm_120
+[    0.360] v4_gpu host_pin=on unpin-on-free=on cap=20.0GiB
+[    0.361] v4_gpu fp8_block=32 dense=gpu (activations quantized on the host) routed-experts=gpu (decode pipeline, VRAM mirrors under the reserve guard) reserve=4096 MB
+[    0.361] v4_gpu priority=frequency hot=VRAM next=RAM cold=disk
+[    0.361] v4_gpu tier=dense-matvec device=0
+[    0.587] v4_gpu gate upload: kernel sized for V4 (E=256 top-6, H=4096, I=2048, hc=4); this model's shape stays on the CPU
+[    0.587] v4_gpu gate bias upload: kernel sized for V4 (E=256 top-6, H=4096, I=2048, hc=4); this model's shape stays on the CPU
+[    0.587] v4_gpu layer=0 uploaded=154.651MiB in 0.081s wall=1794166436
+[    0.822] v4_gpu layer=1 uploaded=154.651MiB in 0.085s wall=1794166437
+[    1.018] v4_gpu layer=2 uploaded=154.651MiB in 0.101s wall=1794166437
+[    1.202] v4_gpu layer=3 uploaded=154.651MiB in 0.092s wall=1794166437
+[    1.411] v4_gpu layer=4 uploaded=154.651MiB in 0.099s wall=1794166437
+[    1.591] v4_gpu layer=5 uploaded=154.651MiB in 0.087s wall=1794166437
+[    1.762] v4_gpu layer=6 uploaded=154.651MiB in 0.091s wall=1794166437
+[    1.948] v4_gpu layer=7 uploaded=154.651MiB in 0.091s wall=1794166438
+[    2.148] v4_gpu layer=8 uploaded=154.651MiB in 0.081s wall=1794166438
+[    2.336] v4_gpu layer=9 uploaded=154.651MiB in 0.094s wall=1794166438
+[    2.532] v4_gpu layer=10 uploaded=154.651MiB in 0.094s wall=1794166438
+[    2.742] v4_gpu layer=11 uploaded=154.651MiB in 0.097s wall=1794166438
+[    2.955] v4_gpu layer=12 uploaded=154.651MiB in 0.098s wall=1794166439
+[    3.164] v4_gpu layer=13 uploaded=154.651MiB in 0.097s wall=1794166439
+[    3.507] v4_gpu layer=14 uploaded=154.651MiB in 0.095s wall=1794166439
+[    3.702] v4_gpu layer=15 uploaded=154.651MiB in 0.092s wall=1794166439
+[    3.885] v4_gpu layer=16 uploaded=154.651MiB in 0.087s wall=1794166440
+[    4.062] v4_gpu layer=17 uploaded=154.651MiB in 0.084s wall=1794166440
+[    4.246] v4_gpu layer=18 uploaded=154.651MiB in 0.086s wall=1794166440
+[    4.429] v4_gpu layer=19 uploaded=154.651MiB in 0.087s wall=1794166440
+[    4.610] v4_gpu layer=20 uploaded=154.651MiB in 0.083s wall=1794166440
+[    4.788] v4_gpu layer=21 uploaded=154.651MiB in 0.086s wall=1794166441
+[    4.958] v4_gpu layer=22 uploaded=154.651MiB in 0.081s wall=1794166441
+[    5.136] v4_gpu layer=23 uploaded=154.651MiB in 0.085s wall=1794166441
+[    5.320] v4_gpu layer=24 uploaded=154.651MiB in 0.087s wall=1794166441
+[    5.494] v4_gpu layer=25 uploaded=154.651MiB in 0.086s wall=1794166441
+[    5.677] v4_gpu layer=26 uploaded=154.651MiB in 0.087s wall=1794166441
+[    5.868] v4_gpu layer=27 uploaded=154.651MiB in 0.091s wall=1794166442
+[    6.068] v4_gpu layer=28 uploaded=154.651MiB in 0.091s wall=1794166442
+[    6.276] v4_gpu layer=29 uploaded=154.651MiB in 0.107s wall=1794166442
+[    6.473] v4_gpu layer=30 uploaded=154.651MiB in 0.092s wall=1794166442
+[    6.660] v4_gpu layer=31 uploaded=154.651MiB in 0.090s wall=1794166442
+[    6.852] v4_gpu layer=32 uploaded=154.651MiB in 0.093s wall=1794166443
+[    7.036] v4_gpu layer=33 uploaded=154.651MiB in 0.091s wall=1794166443
+[    7.246] v4_gpu layer=34 uploaded=154.651MiB in 0.108s wall=1794166443
+[    7.453] v4_gpu layer=35 uploaded=154.651MiB in 0.093s wall=1794166443
+[    7.645] v4_gpu layer=36 uploaded=154.651MiB in 0.090s wall=1794166443
+[    7.834] v4_gpu layer=37 uploaded=154.651MiB in 0.091s wall=1794166444
+[    8.013] v4_gpu layer=38 uploaded=154.651MiB in 0.088s wall=1794166444
+[    8.199] v4_gpu layer=39 uploaded=154.651MiB in 0.094s wall=1794166444
+[    8.199] v4_dense_resident layers=40 bytes=6.650GiB
+[    8.211] [wex] Neural CUDA reconstruction enabled: <KAIRA>/lab/v41-gpu-20261107/w1/build/kaira_wex_cuda.dll
+[    8.211] [v4_wex] GPU-direct Neural-rANS reconstruction enabled: VRAM-first misses outside RAM skip the host slab; the next-layer prefetcher loads them to VRAM too
+[   16.108] v4_tier_prewarm vram_experts=982 frequency_high=4 frequency_low=1 order=VRAM-RAM-disk ram_excludes_vram=on
+[   16.109] [v4] expert cache: reading each layer's most used experts (235 experts, 4.1 GiB) before the first request; COLI_V4_PREWARM=0 starts with it empty
+[   16.196] [v4] expert cache: 0.4 of 4.1 GiB (10%), 4.81 GiB/s, about 1 s left
+[   16.261] [v4] expert cache: 0.8 of 4.1 GiB (20%), 5.41 GiB/s, about 1 s left
+[   16.332] [v4] expert cache: 1.2 of 4.1 GiB (30%), 5.56 GiB/s, about 1 s left
+[   16.396] [v4] expert cache: 1.6 of 4.1 GiB (40%), 5.73 GiB/s, about 0 s left
+[   16.465] [v4] expert cache: 2.1 of 4.1 GiB (50%), 5.81 GiB/s, about 0 s left
+[   16.531] [v4] expert cache: 2.5 of 4.1 GiB (60%), 5.85 GiB/s, about 0 s left
+[   16.601] [v4] expert cache: 2.9 of 4.1 GiB (70%), 5.87 GiB/s, about 0 s left
+[   16.661] [v4] expert cache: 3.3 of 4.1 GiB (80%), 5.96 GiB/s, about 0 s left
+[   16.728] [v4] expert cache: 3.7 of 4.1 GiB (90%), 6.00 GiB/s, about 0 s left
+[   16.793] [v4] expert cache: 235 experts, 4.1 GiB, read in 0.7 s (6.01 GiB/s)
+[   16.793] v4_tier_audit gpu_experts=982 hottest_first=yes min_gpu_frequency=1 max_other_frequency=1 ram_gpu_overlap=0
+[   16.818] v41_attn path=cpu projections=gpu (the GPU and Vulkan attention, the fused decode and the device KV are V4-only)
+[   16.830] v41_moe path=cpu-union experts=192 hidden=5120 moe=2304 topk=6 (every row without expert mirrors, else prefill and multi-slot rows; the GPU route and the prefill bank are V4-only)
+[   21.324] v4_next_prefetch prefetch=1 stats=1 k=8 threads=8
+[   21.325] v4_next_prefetch tokstart=1 keep=1 avx2=1
+[   21.326] v41_moe decode=gpu-pipeline (VRAM expert mirrors, act_quant per 32); prefill and multi-slot rows keep the cpu union
+[   21.327] v4_next_prefetch online=1 eta=0.1 decay=0.01 beta=2 alpha=0.159104
+[   21.327] v4_next_prefetch online=0: its state is sized for 256 experts, this model routes 192
+[   21.327] [v4_copy] V4_COPY_WORKER=1: mirror refills are posted to the copy worker
+[   21.327] [v4_promote] V4_PROMOTE_VRAM=2: predicted experts of each layer are copied to transient mirrors ahead of time
+[   21.410] v4_next_prefetch avx2=1 self-check=ok calls=16
+[   22.109] decprof position=9 layers=40 hc=19 attn=40 moe=384 ms
+[   22.110] moeprof wait=174.8 attach=35.6 gpu=159.1 ms vram_hits=170 cpu_layers=0
+[   22.110] copyprof posts=237 gate_calls=30 gate_wait=79.2 issue=122.5 post=1.1 drains=1023 ms
+[   22.110] promoteprof posted=10 refused=0 mirrored=7
+[   22.975] decprof position=10 layers=40 hc=22 attn=45 moe=440 ms
+[   22.975] moeprof wait=278.5 attach=5.2 gpu=140.3 ms vram_hits=160 cpu_layers=0
+[   22.975] copyprof posts=606 gate_calls=65 gate_wait=142.4 issue=247.0 post=2.1 drains=1107 ms
+[   22.975] promoteprof posted=60 refused=1 mirrored=22
+[   22.977] v4_expert_store: prefetch layer 1 expert 31: no free cache slot (7 of 7 per-layer slots leased)
+[   23.870] decprof position=11 layers=40 hc=22 attn=41 moe=473 ms
+[   23.870] moeprof wait=326.9 attach=7.9 gpu=126.0 ms vram_hits=149 cpu_layers=0
+[   23.870] copyprof posts=1023 gate_calls=104 gate_wait=189.8 issue=361.5 post=3.0 drains=1198 ms
+[   23.870] promoteprof posted=112 refused=1 mirrored=31
+[   24.755] decprof position=12 layers=40 hc=21 attn=45 moe=449 ms
+[   24.755] moeprof wait=308.3 attach=6.5 gpu=120.3 ms vram_hits=150 cpu_layers=0
+[   24.755] copyprof posts=1440 gate_calls=144 gate_wait=229.9 issue=440.5 post=3.8 drains=1291 ms
+[   24.755] promoteprof posted=165 refused=1 mirrored=38
+[   25.521] decprof position=13 layers=40 hc=21 attn=44 moe=333 ms
+[   25.521] moeprof wait=219.9 attach=3.2 gpu=99.4 ms vram_hits=169 cpu_layers=0
+[   25.521] copyprof posts=1752 gate_calls=182 gate_wait=250.1 issue=486.5 post=4.4 drains=1369 ms
+[   25.521] promoteprof posted=205 refused=1 mirrored=50
+[   25.524] v4_expert_store: prefetch layer 1 expert 112: no free cache slot (7 of 7 per-layer slots leased)
+[   26.259] decprof position=14 layers=40 hc=59 attn=44 moe=289 ms
+[   26.259] moeprof wait=188.3 attach=2.3 gpu=88.0 ms vram_hits=182 cpu_layers=0
+[   26.259] copyprof posts=2022 gate_calls=211 gate_wait=262.3 issue=519.8 post=5.0 drains=1441 ms
+[   26.259] promoteprof posted=248 refused=1 mirrored=58
+[   26.496] v4_expert_store: prefetch layer 16 expert 146: no free cache slot (7 of 7 per-layer slots leased)
+[   26.496] v4_expert_store: prefetch layer 16 expert 114: no free cache slot (7 of 7 per-layer slots leased)
+[   27.193] decprof position=15 layers=40 hc=22 attn=45 moe=499 ms
+[   27.193] moeprof wait=382.9 attach=6.9 gpu=94.8 ms vram_hits=143 cpu_layers=0
+[   27.193] copyprof posts=2460 gate_calls=249 gate_wait=277.8 issue=579.9 post=5.9 drains=1536 ms
+[   27.193] promoteprof posted=305 refused=1 mirrored=72
+[   28.068] decprof position=16 layers=40 hc=22 attn=42 moe=427 ms
+[   28.068] moeprof wait=311.6 attach=7.3 gpu=95.8 ms vram_hits=155 cpu_layers=0
+[   28.068] copyprof posts=2832 gate_calls=286 gate_wait=293.9 issue=623.3 post=6.9 drains=1616 ms
+[   28.068] promoteprof posted=348 refused=1 mirrored=87
+[   28.904] decprof position=17 layers=40 hc=20 attn=40 moe=408 ms
+[   28.904] moeprof wait=303.3 attach=5.0 gpu=89.3 ms vram_hits=163 cpu_layers=0
+[   28.904] copyprof posts=3225 gate_calls=322 gate_wait=305.5 issue=670.4 post=7.6 drains=1715 ms
+[   28.904] promoteprof posted=411 refused=1 mirrored=103
+[   29.711] decprof position=18 layers=40 hc=19 attn=38 moe=398 ms
+[   29.711] moeprof wait=299.5 attach=4.6 gpu=84.7 ms vram_hits=176 cpu_layers=0
+[   29.711] copyprof posts=3483 gate_calls=353 gate_wait=314.3 issue=694.5 post=8.2 drains=1774 ms
+[   29.711] promoteprof posted=439 refused=1 mirrored=109
+[   30.493] decprof position=19 layers=40 hc=21 attn=43 moe=357 ms
+[   30.493] moeprof wait=258.8 attach=3.1 gpu=85.2 ms vram_hits=174 cpu_layers=0
+[   30.493] copyprof posts=3795 gate_calls=388 gate_wait=322.0 issue=721.8 post=8.8 drains=1851 ms
+[   30.493] promoteprof posted=482 refused=1 mirrored=119
+[   30.531] v4_expert_store: prefetch layer 3 expert 113: no free cache slot (7 of 7 per-layer slots leased)
+[   30.534] v4_expert_store: prefetch layer 3 expert 180: no free cache slot (7 of 7 per-layer slots leased)
+[   31.333] decprof position=20 layers=40 hc=20 attn=41 moe=429 ms
+[   31.333] moeprof wait=321.9 attach=4.2 gpu=93.1 ms vram_hits=157 cpu_layers=0
+[   31.333] copyprof posts=4143 gate_calls=426 gate_wait=335.7 issue=756.2 post=9.6 drains=1929 ms
+[   31.333] promoteprof posted=522 refused=1 mirrored=130
+[   32.051] decprof position=21 layers=40 hc=20 attn=41 moe=303 ms
+[   32.052] moeprof wait=201.4 attach=4.7 gpu=87.2 ms vram_hits=174 cpu_layers=0
+[   32.052] copyprof posts=4452 gate_calls=460 gate_wait=345.3 issue=785.5 post=10.1 drains=2003 ms
+[   32.052] promoteprof posted=563 refused=1 mirrored=138
+[   32.778] decprof position=22 layers=40 hc=20 attn=39 moe=320 ms
+[   32.779] moeprof wait=221.6 attach=3.2 gpu=86.1 ms vram_hits=177 cpu_layers=0
+[   32.779] copyprof posts=4734 gate_calls=492 gate_wait=354.6 issue=808.1 post=10.6 drains=2071 ms
+[   32.779] promoteprof posted=599 refused=1 mirrored=156
+[   32.781] v4_expert_store: prefetch layer 1 expert 56: no free cache slot (7 of 7 per-layer slots leased)
+[   33.695] v4_gpu_mirror_epochs steps=600 guard_skips=112 direct_refusals=0 pool=0 pool_fills=0 pool_hits=0
+[   34.743] v4_rows16 packed_slots=0
+[   34.743] v4_direct reads=4719 flock_reads=4719 fallbacks=0 payload_bytes=88720220160

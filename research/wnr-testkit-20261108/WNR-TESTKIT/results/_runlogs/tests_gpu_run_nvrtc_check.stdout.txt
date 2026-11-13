@@ -1,0 +1,28 @@
+[    1.4 s] NVRTC 12.9, supported archs 50,52,53,60,61,62,70,72,75,80,86,87,89,90,100,101,103,120,121; testing ['86', '120']; sets ['bench/lb', 'bench/out4', 'zero/colibri', 'zero/extra', 'zero/sm120_mxf4(EXPERIMENTAL)', 'v1/lb(EXPERIMENTAL)', 'v1/out4(EXPERIMENTAL)']
+[    8.2 s] compute_86     bench/lb                           OK 32 kernels 6.8 s max_regs None spill None
+[   11.7 s] sm_86          bench/lb                           OK 32 kernels 3.6 s max_regs 113 spill False
+[   18.7 s] compute_86     bench/out4                         OK 32 kernels 6.9 s max_regs None spill None
+[   22.2 s] sm_86          bench/out4                         OK 32 kernels 3.5 s max_regs 114 spill False
+[   22.3 s] compute_86     zero/colibri                       OK 10 kernels 0.0 s max_regs None spill None
+[   22.3 s] sm_86          zero/colibri                       OK 10 kernels 0.0 s max_regs None spill False
+[   22.3 s] compute_86     zero/extra                         OK 4 kernels 0.0 s max_regs None spill None
+[   22.3 s] sm_86          zero/extra                         OK 4 kernels 0.0 s max_regs None spill False
+[   34.2 s] compute_86     v1/lb(EXPERIMENTAL)                OK 91 kernels 11.8 s max_regs None spill None
+[   39.8 s] sm_86          v1/lb(EXPERIMENTAL)                OK 91 kernels 5.7 s max_regs 81 spill False
+[   50.9 s] compute_86     v1/out4(EXPERIMENTAL)              OK 84 kernels 11.1 s max_regs None spill None
+[   56.3 s] sm_86          v1/out4(EXPERIMENTAL)              OK 84 kernels 5.4 s max_regs 84 spill False
+[   66.4 s] compute_120    bench/lb                           OK 32 kernels 10.1 s max_regs None spill None
+[   70.5 s] sm_120         bench/lb                           OK 32 kernels 4.0 s max_regs 80 spill False
+[   81.8 s] compute_120    bench/out4                         OK 32 kernels 11.3 s max_regs None spill None
+[   86.5 s] sm_120         bench/out4                         OK 32 kernels 4.7 s max_regs 80 spill False
+[   86.5 s] compute_120    zero/colibri                       OK 10 kernels 0.0 s max_regs None spill None
+[   86.5 s] sm_120         zero/colibri                       OK 10 kernels 0.0 s max_regs None spill False
+[   86.5 s] compute_120    zero/extra                         OK 4 kernels 0.0 s max_regs None spill None
+[   86.5 s] sm_120         zero/extra                         OK 4 kernels 0.0 s max_regs None spill False
+[   86.6 s] compute_120a   zero/sm120_mxf4(EXPERIMENTAL)      OK 1 kernels 0.0 s max_regs None spill None
+[   86.6 s] sm_120a        zero/sm120_mxf4(EXPERIMENTAL)      OK 1 kernels 0.0 s max_regs None spill False
+[  103.2 s] compute_120    v1/lb(EXPERIMENTAL)                OK 91 kernels 16.7 s max_regs None spill None
+[  110.2 s] sm_120         v1/lb(EXPERIMENTAL)                OK 91 kernels 7.0 s max_regs 80 spill True
+[  125.5 s] compute_120    v1/out4(EXPERIMENTAL)              OK 84 kernels 15.3 s max_regs None spill None
+[  132.3 s] sm_120         v1/out4(EXPERIMENTAL)              OK 84 kernels 6.8 s max_regs 80 spill True
+[  132.3 s] RESULT nvrtc_check PASS archs 86,120: 26 compiles, 0 failures

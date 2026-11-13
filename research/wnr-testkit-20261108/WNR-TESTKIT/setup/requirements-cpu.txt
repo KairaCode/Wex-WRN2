@@ -1,0 +1,6 @@
+# WNR test kit, CPU-only runners. Install:  python -m pip install -r setup\requirements-cpu.txt
+# Python 3.10+ (tested on the reference PC with CPython 3.14.7 64-bit, Windows 10).
+# Exact version used on the reference PC (numpy 2.5.4 needs Python >= 3.12):
+numpy==2.5.4; python_version >= "3.12"
+# Older interpreters: any numpy 2.x (the kit code does not use 2.5-only API; untested below 2.0).
+numpy>=2.0,<2.6; python_version < "3.12"

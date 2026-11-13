@@ -1,0 +1,255 @@
+{
+ "test": "check_env",
+ "status": "PASS",
+ "quick": true,
+ "seconds": 1.98,
+ "root": "<KAIRA>\\lab\\wnr-testkit-20261108\\WNR-TESTKIT",
+ "data": "<KAIRA>\\lab\\wnr-testkit-20261108\\WNR-TESTKIT\\data",
+ "environment": {
+  "time": "2026-11-08T02:36:14",
+  "os": "Windows-11-10.0.26300-SP0",
+  "os_system": "Windows",
+  "machine": "AMD64",
+  "hostname_hash": "<redacted>",
+  "cpu": "AMD Ryzen 9 7950X3D 16-Core Processor",
+  "logical_cpus": 32,
+  "ram": {
+   "total": 33447325696,
+   "available": 15953842176
+  },
+  "python": "3.14.8",
+  "python_impl": "CPython",
+  "numpy": "2.5.4",
+  "cupy": "14.2.0",
+  "nvrtc_wheel": "12.9.86",
+  "cuda_runtime_wheel": "12.9.79",
+  "nvidia_smi": {
+   "available": true,
+   "driver_cuda_version": "13.5",
+   "gpus": [
+    {
+     "index": "0",
+     "name": "NVIDIA GeForce RTX 5090",
+     "compute_cap": "12.0",
+     "memory.total": "32607",
+     "driver_version": "621.01",
+     "pci.bus_id": "00000000:01:00.0",
+     "clocks.max.sm": "3090",
+     "power.limit": "600.00"
+    }
+   ],
+   "error": null
+  },
+  "cpu_features": {
+   "source": "IsProcessorFeaturePresent (default; --cpuid for the full cpuid probe)",
+   "flags": {
+    "sse4_1": true,
+    "sse4_2": true,
+    "avx": true,
+    "avx2": true,
+    "avx512f": true
+   },
+   "note": "avx512 sub-features (bw, vl, vbmi2, ...) are only known with --cpuid"
+  },
+  "cupy_probe": {
+   "cupy_version": "14.2.0",
+   "import_s": 0.97,
+   "cuda_runtime_version": 12090,
+   "driver_cuda_version": 13050,
+   "devices": [
+    {
+     "index": 0,
+     "name": "NVIDIA GeForce RTX 5090",
+     "major": 12,
+     "minor": 0,
+     "totalGlobalMem": 34162343936,
+     "multiProcessorCount": 170,
+     "clockRate": 2467000,
+     "memoryClockRate": 14001000,
+     "memoryBusWidth": 512,
+     "l2CacheSize": 100663296,
+     "sharedMemPerBlockOptin": 101376,
+     "regsPerMultiprocessor": 65536
+    }
+   ],
+   "nvrtc_version": [
+    12,
+    9
+   ],
+   "nvrtc_supported_archs": [
+    50,
+    52,
+    53,
+    60,
+    61,
+    62,
+    70,
+    72,
+    75,
+    80,
+    86,
+    87,
+    89,
+    90,
+    100,
+    101,
+    103,
+    120,
+    121
+   ],
+   "nvrtc_compile": {
+    "sm_120": {
+     "ok": true,
+     "ptx_bytes": 1136,
+     "s": 0.12
+    }
+   }
+  }
+ },
+ "compilers": {
+  "nvcc": {
+   "path": "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v13.4\\bin\\nvcc.EXE",
+   "version": "nvcc: NVIDIA (R) Cuda compiler driver"
+  },
+  "msvc_installed": {
+   "installation": "C:\\Program Files (x86)\\Microsoft Visual Studio\\18\\BuildTools",
+   "cl_exe": "C:\\Program Files (x86)\\Microsoft Visual Studio\\18\\BuildTools\\VC\\Tools\\MSVC\\14.51.36231\\bin\\Hostx64\\x64\\cl.exe",
+   "vcvars64": "C:\\Program Files (x86)\\Microsoft Visual Studio\\18\\BuildTools\\VC\\Auxiliary\\Build\\vcvars64.bat",
+   "in_path": false
+  }
+ },
+ "data_status": {
+  "v41-sample": {
+   "dir_exists": true,
+   "experts_present": 160,
+   "experts_expected": 160,
+   "bytes_present": 3008102400,
+   "bytes_expected": 3008102400,
+   "complete_by_size": true,
+   "manifest_present": true
+  },
+  "extra": {
+   "dir_exists": true,
+   "experts_present": 76,
+   "experts_expected": 76,
+   "bytes_present": 1428848640,
+   "bytes_expected": 1428848640,
+   "complete_by_size": true,
+   "manifest_present": true
+  },
+  "disk": {
+   "checked_path": "<KAIRA>\\lab\\wnr-testkit-20261108\\WNR-TESTKIT\\data",
+   "free": 75368091648,
+   "total": 999192260608
+  }
+ },
+ "capabilities": {
+  "gpu": true,
+  "nvrtc": true,
+  "cc": false,
+  "data": true,
+  "extra": true,
+  "avx2": true,
+  "avx512": true
+ },
+ "runners": [
+  {
+   "path": "tests/cpu/heldout_configs.py",
+   "name": "heldout_configs",
+   "needs": [
+    "data"
+   ],
+   "missing": [],
+   "can_run": true,
+   "meta_source": "KIT_META"
+  },
+  {
+   "path": "tests/cpu/wnr2_g0.py",
+   "name": "wnr2_g0",
+   "needs": [
+    "data"
+   ],
+   "missing": [],
+   "can_run": true,
+   "meta_source": "KIT_META"
+  },
+  {
+   "path": "tests/cpu/chunk_sweep.py",
+   "name": "chunk_sweep",
+   "needs": [
+    "data"
+   ],
+   "missing": [],
+   "can_run": true,
+   "meta_source": "KIT_META"
+  },
+  {
+   "path": "tests/cpu/train_curve_mtp.py",
+   "name": "train_curve_mtp",
+   "needs": [
+    "data",
+    "extra"
+   ],
+   "missing": [],
+   "can_run": true,
+   "meta_source": "KIT_META"
+  },
+  {
+   "path": "tests/audit/run_audit.py",
+   "name": "audit",
+   "needs": [
+    "data"
+   ],
+   "missing": [],
+   "can_run": true,
+   "meta_source": "KIT_META"
+  },
+  {
+   "path": "tests/gpu/run_nvrtc_check.py",
+   "name": "nvrtc_check",
+   "needs": [
+    "nvrtc"
+   ],
+   "missing": [],
+   "can_run": true,
+   "meta_source": "KIT_META"
+  },
+  {
+   "path": "tests/gpu/run_zero_bittest.py",
+   "name": "zero_bittest",
+   "needs": [
+    "gpu",
+    "data"
+   ],
+   "missing": [],
+   "can_run": true,
+   "meta_source": "KIT_META"
+  },
+  {
+   "path": "tests/gpu/run_gpu_bench.py",
+   "name": "gpu_bench",
+   "needs": [
+    "gpu",
+    "data"
+   ],
+   "missing": [],
+   "can_run": true,
+   "meta_source": "KIT_META"
+  },
+  {
+   "path": "tests/gpu/run_gpu_v1_profile.py",
+   "name": "gpu_v1_profile",
+   "needs": [
+    "gpu",
+    "data"
+   ],
+   "missing": [],
+   "can_run": true,
+   "meta_source": "KIT_META"
+  }
+ ],
+ "warnings": [
+  "MSVC is installed but cl is not in PATH: run from an \"x64 Native Tools\" prompt or call vcvars64.bat first if a test needs a C compiler"
+ ],
+ "problems": []
+}

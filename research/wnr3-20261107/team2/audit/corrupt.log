@@ -1,0 +1,144 @@
+﻿{
+ "clean (must all be accepted)": {
+  "trials": 12000,
+  "accepted": 12000,
+  "detected_frac": 0.0,
+  "accepted_with_wrong_symbols": 0
+ },
+ "A bitflip anywhere": {
+  "trials": 12000,
+  "accepted": 31,
+  "detected_frac": 0.9974166666666666,
+  "accepted_with_wrong_symbols": 31
+ },
+ "B bitflip in last byte": {
+  "trials": 12000,
+  "accepted": 0,
+  "detected_frac": 1.0,
+  "accepted_with_wrong_symbols": 0
+ },
+ "C bitflip in 4-B initial state": {
+  "trials": 12000,
+  "accepted": 8,
+  "detected_frac": 0.9993333333333333,
+  "accepted_with_wrong_symbols": 8
+ },
+ "D random 2-byte overwrite": {
+  "trials": 12000,
+  "accepted": 0,
+  "detected_frac": 1.0,
+  "accepted_with_wrong_symbols": 0,
+  "unchanged_trials": 0
+ },
+ "E zero-fill from random offset to end (torn write)": {
+  "trials": 12000,
+  "accepted": 0,
+  "detected_frac": 1.0,
+  "accepted_with_wrong_symbols": 0,
+  "unchanged_trials": 0
+ },
+ "F length - 1 (truncated)": {
+  "trials": 12000,
+  "accepted": 0,
+  "detected_frac": 1.0,
+  "accepted_with_wrong_symbols": 0
+ },
+ "G length + 1 (one extra byte)": {
+  "trials": 12000,
+  "accepted": 0,
+  "detected_frac": 1.0,
+  "accepted_with_wrong_symbols": 0
+ },
+ "H valid stream decoded at the next index (next stream srel, own length)": {
+  "trials": 12000,
+  "accepted": 0,
+  "detected_frac": 1.0,
+  "accepted_with_wrong_symbols": 0,
+  "identical_srel_pairs": 0
+ },
+ "I valid stream at wrong index, IDENTICAL contexts (rans_check.py test)": {
+  "trials": 12000,
+  "accepted": 12000,
+  "detected_frac": 0.0,
+  "accepted_with_wrong_symbols": 0
+ },
+ "J valid stream decoded with another matrix type model (w1 -> w3 model)": {
+  "trials": 12000,
+  "accepted": 0,
+  "detected_frac": 1.0,
+  "accepted_with_wrong_symbols": 0
+ },
+ "_seconds": 153.20019626617432
+}
+{
+ "clean (must all be accepted)": {
+  "trials": 12000,
+  "accepted": 12000,
+  "detected_frac": 0.0,
+  "accepted_with_wrong_symbols": 0
+ },
+ "A bitflip anywhere": {
+  "trials": 12000,
+  "accepted": 62,
+  "detected_frac": 0.9948333333333333,
+  "accepted_with_wrong_symbols": 62
+ },
+ "B bitflip in last byte": {
+  "trials": 12000,
+  "accepted": 0,
+  "detected_frac": 1.0,
+  "accepted_with_wrong_symbols": 0
+ },
+ "C bitflip in 4-B initial state": {
+  "trials": 12000,
+  "accepted": 55,
+  "detected_frac": 0.9954166666666666,
+  "accepted_with_wrong_symbols": 55
+ },
+ "D random 2-byte overwrite": {
+  "trials": 12000,
+  "accepted": 1,
+  "detected_frac": 0.9999166666666667,
+  "accepted_with_wrong_symbols": 1,
+  "unchanged_trials": 0
+ },
+ "E zero-fill from random offset to end (torn write)": {
+  "trials": 12000,
+  "accepted": 0,
+  "detected_frac": 1.0,
+  "accepted_with_wrong_symbols": 0,
+  "unchanged_trials": 0
+ },
+ "F length - 1 (truncated)": {
+  "trials": 12000,
+  "accepted": 0,
+  "detected_frac": 1.0,
+  "accepted_with_wrong_symbols": 0
+ },
+ "G length + 1 (one extra byte)": {
+  "trials": 12000,
+  "accepted": 0,
+  "detected_frac": 1.0,
+  "accepted_with_wrong_symbols": 0
+ },
+ "H valid stream decoded at the next index (next stream srel, own length)": {
+  "trials": 12000,
+  "accepted": 0,
+  "detected_frac": 1.0,
+  "accepted_with_wrong_symbols": 0,
+  "identical_srel_pairs": 0
+ },
+ "I valid stream at wrong index, IDENTICAL contexts (rans_check.py test)": {
+  "trials": 12000,
+  "accepted": 12000,
+  "detected_frac": 0.0,
+  "accepted_with_wrong_symbols": 0
+ },
+ "J valid stream decoded with another matrix type model (w2 -> w3 model)": {
+  "trials": 12000,
+  "accepted": 0,
+  "detected_frac": 1.0,
+  "accepted_with_wrong_symbols": 0
+ },
+ "_seconds": 117.10222601890564
+}

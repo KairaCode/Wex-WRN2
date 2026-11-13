@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use these formats or this code, please cite it as below, with the commit you used."
+type: software
+title: "WEX: expert-container formats for streamed Mixture-of-Experts inference"
+abstract: >-
+  WEX1-WEX4 expert containers and the WNR2/WNR3 lossless record codecs: one 4096-aligned
+  record per routed expert, read from NVMe with one unbuffered read while the model generates,
+  with SHA-256 hashes per record and a 32-byte root in WEX4. Specifications, reference readers
+  in C and Python, converters, tests and measurements.
+authors:
+  - family-names: "Zanichelli"
+    given-names: "Ludovico"
+license: Apache-2.0
+repository-code: "https://github.com/KairaCode/Wex-WRN2"
+keywords:
+  - mixture-of-experts
+  - model storage format
+  - container format
+  - rANS
+  - lossless compression
+  - MXFP4
+  - NVMe streaming
+  - inference

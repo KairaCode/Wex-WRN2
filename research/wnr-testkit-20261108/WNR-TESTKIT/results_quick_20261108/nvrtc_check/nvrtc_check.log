@@ -1,0 +1,17 @@
+
+===== 2026-11-08T02:38:43 =====
+[    0.5 s] NVRTC 12.9, supported archs 50,52,53,60,61,62,70,72,75,80,86,87,89,90,100,101,103,120,121; testing ['86', '120']; sets ['bench/lb', 'bench/out4', 'zero/colibri', 'zero/extra', 'zero/sm120_mxf4(EXPERIMENTAL)', 'v1/lb(EXPERIMENTAL)', 'v1/out4(EXPERIMENTAL)']
+[    3.9 s] sm_86          bench/lb                           OK 8 kernels 3.3 s max_regs 75 spill False
+[    7.2 s] sm_86          bench/out4                         OK 8 kernels 3.3 s max_regs 75 spill False
+[    7.6 s] sm_86          zero/colibri                       OK 10 kernels 0.5 s max_regs 80 spill True
+[    7.7 s] sm_86          zero/extra                         OK 4 kernels 0.1 s max_regs 38 spill False
+[   16.1 s] sm_86          v1/lb(EXPERIMENTAL)                OK 42 kernels 8.4 s max_regs 81 spill False
+[   21.7 s] sm_86          v1/out4(EXPERIMENTAL)              OK 21 kernels 5.6 s max_regs 79 spill False
+[   26.8 s] sm_120         bench/lb                           OK 8 kernels 5.1 s max_regs 64 spill False
+[   33.7 s] sm_120         bench/out4                         OK 8 kernels 6.9 s max_regs 66 spill False
+[   34.5 s] sm_120         zero/colibri                       OK 10 kernels 0.8 s max_regs 80 spill False
+[   34.7 s] sm_120         zero/extra                         OK 4 kernels 0.2 s max_regs 38 spill False
+[   34.8 s] sm_120a        zero/sm120_mxf4(EXPERIMENTAL)      OK 1 kernels 0.1 s max_regs 39 spill False
+[   43.3 s] sm_120         v1/lb(EXPERIMENTAL)                OK 42 kernels 8.6 s max_regs 80 spill False
+[   48.8 s] sm_120         v1/out4(EXPERIMENTAL)              OK 21 kernels 5.5 s max_regs 75 spill False
+[   48.9 s] RESULT nvrtc_check PASS archs 86,120: 13 compiles, 0 failures

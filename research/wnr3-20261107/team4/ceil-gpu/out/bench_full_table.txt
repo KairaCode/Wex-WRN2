@@ -1,0 +1,147 @@
+nvsmi start/end: 255 MHz, 405 MHz, 19 %, 23.46 W, 45.62 | 1965 MHz, 6801 MHz, 98 %, 219.06 W, 72.09  rounds 41
+byte-exact (weights+scales vs original) for all non-diagnostic variants: True
+pipeline checks all clean: True
+== nt32/lb
+A259   regs  74 lmem 0 smem   8304 occW 10 exact T | m1   299.0 D1.074 | m3   757.8 D0.916 | m24  4617.2 D0.609 | 8streams  4705.3 D0.615 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   346.1 D1.064 | m3   811.0 D0.926 | m24  4812.8 D0.619 | 8streams  4800.7 D0.615 |
+D      regs  76 lmem 0 smem   4160 occW 16 exact T | m1   278.5 A0.932 | m3   826.4 A1.092 | m24  7572.5 A1.641 | 8streams  7641.1 A1.626 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   325.6 A0.940 | m3   875.6 A1.080 | m24  7767.0 A1.616 | 8streams  7788.5 A1.627 |
+CF0    regs  74 lmem 0 smem   8304 occW 10 exact F | m1   298.0 A0.997 D1.070 | m3   752.6 A0.996 D0.911 | m24  4611.1 A0.999 D0.608 | 8streams  4675.2 A0.995 D0.612 |
+CF3    regs  72 lmem 0 smem   8304 occW 10 exact F | m1   298.0 A1.000 D1.070 own1.003 | m3   755.7 A1.000 D0.914 own1.004 | m24  4609.0 A0.998 D0.608 own0.999 | 8streams  4679.6 A0.995 D0.612 own1.000 |
+CF     regs  73 lmem 0 smem   8304 occW 10 exact T | m1   301.1 A1.007 D1.081 own1.010 | m3   881.7 A1.162 D1.066 own1.170 | m24  5564.4 A1.204 D0.734 own1.204 | 8streams  5668.9 A1.202 D0.740 own1.207 |
+CFw    regs  76 lmem 0 smem   8304 occW 10 exact T | m1   298.0 A0.997 D1.070 own1.000 | m3   816.1 A1.077 D0.988 own1.076 | m24  5104.6 A1.105 D0.673 own1.107 | 8streams  5187.2 A1.102 D0.679 own1.110 |
+CF5    regs  76 lmem 0 smem   8304 occW 10 exact T | m1   302.1 A1.014 D1.085 own1.017 | m3   766.0 A1.018 D0.927 own1.018 | m24  4682.8 A1.013 D0.618 own1.017 | 8streams  4774.5 A1.013 D0.624 own1.021 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   350.2 A1.012 D1.076 | m3   813.1 A1.005 D0.929 | m24  4871.2 A1.013 D0.627 | 8streams  4866.2 A1.009 D0.627 |
+CF6    regs  76 lmem 0 smem   8304 occW 10 exact T | m1   302.1 A1.014 D1.085 own1.017 | m3   764.9 A1.018 D0.925 own1.015 | m24  4692.0 A1.016 D0.619 own1.016 | 8streams  4775.9 A1.015 D0.624 own1.018 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   350.2 A1.012 D1.076 | m3   812.0 A1.003 D0.926 | m24  4878.3 A1.014 D0.628 | 8streams  4863.0 A1.013 D0.623 |
+CFD0   regs  76 lmem 0 smem   4160 occW 16 exact F | m1   279.6 A0.935 D1.000 | m3   828.4 A1.095 D1.002 | m24  7520.3 A1.629 D0.991 | 8streams  7577.8 A1.609 D0.991 |
+CFD    regs  76 lmem 0 smem   4160 occW 16 exact T | m1   276.5 A0.925 D0.993 own0.989 | m3   933.9 A1.233 D1.130 own1.127 | m24  8079.4 A1.751 D1.066 own1.074 | 8streams  8143.9 A1.732 D1.067 own1.075 |
+CFD5   regs  76 lmem 0 smem   4160 occW 16 exact T | m1   275.5 A0.921 D0.989 own0.985 | m3   824.3 A1.089 D0.998 own0.995 | m24  7527.4 A1.629 D0.993 own1.002 | 8streams  7586.8 A1.615 D0.993 own1.001 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   322.6 A0.932 D0.991 | m3   875.5 A1.081 D1.000 | m24  7696.4 A1.602 D0.991 | 8streams  7696.5 A1.601 D0.988 |
+CFD6   regs  76 lmem 0 smem   4160 occW 16 exact T | m1   275.5 A0.921 D0.989 own0.989 | m3   825.3 A1.094 D0.999 own0.996 | m24  7522.3 A1.628 D0.992 own1.000 | 8streams  7607.3 A1.612 D0.994 own1.004 |
+== nt64/lb
+A259   regs  64 lmem 0 smem   8304 occW 20 exact T | m1   319.5 D1.126 | m3   693.2 D0.835 | m24  8032.3 D0.958 | 8streams  8140.3 D0.962 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   368.6 D1.111 | m3   738.3 D0.837 | m24  8228.9 D0.952 | 8streams  8008.1 D0.930 |
+D      regs  64 lmem 0 smem   4160 occW 32 exact T | m1   283.6 A0.888 | m3   830.5 A1.197 | m24  8379.4 A1.044 | 8streams  8436.2 A1.040 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   331.8 A0.900 | m3   881.7 A1.195 | m24  8580.1 A1.050 | 8streams  8579.1 A1.076 |
+CF0    regs  64 lmem 0 smem   8304 occW 20 exact F | m1   319.5 A1.000 D1.126 | m3   692.2 A0.997 D0.833 | m24  7552.0 A0.941 D0.901 | 8streams  7655.5 A0.939 D0.906 |
+CF3    regs  64 lmem 0 smem   8304 occW 20 exact F | m1   323.6 A1.013 D1.141 own1.013 | m3   696.3 A1.003 D0.837 own1.004 | m24  7564.3 A0.945 D0.902 own1.001 | 8streams  7654.4 A0.942 D0.907 own1.001 |
+CF     regs  64 lmem 0 smem   8304 occW 20 exact T | m1   335.9 A1.051 D1.184 own1.051 | m3   831.5 A1.199 D1.001 own1.201 | m24  8423.6 A1.050 D1.004 own1.116 | 8streams  8519.8 A1.042 D1.007 own1.113 |
+CFw    regs  64 lmem 0 smem   8304 occW 20 exact T | m1   338.9 A1.061 D1.194 own1.061 | m3   767.0 A1.105 D0.923 own1.108 | m24  8060.9 A1.003 D0.960 own1.064 | 8streams  8100.9 A0.997 D0.960 own1.060 |
+CF5    regs  64 lmem 0 smem   8304 occW 20 exact T | m1   328.7 A1.026 D1.156 own1.026 | m3   698.4 A1.006 D0.840 own1.007 | m24  7562.2 A0.941 D0.900 own1.002 | 8streams  7656.4 A0.941 D0.910 own1.000 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   376.8 A1.022 D1.136 | m3   742.4 A1.006 D0.843 | m24  7738.4 A0.941 D0.901 | 8streams  7734.1 A0.967 D0.899 |
+CF6    regs  64 lmem 0 smem   8304 occW 20 exact T | m1   328.7 A1.026 D1.158 own1.026 | m3   697.3 A1.006 D0.839 own1.007 | m24  7581.7 A0.943 D0.903 own1.003 | 8streams  7674.8 A0.943 D0.905 own1.003 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   376.8 A1.025 D1.136 | m3   742.4 A1.005 D0.842 | m24  7791.6 A0.944 D0.903 | 8streams  7689.6 A0.955 D0.895 |
+CFD0   regs  64 lmem 0 smem   4160 occW 32 exact F | m1   284.7 A0.888 D1.004 | m3   833.5 A1.201 D1.004 | m24  8281.1 A1.032 D0.989 | 8streams  8366.4 A1.032 D0.991 |
+CFD    regs  64 lmem 0 smem   4160 occW 32 exact T | m1   292.9 A0.914 D1.029 own1.029 | m3   941.1 A1.358 D1.132 own1.129 | m24  8770.6 A1.091 D1.046 own1.059 | 8streams  8848.0 A1.090 D1.049 own1.060 |
+CFD5   regs  64 lmem 0 smem   4160 occW 32 exact T | m1   292.9 A0.917 D1.032 own1.032 | m3   832.5 A1.200 D1.001 own0.999 | m24  8307.7 A1.035 D0.992 own1.003 | 8streams  8372.2 A1.031 D0.993 own1.001 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   341.0 A0.928 D1.028 | m3   884.7 A1.198 D1.003 | m24  8481.8 A1.033 D0.989 | 8streams  8479.7 A1.068 D0.987 |
+CFD6   regs  64 lmem 0 smem   4160 occW 32 exact T | m1   292.9 A0.917 D1.032 own1.032 | m3   832.5 A1.201 D1.001 own0.999 | m24  8302.6 A1.034 D0.990 own1.002 | 8streams  8359.1 A1.029 D0.991 own0.999 |
+== nt128/lb
+A259   regs  40 lmem 0 smem   8304 occW 40 exact T | m1   420.9 D1.280 | m3   777.2 D1.005 | m24  9165.8 D1.065 | 8streams  9161.7 D1.053 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   468.0 D1.249 | m3   823.3 D0.990 | m24  9407.5 D1.068 | 8streams  9550.8 D1.086 |
+D      regs  40 lmem 0 smem   4160 occW 48 exact T | m1   328.7 A0.781 | m3   773.1 A0.995 | m24  8594.4 A0.939 | 8streams  8690.7 A0.949 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   373.8 A0.800 | m3   829.4 A1.010 | m24  8780.8 A0.936 | 8streams  8780.8 A0.921 |
+CF0    regs  40 lmem 0 smem   8304 occW 40 exact F | m1   420.9 A1.000 D1.280 | m3   762.9 A0.983 D0.988 | m24  9034.8 A0.987 D1.048 | 8streams  9052.0 A0.986 D1.042 |
+CF3    regs  43 lmem 0 smem   8304 occW 40 exact F | m1   415.7 A0.988 D1.265 own0.988 | m3   761.9 A0.979 D0.985 own0.999 | m24  9019.4 A0.984 D1.050 own0.996 | 8streams  9039.2 A0.987 D1.041 own1.002 |
+CF     regs  40 lmem 0 smem   8304 occW 40 exact T | m1   431.1 A1.024 D1.312 own1.024 | m3   915.5 A1.179 D1.185 own1.200 | m24  9568.3 A1.044 D1.110 own1.060 | 8streams  9588.7 A1.046 D1.100 own1.061 |
+CFw    regs  40 lmem 0 smem   8304 occW 40 exact T | m1   440.3 A1.046 D1.340 own1.046 | m3   850.9 A1.096 D1.102 own1.114 | m24  9243.6 A1.009 D1.074 own1.025 | 8streams  9273.1 A1.014 D1.071 own1.027 |
+CF5    regs  40 lmem 0 smem   8304 occW 40 exact T | m1   434.2 A1.032 D1.321 own1.032 | m3   780.3 A1.004 D1.008 own1.021 | m24  9063.4 A0.984 D1.052 own1.002 | 8streams  9075.5 A0.990 D1.045 own1.005 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   481.3 A1.028 D1.285 | m3   826.5 A1.004 D0.998 | m24  9240.6 A0.989 D1.052 | 8streams  9441.6 A0.991 D1.073 |
+CF6    regs  40 lmem 0 smem   8304 occW 40 exact T | m1   434.2 A1.032 D1.321 own1.032 | m3   779.3 A1.003 D1.009 own1.020 | m24  9053.2 A0.988 D1.053 own1.000 | 8streams  9093.1 A0.995 D1.047 own1.011 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   481.3 A1.026 D1.284 | m3   826.4 A1.004 D0.995 | m24  9223.2 A0.984 D1.050 | 8streams  9399.3 A0.981 D1.067 |
+CFD0   regs  40 lmem 0 smem   4160 occW 48 exact F | m1   325.6 A0.774 D0.991 | m3   784.4 A1.009 D1.013 | m24  8525.8 A0.931 D0.991 | 8streams  8602.4 A0.941 D0.990 |
+CFD    regs  40 lmem 0 smem   4160 occW 48 exact T | m1   333.8 A0.793 D1.016 own1.028 | m3   871.4 A1.119 D1.127 own1.112 | m24  8979.5 A0.981 D1.044 own1.054 | 8streams  9090.3 A0.994 D1.046 own1.053 |
+CFD5   regs  40 lmem 0 smem   4160 occW 48 exact T | m1   321.5 A0.762 D0.975 own0.984 | m3   775.2 A0.997 D1.001 own0.988 | m24  8526.8 A0.932 D0.992 own1.001 | 8streams  8619.1 A0.940 D0.993 own1.003 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   367.6 A0.786 D0.981 | m3   819.2 A0.995 D0.986 | m24  8707.1 A0.928 D0.991 | 8streams  8691.7 A0.908 D0.989 |
+CFD6   regs  40 lmem 0 smem   4160 occW 48 exact T | m1   320.5 A0.762 D0.975 own0.984 | m3   775.2 A0.996 D1.003 own0.987 | m24  8537.1 A0.932 D0.993 own1.002 | 8streams  8598.5 A0.939 D0.989 own0.998 |
+== nt256/lb
+A259   regs  40 lmem 0 smem   8304 occW 48 exact T | m1   436.2 D1.228 | m3   661.5 D0.854 | m24  9462.8 D1.101 | 8streams  9537.5 D1.100 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   482.3 D1.199 | m3   708.6 D0.855 | m24  9642.0 D1.098 | 8streams  9590.1 D1.092 |
+D      regs  40 lmem 0 smem   4160 occW 48 exact T | m1   355.3 A0.815 | m3   774.1 A1.171 | m24  8602.6 A0.908 | 8streams  8674.6 A0.909 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   402.4 A0.834 | m3   828.4 A1.169 | m24  8788.0 A0.911 | 8streams  8768.9 A0.916 |
+CF0    regs  40 lmem 0 smem   8304 occW 48 exact F | m1   436.2 A1.000 D1.228 | m3   646.1 A0.975 D0.833 | m24  9302.0 A0.982 D1.081 | 8streams  9353.0 A0.983 D1.079 |
+CF3    regs  43 lmem 0 smem   8304 occW 40 exact F | m1   433.3 A0.995 D1.219 own0.995 | m3   643.1 A0.972 D0.831 own0.997 | m24  9158.7 A0.960 D1.061 own0.979 | 8streams  8963.4 A0.942 D1.033 own0.958 |
+CF     regs  40 lmem 0 smem   8304 occW 48 exact T | m1   446.5 A1.023 D1.254 own1.023 | m3   759.8 A1.148 D0.980 own1.175 | m24  9782.3 A1.033 D1.136 own1.053 | 8streams  9865.8 A1.035 D1.137 own1.055 |
+CFw    regs  40 lmem 0 smem   8304 occW 48 exact T | m1   454.7 A1.042 D1.277 own1.042 | m3   715.8 A1.081 D0.925 own1.108 | m24  9484.3 A1.002 D1.102 own1.020 | 8streams  9572.0 A1.005 D1.104 own1.022 |
+CF5    regs  40 lmem 0 smem   8304 occW 48 exact T | m1   449.5 A1.028 D1.262 own1.030 | m3   661.5 A0.998 D0.853 own1.024 | m24  9331.7 A0.985 D1.084 own1.003 | 8streams  9374.7 A0.985 D1.081 own1.001 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   495.6 A1.028 D1.234 | m3   706.6 A0.997 D0.853 | m24  9504.8 A0.986 D1.081 | 8streams  9462.8 A0.988 D1.079 |
+CF6    regs  40 lmem 0 smem   8304 occW 48 exact T | m1   449.5 A1.030 D1.262 own1.030 | m3   661.5 A0.998 D0.854 own1.025 | m24  9331.7 A0.986 D1.085 own1.003 | 8streams  9398.5 A0.987 D1.081 own1.001 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   495.6 A1.028 D1.232 | m3   705.5 A0.996 D0.852 | m24  9501.7 A0.985 D1.081 | 8streams  9463.8 A0.984 D1.078 |
+CFD0   regs  40 lmem 0 smem   4160 occW 48 exact F | m1   356.4 A0.815 D1.000 | m3   789.5 A1.194 D1.019 | m24  8542.2 A0.903 D0.993 | 8streams  8591.4 A0.901 D0.990 |
+CFD    regs  40 lmem 0 smem   4160 occW 48 exact T | m1   363.5 A0.833 D1.020 own1.020 | m3   885.8 A1.339 D1.144 own1.121 | m24  8975.4 A0.949 D1.044 own1.050 | 8streams  9083.0 A0.952 D1.046 own1.059 |
+CFD5   regs  40 lmem 0 smem   4160 occW 48 exact T | m1   349.2 A0.799 D0.980 own0.980 | m3   776.2 A1.175 D1.004 own0.984 | m24  8546.3 A0.902 D0.994 own1.000 | 8streams  8599.6 A0.902 D0.991 own1.000 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   395.3 A0.819 D0.982 | m3   828.4 A1.168 D1.000 | m24  8720.4 A0.904 D0.992 | 8streams  8678.4 A0.904 D0.988 |
+CFD6   regs  40 lmem 0 smem   4160 occW 48 exact T | m1   349.2 A0.799 D0.980 own0.980 | m3   776.2 A1.171 D1.001 own0.982 | m24  8533.0 A0.901 D0.992 own0.999 | 8streams  8606.5 A0.902 D0.992 own1.003 |
+== nt32/out4
+A259   regs  73 lmem 0 smem  12912 occW  7 exact T | m1   307.2 D1.079 | m3   668.7 D1.019 | m24  4712.4 D1.229 | 8streams  4752.4 D1.227 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   352.3 D1.068 | m3   716.8 D1.013 | m24  4899.8 D1.218 | 8streams  5089.3 D1.235 |
+D      regs  73 lmem 0 smem   8768 occW 10 exact T | m1   283.6 A0.926 | m3   655.4 A0.981 | m24  3830.8 A0.814 | 8streams  3880.0 A0.815 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   329.7 A0.936 | m3   707.6 A0.987 | m24  4022.3 A0.821 | 8streams  4062.4 A0.810 |
+CF0    regs  73 lmem 0 smem  12912 occW  7 exact F | m1   306.2 A1.000 D1.079 | m3   668.7 A1.000 D1.020 | m24  4706.3 A0.998 D1.228 | 8streams  4752.4 A0.999 D1.225 |
+CF3    regs  74 lmem 0 smem  12912 occW  7 exact F | m1   305.2 A0.993 D1.076 own0.997 | m3   667.6 A0.998 D1.019 own0.998 | m24  4697.1 A0.996 D1.226 own0.997 | 8streams  4763.0 A1.000 D1.224 own1.000 |
+CF     regs  74 lmem 0 smem  12912 occW  7 exact T | m1   308.2 A1.003 D1.087 own1.004 | m3   677.9 A1.012 D1.034 own1.012 | m24  4796.4 A1.016 D1.248 own1.016 | 8streams  4850.8 A1.021 D1.249 own1.016 |
+CFw    regs  78 lmem 0 smem  12912 occW  7 exact T | m1   305.2 A0.997 D1.076 own0.997 | m3   672.8 A1.006 D1.025 own1.006 | m24  4760.6 A1.006 D1.235 own1.007 | 8streams  4827.1 A1.013 D1.240 own1.013 |
+CF5    regs  80 lmem 0 smem  12912 occW  7 exact T | m1   306.2 A0.997 D1.079 own1.000 | m3   670.7 A1.003 D1.024 own1.003 | m24  4719.6 A1.000 D1.230 own1.002 | 8streams  4803.6 A1.010 D1.239 own1.012 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   352.3 A1.000 D1.069 | m3   717.8 A1.003 D1.015 | m24  4897.8 A1.000 D1.217 | 8streams  4962.7 A0.997 D1.232 |
+CF6    regs  80 lmem 0 smem  12912 occW  7 exact T | m1   306.2 A0.997 D1.079 own1.000 | m3   670.7 A1.003 D1.023 own1.003 | m24  4716.5 A1.001 D1.231 own1.002 | 8streams  4782.0 A1.007 D1.233 own1.010 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   351.2 A1.000 D1.068 | m3   717.8 A1.003 D1.014 | m24  4900.9 A1.000 D1.218 | 8streams  5003.6 A0.994 D1.235 |
+CFD0   regs  73 lmem 0 smem   8768 occW 10 exact F | m1   283.7 A0.927 D1.004 | m3   662.5 A0.989 D1.008 | m24  3864.6 A0.820 D1.008 | 8streams  3931.1 A0.826 D1.014 |
+CFD    regs  76 lmem 0 smem   8768 occW 10 exact T | m1   283.6 A0.923 D1.000 own0.996 | m3   713.7 A1.066 D1.088 own1.078 | m24  4311.0 A0.917 D1.127 own1.117 | 8streams  4364.6 A0.919 D1.128 own1.113 |
+CFD5   regs  78 lmem 0 smem   8768 occW 10 exact T | m1   279.6 A0.913 D0.986 own0.986 | m3   655.4 A0.980 D0.998 own0.991 | m24  3838.0 A0.816 D1.003 own0.994 | 8streams  3901.4 A0.820 D1.005 own0.994 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   326.7 A0.927 D0.991 | m3   703.5 A0.981 D0.996 | m24  4026.4 A0.822 D1.001 | 8streams  4080.0 A0.802 D1.006 |
+CFD6   regs  78 lmem 0 smem   8768 occW 10 exact T | m1   279.6 A0.913 D0.986 own0.986 | m3   655.4 A0.979 D1.000 own0.992 | m24  3834.9 A0.817 D1.003 own0.994 | 8streams  3902.5 A0.819 D1.008 own0.995 |
+== nt64/out4
+A259   regs  64 lmem 0 smem  17520 occW 10 exact T | m1   343.0 D1.171 | m3   735.2 D1.435 | m24  4161.5 D0.899 | 8streams  4215.8 D0.878 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   389.1 D1.146 | m3   783.4 D1.383 | m24  4342.8 D0.880 | 8streams  4413.3 D0.953 |
+D      regs  66 lmem 0 smem  13376 occW 14 exact T | m1   292.9 A0.854 | m3   512.0 A0.697 | m24  4616.2 A1.113 | 8streams  4798.5 A1.139 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   340.0 A0.873 | m3   566.3 A0.723 | m24  4961.3 A1.137 | 8streams  4678.7 A1.049 |
+CF0    regs  64 lmem 0 smem  17520 occW 10 exact F | m1   342.0 A0.997 D1.168 | m3   735.2 A0.999 D1.434 | m24  4122.6 A0.995 D0.896 | 8streams  4201.5 A0.999 D0.875 |
+CF3    regs  64 lmem 0 smem  17520 occW 10 exact F | m1   338.9 A0.988 D1.161 own0.994 | m3   733.2 A0.997 D1.430 own0.997 | m24  4111.4 A0.993 D0.898 own0.997 | 8streams  4190.2 A0.992 D0.872 own0.997 |
+CF     regs  64 lmem 0 smem  17520 occW 10 exact T | m1   345.1 A1.006 D1.178 own1.009 | m3   756.7 A1.028 D1.475 own1.029 | m24  4255.7 A1.027 D0.923 own1.031 | 8streams  4334.5 A1.029 D0.902 own1.029 |
+CFw    regs  64 lmem 0 smem  17520 occW 10 exact T | m1   344.1 A1.003 D1.175 own1.006 | m3   749.6 A1.020 D1.464 own1.021 | m24  4214.8 A1.015 D0.913 own1.021 | 8streams  4288.5 A1.018 D0.894 own1.019 |
+CF5    regs  64 lmem 0 smem  17520 occW 10 exact T | m1   338.9 A0.988 D1.158 own0.991 | m3   734.2 A0.999 D1.429 own0.997 | m24  4119.6 A0.993 D0.893 own0.996 | 8streams  4202.8 A0.992 D0.877 own0.994 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   386.0 A0.992 D1.139 | m3   781.3 A0.999 D1.381 | m24  4332.5 A0.999 D0.877 | 8streams  4400.3 A1.002 D0.950 |
+CF6    regs  64 lmem 0 smem  17520 occW 10 exact T | m1   338.9 A0.988 D1.157 own0.991 | m3   733.2 A0.997 D1.432 own0.999 | m24  4121.6 A0.998 D0.896 own0.999 | 8streams  4206.6 A0.997 D0.877 own0.997 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   385.0 A0.990 D1.136 | m3   781.3 A0.999 D1.381 | m24  4350.0 A0.998 D0.877 | 8streams  4445.2 A0.998 D0.952 |
+CFD0   regs  66 lmem 0 smem  13376 occW 14 exact F | m1   292.9 A0.854 D1.000 | m3   516.1 A0.703 D1.010 | m24  4699.1 A1.133 D1.018 | 8streams  4791.2 A1.135 D0.994 |
+CFD    regs  64 lmem 0 smem  13376 occW 14 exact T | m1   302.1 A0.881 D1.032 own1.032 | m3   608.3 A0.828 D1.188 own1.174 | m24  5395.5 A1.299 D1.171 own1.149 | 8streams  5444.5 A1.289 D1.132 own1.136 |
+CFD5   regs  64 lmem 0 smem  13376 occW 14 exact T | m1   301.1 A0.878 D1.028 own1.028 | m3   527.4 A0.717 D1.030 own1.020 | m24  4802.6 A1.157 D1.037 own1.022 | 8streams  4850.5 A1.146 D1.006 own1.009 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   347.2 A0.892 D1.024 | m3   577.5 A0.738 D1.022 | m24  4823.0 A1.111 D0.975 | 8streams  4707.3 A1.062 D1.011 |
+CFD6   regs  64 lmem 0 smem  13376 occW 14 exact T | m1   300.0 A0.877 D1.028 own1.028 | m3   529.4 A0.719 D1.034 own1.024 | m24  4790.3 A1.154 D1.038 own1.016 | 8streams  4830.8 A1.144 D1.008 own1.014 |
+== nt128/out4
+A259   regs  40 lmem 0 smem  26736 occW 12 exact T | m1   441.3 D1.217 | m3   588.8 D0.943 | m24  4452.4 D0.840 | 8streams  4526.1 D0.848 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   487.4 D1.190 | m3   634.9 D0.945 | m24  4623.4 D0.843 | 8streams  4646.9 D0.858 |
+D      regs  44 lmem 0 smem  22592 occW 16 exact T | m1   362.5 A0.822 | m3   624.6 A1.061 | m24  5289.0 A1.190 | 8streams  5301.0 A1.179 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   408.6 A0.840 | m3   670.7 A1.058 | m24  5485.6 A1.187 | 8streams  5430.0 A1.165 |
+CF0    regs  40 lmem 0 smem  26736 occW 12 exact F | m1   440.3 A0.998 D1.215 | m3   574.5 A0.976 D0.920 | m24  4407.3 A0.990 D0.833 | 8streams  4468.8 A0.988 D0.842 |
+CF3    regs  40 lmem 0 smem  26736 occW 12 exact F | m1   436.2 A0.988 D1.203 own0.991 | m3   569.3 A0.965 D0.911 own0.991 | m24  4347.9 A0.977 D0.822 own0.988 | 8streams  4414.5 A0.980 D0.829 own0.993 |
+CF     regs  40 lmem 0 smem  26736 occW 12 exact T | m1   448.5 A1.016 D1.234 own1.016 | m3   613.4 A1.042 D0.982 own1.068 | m24  4654.1 A1.047 D0.880 own1.058 | 8streams  4747.3 A1.052 D0.892 own1.066 |
+CFw    regs  40 lmem 0 smem  26736 occW 12 exact T | m1   442.4 A1.002 D1.220 own1.005 | m3   593.9 A1.009 D0.949 own1.034 | m24  4500.5 A1.011 D0.851 own1.022 | 8streams  4567.3 A1.011 D0.863 own1.023 |
+CF5    regs  44 lmem 0 smem  26736 occW 12 exact T | m1   432.1 A0.979 D1.191 own0.981 | m3   566.3 A0.961 D0.905 own0.986 | m24  4336.6 A0.972 D0.818 own0.983 | 8streams  4393.0 A0.975 D0.828 own0.986 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   478.2 A0.981 D1.170 | m3   610.3 A0.963 D0.910 | m24  4517.9 A0.977 D0.824 | 8streams  4537.3 A0.976 D0.836 |
+CF6    regs  44 lmem 0 smem  26736 occW 12 exact T | m1   431.1 A0.977 D1.189 own0.979 | m3   566.3 A0.962 D0.908 own0.986 | m24  4333.6 A0.974 D0.818 own0.984 | 8streams  4389.6 A0.970 D0.826 own0.982 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   477.2 A0.981 D1.168 | m3   609.3 A0.960 D0.908 | m24  4523.0 A0.979 D0.825 | 8streams  4550.9 A0.980 D0.838 |
+CFD0   regs  44 lmem 0 smem  22592 occW 16 exact F | m1   362.5 A0.821 D1.000 | m3   635.9 A1.080 D1.018 | m24  5297.2 A1.193 D1.002 | 8streams  5323.2 A1.182 D1.003 |
+CFD    regs  44 lmem 0 smem  22592 occW 16 exact T | m1   355.3 A0.807 D0.980 own0.980 | m3   696.4 A1.185 D1.115 own1.097 | m24  5890.0 A1.322 D1.114 own1.110 | 8streams  5931.9 A1.312 D1.118 own1.118 |
+CFD5   regs  46 lmem 0 smem  22592 occW 16 exact T | m1   356.4 A0.807 D0.980 own0.983 | m3   627.7 A1.068 D1.005 own0.989 | m24  5279.7 A1.188 D0.999 own0.996 | 8streams  5279.8 A1.170 D0.996 own0.995 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   402.4 A0.826 D0.983 | m3   677.9 A1.069 D1.011 | m24  5445.6 A1.179 D0.993 | 8streams  5417.2 A1.166 D0.999 |
+CFD6   regs  46 lmem 0 smem  22592 occW 16 exact T | m1   356.4 A0.807 D0.980 own0.980 | m3   627.7 A1.066 D1.007 own0.989 | m24  5283.8 A1.184 D1.000 own0.996 | 8streams  5350.4 A1.185 D0.990 own1.002 |
+== nt256/out4
+A259   regs  40 lmem 0 smem  45168 occW 16 exact T | m1   474.1 D1.228 | m3   633.9 D1.008 | m24  4273.2 D0.815 | 8streams  4341.6 D0.830 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   519.2 D1.202 | m3   678.9 D1.002 | m24  4450.3 D0.822 | 8streams  4497.4 D0.849 |
+D      regs  44 lmem 0 smem  41024 occW 16 exact T | m1   386.0 A0.814 | m3   628.7 A0.992 | m24  5235.7 A1.227 | 8streams  5246.8 A1.205 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   432.1 A0.832 | m3   676.9 A0.998 | m24  5414.9 A1.216 | 8streams  5307.4 A1.178 |
+CF0    regs  40 lmem 0 smem  45168 occW 16 exact F | m1   473.1 A1.000 D1.226 | m3   614.4 A0.969 D0.979 | m24  4233.2 A0.990 D0.808 | 8streams  4297.7 A0.988 D0.821 |
+CF3    regs  40 lmem 0 smem  45168 occW 16 exact F | m1   468.0 A0.987 D1.212 own0.989 | m3   612.4 A0.966 D0.974 own0.997 | m24  4183.0 A0.978 D0.799 own0.988 | 8streams  4244.7 A0.982 D0.809 own0.990 |
+CF     regs  40 lmem 0 smem  45168 occW 16 exact T | m1   476.2 A1.004 D1.236 own1.006 | m3   646.1 A1.019 D1.028 own1.050 | m24  4790.3 A1.122 D0.915 own1.133 | 8streams  4858.9 A1.121 D0.927 own1.134 |
+CFw    regs  40 lmem 0 smem  45168 occW 16 exact T | m1   472.1 A0.998 D1.223 own0.998 | m3   630.8 A0.994 D1.002 own1.026 | m24  4490.2 A1.050 D0.856 own1.061 | 8streams  4546.6 A1.051 D0.867 own1.059 |
+CF5    regs  44 lmem 0 smem  45168 occW 16 exact T | m1   461.8 A0.974 D1.197 own0.976 | m3   609.3 A0.961 D0.971 own0.992 | m24  4177.9 A0.979 D0.798 own0.988 | 8streams  4243.3 A0.979 D0.812 own0.988 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   507.9 A0.978 D1.178 | m3   655.4 A0.967 D0.968 | m24  4367.4 A0.982 D0.807 | 8streams  4413.5 A0.978 D0.834 |
+CF6    regs  44 lmem 0 smem  45168 occW 16 exact T | m1   461.8 A0.974 D1.196 own0.976 | m3   610.3 A0.961 D0.971 own0.992 | m24  4183.0 A0.978 D0.797 own0.987 | 8streams  4259.6 A0.979 D0.813 own0.990 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   507.9 A0.978 D1.175 | m3   654.3 A0.964 D0.965 | m24  4372.5 A0.983 D0.807 | 8streams  4405.8 A0.978 D0.835 |
+CFD0   regs  44 lmem 0 smem  41024 occW 16 exact F | m1   386.0 A0.814 D1.000 | m3   644.1 A1.016 D1.023 | m24  5291.0 A1.238 D1.009 | 8streams  5301.2 A1.222 D1.010 |
+CFD    regs  44 lmem 0 smem  41024 occW 16 exact T | m1   377.9 A0.797 D0.979 own0.981 | m3   706.6 A1.115 D1.124 own1.098 | m24  5883.9 A1.370 D1.124 own1.112 | 8streams  5835.7 A1.344 D1.113 own1.102 |
+CFD5   regs  46 lmem 0 smem  41024 occW 16 exact T | m1   376.8 A0.795 D0.976 own0.976 | m3   636.9 A1.003 D1.013 own0.990 | m24  5287.9 A1.236 D1.010 own0.999 | 8streams  5275.6 A1.218 D1.010 own0.994 |
+       PIPE (sdec<32> + wdec, in-place scale patch) | m1   422.9 A0.815 D0.979 | m3   685.1 A1.011 D1.011 | m24  5435.4 A1.221 D1.004 | 8streams  5403.5 A1.202 D1.021 |
+CFD6   regs  46 lmem 0 smem  41024 occW 16 exact T | m1   375.8 A0.794 D0.976 own0.976 | m3   636.9 A1.005 D1.013 own0.989 | m24  5284.9 A1.237 D1.008 own0.998 | 8streams  5294.9 A1.221 D1.013 own1.000 |

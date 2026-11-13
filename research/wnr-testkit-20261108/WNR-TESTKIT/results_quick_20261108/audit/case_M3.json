@@ -1,0 +1,498 @@
+{
+ "case": "M3",
+ "seed": 20261431,
+ "trials": 360,
+ "by_kind": {
+  "R0": {
+   "w1": {
+    "trials": 120,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.030272972577420072
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0,
+    "scale_stream_rules_pass": 0,
+    "rejected_by_wlength_check": 0,
+    "rejected_in_weight_streams": 0
+   },
+   "w2": {
+    "trials": 120,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.030272972577420072
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0,
+    "scale_stream_rules_pass": 0,
+    "rejected_by_wlength_check": 0,
+    "rejected_in_weight_streams": 0
+   },
+   "w3": {
+    "trials": 120,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.030272972577420072
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0,
+    "scale_stream_rules_pass": 0,
+    "rejected_by_wlength_check": 0,
+    "rejected_in_weight_streams": 0
+   },
+   "all": {
+    "trials": 360,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.010194566882012406
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0,
+    "scale_stream_rules_pass": 0,
+    "rejected_by_wlength_check": 0,
+    "rejected_in_weight_streams": 0
+   },
+   "silent_damage": {
+    "trial": [],
+    "mat": [],
+    "coded_sym_diff": [],
+    "coded_scale_diff": [],
+    "nib_diff": [],
+    "val_diff": [],
+    "scale_diff": [],
+    "block_flips": [],
+    "err_units": [],
+    "err_abs": [],
+    "sign_only": [],
+    "nan_scale": []
+   },
+   "seconds_stage1": 0.0,
+   "seconds_total": 0.0
+  },
+  "HASH": {
+   "w1": {
+    "trials": 120,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.030272972577420072
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0,
+    "scale_stream_rules_pass": 0,
+    "rejected_by_wlength_check": 0,
+    "rejected_in_weight_streams": 0
+   },
+   "w2": {
+    "trials": 120,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.030272972577420072
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0,
+    "scale_stream_rules_pass": 0,
+    "rejected_by_wlength_check": 0,
+    "rejected_in_weight_streams": 0
+   },
+   "w3": {
+    "trials": 120,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.030272972577420072
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0,
+    "scale_stream_rules_pass": 0,
+    "rejected_by_wlength_check": 0,
+    "rejected_in_weight_streams": 0
+   },
+   "all": {
+    "trials": 360,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.010194566882012406
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0,
+    "scale_stream_rules_pass": 0,
+    "rejected_by_wlength_check": 0,
+    "rejected_in_weight_streams": 0
+   },
+   "silent_damage": {
+    "trial": [],
+    "mat": [],
+    "coded_sym_diff": [],
+    "coded_scale_diff": [],
+    "nib_diff": [],
+    "val_diff": [],
+    "scale_diff": [],
+    "block_flips": [],
+    "err_units": [],
+    "err_abs": [],
+    "sign_only": [],
+    "nan_scale": []
+   },
+   "seconds_stage1": 0.0,
+   "seconds_total": 0.0
+  },
+  "HASH32": {
+   "w1": {
+    "trials": 120,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.030272972577420072
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0,
+    "scale_stream_rules_pass": 0,
+    "rejected_by_wlength_check": 0,
+    "rejected_in_weight_streams": 0
+   },
+   "w2": {
+    "trials": 120,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.030272972577420072
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0,
+    "scale_stream_rules_pass": 0,
+    "rejected_by_wlength_check": 0,
+    "rejected_in_weight_streams": 0
+   },
+   "w3": {
+    "trials": 120,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.030272972577420072
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0,
+    "scale_stream_rules_pass": 0,
+    "rejected_by_wlength_check": 0,
+    "rejected_in_weight_streams": 0
+   },
+   "all": {
+    "trials": 360,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.010194566882012406
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0,
+    "scale_stream_rules_pass": 0,
+    "rejected_by_wlength_check": 0,
+    "rejected_in_weight_streams": 0
+   },
+   "silent_damage": {
+    "trial": [],
+    "mat": [],
+    "coded_sym_diff": [],
+    "coded_scale_diff": [],
+    "nib_diff": [],
+    "val_diff": [],
+    "scale_diff": [],
+    "block_flips": [],
+    "err_units": [],
+    "err_abs": [],
+    "sign_only": [],
+    "nan_scale": []
+   },
+   "seconds_stage1": 0.0,
+   "seconds_total": 0.0
+  },
+  "TAIL": {
+   "w1": {
+    "trials": 120,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.030272972577420072
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0,
+    "scale_stream_rules_pass": 0,
+    "rejected_by_wlength_check": 0,
+    "rejected_in_weight_streams": 0
+   },
+   "w2": {
+    "trials": 120,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.030272972577420072
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0,
+    "scale_stream_rules_pass": 0,
+    "rejected_by_wlength_check": 0,
+    "rejected_in_weight_streams": 0
+   },
+   "w3": {
+    "trials": 120,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.030272972577420072
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0,
+    "scale_stream_rules_pass": 0,
+    "rejected_by_wlength_check": 0,
+    "rejected_in_weight_streams": 0
+   },
+   "all": {
+    "trials": 360,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.010194566882012406
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0,
+    "scale_stream_rules_pass": 0,
+    "rejected_by_wlength_check": 0,
+    "rejected_in_weight_streams": 0
+   },
+   "silent_damage": {
+    "trial": [],
+    "mat": [],
+    "coded_sym_diff": [],
+    "coded_scale_diff": [],
+    "nib_diff": [],
+    "val_diff": [],
+    "scale_diff": [],
+    "block_flips": [],
+    "err_units": [],
+    "err_abs": [],
+    "sign_only": [],
+    "nan_scale": []
+   },
+   "seconds_stage1": 0.0,
+   "seconds_total": 0.0
+  },
+  "TAILD": {
+   "w1": {
+    "trials": 120,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.030272972577420072
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0,
+    "scale_stream_rules_pass": null,
+    "rejected_by_wlength_check": 0,
+    "rejected_in_weight_streams": 0
+   },
+   "w2": {
+    "trials": 120,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.030272972577420072
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0,
+    "scale_stream_rules_pass": null,
+    "rejected_by_wlength_check": 0,
+    "rejected_in_weight_streams": 0
+   },
+   "w3": {
+    "trials": 120,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.030272972577420072
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0,
+    "scale_stream_rules_pass": null,
+    "rejected_by_wlength_check": 0,
+    "rejected_in_weight_streams": 0
+   },
+   "all": {
+    "trials": 360,
+    "unchanged_trials": 0,
+    "stream_rules_pass": 0,
+    "rejected_by_spec_inverse_only": 0,
+    "accepted_spec": 0,
+    "accepted_ceilref": 0,
+    "accepted_identical_output": 0,
+    "silent": 0,
+    "silent_rate": 0.0,
+    "silent_ci95": [
+     0.0,
+     0.010194566882012406
+    ],
+    "silent_ceilref": 0,
+    "silent_with_block_flip": 0,
+    "scale_stream_rules_pass": null,
+    "rejected_by_wlength_check": 0,
+    "rejected_in_weight_streams": 0
+   },
+   "silent_damage": {
+    "trial": [],
+    "mat": [],
+    "coded_sym_diff": [],
+    "coded_scale_diff": [],
+    "nib_diff": [],
+    "val_diff": [],
+    "scale_diff": [],
+    "block_flips": [],
+    "err_units": [],
+    "err_abs": [],
+    "sign_only": [],
+    "nan_scale": []
+   },
+   "seconds_stage1": 0.0,
+   "seconds_total": 0.0
+  }
+ },
+ "seconds": 0.0
+}

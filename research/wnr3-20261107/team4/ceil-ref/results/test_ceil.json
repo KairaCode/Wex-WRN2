@@ -1,0 +1,228 @@
+{
+ "synthetic": {
+  "blocks": 200000,
+  "even": 66586,
+  "roundtrip_equal": true,
+  "transformed_max_values": [
+   5,
+   6,
+   7
+  ],
+  "canon_then_ceil_roundtrip": true
+ },
+ "fallback": {
+  "a_block_max0": {
+   "fg": {
+    "F_in_record": false,
+    "fallback": true,
+    "below6": [
+     1,
+     0,
+     0
+    ],
+    "overflow": [
+     0,
+     0,
+     0
+    ],
+    "decoded_equal_to_reference": true,
+    "mode": "byte-exact",
+    "total_bytes": 17285120
+   },
+   "fgdt": {
+    "F_in_record": false,
+    "fallback": true,
+    "below6": [
+     1,
+     0,
+     0
+    ],
+    "overflow": [
+     0,
+     0,
+     0
+    ],
+    "decoded_equal_to_reference": true,
+    "mode": "byte-exact",
+    "total_bytes": 17219584
+   },
+   "fgaK2ce": {
+    "F_in_record": false,
+    "fallback": true,
+    "below6": [
+     1,
+     0,
+     0
+    ],
+    "overflow": [
+     0,
+     0,
+     0
+    ],
+    "decoded_equal_to_reference": true,
+    "mode": "value-exact",
+    "total_bytes": 16773120
+   }
+  },
+  "b_even_scale254": {
+   "fg": {
+    "F_in_record": false,
+    "fallback": true,
+    "below6": [
+     0,
+     0,
+     0
+    ],
+    "overflow": [
+     0,
+     1,
+     0
+    ],
+    "decoded_equal_to_reference": true,
+    "mode": "byte-exact",
+    "total_bytes": 17285120
+   },
+   "fgdt": {
+    "F_in_record": false,
+    "fallback": true,
+    "below6": [
+     0,
+     0,
+     0
+    ],
+    "overflow": [
+     0,
+     1,
+     0
+    ],
+    "decoded_equal_to_reference": true,
+    "mode": "byte-exact",
+    "total_bytes": 17219584
+   },
+   "fgaK2ce": {
+    "F_in_record": false,
+    "fallback": true,
+    "below6": [
+     0,
+     0,
+     0
+    ],
+    "overflow": [
+     0,
+     1,
+     0
+    ],
+    "decoded_equal_to_reference": true,
+    "mode": "value-exact",
+    "total_bytes": 16773120
+   }
+  },
+  "c_even_scale253": {
+   "fg": {
+    "F_in_record": true,
+    "fallback": false,
+    "below6": [
+     0,
+     0,
+     0
+    ],
+    "overflow": [
+     0,
+     0,
+     0
+    ],
+    "decoded_equal_to_reference": true,
+    "mode": "byte-exact",
+    "total_bytes": 16572416
+   },
+   "fgdt": {
+    "F_in_record": true,
+    "fallback": false,
+    "below6": [
+     0,
+     0,
+     0
+    ],
+    "overflow": [
+     0,
+     0,
+     0
+    ],
+    "decoded_equal_to_reference": true,
+    "mode": "byte-exact",
+    "total_bytes": 16506880
+   },
+   "fgaK2ce": {
+    "F_in_record": true,
+    "fallback": false,
+    "below6": [
+     0,
+     0,
+     0
+    ],
+    "overflow": [
+     0,
+     0,
+     0
+    ],
+    "decoded_equal_to_reference": true,
+    "mode": "value-exact",
+    "total_bytes": 16064512
+   }
+  },
+  "d_unmodified": {
+   "fg": {
+    "F_in_record": true,
+    "fallback": false,
+    "below6": [
+     0,
+     0,
+     0
+    ],
+    "overflow": [
+     0,
+     0,
+     0
+    ],
+    "decoded_equal_to_reference": true,
+    "mode": "byte-exact",
+    "total_bytes": 16572416
+   },
+   "fgdt": {
+    "F_in_record": true,
+    "fallback": false,
+    "below6": [
+     0,
+     0,
+     0
+    ],
+    "overflow": [
+     0,
+     0,
+     0
+    ],
+    "decoded_equal_to_reference": true,
+    "mode": "byte-exact",
+    "total_bytes": 16506880
+   },
+   "fgaK2ce": {
+    "F_in_record": true,
+    "fallback": false,
+    "below6": [
+     0,
+     0,
+     0
+    ],
+    "overflow": [
+     0,
+     0,
+     0
+    ],
+    "decoded_equal_to_reference": true,
+    "mode": "value-exact",
+    "total_bytes": 16064512
+   }
+  }
+ },
+ "forged_F_on_plain_record_with_max0_block": "rejected: ceil: decoded block max < 5"
+}

@@ -1,0 +1,546 @@
+{
+ "case": "P3",
+ "seed": 20261533,
+ "by_kind": {
+  "R0": {
+   "trials": 8,
+   "accepted_spec": 0,
+   "silent": 0,
+   "silent_rate": 0.0,
+   "silent_ci95": [
+    0.0,
+    0.36941664755281933
+   ],
+   "silent_with_block_flip": 0,
+   "stages": {
+    "weights": 8
+   },
+   "rows": [
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 1,
+     "unchanged": false
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 2,
+     "unchanged": false
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 3,
+     "unchanged": false
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 4,
+     "unchanged": false
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 1,
+     "unchanged": false
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 2,
+     "unchanged": false
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 3,
+     "unchanged": false
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 4,
+     "unchanged": false
+    }
+   ],
+   "seconds": 0.5
+  },
+  "HASH": {
+   "trials": 8,
+   "accepted_spec": 0,
+   "silent": 0,
+   "silent_rate": 0.0,
+   "silent_ci95": [
+    0.0,
+    0.36941664755281933
+   ],
+   "silent_with_block_flip": 0,
+   "stages": {
+    "weights": 8
+   },
+   "rows": [
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 1,
+     "unchanged": false
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 2,
+     "unchanged": false
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 3,
+     "unchanged": false
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 4,
+     "unchanged": false
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 1,
+     "unchanged": false
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 2,
+     "unchanged": false
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 3,
+     "unchanged": false
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 4,
+     "unchanged": false
+    }
+   ],
+   "seconds": 0.6
+  },
+  "HASH32": {
+   "trials": 8,
+   "accepted_spec": 0,
+   "silent": 0,
+   "silent_rate": 0.0,
+   "silent_ci95": [
+    0.0,
+    0.36941664755281933
+   ],
+   "silent_with_block_flip": 0,
+   "stages": {
+    "weights": 8
+   },
+   "rows": [
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 1,
+     "unchanged": false
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 2,
+     "unchanged": false
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 3,
+     "unchanged": false
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 4,
+     "unchanged": false
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 1,
+     "unchanged": false
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 2,
+     "unchanged": false
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 3,
+     "unchanged": false
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 4,
+     "unchanged": false
+    }
+   ],
+   "seconds": 0.6
+  },
+  "TAIL": {
+   "trials": 8,
+   "accepted_spec": 1,
+   "silent": 1,
+   "silent_rate": 0.125,
+   "silent_ci95": [
+    0.0031597235312519015,
+    0.5265096708752064
+   ],
+   "silent_with_block_flip": 0,
+   "stages": {
+    "weights": 7,
+    "None": 1
+   },
+   "rows": [
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 1,
+     "unchanged": false
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 2,
+     "unchanged": false
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 3,
+     "unchanged": false
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 4,
+     "unchanged": false
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "accepted",
+     "stage": null,
+     "msg": null,
+     "ceilref_reject": false,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 1,
+     "unchanged": false,
+     "damage": {
+      "coded_sym_diff": 2,
+      "coded_scale_diff": 0,
+      "nib_diff": 2,
+      "val_diff": 2,
+      "scale_diff": 0,
+      "block_flips": 0,
+      "err_units": 10.0,
+      "err_abs": 0.078125,
+      "sign_only": false,
+      "nan_scale": false
+     }
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 2,
+     "unchanged": false
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 3,
+     "unchanged": false
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 4,
+     "unchanged": false
+    }
+   ],
+   "seconds": 0.4
+  },
+  "TAILD": {
+   "trials": 8,
+   "accepted_spec": 0,
+   "silent": 0,
+   "silent_rate": 0.0,
+   "silent_ci95": [
+    0.0,
+    0.36941664755281933
+   ],
+   "silent_with_block_flip": 0,
+   "stages": {
+    "weights": 7,
+    "digest": 1
+   },
+   "rows": [
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 1,
+     "unchanged": false
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 2,
+     "unchanged": false
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 3,
+     "unchanged": false
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 4,
+     "unchanged": false
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "digest",
+     "msg": "record digest mismatch",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 1,
+     "unchanged": false
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 2,
+     "unchanged": false
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 3,
+     "unchanged": false
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "weights",
+     "msg": "weight streams failed: 1",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 1,
+     "k": 4,
+     "unchanged": false
+    }
+   ],
+   "seconds": 0.4
+  }
+ },
+ "seconds": 0.5
+}

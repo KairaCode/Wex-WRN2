@@ -1,0 +1,317 @@
+[
+ {
+  "case": "all +0",
+  "stored_max": 0,
+  "even": false,
+  "t_scale": 120,
+  "scale_fits_u8": true,
+  "rt_ok": true,
+  "t_nibbles": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "z_rt_ok": true
+ },
+ {
+  "case": "all -0",
+  "stored_max": 0,
+  "even": false,
+  "t_scale": 120,
+  "scale_fits_u8": true,
+  "rt_ok": true,
+  "t_nibbles": [
+   8,
+   8,
+   8,
+   8,
+   8,
+   8,
+   8,
+   8
+  ],
+  "z_rt_ok": true
+ },
+ {
+  "case": "only +-0 and +-6 (codes 0,8,7,15)",
+  "stored_max": 7,
+  "even": true,
+  "t_scale": 121,
+  "scale_fits_u8": true,
+  "rt_ok": true,
+  "t_nibbles": [
+   0,
+   8,
+   5,
+   13,
+   0,
+   8,
+   5,
+   13
+  ],
+  "z_rt_ok": true
+ },
+ {
+  "case": "only +-0 and +-4 (codes 0,8,6,14)",
+  "stored_max": 6,
+  "even": false,
+  "t_scale": 120,
+  "scale_fits_u8": true,
+  "rt_ok": true,
+  "t_nibbles": [
+   0,
+   8,
+   6,
+   14,
+   0,
+   8,
+   6,
+   14
+  ],
+  "z_rt_ok": true
+ },
+ {
+  "case": "single 6.0, rest 0",
+  "stored_max": 7,
+  "even": true,
+  "t_scale": 121,
+  "scale_fits_u8": true,
+  "rt_ok": true,
+  "t_nibbles": [
+   5,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "z_rt_ok": true
+ },
+ {
+  "case": "even block scale 0",
+  "stored_max": 7,
+  "even": true,
+  "t_scale": 1,
+  "scale_fits_u8": true,
+  "rt_ok": true,
+  "t_nibbles": [
+   5,
+   1,
+   2,
+   3,
+   4,
+   0,
+   5,
+   1
+  ],
+  "z_rt_ok": true
+ },
+ {
+  "case": "even block scale 253",
+  "stored_max": 7,
+  "even": true,
+  "t_scale": 254,
+  "scale_fits_u8": true,
+  "rt_ok": true,
+  "t_nibbles": [
+   5,
+   1,
+   2,
+   3,
+   4,
+   0,
+   5,
+   1
+  ],
+  "z_rt_ok": true
+ },
+ {
+  "case": "even block scale 254 -> 255 (E8M0 NaN byte as coded symbol)",
+  "stored_max": 7,
+  "even": true,
+  "t_scale": 255,
+  "scale_fits_u8": true,
+  "rt_ok": true,
+  "t_nibbles": [
+   5,
+   1,
+   2,
+   3,
+   4,
+   0,
+   5,
+   1
+  ],
+  "z_rt_ok": true
+ },
+ {
+  "case": "even block scale 255 (NaN) -> 256 overflow",
+  "stored_max": 7,
+  "even": true,
+  "t_scale": 256,
+  "scale_fits_u8": false,
+  "rt_ok": true,
+  "t_nibbles": [
+   5,
+   1,
+   2,
+   3,
+   4,
+   0,
+   5,
+   1
+  ],
+  "z_rt_ok": true
+ },
+ {
+  "case": "non-even max7 (has 1)",
+  "stored_max": 7,
+  "even": false,
+  "t_scale": 120,
+  "scale_fits_u8": true,
+  "rt_ok": true,
+  "t_nibbles": [
+   7,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "z_rt_ok": true
+ },
+ {
+  "case": "stored max 5 block (3.0) = NOT ceil-safe",
+  "stored_max": 5,
+  "even": false,
+  "t_scale": 120,
+  "scale_fits_u8": true,
+  "rt_ok": false,
+  "t_nibbles": [
+   5,
+   4,
+   2,
+   1,
+   0,
+   0,
+   0,
+   0
+  ],
+  "z_rt_ok": false
+ },
+ {
+  "case": "stored max 4 block (2.0)",
+  "stored_max": 4,
+  "even": false,
+  "t_scale": 120,
+  "scale_fits_u8": true,
+  "rt_ok": true,
+  "t_nibbles": [
+   4,
+   2,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "z_rt_ok": true
+ },
+ {
+  "case": "stored max 3 block",
+  "stored_max": 3,
+  "even": false,
+  "t_scale": 120,
+  "scale_fits_u8": true,
+  "rt_ok": true,
+  "t_nibbles": [
+   3,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "z_rt_ok": true
+ },
+ {
+  "case": "random max6 block",
+  "stored_max": 6,
+  "even": false,
+  "t_scale": 120,
+  "scale_fits_u8": true,
+  "rt_ok": true,
+  "t_nibbles": [
+   3,
+   3,
+   5,
+   6,
+   0,
+   1,
+   5,
+   6
+  ],
+  "z_rt_ok": true
+ },
+ {
+  "case": "random 200000 blocks (half forced even)",
+  "even": 99371,
+  "stored_max5": 14,
+  "rt_fail_on_max5_blocks": 14,
+  "rt_fail_on_other_blocks": 0
+ },
+ {
+  "case": "smoke L00_E097.bin w2",
+  "bmax_hist": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   150470,
+   218170
+  ],
+  "blocks": 368640,
+  "allzero": 0,
+  "max_lt6": 0,
+  "stored_max5": 0,
+  "even": 116915,
+  "max6_no13": 0,
+  "max7": 218170,
+  "scale_min": 119,
+  "scale_max": 123,
+  "scale_n0": 0,
+  "scale_n254": 0,
+  "scale_n255": 0,
+  "even_scale_max": 122,
+  "even_at_254": 0,
+  "even_at_255_overflow": 0,
+  "ts_max": 123,
+  "rt_ok": true,
+  "inv_selects_exactly_even": true,
+  "z_commute": true,
+  "z_rt_ok": true,
+  "neg0": 688165,
+  "sign_plane_kept": true,
+  "sha256": "8f22c7cbcd1722822e9efd74e4fafae1acf9735224c90de3a8e2418b649acf2b",
+  "med_o": 120,
+  "med_c": 121,
+  "counted": true,
+  "o_base_total": 11796480,
+  "c_base_total": 11796480,
+  "o_clsh_pm2b_total": 11796480
+ }
+]

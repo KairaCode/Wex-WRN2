@@ -1,0 +1,1257 @@
+{
+ "n_each": 5,
+ "n_full": 1,
+ "cases": {
+  "A": {
+   "R0": {
+    "checked": 10,
+    "agree": 10,
+    "silent_checked": 5,
+    "full_decoder_checked": 2,
+    "full_decoder_consistent": true,
+    "rows": [
+     {
+      "trial": 4127,
+      "rec": "L39_E156.bin",
+      "m": 1,
+      "j": 808,
+      "abs_pos": 6436905,
+      "path_WS_silent": true,
+      "path_R_status": "accepted",
+      "path_R_stage": null,
+      "path_R_silent": true,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1,
+      "damage_WS": {
+       "coded_sym_diff": 1.0,
+       "nib_diff": 1.0,
+       "val_diff": 1.0,
+       "scale_diff": 0.0,
+       "block_flips": 0.0
+      },
+      "damage_R": {
+       "coded_sym_diff": 1.0,
+       "nib_diff": 1.0,
+       "val_diff": 1.0,
+       "scale_diff": 0.0,
+       "block_flips": 0.0
+      }
+     },
+     {
+      "trial": 4622,
+      "rec": "L39_E156.bin",
+      "m": 1,
+      "j": 3739,
+      "abs_pos": 9262629,
+      "path_WS_silent": true,
+      "path_R_status": "accepted",
+      "path_R_stage": null,
+      "path_R_silent": true,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1,
+      "damage_WS": {
+       "coded_sym_diff": 1.0,
+       "nib_diff": 1.0,
+       "val_diff": 0.0,
+       "scale_diff": 0.0,
+       "block_flips": 0.0
+      },
+      "damage_R": {
+       "coded_sym_diff": 1.0,
+       "nib_diff": 1.0,
+       "val_diff": 0.0,
+       "scale_diff": 0.0,
+       "block_flips": 0.0
+      }
+     },
+     {
+      "trial": 5232,
+      "rec": "L39_E156.bin",
+      "m": 2,
+      "j": 1286,
+      "abs_pos": 12445038,
+      "path_WS_silent": true,
+      "path_R_status": "accepted",
+      "path_R_stage": null,
+      "path_R_silent": true,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1,
+      "damage_WS": {
+       "coded_sym_diff": 1.0,
+       "nib_diff": 1.0,
+       "val_diff": 1.0,
+       "scale_diff": 0.0,
+       "block_flips": 0.0
+      },
+      "damage_R": {
+       "coded_sym_diff": 1.0,
+       "nib_diff": 1.0,
+       "val_diff": 1.0,
+       "scale_diff": 0.0,
+       "block_flips": 0.0
+      }
+     },
+     {
+      "trial": 5918,
+      "rec": "L39_E156.bin",
+      "m": 2,
+      "j": 5373,
+      "abs_pos": 16359649,
+      "path_WS_silent": true,
+      "path_R_status": "accepted",
+      "path_R_stage": null,
+      "path_R_silent": true,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1,
+      "damage_WS": {
+       "coded_sym_diff": 1.0,
+       "nib_diff": 1.0,
+       "val_diff": 1.0,
+       "scale_diff": 0.0,
+       "block_flips": 0.0
+      },
+      "damage_R": {
+       "coded_sym_diff": 1.0,
+       "nib_diff": 1.0,
+       "val_diff": 1.0,
+       "scale_diff": 0.0,
+       "block_flips": 0.0
+      }
+     },
+     {
+      "trial": 5320,
+      "rec": "L39_E156.bin",
+      "m": 2,
+      "j": 1780,
+      "abs_pos": 12918497,
+      "path_WS_silent": true,
+      "path_R_status": "accepted",
+      "path_R_stage": null,
+      "path_R_silent": true,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1,
+      "damage_WS": {
+       "coded_sym_diff": 1.0,
+       "nib_diff": 1.0,
+       "val_diff": 1.0,
+       "scale_diff": 0.0,
+       "block_flips": 0.0
+      },
+      "damage_R": {
+       "coded_sym_diff": 1.0,
+       "nib_diff": 1.0,
+       "val_diff": 1.0,
+       "scale_diff": 0.0,
+       "block_flips": 0.0
+      }
+     },
+     {
+      "trial": 31,
+      "rec": "L00_E113.bin",
+      "m": 0,
+      "j": 163,
+      "abs_pos": 307564,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "weights",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1
+     },
+     {
+      "trial": 1705,
+      "rec": "L00_E113.bin",
+      "m": 1,
+      "j": 4242,
+      "abs_pos": 9639809,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "weights",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1
+     },
+     {
+      "trial": 1795,
+      "rec": "L00_E113.bin",
+      "m": 1,
+      "j": 4693,
+      "abs_pos": 10066591,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "weights",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1
+     },
+     {
+      "trial": 5474,
+      "rec": "L39_E156.bin",
+      "m": 2,
+      "j": 2690,
+      "abs_pos": 13789264,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "weights",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1
+     },
+     {
+      "trial": 5237,
+      "rec": "L39_E156.bin",
+      "m": 2,
+      "j": 1332,
+      "abs_pos": 12488178,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "weights",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1
+     }
+    ],
+    "full_decoder_rows": [
+     {
+      "trial": 4127,
+      "silent": true,
+      "full_mine_status": "accepted",
+      "full_mine_slab_equals_source": false,
+      "ceilref_status": "accepted",
+      "ceilref_slab_equals_source": false,
+      "mine_incremental": "accepted",
+      "mine_ceilref_reject": false,
+      "consistent": true
+     },
+     {
+      "trial": 31,
+      "silent": false,
+      "full_mine_status": "rejected",
+      "full_mine_slab_equals_source": false,
+      "ceilref_status": "rejected: weight streams failed: 1",
+      "mine_incremental": "rejected",
+      "mine_ceilref_reject": null,
+      "consistent": true
+     }
+    ],
+    "seconds": 7.1
+   },
+   "HASH": {
+    "checked": 5,
+    "agree": 5,
+    "silent_checked": 0,
+    "full_decoder_checked": 1,
+    "full_decoder_consistent": true,
+    "rows": [
+     {
+      "trial": 1817,
+      "rec": "L00_E113.bin",
+      "m": 1,
+      "j": 4808,
+      "abs_pos": 10176698,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "weights",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1
+     },
+     {
+      "trial": 2049,
+      "rec": "L00_E113.bin",
+      "m": 2,
+      "j": 270,
+      "abs_pos": 11335251,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "weights",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1
+     },
+     {
+      "trial": 714,
+      "rec": "L00_E113.bin",
+      "m": 0,
+      "j": 4036,
+      "abs_pos": 3983479,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "weights",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1
+     },
+     {
+      "trial": 4897,
+      "rec": "L39_E156.bin",
+      "m": 1,
+      "j": 5271,
+      "abs_pos": 10741226,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "weights",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1
+     },
+     {
+      "trial": 2806,
+      "rec": "L00_E113.bin",
+      "m": 2,
+      "j": 4673,
+      "abs_pos": 15513961,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "weights",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1
+     }
+    ],
+    "full_decoder_rows": [
+     {
+      "trial": 1817,
+      "silent": false,
+      "full_mine_status": "rejected",
+      "full_mine_slab_equals_source": false,
+      "ceilref_status": "rejected: weight streams failed: 1",
+      "mine_incremental": "rejected",
+      "mine_ceilref_reject": null,
+      "consistent": true
+     }
+    ],
+    "seconds": 3.6
+   },
+   "HASH32": {
+    "checked": 5,
+    "agree": 5,
+    "silent_checked": 0,
+    "full_decoder_checked": 0,
+    "full_decoder_consistent": true,
+    "rows": [
+     {
+      "trial": 2668,
+      "rec": "L00_E113.bin",
+      "m": 2,
+      "j": 3900,
+      "abs_pos": 14780153,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "weights",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1
+     },
+     {
+      "trial": 2867,
+      "rec": "L00_E113.bin",
+      "m": 2,
+      "j": 5048,
+      "abs_pos": 15869982,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "weights",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1
+     },
+     {
+      "trial": 3320,
+      "rec": "L39_E156.bin",
+      "m": 0,
+      "j": 1865,
+      "abs_pos": 1939084,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "weights",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1
+     },
+     {
+      "trial": 3494,
+      "rec": "L39_E156.bin",
+      "m": 0,
+      "j": 2889,
+      "abs_pos": 2917396,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "weights",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1
+     },
+     {
+      "trial": 3026,
+      "rec": "L39_E156.bin",
+      "m": 0,
+      "j": 122,
+      "abs_pos": 273454,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "weights",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1
+     }
+    ],
+    "full_decoder_rows": [],
+    "seconds": 0.3
+   },
+   "TAIL": {
+    "checked": 10,
+    "agree": 10,
+    "silent_checked": 5,
+    "full_decoder_checked": 2,
+    "full_decoder_consistent": true,
+    "rows": [
+     {
+      "trial": 1636,
+      "rec": "L00_E113.bin",
+      "m": 1,
+      "j": 3819,
+      "abs_pos": 9216623,
+      "path_WS_silent": true,
+      "path_R_status": "accepted",
+      "path_R_stage": null,
+      "path_R_silent": true,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1,
+      "damage_WS": {
+       "coded_sym_diff": 95.0,
+       "nib_diff": 95.0,
+       "val_diff": 95.0,
+       "scale_diff": 1.0,
+       "block_flips": 1.0
+      },
+      "damage_R": {
+       "coded_sym_diff": 95.0,
+       "nib_diff": 95.0,
+       "val_diff": 95.0,
+       "scale_diff": 1.0,
+       "block_flips": 1.0
+      }
+     },
+     {
+      "trial": 2189,
+      "rec": "L00_E113.bin",
+      "m": 2,
+      "j": 1060,
+      "abs_pos": 12054804,
+      "path_WS_silent": true,
+      "path_R_status": "accepted",
+      "path_R_stage": null,
+      "path_R_silent": true,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1,
+      "damage_WS": {
+       "coded_sym_diff": 111.0,
+       "nib_diff": 117.0,
+       "val_diff": 110.0,
+       "scale_diff": 2.0,
+       "block_flips": 2.0
+      },
+      "damage_R": {
+       "coded_sym_diff": 111.0,
+       "nib_diff": 117.0,
+       "val_diff": 110.0,
+       "scale_diff": 2.0,
+       "block_flips": 2.0
+      }
+     },
+     {
+      "trial": 3259,
+      "rec": "L39_E156.bin",
+      "m": 0,
+      "j": 1586,
+      "abs_pos": 1668302,
+      "path_WS_silent": true,
+      "path_R_status": "accepted",
+      "path_R_stage": null,
+      "path_R_silent": true,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1,
+      "damage_WS": {
+       "coded_sym_diff": 1.0,
+       "nib_diff": 1.0,
+       "val_diff": 1.0,
+       "scale_diff": 0.0,
+       "block_flips": 0.0
+      },
+      "damage_R": {
+       "coded_sym_diff": 1.0,
+       "nib_diff": 1.0,
+       "val_diff": 1.0,
+       "scale_diff": 0.0,
+       "block_flips": 0.0
+      }
+     },
+     {
+      "trial": 5429,
+      "rec": "L39_E156.bin",
+      "m": 2,
+      "j": 2413,
+      "abs_pos": 13492001,
+      "path_WS_silent": true,
+      "path_R_status": "accepted",
+      "path_R_stage": null,
+      "path_R_silent": true,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1,
+      "damage_WS": {
+       "coded_sym_diff": 77.0,
+       "nib_diff": 74.0,
+       "val_diff": 77.0,
+       "scale_diff": 1.0,
+       "block_flips": 1.0
+      },
+      "damage_R": {
+       "coded_sym_diff": 77.0,
+       "nib_diff": 74.0,
+       "val_diff": 77.0,
+       "scale_diff": 1.0,
+       "block_flips": 1.0
+      }
+     },
+     {
+      "trial": 2722,
+      "rec": "L00_E113.bin",
+      "m": 2,
+      "j": 4173,
+      "abs_pos": 15001188,
+      "path_WS_silent": true,
+      "path_R_status": "accepted",
+      "path_R_stage": null,
+      "path_R_silent": true,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1,
+      "damage_WS": {
+       "coded_sym_diff": 1.0,
+       "nib_diff": 1.0,
+       "val_diff": 1.0,
+       "scale_diff": 0.0,
+       "block_flips": 0.0
+      },
+      "damage_R": {
+       "coded_sym_diff": 1.0,
+       "nib_diff": 1.0,
+       "val_diff": 1.0,
+       "scale_diff": 0.0,
+       "block_flips": 0.0
+      }
+     },
+     {
+      "trial": 689,
+      "rec": "L00_E113.bin",
+      "m": 0,
+      "j": 3892,
+      "abs_pos": 3836434,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "weights",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1
+     },
+     {
+      "trial": 213,
+      "rec": "L00_E113.bin",
+      "m": 0,
+      "j": 1247,
+      "abs_pos": 1332668,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "weights",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1
+     },
+     {
+      "trial": 2674,
+      "rec": "L00_E113.bin",
+      "m": 2,
+      "j": 3926,
+      "abs_pos": 14767998,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "weights",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1
+     },
+     {
+      "trial": 263,
+      "rec": "L00_E113.bin",
+      "m": 0,
+      "j": 1520,
+      "abs_pos": 1590538,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "weights",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1
+     },
+     {
+      "trial": 3676,
+      "rec": "L39_E156.bin",
+      "m": 0,
+      "j": 3878,
+      "abs_pos": 3851668,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "weights",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1
+     }
+    ],
+    "full_decoder_rows": [
+     {
+      "trial": 1636,
+      "silent": true,
+      "full_mine_status": "accepted",
+      "full_mine_slab_equals_source": false,
+      "ceilref_status": "accepted",
+      "ceilref_slab_equals_source": false,
+      "mine_incremental": "accepted",
+      "mine_ceilref_reject": false,
+      "consistent": true
+     },
+     {
+      "trial": 689,
+      "silent": false,
+      "full_mine_status": "rejected",
+      "full_mine_slab_equals_source": false,
+      "ceilref_status": "rejected: weight streams failed: 1",
+      "mine_incremental": "rejected",
+      "mine_ceilref_reject": null,
+      "consistent": true
+     }
+    ],
+    "seconds": 7.5
+   },
+   "TAILD": {
+    "checked": 5,
+    "agree": 5,
+    "silent_checked": 0,
+    "full_decoder_checked": 0,
+    "full_decoder_consistent": true,
+    "rows": [
+     {
+      "trial": 2648,
+      "rec": "L00_E113.bin",
+      "m": 2,
+      "j": 3799,
+      "abs_pos": 14647237,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "weights",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1
+     },
+     {
+      "trial": 4847,
+      "rec": "L39_E156.bin",
+      "m": 1,
+      "j": 5021,
+      "abs_pos": 10472875,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "weights",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1
+     },
+     {
+      "trial": 3774,
+      "rec": "L39_E156.bin",
+      "m": 0,
+      "j": 4406,
+      "abs_pos": 4354311,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "weights",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1
+     },
+     {
+      "trial": 5500,
+      "rec": "L39_E156.bin",
+      "m": 2,
+      "j": 2853,
+      "abs_pos": 13911440,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "weights",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1
+     },
+     {
+      "trial": 4939,
+      "rec": "L39_E156.bin",
+      "m": 1,
+      "j": 5465,
+      "abs_pos": 10900431,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "weights",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 0,
+      "n_dec_w": 1
+     }
+    ],
+    "full_decoder_rows": [],
+    "seconds": 0.3
+   }
+  },
+  "K": {
+   "R0": {
+    "checked": 7,
+    "agree": 7,
+    "silent_checked": 2,
+    "full_decoder_checked": 2,
+    "full_decoder_consistent": true,
+    "rows": [
+     {
+      "trial": 308,
+      "rec": "L39_E156.bin",
+      "m": 2,
+      "j": 132,
+      "abs_pos": 119021,
+      "path_WS_silent": true,
+      "path_R_status": "accepted",
+      "path_R_stage": null,
+      "path_R_silent": true,
+      "agree": true,
+      "n_dec_s": 1,
+      "n_dec_w": 0,
+      "damage_WS": {
+       "coded_sym_diff": 0.0,
+       "nib_diff": 0.0,
+       "val_diff": 14.0,
+       "scale_diff": 1.0,
+       "block_flips": 0.0
+      },
+      "damage_R": {
+       "coded_sym_diff": 0.0,
+       "nib_diff": 0.0,
+       "val_diff": 14.0,
+       "scale_diff": 1.0,
+       "block_flips": 0.0
+      }
+     },
+     {
+      "trial": 703,
+      "rec": "L39_E156.bin",
+      "m": 2,
+      "j": 515,
+      "abs_pos": 142993,
+      "path_WS_silent": true,
+      "path_R_status": "accepted",
+      "path_R_stage": null,
+      "path_R_silent": true,
+      "agree": true,
+      "n_dec_s": 1,
+      "n_dec_w": 0,
+      "damage_WS": {
+       "coded_sym_diff": 0.0,
+       "nib_diff": 0.0,
+       "val_diff": 21.0,
+       "scale_diff": 1.0,
+       "block_flips": 0.0
+      },
+      "damage_R": {
+       "coded_sym_diff": 0.0,
+       "nib_diff": 0.0,
+       "val_diff": 21.0,
+       "scale_diff": 1.0,
+       "block_flips": 0.0
+      }
+     },
+     {
+      "trial": 1500,
+      "rec": "L00_E113.bin",
+      "m": 1,
+      "j": 40,
+      "abs_pos": 62112,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "scales",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 1,
+      "n_dec_w": 0
+     },
+     {
+      "trial": 1040,
+      "rec": "L39_E156.bin",
+      "m": 2,
+      "j": 298,
+      "abs_pos": 129670,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "scales",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 1,
+      "n_dec_w": 0
+     },
+     {
+      "trial": 1395,
+      "rec": "L39_E156.bin",
+      "m": 2,
+      "j": 180,
+      "abs_pos": 122204,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "scales",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 1,
+      "n_dec_w": 0
+     },
+     {
+      "trial": 1229,
+      "rec": "L00_E113.bin",
+      "m": 2,
+      "j": 321,
+      "abs_pos": 126630,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "scales",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 1,
+      "n_dec_w": 0
+     },
+     {
+      "trial": 1612,
+      "rec": "L00_E113.bin",
+      "m": 2,
+      "j": 626,
+      "abs_pos": 146272,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "scales",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 1,
+      "n_dec_w": 0
+     }
+    ],
+    "full_decoder_rows": [
+     {
+      "trial": 308,
+      "silent": true,
+      "full_mine_status": "accepted",
+      "full_mine_slab_equals_source": false,
+      "ceilref_status": "accepted",
+      "ceilref_slab_equals_source": false,
+      "mine_incremental": "accepted",
+      "mine_ceilref_reject": false,
+      "consistent": true
+     },
+     {
+      "trial": 1500,
+      "silent": false,
+      "full_mine_status": "rejected",
+      "full_mine_slab_equals_source": false,
+      "ceilref_status": "rejected: scale streams failed: 1",
+      "mine_incremental": "rejected",
+      "mine_ceilref_reject": null,
+      "consistent": true
+     }
+    ],
+    "seconds": 3.8
+   },
+   "HASH": {
+    "checked": 5,
+    "agree": 5,
+    "silent_checked": 0,
+    "full_decoder_checked": 1,
+    "full_decoder_consistent": true,
+    "rows": [
+     {
+      "trial": 1639,
+      "rec": "L39_E156.bin",
+      "m": 0,
+      "j": 273,
+      "abs_pos": 33970,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "scales",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 1,
+      "n_dec_w": 0
+     },
+     {
+      "trial": 9,
+      "rec": "L00_E113.bin",
+      "m": 0,
+      "j": 118,
+      "abs_pos": 20921,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "scales",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 1,
+      "n_dec_w": 0
+     },
+     {
+      "trial": 1478,
+      "rec": "L00_E113.bin",
+      "m": 0,
+      "j": 442,
+      "abs_pos": 41687,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "scales",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 1,
+      "n_dec_w": 0
+     },
+     {
+      "trial": 899,
+      "rec": "L00_E113.bin",
+      "m": 2,
+      "j": 707,
+      "abs_pos": 151744,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "scales",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 1,
+      "n_dec_w": 0
+     },
+     {
+      "trial": 1568,
+      "rec": "L00_E113.bin",
+      "m": 2,
+      "j": 66,
+      "abs_pos": 110499,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "scales",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 1,
+      "n_dec_w": 0
+     }
+    ],
+    "full_decoder_rows": [
+     {
+      "trial": 1639,
+      "silent": false,
+      "full_mine_status": "rejected",
+      "full_mine_slab_equals_source": false,
+      "ceilref_status": "rejected: scale streams failed: 1",
+      "mine_incremental": "rejected",
+      "mine_ceilref_reject": null,
+      "consistent": true
+     }
+    ],
+    "seconds": 0.2
+   },
+   "HASH32": {
+    "checked": 5,
+    "agree": 5,
+    "silent_checked": 0,
+    "full_decoder_checked": 0,
+    "full_decoder_consistent": true,
+    "rows": [
+     {
+      "trial": 614,
+      "rec": "L39_E156.bin",
+      "m": 1,
+      "j": 273,
+      "abs_pos": 79924,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "scales",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 1,
+      "n_dec_w": 0
+     },
+     {
+      "trial": 1466,
+      "rec": "L00_E113.bin",
+      "m": 0,
+      "j": 306,
+      "abs_pos": 32966,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "scales",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 1,
+      "n_dec_w": 0
+     },
+     {
+      "trial": 1295,
+      "rec": "L39_E156.bin",
+      "m": 0,
+      "j": 403,
+      "abs_pos": 41757,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "scales",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 1,
+      "n_dec_w": 0
+     },
+     {
+      "trial": 500,
+      "rec": "L00_E113.bin",
+      "m": 2,
+      "j": 200,
+      "abs_pos": 119082,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "scales",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 1,
+      "n_dec_w": 0
+     },
+     {
+      "trial": 544,
+      "rec": "L39_E156.bin",
+      "m": 0,
+      "j": 39,
+      "abs_pos": 19812,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "scales",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 1,
+      "n_dec_w": 0
+     }
+    ],
+    "full_decoder_rows": [],
+    "seconds": 0.1
+   },
+   "TAIL": {
+    "checked": 5,
+    "agree": 5,
+    "silent_checked": 0,
+    "full_decoder_checked": 1,
+    "full_decoder_consistent": true,
+    "rows": [
+     {
+      "trial": 906,
+      "rec": "L39_E156.bin",
+      "m": 0,
+      "j": 50,
+      "abs_pos": 20427,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "scales",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 1,
+      "n_dec_w": 0
+     },
+     {
+      "trial": 1046,
+      "rec": "L39_E156.bin",
+      "m": 2,
+      "j": 348,
+      "abs_pos": 132200,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "scales",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 1,
+      "n_dec_w": 0
+     },
+     {
+      "trial": 995,
+      "rec": "L39_E156.bin",
+      "m": 1,
+      "j": 430,
+      "abs_pos": 90415,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "scales",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 1,
+      "n_dec_w": 0
+     },
+     {
+      "trial": 916,
+      "rec": "L39_E156.bin",
+      "m": 0,
+      "j": 158,
+      "abs_pos": 27063,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "scales",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 1,
+      "n_dec_w": 0
+     },
+     {
+      "trial": 1791,
+      "rec": "L39_E156.bin",
+      "m": 2,
+      "j": 630,
+      "abs_pos": 150056,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "scales",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 1,
+      "n_dec_w": 0
+     }
+    ],
+    "full_decoder_rows": [
+     {
+      "trial": 906,
+      "silent": false,
+      "full_mine_status": "rejected",
+      "full_mine_slab_equals_source": false,
+      "ceilref_status": "rejected: scale streams failed: 1",
+      "mine_incremental": "rejected",
+      "mine_ceilref_reject": null,
+      "consistent": true
+     }
+    ],
+    "seconds": 0.2
+   },
+   "TAILD": {
+    "checked": 5,
+    "agree": 5,
+    "silent_checked": 0,
+    "full_decoder_checked": 0,
+    "full_decoder_consistent": true,
+    "rows": [
+     {
+      "trial": 838,
+      "rec": "L00_E113.bin",
+      "m": 1,
+      "j": 663,
+      "abs_pos": 102188,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "scales",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 1,
+      "n_dec_w": 0
+     },
+     {
+      "trial": 1521,
+      "rec": "L00_E113.bin",
+      "m": 1,
+      "j": 316,
+      "abs_pos": 79820,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "scales",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 1,
+      "n_dec_w": 0
+     },
+     {
+      "trial": 1777,
+      "rec": "L39_E156.bin",
+      "m": 2,
+      "j": 426,
+      "abs_pos": 137116,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "scales",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 1,
+      "n_dec_w": 0
+     },
+     {
+      "trial": 387,
+      "rec": "L00_E113.bin",
+      "m": 0,
+      "j": 273,
+      "abs_pos": 30851,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "scales",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 1,
+      "n_dec_w": 0
+     },
+     {
+      "trial": 612,
+      "rec": "L39_E156.bin",
+      "m": 1,
+      "j": 224,
+      "abs_pos": 76180,
+      "path_WS_silent": false,
+      "path_R_status": "rejected",
+      "path_R_stage": "scales",
+      "path_R_silent": false,
+      "agree": true,
+      "n_dec_s": 1,
+      "n_dec_w": 0
+     }
+    ],
+    "full_decoder_rows": [],
+    "seconds": 0.1
+   }
+  }
+ },
+ "all_agree": true,
+ "full_consistent": true
+}

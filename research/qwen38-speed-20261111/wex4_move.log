@@ -1,0 +1,37 @@
+23:14:07 lock busy, waiting
+23:14:37 lock busy, waiting
+23:15:07 lock busy, waiting
+23:15:37 lock busy, waiting
+23:16:07 lock busy, waiting
+23:16:37 lock busy, waiting
+23:17:07 lock busy, waiting
+23:17:37 lock busy, waiting
+23:18:07 lock taken
+23:18:49 wex4_convert.py upgrade C:\kaira_wex\qwen38-mxfp4\q38_experts.wex --names qwen38 -> rc 0
+{'index_bytes': 26086592, 'file_bytes': 64251047936, 'added': 26091520, 'records': 24576}
+23:18:50 wex4.py info C:\kaira_wex\qwen38-mxfp4\q38_experts.wex -> rc 0
+WEX4 4.0  root db5389f699abb49a164a9e73d925b5b629b0ce6de430a553388ba3e1cae5c0df
+  file 64,251,047,936 B  index 26,086,592 B  blobs 2  records 24576  tensors 147456
+  decoded 64,172,851,200 B  stored 64,223,182,848 B  ratio 1.0008  codecs {0: 24576}
+23:18:50 size 64251047936 root ['WEX4 4.0  root db5389f699abb49a164a9e73d925b5b629b0ce6de430a553388ba3e1cae5c0df']
+23:21:50    p1-258 200 tok 14.78 tok/s 'This is a classic resource management failure in high-performance comp'
+23:21:50    p2-2k 30 tok 10.02 tok/s 'Run 23 had the highest decode speed of 11.84 tok/s with an RSS of 13.0'
+23:21:50    p3-turn1 8 tok 7.12 tok/s 'The E: drive is the largest.'
+23:21:50    p3-turn2 8 tok 7.64 tok/s 'The total capacity is 7 TB.'
+23:21:50    p3-turn3 14 tok 7.96 tok/s 'You mentioned the C: drive first, which is 1 TB.'
+23:21:50    marks {'WEX4 container': True, 'WEX mirror active': False, 'warmstart done': True} error None kill None
+23:22:29 wex4_convert.py upgrade U:\kaira_wex\qwen38-mxfp4\q38_experts.wex --names qwen38 -> rc 0
+{'index_bytes': 26086592, 'file_bytes': 64251047936, 'added': 26091520, 'records': 24576}
+23:22:29 wex4.py info U:\kaira_wex\qwen38-mxfp4\q38_experts.wex -> rc 0
+WEX4 4.0  root db5389f699abb49a164a9e73d925b5b629b0ce6de430a553388ba3e1cae5c0df
+  file 64,251,047,936 B  index 26,086,592 B  blobs 2  records 24576  tensors 147456
+  decoded 64,172,851,200 B  stored 64,223,182,848 B  ratio 1.0008  codecs {0: 24576}
+23:22:29 size 64251047936 root ['WEX4 4.0  root db5389f699abb49a164a9e73d925b5b629b0ce6de430a553388ba3e1cae5c0df']
+23:24:27    p1-258 200 tok 17.04 tok/s 'This is a classic resource management failure in high-performance comp'
+23:24:27    p2-2k 30 tok 10.77 tok/s 'Run 23 had the highest decode speed of 11.84 tok/s with an RSS of 13.0'
+23:24:27    p3-turn1 8 tok 9.01 tok/s 'The E: drive is the largest.'
+23:24:27    p3-turn2 8 tok 9.23 tok/s 'The total capacity is 7 TB.'
+23:24:27    p3-turn3 14 tok 8.88 tok/s 'You mentioned the C: drive first, which is 1 TB.'
+23:24:27    marks {'WEX4 container': True, 'WEX mirror active': True, 'warmstart done': True} error None kill None
+23:24:27 DONE: both copies are WEX4, 64251047936 bytes, root ['WEX4 4.0  root db5389f699abb49a164a9e73d925b5b629b0ce6de430a553388ba3e1cae5c0df']
+23:24:27 lock released

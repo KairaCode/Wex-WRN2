@@ -1,0 +1,17 @@
+{
+ "primary": "U:\\models\\Qwen3.8-Flash-Next-FP8",
+ "mirror": "O:\\KAIRA-storage\\Models\\Qwen3.8-Flash-Next-FP8",
+ "threads": 8,
+ "experts_per_side": 400,
+ "single": {
+  "seconds": 0.451,
+  "payload_gib_s": 4.056,
+  "ms_per_expert_wall": 1.129
+ },
+ "striped": {
+  "seconds": 1.01,
+  "payload_gib_s": 1.812,
+  "ms_per_expert_wall": 2.526
+ },
+ "speedup": 0.447
+}

@@ -1,0 +1,29 @@
+elapsed 0.2s
+elapsed 0.0s
+elapsed 0.0s
+sha256: C == hashlib on 203 lengths
+WBP1: 288 encodes byte-identical in C and Python, decoded exactly by both; skewed bytes 20480/32768 B
+container: 12 tensors (multi-tensor, split, zero-size, scalar, opaque dtype) exact; C and Python files identical (151552 B); index-first and index-last agree
+safetensors round trip (python codec): 2 files rebuilt byte-identical; 210865 B -> 159744 B
+safetensors round trip (C codec, 16 KiB parts): 2 files rebuilt byte-identical; 210865 B -> 180224 B
+tiny V4.1 model (3118984 B safetensors): raw experts 2916352 B, WNR3 2977792 B, WNR3-CZ 2781184 B; WNR3 records: 0 without CZ (the others fell back to raw), 48 with CZ, of 48 experts; non-CZ files rebuild byte-identical, CZ differs only in -0 nibbles
+upgrade tiny.wex: +49152 B (index 41456 B, 48 records), records untouched, legacy table reproduced, every expert decoded exactly, downgrade exact
+upgrade tiny_cz.wex: +49152 B (index 41520 B, 48 records), records untouched, legacy table reproduced, every expert decoded exactly, downgrade exact
+upgrade tiny2_cz.wex: +8192 B (index 1914 B, 2 records), records untouched, legacy table reproduced, every expert decoded exactly, downgrade exact
+non-CZ WNR3 in WEX4: 4 WNR3 records, 837992 B safetensors -> 729088 B, rebuilt byte-identical through the fast and the reference decoder
+engine loader: legacy table, flags, model and slab size from 3 upgraded containers; pinned root, table budget and first-read SHA-256 enforced; downgrade recovers a file whose header page is destroyed
+hostile files: 46 hand-made attacks rejected by C and Python; 3 forward-compatible variations accepted by both
+fuzz C [generic] any byte, hashes checked: 24743 mutations, 24614 rejected, 0 accepted with exact content, 0 accepted as a different valid file, 129 no-ops
+fuzz C [generic] compressed record bytes, SHA-256 off: 4948 mutations, 4921 rejected, 0 accepted with exact content, 0 accepted as a different valid file, 27 no-ops
+fuzz C [generic] header and index, hashes recomputed: 24743 mutations, 23784 rejected, 292 accepted with exact content, 288 accepted as a different valid file, 379 no-ops
+fuzz differential [generic]: 989 mutated files, C and Python agree on every verdict (52 accepted, same content digest)
+fuzz C [upgraded WNR3-CZ, 2 experts] any byte, hashes checked: 25000 mutations, 24849 rejected, 0 accepted with exact content, 0 accepted as a different valid file, 151 no-ops
+fuzz C [upgraded WNR3-CZ, 2 experts] compressed record bytes, SHA-256 off: 5000 mutations, 4977 rejected, 0 accepted with exact content, 0 accepted as a different valid file, 23 no-ops
+fuzz C [upgraded WNR3-CZ, 2 experts] header and index, hashes recomputed: 25000 mutations, 24190 rejected, 120 accepted with exact content, 313 accepted as a different valid file, 377 no-ops
+fuzz differential [upgraded WNR3-CZ, 2 experts]: 1000 mutated files, C and Python agree on every verdict (40 accepted, same content digest)
+fuzz C [tiny model, WNR3-CZ] any byte, hashes checked: 1348 mutations, 1341 rejected, 0 accepted with exact content, 0 accepted as a different valid file, 7 no-ops
+fuzz C [tiny model, WNR3-CZ] compressed record bytes, SHA-256 off: 269 mutations, 267 rejected, 0 accepted with exact content, 0 accepted as a different valid file, 2 no-ops
+fuzz C [tiny model, WNR3-CZ] header and index, hashes recomputed: 1348 mutations, 1002 rejected, 320 accepted with exact content, 16 accepted as a different valid file, 10 no-ops
+fuzz differential [tiny model, WNR3-CZ]: 53 mutated files, C and Python agree on every verdict (7 accepted, same content digest)
+fuzz total: 112399 C mutations (each through the fast and the reference WNR3 decoder, same verdicts), 0 silent corruptions; 105 s
+WEX4 prototype: all tests passed

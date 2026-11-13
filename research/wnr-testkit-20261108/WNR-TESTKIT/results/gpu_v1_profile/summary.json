@@ -1,0 +1,73 @@
+{
+ "EXPERIMENTAL": true,
+ "rounds": 41,
+ "nts": "32,64,128,256",
+ "opts": "lb,out4",
+ "t4enc": "<KAIRA>\\lab\\wnr-testkit-20261108\\wnr-testkit\\results\\gpu_bench\\enc",
+ "env": {
+  "os": "Windows-11-10.0.26300-SP0",
+  "machine": "AMD64",
+  "cpu": "AMD Ryzen 9 7950X3D 16-Core Processor",
+  "cpu_count": 32,
+  "python": "3.14.8",
+  "numpy": "2.5.4",
+  "time": "2026-11-08T03:46:23",
+  "cupy": "14.2.0",
+  "gpu": {
+   "name": "NVIDIA GeForce RTX 5090",
+   "cc": "12.0",
+   "sms": 170,
+   "clock_khz_max": 2467000,
+   "mem_bytes": 34162343936,
+   "smem_per_sm": 102400,
+   "smem_per_block_optin": 101376,
+   "regs_per_sm": 65536,
+   "l2_bytes": 100663296
+  },
+  "cuda_driver": 13050,
+  "cuda_runtime": 12090,
+  "nvrtc": "12.9",
+  "nvidia_smi": "NVIDIA GeForce RTX 5090, 621.01, 00000000:01:00.0, 600.00 W, 3090 MHz, 14001 MHz"
+ },
+ "nvrtc_arch": "-arch=sm_120",
+ "bench_s": 128.6,
+ "flags": {
+  "h32_gpu_pass": true,
+  "scale_all_byte_exact": true,
+  "weight_all_exact": true,
+  "original_bytes": {
+   "files": [
+    "L04_E038.bin",
+    "L00_E097.bin",
+    "L10_E015.bin",
+    "L20_E005.bin",
+    "L30_E002.bin",
+    "L39_E156.bin",
+    "L15_E025.bin",
+    "L25_E000.bin"
+   ],
+   "sha256_ok": 8,
+   "eq_encoder_raw": true,
+   "eq_encoder_scales": true,
+   "eq_team4_common_raw": true,
+   "eq_team4_common_scales": true
+  },
+  "coded_scale_inputs_unchanged": {
+   "v1": true,
+   "t4c": true,
+   "t4o": true
+  }
+ },
+ "v1summ_exit": 0,
+ "files": [
+  "bench_v1.json",
+  "bench_v1_table.txt",
+  "v1enc.log",
+  "v1bench.log",
+  "gpu_v1_profile.log"
+ ],
+ "reference_3070": "tests/gpu/ref/v1_3070/bench_v1_table.txt (team 5, earlier code version)",
+ "test": "gpu_v1_profile",
+ "status": "DONE",
+ "short": "EXPERIMENTAL untested: weight_all_exact True, scales exact True, h32 True (NVIDIA GeForce RTX 5090)"
+}

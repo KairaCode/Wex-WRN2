@@ -1,0 +1,316 @@
+{
+ "env": {
+  "os": "Windows-11-10.0.26300-SP0",
+  "machine": "AMD64",
+  "cpu": "AMD Ryzen 9 7950X3D 16-Core Processor",
+  "cpu_count": 32,
+  "python": "3.14.8",
+  "numpy": "2.5.4",
+  "time": "2026-11-08T03:11:29",
+  "cupy": "14.2.0",
+  "gpu": {
+   "name": "NVIDIA GeForce RTX 5090",
+   "cc": "12.0",
+   "sms": 170,
+   "clock_khz_max": 2467000,
+   "mem_bytes": 34162343936,
+   "smem_per_sm": 102400,
+   "smem_per_block_optin": 101376,
+   "regs_per_sm": 65536,
+   "l2_bytes": 100663296
+  },
+  "cuda_driver": 13050,
+  "cuda_runtime": 12090,
+  "nvrtc": "12.9",
+  "nvidia_smi": "NVIDIA GeForce RTX 5090, 621.01, 00000000:01:00.0, 600.00 W, 3090 MHz, 14001 MHz"
+ },
+ "checks": {
+  "real_kernels_0_differing_bits": true,
+  "reruns_deterministic": true,
+  "all_outputs_written": true,
+  "positive_controls_fire": true,
+  "negative_control_fires": true,
+  "tc_fp16_gemm_0_diff": true,
+  "mma_micro_0_diff": true
+ },
+ "experts": 160,
+ "differing_bits_per_real_kernel": {
+  "mv_fp4_grouped<1>": 0,
+  "mv_fp4_grouped<2>": 0,
+  "mv_fp4_grouped<4>": 0,
+  "mv_fp4_grouped<8>": 0,
+  "mv_fp4_expert_major<4>_T4": 0,
+  "mv<4>": 0,
+  "mv_rows<4,4>": 0,
+  "mv_rows<4,16>": 0,
+  "mm_batch<4>_T4": 0,
+  "v4f_dot_fp4(warp/row)": 0
+ },
+ "negctl_synthetic_signzero_mismatches": 10240,
+ "tc_fp16_gemm": {
+  "matrices": 320,
+  "outputs": 1310720,
+  "bitdiff": 0,
+  "positive_control_bitdiff": 8,
+  "layout_max_rel_err": 3.6129183627053862e-06
+ },
+ "sm120_mxf4_EXPERIMENTAL": {
+  "status": "EXPERIMENTAL, ran",
+  "arch": "sm_120a",
+  "matrices": 640,
+  "outputs": 2621440,
+  "bitdiff": 0,
+  "positive_control_bitdiff": 8,
+  "nan_outputs": 0
+ },
+ "compare_3070_team2": {
+  "real_matrices/mv_fp4_grouped<1>": {
+   "compared_here": 14008320,
+   "compared_3070": 14008320,
+   "mismatch_here": 0,
+   "mismatch_3070": 0,
+   "zero_outputs_here": 3295547,
+   "zero_outputs_3070": 3295547
+  },
+  "real_matrices/mv_fp4_grouped<2>": {
+   "compared_here": 14008320,
+   "compared_3070": 14008320,
+   "mismatch_here": 0,
+   "mismatch_3070": 0,
+   "zero_outputs_here": 3295547,
+   "zero_outputs_3070": 3295547
+  },
+  "real_matrices/mv_fp4_grouped<4>": {
+   "compared_here": 14008320,
+   "compared_3070": 14008320,
+   "mismatch_here": 0,
+   "mismatch_3070": 0,
+   "zero_outputs_here": 3295547,
+   "zero_outputs_3070": 3295547
+  },
+  "real_matrices/mv_fp4_grouped<8>": {
+   "compared_here": 14008320,
+   "compared_3070": 14008320,
+   "mismatch_here": 0,
+   "mismatch_3070": 0,
+   "zero_outputs_here": 3295547,
+   "zero_outputs_3070": 3295547
+  },
+  "real_matrices/mv_fp4_expert_major<4>_T4": {
+   "compared_here": 56033280,
+   "compared_3070": 56033280,
+   "mismatch_here": 0,
+   "mismatch_3070": 0,
+   "zero_outputs_here": 14556082,
+   "zero_outputs_3070": 14556082
+  },
+  "real_matrices/mv<4>": {
+   "compared_here": 14008320,
+   "compared_3070": 14008320,
+   "mismatch_here": 0,
+   "mismatch_3070": 0,
+   "zero_outputs_here": 3295547,
+   "zero_outputs_3070": 3295547
+  },
+  "real_matrices/mv_rows<4,4>": {
+   "compared_here": 14008320,
+   "compared_3070": 14008320,
+   "mismatch_here": 0,
+   "mismatch_3070": 0,
+   "zero_outputs_here": 3295547,
+   "zero_outputs_3070": 3295547
+  },
+  "real_matrices/mv_rows<4,16>": {
+   "compared_here": 14008320,
+   "compared_3070": 14008320,
+   "mismatch_here": 0,
+   "mismatch_3070": 0,
+   "zero_outputs_here": 3295547,
+   "zero_outputs_3070": 3295547
+  },
+  "real_matrices/mm_batch<4>_T4": {
+   "compared_here": 56033280,
+   "compared_3070": 56033280,
+   "mismatch_here": 0,
+   "mismatch_3070": 0,
+   "zero_outputs_here": 14556083,
+   "zero_outputs_3070": 14556083
+  },
+  "real_matrices/v4f_dot_fp4(warp/row)": {
+   "compared_here": 14008320,
+   "compared_3070": 14008320,
+   "mismatch_here": 0,
+   "mismatch_3070": 0,
+   "zero_outputs_here": 3295547,
+   "zero_outputs_3070": 3295547
+  },
+  "synthetic_zero_rows/mv_fp4_grouped<1>": {
+   "compared_here": 184320,
+   "compared_3070": 184320,
+   "mismatch_here": 0,
+   "mismatch_3070": 0,
+   "zero_outputs_here": 93384,
+   "zero_outputs_3070": 93384
+  },
+  "synthetic_zero_rows/mv_fp4_grouped<2>": {
+   "compared_here": 184320,
+   "compared_3070": 184320,
+   "mismatch_here": 0,
+   "mismatch_3070": 0,
+   "zero_outputs_here": 93384,
+   "zero_outputs_3070": 93384
+  },
+  "synthetic_zero_rows/mv_fp4_grouped<4>": {
+   "compared_here": 184320,
+   "compared_3070": 184320,
+   "mismatch_here": 0,
+   "mismatch_3070": 0,
+   "zero_outputs_here": 93384,
+   "zero_outputs_3070": 93384
+  },
+  "synthetic_zero_rows/mv_fp4_grouped<8>": {
+   "compared_here": 184320,
+   "compared_3070": 184320,
+   "mismatch_here": 0,
+   "mismatch_3070": 0,
+   "zero_outputs_here": 93384,
+   "zero_outputs_3070": 93384
+  },
+  "synthetic_zero_rows/mv_fp4_expert_major<4>_T4": {
+   "compared_here": 737280,
+   "compared_3070": 737280,
+   "mismatch_here": 0,
+   "mismatch_3070": 0,
+   "zero_outputs_here": 382552,
+   "zero_outputs_3070": 382552
+  },
+  "synthetic_zero_rows/mv<4>": {
+   "compared_here": 184320,
+   "compared_3070": 184320,
+   "mismatch_here": 0,
+   "mismatch_3070": 0,
+   "zero_outputs_here": 93384,
+   "zero_outputs_3070": 93384
+  },
+  "synthetic_zero_rows/mv_rows<4,4>": {
+   "compared_here": 184320,
+   "compared_3070": 184320,
+   "mismatch_here": 0,
+   "mismatch_3070": 0,
+   "zero_outputs_here": 93384,
+   "zero_outputs_3070": 93384
+  },
+  "synthetic_zero_rows/mv_rows<4,16>": {
+   "compared_here": 184320,
+   "compared_3070": 184320,
+   "mismatch_here": 0,
+   "mismatch_3070": 0,
+   "zero_outputs_here": 93384,
+   "zero_outputs_3070": 93384
+  },
+  "synthetic_zero_rows/mm_batch<4>_T4": {
+   "compared_here": 737280,
+   "compared_3070": 737280,
+   "mismatch_here": 0,
+   "mismatch_3070": 0,
+   "zero_outputs_here": 382552,
+   "zero_outputs_3070": 382552
+  },
+  "synthetic_zero_rows/v4f_dot_fp4(warp/row)": {
+   "compared_here": 184320,
+   "compared_3070": 184320,
+   "mismatch_here": 0,
+   "mismatch_3070": 0,
+   "zero_outputs_here": 93384,
+   "zero_outputs_3070": 93384
+  },
+  "positive_control/mv_fp4_grouped<1>": {
+   "compared_here": 2304,
+   "compared_3070": 2304,
+   "mismatch_here": 1,
+   "mismatch_3070": 1,
+   "zero_outputs_here": 0,
+   "zero_outputs_3070": 0
+  },
+  "positive_control/mv_fp4_grouped<2>": {
+   "compared_here": 2304,
+   "compared_3070": 2304,
+   "mismatch_here": 1,
+   "mismatch_3070": 1,
+   "zero_outputs_here": 0,
+   "zero_outputs_3070": 0
+  },
+  "positive_control/mv_fp4_grouped<4>": {
+   "compared_here": 2304,
+   "compared_3070": 2304,
+   "mismatch_here": 1,
+   "mismatch_3070": 1,
+   "zero_outputs_here": 0,
+   "zero_outputs_3070": 0
+  },
+  "positive_control/mv_fp4_grouped<8>": {
+   "compared_here": 2304,
+   "compared_3070": 2304,
+   "mismatch_here": 1,
+   "mismatch_3070": 1,
+   "zero_outputs_here": 0,
+   "zero_outputs_3070": 0
+  },
+  "positive_control/mv_fp4_expert_major<4>_T4": {
+   "compared_here": 9216,
+   "compared_3070": 9216,
+   "mismatch_here": 4,
+   "mismatch_3070": 4,
+   "zero_outputs_here": 0,
+   "zero_outputs_3070": 0
+  },
+  "positive_control/mv<4>": {
+   "compared_here": 2304,
+   "compared_3070": 2304,
+   "mismatch_here": 1,
+   "mismatch_3070": 1,
+   "zero_outputs_here": 0,
+   "zero_outputs_3070": 0
+  },
+  "positive_control/mv_rows<4,4>": {
+   "compared_here": 2304,
+   "compared_3070": 2304,
+   "mismatch_here": 1,
+   "mismatch_3070": 1,
+   "zero_outputs_here": 0,
+   "zero_outputs_3070": 0
+  },
+  "positive_control/mv_rows<4,16>": {
+   "compared_here": 2304,
+   "compared_3070": 2304,
+   "mismatch_here": 1,
+   "mismatch_3070": 1,
+   "zero_outputs_here": 0,
+   "zero_outputs_3070": 0
+  },
+  "positive_control/mm_batch<4>_T4": {
+   "compared_here": 9216,
+   "compared_3070": 9216,
+   "mismatch_here": 4,
+   "mismatch_3070": 4,
+   "zero_outputs_here": 0,
+   "zero_outputs_3070": 0
+  },
+  "positive_control/v4f_dot_fp4(warp/row)": {
+   "compared_here": 2304,
+   "compared_3070": 2304,
+   "mismatch_here": 1,
+   "mismatch_3070": 1,
+   "zero_outputs_here": 0,
+   "zero_outputs_3070": 0
+  }
+ },
+ "files": [
+  "zero_bittest.json",
+  "zero_bittest.log"
+ ],
+ "not_covered_here": "DeepGEMM sm120 FP4, cuBLASLt MXFP8 (tc_fp4_matvec), Vulkan, end-to-end per-step logits memcmp: see tests/gpu/CHECKLIST-kaira-gpu-paths.md",
+ "test": "zero_bittest",
+ "status": "PASS",
+ "short": "160 experts, 10 real kernels: 0 differing bits; pos/neg controls True/True; tc f16 diff 0; mxf4 0 (NVIDIA GeForce RTX 5090)"
+}

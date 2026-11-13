@@ -1,0 +1,452 @@
+lock: waiting 03:23:21 (held by: ﻿lane G (G2 review: REAP determinism repeats + A3, ~45 min) 2026-11-08T03:23:08)
+lock: waiting 03:38:22 (held by: ﻿lane G (G2 review: REAP determinism repeats + A3, ~45 min) 2026-11-08T03:23:08)
+lock: taken 03:46:22 as: wnr-testkit gpu_v1_profile EXPERIMENTAL (GPU ~20-40 min) 2026-11-08T03:23:21 pid20808
+[    0.0 s] *** EXPERIMENTAL gpu_v1_profile (team 5 gpu-v1 partial work; this code version never completed a run) ***
+[    0.0 s] team-4 baseline encode dir <KAIRA>\lab\wnr-testkit-20261108\wnr-testkit\results\gpu_bench\enc (verified cache)
+[    0.1 s] experts ok (sha256 verified): 8 sample_dir <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\data\v41-sample
+<KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\venv\Lib\site-packages\cupy\_environment.py:286: UserWarning: CUDA path could not be detected. Set CUDA_PATH environment variable if CuPy fails to load.
+  warnings.warn(
+[    1.0 s] run <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\venv\Scripts\python.exe -I -X utf8 <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\tests\gpu\src_v1\v1enc.py <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\results\gpu_v1_profile\v1enc
+{
+ "pick": [
+  17,
+  0,
+  40,
+  80,
+  120,
+  159,
+  60,
+  100
+ ],
+ "anchor": 120,
+ "model": "ceilref_even_model.npz:fg_a0_K0_c0",
+ "wnm3": {
+  "bytes": 29468,
+  "index_sha256_ok": true,
+  "model_id": "0x08930756",
+  "blob_sha256": "1313b1ee46cb64ae626f87d63ff7f06d9cee0c32d899a2b37c3e2c134b67acee"
+ },
+ "h32_self_test": {
+  "smhasher_verification": "0xB0F57EE3",
+  "draft01_vectors": {
+   "H32(\"\",0)": "0x00000000",
+   "H32(\"\",seed)": "0xE7F741F1",
+   "H32(00..0F,seed)": "0x31CE0919",
+   "weight h23": "0x0C48D3",
+   "scale h23": "0x3C0999"
+  },
+  "vectorised_eq_scalar": "64/64",
+  "ceil_bit_vector_weight_h23": "0x038F11"
+ }
+}
+L04_E038.bin elapsed 4.1
+L00_E097.bin elapsed 8.2
+L10_E015.bin elapsed 12.5
+L20_E005.bin elapsed 16.6
+L30_E002.bin elapsed 20.7
+L39_E156.bin elapsed 24.8
+L15_E025.bin elapsed 29.0
+L25_E000.bin elapsed 33.2
+{
+ "record_sizes_spec_layout_64B_header": {
+  "CEIL 0x10 (u16 lengths, x0=L)": {
+   "used_mean": 16575113.25,
+   "total_mean_aligned4096": 16577536.0,
+   "of_raw_used": 0.8816249473422182
+  },
+  "CEIL|HASH 0x18 (u16)": {
+   "used_mean": 16576477.375,
+   "total_mean_aligned4096": 16578560.0,
+   "of_raw_used": 0.8816975047126056
+  },
+  "CEIL|LENC 0x14": {
+   "used_mean": 16551834.25,
+   "total_mean_aligned4096": 16553984.0,
+   "of_raw_used": 0.8803867448129425
+  },
+  "CEIL|LENC|HASH 0x1C (v1)": {
+   "used_mean": 16553174.625,
+   "total_mean_aligned4096": 16555520.0,
+   "of_raw_used": 0.880458038928462
+  }
+ },
+ "hash_cost_bytes_per_record": {
+  "H18_minus_G_payload": 1364.125,
+  "H1C_minus_G_payload": 1352.375,
+  "per_stream_H1C": 0.06956661522633745
+ },
+ "lenc_LS_mean": {
+  "G14": 15601.0,
+  "H1C": 15589.0
+ }
+}
+[   37.1 s] run <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\venv\Scripts\python.exe -I -X utf8 <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\tests\gpu\src_v1\v1bench.py <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\results\gpu_v1_profile\v1enc <KAIRA>\lab\wnr-testkit-20261108\wnr-testkit\results\gpu_bench\enc <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\results\gpu_v1_profile\bench_v1.json 41 32,64,128,256 lb,out4
+<KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\venv\Lib\site-packages\cupy\_environment.py:286: UserWarning: CUDA path could not be detected. Set CUDA_PATH environment variable if CuPy fails to load.
+  warnings.warn(
+{"gpu": "NVIDIA GeForce RTX 5090", "sms": 170, "clock_khz_max": 2467000, "smem_per_sm": 102400, "regs_per_sm": 65536, "driver": 13050, "runtime": 12090, "cupy": "14.2.0", "rounds": 41, "nts": [32, 64, 128, 256], "opts": ["lb", "out4"]} 1035 MHz, 17001 MHz, 2 %, 63.34 W, 31.05
+{'files': ['L04_E038.bin', 'L00_E097.bin', 'L10_E015.bin', 'L20_E005.bin', 'L30_E002.bin', 'L39_E156.bin', 'L15_E025.bin', 'L25_E000.bin'], 'sha256_ok': 8, 'eq_encoder_raw': True, 'eq_encoder_scales': True, 'eq_team4_common_raw': True, 'eq_team4_common_scales': True}
+compile 43.48730993270874
+h32 gpu {'empty_seed0': '0x00000000', 'empty_seedWNR3': '0xE7F741F1', 'bytes00_0F': '0x31CE0919', 'weight_vector_h23': '0x0C48D3', 'random_4096x528B_gpu_eq_numpy': 4096, 'pass': True}
+sdec S_t4o 32 {'kernel': 'sdec<32>', 'nt': 32, 'regs': 34, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec S_t4c 32 {'kernel': 'sdec<32>', 'nt': 32, 'regs': 34, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SG 32 {'kernel': 'sdec3<32,0,0,0,0>', 'nt': 32, 'regs': 35, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SH 32 {'kernel': 'sdec3<32,1,0,0,0>', 'nt': 32, 'regs': 35, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SL 32 {'kernel': 'sdec3<32,0,1,0,0>', 'nt': 32, 'regs': 60, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SHL 32 {'kernel': 'sdec3<32,1,1,0,0>', 'nt': 32, 'regs': 60, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SHLd 32 {'kernel': 'sdec3<32,1,1,1,0>', 'nt': 32, 'regs': 60, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SGd 32 {'kernel': 'sdec3<32,0,0,1,0>', 'nt': 32, 'regs': 37, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SLd 32 {'kernel': 'sdec3<32,0,1,1,0>', 'nt': 32, 'regs': 60, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SG2 32 {'kernel': 'sdec3<32,0,0,2,0>', 'nt': 32, 'regs': 47, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SG3 32 {'kernel': 'sdec3<32,0,0,3,0>', 'nt': 32, 'regs': 45, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SG4 32 {'kernel': 'sdec3<32,0,0,4,0>', 'nt': 32, 'regs': 47, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SHL2 32 {'kernel': 'sdec3<32,1,1,2,0>', 'nt': 32, 'regs': 60, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SHL3 32 {'kernel': 'sdec3<32,1,1,3,0>', 'nt': 32, 'regs': 60, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SHL4 32 {'kernel': 'sdec3<32,1,1,4,0>', 'nt': 32, 'regs': 60, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec timing 32 S_t4o {'m1': 36.0, 'm3': 36.0, 'm24': 60.6, '8streams': 153.3} {'m1': 1.0018, 'm3': 1.0009, 'm24': 1.1569, '8streams': 0.9691}
+sdec timing 32 S_t4c {'m1': 35.6, 'm3': 36.0, 'm24': 58.5, '8streams': 151.6} {'m1': 0.992, 'm3': 0.9991, 'm24': 1.1172, '8streams': 0.9987}
+sdec timing 32 SG {'m1': 36.0, 'm3': 36.0, 'm24': 52.4, '8streams': 156.4} {'m1': 1, 'm3': 1, 'm24': 1, '8streams': 1}
+sdec timing 32 SH {'m1': 36.0, 'm3': 36.0, 'm24': 56.5, '8streams': 183.2} {'m1': 1.0027, 'm3': 1.0045, 'm24': 1.0782, '8streams': 1.1094}
+sdec timing 32 SL {'m1': 36.0, 'm3': 38.0, 'm24': 54.4, '8streams': 135.4} {'m1': 1.0027, 'm3': 1.0552, 'm24': 1.0391, '8streams': 0.9456}
+sdec timing 32 SHL {'m1': 38.0, 'm3': 38.0, 'm24': 54.4, '8streams': 162.1} {'m1': 1.0586, 'm3': 1.0578, 'm24': 1.0391, '8streams': 1.0069}
+sdec timing 32 SHLd {'m1': 38.0, 'm3': 38.0, 'm24': 58.5, '8streams': 157.1} {'m1': 1.0597, 'm3': 1.0607, 'm24': 1.1174, '8streams': 0.9954}
+sdec timing 32 SGd {'m1': 36.0, 'm3': 38.0, 'm24': 56.5, '8streams': 174.5} {'m1': 1.0018, 'm3': 1.0586, 'm24': 1.08, '8streams': 1.1086}
+sdec timing 32 SLd {'m1': 40.1, 'm3': 40.0, 'm24': 58.5, '8streams': 164.7} {'m1': 1.1157, 'm3': 1.1128, 'm24': 1.118, '8streams': 1.0222}
+sdec timing 32 SG2 {'m1': 40.0, 'm3': 40.1, 'm24': 58.5, '8streams': 166.8} {'m1': 1.112, 'm3': 1.1137, 'm24': 1.1167, '8streams': 1.0766}
+sdec timing 32 SG3 {'m1': 34.0, 'm3': 34.0, 'm24': 44.2, '8streams': 158.2} {'m1': 0.9439, 'm3': 0.9449, 'm24': 0.8428, '8streams': 0.955}
+sdec timing 32 SG4 {'m1': 36.0, 'm3': 36.0, 'm24': 46.2, '8streams': 165.4} {'m1': 1.0009, 'm3': 1.0018, 'm24': 0.8822, '8streams': 1.0266}
+sdec timing 32 SHL2 {'m1': 42.1, 'm3': 42.1, 'm24': 60.6, '8streams': 174.8} {'m1': 1.1716, 'm3': 1.1724, 'm24': 1.1557, '8streams': 1.109}
+sdec timing 32 SHL3 {'m1': 36.0, 'm3': 36.0, 'm24': 46.2, '8streams': 161.0} {'m1': 1.0009, 'm3': 1.0009, 'm24': 0.8822, '8streams': 0.9238}
+sdec timing 32 SHL4 {'m1': 38.0, 'm3': 38.0, 'm24': 46.3, '8streams': 163.5} {'m1': 1.0571, 'm3': 1.0577, 'm24': 0.884, '8streams': 1.0291}
+sdec S_t4o 64 {'kernel': 'sdec<64>', 'nt': 64, 'regs': 34, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec S_t4c 64 {'kernel': 'sdec<64>', 'nt': 64, 'regs': 34, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SG 64 {'kernel': 'sdec3<64,0,0,0,0>', 'nt': 64, 'regs': 34, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SH 64 {'kernel': 'sdec3<64,1,0,0,0>', 'nt': 64, 'regs': 35, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SL 64 {'kernel': 'sdec3<64,0,1,0,0>', 'nt': 64, 'regs': 73, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SHL 64 {'kernel': 'sdec3<64,1,1,0,0>', 'nt': 64, 'regs': 73, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SHLd 64 {'kernel': 'sdec3<64,1,1,1,0>', 'nt': 64, 'regs': 71, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SGd 64 {'kernel': 'sdec3<64,0,0,1,0>', 'nt': 64, 'regs': 37, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SLd 64 {'kernel': 'sdec3<64,0,1,1,0>', 'nt': 64, 'regs': 71, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SG2 64 {'kernel': 'sdec3<64,0,0,2,0>', 'nt': 64, 'regs': 46, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SG3 64 {'kernel': 'sdec3<64,0,0,3,0>', 'nt': 64, 'regs': 45, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SG4 64 {'kernel': 'sdec3<64,0,0,4,0>', 'nt': 64, 'regs': 48, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SHL2 64 {'kernel': 'sdec3<64,1,1,2,0>', 'nt': 64, 'regs': 71, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SHL3 64 {'kernel': 'sdec3<64,1,1,3,0>', 'nt': 64, 'regs': 73, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SHL4 64 {'kernel': 'sdec3<64,1,1,4,0>', 'nt': 64, 'regs': 75, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec timing 64 S_t4o {'m1': 38.0, 'm3': 38.0, 'm24': 62.7, '8streams': 148.4} {'m1': 1.054, 'm3': 1.0, 'm24': 1.2301, '8streams': 0.9791}
+sdec timing 64 S_t4c {'m1': 38.0, 'm3': 38.0, 'm24': 58.5, '8streams': 133.0} {'m1': 1.055, 'm3': 1.0, 'm24': 1.1212, '8streams': 0.8885}
+sdec timing 64 SG {'m1': 36.0, 'm3': 38.0, 'm24': 52.3, '8streams': 156.6} {'m1': 1, 'm3': 1, 'm24': 1, '8streams': 1}
+sdec timing 64 SH {'m1': 38.0, 'm3': 40.1, 'm24': 56.4, '8streams': 166.3} {'m1': 1.0542, 'm3': 1.0539, 'm24': 1.0801, '8streams': 1.0652}
+sdec timing 64 SL {'m1': 40.0, 'm3': 40.1, 'm24': 54.4, '8streams': 143.2} {'m1': 1.0632, 'm3': 1.0541, 'm24': 1.0416, '8streams': 0.9163}
+sdec timing 64 SHL {'m1': 40.1, 'm3': 40.1, 'm24': 54.4, '8streams': 159.0} {'m1': 1.112, 'm3': 1.0556, 'm24': 1.048, '8streams': 1.0335}
+sdec timing 64 SHLd {'m1': 44.2, 'm3': 44.2, 'm24': 58.5, '8streams': 146.5} {'m1': 1.2256, 'm3': 1.1613, 'm24': 1.1186, '8streams': 0.9967}
+sdec timing 64 SGd {'m1': 42.1, 'm3': 44.1, 'm24': 56.4, '8streams': 145.0} {'m1': 1.1674, 'm3': 1.1581, 'm24': 1.0809, '8streams': 0.9906}
+sdec timing 64 SLd {'m1': 46.2, 'm3': 46.2, 'm24': 58.5, '8streams': 151.9} {'m1': 1.2589, 'm3': 1.2155, 'm24': 1.1199, '8streams': 1.0496}
+sdec timing 64 SG2 {'m1': 42.1, 'm3': 42.1, 'm24': 56.4, '8streams': 168.2} {'m1': 1.1661, 'm3': 1.1084, 'm24': 1.0813, '8streams': 1.0692}
+sdec timing 64 SG3 {'m1': 35.8, 'm3': 36.0, 'm24': 44.2, '8streams': 160.3} {'m1': 0.947, 'm3': 0.9461, 'm24': 0.8452, '8streams': 0.9955}
+sdec timing 64 SG4 {'m1': 38.9, 'm3': 38.0, 'm24': 46.1, '8streams': 169.3} {'m1': 1.0606, 'm3': 1.0, 'm24': 0.8826, '8streams': 1.0537}
+sdec timing 64 SHL2 {'m1': 44.2, 'm3': 44.2, 'm24': 58.6, '8streams': 160.6} {'m1': 1.226, 'm3': 1.1609, 'm24': 1.1428, '8streams': 0.9775}
+sdec timing 64 SHL3 {'m1': 38.0, 'm3': 38.0, 'm24': 46.0, '8streams': 134.4} {'m1': 1.0533, 'm3': 1.0, 'm24': 0.8809, '8streams': 0.8992}
+sdec timing 64 SHL4 {'m1': 42.1, 'm3': 42.1, 'm24': 46.2, '8streams': 162.2} {'m1': 1.1664, 'm3': 1.1069, 'm24': 0.8839, '8streams': 1.0019}
+sdec S_t4o 128 {'kernel': 'sdec<128>', 'nt': 128, 'regs': 33, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec S_t4c 128 {'kernel': 'sdec<128>', 'nt': 128, 'regs': 33, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SG 128 {'kernel': 'sdec3<128,0,0,0,0>', 'nt': 128, 'regs': 35, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SH 128 {'kernel': 'sdec3<128,1,0,0,0>', 'nt': 128, 'regs': 35, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SL 128 {'kernel': 'sdec3<128,0,1,0,0>', 'nt': 128, 'regs': 75, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SHL 128 {'kernel': 'sdec3<128,1,1,0,0>', 'nt': 128, 'regs': 75, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SHLd 128 {'kernel': 'sdec3<128,1,1,1,0>', 'nt': 128, 'regs': 71, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SGd 128 {'kernel': 'sdec3<128,0,0,1,0>', 'nt': 128, 'regs': 37, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SLd 128 {'kernel': 'sdec3<128,0,1,1,0>', 'nt': 128, 'regs': 71, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SG2 128 {'kernel': 'sdec3<128,0,0,2,0>', 'nt': 128, 'regs': 46, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SG3 128 {'kernel': 'sdec3<128,0,0,3,0>', 'nt': 128, 'regs': 46, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SG4 128 {'kernel': 'sdec3<128,0,0,4,0>', 'nt': 128, 'regs': 48, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SHL2 128 {'kernel': 'sdec3<128,1,1,2,0>', 'nt': 128, 'regs': 71, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SHL3 128 {'kernel': 'sdec3<128,1,1,3,0>', 'nt': 128, 'regs': 75, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SHL4 128 {'kernel': 'sdec3<128,1,1,4,0>', 'nt': 128, 'regs': 75, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec timing 128 S_t4o {'m1': 50.3, 'm3': 50.3, 'm24': 60.6, '8streams': 163.0} {'m1': 1.0418, 'm3': 1.0411, 'm24': 1.204, '8streams': 0.9073}
+sdec timing 128 S_t4c {'m1': 50.2, 'm3': 50.3, 'm24': 56.5, '8streams': 152.7} {'m1': 1.0397, 'm3': 1.041, 'm24': 1.1221, '8streams': 0.9026}
+sdec timing 128 SG {'m1': 48.3, 'm3': 48.3, 'm24': 50.3, '8streams': 171.1} {'m1': 1, 'm3': 1, 'm24': 1, '8streams': 1}
+sdec timing 128 SH {'m1': 48.3, 'm3': 50.3, 'm24': 54.4, '8streams': 172.4} {'m1': 1.0007, 'm3': 1.0423, 'm24': 1.0814, '8streams': 0.9841}
+sdec timing 128 SL {'m1': 50.3, 'm3': 50.3, 'm24': 51.4, '8streams': 165.3} {'m1': 1.0417, 'm3': 1.0417, 'm24': 1.0172, '8streams': 0.9534}
+sdec timing 128 SHL {'m1': 52.4, 'm3': 52.4, 'm24': 52.4, '8streams': 172.7} {'m1': 1.0847, 'm3': 1.0836, 'm24': 1.0413, '8streams': 1.026}
+sdec timing 128 SHLd {'m1': 54.4, 'm3': 56.4, 'm24': 58.5, '8streams': 182.5} {'m1': 1.1279, 'm3': 1.1667, 'm24': 1.1626, '8streams': 1.0808}
+sdec timing 128 SGd {'m1': 50.3, 'm3': 52.4, 'm24': 54.4, '8streams': 172.4} {'m1': 1.0424, 'm3': 1.0829, 'm24': 1.0814, '8streams': 0.9503}
+sdec timing 128 SLd {'m1': 52.4, 'm3': 54.0, 'm24': 56.5, '8streams': 171.4} {'m1': 1.0855, 'm3': 1.0863, 'm24': 1.1221, '8streams': 0.9529}
+sdec timing 128 SG2 {'m1': 53.4, 'm3': 54.4, 'm24': 56.5, '8streams': 170.3} {'m1': 1.1128, 'm3': 1.1263, 'm24': 1.1227, '8streams': 0.9137}
+sdec timing 128 SG3 {'m1': 40.1, 'm3': 42.1, 'm24': 42.1, '8streams': 145.0} {'m1': 0.831, 'm3': 0.8714, 'm24': 0.8379, '8streams': 0.8547}
+sdec timing 128 SG4 {'m1': 40.1, 'm3': 43.9, 'm24': 44.1, '8streams': 163.4} {'m1': 0.8305, 'm3': 0.8818, 'm24': 0.8777, '8streams': 0.9109}
+sdec timing 128 SHL2 {'m1': 56.5, 'm3': 58.4, 'm24': 58.5, '8streams': 201.7} {'m1': 1.1707, 'm3': 1.2087, 'm24': 1.1623, '8streams': 1.1537}
+sdec timing 128 SHL3 {'m1': 42.2, 'm3': 44.1, 'm24': 44.2, '8streams': 145.4} {'m1': 0.874, 'm3': 0.9132, 'm24': 0.8779, '8streams': 0.8167}
+sdec timing 128 SHL4 {'m1': 44.2, 'm3': 44.2, 'm24': 46.0, '8streams': 159.2} {'m1': 0.915, 'm3': 0.9134, 'm24': 0.9117, '8streams': 0.9334}
+sdec S_t4o 256 {'kernel': 'sdec<256>', 'nt': 256, 'regs': 34, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec S_t4c 256 {'kernel': 'sdec<256>', 'nt': 256, 'regs': 34, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SG 256 {'kernel': 'sdec3<256,0,0,0,0>', 'nt': 256, 'regs': 37, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SH 256 {'kernel': 'sdec3<256,1,0,0,0>', 'nt': 256, 'regs': 36, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SL 256 {'kernel': 'sdec3<256,0,1,0,0>', 'nt': 256, 'regs': 48, 'local_bytes': 8, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SHL 256 {'kernel': 'sdec3<256,1,1,0,0>', 'nt': 256, 'regs': 48, 'local_bytes': 8, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SHLd 256 {'kernel': 'sdec3<256,1,1,1,0>', 'nt': 256, 'regs': 48, 'local_bytes': 8, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SGd 256 {'kernel': 'sdec3<256,0,0,1,0>', 'nt': 256, 'regs': 39, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SLd 256 {'kernel': 'sdec3<256,0,1,1,0>', 'nt': 256, 'regs': 48, 'local_bytes': 8, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SG2 256 {'kernel': 'sdec3<256,0,0,2,0>', 'nt': 256, 'regs': 42, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SG3 256 {'kernel': 'sdec3<256,0,0,3,0>', 'nt': 256, 'regs': 47, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SG4 256 {'kernel': 'sdec3<256,0,0,4,0>', 'nt': 256, 'regs': 47, 'local_bytes': 0, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SHL2 256 {'kernel': 'sdec3<256,1,1,2,0>', 'nt': 256, 'regs': 48, 'local_bytes': 8, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SHL3 256 {'kernel': 'sdec3<256,1,1,3,0>', 'nt': 256, 'regs': 48, 'local_bytes': 8, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec SHL4 256 {'kernel': 'sdec3<256,1,1,4,0>', 'nt': 256, 'regs': 48, 'local_bytes': 8, 'static_smem': 16912, 'occ_blocks_per_sm': 5, 'bad_streams': 0, 'bad_streams_out2': 0, 'errors': 0, 'rec1_bad': 0, 'rec1_err': 0, 'multi_bad': 0, 'multi_err': 0, 'byte_exact': True, 'streams': 17280}
+sdec timing 256 S_t4o {'m1': 50.3, 'm3': 52.4, 'm24': 60.6, '8streams': 159.9} {'m1': 1.0006, 'm3': 1.0, 'm24': 1.117, '8streams': 0.9746}
+sdec timing 256 S_t4c {'m1': 50.3, 'm3': 52.4, 'm24': 56.5, '8streams': 147.2} {'m1': 1.0, 'm3': 1.0006, 'm24': 1.0407, '8streams': 0.8618}
+sdec timing 256 SG {'m1': 50.3, 'm3': 52.4, 'm24': 54.4, '8streams': 158.7} {'m1': 1, 'm3': 1, 'm24': 1, '8streams': 1}
+sdec timing 256 SH {'m1': 50.3, 'm3': 52.4, 'm24': 56.5, '8streams': 153.5} {'m1': 1.0, 'm3': 0.9988, 'm24': 1.0383, '8streams': 0.9611}
+sdec timing 256 SL {'m1': 50.3, 'm3': 52.4, 'm24': 54.4, '8streams': 168.5} {'m1': 1.0, 'm3': 1.0, 'm24': 1.0006, '8streams': 1.007}
+sdec timing 256 SHL {'m1': 52.4, 'm3': 54.4, 'm24': 54.4, '8streams': 150.4} {'m1': 1.0407, 'm3': 1.0391, 'm24': 1.0006, '8streams': 0.9984}
+sdec timing 256 SHLd {'m1': 64.6, 'm3': 66.6, 'm24': 66.8, '8streams': 175.9} {'m1': 1.2854, 'm3': 1.2711, 'm24': 1.228, '8streams': 1.0972}
+sdec timing 256 SGd {'m1': 60.5, 'm3': 62.6, 'm24': 62.6, '8streams': 165.6} {'m1': 1.2028, 'm3': 1.1943, 'm24': 1.1519, '8streams': 1.0123}
+sdec timing 256 SLd {'m1': 60.6, 'm3': 62.7, 'm24': 64.7, '8streams': 168.6} {'m1': 1.205, 'm3': 1.1962, 'm24': 1.1893, '8streams': 1.0525}
+sdec timing 256 SG2 {'m1': 58.5, 'm3': 60.6, 'm24': 62.6, '8streams': 169.3} {'m1': 1.1627, 'm3': 1.1563, 'm24': 1.1511, '8streams': 0.9787}
+sdec timing 256 SG3 {'m1': 42.1, 'm3': 44.2, 'm24': 44.2, '8streams': 145.4} {'m1': 0.8377, 'm3': 0.8435, 'm24': 0.8122, '8streams': 0.948}
+sdec timing 256 SG4 {'m1': 44.2, 'm3': 46.2, 'm24': 46.2, '8streams': 167.5} {'m1': 0.8783, 'm3': 0.8822, 'm24': 0.8495, '8streams': 0.9646}
+sdec timing 256 SHL2 {'m1': 60.6, 'm3': 63.8, 'm24': 64.7, '8streams': 170.9} {'m1': 1.2047, 'm3': 1.2099, 'm24': 1.1889, '8streams': 1.0788}
+sdec timing 256 SHL3 {'m1': 44.2, 'm3': 46.2, 'm24': 46.2, '8streams': 142.8} {'m1': 0.8783, 'm3': 0.8826, 'm24': 0.8504, '8streams': 0.899}
+sdec timing 256 SHL4 {'m1': 48.3, 'm3': 48.4, 'm24': 50.3, '8streams': 176.4} {'m1': 0.9599, 'm3': 0.923, 'm24': 0.9247, '8streams': 1.0346}
+nt32/lb A259 {'regs': 76, 'local_bytes': 0, 'smem_per_block': 8304, 'occ_warps_per_sm': 10, 'all_exact': True}
+nt32/lb CF5 {'regs': 78, 'local_bytes': 0, 'smem_per_block': 8304, 'occ_warps_per_sm': 10, 'all_exact': True}
+nt32/lb CF5g {'regs': 78, 'local_bytes': 0, 'smem_per_block': 8304, 'occ_warps_per_sm': 10, 'all_exact': True}
+nt32/lb G5 {'regs': 80, 'local_bytes': 0, 'smem_per_block': 8304, 'occ_warps_per_sm': 10, 'all_exact': True}
+nt32/lb G5b {'regs': 80, 'local_bytes': 0, 'smem_per_block': 8304, 'occ_warps_per_sm': 10, 'all_exact': True}
+nt32/lb G5H {'regs': 80, 'local_bytes': 0, 'smem_per_block': 8304, 'occ_warps_per_sm': 10, 'all_exact': True}
+nt32/lb G5L {'regs': 80, 'local_bytes': 0, 'smem_per_block': 8416, 'occ_warps_per_sm': 10, 'all_exact': True}
+nt32/lb G5HL {'regs': 80, 'local_bytes': 0, 'smem_per_block': 8416, 'occ_warps_per_sm': 10, 'all_exact': True}
+nt32/lb NC_inverse_off {'kernel': 'wdec3<32,1,1,0,0>', 'weight_bad_streams': 138240, 'scale_bad_streams': 138240, 'errors': 0, 'streams': 138240}
+nt32/lb NC_hash_off {'kernel': 'wdec3<32,0,1,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt32/lb NC_hash_on_plain {'kernel': 'wdec3<32,1,0,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt32/lb NC_wrong_model_id {'kernel': 'wdec3<32,1,1,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt32/lb NC_wrong_flags_ident {'kernel': 'wdec3<32,1,1,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt32/lb    A259  m1    168.0 /G5 0.9584 /CF5 1.0008 /A 1.0000 m3    259.0 /G5 1.3666 /CF5 1.0080 /A 1.0000 m24    888.8 /G5 0.9710 /CF5 1.0045 /A 1.0000 8streams    947.1 /G5 0.9755 /CF5 0.9956 /A 1.0000
+nt32/lb    CF5   m1    167.1 /G5 0.9532 /CF5 1.0000 /A 0.9992 m3    257.0 /G5 1.3547 /CF5 1.0000 /A 0.9920 m24    886.8 /G5 0.9647 /CF5 1.0000 /A 0.9955 8streams    966.7 /G5 0.9756 /CF5 1.0000 /A 1.0044
+nt32/lb    CF5g  m1    167.1 /G5 0.9534 /CF5 0.9998 /A 0.9994 m3    224.4 /G5 1.1838 /CF5 0.8660 /A 0.8666 m24    882.8 /G5 0.9643 /CF5 0.9986 /A 0.9942 8streams    955.1 /G5 0.9788 /CF5 0.9919 /A 0.9924
+nt32/lb    G5    m1    175.3 /G5 1.0000 /CF5 1.0491 /A 1.0434 m3    189.5 /G5 1.0000 /CF5 0.7382 /A 0.7318 m24    916.5 /G5 1.0000 /CF5 1.0366 /A 1.0298 8streams    974.9 /G5 1.0000 /CF5 1.0250 /A 1.0251
+nt32/lb    G5b   m1    175.3 /G5 0.9998 /CF5 1.0489 /A 1.0481 m3    188.4 /G5 1.0003 /CF5 0.7356 /A 0.7307 m24    915.6 /G5 0.9988 /CF5 1.0335 /A 1.0307 8streams    971.6 /G5 1.0024 /CF5 1.0179 /A 1.0288
+nt32/lb    G5H   m1    175.3 /G5 1.0002 /CF5 1.0493 /A 1.0490 m3    265.5 /G5 1.4053 /CF5 1.0326 /A 1.0244 m24    918.6 /G5 1.0033 /CF5 1.0371 /A 1.0333 8streams    989.7 /G5 1.0143 /CF5 1.0303 /A 1.0319
+nt32/lb    G5L   m1    173.2 /G5 0.9883 /CF5 1.0366 /A 1.0309 m3    183.5 /G5 0.9780 /CF5 0.7232 /A 0.7137 m24    907.3 /G5 0.9866 /CF5 1.0206 /A 1.0175 8streams    967.7 /G5 0.9910 /CF5 1.0106 /A 1.0214
+nt32/lb    G5HL  m1    173.2 /G5 0.9880 /CF5 1.0360 /A 1.0293 m3    259.2 /G5 1.3671 /CF5 1.0001 /A 0.9999 m24    896.2 /G5 0.9787 /CF5 1.0126 /A 1.0079 8streams    957.1 /G5 0.9916 /CF5 1.0210 /A 1.0189
+nt64/lb A259 {'regs': 48, 'local_bytes': 0, 'smem_per_block': 8304, 'occ_warps_per_sm': 20, 'all_exact': True}
+nt64/lb CF5 {'regs': 48, 'local_bytes': 0, 'smem_per_block': 8304, 'occ_warps_per_sm': 20, 'all_exact': True}
+nt64/lb CF5g {'regs': 48, 'local_bytes': 0, 'smem_per_block': 8304, 'occ_warps_per_sm': 20, 'all_exact': True}
+nt64/lb G5 {'regs': 48, 'local_bytes': 0, 'smem_per_block': 8304, 'occ_warps_per_sm': 20, 'all_exact': True}
+nt64/lb G5b {'regs': 48, 'local_bytes': 0, 'smem_per_block': 8304, 'occ_warps_per_sm': 20, 'all_exact': True}
+nt64/lb G5H {'regs': 48, 'local_bytes': 0, 'smem_per_block': 8304, 'occ_warps_per_sm': 20, 'all_exact': True}
+nt64/lb G5L {'regs': 48, 'local_bytes': 0, 'smem_per_block': 8416, 'occ_warps_per_sm': 20, 'all_exact': True}
+nt64/lb G5HL {'regs': 48, 'local_bytes': 0, 'smem_per_block': 8416, 'occ_warps_per_sm': 20, 'all_exact': True}
+nt64/lb NC_inverse_off {'kernel': 'wdec3<64,1,1,0,0>', 'weight_bad_streams': 138240, 'scale_bad_streams': 138240, 'errors': 0, 'streams': 138240}
+nt64/lb NC_hash_off {'kernel': 'wdec3<64,0,1,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt64/lb NC_hash_on_plain {'kernel': 'wdec3<64,1,0,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt64/lb NC_wrong_model_id {'kernel': 'wdec3<64,1,1,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt64/lb NC_wrong_flags_ident {'kernel': 'wdec3<64,1,1,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt64/lb    A259  m1    209.0 /G5 0.9720 /CF5 0.9813 /A 1.0000 m3    302.4 /G5 1.3466 /CF5 0.9933 /A 1.0000 m24    822.5 /G5 1.0050 /CF5 1.0024 /A 1.0000 8streams    895.5 /G5 0.9901 /CF5 0.9902 /A 1.0000
+nt64/lb    CF5   m1    212.1 /G5 0.9904 /CF5 1.0000 /A 1.0191 m3    304.4 /G5 1.3560 /CF5 1.0000 /A 1.0067 m24    819.2 /G5 1.0025 /CF5 1.0000 /A 0.9976 8streams    918.8 /G5 1.0015 /CF5 1.0000 /A 1.0099
+nt64/lb    CF5g  m1    212.1 /G5 0.9906 /CF5 0.9998 /A 1.0189 m3    289.1 /G5 1.2892 /CF5 0.9503 /A 0.9526 m24    819.3 /G5 1.0062 /CF5 1.0012 /A 1.0000 8streams    919.0 /G5 1.0124 /CF5 1.0010 /A 1.0430
+nt64/lb    G5    m1    214.2 /G5 1.0000 /CF5 1.0097 /A 1.0288 m3    224.4 /G5 1.0000 /CF5 0.7375 /A 0.7426 m24    819.2 /G5 1.0000 /CF5 0.9975 /A 0.9950 8streams    910.1 /G5 1.0000 /CF5 0.9985 /A 1.0100
+nt64/lb    G5b   m1    214.2 /G5 0.9999 /CF5 1.0095 /A 1.0271 m3    224.4 /G5 1.0000 /CF5 0.7373 /A 0.7416 m24    816.3 /G5 0.9976 /CF5 0.9973 /A 0.9939 8streams    976.8 /G5 1.0398 /CF5 1.0179 /A 1.0317
+nt64/lb    G5H   m1    216.3 /G5 1.0099 /CF5 1.0198 /A 1.0394 m3    309.3 /G5 1.3775 /CF5 1.0137 /A 1.0204 m24    823.4 /G5 1.0086 /CF5 1.0063 /A 1.0035 8streams    963.6 /G5 1.0431 /CF5 1.0282 /A 1.0203
+nt64/lb    G5L   m1    214.2 /G5 1.0001 /CF5 1.0095 /A 1.0262 m3    226.4 /G5 1.0090 /CF5 0.7440 /A 0.7490 m24    829.4 /G5 1.0127 /CF5 1.0040 /A 1.0125 8streams    924.9 /G5 1.0036 /CF5 1.0063 /A 1.0176
+nt64/lb    G5HL  m1    216.3 /G5 1.0097 /CF5 1.0195 /A 1.0391 m3    306.3 /G5 1.3623 /CF5 1.0067 /A 1.0137 m24    824.8 /G5 1.0126 /CF5 1.0098 /A 1.0077 8streams    895.1 /G5 0.9999 /CF5 0.9986 /A 1.0056
+nt128/lb A259 {'regs': 48, 'local_bytes': 0, 'smem_per_block': 8304, 'occ_warps_per_sm': 40, 'all_exact': True}
+nt128/lb CF5 {'regs': 48, 'local_bytes': 0, 'smem_per_block': 8304, 'occ_warps_per_sm': 40, 'all_exact': True}
+nt128/lb CF5g {'regs': 48, 'local_bytes': 0, 'smem_per_block': 8304, 'occ_warps_per_sm': 40, 'all_exact': True}
+nt128/lb G5 {'regs': 48, 'local_bytes': 0, 'smem_per_block': 8304, 'occ_warps_per_sm': 40, 'all_exact': True}
+nt128/lb G5b {'regs': 48, 'local_bytes': 0, 'smem_per_block': 8304, 'occ_warps_per_sm': 40, 'all_exact': True}
+nt128/lb G5H {'regs': 48, 'local_bytes': 0, 'smem_per_block': 8304, 'occ_warps_per_sm': 40, 'all_exact': True}
+nt128/lb G5L {'regs': 48, 'local_bytes': 0, 'smem_per_block': 8416, 'occ_warps_per_sm': 40, 'all_exact': True}
+nt128/lb G5HL {'regs': 48, 'local_bytes': 0, 'smem_per_block': 8416, 'occ_warps_per_sm': 40, 'all_exact': True}
+nt128/lb NC_inverse_off {'kernel': 'wdec3<128,1,1,0,0>', 'weight_bad_streams': 138240, 'scale_bad_streams': 138240, 'errors': 0, 'streams': 138240}
+nt128/lb NC_hash_off {'kernel': 'wdec3<128,0,1,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt128/lb NC_hash_on_plain {'kernel': 'wdec3<128,1,0,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt128/lb NC_wrong_model_id {'kernel': 'wdec3<128,1,1,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt128/lb NC_wrong_flags_ident {'kernel': 'wdec3<128,1,1,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt128/lb   A259  m1    220.4 /G5 0.9909 /CF5 0.9996 /A 1.0000 m3    300.1 /G5 1.3412 /CF5 0.9800 /A 1.0000 m24    736.4 /G5 0.9988 /CF5 0.9971 /A 1.0000 8streams    824.2 /G5 1.0226 /CF5 0.9947 /A 1.0000
+nt128/lb   CF5   m1    220.4 /G5 0.9914 /CF5 1.0000 /A 1.0004 m3    304.2 /G5 1.3631 /CF5 1.0000 /A 1.0204 m24    738.5 /G5 1.0055 /CF5 1.0000 /A 1.0030 8streams    815.4 /G5 1.0120 /CF5 1.0000 /A 1.0053
+nt128/lb   CF5g  m1    220.3 /G5 0.9911 /CF5 0.9996 /A 1.0001 m3    298.1 /G5 1.2946 /CF5 0.9525 /A 0.9860 m24    740.5 /G5 1.0115 /CF5 1.0040 /A 1.0053 8streams    804.3 /G5 1.0136 /CF5 0.9978 /A 0.9881
+nt128/lb   G5    m1    222.3 /G5 1.0000 /CF5 1.0087 /A 1.0092 m3    222.4 /G5 1.0000 /CF5 0.7336 /A 0.7456 m24    736.4 /G5 1.0000 /CF5 0.9945 /A 1.0012 8streams    790.7 /G5 1.0000 /CF5 0.9881 /A 0.9779
+nt128/lb   G5b   m1    222.4 /G5 1.0001 /CF5 1.0090 /A 1.0092 m3    222.3 /G5 0.9999 /CF5 0.7311 /A 0.7435 m24    734.4 /G5 1.0001 /CF5 0.9916 /A 0.9958 8streams    813.0 /G5 1.0042 /CF5 0.9887 /A 0.9787
+nt128/lb   G5H   m1    226.5 /G5 1.0144 /CF5 1.0190 /A 1.0228 m3    308.2 /G5 1.3791 /CF5 1.0101 /A 1.0271 m24    744.7 /G5 1.0142 /CF5 1.0084 /A 1.0115 8streams    806.8 /G5 1.0044 /CF5 0.9979 /A 0.9874
+nt128/lb   G5L   m1    224.4 /G5 1.0091 /CF5 1.0179 /A 1.0183 m3    224.6 /G5 1.0101 /CF5 0.7425 /A 0.7536 m24    742.6 /G5 1.0127 /CF5 1.0055 /A 1.0085 8streams    806.9 /G5 1.0113 /CF5 0.9787 /A 0.9737
+nt128/lb   G5HL  m1    224.4 /G5 1.0096 /CF5 1.0186 /A 1.0186 m3    306.3 /G5 1.3778 /CF5 1.0066 /A 1.0240 m24    747.5 /G5 1.0181 /CF5 1.0126 /A 1.0143 8streams    836.0 /G5 1.0406 /CF5 0.9984 /A 1.0124
+nt256/lb A259 {'regs': 48, 'local_bytes': 0, 'smem_per_block': 8304, 'occ_warps_per_sm': 40, 'all_exact': True}
+nt256/lb CF5 {'regs': 48, 'local_bytes': 0, 'smem_per_block': 8304, 'occ_warps_per_sm': 40, 'all_exact': True}
+nt256/lb CF5g {'regs': 48, 'local_bytes': 0, 'smem_per_block': 8304, 'occ_warps_per_sm': 40, 'all_exact': True}
+nt256/lb G5 {'regs': 48, 'local_bytes': 0, 'smem_per_block': 8304, 'occ_warps_per_sm': 40, 'all_exact': True}
+nt256/lb G5b {'regs': 48, 'local_bytes': 0, 'smem_per_block': 8304, 'occ_warps_per_sm': 40, 'all_exact': True}
+nt256/lb G5H {'regs': 48, 'local_bytes': 0, 'smem_per_block': 8304, 'occ_warps_per_sm': 40, 'all_exact': True}
+nt256/lb G5L {'regs': 48, 'local_bytes': 0, 'smem_per_block': 8416, 'occ_warps_per_sm': 40, 'all_exact': True}
+nt256/lb G5HL {'regs': 48, 'local_bytes': 0, 'smem_per_block': 8416, 'occ_warps_per_sm': 40, 'all_exact': True}
+nt256/lb NC_inverse_off {'kernel': 'wdec3<256,1,1,0,0>', 'weight_bad_streams': 138240, 'scale_bad_streams': 138240, 'errors': 0, 'streams': 138240}
+nt256/lb NC_hash_off {'kernel': 'wdec3<256,0,1,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt256/lb NC_hash_on_plain {'kernel': 'wdec3<256,1,0,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt256/lb NC_wrong_model_id {'kernel': 'wdec3<256,1,1,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt256/lb NC_wrong_flags_ident {'kernel': 'wdec3<256,1,1,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt256/lb   A259  m1    240.9 /G5 0.9916 /CF5 0.9995 /A 1.0000 m3    314.3 /G5 1.2803 /CF5 0.9896 /A 1.0000 m24    798.8 /G5 1.0000 /CF5 0.9961 /A 1.0000 8streams    884.5 /G5 0.9910 /CF5 1.0003 /A 1.0000
+nt256/lb   CF5   m1    241.8 /G5 0.9924 /CF5 1.0000 /A 1.0005 m3    316.7 /G5 1.2927 /CF5 1.0000 /A 1.0105 m24    802.0 /G5 1.0091 /CF5 1.0000 /A 1.0039 8streams    887.0 /G5 1.0022 /CF5 1.0000 /A 0.9997
+nt256/lb   CF5g  m1    242.8 /G5 0.9956 /CF5 1.0001 /A 1.0008 m3    269.6 /G5 1.0757 /CF5 0.8312 /A 0.8430 m24   1011.2 /G5 1.0114 /CF5 0.9999 /A 1.0065 8streams    920.0 /G5 1.0095 /CF5 1.0108 /A 1.0130
+nt256/lb   G5    m1    242.9 /G5 1.0000 /CF5 1.0077 /A 1.0085 m3    244.9 /G5 1.0000 /CF5 0.7736 /A 0.7811 m24    796.7 /G5 1.0000 /CF5 0.9910 /A 1.0000 8streams    888.1 /G5 1.0000 /CF5 0.9978 /A 1.0090
+nt256/lb   G5b   m1    242.9 /G5 1.0001 /CF5 1.0046 /A 1.0086 m3    244.8 /G5 0.9997 /CF5 0.7713 /A 0.7791 m24    793.9 /G5 0.9980 /CF5 0.9909 /A 0.9949 8streams    862.0 /G5 0.9903 /CF5 0.9995 /A 0.9998
+nt256/lb   G5H   m1    247.9 /G5 1.0174 /CF5 1.0250 /A 1.0259 m3    318.7 /G5 1.2933 /CF5 1.0065 /A 1.0166 m24    800.9 /G5 1.0069 /CF5 0.9986 /A 1.0038 8streams    891.8 /G5 0.9760 /CF5 0.9948 /A 0.9942
+nt256/lb   G5L   m1    244.9 /G5 1.0083 /CF5 1.0138 /A 1.0173 m3    246.9 /G5 1.0084 /CF5 0.7800 /A 0.7900 m24    802.8 /G5 1.0091 /CF5 0.9991 /A 1.0063 8streams    890.8 /G5 1.0075 /CF5 1.0067 /A 1.0096
+nt256/lb   G5HL  m1    244.9 /G5 1.0084 /CF5 1.0163 /A 1.0168 m3    319.6 /G5 1.3019 /CF5 1.0064 /A 1.0227 m24    805.0 /G5 1.0104 /CF5 1.0037 /A 1.0080 8streams    887.2 /G5 0.9824 /CF5 1.0093 /A 1.0022
+nt32/out4 A259 {'regs': 80, 'local_bytes': 0, 'smem_per_block': 12912, 'occ_warps_per_sm': 7, 'all_exact': True}
+nt32/out4 CF5 {'regs': 80, 'local_bytes': 0, 'smem_per_block': 12912, 'occ_warps_per_sm': 7, 'all_exact': True}
+nt32/out4 CF5g {'regs': 80, 'local_bytes': 0, 'smem_per_block': 12912, 'occ_warps_per_sm': 7, 'all_exact': True}
+nt32/out4 G5 {'regs': 80, 'local_bytes': 0, 'smem_per_block': 12912, 'occ_warps_per_sm': 7, 'all_exact': True}
+nt32/out4 G5b {'regs': 80, 'local_bytes': 0, 'smem_per_block': 12912, 'occ_warps_per_sm': 7, 'all_exact': True}
+nt32/out4 G5H {'regs': 80, 'local_bytes': 0, 'smem_per_block': 12912, 'occ_warps_per_sm': 7, 'all_exact': True}
+nt32/out4 G5L {'regs': 80, 'local_bytes': 0, 'smem_per_block': 13024, 'occ_warps_per_sm': 7, 'all_exact': True}
+nt32/out4 G5HL {'regs': 80, 'local_bytes': 0, 'smem_per_block': 13024, 'occ_warps_per_sm': 7, 'all_exact': True}
+nt32/out4 NC_inverse_off {'kernel': 'wdec3<32,1,1,0,0>', 'weight_bad_streams': 138240, 'scale_bad_streams': 138240, 'errors': 0, 'streams': 138240}
+nt32/out4 NC_hash_off {'kernel': 'wdec3<32,0,1,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt32/out4 NC_hash_on_plain {'kernel': 'wdec3<32,1,0,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt32/out4 NC_wrong_model_id {'kernel': 'wdec3<32,1,1,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt32/out4 NC_wrong_flags_ident {'kernel': 'wdec3<32,1,1,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt32/out4  A259  m1    169.1 /G5 0.8919 /CF5 0.9429 /A 1.0000 m3    261.2 /G5 1.2435 /CF5 0.9543 /A 1.0000 m24   1088.7 /G5 0.8963 /CF5 0.9567 /A 1.0000 8streams   1208.1 /G5 0.9046 /CF5 0.9533 /A 1.0000
+nt32/out4  CF5   m1    179.3 /G5 0.9461 /CF5 1.0000 /A 1.0605 m3    273.6 /G5 1.3145 /CF5 1.0000 /A 1.0479 m24   1136.8 /G5 0.9374 /CF5 1.0000 /A 1.0452 8streams   1376.4 /G5 0.9676 /CF5 1.0000 /A 1.0490
+nt32/out4  CF5g  m1    179.3 /G5 0.9455 /CF5 0.9996 /A 1.0601 m3    203.9 /G5 0.9705 /CF5 0.7863 /A 0.8973 m24   1343.0 /G5 0.9398 /CF5 1.0028 /A 1.0490 8streams   1226.7 /G5 0.9509 /CF5 0.9940 /A 1.0437
+nt32/out4  G5    m1    189.6 /G5 1.0000 /CF5 1.0569 /A 1.1211 m3    208.1 /G5 1.0000 /CF5 0.7607 /A 0.8042 m24   1213.5 /G5 1.0000 /CF5 1.0667 /A 1.1157 8streams   1305.2 /G5 1.0000 /CF5 1.0335 /A 1.1055
+nt32/out4  G5b   m1    189.6 /G5 1.0002 /CF5 1.0573 /A 1.1211 m3    208.0 /G5 0.9997 /CF5 0.7606 /A 0.8022 m24   1213.5 /G5 0.9992 /CF5 1.0666 /A 1.1157 8streams   1322.4 /G5 1.0006 /CF5 1.0490 /A 1.0952
+nt32/out4  G5H   m1    183.5 /G5 0.9679 /CF5 1.0239 /A 1.0855 m3    275.6 /G5 1.3194 /CF5 1.0075 /A 1.0588 m24   1159.2 /G5 0.9555 /CF5 1.0181 /A 1.0643 8streams   1252.7 /G5 0.9652 /CF5 1.0094 /A 1.0344
+nt32/out4  G5L   m1    187.6 /G5 0.9892 /CF5 1.0457 /A 1.1090 m3    201.9 /G5 0.9700 /CF5 0.7386 /A 0.7826 m24   1183.7 /G5 0.9721 /CF5 1.0379 /A 1.0868 8streams   1277.4 /G5 0.9762 /CF5 0.9966 /A 1.0661
+nt32/out4  G5HL  m1    181.4 /G5 0.9569 /CF5 1.0121 /A 1.0728 m3    270.5 /G5 1.2889 /CF5 0.9915 /A 1.0393 m24   1138.6 /G5 0.9376 /CF5 1.0009 /A 1.0462 8streams   1231.5 /G5 0.9424 /CF5 0.9216 /A 1.0409
+nt64/out4 A259 {'regs': 48, 'local_bytes': 0, 'smem_per_block': 17520, 'occ_warps_per_sm': 10, 'all_exact': True}
+nt64/out4 CF5 {'regs': 48, 'local_bytes': 0, 'smem_per_block': 17520, 'occ_warps_per_sm': 10, 'all_exact': True}
+nt64/out4 CF5g {'regs': 48, 'local_bytes': 0, 'smem_per_block': 17520, 'occ_warps_per_sm': 10, 'all_exact': True}
+nt64/out4 G5 {'regs': 56, 'local_bytes': 0, 'smem_per_block': 17520, 'occ_warps_per_sm': 10, 'all_exact': True}
+nt64/out4 G5b {'regs': 56, 'local_bytes': 0, 'smem_per_block': 17520, 'occ_warps_per_sm': 10, 'all_exact': True}
+nt64/out4 G5H {'regs': 56, 'local_bytes': 0, 'smem_per_block': 17520, 'occ_warps_per_sm': 10, 'all_exact': True}
+nt64/out4 G5L {'regs': 48, 'local_bytes': 0, 'smem_per_block': 17632, 'occ_warps_per_sm': 10, 'all_exact': True}
+nt64/out4 G5HL {'regs': 56, 'local_bytes': 0, 'smem_per_block': 17632, 'occ_warps_per_sm': 10, 'all_exact': True}
+nt64/out4 NC_inverse_off {'kernel': 'wdec3<64,1,1,0,0>', 'weight_bad_streams': 138240, 'scale_bad_streams': 138240, 'errors': 0, 'streams': 138240}
+nt64/out4 NC_hash_off {'kernel': 'wdec3<64,0,1,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt64/out4 NC_hash_on_plain {'kernel': 'wdec3<64,1,0,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt64/out4 NC_wrong_model_id {'kernel': 'wdec3<64,1,1,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt64/out4 NC_wrong_flags_ident {'kernel': 'wdec3<64,1,1,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt64/out4  A259  m1    208.1 /G5 0.9813 /CF5 0.9526 /A 1.0000 m3    302.1 /G5 1.3532 /CF5 0.9670 /A 1.0000 m24    997.5 /G5 0.9927 /CF5 0.9720 /A 1.0000 8streams   1102.5 /G5 1.0326 /CF5 0.9764 /A 1.0000
+nt64/out4  CF5   m1    220.3 /G5 1.0383 /CF5 1.0000 /A 1.0497 m3    312.4 /G5 1.3999 /CF5 1.0000 /A 1.0341 m24   1026.0 /G5 1.0235 /CF5 1.0000 /A 1.0288 8streams   1156.4 /G5 1.0372 /CF5 1.0000 /A 1.0241
+nt64/out4  CF5g  m1    219.1 /G5 1.0308 /CF5 0.9959 /A 1.0495 m3    259.2 /G5 1.1570 /CF5 0.8296 /A 0.8542 m24   1240.7 /G5 1.0244 /CF5 1.0021 /A 1.0341 8streams   1110.6 /G5 1.0188 /CF5 0.9925 /A 1.0244
+nt64/out4  G5    m1    212.1 /G5 1.0000 /CF5 0.9631 /A 1.0191 m3    222.4 /G5 1.0000 /CF5 0.7143 /A 0.7390 m24   1003.6 /G5 1.0000 /CF5 0.9771 /A 1.0074 8streams   1079.3 /G5 1.0000 /CF5 0.9641 /A 0.9685
+nt64/out4  G5b   m1    212.1 /G5 1.0002 /CF5 0.9628 /A 1.0191 m3    222.4 /G5 0.9999 /CF5 0.7117 /A 0.7361 m24   1005.7 /G5 0.9993 /CF5 0.9809 /A 1.0071 8streams   1086.2 /G5 0.9985 /CF5 0.9716 /A 0.9782
+nt64/out4  G5H   m1    208.0 /G5 0.9811 /CF5 0.9449 /A 1.0000 m3    299.0 /G5 1.3416 /CF5 0.9581 /A 0.9929 m24    996.5 /G5 0.9929 /CF5 0.9712 /A 0.9990 8streams   1095.9 /G5 1.0155 /CF5 0.9305 /A 0.9950
+nt64/out4  G5L   m1    216.2 /G5 1.0193 /CF5 0.9814 /A 1.0389 m3    226.5 /G5 1.0183 /CF5 0.7250 /A 0.7498 m24   1018.9 /G5 1.0152 /CF5 0.9928 /A 1.0217 8streams   1118.3 /G5 1.0246 /CF5 0.9643 /A 1.0075
+nt64/out4  G5HL  m1    214.1 /G5 1.0097 /CF5 0.9725 /A 1.0289 m3    305.2 /G5 1.3685 /CF5 0.9797 /A 1.0072 m24   1241.6 /G5 1.2250 /CF5 1.0040 /A 1.0262 8streams   1121.1 /G5 1.0185 /CF5 0.9506 /A 1.0084
+nt128/out4 A259 {'regs': 48, 'local_bytes': 0, 'smem_per_block': 26736, 'occ_warps_per_sm': 12, 'all_exact': True}
+nt128/out4 CF5 {'regs': 48, 'local_bytes': 0, 'smem_per_block': 26736, 'occ_warps_per_sm': 12, 'all_exact': True}
+nt128/out4 CF5g {'regs': 48, 'local_bytes': 0, 'smem_per_block': 26736, 'occ_warps_per_sm': 12, 'all_exact': True}
+nt128/out4 G5 {'regs': 56, 'local_bytes': 0, 'smem_per_block': 26736, 'occ_warps_per_sm': 12, 'all_exact': True}
+nt128/out4 G5b {'regs': 56, 'local_bytes': 0, 'smem_per_block': 26736, 'occ_warps_per_sm': 12, 'all_exact': True}
+nt128/out4 G5H {'regs': 56, 'local_bytes': 0, 'smem_per_block': 26736, 'occ_warps_per_sm': 12, 'all_exact': True}
+nt128/out4 G5L {'regs': 48, 'local_bytes': 0, 'smem_per_block': 26848, 'occ_warps_per_sm': 12, 'all_exact': True}
+nt128/out4 G5HL {'regs': 56, 'local_bytes': 0, 'smem_per_block': 26848, 'occ_warps_per_sm': 12, 'all_exact': True}
+nt128/out4 NC_inverse_off {'kernel': 'wdec3<128,1,1,0,0>', 'weight_bad_streams': 138240, 'scale_bad_streams': 138240, 'errors': 0, 'streams': 138240}
+nt128/out4 NC_hash_off {'kernel': 'wdec3<128,0,1,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt128/out4 NC_hash_on_plain {'kernel': 'wdec3<128,1,0,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt128/out4 NC_wrong_model_id {'kernel': 'wdec3<128,1,1,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt128/out4 NC_wrong_flags_ident {'kernel': 'wdec3<128,1,1,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt128/out4 A259  m1    218.3 /G5 0.9903 /CF5 0.9542 /A 1.0000 m3    298.2 /G5 1.3441 /CF5 0.9603 /A 1.0000 m24   1023.1 /G5 0.9911 /CF5 0.9719 /A 1.0000 8streams   1213.6 /G5 1.0247 /CF5 0.9928 /A 1.0000
+nt128/out4 CF5   m1    230.5 /G5 1.0377 /CF5 1.0000 /A 1.0480 m3    312.4 /G5 1.4084 /CF5 1.0000 /A 1.0414 m24   1053.0 /G5 1.0202 /CF5 1.0000 /A 1.0289 8streams   1137.0 /G5 1.0169 /CF5 1.0000 /A 1.0072
+nt128/out4 CF5g  m1    230.5 /G5 1.0453 /CF5 1.0008 /A 1.0559 m3    249.1 /G5 1.1297 /CF5 0.7973 /A 0.8416 m24   1052.7 /G5 1.0207 /CF5 1.0001 /A 1.0292 8streams   1119.6 /G5 1.0140 /CF5 0.9956 /A 1.0130
+nt128/out4 G5    m1    221.2 /G5 1.0000 /CF5 0.9636 /A 1.0098 m3    220.4 /G5 1.0000 /CF5 0.7100 /A 0.7440 m24   1032.2 /G5 1.0000 /CF5 0.9802 /A 1.0090 8streams   1126.4 /G5 1.0000 /CF5 0.9834 /A 0.9759
+nt128/out4 G5b   m1    220.4 /G5 0.9997 /CF5 0.9596 /A 1.0092 m3    220.3 /G5 0.9999 /CF5 0.7098 /A 0.7437 m24   1031.3 /G5 0.9992 /CF5 0.9794 /A 1.0083 8streams   1095.6 /G5 0.9872 /CF5 0.9797 /A 0.9556
+nt128/out4 G5H   m1    218.3 /G5 0.9865 /CF5 0.9503 /A 0.9999 m3    297.1 /G5 1.3350 /CF5 0.9513 /A 0.9994 m24   1025.2 /G5 0.9932 /CF5 0.9746 /A 1.0040 8streams   1093.1 /G5 1.0012 /CF5 0.9743 /A 0.9680
+nt128/out4 G5L   m1    225.3 /G5 1.0184 /CF5 0.9818 /A 1.0283 m3    226.4 /G5 1.0276 /CF5 0.7296 /A 0.7649 m24   1055.9 /G5 1.0129 /CF5 0.9951 /A 1.0249 8streams   1078.7 /G5 1.0073 /CF5 0.9820 /A 0.9702
+nt128/out4 G5HL  m1    222.4 /G5 1.0090 /CF5 0.9727 /A 1.0191 m3    304.4 /G5 1.3698 /CF5 0.9737 /A 1.0202 m24   1243.8 /G5 1.0099 /CF5 0.9893 /A 1.0191 8streams   1119.6 /G5 1.0067 /CF5 0.9936 /A 0.9828
+nt256/out4 A259 {'regs': 48, 'local_bytes': 0, 'smem_per_block': 45168, 'occ_warps_per_sm': 16, 'all_exact': True}
+nt256/out4 CF5 {'regs': 48, 'local_bytes': 0, 'smem_per_block': 45168, 'occ_warps_per_sm': 16, 'all_exact': True}
+nt256/out4 CF5g {'regs': 48, 'local_bytes': 0, 'smem_per_block': 45168, 'occ_warps_per_sm': 16, 'all_exact': True}
+nt256/out4 G5 {'regs': 48, 'local_bytes': 0, 'smem_per_block': 45168, 'occ_warps_per_sm': 16, 'all_exact': True}
+nt256/out4 G5b {'regs': 48, 'local_bytes': 0, 'smem_per_block': 45168, 'occ_warps_per_sm': 16, 'all_exact': True}
+nt256/out4 G5H {'regs': 48, 'local_bytes': 0, 'smem_per_block': 45168, 'occ_warps_per_sm': 16, 'all_exact': True}
+nt256/out4 G5L {'regs': 48, 'local_bytes': 0, 'smem_per_block': 45280, 'occ_warps_per_sm': 16, 'all_exact': True}
+nt256/out4 G5HL {'regs': 64, 'local_bytes': 0, 'smem_per_block': 45280, 'occ_warps_per_sm': 16, 'all_exact': True}
+nt256/out4 NC_inverse_off {'kernel': 'wdec3<256,1,1,0,0>', 'weight_bad_streams': 138240, 'scale_bad_streams': 138240, 'errors': 0, 'streams': 138240}
+nt256/out4 NC_hash_off {'kernel': 'wdec3<256,0,1,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt256/out4 NC_hash_on_plain {'kernel': 'wdec3<256,1,0,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt256/out4 NC_wrong_model_id {'kernel': 'wdec3<256,1,1,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt256/out4 NC_wrong_flags_ident {'kernel': 'wdec3<256,1,1,5,0>', 'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 138240, 'streams': 138240}
+nt256/out4 A259  m1    244.9 /G5 0.9795 /CF5 0.9523 /A 1.0000 m3    316.6 /G5 1.2621 /CF5 0.9594 /A 1.0000 m24    820.4 /G5 0.7759 /CF5 0.9794 /A 1.0000 8streams    938.6 /G5 1.0213 /CF5 1.0226 /A 1.0000
+nt256/out4 CF5   m1    257.2 /G5 1.0248 /CF5 1.0000 /A 1.0500 m3    330.8 /G5 1.3161 /CF5 1.0000 /A 1.0423 m24    838.8 /G5 0.7927 /CF5 1.0000 /A 1.0210 8streams    929.2 /G5 0.9948 /CF5 1.0000 /A 0.9779
+nt256/out4 CF5g  m1    257.2 /G5 1.0246 /CF5 0.9997 /A 1.0423 m3    292.0 /G5 1.1277 /CF5 0.8396 /A 0.9410 m24    837.8 /G5 0.9587 /CF5 0.9988 /A 1.0213 8streams    939.4 /G5 1.0084 /CF5 1.0058 /A 0.9909
+nt256/out4 G5    m1    251.0 /G5 1.0000 /CF5 0.9758 /A 1.0209 m3    251.0 /G5 1.0000 /CF5 0.7598 /A 0.7923 m24   1061.3 /G5 1.0000 /CF5 1.2616 /A 1.2888 8streams    910.3 /G5 1.0000 /CF5 1.0052 /A 0.9791
+nt256/out4 G5b   m1    250.9 /G5 1.0003 /CF5 0.9761 /A 1.0248 m3    249.9 /G5 0.9923 /CF5 0.7581 /A 0.7918 m24   1054.2 /G5 1.0000 /CF5 1.2503 /A 1.2773 8streams    945.4 /G5 1.0026 /CF5 1.0143 /A 0.9806
+nt256/out4 G5H   m1    257.2 /G5 1.0279 /CF5 1.0004 /A 1.0502 m3    328.8 /G5 1.3095 /CF5 0.9938 /A 1.0388 m24   1072.6 /G5 1.0125 /CF5 1.2439 /A 1.2939 8streams    933.9 /G5 1.0122 /CF5 0.9947 /A 0.9716
+nt256/out4 G5L   m1    251.1 /G5 1.0004 /CF5 0.9770 /A 1.0252 m3    253.0 /G5 1.0081 /CF5 0.7692 /A 0.7998 m24    841.8 /G5 1.0000 /CF5 1.0035 /A 1.0263 8streams    932.7 /G5 1.0025 /CF5 1.0029 /A 1.0026
+nt256/out4 G5HL  m1    244.9 /G5 0.9793 /CF5 0.9523 /A 1.0001 m3    316.5 /G5 1.2585 /CF5 0.9566 /A 1.0001 m24    833.5 /G5 0.7961 /CF5 0.9950 /A 1.0151 8streams    900.8 /G5 0.9924 /CF5 0.9978 /A 1.0044
+weight all exact True {'v1': True, 't4c': True, 't4o': True} {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}
+corrupt G5 A_random_bit {'trials': 1382400, 'flagged': 1376151, 'accepted_exact': 0, 'accepted_wrong': 6249, 'structural_pass': 6249, 'structural_pass_but_hash_reject': 0, 'status_bits_hist': {'0': 6249, '4': 163361, '6': 1212737, '7': 52, '5': 1}, 'accepted_wrong_sign_only_one_nibble': 6245, 'accepted_wrong_other': 4, 'structural_pass_output_wrong': 6249, 'structural_pass_one_sign_nibble': 6245, 'by_matrix': {'w1': {'trials': 460800, 'accepted_wrong': 1709, 'structural_pass': 1709, 'structural_pass_but_hash_reject': 0}, 'w2': {'trials': 460800, 'accepted_wrong': 2460, 'structural_pass': 2460, 'structural_pass_but_hash_reject': 0}, 'w3': {'trials': 460800, 'accepted_wrong': 2080, 'structural_pass': 2080, 'structural_pass_but_hash_reject': 0}}, 'structural_pass_wrong_nibbles_hist': {'1': 6247, '2': 1, '3': 1}, 'accepted_wrong_rate': 0.004520399305555555, 'structural_pass_rate': 0.004520399305555555}
+corrupt G5 B_last_byte {'trials': 1382400, 'flagged': 1382400, 'accepted_exact': 0, 'accepted_wrong': 0, 'structural_pass': 0, 'structural_pass_but_hash_reject': 0, 'status_bits_hist': {'4': 697145, '6': 685255}, 'accepted_wrong_sign_only_one_nibble': 0, 'accepted_wrong_other': 0, 'structural_pass_output_wrong': 0, 'structural_pass_one_sign_nibble': 0, 'by_matrix': {'w1': {'trials': 460800, 'accepted_wrong': 0, 'structural_pass': 0, 'structural_pass_but_hash_reject': 0}, 'w2': {'trials': 460800, 'accepted_wrong': 0, 'structural_pass': 0, 'structural_pass_but_hash_reject': 0}, 'w3': {'trials': 460800, 'accepted_wrong': 0, 'structural_pass': 0, 'structural_pass_but_hash_reject': 0}}, 'accepted_wrong_rate': 0.0, 'structural_pass_rate': 0.0}
+corrupt G5H A_random_bit {'trials': 1382400, 'flagged': 1382400, 'accepted_exact': 0, 'accepted_wrong': 0, 'structural_pass': 6111, 'structural_pass_but_hash_reject': 6111, 'status_bits_hist': {'4': 173778, '5': 2, '6': 1208556, '7': 64}, 'accepted_wrong_sign_only_one_nibble': 0, 'accepted_wrong_other': 0, 'structural_pass_output_wrong': 6111, 'structural_pass_one_sign_nibble': 6108, 'by_matrix': {'w1': {'trials': 460800, 'accepted_wrong': 0, 'structural_pass': 1607, 'structural_pass_but_hash_reject': 1607}, 'w2': {'trials': 460800, 'accepted_wrong': 0, 'structural_pass': 2435, 'structural_pass_but_hash_reject': 2435}, 'w3': {'trials': 460800, 'accepted_wrong': 0, 'structural_pass': 2069, 'structural_pass_but_hash_reject': 2069}}, 'structural_pass_wrong_nibbles_hist': {'1': 6109, '64': 1, '2': 1}, 'accepted_wrong_rate': 0.0, 'structural_pass_rate': 0.004420572916666666}
+corrupt G5H B_last_byte {'trials': 1382400, 'flagged': 1382400, 'accepted_exact': 0, 'accepted_wrong': 0, 'structural_pass': 0, 'structural_pass_but_hash_reject': 0, 'status_bits_hist': {'4': 1363938, '6': 18462}, 'accepted_wrong_sign_only_one_nibble': 0, 'accepted_wrong_other': 0, 'structural_pass_output_wrong': 0, 'structural_pass_one_sign_nibble': 0, 'by_matrix': {'w1': {'trials': 460800, 'accepted_wrong': 0, 'structural_pass': 0, 'structural_pass_but_hash_reject': 0}, 'w2': {'trials': 460800, 'accepted_wrong': 0, 'structural_pass': 0, 'structural_pass_but_hash_reject': 0}, 'w3': {'trials': 460800, 'accepted_wrong': 0, 'structural_pass': 0, 'structural_pass_but_hash_reject': 0}}, 'accepted_wrong_rate': 0.0, 'structural_pass_rate': 0.0}
+corrupt G5HL A_random_bit {'trials': 1382400, 'flagged': 1382400, 'accepted_exact': 0, 'accepted_wrong': 0, 'structural_pass': 5578, 'structural_pass_but_hash_reject': 5578, 'status_bits_hist': {'4': 157818, '6': 1091121, '7': 42, '14': 133419}, 'accepted_wrong_sign_only_one_nibble': 0, 'accepted_wrong_other': 0, 'structural_pass_output_wrong': 5578, 'structural_pass_one_sign_nibble': 5573, 'by_matrix': {'w1': {'trials': 460800, 'accepted_wrong': 0, 'structural_pass': 1462, 'structural_pass_but_hash_reject': 1462}, 'w2': {'trials': 460800, 'accepted_wrong': 0, 'structural_pass': 2227, 'structural_pass_but_hash_reject': 2227}, 'w3': {'trials': 460800, 'accepted_wrong': 0, 'structural_pass': 1889, 'structural_pass_but_hash_reject': 1889}}, 'structural_pass_wrong_nibbles_hist': {'1': 5575, '2': 1, '5': 1, '23': 1}, 'accepted_wrong_rate': 0.0, 'structural_pass_rate': 0.004035011574074074}
+corrupt G5HL B_last_byte {'trials': 1382400, 'flagged': 1382400, 'accepted_exact': 0, 'accepted_wrong': 0, 'structural_pass': 0, 'structural_pass_but_hash_reject': 0, 'status_bits_hist': {'4': 1363947, '6': 18453}, 'accepted_wrong_sign_only_one_nibble': 0, 'accepted_wrong_other': 0, 'structural_pass_output_wrong': 0, 'structural_pass_one_sign_nibble': 0, 'by_matrix': {'w1': {'trials': 460800, 'accepted_wrong': 0, 'structural_pass': 0, 'structural_pass_but_hash_reject': 0}, 'w2': {'trials': 460800, 'accepted_wrong': 0, 'structural_pass': 0, 'structural_pass_but_hash_reject': 0}, 'w3': {'trials': 460800, 'accepted_wrong': 0, 'structural_pass': 0, 'structural_pass_but_hash_reject': 0}}, 'accepted_wrong_rate': 0.0, 'structural_pass_rate': 0.0}
+corrupt SG A_random_bit {'trials': 172800, 'flagged': 172726, 'accepted_exact': 0, 'accepted_wrong': 74, 'structural_pass': 74, 'structural_pass_but_hash_reject': 0, 'structural_pass_output_wrong': 74, 'accepted_wrong_rate': 0.00042824074074074075}
+corrupt SG B_last_byte {'trials': 172800, 'flagged': 172800, 'accepted_exact': 0, 'accepted_wrong': 0, 'structural_pass': 0, 'structural_pass_but_hash_reject': 0, 'structural_pass_output_wrong': 0, 'accepted_wrong_rate': 0.0}
+corrupt SH A_random_bit {'trials': 172800, 'flagged': 172800, 'accepted_exact': 0, 'accepted_wrong': 0, 'structural_pass': 77, 'structural_pass_but_hash_reject': 77, 'structural_pass_output_wrong': 77, 'accepted_wrong_rate': 0.0}
+corrupt SH B_last_byte {'trials': 172800, 'flagged': 172800, 'accepted_exact': 0, 'accepted_wrong': 0, 'structural_pass': 0, 'structural_pass_but_hash_reject': 0, 'structural_pass_output_wrong': 0, 'accepted_wrong_rate': 0.0}
+corrupt SHL A_random_bit {'trials': 172800, 'flagged': 172800, 'accepted_exact': 0, 'accepted_wrong': 0, 'structural_pass': 76, 'structural_pass_but_hash_reject': 76, 'structural_pass_output_wrong': 76, 'accepted_wrong_rate': 0.0}
+corrupt SHL B_last_byte {'trials': 172800, 'flagged': 172800, 'accepted_exact': 0, 'accepted_wrong': 0, 'structural_pass': 0, 'structural_pass_but_hash_reject': 0, 'structural_pass_output_wrong': 0, 'accepted_wrong_rate': 0.0}
+lenc corruption {"clean_records_exact": 8, "by_field": {"header_sbase_alpha": {"trials": 800, "rejected": 798, "accepted_exact": 2, "accepted_wrong": 0, "weight_status_or_hist": {"15": 789, "14": 9}, "scale_status_or_hist": {"0": 400, "15": 186, "14": 212}, "rejected_by_lenc_bit_any": 798}, "s_base_off": {"trials": 800, "rejected": 800, "accepted_exact": 0, "accepted_wrong": 0, "weight_status_or_hist": {"14": 501, "15": 299}, "scale_status_or_hist": {"14": 768, "15": 32}, "rejected_by_lenc_bit_any": 800}, "s_width": {"trials": 800, "rejected": 800, "accepted_exact": 0, "accepted_wrong": 0, "weight_status_or_hist": {"14": 800}, "scale_status_or_hist": {"14": 800}, "rejected_by_lenc_bit_any": 800}, "s_pad": {"trials": 800, "rejected": 800, "accepted_exact": 0, "accepted_wrong": 0, "weight_status_or_hist": {"14": 800}, "scale_status_or_hist": {"14": 800}, "rejected_by_lenc_bit_any": 800}, "s_words": {"trials": 800, "rejected": 800, "accepted_exact": 0, "accepted_wrong": 0, "weight_status_or_hist": {"14": 636, "15": 150, "0": 14}, "scale_status_or_hist": {"14": 754, "15": 17, "6": 15, "0": 14}, "rejected_by_lenc_bit_any": 800}, "w_base_off": {"trials": 800, "rejected": 800, "accepted_exact": 0, "accepted_wrong": 0, "weight_status_or_hist": {"14": 767, "15": 33}, "scale_status_or_hist": {"0": 800}, "rejected_by_lenc_bit_any": 800}, "w_width": {"trials": 800, "rejected": 800, "accepted_exact": 0, "accepted_wrong": 0, "weight_status_or_hist": {"14": 800}, "scale_status_or_hist": {"14": 800}, "rejected_by_lenc_bit_any": 800}, "w_words": {"trials": 800, "rejected": 800, "accepted_exact": 0, "accepted_wrong": 0, "weight_status_or_hist": {"14": 775, "15": 25}, "scale_status_or_hist": {"0": 800}, "rejected_by_lenc_bit_any": 800}}, "trials": 6400, "seconds": 19.347572088241577, "variant": "G5HL + SHLd, section H1C"}
+lenc corruption {"clean_records_exact": 8, "by_field": {"header_sbase_alpha": {"trials": 800, "rejected": 800, "accepted_exact": 0, "accepted_wrong": 0, "weight_status_or_hist": {"15": 793, "14": 4, "31": 3}, "scale_status_or_hist": {"0": 402, "14": 187, "10": 51, "15": 160}, "rejected_by_lenc_bit_any": 800}, "s_base_off": {"trials": 800, "rejected": 800, "accepted_exact": 0, "accepted_wrong": 0, "weight_status_or_hist": {"14": 509, "15": 290, "31": 1}, "scale_status_or_hist": {"14": 665, "10": 110, "15": 25}, "rejected_by_lenc_bit_any": 800}, "s_width": {"trials": 800, "rejected": 800, "accepted_exact": 0, "accepted_wrong": 0, "weight_status_or_hist": {"14": 800}, "scale_status_or_hist": {"14": 800}, "rejected_by_lenc_bit_any": 800}, "s_pad": {"trials": 800, "rejected": 800, "accepted_exact": 0, "accepted_wrong": 0, "weight_status_or_hist": {"14": 800}, "scale_status_or_hist": {"14": 800}, "rejected_by_lenc_bit_any": 800}, "s_words": {"trials": 800, "rejected": 800, "accepted_exact": 0, "accepted_wrong": 0, "weight_status_or_hist": {"14": 639, "15": 141, "0": 17, "6": 3}, "scale_status_or_hist": {"14": 735, "10": 15, "15": 21, "6": 12, "0": 16, "2": 1}, "rejected_by_lenc_bit_any": 799}, "w_base_off": {"trials": 800, "rejected": 800, "accepted_exact": 0, "accepted_wrong": 0, "weight_status_or_hist": {"14": 754, "15": 46}, "scale_status_or_hist": {"0": 800}, "rejected_by_lenc_bit_any": 800}, "w_width": {"trials": 800, "rejected": 800, "accepted_exact": 0, "accepted_wrong": 0, "weight_status_or_hist": {"14": 800}, "scale_status_or_hist": {"14": 800}, "rejected_by_lenc_bit_any": 800}, "w_words": {"trials": 800, "rejected": 800, "accepted_exact": 0, "accepted_wrong": 0, "weight_status_or_hist": {"14": 757, "15": 43}, "scale_status_or_hist": {"0": 800}, "rejected_by_lenc_bit_any": 800}}, "trials": 6400, "seconds": 15.137238025665283, "variant": "G5L + SLd, section G14"}
+nt32/lb pipe checks {'P_A259/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_A259/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_CF5/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_CF5/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5c/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5c/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLc/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLc/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5d/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5d/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLd/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLd/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}}
+nt32/lb    P_A259       m1    204.0 /P_G5 1.0000 /P_CF5 1.0008 m3    232.9 /P_G5 1.0000 /P_CF5 0.9905 m24    945.5 /P_G5 1.0000 /P_CF5 0.9991 8streams   1013.8 /P_G5 1.0000 /P_CF5 0.9823
+nt32/lb    P_CF5        m1    203.9 /P_G5 1.0000 /P_CF5 1.0000 m3    228.5 /P_G5 1.0000 /P_CF5 1.0000 m24    947.5 /P_G5 1.0000 /P_CF5 1.0000 8streams   1039.4 /P_G5 1.0000 /P_CF5 1.0000
+nt32/lb    P_G5c        m1    212.2 /P_G5 1.0000 /P_CF5 1.0447 m3    230.5 /P_G5 1.0000 /P_CF5 1.0471 m24    982.2 /P_G5 1.0000 /P_CF5 1.0379 8streams   1080.9 /P_G5 1.0000 /P_CF5 1.0378
+nt32/lb    P_G5HLc      m1    210.2 /P_G5 1.0000 /P_CF5 1.0347 m3    226.4 /P_G5 1.0000 /P_CF5 1.0274 m24    958.7 /P_G5 1.0000 /P_CF5 1.0108 8streams   1040.1 /P_G5 1.0000 /P_CF5 1.0259
+nt32/lb    P_G5d        m1    210.1 /P_G5 1.0000 /P_CF5 1.0345 m3    224.5 /P_G5 1.0000 /P_CF5 1.0097 m24    963.8 /P_G5 1.0000 /P_CF5 1.0173 8streams   1034.3 /P_G5 1.0000 /P_CF5 1.0192
+nt32/lb    P_G5HLd      m1    207.0 /P_G5 1.0000 /P_CF5 1.0196 m3    218.4 /P_G5 1.0000 /P_CF5 0.9817 m24    945.3 /P_G5 1.0000 /P_CF5 0.9969 8streams   1040.6 /P_G5 1.0000 /P_CF5 0.9897
+nt64/lb pipe checks {'P_A259/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_A259/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_CF5/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_CF5/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5c/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5c/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLc/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLc/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5d/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5d/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLd/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLd/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}}
+nt64/lb    P_A259       m1    245.0 /P_G5 1.0000 /P_CF5 0.9837 m3    341.1 /P_G5 1.0000 /P_CF5 0.9727 m24    882.8 /P_G5 1.0000 /P_CF5 0.9964 8streams    957.4 /P_G5 1.0000 /P_CF5 0.9773
+nt64/lb    P_CF5        m1    249.1 /P_G5 1.0000 /P_CF5 1.0000 m3    349.3 /P_G5 1.0000 /P_CF5 1.0000 m24    884.0 /P_G5 1.0000 /P_CF5 1.0000 8streams    966.2 /P_G5 1.0000 /P_CF5 1.0000
+nt64/lb    P_G5c        m1    251.1 /P_G5 1.0000 /P_CF5 1.0082 m3    336.7 /P_G5 1.0000 /P_CF5 0.9703 m24    888.0 /P_G5 1.0000 /P_CF5 1.0035 8streams    985.4 /P_G5 1.0000 /P_CF5 1.0225
+nt64/lb    P_G5HLc      m1    255.2 /P_G5 1.0000 /P_CF5 1.0247 m3    343.2 /P_G5 1.0000 /P_CF5 0.9877 m24    892.1 /P_G5 1.0000 /P_CF5 1.0092 8streams    971.0 /P_G5 1.0000 /P_CF5 1.0128
+nt64/lb    P_G5d        m1    249.0 /P_G5 1.0000 /P_CF5 0.9999 m3    259.4 /P_G5 1.0000 /P_CF5 0.7750 m24    869.6 /P_G5 1.0000 /P_CF5 0.9828 8streams    980.0 /P_G5 1.0000 /P_CF5 0.9864
+nt64/lb    P_G5HLd      m1    251.1 /P_G5 1.0000 /P_CF5 1.0081 m3    263.5 /P_G5 1.0000 /P_CF5 0.7814 m24    877.9 /P_G5 1.0000 /P_CF5 0.9917 8streams    970.6 /P_G5 1.0000 /P_CF5 0.9909
+nt128/lb pipe checks {'P_A259/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_A259/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_CF5/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_CF5/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5c/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5c/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLc/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLc/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5d/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5d/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLd/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLd/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}}
+nt128/lb   P_A259       m1    255.3 /P_G5 1.0000 /P_CF5 0.9928 m3    263.3 /P_G5 1.0000 /P_CF5 0.9700 m24    783.7 /P_G5 1.0000 /P_CF5 0.9872 8streams    866.8 /P_G5 1.0000 /P_CF5 0.9415
+nt128/lb   P_CF5        m1    257.2 /P_G5 1.0000 /P_CF5 1.0000 m3    273.6 /P_G5 1.0000 /P_CF5 1.0000 m24    795.9 /P_G5 1.0000 /P_CF5 1.0000 8streams    932.4 /P_G5 1.0000 /P_CF5 1.0000
+nt128/lb   P_G5c        m1    261.2 /P_G5 1.0000 /P_CF5 1.0157 m3    263.4 /P_G5 1.0000 /P_CF5 0.9886 m24    793.8 /P_G5 1.0000 /P_CF5 0.9976 8streams    947.4 /P_G5 1.0000 /P_CF5 1.0062
+nt128/lb   P_G5HLc      m1    263.4 /P_G5 1.0000 /P_CF5 1.0240 m3    268.5 /P_G5 1.0000 /P_CF5 1.0085 m24    799.0 /P_G5 1.0000 /P_CF5 1.0065 8streams    962.7 /P_G5 1.0000 /P_CF5 0.9983
+nt128/lb   P_G5d        m1    259.2 /P_G5 1.0000 /P_CF5 1.0078 m3    257.2 /P_G5 1.0000 /P_CF5 0.9770 m24    778.4 /P_G5 1.0000 /P_CF5 0.9778 8streams    880.9 /P_G5 1.0000 /P_CF5 0.9337
+nt128/lb   P_G5HLd      m1    259.3 /P_G5 1.0000 /P_CF5 1.0081 m3    261.9 /P_G5 1.0000 /P_CF5 0.9849 m24    786.7 /P_G5 1.0000 /P_CF5 0.9895 8streams    902.9 /P_G5 1.0000 /P_CF5 0.9549
+nt256/lb pipe checks {'P_A259/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_A259/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_CF5/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_CF5/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5c/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5c/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLc/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLc/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5d/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5d/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLd/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLd/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}}
+nt256/lb   P_A259       m1    275.8 /P_G5 1.0000 /P_CF5 0.9888 m3    277.8 /P_G5 1.0000 /P_CF5 0.9716 m24    861.4 /P_G5 1.0000 /P_CF5 0.9870 8streams    908.9 /P_G5 1.0000 /P_CF5 0.9540
+nt256/lb   P_CF5        m1    279.7 /P_G5 1.0000 /P_CF5 1.0000 m3    361.6 /P_G5 1.0000 /P_CF5 1.0000 m24    872.6 /P_G5 1.0000 /P_CF5 1.0000 8streams    988.7 /P_G5 1.0000 /P_CF5 1.0000
+nt256/lb   P_G5c        m1    281.8 /P_G5 1.0000 /P_CF5 1.0077 m3    292.0 /P_G5 1.0000 /P_CF5 1.0047 m24    871.0 /P_G5 1.0000 /P_CF5 0.9976 8streams    944.1 /P_G5 1.0000 /P_CF5 0.9990
+nt256/lb   P_G5HLc      m1    285.9 /P_G5 1.0000 /P_CF5 1.0224 m3    289.9 /P_G5 1.0000 /P_CF5 1.0112 m24    874.6 /P_G5 1.0000 /P_CF5 1.0022 8streams    958.8 /P_G5 1.0000 /P_CF5 1.0088
+nt256/lb   P_G5d        m1    279.7 /P_G5 1.0000 /P_CF5 1.0000 m3    279.8 /P_G5 1.0000 /P_CF5 0.9793 m24    856.3 /P_G5 1.0000 /P_CF5 0.9802 8streams    944.6 /P_G5 1.0000 /P_CF5 0.9656
+nt256/lb   P_G5HLd      m1    281.8 /P_G5 1.0000 /P_CF5 1.0105 m3    283.9 /P_G5 1.0000 /P_CF5 0.9976 m24    862.2 /P_G5 1.0000 /P_CF5 0.9872 8streams    949.4 /P_G5 1.0000 /P_CF5 0.9633
+nt32/out4 pipe checks {'P_A259/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_A259/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_CF5/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_CF5/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5c/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5c/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLc/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLc/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5d/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5d/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLd/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLd/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}}
+nt32/out4  P_A259       m1    204.1 /P_G5 1.0000 /P_CF5 0.9470 m3    220.4 /P_G5 1.0000 /P_CF5 0.9357 m24   1147.0 /P_G5 1.0000 /P_CF5 0.9539 8streams   1234.0 /P_G5 1.0000 /P_CF5 0.9477
+nt32/out4  P_CF5        m1    216.2 /P_G5 1.0000 /P_CF5 1.0000 m3    234.7 /P_G5 1.0000 /P_CF5 1.0000 m24   1202.3 /P_G5 1.0000 /P_CF5 1.0000 8streams   1302.7 /P_G5 1.0000 /P_CF5 1.0000
+nt32/out4  P_G5c        m1    226.5 /P_G5 1.0000 /P_CF5 1.0475 m3    249.0 /P_G5 1.0000 /P_CF5 1.0610 m24   1281.2 /P_G5 1.0000 /P_CF5 1.0656 8streams   1395.3 /P_G5 1.0000 /P_CF5 1.0647
+nt32/out4  P_G5HLc      m1    220.4 /P_G5 1.0000 /P_CF5 1.0244 m3    236.7 /P_G5 1.0000 /P_CF5 1.0083 m24   1204.2 /P_G5 1.0000 /P_CF5 1.0002 8streams   1442.8 /P_G5 1.0000 /P_CF5 1.0394
+nt32/out4  P_G5d        m1    224.4 /P_G5 1.0000 /P_CF5 1.0383 m3    242.9 /P_G5 1.0000 /P_CF5 1.0350 m24   1264.8 /P_G5 1.0000 /P_CF5 1.0505 8streams   1341.5 /P_G5 1.0000 /P_CF5 1.0383
+nt32/out4  P_G5HLd      m1    216.4 /P_G5 1.0000 /P_CF5 1.0012 m3    230.6 /P_G5 1.0000 /P_CF5 0.9827 m24   1190.1 /P_G5 1.0000 /P_CF5 0.9898 8streams   1454.4 /P_G5 1.0000 /P_CF5 1.1047
+nt64/out4 pipe checks {'P_A259/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_A259/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_CF5/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_CF5/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5c/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5c/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLc/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLc/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5d/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5d/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLd/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLd/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}}
+nt64/out4  P_A259       m1    243.0 /P_G5 1.0000 /P_CF5 0.9454 m3    331.8 /P_G5 1.0000 /P_CF5 0.9403 m24   1057.1 /P_G5 1.0000 /P_CF5 0.9690 8streams   1168.0 /P_G5 1.0000 /P_CF5 0.9643
+nt64/out4  P_CF5        m1    257.2 /P_G5 1.0000 /P_CF5 1.0000 m3    310.5 /P_G5 1.0000 /P_CF5 1.0000 m24   1091.8 /P_G5 1.0000 /P_CF5 1.0000 8streams   1232.4 /P_G5 1.0000 /P_CF5 1.0000
+nt64/out4  P_G5c        m1    249.0 /P_G5 1.0000 /P_CF5 0.9681 m3    263.4 /P_G5 1.0000 /P_CF5 0.9654 m24   1072.4 /P_G5 1.0000 /P_CF5 0.9820 8streams   1202.3 /P_G5 1.0000 /P_CF5 1.0062
+nt64/out4  P_G5HLc      m1    253.2 /P_G5 1.0000 /P_CF5 0.9846 m3    267.5 /P_G5 1.0000 /P_CF5 0.9774 m24   1081.5 /P_G5 1.0000 /P_CF5 0.9896 8streams   1228.2 /P_G5 1.0000 /P_CF5 0.9972
+nt64/out4  P_G5d        m1    246.9 /P_G5 1.0000 /P_CF5 0.9603 m3    257.2 /P_G5 1.0000 /P_CF5 0.8632 m24   1056.0 /P_G5 1.0000 /P_CF5 0.9662 8streams   1171.3 /P_G5 1.0000 /P_CF5 0.9571
+nt64/out4  P_G5HLd      m1    249.0 /P_G5 1.0000 /P_CF5 0.9686 m3    261.3 /P_G5 1.0000 /P_CF5 0.9547 m24   1065.1 /P_G5 1.0000 /P_CF5 0.9748 8streams   1162.8 /P_G5 1.0000 /P_CF5 0.9667
+nt128/out4 pipe checks {'P_A259/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_A259/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_CF5/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_CF5/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5c/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5c/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLc/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLc/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5d/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5d/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLd/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLd/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}}
+nt128/out4 P_A259       m1    254.2 /P_G5 1.0000 /P_CF5 0.9539 m3    324.7 /P_G5 1.0000 /P_CF5 0.9511 m24   1081.5 /P_G5 1.0000 /P_CF5 0.9679 8streams   1132.9 /P_G5 1.0000 /P_CF5 0.9654
+nt128/out4 P_CF5        m1    267.5 /P_G5 1.0000 /P_CF5 1.0000 m3    310.5 /P_G5 1.0000 /P_CF5 1.0000 m24   1116.2 /P_G5 1.0000 /P_CF5 1.0000 8streams   1192.1 /P_G5 1.0000 /P_CF5 1.0000
+nt128/out4 P_G5c        m1    259.3 /P_G5 1.0000 /P_CF5 0.9689 m3    263.3 /P_G5 1.0000 /P_CF5 0.9592 m24   1096.7 /P_G5 1.0000 /P_CF5 0.9818 8streams   1133.5 /P_G5 1.0000 /P_CF5 0.9730
+nt128/out4 P_G5HLc      m1    261.4 /P_G5 1.0000 /P_CF5 0.9774 m3    267.4 /P_G5 1.0000 /P_CF5 0.9701 m24   1104.4 /P_G5 1.0000 /P_CF5 0.9899 8streams   1176.4 /P_G5 1.0000 /P_CF5 0.9858
+nt128/out4 P_G5d        m1    257.2 /P_G5 1.0000 /P_CF5 0.9614 m3    257.1 /P_G5 1.0000 /P_CF5 0.9338 m24   1081.5 /P_G5 1.0000 /P_CF5 0.9680 8streams   1147.9 /P_G5 1.0000 /P_CF5 0.9590
+nt128/out4 P_G5HLd      m1    257.3 /P_G5 1.0000 /P_CF5 0.9622 m3    260.2 /P_G5 1.0000 /P_CF5 0.9201 m24   1090.8 /P_G5 1.0000 /P_CF5 0.9769 8streams   1133.0 /P_G5 1.0000 /P_CF5 0.9690
+nt256/out4 pipe checks {'P_A259/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_A259/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_CF5/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_CF5/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5c/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5c/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLc/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLc/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5d/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5d/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLd/single': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}, 'P_G5HLd/multi': {'weight_bad_streams': 0, 'scale_bad_streams': 0, 'errors': 0}}
+nt256/out4 P_A259       m1    279.9 /P_G5 1.0000 /P_CF5 0.9544 m3    355.6 /P_G5 1.0000 /P_CF5 0.9515 m24    879.9 /P_G5 1.0000 /P_CF5 0.9760 8streams    988.9 /P_G5 1.0000 /P_CF5 0.9749
+nt256/out4 P_CF5        m1    294.0 /P_G5 1.0000 /P_CF5 1.0000 m3    322.7 /P_G5 1.0000 /P_CF5 1.0000 m24    901.3 /P_G5 1.0000 /P_CF5 1.0000 8streams   1012.3 /P_G5 1.0000 /P_CF5 1.0000
+nt256/out4 P_G5c        m1    287.9 /P_G5 1.0000 /P_CF5 0.9792 m3    292.0 /P_G5 1.0000 /P_CF5 0.9663 m24    898.2 /P_G5 1.0000 /P_CF5 0.9953 8streams    984.0 /P_G5 1.0000 /P_CF5 0.9843
+nt256/out4 P_G5HLc      m1    283.9 /P_G5 1.0000 /P_CF5 0.9654 m3    288.1 /P_G5 1.0000 /P_CF5 0.9593 m24    896.3 /P_G5 1.0000 /P_CF5 0.9931 8streams    969.9 /P_G5 1.0000 /P_CF5 0.9778
+nt256/out4 P_G5d        m1    285.9 /P_G5 1.0000 /P_CF5 0.9727 m3    285.9 /P_G5 1.0000 /P_CF5 0.9277 m24    881.9 /P_G5 1.0000 /P_CF5 0.9784 8streams    981.0 /P_G5 1.0000 /P_CF5 0.9699
+nt256/out4 P_G5HLd      m1    279.8 /P_G5 1.0000 /P_CF5 0.9519 m3    281.9 /P_G5 1.0000 /P_CF5 0.9079 m24    884.0 /P_G5 1.0000 /P_CF5 0.9794 8streams    984.6 /P_G5 1.0000 /P_CF5 0.9681
+done 3075 MHz, 17001 MHz, 77 %, 522.18 W, 55.15
+[  165.9 s] RESULT gpu_v1_profile DONE EXPERIMENTAL untested: weight_all_exact True, scales exact True, h32 True (NVIDIA GeForce RTX 5090)
+command exit code 0 03:49:08
+lock: released 03:49:08

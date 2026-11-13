@@ -1,0 +1,5097 @@
+{
+ "case": "M1",
+ "seed": 20261482,
+ "by_kind": {
+  "R0": {
+   "trials": 100,
+   "accepted_spec": 0,
+   "silent": 0,
+   "silent_rate": 0.0,
+   "silent_ci95": [
+    0.0,
+    0.03621669264517642
+   ],
+   "silent_with_block_flip": 0,
+   "stages": {
+    "wlengths": 91,
+    "lengths": 9
+   },
+   "rows": [
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9434
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4625
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4169
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2903
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11833
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5847
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6231
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11580
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11606
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6615
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 7862
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11416
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4861
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 650
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2582
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 7462
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6381
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5368
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11221
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6084
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6661
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 7989
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 7558
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 3061
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 3718
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 1800
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8977
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9749
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8459
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8860
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 3588
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12861
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 1463
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12449
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12015
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 1646
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4531
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11653
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9735
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6976
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5053
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 1305
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 3339
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12842
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2007
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "length table size",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 379
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6153
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12144
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "length table parse: ValueError",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 553
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 10573
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9864
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8274
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5833
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4749
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11934
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 10104
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12009
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9692
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 13573
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11831
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9474
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6552
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 16868
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 16488
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6476
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 13500
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2423
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 1767
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6742
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 17355
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 3103
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 7187
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 10136
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12031
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 13337
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2717
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 10770
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2635
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 3158
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8987
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 14655
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 10278
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5352
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5006
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4801
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8612
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8597
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 13781
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2771
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 15994
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 14939
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 14702
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 10788
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 14353
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 16873
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8079
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4841
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5921
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11801
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6315
+    }
+   ],
+   "seconds": 1.8
+  },
+  "HASH": {
+   "trials": 100,
+   "accepted_spec": 0,
+   "silent": 0,
+   "silent_rate": 0.0,
+   "silent_ci95": [
+    0.0,
+    0.03621669264517642
+   ],
+   "silent_with_block_flip": 0,
+   "stages": {
+    "wlengths": 91,
+    "lengths": 9
+   },
+   "rows": [
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9437
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4627
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4171
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2904
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11836
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5849
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6233
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11583
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11610
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6617
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 7864
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11419
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4862
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 650
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2583
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 7464
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6383
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5370
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11225
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6086
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6663
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 7992
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 7560
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 3062
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 3719
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 1800
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8980
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9752
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8461
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8862
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 3590
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12865
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 1463
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12453
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12018
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 1647
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4533
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11656
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9738
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6978
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5054
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 1306
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 3340
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12846
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2008
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "length table size",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 379
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6155
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12147
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "length table size",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 554
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 10576
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9857
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8268
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5829
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4746
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11926
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 10097
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12001
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9686
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 13564
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11823
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9467
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6548
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 16856
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 16477
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6472
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 13490
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2421
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 1766
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6738
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 17343
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 3101
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 7182
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 10129
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12022
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 13327
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2715
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 10762
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2633
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 3156
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8980
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 14645
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 10271
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5348
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5003
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4798
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8606
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8591
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 13771
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2769
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 15983
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 14928
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 14692
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 10780
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 14343
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 16861
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8073
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4837
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5917
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11793
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6311
+    }
+   ],
+   "seconds": 1.7
+  },
+  "HASH32": {
+   "trials": 100,
+   "accepted_spec": 0,
+   "silent": 0,
+   "silent_rate": 0.0,
+   "silent_ci95": [
+    0.0,
+    0.03621669264517642
+   ],
+   "silent_with_block_flip": 0,
+   "stages": {
+    "wlengths": 91,
+    "lengths": 9
+   },
+   "rows": [
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9442
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4629
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4173
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2906
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11843
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5853
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6237
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11590
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11617
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6621
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 7869
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11426
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4865
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 651
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2584
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 7469
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6386
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5373
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11232
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6090
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6667
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 7996
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 7564
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 3063
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 3721
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 1802
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8985
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9758
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8466
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8868
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 3592
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12873
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 1464
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12460
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12025
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 1648
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4535
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11663
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9744
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6982
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5057
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 1307
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 3342
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12853
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2009
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "length table size",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 379
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6159
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12155
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "length table size",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 554
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 10582
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9857
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8268
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5829
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4746
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11926
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 10097
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12001
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9686
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 13564
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11823
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9467
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6548
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 16856
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 16477
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6472
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 13490
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2421
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 1766
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6738
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 17343
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 3101
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 7182
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 10129
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12022
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 13327
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2715
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 10762
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2633
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 3156
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8980
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 14645
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 10271
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5348
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5003
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4798
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8606
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8591
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 13771
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2769
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 15983
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 14928
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 14692
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 10780
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 14343
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 16861
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8073
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4837
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5917
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11793
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6311
+    }
+   ],
+   "seconds": 1.7
+  },
+  "TAIL": {
+   "trials": 100,
+   "accepted_spec": 0,
+   "silent": 0,
+   "silent_rate": 0.0,
+   "silent_ci95": [
+    0.0,
+    0.03621669264517642
+   ],
+   "silent_with_block_flip": 0,
+   "stages": {
+    "wlengths": 91,
+    "lengths": 9
+   },
+   "rows": [
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9479
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4647
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4189
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2917
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11890
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5875
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6261
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11635
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11662
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6646
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 7900
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11471
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4884
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 653
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2594
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 7498
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6411
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5394
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11275
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6114
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6693
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8027
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 7594
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 3075
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 3735
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 1809
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9020
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9796
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8499
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8902
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 3606
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12923
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 1470
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12509
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12072
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 1654
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4553
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11708
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9782
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 7009
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5077
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 1312
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 3355
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12903
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2017
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "length table size",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 381
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6183
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12202
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "length table size",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 556
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 10623
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9846
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8258
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5822
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4741
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11912
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 10085
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11987
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9674
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 13548
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11810
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9456
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6540
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 16837
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 16458
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6464
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 13475
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2419
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 1763
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6730
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 17323
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 3097
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 7174
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 10118
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12008
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 13312
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2712
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 10750
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2630
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 3152
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8970
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 14628
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 10259
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5342
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4997
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4793
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8597
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8581
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 13756
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2766
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 15965
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 14911
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 14675
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 10768
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 14326
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 16842
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8064
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4832
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5910
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11779
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6304
+    }
+   ],
+   "seconds": 1.8
+  },
+  "TAILD": {
+   "trials": 100,
+   "accepted_spec": 0,
+   "silent": 0,
+   "silent_rate": 0.0,
+   "silent_ci95": [
+    0.0,
+    0.03621669264517642
+   ],
+   "silent_with_block_flip": 0,
+   "stages": {
+    "wlengths": 91,
+    "lengths": 9
+   },
+   "rows": [
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9479
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4647
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4189
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2917
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11890
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5875
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6261
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11635
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11662
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6646
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 7900
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11471
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4884
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 653
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2594
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 7498
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6411
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5394
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11275
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6114
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6693
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8027
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 7594
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 3075
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 3735
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 1809
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9020
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9796
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8499
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8902
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 3606
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12923
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 1470
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12509
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12072
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 1654
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4553
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11708
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9782
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 7009
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5077
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 1312
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 3355
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12903
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2017
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "length table size",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 381
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6183
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12202
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "length table size",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 556
+    },
+    {
+     "rec": "L00_E113.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 10623
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9846
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8258
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5822
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4741
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11912
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 10085
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11987
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9674
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 13548
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11810
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 9456
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6540
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 16837
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 16458
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6464
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 13475
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2419
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "lengths",
+     "msg": "scale lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 1763
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6730
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 17323
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 3097
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 7174
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 10118
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 12008
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 13312
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2712
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 10750
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2630
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 3152
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8970
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 14628
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 10259
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5342
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4997
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4793
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8597
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8581
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 13756
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 2766
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 15965
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 14911
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 14675
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 10768
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 14326
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 16842
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 8064
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 4832
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 5910
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 11779
+    },
+    {
+     "rec": "L39_E156.bin",
+     "status": "rejected",
+     "stage": "wlengths",
+     "msg": "weight lengths",
+     "ceilref_reject": null,
+     "n_dec_s": 0,
+     "n_dec_w": 0,
+     "pos_rel": 6304
+    }
+   ],
+   "seconds": 1.5
+  }
+ },
+ "seconds": 1.8
+}

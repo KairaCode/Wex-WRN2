@@ -1,0 +1,41 @@
+m0 L00_E113.bin: table80_ideal=3.76207 table80_q14=3.76207 tableNtr_ideal=3.76195 latent_seq_float=3.69466 latent_seq_q14=3.69474 runctx_ideal=3.77286 runctx_q14=3.77287 (55s)
+m0 L13_E117.bin: table80_ideal=3.77000 table80_q14=3.77000 tableNtr_ideal=3.76987 latent_seq_float=3.70151 latent_seq_q14=3.70158 runctx_ideal=3.78054 runctx_q14=3.78053 (89s)
+m0 L26_E160.bin: table80_ideal=3.76788 table80_q14=3.76788 tableNtr_ideal=3.76776 latent_seq_float=3.69981 latent_seq_q14=3.69989 runctx_ideal=3.77853 runctx_q14=3.77853 (127s)
+m0 L39_E156.bin: table80_ideal=3.80506 table80_q14=3.80504 tableNtr_ideal=3.83860 latent_seq_float=3.74168 latent_seq_q14=3.74163 runctx_ideal=3.86526 runctx_q14=3.86320 (160s)
+m1 L00_E113.bin: table80_ideal=3.79634 table80_q14=3.79633 tableNtr_ideal=3.82384 latent_seq_float=3.73209 latent_seq_q14=3.73206 runctx_ideal=3.84747 runctx_q14=3.84583 (240s)
+m1 L13_E117.bin: table80_ideal=3.79089 table80_q14=3.79088 tableNtr_ideal=3.81432 latent_seq_float=3.72596 latent_seq_q14=3.72595 runctx_ideal=3.83598 runctx_q14=3.83461 (301s)
+m1 L26_E160.bin: table80_ideal=3.78485 table80_q14=3.78484 tableNtr_ideal=3.80549 latent_seq_float=3.72020 latent_seq_q14=3.72020 runctx_ideal=3.82540 runctx_q14=3.82423 (357s)
+m1 L39_E156.bin: table80_ideal=3.79937 table80_q14=3.79936 tableNtr_ideal=3.81297 latent_seq_float=3.72628 latent_seq_q14=3.72629 runctx_ideal=3.82788 runctx_q14=3.82685 (391s)
+m2 L00_E113.bin: table80_ideal=3.79526 table80_q14=3.79525 tableNtr_ideal=3.80766 latent_seq_float=3.72301 latent_seq_q14=3.72302 runctx_ideal=3.82214 runctx_q14=3.82122 (459s)
+m2 L13_E117.bin: table80_ideal=3.79240 table80_q14=3.79239 tableNtr_ideal=3.80385 latent_seq_float=3.72068 latent_seq_q14=3.72070 runctx_ideal=3.81801 runctx_q14=3.81718 (498s)
+m2 L26_E160.bin: table80_ideal=3.78872 table80_q14=3.78871 tableNtr_ideal=3.79952 latent_seq_float=3.71804 latent_seq_q14=3.71807 runctx_ideal=3.81312 runctx_q14=3.81237 (537s)
+m2 L39_E156.bin: table80_ideal=3.79796 table80_q14=3.79795 tableNtr_ideal=3.80446 latent_seq_float=3.72075 latent_seq_q14=3.72077 runctx_ideal=3.81472 runctx_q14=3.81403 (571s)
+{
+ "train": [
+  "L00_E097.bin",
+  "L05_E072.bin",
+  "L11_E114.bin",
+  "L17_E002.bin",
+  "L22_E166.bin",
+  "L28_E052.bin",
+  "L34_E003.bin",
+  "L39_E137.bin"
+ ],
+ "test": [
+  "L00_E113.bin",
+  "L13_E117.bin",
+  "L26_E160.bin",
+  "L39_E156.bin"
+ ],
+ "K": 4,
+ "bpw_no_flush": {
+  "table80_ideal": 3.797959800974821,
+  "table80_q14": 3.7979456187184497,
+  "tableNtr_ideal": 3.8044625072436853,
+  "latent_seq_float": 3.720748446473529,
+  "latent_seq_q14": 3.7207714702793915,
+  "runctx_ideal": 3.814716526568076,
+  "runctx_q14": 3.814027911646876
+ },
+ "runctx_rows": 2688
+}

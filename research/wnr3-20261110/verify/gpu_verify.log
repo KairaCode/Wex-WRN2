@@ -1,0 +1,53 @@
+lock: taken 02:57:10; other deepseek_v4.exe now: 1
+NVIDIA GeForce RTX waiting 02:58:18: lock wnr3-impl-20261110 VERIFY gpu (~40 min) 2026-11-10T02:57:10 / engine 1
+waiting 03:00:19: lock wnr3-impl-20261110 VERIFY gpu (~40 min) 2026-11-10T02:57:10 / engine 0
+waiting 03:02:20: lock wnr3-impl-20261110 VERIFY gpu (~40 min) 2026-11-10T02:57:10 / engine 0
+waiting 03:04:21: lock wnr3-impl-20261110 VERIFY gpu (~40 min) 2026-11-10T02:57:10 / engine 0
+waiting 03:06:22: lock wnr3-impl-20261110 VERIFY gpu (~40 min) 2026-11-10T02:57:10 / engine 0
+waiting 03:08:23: lock wnr3-impl-20261110 VERIFY gpu (~40 min) 2026-11-10T02:57:10 / engine 0
+waiting 03:10:24: lock wnr3-impl-20261110 VERIFY gpu (~40 min) 2026-11-10T02:57:10 / engine 0
+waiting 03:12:25: lock wnr3-impl-20261110 VERIFY gpu (~40 min) 2026-11-10T02:57:10 / engine 0
+waiting 03:14:26: lock wnr3-impl-20261110 VERIFY gpu (~40 min) 2026-11-10T02:57:10 / engine 0
+waiting 03:16:27: lock wnr3-impl-20261110 VERIFY gpu (~40 min) 2026-11-10T02:57:10 / engine 0
+waiting 03:18:28: lock wnr3-impl-20261110 VERIFY gpu (~40 min) 2026-11-10T02:57:10 / engine 0
+waiting 03:20:29: lock wnr3-impl-20261110 VERIFY gpu (~40 min) 2026-11-10T02:57:10 / engine 0
+waiting 03:22:30: lock wnr3-impl-20261110 VERIFY gpu (~40 min) 2026-11-10T02:57:10 / engine 0
+waiting 03:24:31: lock wnr3-impl-20261110 VERIFY gpu (~40 min) 2026-11-10T02:57:10 / engine 0
+waiting 03:26:33: lock wnr3-impl-20261110 VERIFY gpu (~40 min) 2026-11-10T02:57:10 / engine 0
+waiting 03:28:34: lock wnr3-impl-20261110 VERIFY gpu (~40 min) 2026-11-10T02:57:10 / engine 0
+waiting 03:30:36: lock wnr3-impl-20261110 VERIFY gpu (~40 min) 2026-11-10T02:57:10 / engine 0
+waiting 03:32:39: lock v41gp integrator C2: DLL builds + tiny GPU gates (no real mo / engine 0
+waiting 03:34:48: lock v41gp integrator C2: DLL builds + tiny GPU gates (no real mo / engine 0
+waiting 03:36:52: lock v41gp integrator C2: DLL builds + tiny GPU gates (no real mo / engine 1
+waiting 03:38:56: lock v41gp integrator C2: DLL builds + tiny GPU gates (no real mo / engine 0
+waiting 03:40:59: lock v41gp integrator C2: DLL builds + tiny GPU gates (no real mo / engine 0
+waiting 03:43:01: lock v41gp integrator C2: DLL builds + tiny GPU gates (no real mo / engine 0
+waiting 03:45:03: lock v41gp integrator C2: DLL builds + tiny GPU gates (no real mo / engine 0
+waiting 03:47:06: lock v41gp integrator C2: DLL builds + tiny GPU gates (no real mo / engine 0
+./run_gpu_verify.sh: line 21: syntax error near unexpected token `)'
+./run_gpu_verify.sh: line 21: `>/dev/null); KAIRA engines: $(kaira_engine))"; exit 3; }'
+8,"ms_per_record_p50":0.402},{"api":"batch","batch":10,"ms_per_record_p50":0.381},{"api":"batch","batch":16,"ms_per_record_p50":0.373}]}
+ALL OK
+== 2. round 1: WNR3 helper, WNR2 production sample
+{"records":64,"verified":512,"record_mib":16.14,"timing":[{"api":"single","ms_per_record_p50":0.743},{"api":"batch","batch":1,"ms_per_record_p50":0.755},{"api":"batch","batch":2,"ms_per_record_p50":0.546},{"api":"batch","batch":4,"ms_per_record_p50":0.447},{"api":"batch","batch":6,"ms_per_record_p50":0.428},{"api":"batch","batch":8,"ms_per_record_p50":0.413},{"api":"batch","batch":10,"ms_per_record_p50":0.408},{"api":"batch","batch":16,"ms_per_record_p50":0.399}]}
+ALL OK
+== 2. round 2: deployed helper, WNR2 production sample
+{"records":64,"verified":512,"record_mib":16.14,"timing":[{"api":"single","ms_per_record_p50":0.718},{"api":"batch","batch":1,"ms_per_record_p50":0.734},{"api":"batch","batch":2,"ms_per_record_p50":0.528},{"api":"batch","batch":4,"ms_per_record_p50":0.440},{"api":"batch","batch":6,"ms_per_record_p50":0.418},{"api":"batch","batch":8,"ms_per_record_p50":0.398},{"api":"batch","batch":10,"ms_per_record_p50":0.387},{"api":"batch","batch":16,"ms_per_record_p50":0.377}]}
+ALL OK
+== 2. round 2: WNR3 helper, WNR3-CZ 103
+[wex] WNR3 record failed its integrity check (error 0x3); rejected
+{"records":103,"verified":824,"record_mib":15.31,"timing":[{"api":"single","ms_per_record_p50":0.706},{"api":"batch","batch":1,"ms_per_record_p50":0.700},{"api":"batch","batch":2,"ms_per_record_p50":0.525},{"api":"batch","batch":4,"ms_per_record_p50":0.431},{"api":"batch","batch":6,"ms_per_record_p50":0.408},{"api":"batch","batch":8,"ms_per_record_p50":0.399},{"api":"batch","batch":10,"ms_per_record_p50":0.382},{"api":"batch","batch":16,"ms_per_record_p50":0.366}]}
+ALL OK
+== 2. round 2: WNR3 helper, WNR2 production sample
+{"records":64,"verified":512,"record_mib":16.14,"timing":[{"api":"single","ms_per_record_p50":0.756},{"api":"batch","batch":1,"ms_per_record_p50":0.720},{"api":"batch","batch":2,"ms_per_record_p50":0.542},{"api":"batch","batch":4,"ms_per_record_p50":0.451},{"api":"batch","batch":6,"ms_per_record_p50":0.424},{"api":"batch","batch":8,"ms_per_record_p50":0.400},{"api":"batch","batch":10,"ms_per_record_p50":0.389},{"api":"batch","batch":16,"ms_per_record_p50":0.383}]}
+ALL OK
+== 3. GPU corruption audit
+{"record":0,"layer":0,"expert":113,"codec":4,"total":16891904,"streams":19440,"header":{"bytes":32,"flips":256,"rejected":256,"harmless":0,"wrong":0,"slab_touched_on_reject":0,"s":0.0},"lengths4k":{"bytes":4096,"flips":32768,"rejected":32768,"harmless":0,"wrong":0,"slab_touched_on_reject":0,"s":3.9},"scale_streams_m0":{"bytes":48325,"flips":386600,"rejected":386600,"harmless":0,"wrong":0,"slab_touched_on_reject":0,"s":194.3},"weight_streams_9":{"bytes":8693,"flips":69544,"rejected":67463,"harmless":0,"wrong":2081,"slab_touched_on_reject":0,"s":35.1}}
+{"record":1,"layer":39,"expert":120,"codec":4,"total":18321408,"streams":19440,"header":{"bytes":32,"flips":256,"rejected":256,"harmless":0,"wrong":0,"slab_touched_on_reject":0,"s":0.0},"lengths4k":{"bytes":4096,"flips":32768,"rejected":32768,"harmless":0,"wrong":0,"slab_touched_on_reject":0,"s":4.0},"scale_streams_m0":{"bytes":142508,"flips":1140064,"rejected":1140038,"harmless":0,"wrong":26,"slab_touched_on_reject":0,"s":602.6},"weight_streams_9":{"bytes":9051,"flips":72408,"rejected":70851,"harmless":0,"wrong":1557,"slab_touched_on_reject":0,"s":38.1}}
+{"record":0,"layer":0,"expert":113,"codec":5,"total":16056320,"streams":19440[wex] WNR3 record failed its integrity check (error 0xb); rejected
+,"header":{"bytes":32,"flips":256,"rejected":256,"harmless":0,"wrong":0,"slab_touched_on_reject":0,"s":0.0},"lengths4k":{"bytes":4096,"flips":32768,"rejected":32768,"harmless":0,"wrong":0,"slab_touched_on_reject":0,"s":3.8},"scale_streams_m0":{"bytes":46136,"flips":369088,"rejected":369088,"harmless":0,"wrong":0,"slab_touched_on_reject":0,"s":174.8},"weight_streams_9":{"bytes":8270,"flips":66160,"rejected":66160,"harmless":0,"wrong":0,"slab_touched_on_reject":0,"s":31.7}}
+{"record":40,"layer":39,"expert":120,"codec":5,"total":17358848,"streams":19440,"header":{"bytes":32,"flips":256,"rejected":256,"harmless":0,"wrong":0,"slab_touched_on_reject":0,"s":0.0},"lengths4k":{"bytes":4096,"flips":32768,"rejected":32768,"harmless":0,"wrong":0,"slab_touched_on_reject":0,"s":3.9},"scale_streams_m0":{"bytes":148890,"flips":1191120,"rejected":1191120,"harmless":0,"wrong":0,"slab_touched_on_reject":0,"s":636.3},"weight_streams_9":{"bytes":8564,"flips":68512,"rejected":68512,"harmless":0,"wrong":0,"slab_touched_on_reject":0,"s":36.8}}
+{"record":0,"layer":0,"expert":113,"codec":5,"total":16572416,"streams":19440[wex] WNR3 record failed its integrity check (error 0x3); rejected
+,"header":{"bytes":32,"flips":256,"rejected":256,"harmless":0,"wrong":0,"slab_touched_on_reject":0,"s":0.0},"lengths4k":{"bytes":4096,"flips":32768,"rejected":32768,"harmless":0,"wrong":0,"slab_touched_on_reject":0,"s":4.0},"scale_streams_m0":{"bytes":46138,"flips":369104,"rejected":369104,"harmless":0,"wrong":0,"slab_touched_on_reject":0,"s":196.2},"weight_streams_9":{"bytes":8535,"flips":68280,"rejected":68280,"harmless":0,"wrong":0,"slab_touched_on_reject":0,"s":36.9}}
+1270 MiB, 50 %, 49.52
+lock: released 03:31:03

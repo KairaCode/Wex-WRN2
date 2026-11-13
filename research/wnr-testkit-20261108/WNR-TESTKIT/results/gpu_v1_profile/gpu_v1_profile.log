@@ -1,0 +1,8 @@
+
+===== 2026-11-08T03:46:22 =====
+[    0.0 s] *** EXPERIMENTAL gpu_v1_profile (team 5 gpu-v1 partial work; this code version never completed a run) ***
+[    0.0 s] team-4 baseline encode dir <KAIRA>\lab\wnr-testkit-20261108\wnr-testkit\results\gpu_bench\enc (verified cache)
+[    0.1 s] experts ok (sha256 verified): 8 sample_dir <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\data\v41-sample
+[    1.0 s] run <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\venv\Scripts\python.exe -I -X utf8 <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\tests\gpu\src_v1\v1enc.py <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\results\gpu_v1_profile\v1enc
+[   37.1 s] run <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\venv\Scripts\python.exe -I -X utf8 <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\tests\gpu\src_v1\v1bench.py <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\results\gpu_v1_profile\v1enc <KAIRA>\lab\wnr-testkit-20261108\wnr-testkit\results\gpu_bench\enc <KAIRA>\lab\wnr-testkit-20261108\WNR-TESTKIT\results\gpu_v1_profile\bench_v1.json 41 32,64,128,256 lb,out4
+[  165.9 s] RESULT gpu_v1_profile DONE EXPERIMENTAL untested: weight_all_exact True, scales exact True, h32 True (NVIDIA GeForce RTX 5090)

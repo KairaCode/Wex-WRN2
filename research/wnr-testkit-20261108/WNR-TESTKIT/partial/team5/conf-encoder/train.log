@@ -1,0 +1,186 @@
+﻿0 L00_E097.bin 5.3s
+1 L00_E144.bin 10.5s
+2 L01_E008.bin 15.8s
+3 L01_E155.bin 20.8s
+4 L02_E055.bin 24.6s
+5 L02_E079.bin 28.5s
+6 L03_E016.bin 32.3s
+7 L03_E079.bin 35.9s
+8 L04_E019.bin 39.5s
+9 L04_E054.bin 43.4s
+10 L05_E042.bin 47.2s
+11 L05_E072.bin 51.4s
+12 L06_E060.bin 55.2s
+13 L06_E140.bin 59.0s
+14 L07_E044.bin 62.7s
+15 L07_E161.bin 66.6s
+16 L08_E006.bin 70.4s
+17 L08_E154.bin 74.1s
+18 L09_E059.bin 77.6s
+19 L09_E132.bin 81.1s
+20 L10_E015.bin 84.5s
+21 L10_E109.bin 87.9s
+22 L11_E012.bin 91.5s
+23 L11_E114.bin 94.7s
+24 L12_E033.bin 97.9s
+25 L12_E157.bin 101.3s
+26 L13_E018.bin 104.5s
+27 L13_E132.bin 107.7s
+28 L14_E105.bin 111.0s
+29 L14_E157.bin 114.2s
+30 L15_E025.bin 117.3s
+31 L15_E118.bin 120.7s
+32 L16_E016.bin 124.9s
+33 L16_E052.bin 129.2s
+34 L17_E002.bin 133.2s
+35 L17_E056.bin 137.5s
+36 L18_E066.bin 141.4s
+37 L18_E089.bin 145.4s
+38 L19_E092.bin 149.6s
+39 L19_E146.bin 154.3s
+40 L20_E005.bin 159.0s
+41 L20_E095.bin 164.0s
+42 L21_E001.bin 169.1s
+43 L21_E063.bin 173.3s
+44 L22_E049.bin 178.1s
+45 L22_E166.bin 182.3s
+46 L23_E041.bin 187.4s
+47 L23_E115.bin 192.1s
+48 L24_E033.bin 197.5s
+49 L24_E065.bin 202.6s
+50 L25_E000.bin 206.6s
+51 L25_E114.bin 211.3s
+52 L26_E002.bin 215.8s
+53 L26_E151.bin 221.6s
+54 L27_E016.bin 227.4s
+55 L27_E085.bin 231.3s
+56 L28_E052.bin 235.5s
+57 L28_E108.bin 240.1s
+58 L29_E020.bin 244.5s
+59 L29_E152.bin 249.4s
+60 L30_E002.bin 253.4s
+61 L30_E110.bin 258.5s
+62 L31_E080.bin 263.4s
+63 L31_E146.bin 267.6s
+64 L32_E030.bin 272.4s
+65 L32_E172.bin 276.6s
+66 L33_E078.bin 280.8s
+67 L33_E181.bin 285.5s
+68 L34_E003.bin 290.2s
+69 L34_E080.bin 294.9s
+70 L35_E008.bin 299.3s
+71 L35_E158.bin 303.5s
+72 L36_E066.bin 307.5s
+73 L36_E127.bin 311.6s
+74 L37_E012.bin 316.9s
+75 L37_E158.bin 320.8s
+76 L38_E003.bin 327.3s
+77 L38_E048.bin 333.1s
+78 L39_E032.bin 337.6s
+79 L39_E137.bin 342.8s
+{'w1_weight_freqs_equal': True, 'w1_scale_freqs_equal': True, 'w1_etab_equal': True, 'w1_etab_maxabs_diff': 0, 'w2_weight_freqs_equal': True, 'w2_scale_freqs_equal': True, 'w2_etab_equal': True, 'w2_etab_maxabs_diff': 0, 'w3_weight_freqs_equal': True, 'w3_scale_freqs_equal': True, 'w3_etab_equal': True, 'w3_etab_maxabs_diff': 0}
+{
+ "blob_bytes": 57736,
+ "model_id": 936500218,
+ "model_id_hex": "0x37D1DBFA",
+ "blob_sha256": "39a273d39be1b18fecdc01f601774b16ea2f40be9d028ebbd64cb99a62e29e2b",
+ "gate_failures": [],
+ "seconds": 343.31305718421936,
+ "training_experts": [
+  0,
+  2,
+  4,
+  6,
+  8,
+  10,
+  12,
+  14,
+  16,
+  18,
+  20,
+  22,
+  24,
+  26,
+  28,
+  30,
+  32,
+  34,
+  36,
+  38,
+  40,
+  42,
+  44,
+  46,
+  48,
+  50,
+  52,
+  54,
+  56,
+  58,
+  60,
+  62,
+  64,
+  66,
+  68,
+  70,
+  72,
+  74,
+  76,
+  78,
+  80,
+  82,
+  84,
+  86,
+  88,
+  90,
+  92,
+  94,
+  96,
+  98,
+  100,
+  102,
+  104,
+  106,
+  108,
+  110,
+  112,
+  114,
+  116,
+  118,
+  120,
+  122,
+  124,
+  126,
+  128,
+  130,
+  132,
+  134,
+  136,
+  138,
+  140,
+  142,
+  144,
+  146,
+  148,
+  150,
+  152,
+  154,
+  156,
+  158
+ ],
+ "check_set0_vs_ceilref_fg_a0_K0_c0": {
+  "w1_weight_freqs_equal": true,
+  "w1_scale_freqs_equal": true,
+  "w1_etab_equal": true,
+  "w1_etab_maxabs_diff": 0,
+  "w2_weight_freqs_equal": true,
+  "w2_scale_freqs_equal": true,
+  "w2_etab_equal": true,
+  "w2_etab_maxabs_diff": 0,
+  "w3_weight_freqs_equal": true,
+  "w3_scale_freqs_equal": true,
+  "w3_etab_equal": true,
+  "w3_etab_maxabs_diff": 0
+ }
+}
+[[120, 120, 120], [120, 120, 120]]

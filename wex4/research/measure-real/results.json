@@ -1,0 +1,112 @@
+{
+ "bf16_shard": {
+  "source_bytes": 970533624,
+  "wex4_bytes": 643002368,
+  "ratio": 0.66252,
+  "index_bytes": 73863,
+  "records": {
+   "6": {
+    "count": 133,
+    "decoded": 970506240,
+    "stored": 642920448,
+    "ratio": 0.66246
+   }
+  },
+  "pack_s": 9.21,
+  "open_ms": 4.28,
+  "verify_decode_s": 6.7,
+  "unpack_s": 7.41,
+  "rebuilt_sha256_identical": true,
+  "unpack_reported": [
+   true
+  ]
+ },
+ "wbp1_decode": {
+  "records": 16,
+  "decoded_bytes": 225968128,
+  "seconds": 1.399,
+  "MB_per_s": 161.5,
+  "note": "1 thread, scalar C, BF16 (1 rANS plane)"
+ },
+ "layer_other": {
+  "source_bytes": 168090456,
+  "wex4_bytes": 137338880,
+  "ratio": 0.81705,
+  "index_bytes": 8223,
+  "records": {
+   "6": {
+    "count": 13,
+    "decoded": 168085504,
+    "stored": 137318400,
+    "ratio": 0.81696
+   },
+   "0": {
+    "count": 1,
+    "decoded": 2008,
+    "stored": 4096,
+    "ratio": 2.03984
+   }
+  },
+  "pack_s": 1.2,
+  "open_ms": 0.6,
+  "verify_decode_s": 1.14,
+  "unpack_s": 1.26,
+  "rebuilt_sha256_identical": true,
+  "unpack_reported": [
+   true
+  ]
+ },
+ "experts_from_safetensors": {
+  "experts": [
+   "L18E0",
+   "L18E1",
+   "L18E2",
+   "L18E3"
+  ],
+  "records_identical_to_production": [
+   true,
+   true,
+   true,
+   true
+  ],
+  "stored": [
+   16146432,
+   16076800,
+   16052224,
+   16076800
+  ],
+  "decoded": [
+   18800640,
+   18800640,
+   18800640,
+   18800640
+  ],
+  "pack_s": 4.32,
+  "source_bytes": 75205112,
+  "wex4_bytes": 64425984
+ },
+ "production_index": {
+  "container_bytes": 123306192896,
+  "records": 7680,
+  "tensors": 46080,
+  "index_bytes": 6712992,
+  "added_bytes": 6717440,
+  "added_fraction": 5.447771796559872e-05,
+  "build_index_s": 0.1,
+  "python_open_ms": 202.9,
+  "c_validate_ms": 26.91,
+  "legacy_table_identical": true,
+  "note": "record SHA-256 fields are zero in this stub: hashing the records means reading the whole container"
+ },
+ "sha256_MB_per_s": {
+  "hashlib": 2396,
+  "c_scalar": 328
+ },
+ "production_record_hash": {
+  "records": 64,
+  "bytes": 1027477504,
+  "seconds": 1.0,
+  "MB_per_s": 1030,
+  "full_container_estimate_s": 120
+ }
+}

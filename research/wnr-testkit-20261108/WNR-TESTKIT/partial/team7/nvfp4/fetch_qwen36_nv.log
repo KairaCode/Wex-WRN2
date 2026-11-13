@@ -1,0 +1,14 @@
+﻿qwen36_nv nvidia/Qwen3.6-35B-A3B-NVFP4 items 80 planned bytes 141559680
+  model.language_model.layers.0.mlp.experts.168.gate_proj.weight U8 [512, 1024] 524288
+  model.language_model.layers.0.mlp.experts.168.gate_proj.weight_scale F8_E4M3 [512, 128] 65536
+  model.language_model.layers.0.mlp.experts.168.gate_proj.weight_scale_2 F32 [] 4
+  model.language_model.layers.0.mlp.experts.168.gate_proj.input_scale F32 [] 4
+  model.language_model.layers.0.mlp.experts.168.down_proj.weight U8 [2048, 256] 524288
+  model.language_model.layers.0.mlp.experts.168.down_proj.weight_scale F8_E4M3 [2048, 32] 65536
+  model.language_model.layers.0.mlp.experts.168.down_proj.weight_scale_2 F32 [] 4
+  model.language_model.layers.0.mlp.experts.168.down_proj.input_scale F32 [] 4
+  model.language_model.layers.0.mlp.experts.168.up_proj.weight U8 [512, 1024] 524288
+  model.language_model.layers.0.mlp.experts.168.up_proj.weight_scale F8_E4M3 [512, 128] 65536
+  model.language_model.layers.0.mlp.experts.168.up_proj.weight_scale_2 F32 [] 4
+  model.language_model.layers.0.mlp.experts.168.up_proj.input_scale F32 [] 4
+qwen36_nv 80 items 141559680 bytes 104.8 s
