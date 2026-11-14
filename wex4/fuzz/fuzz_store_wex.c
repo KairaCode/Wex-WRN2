@@ -61,13 +61,19 @@ int coli_expert_store_backend_register(const char *name, ColiExpertStoreBackendO
 
 /* what the run reached, printed at exit */
 static unsigned long long count_inputs, count_opened, count_lookups, count_served, count_served_coded, count_served_wnr3;
+/* the records served, by the codec in the low byte of the entry flags: 0 raw, 1 scale tiles, 2 palette, 3 WNR,
+ * 4 WNR2, 5 WNR3 (wex_validate_table accepts no other value) */
+static unsigned long long count_served_codec[6];
 
 static void fuzz_cleanup(void) {
     remove(temp_path);
     fprintf(stderr, "fuzz_store_wex: %llu inputs, %llu opened by the store, %llu lookups, %llu records served, %llu of "
-            "them decoded from a coded record, %llu from a WNR3 record, %llu%s different WNR3 ones (structured mutations "
-            "%s)\n", count_inputs, count_opened, count_lookups, count_served, count_served_coded, count_served_wnr3,
-            fuzz_distinct, fuzz_distinct >= FUZZ_SEEN_MAX ? " or more" : "", fuzz_structured() ? "on" : "off");
+            "them decoded from a coded record, %llu from a WNR3 record, %llu%s different WNR3 ones; served by codec: "
+            "raw %llu, scale tiles %llu, palette %llu, WNR %llu, WNR2 %llu, WNR3 %llu (structured mutations %s)\n",
+            count_inputs, count_opened, count_lookups, count_served, count_served_coded, count_served_wnr3,
+            fuzz_distinct, fuzz_distinct >= FUZZ_SEEN_MAX ? " or more" : "", count_served_codec[0],
+            count_served_codec[1], count_served_codec[2], count_served_codec[3], count_served_codec[4],
+            count_served_codec[5], fuzz_structured() ? "on" : "off");
 }
 
 static void fuzz_setup(void) {
@@ -193,6 +199,8 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         coli_expert_release(store, &view);
         count_served++;
         count_served_coded += e->flags != 0;
+        FUZZ_REQUIRE((e->flags & WEX_ENTRY_CODEC_MASK) < 6u, "the store served a record of a codec that does not exist");
+        count_served_codec[e->flags & WEX_ENTRY_CODEC_MASK]++;
         if (e->flags == WEX_ENTRY_NEURAL_RANS3) {
             count_served_wnr3++;
             fuzz_note_distinct(slab, (size_t)e->scale_bytes + e->weight_bytes);

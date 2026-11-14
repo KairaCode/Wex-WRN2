@@ -32,6 +32,10 @@ jobs:
           persist-credentials: false   # the checks never talk to the remote: keep the token out of .git/config
       - name: All CPU checks
         run: bash scripts/check_all.sh
+      # the fuzzing harnesses of wex4/fuzz/ built with gcc: every seed once and the custom mutators on the seeds,
+      # with a deterministic stand-in for libFuzzer's mutation. No coverage guidance: that is the Fuzz workflow
+      - name: Fuzz harnesses, seeds and mutators replayed
+        run: bash wex4/fuzz/run.sh --replay
 
   # the same checks on a 64-bit ARM CPU: no AVX2, so wex4/build_and_test.sh builds the scalar kernel of the fast
   # WNR3 decoder, and plain char is unsigned there
@@ -48,6 +52,8 @@ jobs:
           persist-credentials: false
       - name: All CPU checks
         run: bash scripts/check_all.sh
+      - name: Fuzz harnesses, seeds and mutators replayed   # the scalar kernel of the fast WNR3 decoder here
+        run: bash wex4/fuzz/run.sh --replay
 
   windows:
     runs-on: windows-2022
@@ -76,6 +82,8 @@ jobs:
         run: |
           export PATH="$PATH:/c/Program Files/Git/cmd"
           bash scripts/check_all.sh
+      - name: Fuzz harnesses, seeds and mutators replayed
+        run: bash wex4/fuzz/run.sh --replay
 
   # the same checks with every C file they build compiled under AddressSanitizer and UndefinedBehaviorSanitizer: an out-of-bounds
   # read or write, a use after free or undefined behaviour in a reader, a decoder or the in-process fuzzer stops
@@ -101,3 +109,6 @@ jobs:
           LD_PRELOAD=$(gcc -print-file-name=libasan.so)
           export LD_PRELOAD
           bash scripts/check_all.sh
+      # the harnesses are executables built with WEX_CFLAGS, so they carry the sanitizer runtimes themselves
+      - name: Fuzz harnesses, seeds and mutators replayed under ASan and UBSan
+        run: bash wex4/fuzz/run.sh --replay
