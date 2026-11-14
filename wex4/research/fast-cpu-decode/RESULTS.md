@@ -32,7 +32,7 @@ measured on synthetic records only: see "NEON kernel (AArch64)" below.
 | `test_fast_decode.c` | harness: `equal`, `mutate`, `bench`, `speed` |
 | `build.sh` | x86: builds the harness three ways into `out/` (AVX2 + OpenMP, scalar fallback, UBSan trap build) |
 | `synth.sh` | any CPU, no real model: builds the harness with the SIMD kernels of the CPU and with the scalar kernel into `out/synth/` and runs it on the 4 synthetic records of `wex4/out/synth_nr3.wex` (`check`, run by `scripts/check_all.sh`, or `speed`) |
-| `negative_control.sh` | removes one check at a time from a copy of the header and expects the mutation test to notice |
+| `negative_control.sh` | removes one check at a time from a copy of the header and expects the mutation test to notice; exit 2 if it cannot read the model or a record |
 | `extract.py` | copies the model blob and chosen records out of a container opened read-only |
 | `out/` | build products, data copies, logs (not in git) |
 
@@ -228,6 +228,19 @@ Everything below ran on 2026-11-14 in the `linux-arm` job of `.github/workflows/
 (208,896 decoded bytes each, 24 scale and 192 weight streams, flags 0x00, model trained on the same 4
 records). No real record was decoded on ARM.
 
+The numbers come from three runs of the CI workflow on the branch of this change (GitHub Actions run
+ids; the logs are kept by GitHub for a limited time):
+
+| run | what it gives here |
+|---|---|
+| 43618200630 | the "earlier run" of the speed notes. Its `linux-arm` job ended red: a temporary step called `negative_control.sh` with a relative model path, which the script could not read then |
+| 43618569181 | the speed table, the `bench` figure, the negative controls and the clang build |
+| 43619432196 | the first run without the two temporary steps (negative controls, clang) |
+
+The decoder, the harness and the scripts they call were the same in the three runs; the runs differ in
+the temporary steps and in documentation. The correctness results of the first two bullets were the same
+in all three.
+
 - `synth.sh check`, NEON build: `equal` on 4 records x 13 variants x {1, 8} threads + default, 0
   mismatches; `mutate` with 600 mini-records (205 accepted and 395 rejected by the reference), 7,800 fast
   decodes, 0 mismatches. The scalar build of the same run: 0 mismatches. The job fails if the build is
@@ -235,9 +248,12 @@ records). No real record was decoded on ARM.
 - `wex4/build_and_test.sh`, where `wex4_tools.dll` holds the fast decoder and `wex4_tools_ref.dll` the
   reference: all tests passed with the NEON kernel and again with `WEX4_MARCH=-DWEX_FAST_SCALAR`
   (112,399 C mutations each time, same verdicts from both decoders).
-- Once, not part of the job as committed: `negative_control.sh` on the synthetic records caught 5 of 5
-  broken decoders (the kernel 2 control does not apply); the harness built with clang 18.1.3 without
-  OpenMP gave 0 mismatches in `equal` and in `mutate` with 3,000 mini-records (39,000 fast decodes).
+- `negative_control.sh` on the synthetic records caught 5 of 5 broken decoders (the kernel 2 control
+  does not apply). The harness built with clang 18.1.3 without OpenMP gave 0 mismatches in `equal` and
+  in `mutate` with 3,000 mini-records (39,000 fast decodes). Both in run 43618569181, as temporary
+  steps. They are steps of the job since then: the negative controls as above, the clang build with
+  `equal` and `mutate` on 600 mini-records. The job fails if a broken decoder is not caught, if the
+  clang build is not the NEON one or if it gives a mismatch.
 - From this change on the harness has guard pages off Windows too (`mmap` + `mprotect`). No fault in any
   of these runs.
 
@@ -267,16 +283,18 @@ shared virtual machine, load unknown.
 | k1: 6 streams, fused | 1.392 | 150.0 | 1.391 | 3.98 |
 | k1: 8 streams, fused | 1.826 | 114.4 | 1.824 | 3.03 |
 
-- NEON kernel 1 against the scalar kernel, default configuration: 5.54 -> 1.41 ms per record, 3.9x. An
-  earlier run of the job the same day gave 5.542 -> 1.408 ms. The scalar build of the same source
-  measured 5.48 and 5.46 ms for kernel 0 in the two runs.
+- NEON kernel 1 against the scalar kernel, default configuration: 5.54 -> 1.41 ms per record, 3.9x. The
+  table is run 43618569181. The two other runs of the job the same day gave 5.542 -> 1.408 ms (run
+  43618200630, earlier) and 5.544 -> 1.406 ms (run 43619432196, later). The scalar build of the same
+  source measured 5.475, 5.457 and 5.476 ms for kernel 0 in these three runs, in the same order.
 - 4 and 6 streams are equal within 1%; the default stays at 4 streams, as on x86.
 - Fusing the hash into the loop changes nothing measurable here (1.403 against 1.406 ms), unlike on the
   x86 desktop with real records (-21%).
 - `bench` in the same job (best of 15): the default configuration with 8 threads on the 4 CPUs took 0.47
-  ms per record against 1.41 ms on one thread. The records are small (216 streams), so this says little
+  ms per record against 1.41 ms on one thread (0.48 and 0.47 ms in the two other runs). The records are small (216 streams), so this says little
   about thread scaling on full records.
-- The harness built with clang 18.1.3 (no OpenMP), one run: 5.97 -> 1.48 ms, 4.0x.
+- The harness built with clang 18.1.3 (no OpenMP), run 43618569181 only: 5.97 -> 1.48 ms, 4.0x. The
+  clang step of the job as committed does not measure speed.
 - For scale, the same script on the x86 desktop (AVX2, gcc 16.2, one run, machine not idle): 6.87 -> 1.16
   ms, 5.9x, where real records gave 7.1x. Whether the synthetic records understate the gain on ARM too
   was not measured.
@@ -316,7 +334,7 @@ Ampere, no Cortex-A); macOS and Apple clang; big-endian AArch64 (it builds the s
   record was decoded by the reference.
 - Real records were decoded only by builds of gcc 16.2 on Windows (x86). On Linux the harness runs on
   synthetic records only, in CI: gcc 13.3 on x86-64 (also under ASan and UBSan) and on ARM64. No MSVC, no
-  big-endian; clang once, on ARM (see the NEON section).
+  big-endian; clang only on ARM, in CI (see the NEON section).
 - WNR2 records (delegated to the reference), the `malloc` failure path and unvalidated models.
 - Thread counts other than 1, 3 (mutation test) and 8; no run pinned to physical cores; the desktop was busy.
 - Laptop: one record and 3,000 mutation cases only.

@@ -64,6 +64,20 @@ jobs:
           bash wex4/research/fast-cpu-decode/synth.sh speed 21
           cd wex4/research/fast-cpu-decode/out/synth
           ./t_simd.exe bench model.wnm2 15 L0_E0.rec L0_E1.rec L0_E2.rec L0_E3.rec
+      # the two steps below use the records and the model that synth.sh left in out/synth
+      - name: Negative controls of the mutation test (NEON build)
+        run: |
+          cd wex4/research/fast-cpu-decode/out/synth
+          bash ../../negative_control.sh model.wnm2 L0_E0.rec L0_E1.rec L0_E2.rec L0_E3.rec
+      - name: clang build of the harness (NEON kernel, no OpenMP)
+        run: |
+          set -o pipefail
+          clang --version
+          cd wex4/research/fast-cpu-decode/out/synth
+          clang -std=c11 -Wall -Wextra -Werror -Wno-unused-function -O3 -I../../../../../c -I../.. ../../test_fast_decode.c -o t_clang.exe
+          ./t_clang.exe equal model.wnm2 L0_E0.rec L0_E1.rec L0_E2.rec L0_E3.rec | tee "$RUNNER_TEMP/clang.log"
+          grep -q '^build: NEON kernels' "$RUNNER_TEMP/clang.log"
+          ./t_clang.exe mutate model.wnm2 600 20261114 L0_E0.rec L0_E1.rec L0_E2.rec L0_E3.rec
 
   windows:
     runs-on: windows-2022
