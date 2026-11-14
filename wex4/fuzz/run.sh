@@ -19,7 +19,8 @@ ROOT=$(cd "$(dirname "$0")/../.." && pwd)
 O=$ROOT/wex4/fuzz/out
 PY=${PYTHON:-python}
 HARNESSES="fuzz_wex4_file fuzz_wnr3_record fuzz_wex4_verify"
-# no -fopenmp: one thread per harness, so the OpenMP pragmas of wex4_verify.c and of the fast decoder are skipped
+# no -fopenmp: one thread per harness, so the OpenMP pragmas of wex4_verify.c and of the fast decoder are skipped,
+# unless WEX_CFLAGS brings it in the --replay mode (scripts/sanitize_c.sh tsan does)
 W="-Wall -Wextra -Wno-unused-parameter -Wno-unused-function -Wno-unknown-pragmas"
 INC="-I $ROOT/c -I $ROOT/wex4/research/fast-cpu-decode"
 # the AVX2 kernels of the fast WNR3 decoder exist on x86 only; elsewhere fuzz_wnr3_record compares its scalar kernel

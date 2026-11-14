@@ -17,12 +17,15 @@
 #      with the OpenMP constructs of the sources (parallel, for schedule(dynamic), reduction, critical), which
 #      must give no report. They show that the run can fail and that the OpenMP runtime adds no false report
 #   2. c/tests/test_wex_format.c (msan only: it has no threads) and c/tests/test_wex4_verify.c (1 and 4 threads)
-#   3. c/tools/wex4_verify.c on 8 threads over the valid conformance vectors and over a WEX4 file of 4 synthetic
-#      WNR3 records (fixtures/make_synth_mxfp4.py, c/tools/build_nr3.py, wex4/wex4_convert.py upgrade)
+#   3. c/tools/wex4_verify.c over the valid conformance vectors and over a WEX4 file of 4 synthetic WNR3 records
+#      (fixtures/make_synth_mxfp4.py, c/tools/build_nr3.py, wex4/wex4_convert.py upgrade): on 8 threads under
+#      tsan, on one thread under msan, whose build has no OpenMP
 #   4. the three harnesses of wex4/fuzz/ on their seeds (wex4/fuzz/run.sh --replay), fuzz_wex4_file with the fast
 #      WNR3 decoder (-DWEX4_FAST_NR3); then fuzz_wex4_file on the synthetic file and fuzz_wnr3_record on its first
 #      record, where the fast decoder has enough streams for several OpenMP tasks (the records of the vectors
-#      have one task per section)
+#      have one task per section). Before that a small program prints the streams and the tasks of that record,
+#      and the run stops if the weight section has fewer than 2 tasks. Under msan the tasks run one after the other
+# The log of a tsan run also names the Archer library and shows what the OpenMP runtime says about loading it.
 # CC names the clang (default clang), PYTHON the interpreter, WEX_CFLAGS adds flags. TSAN_OPTIONS and
 # MSAN_OPTIONS are passed through; without TSAN_OPTIONS the script sets ignore_noninstrumented_modules=1, which
 # drops what ThreadSanitizer intercepts inside the OpenMP runtime (not instrumented) and nothing of the code
@@ -96,6 +99,9 @@ int main(void) {
 EOF
   "$CC" $W $S clean.c -o clean
   ./clean > clean.log 2>&1 || { cat clean.log; echo "the correct OpenMP control does not pass under ThreadSanitizer (OMP_TOOL_LIBRARIES=${OMP_TOOL_LIBRARIES-}: is Archer loaded?)" >&2; exit 1; }
+  echo "controls: the correct OpenMP loop gives no report (OMP_TOOL_LIBRARIES=${OMP_TOOL_LIBRARIES-not set})"
+  # what the OpenMP runtime itself says about the tool; shown only, the control above is the test
+  OMP_TOOL_VERBOSE_INIT=stderr ./clean 2>&1 | grep -E '^(Opening|Tool was started)' || echo "(the OpenMP runtime printed nothing about loading a tool)"
 else
   cat > defect.c <<'EOF'
 #include <stdlib.h>
@@ -139,14 +145,61 @@ fi
 ./test_wex4_verify > test_wex4_verify.log 2>&1 || { cat test_wex4_verify.log; exit 1; }
 tail -1 test_wex4_verify.log
 
-# 3. the checker on 8 threads
+# 3. the checker: 8 threads under tsan; the msan build has no OpenMP, so there it runs on one thread
+if [ "$MODE" = tsan ]; then THREADS=8; HOW="8 threads"; else THREADS=1; HOW="1 thread (no OpenMP)"; fi
 "$CC" $W $S "$C/tools/wex4_verify.c" -o wex4_verify
 n=0
 for f in synth_nr3.wex "$ROOT"/wex4/vectors/valid/*.wex4; do
-  ./wex4_verify "$f" 8 > wex4_verify.log 2>&1 || { cat wex4_verify.log; exit 1; }
+  ./wex4_verify "$f" $THREADS > wex4_verify.log 2>&1 || { cat wex4_verify.log; exit 1; }
   n=$((n + 1))
 done
-echo "wex4_verify, 8 threads: $n files pass"
+echo "wex4_verify, $HOW: $n files pass"
+
+# how the fast decoder splits the first synthetic record: the arithmetic of wexf_section (wex_fast_decode.h)
+cat > tasks.c <<'EOF'
+#include "wex_fast_decode.h"
+#include "wex4.h"
+#include "fuzz_common.h"
+static int tasks_of(uint64_t streams) {
+    const uint64_t per = ((streams + WEXF_MAX_TASKS - 1u) / WEXF_MAX_TASKS + 47u) / 48u * 48u;
+    return per ? (int)((streams + per - 1u) / per) : 0;
+}
+int main(int argc, char **argv) {
+    Wex4Header h;
+    Wex4View v;
+    Wex4Record record;
+    Wex4Blob blob;
+    WexNr2Model model;
+    WexNr2Layout layout;
+    WexNr2Record view;
+    WexEntry entry;
+    size_t size = 0;
+    uint32_t r;
+    int threads = 1;
+    unsigned char *file = argc > 1 ? fuzz_read_file(argv[1], &size) : NULL;
+    if (!file || size < WEX4_PAGE || wex4_parse_header(file, size, &h) ||
+        wex4_open(&h, file + h.index_offset, (size_t)wex4_align(h.index_bytes), &v)) return 2;
+    for (r = 0; r < h.records; r++) {
+        wex4_get_record(&v, r, &record);
+        if (record.codec == WEX4_CODEC_WNR3) break;
+    }
+    if (r == h.records) return 2;
+    wex4_get_blob(&v, record.blob - 1u, &blob);
+    if (wex_nr2_model_open(file + blob.offset, (size_t)blob.bytes, &model) || wex4_expert_entry(&v, r, &entry)) return 2;
+    wex_nr2_layout(&entry, &layout);
+    if (wex_nrx_parse(file + record.offset, record.stored, &layout, model.id, WEX_NR3_MAGIC, &view)) return 2;
+#ifdef _OPENMP
+    threads = omp_get_max_threads();
+#endif
+    printf("fast decoder, first synthetic record: %u scale streams in %d task(s), %u weight streams in %d task(s); "
+           "OpenMP threads: %d\n", (unsigned)view.scale_streams, tasks_of(view.scale_streams),
+           (unsigned)view.weight_streams, tasks_of(view.weight_streams), threads);
+    free(file);
+    return tasks_of(view.weight_streams) >= 2 ? 0 : 1;
+}
+EOF
+"$CC" $W $S -I "$C" -I "$ROOT/wex4/research/fast-cpu-decode" -I "$ROOT/wex4/fuzz" tasks.c -o tasks
+./tasks synth_nr3.wex || { echo "the synthetic record gives the fast decoder fewer than 2 tasks: step 4 would not run its parallel path" >&2; exit 1; }
 
 # 4. the fuzzing harnesses on their seeds, then on the synthetic file
 WEX_CFLAGS="$S -DWEX4_FAST_NR3" bash "$ROOT/wex4/fuzz/run.sh" --replay
