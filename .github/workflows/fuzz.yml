@@ -1,4 +1,4 @@
-# Coverage-guided fuzzing of the C readers and decoders (wex4/fuzz/): the three libFuzzer harnesses are built with
+# Coverage-guided fuzzing of the C readers and decoders (wex4/fuzz/): the five libFuzzer harnesses are built with
 # AddressSanitizer and UndefinedBehaviorSanitizer and each runs for a short time from the conformance vectors.
 # No GPU, no model weights, no secrets.
 name: Fuzz
@@ -10,8 +10,11 @@ on:
   workflow_dispatch:   # a longer run, by hand
     inputs:
       seconds:
-        description: seconds per harness, at least 1 (three harnesses; the job stops after 6 hours, so at most about 7000)
+        description: seconds per harness, at least 1 (five harnesses; the job stops after 6 hours, so at most about 4200)
         default: "60"
+      mutators:
+        description: "1: the WNR3-aware custom mutators (the default). 0: libFuzzer's own mutations only, the control of a measurement"
+        default: "1"
 
 permissions:
   contents: read
@@ -27,6 +30,7 @@ jobs:
     env:
       PYTHON: python3
       SECONDS_EACH: ${{ inputs.seconds || '60' }}   # read from the environment, never pasted into the script
+      WEX_FUZZ_MUTATOR: ${{ inputs.mutators || '1' }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
         with:

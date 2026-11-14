@@ -1,0 +1,43 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Ludovico Zanichelli
+# libFuzzer dictionary (-dict=) for the harnesses whose input is a whole container: the magic numbers and the
+# small field values a reader compares against, as the little-endian bytes they have in a file.
+# From c/wex_format.h, c/wex_neural_rans.h, c/wex_palette.h and c/wex4.h.
+
+# containers
+wex1="1XEW"
+wex2="2XEW"
+wex3="3XEW"
+wex4="4XEW"
+# records and blobs
+scale_stream="WCS1"
+palette3="WCP3"
+wnr="WNR1"
+wnr2="WNR2"
+wnr3="WNR3"
+wbp1="WBP1"
+model="WNM2"
+model_descriptor="WNMD"
+
+# legacy header: version, then flags (1 scale tiles, 2 palette, 4 dedup, 8 WNR, 16 WNR2, 32 WNR3, 64 canonical zero)
+u32_1="\x01\x00\x00\x00"
+u32_2="\x02\x00\x00\x00"
+u32_3="\x03\x00\x00\x00"
+u32_4="\x04\x00\x00\x00"
+u32_5="\x05\x00\x00\x00"
+u32_6="\x06\x00\x00\x00"
+flags_wnr="\x08\x00\x00\x00"
+flags_wnr2="\x10\x00\x00\x00"
+flags_wnr3="\x20\x00\x00\x00"
+flags_wnr3_tiles="\x21\x00\x00\x00"
+flags_wnr3_cz="\x60\x00\x00\x00"
+flags_wnr3_cz_tiles="\x61\x00\x00\x00"
+# legacy entry flags: scale tiles with one or two pages of scale stream
+entry_tiles_1="\x01\x01\x00\x00"
+entry_tiles_2="\x01\x02\x00\x00"
+# sizes
+page="\x00\x10\x00\x00"
+model_bytes="\x10\xe8\x00\x00"
+chunk_256="\x00\x01\x00\x00"
+chunk_512="\x00\x02\x00\x00"
+chunk_16384="\x00\x40\x00\x00"
