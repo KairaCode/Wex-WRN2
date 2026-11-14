@@ -6,6 +6,7 @@ Seven rules, after a section for people new to the repository. The rules exist b
 
 Thank you for looking. Most of this repository is specifications and tests, so the most useful contributions are a reader or writer in another language that passes the conformance vectors, a bug found by them, and a sentence of a specification that can be read two ways.
 
+- **Where to start:** [docs/HELP-WANTED.md](docs/HELP-WANTED.md) lists concrete tasks, from running the benchmark to a second implementation of the readers.
 - **Open an issue first** for any change to a format (a field, a flag, a codec, a rule of validation): it changes what other readers must do. A bug fix or a documentation fix can go straight to a pull request.
 - **Set up.** Windows: [MSYS2](https://www.msys2.org/) with the UCRT64 packages `mingw-w64-ucrt-x86_64-gcc`, `mingw-w64-ucrt-x86_64-libgomp` and `mingw-w64-ucrt-x86_64-python` (or `gcc` on `PATH` from Git Bash), and `git`. Linux: `gcc`, `python3`, `git`, and `export PYTHON=python3`. An x86-64 CPU with AVX2. No GPU, no model and no Python package outside the standard library.
 - **Check.** `bash scripts/check_all.sh` builds and runs every CPU test and the repository check. It must end with `all checks passed`.

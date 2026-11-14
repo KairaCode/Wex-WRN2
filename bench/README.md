@@ -55,4 +55,5 @@ Notes:
 - On ZFS, `O_DIRECT` is honoured only from OpenZFS 2.3 with `direct=standard` or `always`. Otherwise the
   reads go through the ARC, and the second pass mostly measures RAM. The JSON records which case you
   were in.
+- On ARM (for example a DGX Spark) the `wex_check` section is expected to fail for now: the fast CPU decoder is built for x86-64 AVX2. The other sections still run.
 - The GPU copy test is CUDA-only. On Intel Arc or AMD it reports `skipped`, which is expected.

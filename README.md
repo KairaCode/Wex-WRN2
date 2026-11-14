@@ -208,7 +208,7 @@ The source and licence of each of these is in [THIRD_PARTY_NOTICES.md](THIRD_PAR
 
 ## Contributing
 
-Contributions are welcome under the Apache License 2.0, inbound = outbound; a contributor's commits carry a `Signed-off-by` line (Developer Certificate of Origin). The rules, including the privacy rules and how `c/` is kept in step with the other trees that carry it, are in [CONTRIBUTING.md](CONTRIBUTING.md).
+Contributions are welcome under the Apache License 2.0, inbound = outbound; a contributor's commits carry a `Signed-off-by` line (Developer Certificate of Origin). The rules, including the privacy rules and how `c/` is kept in step with the other trees that carry it, are in [CONTRIBUTING.md](CONTRIBUTING.md). Tasks to pick up: [docs/HELP-WANTED.md](docs/HELP-WANTED.md).
 
 ## In breve (italiano)
 
