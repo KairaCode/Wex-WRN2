@@ -9,6 +9,11 @@ on:
 permissions:
   contents: read
 
+# a newer push to the same branch or PR makes the running checks moot
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   linux:
     runs-on: ubuntu-24.04

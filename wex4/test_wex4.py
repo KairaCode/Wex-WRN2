@@ -10,6 +10,7 @@ writes them anew from the files these tests build (a maintainer step, after a fo
 WORK_DIR holds wex4_tools.dll, wex4_tools_ref.dll, wex_nr3_tools.dll, tiny.wex (WEX1 of fixtures/v41-tiny), tiny_cz.wex (its
 WNR3 canonical-zero container), tiny2_cz.wex (the same with 2 experts only, a small fuzz corpus) and tiny.wnm2
 (the model of both). Standard library only."""
+import concurrent.futures
 import ctypes
 import hashlib
 import io
@@ -458,16 +459,29 @@ def test_vectors(where=VECTORS):
 def test_fuzz(corpora):
     t0 = time.time()
     total = [0, 0, 0, 0]
+    modes = ((0, 'any byte, hashes checked'), (1, 'compressed record bytes, SHA-256 off'),
+             (2, 'header and index, hashes recomputed'))
+
+    def fuzz_run(dll, base, mode, n):
+        counts = (ctypes.c_uint64 * 4)()
+        assert dll.lib.wex4_fuzz_run(base, len(base), 1000 + mode, n, mode, counts) == 0
+        return list(counts)
+
+    # every C fuzz run is independent (own seed, own guard-page buffer) and ctypes drops the GIL during the call:
+    # run them all at once, then check them in the usual order, so the output stays the same
+    jobs = {}
+    with concurrent.futures.ThreadPoolExecutor(max_workers=os.cpu_count() or 4) as pool:
+        for label, base in corpora:
+            for mode, _ in modes:
+                n = max(100, FUZZ * (25 if mode != 1 else 5) * 150_000 // max(150_000, len(base)))   # same time per corpus
+                jobs[label, mode] = (n, pool.submit(fuzz_run, C, base, mode, n), pool.submit(fuzz_run, CREF, base, mode, n))
     for label, base in corpora:
         base_status, base_digest = C.check(base, 3, True)
         assert base_status == 0 and CREF.check(base, 3, True) == (0, base_digest)
-        for mode, what in ((0, 'any byte, hashes checked'), (1, 'compressed record bytes, SHA-256 off'),
-                           (2, 'header and index, hashes recomputed')):
-            counts, reference = (ctypes.c_uint64 * 4)(), (ctypes.c_uint64 * 4)()
-            n = max(100, FUZZ * (25 if mode != 1 else 5) * 150_000 // max(150_000, len(base)))   # same time per corpus
-            assert C.lib.wex4_fuzz_run(base, len(base), 1000 + mode, n, mode, counts) == 0
-            assert CREF.lib.wex4_fuzz_run(base, len(base), 1000 + mode, n, mode, reference) == 0
-            assert list(counts) == list(reference), f'{label} mode {mode}: fast and reference decoders disagree'
+        for mode, what in modes:
+            n, fast, ref = jobs[label, mode]
+            counts, reference = fast.result(), ref.result()
+            assert counts == reference, f'{label} mode {mode}: fast and reference decoders disagree'
             rejected_n, same, other, noop = counts
             assert mode == 2 or other == 0, f'{label} mode {mode}: {other} corrupted files accepted with wrong content'
             assert mode != 0 or same == 0, f'{label}: {same} corrupted files accepted'
