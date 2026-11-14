@@ -35,7 +35,7 @@ The bridge in `c/tools/` reports 63 (all six). The full helper API is in [WNR2-R
 
 ## 2. Build
 
-**CPU checks, from this repository.** `bash scripts/check_all.sh` builds and runs every test that needs no engine tree and no GPU, and ends with `all checks passed`. Windows: MSYS2 UCRT64 or MINGW64 `gcc` and Python 3 on `PATH`, run from Git Bash or an MSYS2 shell. Linux: `gcc`, Python 3 and `PYTHON=python3` (not yet run on Linux; the Linux CI job may fail until its first green run). Both need an x86-64 CPU with AVX2 (one test builds with `-march=haswell`).
+**CPU checks, from this repository.** `bash scripts/check_all.sh` builds and runs every test that needs no engine tree and no GPU, and ends with `all checks passed`. Windows: MSYS2 UCRT64 or MINGW64 `gcc` and Python 3 on `PATH`, run from Git Bash or an MSYS2 shell. Linux: `gcc`, Python 3 and `PYTHON=python3` (not yet run on Linux; the Linux CI job may fail until its first green run). The CPU is x86-64 with AVX2 (one test builds with `-march=haswell`) or, under Linux, 64-bit ARM, where that test builds the scalar kernel of the fast decoder instead (the `linux-arm` CI job).
 
 **The helper and the GPU checkers, from this repository (Windows):**
 

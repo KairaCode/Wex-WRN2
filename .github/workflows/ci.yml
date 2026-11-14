@@ -33,6 +33,22 @@ jobs:
       - name: All CPU checks
         run: bash scripts/check_all.sh
 
+  # the same checks on a 64-bit ARM CPU: no AVX2, so wex4/build_and_test.sh builds the scalar kernel of the fast
+  # WNR3 decoder, and plain char is unsigned there
+  linux-arm:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    env:
+      PYTHON: python3
+      USER: ""
+      USERNAME: ""
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
+      - name: All CPU checks
+        run: bash scripts/check_all.sh
+
   windows:
     runs-on: windows-2022
     timeout-minutes: 15   # a green run takes 3 to 5.5 minutes

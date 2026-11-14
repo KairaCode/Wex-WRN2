@@ -28,7 +28,7 @@ bash wex4/build_and_test.sh            # from the repository root; add --fuzz N 
 
 The line before the last checks the conformance vectors; last line on success: `WEX4 prototype: all tests passed`. Everything built goes to `wex4/out/` (git-ignored). The script builds a WEX1 and a WNR3-CZ container from [`../fixtures/v41-tiny`](../fixtures/README.md) and a synthetic one, so it also exercises `c/tools/repack_v4_wex.py`, `c/tools/build_nr3.py` and `c/tools/wex_nr3_tools.c`.
 
-Two decoders are compared on purpose. `c/wex4.h` always calls the reference WNR3 decoder; `wex4_tools.c`, built with `-DWEX4_FAST_NR3`, puts `research/fast-cpu-decode/wex_fast_decode.h` (AVX2 + OpenMP) under that name. The script stops if the two DLLs do not differ at that call site, because a sync of `c/wex4.h` once removed the hook and the comparison then tested the reference against itself.
+Two decoders are compared on purpose. `c/wex4.h` always calls the reference WNR3 decoder; `wex4_tools.c`, built with `-DWEX4_FAST_NR3`, puts `research/fast-cpu-decode/wex_fast_decode.h` (AVX2 + OpenMP on x86-64; on any other CPU its scalar kernel, still parallel across streams) under that name. The script stops if the two DLLs do not differ at that call site, because a sync of `c/wex4.h` once removed the hook and the comparison then tested the reference against itself.
 
 ## Reviews
 

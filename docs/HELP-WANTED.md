@@ -36,10 +36,12 @@ Labels you may see on issues: **good first issue** (a few hours, little context)
   `-fsanitize=address,undefined`).
 - **More test vectors:** hostile files that [wex4/vectors](../wex4/vectors/README.md) does not cover yet
   (each with its `MANIFEST.tsv` row and the expected verdict from both readers).
-- **macOS and ARM jobs in CI:** today CI runs on x86-64 Linux and Windows only, and the fast CPU
-  decoder in `wex4/build_and_test.sh` is built with `-march=haswell` (AVX2). An ARM build needs that
-  path guarded (reference decoder only, or a NEON version), then a CI job. Good first issue for the
-  guard, help wanted for NEON.
+- **macOS job in CI, NEON decoder:** CI runs on Linux (x86-64 and ARM64) and Windows. On a CPU that is
+  not x86 `wex4/build_and_test.sh` drops `-march=haswell`, so the fast CPU decoder builds its scalar
+  kernel only. Still open: a macOS job (the scripts call `gcc` and link with `-fopenmp`), good first
+  issue; a NEON version of the AVX2 kernels in `wex4/research/fast-cpu-decode/wex_fast_decode.h`,
+  byte-identical to the reference on the vectors and with a speed number against the scalar kernel,
+  help wanted.
 
 ## 4. A second, independent implementation
 
@@ -98,8 +100,8 @@ listed above as well.
   experts first (#2822-#2825 are open), then the WEX4 container, the WNR3 codec and its GPU decode, and
   the I/O switches. Reviewing or testing those PRs on your hardware helps directly.
 - **WNR3 decode on Vulkan** *(open to you, section 6)*.
-- **ARM:** a CPU decoder path without AVX2 (reference only first, then NEON), and an ARM CI job
-  *(open to you, section 3)*.
+- **ARM:** the CPU decoder path without AVX2 and the ARM CI job are in (scalar kernel); a NEON version
+  is still open *(open to you, section 3)*.
 - **Linux I/O in the engine:** the fast read paths were built and measured on Windows; Linux needs its
   own measurements and tuning *(open to you, section 7)*.
 - **Measurements not done yet** (they need the full models, so they stay with the maintainer, see
