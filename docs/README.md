@@ -56,7 +56,7 @@ Summary of 2026-11-13; the page of record for what runs is [STATUS.md](../STATUS
 | [README.md](README.md) | EN | index | current | Which page do I need? |
 | [GLOSSARY.md](GLOSSARY.md) | EN | reference | current | What does this word mean, and which file defines it? |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | EN | overview | current | How do the pieces fit together, where does a record go from the checkpoint to the GPU, and what is not in this repository? |
-| [BENCHMARKS.md](BENCHMARKS.md) | EN | measurements | current: every table, newest rows of 2026-11-13 | What was measured, under which conditions, how many runs stand behind it, and where is the raw output? |
+| [BENCHMARKS.md](BENCHMARKS.md) | EN | measurements | current: every table, newest rows of 2026-11-14 | What was measured, under which conditions, how many runs stand behind it, and where is the raw output? |
 | [COLIBRI-INTEGRATION.md](COLIBRI-INTEGRATION.md) | EN | guide | current: WEX4 with RAW or WNR3 records | What do I copy and build, how do I make, verify and pin a container, which variables does the engine read, and what does an error line mean? |
 | [WEX4-SPEC.md](WEX4-SPEC.md) | EN | spec | current: format version 4.0, in production | What are the bytes of a WEX4 file, how is it validated and hashed, and how is a WEX1 or WNR3 container upgraded in place? |
 | [WNR3-SPEC.md](WNR3-SPEC.md) | EN | spec | current: FINAL v1, in production. Sections 0 to 8 with the errata at the top are the format; sections 9 to 11 are the implementation plan, historical | What are the bytes of a WNR3 record, and how are ceil-form, rule g, canonical zero and the stream hash encoded and checked? |

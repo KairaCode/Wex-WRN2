@@ -186,6 +186,24 @@ Both drives together reach 13.8 GB/s at QD1 with 16 MiB requests and 15.3-15.5 G
 
 Earlier figures (2026-11-11, old README, raw output not here): C: (PCIe 5) 2.0 ms and 8.1 GB/s, U: (PCIe 4) 2.9 ms and 5.5 GB/s at QD1 with 16 MiB; with 4 reads in flight each read took 6.8-8.1 ms, so the 13 ms demand reads seen in engine logs were queueing behind prefetch reads, not slow drives. The probe above agrees.
 
+## Linux read paths for expert records (2026-11-14, cloud VMs only)
+
+`bench/wex_io.py` ([bench/README.md](../bench/README.md)) reads the expert records of a synthetic WEX4 container (8 x 48 RAW records of 13,369,344 bytes, 5.13 GB, no model) through 20 Linux read paths, each first checked against the index's SHA-256. The only runs so far are on GitHub Actions `ubuntu-24.04` runners: shared cloud VMs with a virtual disk, 4 logical CPUs, 16 GB of RAM, ext4, **not NVMe hardware and not the machine of the other tables**. Runs 1 and 2 landed on two different kinds of VM; a third run, on the kind of run 2, repeated its numbers within a few MB/s and is not in the table. One run of the script is 5 cold passes per path, 48 records (642 MB) per pass, `drop_caches` before every pass and 0.0% of the pass's pages in the page cache before each cold pass. MB/s (10^6 bytes), median with minimum to maximum; the whole table of 20 rows, the conditions and the raw JSON are in [research/linux-io-20261114](../research/linux-io-20261114/README.md).
+
+| Read path | Run 1 (AMD EPYC 7763, kernel 7.0.0-1017-azure) | Run 2 (Intel Xeon 6975P-C, kernel 7.0.0-1014-aws) |
+|---|---|---|
+| page cache, `pread`, 1 thread (`c/expert_store_wex.c` on Linux today) | 393 (380 to 395) | 543 (541 to 575) |
+| the same with `POSIX_FADV_RANDOM` | 466 (455 to 492), 1.19x | 517 (511 to 548), 0.95x |
+| the same with `POSIX_FADV_WILLNEED` on the next record (run 3: the kernel loaded 1.0% of the announced record, see below) | 395 (384 to 399), 1.00x | 507 (499 to 518), 0.93x |
+| page cache, `pread`, 8 threads | 437 (434 to 451), 1.11x | 528 (521 to 532), 0.97x |
+| `O_DIRECT`, `pread`, 1 thread (`c/qwen38_wex.h` on Linux today) | 456 (450 to 468), 1.16x | 520 (514 to 522), 0.96x |
+| `O_DIRECT`, `pread`, 8 threads | 469 (457 to 478), 1.19x | 523 (515 to 528), 0.96x |
+| `O_DIRECT`, `io_uring`, 1 record in flight | 447 (446 to 462), 1.14x | 512 (497 to 514), 0.94x |
+| `O_DIRECT`, `io_uring`, 16 records in flight | 481 (471 to 496), 1.22x | 540 (533 to 544), 0.99x |
+| page cache already warm (no drive in it) | 15,335 (14,854 to 15,604) | 10,242 (10,097 to 10,766) |
+
+No read path won on both machines: what was 16% to 19% faster than the store's path in run 1 was 4% to 5% slower in run 2, and more reads in flight gained at most 11% over one read of the same kind in run 1 (page cache, 8 threads against 1) and at most 4% in run 2 (`O_DIRECT`, 16 records in flight against 1 thread), with every depth between 418 and 481 and between 511 and 540 MB/s. The store's Linux read path was therefore not changed. The `WILLNEED` row is not a prefetch of the next record: in run 3, where it was measured with `mincore`, 1.0% of the pages of an announced record (about 130 KB of 13.4 MB, on a device with `read_ahead_kb` 128) were in the page cache just before its read, in each of 10 passes; on the VM kind of run 1 this was not measured. **Not measured:** a prefetch that loads the whole record, any real drive (NVMe, SATA), ARM, another filesystem, two drives, a pass longer than 1.7 s, and any engine; the benchmark reads records as the stores do but decodes nothing.
+
 ## Earlier results
 
 CPU-only baseline (M0, `DSV4_CUDA=0`: dense, attention and MoE on CPU), DeepSeek V4.1 Flash REAP-192 MXFP4, 16 GB RAM, warm (`docs/reports/v41-reap-baseline-m0-20261107.md`):

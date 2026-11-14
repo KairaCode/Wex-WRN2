@@ -11,6 +11,11 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:   # any other branch, by hand
+    inputs:
+      linux_io_bench:
+        description: "Also run the full bench/wex_io.py (Linux read paths; a measurement, not a check)"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -38,11 +43,20 @@ jobs:
       # with a deterministic stand-in for libFuzzer's mutation. No coverage guidance: that is the Fuzz workflow
       - name: Fuzz harnesses, seeds and mutators replayed
         run: bash wex4/fuzz/run.sh --replay
+      # seconds: a 10 MB container, every read path of bench/wex_io.c checked against the index's SHA-256 and
+      # run once. It shows that the benchmark still builds and reads right, not how fast anything is.
+      # --strict: all 20 paths run on this runner, so a path that reports "skipped" (O_DIRECT or io_uring
+      # set-up broken) fails the step. The second call reads the container the first one left (--file)
+      - name: Linux read-path benchmark, smoke run
+        run: |
+          python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --smoke --strict --keep
+          python3 -I bench/wex_io.py --file "$RUNNER_TEMP/wex-io-bench.wex4" --smoke --strict
 
   # the same checks on a 64-bit ARM CPU: the fast WNR3 decoder builds its NEON kernel there (the step fails if it
   # built another one), and plain char is unsigned. Then the WEX4 tests once more with the scalar kernel forced,
   # so both kernels are compared with the reference decoder on ARM, and the speed of both (printed, never judged:
-  # a shared runner is not a benchmark machine)
+  # a shared runner is not a benchmark machine). The smoke run builds bench/wex_io.c for ARM and runs its 20 read
+  # paths once (the full benchmark was not run on ARM)
   linux-arm:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 15
@@ -62,6 +76,8 @@ jobs:
           grep -q '^build: NEON kernels' "$RUNNER_TEMP/check.log"
       - name: Fuzz harnesses, seeds and mutators replayed   # the NEON kernel of the fast WNR3 decoder here
         run: bash wex4/fuzz/run.sh --replay
+      - name: Linux read-path benchmark, smoke run
+        run: python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --smoke --strict
       - name: WEX4 tests with the scalar kernel forced
         run: |
           set -o pipefail
@@ -168,6 +184,9 @@ jobs:
       # the harnesses are executables built with WEX_CFLAGS, so they carry the sanitizer runtimes themselves
       - name: Fuzz harnesses, seeds and mutators replayed under ASan and UBSan
         run: bash wex4/fuzz/run.sh --replay
+      # bench/wex_io.py appends WEX_CFLAGS too: its pread and io_uring paths under the sanitizers
+      - name: Linux read-path benchmark, smoke run under ASan and UBSan
+        run: python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --smoke --strict
 
   # the C test executables under ThreadSanitizer: clang with its own OpenMP runtime and Archer, the tool of that
   # runtime that tells ThreadSanitizer what OpenMP synchronizes. A data race in the OpenMP loops of
@@ -222,3 +241,22 @@ jobs:
           persist-credentials: false
       - name: Go reader on the conformance vectors
         run: bash impl/go-wex4/run.sh
+
+  # A measurement, not a check: the full bench/wex_io.py, only when a manual run asks for it
+  # (gh workflow run ci.yml --ref <branch> -f linux_io_bench=true). The runner is a shared cloud VM with a
+  # virtual disk: its numbers say how the read paths compare there, not what an NVMe drive gives. The table
+  # goes to the job summary, every pass to the log (bench/out/wex_io.json)
+  linux-io-bench:
+    if: github.event_name == 'workflow_dispatch' && inputs.linux_io_bench
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
+      - name: Linux read paths (bench/wex_io.py)
+        run: |
+          python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --drop-caches
+          jq -r .table_markdown bench/out/wex_io.json >> "$GITHUB_STEP_SUMMARY"
+          echo "----- bench/out/wex_io.json"
+          cat bench/out/wex_io.json
