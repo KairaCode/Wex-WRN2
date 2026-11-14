@@ -7,7 +7,7 @@
 
 # WEX
 
-WEX is KAIRA's family of expert-container formats for streamed Mixture-of-Experts inference: one file of 4096-aligned records, one per routed expert, that the engine reads from NVMe while it generates.
+WEX is a family of expert-container formats for streamed Mixture-of-Experts inference: one file of 4096-aligned records, one per routed expert, that the engine reads from NVMe while it generates.
 
 The repository slug says `Wex-WRN2` for historical reasons; the codec is spelled **WNR2** in every constant, file and page.
 
@@ -15,7 +15,7 @@ The repository slug says `Wex-WRN2` for historical reasons; the codec is spelled
 
 ## What WEX is
 
-Some Mixture-of-Experts (MoE) models do not fit in the machine's memory: DeepSeek V4.1 REAP-192 has 7,680 routed experts of 18.8 MB each. The engine keeps some experts resident and reads the others from NVMe when the router picks them. A WEX file is laid out for that read: every record starts on a 4096-byte boundary, is a multiple of 4096 bytes long, and is fetched with one unbuffered read. A record is either the expert's native MXFP4 slab (4-bit FP4 weights plus one E8M0 scale byte per 32 weights) or a lossless rANS coding of it (WNR3 with canonical zero: 0.854 of raw over the whole DeepSeek V4.1 container), which the CUDA helper decodes straight into VRAM. The current container, WEX4, wraps the same records in a SHA-256-hashed header page and index: 32 bytes, the root, identify the whole file, and the DeepSeek engine, with the root pinned, checks each record against it the first time it reads it. KAIRA is the local inference application these formats were made for (it is not public); its engines are builds of the [colibri](https://github.com/JustVugg/colibri) C engine, and the format code lives in its tree under `src/colibri/c`. How the pieces fit together, and what lives only in KAIRA: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+Some Mixture-of-Experts (MoE) models do not fit in the machine's memory: DeepSeek V4.1 REAP-192 has 7,680 routed experts of 18.8 MB each. The engine keeps some experts resident and reads the others from NVMe when the router picks them. A WEX file is laid out for that read: every record starts on a 4096-byte boundary, is a multiple of 4096 bytes long, and is fetched with one unbuffered read. A record is either the expert's native MXFP4 slab (4-bit FP4 weights plus one E8M0 scale byte per 32 weights) or a lossless rANS coding of it (WNR3 with canonical zero: 0.854 of raw over the whole DeepSeek V4.1 container), which the CUDA helper decodes straight into VRAM. The current container, WEX4, wraps the same records in a SHA-256-hashed header page and index: 32 bytes, the root, identify the whole file, and the DeepSeek engine, with the root pinned, checks each record against it the first time it reads it. WEX was developed for KAIRA, a private local inference application whose engines are builds of the [colibri](https://github.com/JustVugg/colibri) C engine. The engine-side format code is in `c/`, and its integration into colibri is in progress. How the pieces fit together, and what is not in this repository: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Why not safetensors or GGUF
 
@@ -40,7 +40,7 @@ Two things are numbered separately. The **container** version (WEX1 to WEX4) is 
 | **WEX1** | `0x57455831`, 1 | a 4096-byte header page with the 40-byte `WexHeader`, one 72-byte `WexEntry` per (layer, expert), raw aligned records | must be 0 | 0 | no production file left: the V4.1 file was deleted on 2026-11-10 and the Qwen3.8 files were upgraded in place to WEX4. Still the input of `build_nr3.py` and of `upgrade` | `c/wex_format.h`; [WNR2-REFERENCE](docs/WNR2-REFERENCE.md) | `c/wex_format.h`, `c/expert_store_wex.c`, `c/qwen38_wex.h`; writers `c/tools/repack_v4_wex.py`, `c/tools/repack_q38_mxfp4_wex.py`; checker `scripts/verify_wex1.py` |
 | **WEX2** | `0x57455832`, 2 | E8M0 scales packed in tiles of 256 values; weights unchanged | 1 only | 0, 1 | written and tested; measured on 2 experts on 2026-10-18, never built for a whole model | [wex2-scale-tiles](docs/reports/wex2-scale-tiles-20261018.it.md) (Italian) | `c/wex_format.h`; writer `repack_v4_wex.py --format-version 2` |
 | **WEX3** | `0x57455833`, 3 | coded records, aliased records (flag 4), one WNM2 model found through the `WNMD` descriptor at header byte 64 | any of 1, 2, 4, 8, 16, 32, 64; 32 excludes 4, 8 and 16; 64 needs 32 | 0 to 5 | read path kept; no production file left (the V4.1 WNR3 file became WEX4 in place, `downgrade` gives it back) | [WNR2-REFERENCE](docs/WNR2-REFERENCE.md); [WNR3-SPEC](docs/WNR3-SPEC.md) section 2 | `c/wex_format.h`, `c/wex_decode.c`, `c/wex_cuda.cuh`; writers `repack_v4_wex.py` (codecs 1 to 3), `archive/nr2/build_nr2_full.py` (4), `c/tools/build_nr3.py` (5) |
-| **WEX4** | `0x57455834`, 4.0 | a SHA-256-hashed header page and index (blob, record and tensor tables, names, metadata), a SHA-256 per record and blob, exact tiling of the file, any tensor and dtype, in-place upgrade and downgrade of WEX1 and WEX3/WNR3 files | `required_features` bit 0 VALUE_EXACT; `optional_features` bit 0 ST_SOURCES | 0, 5, 6 | **in production** for both models | [WEX4-SPEC](docs/WEX4-SPEC.md) | reader `c/wex4.h`; `c/qwen38_wex.h`; the DeepSeek loader is in KAIRA and shown here as patches in `integration/`; reference `wex4/wex4.py`; converter `wex4/wex4_convert.py`. Not read by `c/expert_store_wex.c` |
+| **WEX4** | `0x57455834`, 4.0 | a SHA-256-hashed header page and index (blob, record and tensor tables, names, metadata), a SHA-256 per record and blob, exact tiling of the file, any tensor and dtype, in-place upgrade and downgrade of WEX1 and WEX3/WNR3 files | `required_features` bit 0 VALUE_EXACT; `optional_features` bit 0 ST_SOURCES | 0, 5, 6 | **in production** for both models | [WEX4-SPEC](docs/WEX4-SPEC.md) | reader `c/wex4.h`; `c/qwen38_wex.h`; the DeepSeek loader is in the engine build and shown here as patches in `integration/`; reference `wex4/wex4.py`; converter `wex4/wex4_convert.py`. Not read by `c/expert_store_wex.c` |
 
 | Id | Record codec | Magic on disk | WEX3 header flag | Payload | Lossless | Check inside the record | Decoders | Status |
 |---|---|---|---|---|---|---|---|---|
@@ -148,35 +148,35 @@ The index of every page, with its kind, language and state, is [docs/README.md](
 README.md  STATUS.md  CHANGELOG.md  CONTRIBUTING.md   front page, what runs today, format changes, rules
 SECURITY.md  CITATION.cff     how to report a vulnerability, how to cite
 LICENSE  NOTICE  THIRD_PARTY_NOTICES.md              Apache-2.0 text, attribution notices, third-party material
-check_repo.py  sync-map.tsv    self-check (links, mirror identity, licence headers, privacy) and the list of mirrored files
+check_repo.py  sync-map.tsv    self-check (links, c/ file map, licence headers, privacy) and the map of c/ files to the maintainer's tree
 assets/        the logo (light and dark), the mark, and the source image of the social preview (set in the repository settings)
 .github/       CI workflow (Linux and Windows CPU checks), issue forms, pull-request checklist
-c/             MIRROR of KAIRA src/colibri/c: same relative paths, byte-identical, never edited here
+c/             engine-side WEX code in the colibri c/ layout; pull requests may change it
   *.h *.c *.cuh   format, codecs, CPU and CUDA decoders, the standalone store, wex4.h, qwen38_wex.h
   tools/          container writers, the WNR3 builder and its encoder DLL, the CUDA helper, benches
-  tests/          format, store, repack, WNR3 and Qwen3.8 tests; several build only inside the KAIRA tree
+  tests/          format, store, repack, WNR3 and Qwen3.8 tests; several build only inside a full engine tree
 wex4/          WEX4, repo-only: Python reference, converter, C tools, tests, reviews, research
   vectors/        conformance vectors: valid and invalid files with the verdict a reader must give
 scripts/       repo-only checks: check_all.sh (every CPU check), build_cpu_check.sh, verify_wex1.py and its test
 archive/       the WNR2 lab code (encoder, trainer, checks) and its benches, kept for the record
 models/        trained WNM2 models: DeepSeek V4 Flash 0731 and V4.1 REAP-192
 fixtures/      the tiny V4.1 model and the makers of synthetic experts
-integration/   KAIRA engine, backend and host excerpts, build scripts, patches
+integration/   engine, backend and host excerpts, build scripts, patches
 docs/          living pages: index, architecture, glossary, benchmarks, integration guide, WNR2 reference, WNR3 and WEX4 specs
   reports/        dated, frozen reports (some in Italian)
 research/      dated lab runs, frozen; README.md is the index
-docs/NEXT-FORMAT-SPEC.md         stub: a comment in the mirrored c/wex4.h still names this path
+docs/NEXT-FORMAT-SPEC.md         stub: a comment in c/wex4.h still names this path
 ```
 
-## Source of truth and sync
+## Where the code lives
 
-The live copies of the 37 files under `c/` are in KAIRA, under `src/colibri/c/` at the same relative paths. They are copied whole and never edited here; `sync-map.tsv` lists them with the KAIRA commit they were last compared with. Nothing outside `c/` is mirrored: `archive/` came from the KAIRA lab folder, `integration/` quotes KAIRA code, `research/`, `models/` and `fixtures/v41-tiny` are copies of lab results, the rest was written here. To check the mirror, the links and the privacy patterns:
+The 37 files under `c/` are this repository's engine-side code, and pull requests may change them. The same files are also carried in the maintainer's application tree (under `src/colibri/c/`, same relative paths) and are being integrated into colibri's `dev` branch; the maintainer keeps the copies in step, and `sync-map.tsv` maps each file to its path there. `archive/` came from the maintainer's lab folder, `integration/` quotes engine code that is not in this repository, `research/`, `models/` and `fixtures/v41-tiny` are copies of lab results, the rest was written here. To check the links, the file map, the licence headers and the privacy patterns:
 
 ```sh
-python -I check_repo.py --source "<TREE>"
+python -I check_repo.py
 ```
 
-It exits with 1 when a relative Markdown link or its anchor is broken, when a mirrored file differs from KAIRA `master` (apart from the licence header, which KAIRA does not carry yet), when `STATUS.md` or `integration/README.md` does not name the recorded sync, when a source file outside `research/` has no SPDX licence header, or when a tracked file holds a user-profile path, a personal e-mail address or an access token. How to sync, and what may be written here: [CONTRIBUTING.md](CONTRIBUTING.md).
+It exits with 1 when a relative Markdown link or its anchor is broken, when a file under `c/` has no row in `sync-map.tsv`, when a source file outside `research/` has no SPDX licence header, or when a tracked file holds a user-profile path, a personal e-mail address or an access token. The maintainer's comparison with the other tree (`--source <TREE>`) and what may be written here: [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Licence
 
@@ -208,7 +208,7 @@ The source and licence of each of these is in [THIRD_PARTY_NOTICES.md](THIRD_PAR
 
 ## Contributing
 
-Contributions are welcome under the Apache License 2.0, inbound = outbound, with a `Signed-off-by` line (Developer Certificate of Origin) on every commit. The rules, including the privacy rules and how `c/` is kept in step with KAIRA, are in [CONTRIBUTING.md](CONTRIBUTING.md).
+Contributions are welcome under the Apache License 2.0, inbound = outbound, with a `Signed-off-by` line (Developer Certificate of Origin) on every commit. The rules, including the privacy rules and how `c/` is kept in step with the other trees that carry it, are in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## In breve (italiano)
 

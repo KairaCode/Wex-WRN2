@@ -11,7 +11,7 @@ A WEX file is untrusted input: it can be damaged, or built by someone who has re
 | WEX1, WEX2 and WEX3 readers (`c/wex_format.h`, `c/expert_store_wex.c`, `scripts/verify_wex1.py`) | **no.** These containers have no hashes, and WNR2 records accepted 1.8-1.9% of random bit flips without noticing. Open only files you built yourself | crashes are fixed as bugs |
 | `archive/`, `research/` | no: lab code, kept for the record | no |
 
-The engines that read these files in production (the DeepSeek loader and the KAIRA host) are not in this repository; see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+The engines that read these files in production (the DeepSeek loader and the maintainer's application host) are not in this repository; see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Reporting a vulnerability
 

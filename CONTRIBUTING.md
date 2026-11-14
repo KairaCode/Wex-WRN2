@@ -28,21 +28,21 @@ Nothing tracked may contain a real name (except the names of copyright holders a
 
 | Placeholder | Stands for |
 |---|---|
-| `<KAIRA>` | the KAIRA checkout |
-| `<KAIRA-WT>`, `<worktree>` | a git worktree of KAIRA |
+| `<TREE>` | a checkout of the maintainer's application tree (older logs write `<KAIRA>`) |
+| `<worktree>` | a git worktree of that tree (older logs write `<KAIRA-WT>`) |
 | `<Wex-WRN2>` | a checkout of this repository |
 | `<SCRATCH>`, `<local scratch dir>` | a scratch folder named in a raw log |
 | `<HOME>` | the user profile |
 | `<TMP>` | any temporary folder |
 | `<RESEARCH-PC>` | the working folder on the research PC |
 
-Drive letters of the lab machine (`U:`, `C:`) are fine. In a shell script quote the placeholder (`'<KAIRA>'/lab`): bare, the shell reads it as a redirection. Commit with a noreply address. Before committing, and after `git add` (the check reads tracked files only), run `python -I check_repo.py`. A `privacy` line that says FAIL (a user-profile path, also inside a binary file; an e-mail address that is not a noreply one; an access token) fails the check and must be fixed. The other `privacy` lines are warnings and must not grow. They look for scratch-folder words and identifiers of work sessions; session and temp paths; assistant and session words; a private IPv4 address (10.x, 172.16-31.x, 192.168.x); the login name and the machine name of whoever runs the check, both read from the environment at run time. Re-measured on 2026-11-13 on this tree, they read, in the order printed, 24 matches in 15 files, 7 in 7, 58 in 26, 0, 0 and 0. All of those are in research run folders, except one line of `wex4/review/REVIEW.md` and the trailer line of the three `engine-*` patches in `integration/` (byte copies of engine commits). The check does not look for real names, quoted messages or lists of programs: read your diff for them.
+Drive letters of the lab machine (`U:`, `C:`) are fine. In a shell script quote the placeholder (`'<TREE>'/lab`): bare, the shell reads it as a redirection. Commit with a noreply address. Before committing, and after `git add` (the check reads tracked files only), run `python -I check_repo.py`. A `privacy` line that says FAIL (a user-profile path, also inside a binary file; an e-mail address that is not a noreply one; an access token) fails the check and must be fixed. The other `privacy` lines are warnings and must not grow. They look for scratch-folder words and identifiers of work sessions; session and temp paths; assistant and session words; a private IPv4 address (10.x, 172.16-31.x, 192.168.x); the login name and the machine name of whoever runs the check, both read from the environment at run time. Re-measured on 2026-11-13 on this tree, they read, in the order printed, 24 matches in 15 files, 7 in 7, 58 in 26, 0, 0 and 0. All of those are in research run folders, except one line of `wex4/review/REVIEW.md` and the trailer line of the three `engine-*` patches in `integration/` (byte copies of engine commits). The check does not look for real names, quoted messages or lists of programs: read your diff for them.
 
 ## 3. What does not go into the repository
 
 Real containers and checkpoints never enter the repository (`*.wex` is git-ignored), nor do model weights of any kind, nor third-party code or data whose licence is not compatible with Apache-2.0. What is tracked is small: the 59 KB WNM2 models, the tiny fixtures, the conformance vectors of `wex4/vectors/`, and the trigger files of the WEX4 security review. A file computed from real weights (a model table, a fixture, a sample) goes in only with a row in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) that names the checkpoint and its licence.
 
-The format code is not proposed to the upstream colibri repository from here; `integration/upstream-561966ec-levelA.patch` is for a user's own colibri tree.
+Upstream integration into colibri is done by the maintainer, not from pull requests here; `integration/upstream-561966ec-levelA.patch` is for a user's own colibri tree.
 
 ## 4. Adding a research run
 

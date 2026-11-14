@@ -1,4 +1,4 @@
-Wex-WRN2 / KAIRA expert container formats - Copyright 2026 Ludovico Zanichelli
+Wex-WRN2 / WEX expert container formats - Copyright 2026 Ludovico Zanichelli
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not
 use these files except in compliance with the License. A copy is in LICENSE
@@ -56,7 +56,7 @@ Zanichelli in 2026; each one names its colibri source in its header:
     research/wnr3-20261107/team2/zero-safety/scripts/zs_gpu_kernels.cu
     research/wnr3-20261107/team2/zero-safety/scripts/zs_kern.c
 
-These files are patches against colibri sources (KAIRA's tree or stock
+These files are patches against colibri sources (the maintainer's engine tree or stock
 colibri); they quote colibri lines as diff context:
 
     integration/backend/backend-upload-race-fix.patch
