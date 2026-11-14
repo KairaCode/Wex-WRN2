@@ -83,7 +83,11 @@ Labels you may see on issues: **good first issue** (a few hours, little context)
 - **Still open, most wanted first:**
   - run `bash wex4/research/vulkan-decode/run.sh <container.wex4>` on a real GPU (Intel, AMD, NVIDIA,
     Apple through MoltenVK) and report the last lines and the device line; a real container with WNR3
-    records is the test that counts, and none was decoded yet;
+    records is the test that counts, and none was decoded yet. The host program reads the file record
+    by record and cuts its batches to the device's buffer limit, so the file size is not a limit (a
+    5.4 GB test file was read; no record of a real model was). The slow part is the CPU reference,
+    which decodes every record too: start with `MUTATIONS=0 WNR3_VK_EVERY=64` (no mutated copies, one
+    record in 64), as the folder's README says;
   - a speed number against the CPU path on the same machine. The prototype looks symbols up with the
     reference binary search; the design note, section 5, lists the tables the CUDA kernels use instead;
   - the commit step (copy the decoded regions to the engine's buffers only when the record's error word
