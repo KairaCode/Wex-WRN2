@@ -7,12 +7,14 @@
 #   2. c/tools/wex_nr3_tools.c -> wex_nr3_tools.dll; fixtures/v41-tiny -> tiny.wex (WEX1) -> tiny_cz.wex (WNR3-CZ)
 #   3. wex4/test_wex4.py
 # Windows: MSYS2 UCRT64 or MINGW64 gcc on PATH, python 3 (stdlib only). Linux: gcc and PYTHON=python3.
+# macOS: a GNU gcc in CC (Homebrew: CC=gcc-15) and PYTHON=python3; the gcc of Xcode is clang and has no OpenMP.
 # Usage: bash wex4/build_and_test.sh [--fuzz N] [--write-vectors DIR]
 set -eu
 set -o pipefail
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 S=$ROOT/wex4/out
 PY=${PYTHON:-python}
+CC=${CC:-gcc}   # the C compiler of every build below
 rm -rf "$S" && mkdir -p "$S"
 export TMP="$S" TEMP="$S"   # gcc from Git Bash cannot create temporary files under C:\WINDOWS
 # shared libraries: Windows (MSYS2, Git Bash) as before; elsewhere position-independent and not -static
@@ -23,7 +25,7 @@ esac
 # WEX_CFLAGS: extra flags for every compile and link, empty by default (the sanitizer CI job sets
 # -fsanitize=address,undefined there)
 W="-O2 -Wall -Wextra -Wno-unused-parameter -Wno-unused-function ${WEX_CFLAGS-}"
-gcc $W $SO -I "$ROOT/c" "$ROOT/wex4/wex4_tools.c" -o "$S/wex4_tools_ref.dll"
+"$CC" $W $SO -I "$ROOT/c" "$ROOT/wex4/wex4_tools.c" -o "$S/wex4_tools_ref.dll"
 # the AVX2 kernels of the fast decoder exist on x86 only (-march=haswell: AVX2, BMI, BMI2, LZCNT). On any other
 # CPU (ARM, RISC-V, ...) the same source builds its scalar kernel 0: the reference loop per stream, parallel
 # across streams, so the fast-versus-reference tests still compare two decoders. WEX4_MARCH overrides the choice
@@ -33,14 +35,14 @@ case $(uname -m) in
   *) MARCH=${WEX4_MARCH-} ;;
 esac
 F="-O3 $MARCH -fopenmp -DWEX4_FAST_NR3"
-gcc $W $F $STATIC_SO -I "$ROOT/c" -I "$ROOT/wex4/research/fast-cpu-decode" "$ROOT/wex4/wex4_tools.c" -o "$S/wex4_tools.dll"
+"$CC" $W $F $STATIC_SO -I "$ROOT/c" -I "$ROOT/wex4/research/fast-cpu-decode" "$ROOT/wex4/wex4_tools.c" -o "$S/wex4_tools.dll"
 # c/wex4.h is the engine-side file and can change with the engine: prove that the two DLLs really hold two decoders
 # (a sync once dropped the hook, and the fast-versus-reference tests compared the reference with itself)
-site() { gcc $1 -E -I "$ROOT/c" -I "$ROOT/wex4/research/fast-cpu-decode" "$ROOT/wex4/wex4_tools.c" | grep -c "return $2(&view, &layout, model, scales, weights)" || true; }
+site() { "$CC" $1 -E -I "$ROOT/c" -I "$ROOT/wex4/research/fast-cpu-decode" "$ROOT/wex4/wex4_tools.c" | grep -c "return $2(&view, &layout, model, scales, weights)" || true; }
 if [ "$(site "$F" wex_fast_decode)" != 1 ] || [ "$(site "" wex_nr2_decode)" != 1 ]; then
   echo "wex4_decode_record does not call wex_fast_decode in wex4_tools.dll and wex_nr2_decode in wex4_tools_ref.dll" >&2; exit 1
 fi
-gcc $W $SO "$ROOT/c/tools/wex_nr3_tools.c" -o "$S/wex_nr3_tools.dll"
+"$CC" $W $SO "$ROOT/c/tools/wex_nr3_tools.c" -o "$S/wex_nr3_tools.dll"
 cd "$S"
 "$PY" -I "$ROOT/c/tools/repack_v4_wex.py" --model-dir "$ROOT/fixtures/v41-tiny" --output tiny.wex > tiny.wex.log
 P=$("$PY" -I -c "print(','.join(f'{l}:{e}' for l in range(6) for e in range(8)))")
