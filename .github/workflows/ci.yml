@@ -1,5 +1,6 @@
 # CPU checks of the repository: check_repo.py, the stdlib tests, the WEX1-3/WNR3 CPU check and the
-# WEX4 tests (scripts/check_all.sh). No GPU, no model weights, no secrets.
+# WEX4 tests (scripts/check_all.sh), then the fuzzing harnesses replayed on their seeds (wex4/fuzz/run.sh --replay).
+# No GPU, no model weights, no secrets.
 name: CI
 
 on:
