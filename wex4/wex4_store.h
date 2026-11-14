@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0
  * Copyright 2026 Ludovico Zanichelli */
-#ifndef KAIRA_WEX4_STORE_H
-#define KAIRA_WEX4_STORE_H
+#ifndef WEX4_STORE_H
+#define WEX4_STORE_H
 
 /* Loader of docs/WEX4-SPEC.md section 13.2: opens a WEX4 expert
  * container and gives the engine store exactly what it keeps today (the
@@ -115,4 +115,4 @@ static inline int wex4_store_check(const Wex4Store *s, uint32_t layer, uint32_t 
     return memcmp(digest, s->hashes + ((size_t)layer * s->experts + expert) * 32u, 32u) ? WEX4_E_HASH : WEX4_OK;
 }
 
-#endif /* KAIRA_WEX4_STORE_H */
+#endif /* WEX4_STORE_H */

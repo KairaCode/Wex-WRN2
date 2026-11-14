@@ -7,7 +7,7 @@ Seven rules, after a section for people new to the repository. The rules exist b
 Thank you for looking. Most of this repository is specifications and tests, so the most useful contributions are a reader or writer in another language that passes the conformance vectors, a bug found by them, and a sentence of a specification that can be read two ways.
 
 - **Open an issue first** for any change to a format (a field, a flag, a codec, a rule of validation): it changes what other readers must do. A bug fix or a documentation fix can go straight to a pull request.
-- **Set up.** Windows: [MSYS2](https://www.msys2.org/) with the UCRT64 packages `mingw-w64-ucrt-x86_64-gcc` and `mingw-w64-ucrt-x86_64-python` (or `gcc` on `PATH` from Git Bash), and `git`. Linux: `gcc`, `python3`, `git`, and `export PYTHON=python3`. An x86-64 CPU with AVX2. No GPU, no model and no Python package outside the standard library.
+- **Set up.** Windows: [MSYS2](https://www.msys2.org/) with the UCRT64 packages `mingw-w64-ucrt-x86_64-gcc`, `mingw-w64-ucrt-x86_64-libgomp` and `mingw-w64-ucrt-x86_64-python` (or `gcc` on `PATH` from Git Bash), and `git`. Linux: `gcc`, `python3`, `git`, and `export PYTHON=python3`. An x86-64 CPU with AVX2. No GPU, no model and no Python package outside the standard library.
 - **Check.** `bash scripts/check_all.sh` builds and runs every CPU test and the repository check. It must end with `all checks passed`.
 - **Style.** C99 that builds without warnings under `-Wall -Wextra`; Python 3 standard library only, run with `python -I`; plain English in the pages, with numbers stated as rule 5 says. Add no dependency.
 - **A format change** brings, in the same pull request: the specification diff, new or changed files in [wex4/vectors/](wex4/vectors/README.md) with their `MANIFEST.tsv` rows, matching changes in both WEX4 readers (`c/wex4.h` and `wex4/wex4.py`), and a `CHANGELOG.md` entry.
@@ -78,7 +78,7 @@ New pages are written in English. The Italian reports stay in Italian. New repor
 
 **Inbound = outbound.** Every contribution is licensed under the Apache License 2.0, the licence of the repository (section 5 of [LICENSE](LICENSE)). There is no separate contributor agreement.
 
-**Sign-off.** Every commit ends with a line
+**Sign-off.** Every commit of a contribution from outside (anyone but the maintainer, who holds the copyright of their own commits) ends with a line
 
 ```text
 Signed-off-by: Your Name <your e-mail>

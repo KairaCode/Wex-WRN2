@@ -3,8 +3,12 @@
 name: CI
 
 on:
+  # main only: a branch of this repository is checked through its pull request; push and pull_request
+  # together would run every check twice for it
   push:
+    branches: [main]
   pull_request:
+  workflow_dispatch:   # any other branch, by hand
 
 permissions:
   contents: read
@@ -17,19 +21,21 @@ concurrency:
 jobs:
   linux:
     runs-on: ubuntu-24.04
-    # shortcut: the Linux build has not been seen green yet; remove continue-on-error after its first green run
-    continue-on-error: true
+    timeout-minutes: 15   # a green run takes about 2 minutes; the default lets a hung test hold the runner for 6 hours
     env:
       PYTHON: python3
       USER: ""        # check_repo.py's user-name pattern reads USERNAME/USER; "runner" would match prose
       USERNAME: ""
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false   # the checks never talk to the remote: keep the token out of .git/config
       - name: All CPU checks
         run: bash scripts/check_all.sh
 
   windows:
     runs-on: windows-2022
+    timeout-minutes: 15   # a green run takes 3 to 5.5 minutes
     env:
       USER: ""
       USERNAME: ""
@@ -38,11 +44,19 @@ jobs:
         shell: msys2 {0}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
       - uses: msys2/setup-msys2@ec48f7c5447b3140e2b088413ae3a55687bccb6e  # v2.33.0
         with:
           msystem: UCRT64
           update: false
+          # the action already caches the downloaded packages (cache: true is its default); the time left is
+          # unpacking them, so the list is short. no MSYS2 git: it brings perl and openssh, 41 packages of 79
           # libgomp.a ships in its own package in current MSYS2; without it -fopenmp links fail
-          install: git mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-libgomp mingw-w64-ucrt-x86_64-python
+          install: mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-libgomp mingw-w64-ucrt-x86_64-python
       - name: All CPU checks
-        run: bash scripts/check_all.sh
+        # check_repo.py calls git: the runner's Git for Windows, which made the checkout. only its folder is
+        # appended, so nothing else of the Windows PATH reaches the MSYS2 shell (path-type stays minimal)
+        run: |
+          export PATH="$PATH:/c/Program Files/Git/cmd"
+          bash scripts/check_all.sh

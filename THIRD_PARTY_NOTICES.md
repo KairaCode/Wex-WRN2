@@ -45,6 +45,10 @@ SOFTWARE.
 
 That repository is licensed under the MIT License, Copyright (c) 2023 DeepSeek; the full text is in [code/LICENSE](research/wnr3-20261107/team3/other-tensors/data/code/LICENSE) next to the copies.
 
+## OCP Microscaling Formats (MX) Specification v1.0 (OWFa 1.0)
+
+`research/wnr3-20261107/team2/zero-safety/out/ocp-mx.txt` is a text extract of the Open Compute Project's "OCP Microscaling Formats (MX) Specification", Version 1.0 (https://www.opencompute.org/documents/ocp-microscaling-formats-mx-v1-0-spec-final-pdf), written by `scripts/pdftext.py` of the same run folder to check the format's zero and rounding rules. The specification states that its use is governed by the Open Web Foundation Modified Final Specification Agreement ("OWFa 1.0"), whose terms are at http://www.opencompute.org/participate/legal; the extract keeps the specification's own licence and disclaimer section.
+
 ## Data computed from model weights
 
 No model weights are in this repository. These files are statistics computed from the routed-expert weights of DeepSeek checkpoints, both released under the MIT License (Copyright (c) 2023 DeepSeek):

@@ -11,7 +11,7 @@ WEX is a family of expert-container formats for streamed Mixture-of-Experts infe
 
 The repository slug says `Wex-WRN2` for historical reasons; the codec is spelled **WNR2** in every constant, file and page.
 
-**Status.** WEX4 (format version 4.0) and the WNR3 record codec (v1) are frozen and in production since 2026-11-10/11, on one machine, for two models. The code here is the reference implementation and the research behind it: research-grade and Windows-first (the CPU checks are written to build on Linux too, but no Linux run has been seen yet), one maintainer, no packages, no release yet, and no stability promise for the tools' command lines; the specifications are the stable part. [![CI](https://github.com/KairaCode/Wex-WRN2/actions/workflows/ci.yml/badge.svg)](https://github.com/KairaCode/Wex-WRN2/actions/workflows/ci.yml)
+**Status.** WEX4 (format version 4.0) and the WNR3 record codec (v1) are frozen and in production since 2026-11-10/11, on one machine, for two models. The code here is the reference implementation and the research behind it: research-grade and Windows-first (CI also runs the CPU checks on Linux), one maintainer, no packages, no release yet, and no stability promise for the tools' command lines; the specifications are the stable part. [![CI](https://github.com/KairaCode/Wex-WRN2/actions/workflows/ci.yml/badge.svg)](https://github.com/KairaCode/Wex-WRN2/actions/workflows/ci.yml)
 
 ## What WEX is
 
@@ -117,8 +117,8 @@ Every measurement table: [docs/BENCHMARKS.md](docs/BENCHMARKS.md). Format change
 
 No GPU and no model are needed. Prerequisites: an x86-64 CPU with AVX2 (one test builds with `-march=haswell`), `bash`, `gcc` and Python 3 (standard library only).
 
-- **Windows:** [MSYS2](https://www.msys2.org/) with the UCRT64 packages `mingw-w64-ucrt-x86_64-gcc` and `mingw-w64-ucrt-x86_64-python` (or Git Bash with that `gcc` on `PATH`).
-- **Linux:** `gcc` and `python3`, and `export PYTHON=python3`. Not yet run on Linux: the maintainer's machines are Windows, and the Linux CI job is marked allowed-to-fail until its first green run.
+- **Windows:** [MSYS2](https://www.msys2.org/) with the UCRT64 packages `mingw-w64-ucrt-x86_64-gcc`, `mingw-w64-ucrt-x86_64-libgomp` (two tests link with `-fopenmp`) and `mingw-w64-ucrt-x86_64-python` (or Git Bash with that `gcc` on `PATH`).
+- **Linux:** `gcc` and `python3`, and `export PYTHON=python3`. Linux is checked by CI (ubuntu-24.04); the maintainer's machines are Windows.
 
 From the repository root:
 
@@ -208,7 +208,7 @@ The source and licence of each of these is in [THIRD_PARTY_NOTICES.md](THIRD_PAR
 
 ## Contributing
 
-Contributions are welcome under the Apache License 2.0, inbound = outbound, with a `Signed-off-by` line (Developer Certificate of Origin) on every commit. The rules, including the privacy rules and how `c/` is kept in step with the other trees that carry it, are in [CONTRIBUTING.md](CONTRIBUTING.md).
+Contributions are welcome under the Apache License 2.0, inbound = outbound; a contributor's commits carry a `Signed-off-by` line (Developer Certificate of Origin). The rules, including the privacy rules and how `c/` is kept in step with the other trees that carry it, are in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## In breve (italiano)
 

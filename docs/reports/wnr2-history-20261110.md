@@ -40,7 +40,7 @@
   - for W3, putting both containers on U: if space allows (copy under heavy.lock, verify size + sha256, write .verified), otherwise reporting the drive confound.
 - **2026-11-07 ~03:30**: fork-only decision. WEX1/WNR2 code must NEVER go upstream to JustVugg/colibri, and WEX/WNR2 hunks are stripped from upstream PRs.
   - Code covered: expert_store_wex.c, wex_decode.c/.h, c\tools\wex_cuda_bridge.cu, wex_cuda.cuh, repack_v4_wex.py, the nr2 encoder.
-  - It lives in the PRIVATE repo https://github.com/KairaCode/Wex-WRN2 (local clone `<Wex-WRN2>`, initial commit a74b279 synced from the engine of 2026-11-07, created ~16:10).
+  - It lives in the repository https://github.com/KairaCode/Wex-WRN2 (private at that date; local clone `<Wex-WRN2>`, initial commit a74b279 synced from the engine of 2026-11-07, created ~16:10).
   - Initial commit a74b279 (2026-11-07 16:10, from the engine of 2026-11-07). On 2026-11-09 main = origin/main = c39a650, 10 commits later. src\* (now c\) and the shared tools (wex_cuda_bridge.cu, repack_v4_wex.py, wex_neural_rans.py, benches) are byte-identical to the engine of 2026-11-09; models\ holds v4-flash-0731.wnm2 and v41-reap192.wnm2.
   - The engine tree src\colibri\c stays the live copy; re-sync the repo after format changes.
   - Reason: beating safetensors is the maintainer's own asset (WEX1 on U: ~1.12 vs safetensors ~0.99 tok/s).
@@ -366,7 +366,7 @@ Line numbers `v4:NNNN` in this section are for the engine of 2026-11-09 (`src/co
   - v41-port-plan.md and v41-port-gap.md (where the V4.1 W items came from);
   - bench_nr2_{batch,kernel,rechunk}.cu, h2d_bw.cu, wddm_graph.cu, bench_prio.cu, test_decode_batch.cu, rechunk.py, reencode_bin.py, sim\, *.json and *.log results.
 - **V4.1 lab**: `lab\v41-gpu-20261107\` PLAN.md (W1/W2/W3/F1/G2/D1/H1, 3.1/3.2), w1.md + w1\, m0.md + m0\ (drive_probe.log, run_m0.out.log, runs\), moves.log, F1.patch, laneG-g1.patch, P1.patch. Also `lab\v41-port-20261106\` (repack-wex1-20261107.log, phase1-carryforward.md, HANDOFF.md).
-- **Private repo**: `<Wex-WRN2>\`
+- **Format repository** (private at that date): `<Wex-WRN2>\`
   - README.md;
   - c\ (mirror of the engine's src\colibri\c, with tools\ and tests\), wex4\, scripts\, nr2\, models\, bench\, research\, integration\, fixtures\;
   - docs\ (COLIBRI-INTEGRATION.md, WNR2-REFERENCE.md) and docs\reports\ (wex-architecture-20261018.it.md, wex2-scale-tiles-20261018.it.md, wnr2-wex3-when-compression-pays-20261105.it.md, wnr2-cache-decode-cpu-wddm-20261105.it.md, v41-reap-wnr2-build-20261107.md = w1.md, v41-reap-baseline-m0-20261107.md = m0.md, kaira-status-20261109.it.md, wnr3-research-20261107.it.md and wnr3-research-measurements-20261107.md (were research-wnr3-20261107\), wnr4-entropy-engine-evaluation-20261108.it.md, wex-prod-20261105.it.md, wnr2-reads-vs-ram-cache-20261109.md).

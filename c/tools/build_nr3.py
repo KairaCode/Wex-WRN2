@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 Ludovico Zanichelli
-"""WNR3 builder (KAIRA-private; never push to JustVugg/colibri).
+"""WNR3 builder.
 
 Reads expert slabs from a WEX1 container of any geometry (V4.1 REAP-192: 40 x 192,
 U:\\kaira_wex\\v41-reap\\v4_flash_experts.wex; Qwen3.8-Flash-Next AMD MXFP4: 48 x 512 routed),

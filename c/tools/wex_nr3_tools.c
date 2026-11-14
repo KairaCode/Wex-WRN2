@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0
  * Copyright 2026 Ludovico Zanichelli */
-/* WNR3 encoder side for tools/build_nr3.py (ctypes). CPU only, KAIRA-private.
+/* WNR3 encoder side for tools/build_nr3.py (ctypes). CPU only.
  * Build: gcc -O2 -shared -o wex_nr3_tools.dll tools/wex_nr3_tools.c
  * Every function is thread-safe (no globals); buffers belong to the caller.
  * The codec itself lives in wex_neural_rans.h / wex_format.h; this file only

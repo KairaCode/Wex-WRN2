@@ -63,6 +63,27 @@ PRIVACY = (
 )
 
 
+def fold(s):
+    """Lower case, with the three non-ASCII letters that (?i) matches against i and s written as those."""
+    return s.replace('İ', 'i').lower().replace('ı', 'i').replace('ſ', 's')
+
+
+# Lower-case literals of each pattern: every match holds one of them, so a file that holds none is not
+# searched. The nine searches of every file took 14 of the check's 15 seconds; the counts do not change.
+LITERALS = {
+    'profile path': ('users',),
+    'e-mail': ('@',),
+    'token': ('ghp_', 'github_pat_', 'sk-', 'akia', 'bearer '),
+    'scratchpad / session id': ('scratchpad', 'session'),
+    'session path': ('.claude', 'worktrees', 'appdata', 'temp'),
+    'assistant / session words': ('claude', 'anthropic', 'opus', 'sonnet', 'haiku', 'codex', 'chatgpt', 'session',
+                                  'agent', 'memory', 'toolu_', 'wf_'),
+    'private IPv4 address': ('10.', '192.168', '172.'),
+    'user name': (fold(LOGIN) if LOGIN.isascii() else '',),
+    'machine name': (fold(HOST) if HOST.isascii() else '',),
+}
+
+
 def git(*args, cwd=ROOT):   # stderr is not captured: git's own message reaches the terminal
     return subprocess.run(('git',) + args, cwd=cwd, stdout=subprocess.PIPE, check=True).stdout.decode('utf-8')
 
@@ -231,7 +252,9 @@ def check_licence(files):
 def privacy_counts(data):
     """{pattern name: matches} in one file's bytes; a binary file is searched for profile paths only."""
     text = data.decode('utf-8', 'replace')
-    return {name: len(p.findall(text)) for name, p in (PRIVACY[:1] if b'\0' in data[:8192] else PRIVACY)}
+    low = fold(text)
+    return {name: len(p.findall(text)) if any(s in low for s in LITERALS[name]) else 0
+            for name, p in (PRIVACY[:1] if b'\0' in data[:8192] else PRIVACY)}
 
 
 def check_privacy(files):
@@ -273,6 +296,9 @@ def self_test():
     binary, text = b'\0\0D:\\Users\\someone\\x a.b@example.org', b'D:\\Users\\someone\\x a.b@example.org'
     assert privacy_counts(binary) == {'profile path': 1}, 'binary files: profile paths only'
     assert [privacy_counts(text)[k] for k in ('profile path', 'e-mail', 'token')] == [1, 1, 0]
+    mixed = 'C:\\U\u017fers\\x a@b.org ghp_' + 'a1' * 18 + ' Se\u017f\u017fion-\u0130D C:\\Temp\\x asked Claude wf_2af1fd28 192.168.1.20'
+    assert privacy_counts(mixed.encode()) == {name: len(p.findall(mixed)) for name, p in PRIVACY}, 'LITERALS hide a match'
+    assert all(privacy_counts(mixed.encode())[name] for name, _ in PRIVACY[:7])
     sha = '0123456789abcdef' * 2 + '01234567'
     good = f'# source_commit {sha} 2026-11-11\nc/a.h\tsrc/colibri/c/a.h\n\n# note\nc/t/b.c\tsrc/colibri/c/t/b.c\n'
     assert parse_sync(good) == ((sha, '2026-11-11'), [['c/a.h', 'src/colibri/c/a.h'], ['c/t/b.c', 'src/colibri/c/t/b.c']], [])
