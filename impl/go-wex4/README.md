@@ -1,12 +1,12 @@
 # impl/go-wex4/
 
-**Current.** A second WEX4 reader and verifier, in Go, standard library only. It was written on 2026-11-14 from the specification pages and not from the reference code: [WEX4-SPEC](../../docs/WEX4-SPEC.md), [WNR3-SPEC](../../docs/WNR3-SPEC.md), [WNR2-REFERENCE](../../docs/WNR2-REFERENCE.md) sections 5 to 7 (the WNM2 model and the stream framing, which WNR3-SPEC does not repeat) and the [conformance vectors](../../wex4/vectors/README.md) with their manifest. `c/wex4.h`, `c/wex_format.h`, `c/wex_neural_rans.h`, `c/tools/wex4_verify.c`, `wex4/wex4.py`, `wex4/wex4_tools.c` and `wex4/test_wex4.py` were not opened while it was written. It is the answer to item 4 of [HELP-WANTED](../../docs/HELP-WANTED.md); what the specifications left open is in [SPEC-NOTES.md](SPEC-NOTES.md).
+**Current.** The Go reader: a WEX4 reader and verifier in Go, standard library only, beside the two reference readers (`c/wex4.h` and `wex4/wex4.py`). It was written on 2026-11-14 from the specification pages and not from the reference code: [WEX4-SPEC](../../docs/WEX4-SPEC.md), [WNR3-SPEC](../../docs/WNR3-SPEC.md), [WNR2-REFERENCE](../../docs/WNR2-REFERENCE.md) sections 5 to 7 (the WNM2 model and the stream framing, which WNR3-SPEC does not repeat) and the [conformance vectors](../../wex4/vectors/README.md) with their manifest. `c/wex4.h`, `c/wex_format.h`, `c/wex_neural_rans.h`, `c/tools/wex4_verify.c`, `wex4/wex4.py`, `wex4/wex4_tools.c` and `wex4/test_wex4.py` were not opened while it was written; the reference readers and the reference writer were run as black boxes to make test files and to ask for verdicts. It is the answer to item 4 of [HELP-WANTED](../../docs/HELP-WANTED.md); what the specifications left open is in [SPEC-NOTES.md](SPEC-NOTES.md).
 
 It reads; it does not write. It is not used by any engine.
 
 ## Build and run
 
-Go 1.21 or newer, nothing else. With the MSYS2 package `mingw-w64-ucrt-x86_64-go`, run `export GOROOT=/ucrt64/lib/go` first.
+Go and nothing else. The code uses the `min` and `max` builtins, which came with Go 1.21; `run.sh` was run with Go 1.21.13 (once, Windows), 1.24.13 (CI, Linux) and 1.27.4 (Windows), and with no other version. With the MSYS2 package `mingw-w64-ucrt-x86_64-go`, run `export GOROOT=/ucrt64/lib/go` first.
 
 ```sh
 bash impl/go-wex4/run.sh                 # gofmt, go vet, go test, then every row of wex4/vectors/MANIFEST.tsv
@@ -37,7 +37,7 @@ The reject classes are the names the manifest uses for the C reader (`WEX4_E_HEA
 
 ## What was checked, and how
 
-All on 2026-11-14. Local: Windows 10 desktop, Go 1.27.4 from MSYS2 UCRT64, one run each unless said. Linux: the `go-reader` job of CI (ubuntu-24.04, x86-64, the runner's Go, 1.24.13 on that day) runs `run.sh`: the tests and the 112 rows passed there too; the files of `wex4/out/` and the reference's `verify` were run locally only.
+All on 2026-11-14. Local: Windows 10 desktop, Go 1.27.4 from MSYS2 UCRT64, one run each unless said. Linux: the `go-reader` job of CI (ubuntu-24.04, x86-64, the runner's Go, 1.24.13 on that day) runs `run.sh`: the tests and the 112 rows passed there too; the files of `wex4/out/`, the reference's verdicts and the differential run were done locally only. "The reference" is `wex4/wex4.py` and the C reader behind `wex4/out/wex4_tools.dll`.
 
 | Check | Result |
 |---|---|
@@ -45,23 +45,29 @@ All on 2026-11-14. Local: Windows 10 desktop, Go 1.27.4 from MSYS2 UCRT64, one r
 | WNR3 output against data this reader did not decode | the 2 WNR3-CZ records of `valid/tiny2-cz-upgraded.wex4` decode to the RAW records of the same owners in `valid/tiny-raw-upgraded.wex4` with every -0 weight nibble set to +0 (13,056 B each, 2,850 such nibbles) |
 | The ceil form of WNR3, which no vector has | the 2 records of `testdata/ceil-form.wex4` (5 matrices in ceil form, 808 blocks changed by the inverse) decode to the SHA-256 of their source slabs |
 | WBP1 with 4 and 8 planes, with and without the rotation, and byte 255 in coded planes, which no vector has | the 13 tensors of `testdata/planes.wex4` decode to the SHA-256 of their source bytes |
+| WBP1 records whose size is not a multiple of the plane count, and `chunk_log2 = 11`, which no vector has | the 4 records of `testdata/ragged.wex4` (2, 4, 8 and 8 planes; 5 raw chunks, 31 rANS streams) decode to the SHA-256 of their source bytes |
+| A WBP1 record with one more page of zeros than it needs, every hash right ([SPEC-NOTES.md](SPEC-NOTES.md), A9) | `testdata/extra-page.wex4` is refused with `WEX4_E_DATA`, as both reference readers refuse it; with that page dropped and the sizes and hashes repaired the file verifies and decodes to its source |
+| Tensors of 0 bytes outside every record: 8 changes of one tensor entry of `generic.wex4`, both hashes recomputed (SPEC-NOTES, A5 and A6) | 4 accepted and 4 refused, the verdicts both reference readers gave on the same 8 files |
 | `generic.wex4` against `generic-index-last.wex4` | the 8 records decode to the same bytes in both layouts |
 | The stream hash | the four function vectors and the two stream vectors of WNR3-SPEC 4.5, and the SMHasher verification value |
-| Mutations, WEX4-SPEC section 9, on the 7 valid vectors and the 2 files of `testdata/`, fixed seed | (a) 9,000 single-bit flips with the hashes left alone: all refused. (b) 18,000 bytes of the header page or the index changed with both hashes recomputed: 15,158 refused, 2,842 accepted (changes that leave a valid file: metadata, names, optional bits), no panic. (c) 8,000 bytes of WBP1 and WNR3 records changed with the record's SHA-256 recomputed: 7,982 refused by the decoder, 18 accepted with the same decoded bytes, none accepted with other bytes |
+| Mutations, WEX4-SPEC section 9, on the 7 valid vectors and on `ceil-form.wex4` and `planes.wex4` of `testdata/`, fixed seed | (a) 9,000 single-bit flips with the hashes left alone: all refused. (b) 18,000 bytes of the header page or the index changed with both hashes recomputed: 15,158 refused, 2,842 accepted, no panic. This part has no oracle: the test does not ask the reference whether an accepted file is valid (many are changes of metadata, names or optional bits), so it shows the absence of a panic and nothing about the verdicts; the differential run below is the check of the verdicts. (c) 8,000 bytes of WBP1 and WNR3 records changed with the record's SHA-256 recomputed: 7,982 refused by the decoder, 18 accepted with the same decoded bytes, none accepted with other bytes |
+| Verdicts against the reference on changed files: a review's differential run, with scripts that are not in the repository. 20,000 files (4,000 from each of `generic.wex4`, `generic-index-last.wex4`, `tiny2-cz-upgraded.wex4`, `testdata/planes.wex4`, `testdata/ceil-form.wex4`): one or two fields of the header or of an index entry set to a boundary or random value, or one byte of a compressed record with its hash recomputed; both file hashes recomputed; one seed, one run, after the two fixes below | the C and the Python reader agreed on all 20,000 (2,136 accepted, 166 with a record of an unknown codec). The Go reader gave the same verdict on all 20,000; on 184 refused files its reject class was another one. These mutations do not build the two cases below (the review reports no difference from its own run of the same scripts on the first version), so the run says nothing about them |
 | The 8 WEX4 files that `bash wex4/build_and_test.sh` leaves in `wex4/out/` (not tracked) | all accepted after the fix below. Roots were compared with the reference only for the three that are copies of a vector |
-| The reference on the two files of `testdata/` | `python -I wex4/wex4.py verify` accepts both and prints the roots this reader prints |
+| The reference on the four files of `testdata/` | `python -I wex4/wex4.py verify` accepts `ceil-form.wex4`, `planes.wex4` and `ragged.wex4` and prints the roots this reader prints; it refuses `extra-page.wex4` |
 
-**One bug the vectors did not find.** The first version passed all 112 rows and refused three files of `wex4/out/`: symbol 255 of a rANS-coded plane read the wrong CDF entry. No rANS-coded plane and no scale stream of the vectors holds that byte. The two files of `testdata/` fail with the bug put back ([SPEC-NOTES.md](SPEC-NOTES.md), part D).
+**One bug the vectors did not find.** The first version passed all 112 rows and refused three files of `wex4/out/`: symbol 255 of a rANS-coded plane read the wrong CDF entry. No rANS-coded plane and no scale stream of the vectors holds that byte. `ceil-form.wex4` and `planes.wex4` of `testdata/` fail with the bug put back ([SPEC-NOTES.md](SPEC-NOTES.md), part D).
+
+**Two verdicts that differed from the reference.** The first version passed all 112 rows and still disagreed with both reference readers on two kinds of file, found by a review that asked the reference. It accepted a WBP1 record with one more page of zeros than it needs, which the reference refuses; and it refused an opaque tensor of 0 bytes outside every record whose shape has no 0 dimension, which the reference accepts. The specification does not have the sentence for either case. The reader now gives the reference's verdict on both ([SPEC-NOTES.md](SPEC-NOTES.md), A6 and A9), and the tests above hold them.
 
 ## Limits
 
 - **A reader and verifier only:** no writer, no upgrade or downgrade, no safetensors unpack. The content digest of WEX4-SPEC section 5 is not computed, because the specification does not give the encoding of its fields.
-- **Not exercised by any file:** a WBP1 record whose size is not a multiple of its plane count; `chunk_log2` other than 10 and 12; WNR3 chunks other than 2048:512; canonical zero together with the ceil form; the error for a ceil-form block with coded scale 0; a record of an unknown codec (exit code 3 was not run on a file).
+- **Not exercised by any file:** `chunk_log2` other than 10, 11 and 12; WNR3 chunks other than 2048:512; canonical zero together with the ceil form; the error for a ceil-form block with coded scale 0; a record of an unknown codec (exit code 3 was not run on a file).
 - **No coverage-guided fuzzing.** The mutation test above is the only fuzzing. One attempt with Go's native fuzzer on whole files ran 18 inputs in 60 seconds and was dropped.
 - **Speed and size were not measured.** One thread, one record in memory at a time (`max_decoded` bytes plus the stored record); the largest file read is 2,977,792 B. It was not run on a real container.
 - **Go checks every index**, so an out-of-bounds access is a panic, not a read of other memory; a panic on a hostile file would still be a bug. None was seen in the runs above.
 - **Little-endian or big-endian host:** the code reads integers byte by byte; it was run on x86-64 only.
-- **Class names** follow the C reader's order for the files of the manifest only. On another broken file the class can differ from the C reader's; the verdict must not.
+- **Class names** follow the C reader's order for the files of the manifest only. On another broken file the class can differ from the C reader's (184 of the 20,000 files of the differential run). The verdict should not differ, and that is known only for the files of the table above: the readings of SPEC-NOTES part B are not decided by any file, and a file built on one of them could get another verdict from the reference.
 
 ## Files
 
@@ -75,5 +81,5 @@ All on 2026-11-14. Local: Windows 10 desktop, Go 1.27.4 from MSYS2 UCRT64, one r
 | `main.go` | the command line and the manifest check |
 | `wex4_test.go` | the tests of the table above |
 | `run.sh` | builds, tests, checks the vectors |
-| `testdata/` | two WEX4 files for what the vectors do not cover, and the scripts that make their sources ([README](testdata/README.md)) |
+| `testdata/` | four WEX4 files for what the vectors do not cover, and the scripts that make them or their sources ([README](testdata/README.md)) |
 | `SPEC-NOTES.md` | what the specifications left open, and what the vectors do not exercise |

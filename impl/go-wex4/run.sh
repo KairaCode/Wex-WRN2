@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 Ludovico Zanichelli
 # Builds the Go reader, runs its tests and checks every row of wex4/vectors/MANIFEST.tsv with it.
-# Needs Go 1.21 or newer on PATH and nothing else (MSYS2: export GOROOT=/ucrt64/lib/go first).
+# Needs Go on PATH and nothing else (the code uses the min and max builtins of Go 1.21; run with Go 1.21.13,
+# 1.24.13 and 1.27.4 only). MSYS2: export GOROOT=/ucrt64/lib/go first.
 # Usage: bash impl/go-wex4/run.sh     (last line on success: go reader: all checks passed)
 #        bash impl/go-wex4/run.sh FILE...   also verifies these WEX4 files after the vectors
 set -eu

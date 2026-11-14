@@ -230,6 +230,133 @@ func TestPlanes(t *testing.T) {
 	t.Logf("%d tensors byte-identical to their source, %d WBP1 records", seen, coded)
 }
 
+// testdata/ragged.wex4: four WBP1 records whose size is not a multiple of the plane count (2, 4, 8 and 8
+// planes), chunk_log2 = 11, raw and rANS planes. testdata/make_edge.py prints the SHA-256 of the sources
+// and writes the file with the repository's Python writer.
+func TestRagged(t *testing.T) {
+	want := map[string]string{
+		"r2":      "bb4e275be4b3fc49f9f0c7130d0cf841cfebc5d398b27a693b2852dd97cde5ab",
+		"r4":      "b6e093d3576ad81952cf073d2a4a456d8d8a2b6a809b5dbd21e2576bfd6b93ce",
+		"r8":      "ac3b248075814e7e0fb618d9bd4be7497144b9d9d2efdd4a571e674a24c4c7f1",
+		"r8.long": "b72d920062a0568eb1176b9669de42f0d97bbc06d9eaf14ec03202eb08f13c9a",
+	}
+	b, err := os.ReadFile("testdata/ragged.wex4")
+	if err != nil {
+		t.Fatal(err)
+	}
+	before := Seen
+	seen := 0
+	if _, e := verifyBytes(b, func(i uint32, r Record, x *Index, dec []byte) {
+		tn := x.Tensor(r.FirstTensor)
+		name := string(x.Name(tn))
+		if got := fmt.Sprintf("%x", sha256.Sum256(dec)); r.Codec != codecWBP1 || r.TensorCount != 1 || got != want[name] {
+			t.Errorf("record %d: codec %d, tensor %q decodes to %s", i, r.Codec, name, got)
+		}
+		seen++
+	}); e != nil {
+		t.Fatal(e)
+	}
+	ragged, raw, coded := Seen.WBP1Ragged-before.WBP1Ragged, Seen.WBP1Raw-before.WBP1Raw, Seen.WBP1Rans-before.WBP1Rans
+	if seen != len(want) || ragged != 4 || raw == 0 || coded == 0 {
+		t.Fatalf("%d records, %d of a size that is not a multiple of the plane count, %d raw chunks, %d rANS streams", seen, ragged, raw, coded)
+	}
+	t.Logf("%d WBP1 records of a size that is not a multiple of the plane count, byte-identical to their source (%d raw chunks, %d rANS streams)", ragged, raw, coded)
+}
+
+// testdata/extra-page.wex4: a WBP1 record whose stored_bytes holds one page of zeros more than the used
+// bytes rounded up to a page. Every hash of the file is right. Both reference readers refuse it, so this
+// reader must (SPEC-NOTES.md, A9). The control drops that page (the record is the end of the file) and
+// repairs the sizes and hashes: the file must then verify and decode to the source.
+func TestExtraPage(t *testing.T) {
+	const source = "7d27ffe31ac0558ffd6bcaf976b2f988e33b302fbb71e38aec8e928a00136e88"
+	b, err := os.ReadFile("testdata/extra-page.wex4")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, e := verifyBytes(b, nil); e == nil || e.Class != EData {
+		t.Fatalf("a WBP1 record with one more page of zeros: %v, want a refusal of class %s", e, EData)
+	}
+	off, n := le.Uint64(b[32:]), le.Uint64(b[40:])
+	h, e := ParseHeader(b[:pageBytes], uint64(len(b)))
+	if e != nil {
+		t.Fatal(e)
+	}
+	x, e := OpenIndex(h, b[off:off+align(n)])
+	if e != nil {
+		t.Fatal(e)
+	}
+	r := x.Record(0)
+	if h.Records != 1 || r.Offset+uint64(r.Stored) != uint64(len(b)) || le.Uint64(b[24:]) != uint64(len(b)) {
+		t.Fatal("the file is not one record at its end")
+	}
+	c := append([]byte(nil), b[:len(b)-pageBytes]...)
+	entry := off + x.rt
+	le.PutUint64(c[24:], uint64(len(c)))
+	le.PutUint32(c[entry+8:], r.Stored-pageBytes)
+	sum := sha256.Sum256(c[r.Offset:])
+	copy(c[entry+36:], sum[:])
+	rehash(c)
+	decoded := ""
+	if _, e := verifyBytes(c, func(i uint32, r Record, x *Index, dec []byte) {
+		decoded = fmt.Sprintf("%x", sha256.Sum256(dec))
+	}); e != nil {
+		t.Fatalf("the control (the extra page dropped): %v", e)
+	}
+	if decoded != source {
+		t.Fatalf("the control decodes to %s", decoded)
+	}
+}
+
+// Tensors outside every record (record_count 0), made from the first such tensor of generic.wex4 with both
+// hashes recomputed. The verdicts wanted are those of the two reference readers, asked on 2026-11-14 on
+// the same bytes (SPEC-NOTES.md, A5 and A6).
+func TestTensorsOfZeroBytes(t *testing.T) {
+	orig := load(t, "generic.wex4")
+	off, n := le.Uint64(orig[32:]), le.Uint64(orig[40:])
+	h, e := ParseHeader(orig[:pageBytes], uint64(len(orig)))
+	if e != nil {
+		t.Fatal(e)
+	}
+	x, e := OpenIndex(h, orig[off:off+align(n)])
+	if e != nil {
+		t.Fatal(e)
+	}
+	if x.DataTensors == h.Tensors {
+		t.Fatal("generic.wex4 has no tensor with record_count 0")
+	}
+	entry := off + x.tt + uint64(x.DataTensors)*tensorEntry
+	for _, c := range []struct {
+		what   string
+		dtype  uint8
+		shape  []uint64
+		accept bool
+	}{
+		{"opaque dtype, shape [3, 3]", 200, []uint64{3, 3}, true},
+		{"opaque dtype, rank 0", 200, nil, true},
+		{"opaque dtype, shape [0, 7]", 200, []uint64{0, 7}, true},
+		{"F32, shape [3, 3]", 13, []uint64{3, 3}, false},
+		{"F32, rank 0", 13, nil, false},
+		{"F32, shape [0, 2^32, 2^32]", 13, []uint64{0, 1 << 32, 1 << 32}, true},
+		{"F32, shape [2^32, 2^32, 0]", 13, []uint64{1 << 32, 1 << 32, 0}, false},
+		{"opaque dtype, shape [2^32, 2^32, 0]", 200, []uint64{1 << 32, 1 << 32, 0}, false},
+	} {
+		b := append([]byte(nil), orig...)
+		b[entry+6], b[entry+7] = c.dtype, uint8(len(c.shape))
+		for k := 0; k < 8; k++ {
+			v := uint64(0)
+			if k < len(c.shape) {
+				v = c.shape[k]
+			}
+			le.PutUint64(b[entry+8+8*uint64(k):], v)
+		}
+		rehash(b)
+		_, e := verifyBytes(b, nil)
+		if (e == nil) != c.accept || (e != nil && e.Class != ETensor) {
+			t.Errorf("%s with 0 bytes and record_count 0: %v, want accept = %v", c.what, e, c.accept)
+		}
+	}
+}
+
 // rehash recomputes index_sha256 and header_sha256, so that a change of the header page or of the index
 // reaches the validators. It does nothing on a file whose index is not where the header says.
 func rehash(b []byte) {
@@ -254,7 +381,7 @@ func decodedDigest(b []byte) ([32]byte, *Error) {
 	return sum, e
 }
 
-// Mutations of the valid vectors and of the two files of testdata/, the policy of WEX4-SPEC section 9:
+// Mutations of the valid vectors and of ceil-form.wex4 and planes.wex4 of testdata/, the policy of WEX4-SPEC section 9:
 // (a) a bit flipped anywhere with the hashes left alone must be refused; (b) a byte changed in the header
 // page or the index with the hashes recomputed must be refused or verify in full; (c) a byte changed in a
 // WBP1 or WNR3 record with the record's SHA-256 recomputed must be refused by the decoder or decode to the

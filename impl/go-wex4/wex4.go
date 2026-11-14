@@ -328,16 +328,13 @@ func (x *Index) checkTensors() *Error {
 		if t.Rank > 8 {
 			return fail(ETensor, "tensor %d: rank %d", i, t.Rank)
 		}
-		prod, zeroDim := uint64(1), false
+		prod := uint64(1)
 		for k := 0; k < 8; k++ {
 			if k >= int(t.Rank) {
 				if t.Shape[k] != 0 {
 					return fail(ETensor, "tensor %d: shape[%d] is not 0 at rank %d", i, k, t.Rank)
 				}
 				continue
-			}
-			if t.Shape[k] == 0 {
-				zeroDim = true
 			}
 			hi, lo := bits.Mul64(prod, t.Shape[k])
 			if hi != 0 {
@@ -353,8 +350,11 @@ func (x *Index) checkTensors() *Error {
 			}
 		}
 		if t.RecordCount == 0 {
-			if t.NBytes != 0 || t.Record != 0 || t.Offset != 0 || !zeroDim {
-				return fail(ETensor, "tensor %d: record_count 0 on a tensor that is not a zero-size tensor with record 0 and offset 0", i)
+			// A tensor outside every record is a tensor of 0 bytes. For a dtype of a known width the size
+			// rule above then gives a 0 dimension. For an opaque dtype nothing ties the bytes to the shape,
+			// and both reference readers accept 0 bytes under any shape (SPEC-NOTES.md, A6).
+			if t.NBytes != 0 || t.Record != 0 || t.Offset != 0 {
+				return fail(ETensor, "tensor %d: record_count 0 on a tensor that does not have 0 bytes, record 0 and offset 0", i)
 			}
 			zeroSeen = true
 			continue

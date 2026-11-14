@@ -102,10 +102,10 @@ jobs:
           export LD_PRELOAD
           bash scripts/check_all.sh
 
-  # the second WEX4 reader (impl/go-wex4: Go, standard library only, written from the specifications and not
+  # the Go reader of WEX4 (impl/go-wex4: Go, standard library only, written from the specifications and not
   # from the reference code): gofmt, go vet, its tests, and every row of wex4/vectors/MANIFEST.tsv. It is not
   # part of scripts/check_all.sh, so that Go is not needed for the repository's checks. The runner's own Go
-  # is used (the code needs Go 1.21 or newer and no module)
+  # is used (the code needs the min and max builtins of Go 1.21 and no module)
   go-reader:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
