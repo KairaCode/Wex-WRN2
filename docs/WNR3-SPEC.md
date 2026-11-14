@@ -1,16 +1,16 @@
 # WNR3 specification (FINAL v1, 2026-11-10)
 
-**Codec version:** WNR3 v1 (FINAL), frozen on 2026-11-10. **Status:** stable, in production. **Change log:** "Document history" at the end. The lossless expert-record codec of KAIRA, successor of WNR2; record codec 5 of WEX3 and WEX4 containers.
+**Codec version:** WNR3 v1 (FINAL), frozen on 2026-11-10. **Status:** stable, in production. **Change log:** "Document history" at the end. The lossless expert-record codec of the WEX formats, successor of WNR2; record codec 5 of WEX3 and WEX4 containers.
 
-**Inputs:** the owner's decisions of 2026-11-10 (below); drafts `Wex-WRN2\research\wnr3-20261107\team4\spec-update\WNR3-DRAFT-v2.1.md` (DRAFT 0.2.1), `Wex-WRN2\research\wnr3-20261107\team3\wnr3-spec\WNR3-DRAFT.md` (DRAFT 0.1), `team4\spec-update\`, `Wex-WRN2\docs\reports\wnr3-research-measurements-20261107.md`; 5090 results `Wex-WRN2\research\wnr3-5090-20261107\RESULTS.md`, `zero\ZERO-RESULTS.md`, `ceil-kaira\`, `g0\`; KAIRA source at master `cfb7ea0` (`src/colibri/c/wex_neural_rans.h`, `wex_format.h`, `wex_decode.c/.h`, `wex_cuda.cuh`, `tools/wex_cuda_bridge.cu`, `expert_store_wex.c`, `deepseek_v4.c`). Line numbers `v4:NNNN` refer to `git show cfb7ea0:src/colibri/c/deepseek_v4.c`.
+**Inputs:** the owner's decisions of 2026-11-10 (below); drafts `Wex-WRN2\research\wnr3-20261107\team4\spec-update\WNR3-DRAFT-v2.1.md` (DRAFT 0.2.1), `Wex-WRN2\research\wnr3-20261107\team3\wnr3-spec\WNR3-DRAFT.md` (DRAFT 0.1), `team4\spec-update\`, `Wex-WRN2\docs\reports\wnr3-research-measurements-20261107.md`; 5090 results `Wex-WRN2\research\wnr3-5090-20261107\RESULTS.md`, `zero\ZERO-RESULTS.md`, `ceil-kaira\`, `g0\`; the engine source of that time in the maintainer's tree (`src/colibri/c/wex_neural_rans.h`, `wex_format.h`, `wex_decode.c/.h`, `wex_cuda.cuh`, `tools/wex_cuda_bridge.cu`, `expert_store_wex.c`, `deepseek_v4.c`). Line numbers `v4:NNNN` refer to that version of `src/colibri/c/deepseek_v4.c`, which is not in this repository.
 
-**Status:** in production since 2026-11-10 as the record codec of DeepSeek V4.1 REAP-192 (WNR3-CZ, codec 5); since 2026-11-11 those records sit in a WEX4 container ([WEX4-SPEC.md](WEX4-SPEC.md)). The code is in KAIRA master (merge 89bdc30) and mirrored in `c/`. What runs today: [STATUS.md](../STATUS.md).
+**Status:** in production since 2026-11-10 as the record codec of DeepSeek V4.1 REAP-192 (WNR3-CZ, codec 5); since 2026-11-11 those records sit in a WEX4 container ([WEX4-SPEC.md](WEX4-SPEC.md)). The code is in `c/` and in the engine. What runs today: [STATUS.md](../STATUS.md).
 
 **Gates** (section 7.2, all on 2026-11-10): G1 to G6 passed, G5 as the real-stream audit of [WNR3-VERIFY.md](reports/WNR3-VERIFY.md) section 2 instead of the protocol in the gate table; G7 passed through a lab switch instead of subset containers (erratum 8); the full container of G8 was built and read back (123,306,192,896 B, 7,680/7,680 records). Switch record: [WNR3-PRODUCTION-20261110.md](reports/WNR3-PRODUCTION-20261110.md).
 
-**History of the implementation (2026-11-10):** written on KAIRA branch `wnr3-20261110` (commits b7a49ff CPU codec 5, fcbe820 GPU decoder + helper feature 16 + engine + builder, 8ef9645 review fixes, cade51d lab-only `V4_LAB_CANON_ZERO`), on top of master 3b604bb. Gate evidence: G3 `research/wnr3-20261110/g3_result.json`; G2b/G4/G6 `research/wnr3-20261110/mutants/gpu_run1.log` and WNR3-VERIFY sections 1 and 3; G5 WNR3-VERIFY section 2. After the switch WEX1 and all WNR2 copies of V4.1 were deleted.
+**History of the implementation (2026-11-10):** written on the engine branch `wnr3-20261110` (commits for the CPU codec 5; the GPU decoder, helper feature 16, engine and builder; review fixes; the lab-only `V4_LAB_CANON_ZERO`). Gate evidence: G3 `research/wnr3-20261110/g3_result.json`; G2b/G4/G6 `research/wnr3-20261110/mutants/gpu_run1.log` and WNR3-VERIFY sections 1 and 3; G5 WNR3-VERIFY section 2. After the switch WEX1 and all WNR2 copies of V4.1 were deleted.
 
-Paths in this file: `Wex-WRN2\...` is this repository; `lab\...`, `app\...` are relative to the KAIRA tree (`<KAIRA>`); `<KAIRA-WT>` is the KAIRA worktree of branch wnr3-20261110. Files in this repo: `c/` (codec, decoders, store), `c/tools/wex_cuda_bridge.cu` (helper), `c/tests/test_wex_format.c`, `c/tests/test_expert_store_wex.c`, `c/tools/build_nr3.py` and `c/tools/wex_nr3_tools.c` (builder, encoder DLL), `c/tests/` (engine/GPU tests), `integration/engine/deepseek_v4.wnr3.wex-excerpt.c` (engine hooks), `research/wnr3-20261110/` (verification scripts and results).
+Paths in this file: `Wex-WRN2\...` is this repository; `lab\...`, `app\...` are relative to the maintainer's application tree (`<TREE>`); `<worktree>` is its worktree of branch wnr3-20261110. Files in this repo: `c/` (codec, decoders, store), `c/tools/wex_cuda_bridge.cu` (helper), `c/tests/test_wex_format.c`, `c/tests/test_expert_store_wex.c`, `c/tools/build_nr3.py` and `c/tools/wex_nr3_tools.c` (builder, encoder DLL), `c/tests/` (engine/GPU tests), `integration/engine/deepseek_v4.wnr3.wex-excerpt.c` (engine hooks), `research/wnr3-20261110/` (verification scripts and results).
 
 ### Errata (normative: where they and the sections below disagree, the errata and the code win)
 
@@ -284,7 +284,7 @@ WNR3 non-CZ records decode byte-exact to the WEX1 slab. WNR3 CZ records decode t
 | G4 | GPU WNR3 (5090, heavy.lock): bins of G3's 52 records non-CZ and CZ (CZ model trained on the same 80) | all batch sizes byte-exact vs WEX1 / Z(WEX1); corruption statuses as G2; CPU vs GPU differential on >= 300 mutated records (same status, same output when 0); ptxas 0 spill stores/loads; batch-16 p50 <= WNR2 + 5% on the same GPU | engine work |
 | G5 | integrity audit: single-bit flips in weight and scale payloads of 2 experts, 3,000 flips per matrix (w1, w2) and form, WNR2-rule vs WNR3 | WNR3 accepted 0 (expected <= 0.01); WNR2 rate reported for comparison | CZ/hash sign-off |
 | G6 | CZ correctness on G4's bins | decoded == Z(WEX1); differences vs WEX1 exactly on the 0x8 nibbles; per-record count == source count | G7 |
-| G7 | **end-to-end** (engine built from the worktree, run outside app/, heavy.lock, KAIRA not running): two subset containers built from WEX1 with only layers {0, 13, 26, 39} present (other entries all-zero -> safetensors), A = WNR3 non-CZ, B = WNR3 CZ (~12.4 GB each, on D:); 4 W3-style prompts x >= 256 greedy tokens, `V4_LOGITS_DUMP` | A-vs-A identical first (else inconclusive, report); then A-vs-B logits files byte-identical at every step; A tokens == a WNR2 run's tokens | owner decision on a full CZ build |
+| G7 | **end-to-end** (engine built from the worktree, run outside app/, heavy.lock, the application not running): two subset containers built from WEX1 with only layers {0, 13, 26, 39} present (other entries all-zero -> safetensors), A = WNR3 non-CZ, B = WNR3 CZ (~12.4 GB each, on D:); 4 W3-style prompts x >= 256 greedy tokens, `V4_LOGITS_DUMP` | A-vs-A identical first (else inconclusive, report); then A-vs-B logits files byte-identical at every step; A tokens == a WNR2 run's tokens | owner decision on a full CZ build |
 | G8 | full build + W3-style procedure (all records CPU-verified, every 43rd GPU/CPU compare, readbacks, sha256, 64-record GPU check, A/B speed) | as W1 | **owner decision** (disk space) |
 
 ---
@@ -300,11 +300,11 @@ WNR3 non-CZ records decode byte-exact to the WEX1 slab. WNR3 CZ records decode t
 
 ---
 
-## 9. Implementation plan (KAIRA src, in worktree `<KAIRA-WT>`)
+## 9. Implementation plan (engine source, in worktree `<worktree>`)
 
-*Historical: sections 9 to 11 are the plan as written before the code, with line numbers at KAIRA cfb7ea0. The work was done on 2026-11-10; the code is in `c/`, and the errata at the top of this file say where it differs from the plan.*
+*Historical: sections 9 to 11 are the plan as written before the code, with line numbers of the engine source of that time. The work was done on 2026-11-10; the code is in `c/`, and the errata at the top of this file say where it differs from the plan.*
 
-P0: `git -C <KAIRA> worktree add <KAIRA-WT> -b wnr3-20261110 master`. Before any edit, record the WNR2 golden (G2a) with master code. Commits stay local, never pushed. Builds from a fresh copy of the worktree (tests may rebuild `backend_loader.o` as HIP in place; grep `COLI_HIP_RUNTIME_DIR=0` before any install). Never touch the live `src\`, `app\`, `app\kaira.json`.
+P0: `git -C <TREE> worktree add <worktree> -b wnr3-20261110 master`. Before any edit, record the WNR2 golden (G2a) with master code. Commits stay local, never pushed. Builds from a fresh copy of the worktree (tests may rebuild `backend_loader.o` as HIP in place; grep `COLI_HIP_RUNTIME_DIR=0` before any install). Never touch the live `src\`, `app\` and the application's configuration file.
 
 ### 9.1 `wex_neural_rans.h` (CPU codec, shared helpers)
 
@@ -366,7 +366,7 @@ P0: `git -C <KAIRA> worktree add <KAIRA-WT> -b wnr3-20261110 master`. Before any
 - Model registration at open: `hdr->flags & (WEX_HEADER_NEURAL_RANS2 | WEX_HEADER_NEURAL_RANS3)` (v: line 652).
 - `wex_load_slot`: before `coli_wex_decode_record`, `wex_nr3_owner_ok(entry, slot->slab + read_offset, layer, expert)` else fail like a decode failure.
 
-### 9.7 `deepseek_v4.c` (line numbers at cfb7ea0)
+### 9.7 `deepseek_v4.c` (line numbers of the plan's engine source)
 
 - `v4_wex_load_manifest` (v4:13718-13738): model registration for flag 16 or 32; for 32 require `coli_wex_cuda_nr3_available()`, else "[v4_wex] WNR3 container needs kaira_wex_cuda.dll with WNR3 support (helper feature 16) next to the engine" and fail; for 64 the policy of 4.4 (`getenv("DSV4_CUDA_MOE_MASKED")`).
 - `coli_v4_expert_store_wex_entry` (v4:14588): also accept codec 5 when `coli_wex_cuda_nr3_available()`.
@@ -420,7 +420,7 @@ The WNR2 encoder lives only in the lab (`lab\wex-gpu-direct-20261019\nr2\encode_
 1. **P0** worktree + golden.
 2. **P1** 9.1 + 9.2 + G1 tests (CPU only).
 3. **P2** 9.3 + 9.6 + store test; 9.8 tool; **G3** (CPU, no lock needed; reads U: WEX1 or the lab bins).
-4. **P3** 9.4 + 9.5; helper built from a fresh workspace; **G2b, G4, G5, G6** on the 5090 (heavy.lock via `lab\wnr3-5090-20261107\lock.sh`, only with no KAIRA `deepseek_v4.exe` running; poll every 2 min up to 3 h, else report not run).
+4. **P3** 9.4 + 9.5; helper built from a fresh workspace; **G2b, G4, G5, G6** on the 5090 (heavy.lock via `lab\wnr3-5090-20261107\lock.sh`, only with no application `deepseek_v4.exe` running; poll every 2 min up to 3 h, else report not run).
 5. **P4** 9.7; engine built from a fresh workspace; **G7** (two ~12.4 GB subset containers on D:, deleted after the run unless the owner keeps them).
 6. **P5** (owner decision) free ~124-128 GB, full build (G8), deploy like W3. Until then nothing in `app\` changes and the live container stays WNR2. *Done 2026-11-10 (G7 via the lab switch instead of subset containers; [WNR3-PRODUCTION-20261110.md](reports/WNR3-PRODUCTION-20261110.md)).*
 
@@ -430,6 +430,6 @@ The WNR2 encoder lives only in the lab (`lab\wex-gpu-direct-20261019\nr2\encode_
 
 | Date | Change |
 |---|---|
-| 2026-11-10 | FINAL v1: frozen, implemented in KAIRA (branch wnr3-20261110, merge 89bdc30) and put in production for DeepSeek V4.1 |
+| 2026-11-10 | FINAL v1: frozen, implemented in the engine (branch wnr3-20261110) and put in production for DeepSeek V4.1 |
 | 2026-11-11 | The WNR3 records moved, unchanged, into WEX4 containers ([WEX4-SPEC.md](WEX4-SPEC.md)) |
 | 2026-11-13 | Version header; the implementation notes are named errata. No format change |

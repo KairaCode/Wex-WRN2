@@ -4,7 +4,7 @@
 
 **Status.** WEX1 to WEX3 are read by the current code and are the input of the WEX4 upgrade; no production file is in one of these forms any more. WNR2 (codec 4) was superseded by WNR3 (codec 5, [WNR3-SPEC.md](WNR3-SPEC.md)) on 2026-11-10 and every WNR2 container was deleted; its decoder is kept. The current container is WEX4 ([WEX4-SPEC.md](WEX4-SPEC.md)); what runs today is in [STATUS.md](../STATUS.md).
 
-**History.** The record of the WNR2 period (the owner's decisions, the drives, the open work of the time, the engine integration at KAIRA cfb7ea0, the measurements, the timeline, the contradictions between sources, the source index and the dated updates of 2026-11-08 to 2026-11-10) moved on 2026-11-13 to [reports/wnr2-history-20261110.md](reports/wnr2-history-20261110.md), with the same section numbers. Sections 1 to 3 and 11 to 15 below are one-line pointers to it.
+**History.** The record of the WNR2 period (the owner's decisions, the drives, the open work of the time, the engine integration of that time, the measurements, the timeline, the contradictions between sources, the source index and the dated updates of 2026-11-08 to 2026-11-10) moved on 2026-11-13 to [reports/wnr2-history-20261110.md](reports/wnr2-history-20261110.md), with the same section numbers. Sections 1 to 3 and 11 to 15 below are one-line pointers to it.
 
 ## 1. Owner decisions and rules
 
@@ -20,7 +20,7 @@ Moved to [reports/wnr2-history-20261110.md](reports/wnr2-history-20261110.md), s
 
 ## 4. What WNR2 is
 
-WNR2 is KAIRA's lossless entropy coding of MXFP4 MoE expert records (FP4 E2M1 weights + UE8M0 scales). It is entry codec 4 inside a WEX3 container (header magic WEX3, version 3, header flag NEURAL_RANS2 = 16). One shared probability model (WNM2, 59,408 B) is stored once per container, and every record names it by its FNV-1a id. Weights use a 567-context rANS per matrix and scales an order-0 rANS. All CDFs are 14-bit.
+WNR2 is a lossless entropy coding of MXFP4 MoE expert records (FP4 E2M1 weights + UE8M0 scales). It is entry codec 4 inside a WEX3 container (header magic WEX3, version 3, header flag NEURAL_RANS2 = 16). One shared probability model (WNM2, 59,408 B) is stored once per container, and every record names it by its FNV-1a id. Weights use a 567-context rANS per matrix and scales an order-0 rANS. All CDFs are 14-bit.
 - Naming: the repository slug spells it "WRN2" (KairaCode/Wex-WRN2), but every code constant, file and doc says WNR2: record magic 'WNR2', model 'WNM2', descriptor 'WNMD'. WNR2z is the canonical-zero variant. WNR1 is the older per-record-model codec (codec 3).
 - The name says "neural", but the WNM2 model is a count-based context table. The trainer counts symbols and quantizes them to CDFs. No neural net is involved (see section 14).
 - Container family in 3 lines:
@@ -191,7 +191,7 @@ WNR2 is KAIRA's lossless entropy coding of MXFP4 MoE expert records (FP4 E2M1 we
     - 7680/7680 records are WNR2, 0 raw fallbacks, 0 negative-zero codes mapped (canonical_zero false).
   - 64-record GPU check:
     - w1\sample_records.py (seed 20261107) pairs each record from E: with the same expert's slab from the original WEX1 on D:, asserting geometry and model id.
-    - test_decode_batch.exe (source in lab\wex-prod-20261105) ran with a kaira_wex_cuda.dll built from clean src at 79aff2b (wex_cuda_bridge.cu sha a346652f..., wex_cuda.cuh b6a6563f..., wex_neural_rans.h d875e1d1...).
+    - test_decode_batch.exe (source in lab\wex-prod-20261105) ran with a kaira_wex_cuda.dll built from the clean engine source of 2026-11-07 (wex_cuda_bridge.cu sha a346652f..., wex_cuda.cuh b6a6563f..., wex_neural_rans.h d875e1d1...).
     - Batch sizes 1,2,3,4,6,8,10,16 = 512 decodes, all byte-equal; ALL OK, rc=0.
     - Corruption statuses [0,0,-1,0,-1,0]: a damaged payload and an invalid entry return -1 with the destination untouched.
     - Scratch records64.bin is 2,284,530,456 B.
@@ -303,12 +303,12 @@ WNR2 is KAIRA's lossless entropy coding of MXFP4 MoE expert records (FP4 E2M1 we
   - Output stays in private scratch until kernels, return copy and error check finish.
   - Scripts: lab\wex_neural\run_bridge_optimization.py, verify_bridge_optimization.py, validate_integrated_optimization.py.
   - Direct-path cost was estimated from code, not measured: ~2 x 12.75 MiB VRAM workspace per decoding thread plus a LUT, and two page-locked 12.75 MiB RAM buffers.
-- **Batch API** (feature 8; committed in 9a631c8):
+- **Batch API** (feature 8; committed in the engine tree):
   - Spreads n records round-robin over up to WEX_CUDA_BATCH_LANES = 8 thread-local lanes. Each lane has its own copy `stream` and kernel `aux` stream plus events head/data/consumed (`consumed` orders a lane's next record after its previous kernels).
   - Offsets and error words live in page-locked scratch (WexCudaBatchHost). Workspaces grow per call. ONE host wait per batch.
   - Destinations: record i, matrix m -> dst_scale[3*i+m] / dst_weight[3*i+m].
   - status[i]: 0 written; -1 invalid record or destination (untouched); 1 CUDA/resources unavailable or model not registered (data correct or untouched, never partial). If queueing fails at record i, i and every later record report 1.
-- **Deployed helper** (since 2026-11-09 06:17): app\colibri-optimized\kaira_wex_cuda.dll = the W1 build, sha256 cceb4fb573b3b3e7b71843bf85a2b87cf9efdd94155bfc5deec717cce949e782, 387,072 B, copied from lab\v41-gpu-20261107\w1\build (built 02:04 on 2026-11-07 from clean 79aff2b). This binary passed the 64-record V4.1 check, was the helper in W3 and the 11-08 A/B, and ran the mirror verify (41,271 device decodes, 0 failures). Features 4 and 8 are in it.
+- **Deployed helper** (since 2026-11-09 06:17): app\colibri-optimized\kaira_wex_cuda.dll = the W1 build, sha256 cceb4fb573b3b3e7b71843bf85a2b87cf9efdd94155bfc5deec717cce949e782, 387,072 B, copied from lab\v41-gpu-20261107\w1\build (built 02:04 on 2026-11-07 from the clean engine source). This binary passed the 64-record V4.1 check, was the helper in W3 and the 11-08 A/B, and ran the mirror verify (41,271 device decodes, 0 failures). Features 4 and 8 are in it.
   - The previous helper a79772004426c38fe2ed1196d27cb4e17a52512c0368d5bb71b86b2e3286b049 (2026-11-07 00:47:44, built in ws-int for the V4.1 install, same size) is kept in lab\app-before-mirror-20261109-061724.
 
 ## 11. Engine integration (deepseek_v4.c only)

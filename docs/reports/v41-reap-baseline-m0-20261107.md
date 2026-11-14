@@ -6,7 +6,7 @@ Package M0 of `PLAN.md` (protocol 3.1), measurement only: no source was edited. 
 
 ## Setup
 
-- Code: git `master` 79aff2b, `src\` clean. `deepseek_v4.exe` built in workspace `ws-m0` (`make -j8 deepseek-v4`), sha256 `e215651b9fc77dbe869cd023e7b865bb4312d02e1b8cfac2da92e7146689d943`. Build log `lab\v41-port-20261106\ws-m0\m0-build.log`.
+- Code: the engine's main branch of 2026-11-07, `src\` clean. `deepseek_v4.exe` built in workspace `ws-m0` (`make -j8 deepseek-v4`), sha256 `e215651b9fc77dbe869cd023e7b865bb4312d02e1b8cfac2da92e7146689d943`. Build log `lab\v41-port-20261106\ws-m0\m0-build.log`.
 - heavy.lock held for the whole package (taken 01:33:14).
 - Tools written for this package (in `m0\`):
   - `drive_probe.py`: unbuffered (`FILE_FLAG_NO_BUFFERING`) read probe, one handle per thread, 4 KiB aligned offsets uniform over the file.
@@ -36,7 +36,7 @@ Reading:
 ## 2. REAP CPU baseline (R0a safetensors, R0b WEX1): NOT RUN, machine not quiet
 
 - **Blocked on the precondition** "free RAM >= 18 GB before a REAP run" (and the quiet-machine rule of 3.1).
-  - At 01:33: 3.6 GB free / 8.9 GB available (incl. standby) of 31.1 GB. Other applications, not part of this work, were running: two of their processes held ~16 GB private commit each (one at ~3.4 cores of CPU for the whole window), and the GPU sat at 94-99% utilization with 19-24 GB VRAM used (no KAIRA, no colibri engine, no other build of this work).
+  - At 01:33: 3.6 GB free / 8.9 GB available (incl. standby) of 31.1 GB. Other applications, not part of this work, were running: two of their processes held ~16 GB private commit each (one at ~3.4 cores of CPU for the whole window), and the GPU sat at 94-99% utilization with 19-24 GB VRAM used (no application, no colibri engine, no other build of this work).
   - Polled every 60 s from 01:39 to 01:58 (`m0\ram_poll.log`): available RAM stayed between 4.0 and 8.8 GB. One of those processes exited and a new one started with the same 16 GB commit.
   - I did not stop any of those processes (not mine), and a run at a lower `--memory-gb` would not be the M0 baseline. heavy.lock released at 01:59:54.
 - **Ready to run** once the machine is quiet: `sh lab\v41-gpu-20261107\m0\run_m0.sh [MAX_TOKENS=64] [IDS=w0,code1,chat_it1]` (take heavy.lock first).
@@ -63,7 +63,7 @@ Disk floor of one decode token = misses/token x 18.8 MB / drive GB/s. Using the 
 
 ## 4. Prompt set for later stages
 
-`lab\v41-gpu-20261107\ab\prompts.jsonl`, written by `m0\gen_prompts.py`: 1 warm-up line (`"warmup": true`, 16 tokens, discarded) plus the 8 prompts of 3.1 at 256 tokens: `code1`, `code2` (code), `chat_it1`, `chat_it2` (Italian chat), `reason1`, `reason2` (reasoning), `ctx2k` (a fixed 7,573-char excerpt of `serve_codec.h` at 79aff2b embedded verbatim, ~2k tokens [I], plus a summarization question), `short1` (short). Fields: `id, category, warmup, max_tokens, user`. No system prompt; `serve_bench.py` applies the V4 chat template (`<bos><User>...<Assistant></think>`, the CLI's non-thinking default).
+`lab\v41-gpu-20261107\ab\prompts.jsonl`, written by `m0\gen_prompts.py`: 1 warm-up line (`"warmup": true`, 16 tokens, discarded) plus the 8 prompts of 3.1 at 256 tokens: `code1`, `code2` (code), `chat_it1`, `chat_it2` (Italian chat), `reason1`, `reason2` (reasoning), `ctx2k` (a fixed 7,573-char excerpt of `serve_codec.h` at the engine of 2026-11-07 embedded verbatim, ~2k tokens [I], plus a summarization question), `short1` (short). Fields: `id, category, warmup, max_tokens, user`. No system prompt; `serve_bench.py` applies the V4 chat template (`<bos><User>...<Assistant></think>`, the CLI's non-thinking default).
 
 ## 5. Not done
 

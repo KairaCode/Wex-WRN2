@@ -4,7 +4,7 @@
 
 (Written 2026-11-09 ~04:40; the last two rows were added after W3 finished.)
 
-W3 totals (KAIRA-local logs lab\v41-gpu-20261107\ab\runs\w3-*.stderr.log, not in this repo; last `v4_direct` and `v4_wex_gpu_direct` lines of each run):
+W3 totals (logs local to the maintainer's tree, lab\v41-gpu-20261107\ab\runs\w3-*.stderr.log, not in this repo; last `v4_direct` and `v4_wex_gpu_direct` lines of each run):
 
 | run | host reads | GPU-direct reads | total reads | GB read |
 |---|---|---|---|---|
@@ -25,7 +25,7 @@ Hypothesis:
 - In the ab-samedrive and W3 setups the compressed WNR2 RAM record cache was turned off, so both arms had the same RAM.
 
 What to test, in the replay and/or the short ABBA:
-- **WNR2 + compressed RAM record cache.** Use the same total host-RAM GB as the WEX1 arm. The WNR2 arm then holds compressed records in RAM, about 11% more experts for the same GB. Find the knob: COLI_WEX_RAM_CACHE_GB (`v4_wex_crc`, deepseek_v4.c:14745 at cfb7ea0; it needs COLI_WEX_GPU_DIRECT>=1 and adds to --memory-gb), and keep the RAM accounting equal.
+- **WNR2 + compressed RAM record cache.** Use the same total host-RAM GB as the WEX1 arm. The WNR2 arm then holds compressed records in RAM, about 11% more experts for the same GB. Find the knob: COLI_WEX_RAM_CACHE_GB (`v4_wex_crc`, deepseek_v4.c:14745 at the engine of 2026-11-09; it needs COLI_WEX_GPU_DIRECT>=1 and adds to --memory-gb), and keep the RAM accounting equal.
 - **GPU-direct off (host path)** for WNR2: COLI_WEX_GPU_DIRECT=0, so every record goes through the host slab and the RAM tier. With 1, demand misses outside RAM still go disk -> VRAM; only the prefetcher's direct loads (mode 2) stop. COLI_WEX_RAM_CACHE_GB works only with COLI_WEX_GPU_DIRECT>=1.
 
 Report total reads, GB read and ms/token for each variant.

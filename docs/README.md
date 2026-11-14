@@ -29,7 +29,7 @@ Summary of 2026-11-13; the page of record for what runs is [STATUS.md](../STATUS
 
 **...report a vulnerability.** [SECURITY.md](../SECURITY.md): privately, through GitHub's vulnerability reporting; which readers are supported and what the formats do not protect against.
 
-**...understand the design.** [ARCHITECTURE.md](ARCHITECTURE.md): the components, the write and read paths, the trust boundaries, what lives only in KAIRA, and which mirrored files build here.
+**...understand the design.** [ARCHITECTURE.md](ARCHITECTURE.md): the components, the write and read paths, the trust boundaries, what is not in this repository, and which files of `c/` build here.
 
 **...integrate the formats into an engine.** Open [COLIBRI-INTEGRATION.md](COLIBRI-INTEGRATION.md): what to copy and build (sections 1 and 2), how to make and verify a WEX4 container (3), how to wire an engine (4), every environment variable with its default (5), mirrors, integrity and troubleshooting (6 to 8). The quoted engine code and the patches are listed in [integration/README.md](../integration/README.md); the level-by-level guide of 2026-11-09 (WEX1, WEX2, WNR2) is the dated report [colibri-integration-20261109.md](reports/colibri-integration-20261109.md).
 
@@ -41,7 +41,7 @@ Summary of 2026-11-13; the page of record for what runs is [STATUS.md](../STATUS
 
 **...check a result.** Start from the number in [BENCHMARKS.md](BENCHMARKS.md): a row or paragraph names its dated report or its run where the repository has one; the rows that have none are listed in its section "Where the numbers come from". The report is in the table below; the scripts and raw output of the run are in [research/README.md](../research/README.md), which gives the verdict and the entry file of every run. How numbers are stated here (pairs, conditions, what was not run): [CONTRIBUTING.md](../CONTRIBUTING.md), section 5.
 
-**...know what runs today.** [STATUS.md](../STATUS.md): the two production containers with their roots, drives, switches and builds, what is in KAIRA master but switched off, and what was not verified.
+**...know what runs today.** [STATUS.md](../STATUS.md): the two production containers with their roots, drives, switches and builds, what is in the engine but switched off, and what was not verified.
 
 **...read the history.** [CHANGELOG.md](../CHANGELOG.md) for the format changes by date, then the dated reports below, newest first. The record of the WNR2 period (2026-10-20 to 2026-11-10: decisions, disk tables, measurements, timeline) is [reports/wnr2-history-20261110.md](reports/wnr2-history-20261110.md).
 
@@ -55,9 +55,9 @@ Summary of 2026-11-13; the page of record for what runs is [STATUS.md](../STATUS
 |---|---|---|---|---|
 | [README.md](README.md) | EN | index | current | Which page do I need? |
 | [GLOSSARY.md](GLOSSARY.md) | EN | reference | current | What does this word mean, and which file defines it? |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | EN | overview | current | How do the pieces fit together, where does a record go from the checkpoint to the GPU, and what is only in KAIRA? |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | EN | overview | current | How do the pieces fit together, where does a record go from the checkpoint to the GPU, and what is not in this repository? |
 | [BENCHMARKS.md](BENCHMARKS.md) | EN | measurements | current: every table, newest rows of 2026-11-13 | What was measured, under which conditions, how many runs stand behind it, and where is the raw output? |
-| [COLIBRI-INTEGRATION.md](COLIBRI-INTEGRATION.md) | EN | guide | current: WEX4 with RAW or WNR3 records, KAIRA 24f7e72 | What do I copy and build, how do I make, verify and pin a container, which variables does the engine read, and what does an error line mean? |
+| [COLIBRI-INTEGRATION.md](COLIBRI-INTEGRATION.md) | EN | guide | current: WEX4 with RAW or WNR3 records | What do I copy and build, how do I make, verify and pin a container, which variables does the engine read, and what does an error line mean? |
 | [WEX4-SPEC.md](WEX4-SPEC.md) | EN | spec | current: format version 4.0, in production | What are the bytes of a WEX4 file, how is it validated and hashed, and how is a WEX1 or WNR3 container upgraded in place? |
 | [WNR3-SPEC.md](WNR3-SPEC.md) | EN | spec | current: FINAL v1, in production. Sections 0 to 8 with the errata at the top are the format; sections 9 to 11 are the implementation plan, historical | What are the bytes of a WNR3 record, and how are ceil-form, rule g, canonical zero and the stream hash encoded and checked? |
 | [WNR2-REFERENCE.md](WNR2-REFERENCE.md) | EN | reference | current as the description of the WEX1 / WEX2 / WEX3 layout, the WNR2 record, the WNM2 model, the encoder and the helper API (sections 4 to 10); WNR2 itself is superseded and no WNR2 container exists. Sections 1 to 3 and 11 to 15 point to the history report | What is in a WEX1 / WEX2 / WEX3 container, a WNR2 record and a WNM2 model, and what does the CUDA helper offer? |
@@ -67,7 +67,7 @@ Summary of 2026-11-13; the page of record for what runs is [STATUS.md](../STATUS
 
 | File | Lang. | Kind | State | Question it answers |
 |---|---|---|---|---|
-| [colibri-integration-20261109.md](reports/colibri-integration-20261109.md) | EN, Italian summary at the top | dated report (the integration guide until 2026-11-13) | historical: WEX1, WEX2 and WNR2 level by level, engine quotes at KAIRA 88ddb07, sections 12 to 14 a deployment log of 2026-11-09/10 | How were the WEX1-WNR2 hooks ported into colibri, built, generated, verified and deployed? |
+| [colibri-integration-20261109.md](reports/colibri-integration-20261109.md) | EN, Italian summary at the top | dated report (the integration guide until 2026-11-13) | historical: WEX1, WEX2 and WNR2 level by level, engine quotes of 2026-11-09, sections 12 to 14 a deployment log of 2026-11-09/10 | How were the WEX1-WNR2 hooks ported into colibri, built, generated, verified and deployed? |
 | [wnr2-history-20261110.md](reports/wnr2-history-20261110.md) | EN | dated report (taken out of WNR2-REFERENCE.md on 2026-11-13) | historical: the WNR2 period, 2026-10-20 to 2026-11-10 | What did the owner decide, where did every container and model sit, what was measured with WNR2 and when, and which sources disagreed? |
 | [QWEN38-MXFP4-20261111.md](reports/QWEN38-MXFP4-20261111.md) | EN | dated report | historical (banner: its status lines say WEX1, the containers are WEX4). Its measurements are the record for Qwen3.8 | Do the MXFP4 experts of Qwen3.8 keep the quality of the FP8 ones, how large and how fast are their containers, and what did the engine-side fixes gain? |
 | [wex4-summary-20261111.it.md](reports/wex4-summary-20261111.it.md) | IT | dated report | historical, superseded by WEX4-SPEC.md | What is WEX4 in a few pages: what it adds over safetensors and WEX3, what was measured, what the deploy needed? |

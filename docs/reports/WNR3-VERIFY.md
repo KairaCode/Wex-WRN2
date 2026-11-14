@@ -2,7 +2,7 @@
 
 > **Dated report (2026-11-10).** "WNR2 (production)" and "deployed" describe the state before the switch of that day; WNR3 is the production record codec since then: superseded for what runs today by [STATUS.md](../../STATUS.md).
 
-**Status (English).** WNR3 ([WNR3-SPEC.md](../WNR3-SPEC.md)) on 103 real DeepSeek V4.1 REAP-192 records, code of KAIRA branch wnr3-20261110 (8ef9645 for the encodes and the helper; cade51d adds only the lab switch of section 4).
+**Status (English).** WNR3 ([WNR3-SPEC.md](../WNR3-SPEC.md)) on 103 real DeepSeek V4.1 REAP-192 records, code of engine branch wnr3-20261110 (the WNR3 review-fix commit for the encodes and the helper; the WNR3 branch head adds only the lab switch of section 4).
 
 | check | WNR3-CZ (shipping profile) | WNR3 without CZ | WNR2 (production) |
 |---|---|---|---|
@@ -13,9 +13,9 @@
 | GPU decode p50, batch-16 / single (RTX 5090) | 0.366-0.373 / 0.706-0.713 ms | - | 0.376-0.377 / 0.718-0.723 ms (parity; WNR3 -1.5%) |
 
 - Full container estimate: **~123.4 GB = 114.9 GiB** (WNR2 129.9 GB, WEX1 144.4 GB), extrapolated from 103 records with models trained on 80 experts.
-- **G7 (end-to-end per-step logits proof of canonical zero): PASSED 2026-11-10** (section "G7-lab result" below). **Full WNR3 container: BUILT 2026-11-10** (123.3 GB = 114.8 GiB, 0.949 of WNR2, 7,680/7,680 records read back and decoded exactly; [`research/wnr3-20261110/full-build/RESULT-20261110.md`](../../research/wnr3-20261110/full-build/RESULT-20261110.md)). **Update 2026-11-10: in production.** KAIRA runs this container on U: with a C: mirror; WEX1 and every WNR2 copy were deleted ([WNR3-PRODUCTION-20261110.md](WNR3-PRODUCTION-20261110.md)). "WNR2 (production)" below means the WNR2 container in use when these checks ran.
+- **G7 (end-to-end per-step logits proof of canonical zero): PASSED 2026-11-10** (section "G7-lab result" below). **Full WNR3 container: BUILT 2026-11-10** (123.3 GB = 114.8 GiB, 0.949 of WNR2, 7,680/7,680 records read back and decoded exactly; [`research/wnr3-20261110/full-build/RESULT-20261110.md`](../../research/wnr3-20261110/full-build/RESULT-20261110.md)). **Update 2026-11-10: in production.** The maintainer's application runs this container on U: with a C: mirror; WEX1 and every WNR2 copy were deleted ([WNR3-PRODUCTION-20261110.md](WNR3-PRODUCTION-20261110.md)). "WNR2 (production)" below means the WNR2 container in use when these checks ran.
 
-Paths: `verify/`, `verify/audit/`, `g7lab/`, `mutants/` are in this repo under [`research/wnr3-20261110/`](../../research/wnr3-20261110/) (scripts, logs and the small JSON results; the `.bin` samples, `.wnm2` lab models, executables and `g7lab/bin` stay in the KAIRA lab, `<KAIRA>\lab\wnr3-impl-20261110`). The `tools/` builder and DLL named below are `c/tools/build_nr3.py` and `c/tools/wex_nr3_tools.c` here; `fresh-fix3` / `fresh-verify` are fresh lab copies of the KAIRA worktree (`<KAIRA-WT>`) at 8ef9645 / cade51d.
+Paths: `verify/`, `verify/audit/`, `g7lab/`, `mutants/` are in this repo under [`research/wnr3-20261110/`](../../research/wnr3-20261110/) (scripts, logs and the small JSON results; the `.bin` samples, `.wnm2` lab models, executables and `g7lab/bin` stay in the maintainer's lab, `<TREE>\lab\wnr3-impl-20261110`). The `tools/` builder and DLL named below are `c/tools/build_nr3.py` and `c/tools/wex_nr3_tools.c` here; `fresh-fix3` / `fresh-verify` are fresh lab copies of the engine worktree (`<worktree>`) at the WNR3 review-fix commit / the WNR3 branch head.
 
 ## Riassunto (italiano)
 
@@ -32,14 +32,14 @@ Paths: `verify/`, `verify/audit/`, `g7lab/`, `mutants/` are in this repo under [
    - Audit CPU (decoder dell'host): WNR3, 0 accettati sbagliati su 86.136 flip (esaustivi su header, lunghezze e primi stream, più 3.000 casuali sull'intero record). **WNR2 di produzione accetta sbagliati l'1,8-1,9% dei flip casuali su un record reale** (19/1000 e 18/1000), molto più dello 0,26-0,63% stimato prima.
 3. **Microbench GPU (5090, stessa sessione bloccata, due giri ABAB).** p50 in ms per record: con WNR3-CZ, single 0,706-0,713 e batch-16 0,366-0,373; con WNR2 di produzione (helper distribuito, cceb4fb5) single 0,718-0,723 e batch-16 0,376-0,377. Quindi **WNR3 è alla pari o un po' più veloce per record (-1,5%)**, e i record sono più piccoli del 5%. Su record WNR2, l'helper WNR3 sta entro +1,6% / +6% al batch-16, che considero rumore (G2b: ±0,5%).
 4. **Prova end-to-end dello zero canonico: preparata, non eseguita** (eseguita poi il 10/11: PASS, sezione "G7-lab result").
-   - Ho aggiunto lo switch di laboratorio `V4_LAB_CANON_ZERO=1` nel worktree (commit cade51d). Trasforma ogni -0 in +0 in ogni slab di expert appena letto. Il motore compila da workspace pulito. Con lo switch spento passano test_deepseek_v4 e test_v4_wex_nr3; con lo switch acceso, test_v4_wex_nr3 fallisce dove deve (confronto byte dei pesi), e questo dimostra che lo switch è attivo.
+   - Ho aggiunto lo switch di laboratorio `V4_LAB_CANON_ZERO=1` nel worktree (la testa del branch WNR3). Trasforma ogni -0 in +0 in ogni slab di expert appena letto. Il motore compila da workspace pulito. Con lo switch spento passano test_deepseek_v4 e test_v4_wex_nr3; con lo switch acceso, test_v4_wex_nr3 fallisce dove deve (confronto byte dei pesi), e questo dimostra che lo switch è attivo.
    - Lo script `g7lab/run_g7_lab.sh` usa i bracci A1 B1 A2 B2 M1, con 4 prompt da 256 token. `compare_g7.py` fa il memcmp dei logits riga per riga. **Durata: ~55 min** (~11 min per braccio), ~20 min con `TOK=64`.
    - Il percorso `dg_moe<256>`: deepseek_v4.exe non chiama mai `dsv4_cuda_route_moe`, l'unica funzione che lo usa (e che rifiuta set con un numero di expert diverso da 256, quindi anche REAP-192). Il braccio M1 (masked + CZ) deve quindi dare logits identici, e lo script controlla che la riga "DeepGEMM routed experts active" non compaia mai.
 5. **Piano disco: decisione del proprietario** (sezione 5; superato il 10/11: il container è stato costruito su U:, poi WEX1 e le copie WNR2 sono state cancellate, vedi [WNR3-PRODUCTION-20261110.md](WNR3-PRODUCTION-20261110.md)). La soluzione che consiglio: cancellare la copia WNR2 originale su E: (121 GiB, duplicato di U:) dopo un confronto sha256 con U:, e costruire WNR3 su E:. WEX1 resta su U: finché G7 non passa.
 
 ## 1. Encoding and decode of real records
 
-Inputs: WEX1 `U:\kaira_wex\v41-reap\v4_flash_experts.wex` (read-only), WNR2 sizes from `t1_record_sizes.json` (the 7,680 records of `E:\...\v4_flash_experts.nr2.wex`). Encoder: `c/tools/build_nr3.py` + `wex_nr3_tools.dll` from `fresh-fix3` (= worktree 8ef9645). Each record was CPU-verified by the builder. `verify/analyze.py` then decoded it again (`wex_nr3_decode`) and compared it with the WEX1 slab read fresh from U:.
+Inputs: WEX1 `U:\kaira_wex\v41-reap\v4_flash_experts.wex` (read-only), WNR2 sizes from `t1_record_sizes.json` (the 7,680 records of `E:\...\v4_flash_experts.nr2.wex`). Encoder: `c/tools/build_nr3.py` + `wex_nr3_tools.dll` from `fresh-fix3` (= worktree the WNR3 review-fix commit). Each record was CPU-verified by the builder. `verify/analyze.py` then decoded it again (`wex_nr3_decode`) and compared it with the WEX1 slab read fresh from U:.
 
 Selection (`verify/select_experts.py`): the 40 held-out experts of the 5090 study and the top 64 WNR2 records by size (cutoff 17,457,152 B, about p99). The 12 lab tail records are included. In total 103 distinct experts (L39 E156 is in both sets).
 
@@ -96,7 +96,7 @@ Harmless: 0 everywhere. Every rejection left the slab untouched. CPU and GPU agr
 
 ## 3. GPU decode microbench (RTX 5090, one heavy.lock session 02:57-03:31)
 
-`test_decode_batch.exe` p50 in ms per record. Two ABAB rounds, in the same session as section 2a. The lock was free. No KAIRA engine was running; a small lab test binary of another work package (`ws-v41gp-integ\c\deepseek_v4.exe`, 17 MB) was running.
+`test_decode_batch.exe` p50 in ms per record. Two ABAB rounds, in the same session as section 2a. The lock was free. No engine was running; a small lab test binary of another work package (`ws-v41gp-integ\c\deepseek_v4.exe`, 17 MB) was running.
 
 | helper / records | round | single | batch 1 | batch 2 | batch 4 | batch 8 | batch 16 |
 |---|---|---|---|---|---|---|---|
@@ -116,7 +116,7 @@ Harmless: 0 everywhere. Every rejection left the slab untouched. CPU and GPU agr
 
 *Run later on 2026-11-10: PASS, see section "G7-lab result" below.*
 
-**Switch** (worktree `<KAIRA-WT>`, branch wnr3-20261110, commit **cade51d**): `V4_LAB_CANON_ZERO=1`. It is lab only; KAIRA never sets it. `v4_read_expert_record` is now a thin wrapper around the unchanged reader (`v4_read_expert_record_io`). After every successful read (WEX1, WNR2 or safetensors), the wrapper runs `wex_nr3_canonical_zero` on the slab's weight bytes. Both callers go through it: the lease load and `read_private`. Every downstream use (RAM cache hits, rows16 pins, GPU mirror uploads) sees the canonical bytes. The GPU-direct fill skips the host slab, so the proof runs with `COLI_WEX_GPU_DIRECT=0` on WEX1, which has raw records only. Log: one ON line, then `experts=... nibbles=...` on the first expert and every 4096th.
+**Switch** (worktree `<worktree>`, branch wnr3-20261110, the WNR3 branch head): `V4_LAB_CANON_ZERO=1`. It is lab only; the application never sets it. `v4_read_expert_record` is now a thin wrapper around the unchanged reader (`v4_read_expert_record_io`). After every successful read (WEX1, WNR2 or safetensors), the wrapper runs `wex_nr3_canonical_zero` on the slab's weight bytes. Both callers go through it: the lease load and `read_private`. Every downstream use (RAM cache hits, rows16 pins, GPU mirror uploads) sees the canonical bytes. The GPU-direct fill skips the host slab, so the proof runs with `COLI_WEX_GPU_DIRECT=0` on WEX1, which has raw records only. Log: one ON line, then `experts=... nibbles=...` on the first expert and every 4096th.
 - Fresh workspace `lab\wnr3-impl-20261110\fresh-verify`: the engine builds with rc 0. The only warning is the pre-existing signedness warning, now at line 18286. `test_deepseek_v4`: ok. `test_v4_wex_nr3`: ALL PASSED. With `V4_LAB_CANON_ZERO=1`, `test_v4_wex_nr3` logs `experts=1 nibbles=24721` and fails at the weight-bytes compare, as intended; this shows the switch is live on the store path.
 
 **Script** `g7lab/run_g7_lab.sh` (with `g7lab/bin`: the fresh engine a55a4ce0, `coli_cuda_dsv4_dg.dll` b45eb5d2 from `artifacts\v41-prefix-gpufix-20261110` (= the worktree's CUDA source), and cudart/cublasLt from ws-ab):

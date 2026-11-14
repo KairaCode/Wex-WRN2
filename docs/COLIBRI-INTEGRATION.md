@@ -1,6 +1,6 @@
 # Integration guide: WEX4 containers in a colibri engine
 
-Older reports cite sections 1 to 14 of this guide as it stood on 2026-11-09 (WEX1, WEX2 and WNR2, engine quotes at KAIRA 88ddb07, the deployment log of that week). That text is now the dated report [reports/colibri-integration-20261109.md](reports/colibri-integration-20261109.md), with the same section numbers. This page is the current guide: WEX4 containers with RAW or WNR3 records, as KAIRA runs them on 2026-11-13.
+Older reports cite sections 1 to 14 of this guide as it stood on 2026-11-09 (WEX1, WEX2 and WNR2, engine quotes of that date, the deployment log of that week). That text is now the dated report [reports/colibri-integration-20261109.md](reports/colibri-integration-20261109.md), with the same section numbers. This page is the current guide: WEX4 containers with RAW or WNR3 records, as the maintainer's application runs them on 2026-11-13.
 
 What each piece is and how a record travels from the drive to the GPU: [ARCHITECTURE.md](ARCHITECTURE.md). The bytes: [WEX4-SPEC.md](WEX4-SPEC.md) and [WNR3-SPEC.md](WNR3-SPEC.md).
 
@@ -16,7 +16,7 @@ What each piece is and how a record travels from the drive to the GPU: [ARCHITEC
 | Qwen3.8 store | `qwen38_wex.h` (included by the qwen38 engine) |
 | CUDA helper source | `wex_cuda.cuh`, `tools/wex_cuda_bridge.cu` |
 | tools | `tools/repack_v4_wex.py`, `tools/repack_q38_mxfp4_wex.py`, `tools/build_nr3.py`, `tools/wex_nr3_tools.c`, `tools/wex4_verify.c` (and `tools/wex_neural_rans.py`, `tools/wex_palette.py`, which `repack_v4_wex.py` loads) |
-| tests | `tests/test_wex_format.c`, `tests/test_wex4_verify.c`, `tests/wex4_fixture.h`; the engine tests `tests/test_v4_wex_nr3.c` and `tests/test_qwen38_mxfp4.c` need the KAIRA engine sources ([ARCHITECTURE.md](ARCHITECTURE.md), section "The `c/` mirror") |
+| tests | `tests/test_wex_format.c`, `tests/test_wex4_verify.c`, `tests/wex4_fixture.h`; the engine tests `tests/test_v4_wex_nr3.c` and `tests/test_qwen38_mxfp4.c` need the engine sources ([ARCHITECTURE.md](ARCHITECTURE.md), section "The `c/` folder") |
 
 `c/expert_store_wex.c` is colibri's standalone expert store for WEX1-WEX3; it does not read WEX4.
 
@@ -35,7 +35,7 @@ The bridge in `c/tools/` reports 63 (all six). The full helper API is in [WNR2-R
 
 ## 2. Build
 
-**CPU checks, from this repository.** `bash scripts/check_all.sh` builds and runs every test that needs no KAIRA tree and no GPU, and ends with `all checks passed`. Windows: MSYS2 UCRT64 or MINGW64 `gcc` and Python 3 on `PATH`, run from Git Bash or an MSYS2 shell. Linux: `gcc`, Python 3 and `PYTHON=python3` (not yet run on Linux; the Linux CI job may fail until its first green run). Both need an x86-64 CPU with AVX2 (one test builds with `-march=haswell`).
+**CPU checks, from this repository.** `bash scripts/check_all.sh` builds and runs every test that needs no engine tree and no GPU, and ends with `all checks passed`. Windows: MSYS2 UCRT64 or MINGW64 `gcc` and Python 3 on `PATH`, run from Git Bash or an MSYS2 shell. Linux: `gcc`, Python 3 and `PYTHON=python3` (not yet run on Linux; the Linux CI job may fail until its first green run). Both need an x86-64 CPU with AVX2 (one test builds with `-march=haswell`).
 
 **The helper and the GPU checkers, from this repository (Windows):**
 
@@ -45,7 +45,7 @@ integration\build\build_wex_windows.cmd [OUT_DIR]
 
 It needs MSVC (found with `vswhere`, or set `VCVARS` to a `vcvars64.bat`), the CUDA toolkit (`NVCC`, default `nvcc` on `PATH`) and a target (`ARCH`, default `sm_120`; set `ARCH=sm_86` for an RTX 30 card, for example). Below sm_80 `wex_cuda.cuh` replaces `cp.async` with a plain load and store; that build has not run on such a GPU. Outputs: `kaira_wex_cuda.dll`, `test_decode_batch.exe`, `check_container.exe` in `OUT_DIR` (default `out\`), and the archived WNR2 encoder DLL (`archive\nr2\wex_nr2_tools.dll`).
 
-**In the engine.** The engine compiles `wex_decode.c` into its executable and includes `wex4.h`; the qwen38 engine includes `qwen38_wex.h`, which includes `wex_decode.c` itself. How KAIRA's Makefiles do it: `integration/build/*.wex-excerpt.mk`, and section 4 of the [2026-11-09 guide](reports/colibri-integration-20261109.md).
+**In the engine.** The engine compiles `wex_decode.c` into its executable and includes `wex4.h`; the qwen38 engine includes `qwen38_wex.h`, which includes `wex_decode.c` itself. How the engine's Makefiles do it: `integration/build/*.wex-excerpt.mk`, and section 4 of the [2026-11-09 guide](reports/colibri-integration-20261109.md).
 
 ## 3. Make a container
 
@@ -65,18 +65,18 @@ From a checkpoint to a verified WEX4 file. Every command runs from the repositor
 
 ## 4. Wire an engine
 
-- **Qwen3.8.** `c/qwen38_wex.h` is the complete store: WEX1, WNR3 and WEX4, mirrors, split reads, the root pin and the first-read SHA-256. Its header comment documents every variable. The rest of the qwen38 engine (`qwen38.c`, `qwen38_core.h`) is KAIRA's.
-- **DeepSeek V4 / V4.1.** The store is in KAIRA's `deepseek_v4.c`, which is not in this repository. What it takes to add WEX4 to it:
-  - the WEX1-WEX3 store first: [integration/](../integration/README.md) has the excerpts of KAIRA 88ddb07 (levels A to C of the [2026-11-09 guide](reports/colibri-integration-20261109.md), section 5) and, for stock colibri 561966ec, `upstream-561966ec-levelA.patch`;
+- **Qwen3.8.** `c/qwen38_wex.h` is the complete store: WEX1, WNR3 and WEX4, mirrors, split reads, the root pin and the first-read SHA-256. Its header comment documents every variable. The rest of the qwen38 engine (`qwen38.c`, `qwen38_core.h`) is not in this repository.
+- **DeepSeek V4 / V4.1.** The store is in the engine's `deepseek_v4.c`, which is not in this repository. What it takes to add WEX4 to it:
+  - the WEX1-WEX3 store first: [integration/](../integration/README.md) has the engine excerpts of 2026-11-09 (levels A to C of the [2026-11-09 guide](reports/colibri-integration-20261109.md), section 5) and, for stock colibri 561966ec, `upstream-561966ec-levelA.patch`;
   - then the three WEX4 patches, in order: `engine-wex4-loader-75932c1.patch` (open a WEX4 file, pin the root), `engine-wex4-first-read-4ba5568.patch` (SHA-256 at the first read) and, for qwen38 only, `engine-q38-wex4-loader-de17198.patch`;
-  - then what came after them, shown in `integration/engine/deepseek_v4.wex4.wex-excerpt.c` (KAIRA 24f7e72): the refusal of a legacy file under a pinned root, the hash pool, sub-reads and the batched tier prewarm.
+  - then what came after them, shown in `integration/engine/deepseek_v4.wex4.wex-excerpt.c`: the refusal of a legacy file under a pinned root, the hash pool, sub-reads and the batched tier prewarm.
 
-  The patches are KAIRA commits with KAIRA paths (`src/colibri/c/...`); they apply to a KAIRA-like tree, and are the reference for a port to another one.
+  The patches are engine commits with the paths of the maintainer's tree (`src/colibri/c/...`); they apply to a tree with that layout, and are the reference for a port to another one.
 - **A new engine.** Open the file with `wex4_parse_header` and `wex4_open` (`c/wex4.h`), read a record's extent from the record table, read it with one aligned read, check its SHA-256 the first time (`wex4_sha256` against the index), and decode it with `wex4_decode_record` or, for WNR3 on the GPU, the helper. `wex4/wex4.py` shows the same steps in Python.
 
 ## 5. Environment
 
-Every variable that changes how a WEX file is opened or read, with its default in the code at KAIRA 24f7e72. "deepseek_v4.c" means KAIRA's engine, not in this repository.
+Every variable that changes how a WEX file is opened or read, with its default in the engine code of 2026-11-13. "deepseek_v4.c" means the DeepSeek engine, not in this repository.
 
 | Variable | Default | Effect | Read in |
 |---|---|---|---|
@@ -99,16 +99,16 @@ Every variable that changes how a WEX file is opened or read, with its default i
 | `WEX_READ_RETRY` | off | `1` = one retry after 16 ms when a direct read fails | `deepseek_v4.c`; `c/expert_store_wex.c` |
 | `COLI_WEX_CUDA_LIB` | `kaira_wex_cuda.dll` next to the executable | another helper; `0` = CPU decoder only | `c/wex_decode.c` |
 | `Q38_MXFP4_DIR` | unset | qwen38: read the Quark shards directly, no container (a check, not the fast path) | `c/qwen38_wex.h` |
-| `Q38_ASYNC_MISS` | 0 | qwen38 with `QT_GPU_MISS=2`: a decode step's misses are read on the loader thread, and each goes to the GPU as soon as its read lands | KAIRA `qwen38_core.h` |
+| `Q38_ASYNC_MISS` | 0 | qwen38 with `QT_GPU_MISS=2`: a decode step's misses are read on the loader thread, and each goes to the GPU as soon as its read lands | engine `qwen38_core.h` |
 
-What KAIRA's two profiles set on 2026-11-13: [STATUS.md](../STATUS.md).
+What the two engine profiles set on 2026-11-13: [STATUS.md](../STATUS.md).
 
 ## 6. Mirrors and split reads
 
 - A mirror is a byte copy of the container on another drive, under the same file name, in a folder listed in `COLI_WEX_EXTRA_MIRRORS`. A copy whose header page differs is ignored with a log line.
 - Each (layer, expert) goes to one drive, picked by a hash weighted with `COLI_WEX_WEIGHTS`. Weights proportional to the drives' measured speed are a starting point: on the test machine `38,62` matches U: (PCIe 4) against C: (PCIe 5), and the second drive gave V4.1 +49% decode ([BENCHMARKS.md](BENCHMARKS.md)).
 - Splitting one record across both drives (`V4_WEX_STRIPE=1`) measured -8.7% on V4.1, so it stays off; sub-reads (`V4_WEX_SUBREADS=4`) measured +7.7% and are on in the `v41gpu` profile.
-- Pick the read size and queue depth with `c/tools/wexio_probe.py` (Windows, read-only; `--self-test` first). It refuses to run while KAIRA or an engine is running, and its default inputs are the test machine's container paths: pass `--file` for yours.
+- Pick the read size and queue depth with `c/tools/wexio_probe.py` (Windows, read-only; `--self-test` first). It refuses to run while the application or an engine is running, and its default inputs are the test machine's container paths: pass `--file` for yours.
 
 ## 7. Integrity
 
@@ -137,6 +137,6 @@ The longer table of 2026-11-09 (WNR2, tiny fixtures, MSYS2 builds) is in section
 
 ## 9. Where the older material is
 
-- WEX1, WEX2 and WNR2 integration, level by level, with the engine excerpts of KAIRA 88ddb07, the generation and verification commands of that time and the deployment log of 2026-11-09/10: [reports/colibri-integration-20261109.md](reports/colibri-integration-20261109.md).
+- WEX1, WEX2 and WNR2 integration, level by level, with the engine excerpts of that date, the generation and verification commands of that time and the deployment log of 2026-11-09/10: [reports/colibri-integration-20261109.md](reports/colibri-integration-20261109.md).
 - The WNR2 encoder and its GPU checks: [archive/](../archive/README.md).
 - The record of the WNR2 period: [reports/wnr2-history-20261110.md](reports/wnr2-history-20261110.md).

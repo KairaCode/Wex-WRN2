@@ -5,57 +5,57 @@
 ## How the original page was read
 
 
-**Successor:** WNR3 (codec 5, header flags 32/64) is specified in [WNR3-SPEC.md](../WNR3-SPEC.md) and verified in [WNR3-VERIFY.md](WNR3-VERIFY.md); status in the section "WNR3 implemented (2026-11-10)" at the end of this file. WNR2 containers, the WNM2 model format and the WNR2 code path are unchanged by WNR3. **Since 2026-11-10 WNR3 is in production and every WNR2 container (U:, C:, E:) and WEX1 are deleted** ([WNR3-PRODUCTION-20261110.md](WNR3-PRODUCTION-20261110.md)); the disk tables in this file are history. Since 2026-11-11 the WNR3 records sit in a WEX4 container ([WEX4-SPEC.md](../WEX4-SPEC.md)) and Qwen3.8 reads MXFP4 records from WEX4 containers too; what runs today is in [STATUS.md](../../STATUS.md). This file remains the reference for the WNR2 record, the WNM2 model, the encoder and the helper API (sections 4 to 10). Section 11 describes the engine integration with line numbers at KAIRA cfb7ea0, and section 12 holds the measurements up to 2026-11-09. Its rules, disk tables, open work and timeline (sections 1 to 3 and 13 to 15, and the dated sections at the end) are the record of 2026-10-20 to 2026-11-10.
+**Successor:** WNR3 (codec 5, header flags 32/64) is specified in [WNR3-SPEC.md](../WNR3-SPEC.md) and verified in [WNR3-VERIFY.md](WNR3-VERIFY.md); status in the section "WNR3 implemented (2026-11-10)" at the end of this file. WNR2 containers, the WNM2 model format and the WNR2 code path are unchanged by WNR3. **Since 2026-11-10 WNR3 is in production and every WNR2 container (U:, C:, E:) and WEX1 are deleted** ([WNR3-PRODUCTION-20261110.md](WNR3-PRODUCTION-20261110.md)); the disk tables in this file are history. Since 2026-11-11 the WNR3 records sit in a WEX4 container ([WEX4-SPEC.md](../WEX4-SPEC.md)) and Qwen3.8 reads MXFP4 records from WEX4 containers too; what runs today is in [STATUS.md](../../STATUS.md). This file remains the reference for the WNR2 record, the WNM2 model, the encoder and the helper API (sections 4 to 10). Section 11 describes the engine integration with line numbers at the engine of 2026-11-09, and section 12 holds the measurements up to 2026-11-09. Its rules, disk tables, open work and timeline (sections 1 to 3 and 13 to 15, and the dated sections at the end) are the record of 2026-10-20 to 2026-11-10.
 
 **Why this page exists:** WNR2 work was spread over three lab folders, two reports and this repository, and those sources disagreed on key numbers. This file is the single place that says what WNR2 is, where every container and model sat, what was measured under which conditions, and which decisions the owner took.
 
 **How to read it:**
 - Sections 1 (rules of the period), 2 (disk state) and 3 (open work) are the record of 2026-10-20 to 2026-11-10. The reference is sections 4-15: format and codec 4-7, build 8, decoders and helper 9-10, engine 11, measurements 12, timeline 13, contradictions 14, sources 15. Runs marked * are contaminated.
 - The dated sections at the end (from '## Containers on disk, update 2026-11-08') are the newest; where they disagree with sections 2-13, they win.
-- Paths: lab\, app\ and src\host paths are relative to the KAIRA tree (`<KAIRA>`) and are not in the Wex-WRN2 repo; copies of some lab results are under research\ there (e.g. research\v41-gpu-20261109\REPORT.md, research\v41-w3-20261109\results.md, research\v41-ab-20261108\ab-samedrive\results.md).
+- Paths: lab\, app\ and src\host paths are relative to the maintainer's tree (`<TREE>`) and are not in the Wex-WRN2 repo; copies of some lab results are under research\ there (e.g. research\v41-gpu-20261109\REPORT.md, research\v41-w3-20261109\results.md, research\v41-ab-20261108\ab-samedrive\results.md).
 - Re-check disk free space and the existence of the files before relying on them.
 - Prefer measured V4.1 numbers (-10.03%, +11.1%) over older V4 estimates.
-- After any format change, update KAIRA src first, then re-sync Wex-WRN2.
+- After any format change, update the engine source first, then re-sync Wex-WRN2.
 
 ## 1. Owner decisions and rules
 
 - **2026-10-20 04:09**: the owner approved installing ONLY the WEX1-compatible runtime.
-  - Lab engine 7d139737, backend d05fd43b (race fix) and helper cac5348d went into app\colibri-optimized; kaira.json unchanged.
+  - Lab engine 7d139737, backend d05fd43b (race fix) and helper cac5348d went into app\colibri-optimized; the application config unchanged.
   - Backup: lab\app-before-wexgd-20261020-040912. Rollback: copy back deepseek_v4.exe + coli_cuda_dsv4_dg.dll and delete kaira_wex_cuda.dll.
-  - Switching KAIRA to WNR2, GPU-direct or the RAM cache via kaira.json was NOT approved. Verdict: WNR2 is a SPACE/capacity option. (History: superseded on 2026-11-09, see below.)
+  - Switching the application to WNR2, GPU-direct or the RAM cache via the application config was NOT approved. Verdict: WNR2 is a SPACE/capacity option. (History: superseded on 2026-11-09, see below.)
 - **2026-11-05**: the owner chose to port WEX to Qwen3.8 (lever there: C:+U: striping, not compression; the WEX-Q8 container on C: needs OK on space; report lab\wex-prod-20261105\REPORT.md).
   - Then V4 was replaced by DeepSeek V4.1 Flash 1017 REAP-192 MXFP4 (patrickbdevaney/...), not "Thor", because Thor's K-quant experts are unreadable by the engine and by WNR2.
   - Deletion of the old V4 WNR2 container was approved.
 - **2026-11-06**: containers go WEX1 raw on D:\kaira_wex and WNR2 on E:\kaira_wex.
-  - Never commit, push, deploy to app\ or edit app\kaira.json without explicit OK.
+  - Never commit, push, deploy to app\ or edit the application config without explicit OK.
   - Defender exclusions are set by the owner; no script of this work changes security settings.
   - No benchmark while a W1 encode or any build runs; take heavy.lock for big I/O.
-- **heavy.lock**: `<KAIRA>\lab\v41-gpu-20261107\heavy.lock`.
+- **heavy.lock**: `<TREE>\lab\v41-gpu-20261107\heavy.lock`.
   - Take it by creating the file exclusively (New-Item fails while it exists) and writing `<label> <ISO time>` into it. `lab\v41-gpu-20261107\w1\take_lock.ps1 -Label '...'` does this, retrying every 60 s for up to 90 min (prints TAKEN or TIMEOUT).
   - Release it by deleting the file.
-- **2026-11-07 ~00:47-01:10**: V4.1 installed into app\ from src, including kaira_wex_cuda.dll built in ws-int. Backup lab\app-before-v41-full-20261107-004555, hash list lab\install-v41-full-20261107.txt; coli_cuda.dll not replaced; kaira.json unchanged.
+- **2026-11-07 ~00:47-01:10**: V4.1 installed into app\ from src, including kaira_wex_cuda.dll built in ws-int. Backup lab\app-before-v41-full-20261107-004555, hash list lab\install-v41-full-20261107.txt; coli_cuda.dll not replaced; the application config unchanged.
 - **2026-11-07 ~02:00**: the owner approved:
   - copying the WEX1 to U:\kaira_wex\v41-reap (use only when .verified exists);
   - moving the V4 checkpoint to H: with a junction;
   - for W3, putting both containers on U: if space allows (copy under heavy.lock, verify size + sha256, write .verified), otherwise reporting the drive confound.
-- **2026-11-07 ~03:30**: KAIRA-only decision. WEX1/WNR2 code must NEVER go upstream to JustVugg/colibri, and WEX/WNR2 hunks are stripped from upstream PRs.
+- **2026-11-07 ~03:30**: fork-only decision. WEX1/WNR2 code must NEVER go upstream to JustVugg/colibri, and WEX/WNR2 hunks are stripped from upstream PRs.
   - Code covered: expert_store_wex.c, wex_decode.c/.h, c\tools\wex_cuda_bridge.cu, wex_cuda.cuh, repack_v4_wex.py, the nr2 encoder.
-  - It lives in the PRIVATE repo https://github.com/KairaCode/Wex-WRN2 (local clone `<Wex-WRN2>`, initial commit a74b279 synced from KAIRA master 88ddb07, created ~16:10).
-  - Initial commit a74b279 (2026-11-07 16:10, from KAIRA 88ddb07). On 2026-11-09 main = origin/main = c39a650, 10 commits later. src\* (now c\) and the shared tools (wex_cuda_bridge.cu, repack_v4_wex.py, wex_neural_rans.py, benches) are byte-identical to KAIRA master cfb7ea0; models\ holds v4-flash-0731.wnm2 and v41-reap192.wnm2.
-  - KAIRA src\colibri\c stays the live copy; re-sync the repo after format changes.
-  - Reason: beating safetensors is KAIRA's own asset (WEX1 on U: ~1.12 vs safetensors ~0.99 tok/s).
+  - It lives in the PRIVATE repo https://github.com/KairaCode/Wex-WRN2 (local clone `<Wex-WRN2>`, initial commit a74b279 synced from the engine of 2026-11-07, created ~16:10).
+  - Initial commit a74b279 (2026-11-07 16:10, from the engine of 2026-11-07). On 2026-11-09 main = origin/main = c39a650, 10 commits later. src\* (now c\) and the shared tools (wex_cuda_bridge.cu, repack_v4_wex.py, wex_neural_rans.py, benches) are byte-identical to the engine of 2026-11-09; models\ holds v4-flash-0731.wnm2 and v41-reap192.wnm2.
+  - The engine tree src\colibri\c stays the live copy; re-sync the repo after format changes.
+  - Reason: beating safetensors is the maintainer's own asset (WEX1 on U: ~1.12 vs safetensors ~0.99 tok/s).
   - The no-upstream rule applies to the public JustVugg/colibri repo.
 - **2026-11-08 21:15**: container rule (replaces the +3% rule of PLAN 3.2): keep WNR2 if the token ids are identical and it is not slower.
-- **2026-11-09**: the owner approved the U:+C: mirror (05:00), the cfb7ea0 install (06:05), profile v41gpu with WNR2 + GPU-direct 2 + U:+C: mirror (06:17), and v41gpu as the active model (16:47). At 17:08 the owner switched the active model to qwen38 in the UI.
+- **2026-11-09**: the owner approved the U:+C: mirror (05:00), the 2026-11-09 install (06:05), profile v41gpu with WNR2 + GPU-direct 2 + U:+C: mirror (06:17), and v41gpu as the active model (16:47). At 17:08 the owner switched the active model to qwen38 in the UI.
 - **Install rule**: a WNR2 deploy needs the new engine AND a helper with feature 4 together. With an old helper, WNR2 went to the CPU at ~0.29 s/expert; since 2026-11-05 the engine refuses the container instead. Ask before installing anything.
 - **Decision rules**:
   - Nov 5: if < ~70 avoidable NVMe misses/token and the batch pipeline does not go under 0.22 ms, WEX1 stays. Round 2: if disk is not really the bottleneck, WEX1 stays.
   - PLAN 3.2 for V4.1: WNR2 becomes the speed format only if >= +3% tok/s with the 95% CI excluding 0 AND token ids identical in every prompt of every run; otherwise WEX1 stays in production and WNR2 is a capacity format. Replaced on 2026-11-08 21:15 by the "identical tokens, not slower" rule (above).
   - Any token difference stops the A/B and is treated as a bug.
 - **Measurement protocol** (PLAN 3.1):
-  - Quiet machine: no KAIRA/engine, builds or copies; Defender exclusions active; high-performance power plan.
+  - Quiet machine: no application or engine, builds or copies; Defender exclusions active; high-performance power plan.
   - Record hashes of the exe, both DSV4 DLLs and kaira_wex_cuda.dll; pin COLI_DSV4_DLL.
-  - Lossless settings: V4_SKIP_COLD=0 (kaira.json v4_skip_cold is false, line 824; the host also forces 0 for V4.1 on deepseek_v4.exe, Engine.cs:616), V4_TOPK unset, V4_MTP=0, temperature 0.
+  - Lossless settings: V4_SKIP_COLD=0 (the application config v4_skip_cold is false, line 824; the host also forces 0 for V4.1 on deepseek_v4.exe, Engine.cs:616), V4_TOPK unset, V4_MTP=0, temperature 0.
   - Prompts: lab\v41-gpu-20261107\ab\prompts.jsonl (warm-up + code1, code2, chat_it1, chat_it2, reason1, reason2, ctx2k, short1; 256 tokens; no system prompt). Fresh process per run, ABBA x2.
 - **W1 design choices**: retrain the WNM2 instead of reusing V4's; use 2048:512 directly; `--min-free-gib 5` to protect E:.
 - **Not to do**:
@@ -116,15 +116,15 @@
 
   - E: also holds engram shard 48 (E:\models\DeepSeek-V4.1-Flash-1017-engram\model-00048-of-00048.safetensors, 101,537,926,640 B), so check space before writing to E:.
   - Each letter is its own physical disk.
-  - The V4 checkpoint was moved U:\Models\DeepSeek-V4-Flash-0731 -> H:\models\DeepSeek-V4-Flash-0731 with a junction (02:00-02:23 2026-11-07, 152 files, 107 hashed). Engram shard 47 moved to D:\models\DeepSeek-V4.1-Flash-1017-engram (D: is PCIe 3.0 x2) on 2026-11-09 05:02-05:10. A junction is left at the old C: path, and COLI_MODEL_DIRS (kaira.json:567,593) still names it.
+  - The V4 checkpoint was moved U:\Models\DeepSeek-V4-Flash-0731 -> H:\models\DeepSeek-V4-Flash-0731 with a junction (02:00-02:23 2026-11-07, 152 files, 107 hashed). Engram shard 47 moved to D:\models\DeepSeek-V4.1-Flash-1017-engram (D: is PCIe 3.0 x2) on 2026-11-09 05:02-05:10. A junction is left at the old C: path, and COLI_MODEL_DIRS (the application config (lines 567, 593)) still names it.
 
 ## 3. Open work / next steps
 
-- **G2**: DONE in cfb7ea0 (installed 2026-11-09 06:05). V4.1 decode MoE runs through moe_token_pipeline. GPU-direct 0 vs 2 is token-identical (REPORT.md:37-39). Measured 934-1,028 VRAM mirrors plus 360 RAM slots at 16 GB (REPORT.md:55). The original plan: route V4.1 decode MoE through moe_token_pipeline (VRAM mirrors, vram_first lanes, v4_np_predict prefetch, copy worker, promotion, async attach, WEX GPU-direct + RAM record cache).
+- **G2**: DONE in the engine of 2026-11-09 (installed 2026-11-09 06:05). V4.1 decode MoE runs through moe_token_pipeline. GPU-direct 0 vs 2 is token-identical (REPORT.md:37-39). Measured 934-1,028 VRAM mirrors plus 360 RAM slots at 16 GB (REPORT.md:55). The original plan: route V4.1 decode MoE through moe_token_pipeline (VRAM mirrors, vram_first lanes, v4_np_predict prefetch, copy worker, promotion, async attach, WEX GPU-direct + RAM record cache).
   - The V4.1 router must avoid V4_ROUTER_AVX2 (is_v41 guard) and coli_v4_gpu_route; add dsv4_cuda_set_act_group (group 32).
   - Test: 256 greedy tokens with COLI_WEX_GPU_DIRECT=0 vs =2 + COLI_WEX_RAM_CACHE_GB=4 must be token-identical.
   - Expected VRAM tier: ~1,030-1,110 mirrors of 17.93 MiB (13.4-14.5% of 7,680); measured 934-1,028 (REPORT.md:55). The backend reserve or mirror budget must also cover the helper's own thread_local lanes (~287 MiB per batch-calling thread on V4.1, outside backend accounting; see section 10, helper memory footprint).
-- **W2**: DONE in cfb7ea0, opt-in V4_WEX_BATCH=1 (getenv at deepseek_v4.c:19538; the batch block in moe_token_pipeline at :9732), which v41gpu sets (kaira.json:592). +0.5% vs per-record decode (CI +0.34..+0.70%), logits bit-identical, batches of only ~1.56-1.83 records. Still open: VRAM of the batch lanes outside the reserve (~2 GB [I]) and no unit tests for the overlapped read, the RAM cache inside a batch and the feature-8 guard (REPORT.md:80,85). Default off; only with COLI_WEX_GPU_DIRECT>=1 and coli_wex_cuda_batch_available(). The design (line numbers at cfb7ea0):
+- **W2**: DONE in the engine of 2026-11-09, opt-in V4_WEX_BATCH=1 (getenv at deepseek_v4.c:19538; the batch block in moe_token_pipeline at :9732), which v41gpu sets (the application config (line 592)). +0.5% vs per-record decode (CI +0.34..+0.70%), logits bit-identical, batches of only ~1.56-1.83 records. Still open: VRAM of the batch lanes outside the reserve (~2 GB [I]) and no unit tests for the overlapped read, the RAM cache inside a batch and the feature-8 guard (REPORT.md:80,85). Default off; only with COLI_WEX_GPU_DIRECT>=1 and coli_wex_cuda_batch_available(). The design (line numbers at the engine of 2026-11-09):
   1. In moe_token_pipeline (v4:9491; batch block 9732), collect WNR2 misses of coli_v4_gpu_expert_peek_routed that are not in host RAM (via coli_v4_expert_store_wex_entry, v4:14579).
   2. Split v4_gpu_mirror_fill_unlocked (v4:18798) into reserve(N) (one mutex hold + one dsv4_cuda_stream_drain) and publish(i).
   3. Fetch records from the RAM cache or with N overlapped ReadFile into a ring of 8 pinned staging buffers (~132 MB).
@@ -137,14 +137,14 @@
   - The arms differ only in COLI_WEX_PATH. Planned common settings: `--memory-gb 16`, COLI_WEX_GPU_DIRECT=2, COLI_WEX_RAM_CACHE_GB=4, DSV4_CUDA_VRAM_RESERVE_MB=4096, V4_COPY_WORKER=1, V4_PROMOTE_VRAM=2, V4_ASYNC_ATTACH=1, DSV4_CUDA_STREAM_PRIORITY=1, V4_WEX_BATCH=1, same F1 and V4_GPU_HEAD.
   - Add a 'wexprof' line next to moeprof (VRAM hits, RAM hits, NVMe reads/bytes, WNR2 demand/prefetch decodes, decode ms). Use +11.1% capacity, not +14%.
   - D: (1.61) vs E: (2.29 GB/s) differ by 42%, above the 10% threshold, so a same-drive control on U: is mandatory. It needs a ~130 GB WNR2 copy verified against sha256 3f703fa4... plus a .verified marker. The U: space note is obsolete: the WNR2 copy on U: was made on 2026-11-08.
-- **F1**: in src since cfb7ea0 (V4NpItem.conf at deepseek_v4.c:7351; V4_NP_MIN_CONF / V4_NP_TOKEN_MB at :7440-7441), defaults off. Confidence-gated prefetch with a per-token byte budget (npprof gated=, histogram under V4_PREDICT_STATS=1). Thresholds tau1=0.10 and tau2=0.15 were chosen offline (ab\results.md:117-131). The F1 grid (f1\run_f1.sh) is not measured. Prefetch must stay.
+- **F1**: in src since the engine of 2026-11-09 (V4NpItem.conf at deepseek_v4.c:7351; V4_NP_MIN_CONF / V4_NP_TOKEN_MB at :7440-7441), defaults off. Confidence-gated prefetch with a per-token byte budget (npprof gated=, histogram under V4_PREDICT_STATS=1). Thresholds tau1=0.10 and tau2=0.15 were chosen offline (ab\results.md:117-131). The F1 grid (f1\run_f1.sh) is not measured. Prefetch must stay.
 - **WNR2 deploy helper check**: done. Since 2026-11-09 06:17 the app helper is the W1 build cceb4fb5, the binary that passed test_decode_batch on V4.1 records (verify64.log ALL OK).
 - **Cache policy candidates** (Report "WNR2 cache decode CPU e WDDM", now [reports/wnr2-cache-decode-cpu-wddm-20261105.it.md](wnr2-cache-decode-cpu-wddm-20261105.it.md), next to F1):
   - Measured LRU hit rate 70% at 1530 vs IRM-static 45%, so "LRU beats LFU" is not proven. Replay offline: LRU with a frequency tie-break, S3-FIFO-style probation for prefetches, decay. FlashMoE claims +21% hit.
   - Proposed gating rule: depth-1 (top-8) promotes to VRAM only at high confidence; depth-2 (top-6) goes only to RAM probation; a per-token byte budget; a per-layer cap, more generous on deep layers.
 - **WDDM candidates** (same report): cudaDeviceScheduleSpin on the decode thread and blocking sync on the copy thread; HAGS untested; cudaMemcpyBatchAsync cannot be captured in a CUDA graph; graphs must cope with expert addresses that change every token.
 - **Other**:
-  - H1: done through COLI_FAMILY_ENGINE=deepseek_v4 in the v41gpu profile. The stale V4 COLI_WEX_PATH entries are gone from kaira.json. Still open: the outdated preflight warning (DeepSeekV41Preflight.cs:243-246 at cfb7ea0, 241-244 in the working tree) that tells v41gpu to remove COLI_WEX_PATH.
+  - H1: done through COLI_FAMILY_ENGINE=deepseek_v4 in the v41gpu profile. The stale V4 COLI_WEX_PATH entries are gone from the application config. Still open: the outdated preflight warning (DeepSeekV41Preflight.cs:243-246 at the engine of 2026-11-09, 241-244 in the working tree) that tells v41gpu to remove COLI_WEX_PATH.
   - Residual bug from upstream #2668: a failed mirror upload leaves the expert registered without data, so it always runs on CPU (~10-line fix after W2).
   - D1: second drive / D: link fix (hardware decision, needs OK; could make D: 3-4x faster).
   - WNR2z logprob check.
@@ -160,9 +160,9 @@
 
 ## 11. Engine integration (deepseek_v4.c only)
 
-WEX/WNR2 integration exists only in deepseek_v4.c and the standalone store expert_store_wex.c. qwen38_core.h has no WEX code, and deepseek_v41.c is CPU/Vulkan only. *(State at cfb7ea0. Since 2026-11-11 the qwen38 engine has its own container store, `c/qwen38_wex.h`.)*
+WEX/WNR2 integration exists only in deepseek_v4.c and the standalone store expert_store_wex.c. qwen38_core.h has no WEX code, and deepseek_v41.c is CPU/Vulkan only. *(State at the engine of 2026-11-09. Since 2026-11-11 the qwen38 engine has its own container store, `c/qwen38_wex.h`.)*
 
-Line numbers `v4:NNNN` in this section are for KAIRA master cfb7ea0 (`git show cfb7ea0:src/colibri/c/deepseek_v4.c`); the uncommitted working tree is shifted by about +140.
+Line numbers `v4:NNNN` in this section are for the engine of 2026-11-09 (`src/colibri/c/deepseek_v4.c` of the engine of 2026-11-09); the uncommitted working tree is shifted by about +140.
 
 - **Container open** (v4:13821-13918; COLI_WEX_PATH getenv 13823, logs 13848-13853):
   - Path: COLI_WEX_PATH, default `<model_dir>\v4_flash_experts.wex`. Opened with FILE_FLAG_NO_BUFFERING|OVERLAPPED|SEQUENTIAL_SCAN.
@@ -230,13 +230,13 @@ Line numbers `v4:NNNN` in this section are for KAIRA master cfb7ea0 (`git show c
   - c\tests\test_expert_store_wex.c test_nr2_container: model registration at open, exact decode, corrupt/foreign model refused, entries invalid without the header flag; encodes at 4096:2048.
   - nr2\test_nr2_cuda: 30 records exact via host and device with buffers from another runtime; 70 malformed rejected; 300 fuzz cases (0 accepted); WNR1 regression OK; compute-sanitizer 0 errors.
   - check_all.py: 688/688 exact for WNR2 and WNR2z.
-- **V4.1 at cfb7ea0** (installed 2026-11-09; later builds and what runs today: [STATUS.md](../../STATUS.md)): decode MoE runs through moe_token_pipeline with VRAM mirrors, WEX GPU-direct mode 2, W2 batches and the exact GPU head (V4_GPU_HEAD=1). The attention core and prefill MoE stay on the CPU.
+- **V4.1 at the engine of 2026-11-09** (installed 2026-11-09; later builds and what runs today: [STATUS.md](../../STATUS.md)): decode MoE runs through moe_token_pipeline with VRAM mirrors, WEX GPU-direct mode 2, W2 batches and the exact GPU head (V4_GPU_HEAD=1). The attention core and prefill MoE stay on the CPU.
   - Logs: "v41_moe path=cpu-union ... (every row without expert mirrors, else prefill and multi-slot rows; the GPU route and the prefill bank are V4-only)" (v4:11241) and "v41_attn path=cpu projections=gpu".
   - WNR2 GPU-direct is tested on V4.1 (W3: 8 runs; mirror verify: 41,271 decodes, 0 failures). In mode 0 (host slab via v4_read_expert_record -> coli_wex_decode_record -> helper wex_cuda_decode_to_host, plus a D2H of 18.8 MB per record) a full V4.1 run is still untested. The WNR2 guard (v4:13736) checks only coli_wex_cuda_nr2_available(), with no is_v41 or GPU-engine condition, and the helper loads lazily whatever DSV4_CUDA is set to.
   - On CPU MoE, WEX1 is read with "v4_ssd_io mode=wex-direct-aligned fallback=buffered-pread".
 - **Host and profile**:
   - src\host\ColibriFamily.cs V41EnvNames still drops WEX/V4_*/DSV4_* for a V4.1 profile that runs deepseek_v41.exe. With COLI_FAMILY_ENGINE=deepseek_v4 (RunsOnV4Engine, ColibriFamily.cs:75-82), Engine.ApplyProfileEnv (Engine.cs:64-79) passes the whole profile env to deepseek_v4.exe, so H1 is solved for v41gpu. (M0 passed COLI_WEX_PATH=D:\kaira_wex\v41-reap\v4_flash_experts.wex directly.)
-  - app\kaira.json (the only live config) no longer sets COLI_EXPERT_STORE or the stale V4 COLI_WEX_PATH; those were last seen in lab\app-before-v41-full-20261107-004555\kaira.json:17-18,123-124. The only WEX settings are in the v41gpu profile: COLI_FAMILY_ENGINE=deepseek_v4 (588), COLI_WEX_PATH=U:\kaira_wex\v41-reap\v4_flash_experts.nr2.wex (589), COLI_WEX_EXTRA_MIRRORS=C:\kaira_wex\v41-reap (590), COLI_WEX_WEIGHTS=38,62 (591), V4_WEX_BATCH=1 (592), COLI_WEX_GPU_DIRECT=2 (620).
+  - the application config (the only live config) no longer sets COLI_EXPERT_STORE or the stale V4 COLI_WEX_PATH; those were last seen in lab\app-before-v41-full-20261107-004555\kaira.json:17-18,123-124. The only WEX settings are in the v41gpu profile: COLI_FAMILY_ENGINE=deepseek_v4 (588), COLI_WEX_PATH=U:\kaira_wex\v41-reap\v4_flash_experts.nr2.wex (589), COLI_WEX_EXTRA_MIRRORS=C:\kaira_wex\v41-reap (590), COLI_WEX_WEIGHTS=38,62 (591), V4_WEX_BATCH=1 (592), COLI_WEX_GPU_DIRECT=2 (620).
 - **Machine**: RTX 5090 under WDDM: asyncEngineCount=1 (a single copy engine, so H2D and D2H serialize), tccDriver=0, CUDA driver/runtime 13050, 170 SMs. Ryzen 9 7950X3D.
 
 ## 12. Measurements
@@ -320,8 +320,8 @@ Line numbers `v4:NNNN` in this section are for KAIRA master cfb7ea0 (`git show c
   - 00:47 batch-capable helper installed; ~00:59 V4.1 WEX1 repack on D: (40x192 = 7680 records of 18,800,640 B, 0 compressed/dedup/neural); ~01:10 V4.1 install;
   - 02:00-02:23 V4 checkpoint moved to H:; 02:23-02:34 verified U: WEX1 copy;
   - 02:34:57-02:47:01 W1 WNR2 build; 03:10-03:22 M0 baseline;
-  - ~03:30 KAIRA-only decision; ~16:10 Wex-WRN2 repo; 16:33 F1.patch.
-- **Git** (KAIRA master, newest first; local only, no remote): cfb7ea0 (V4.1 GPU tiers G1/G2/G3, P1, F1 off, W2 opt-in); 6be34da (upstream dev fixes); 88ddb07 (port upstream #2625/#2623/#2639 + cc_buf race fix); 79aff2b (PLAN base); 0007c89 (V4.1 REAP-192 in V4 engine, CPU); 9a631c8 (qwen38/WEX: Mente route tap, warmstart, row-wise tier prefill, batched WNR2 helper); a94cfdd (25 upstream fixes). WNR2 core sources exist since baseline 2ed0ab9 (2026-10-26).
+  - ~03:30 fork-only decision; ~16:10 Wex-WRN2 repo; 16:33 F1.patch.
+- **Git** (the engine's main branch, newest first; local only, no remote): V4.1 GPU tiers G1/G2/G3, P1, F1 off, W2 opt-in (2026-11-09); upstream dev fixes; port upstream #2625/#2623/#2639 + cc_buf race fix (2026-11-07); PLAN base (2026-11-07); V4.1 REAP-192 in V4 engine, CPU; qwen38/WEX: Mente route tap, warmstart, row-wise tier prefill, batched WNR2 helper; 25 upstream fixes. WNR2 core sources exist since the baseline of 2026-10-26.
 - **Uncommitted** (2026-11-09 evening): the working tree has new uncommitted edits (qwen38/qwen36 CUDA fix, deepseek_v4.c, Makefiles, src\host RAM guard) and does not match the installed build.
 
 ## 14. Contradictions between sources
@@ -353,7 +353,7 @@ Line numbers `v4:NNNN` in this section are for KAIRA master cfb7ea0 (`git show c
 
 ## 15. Source index
 
-- **Code**: `<KAIRA>\src\colibri\c\` wex_format.h, wex_neural_rans.h, wex_decode.c/.h, wex_cuda.cuh, tools\wex_cuda_bridge.cu, tools\repack_v4_wex.py, deepseek_v4.c, expert_store_wex.c, backend_cuda_dsv4.cu, tests\test_wex_format.c, tests\test_expert_store_wex.c; src\host\ColibriFamily.cs; app\kaira.json.
+- **Code**: `<TREE>\src\colibri\c\` wex_format.h, wex_neural_rans.h, wex_decode.c/.h, wex_cuda.cuh, tools\wex_cuda_bridge.cu, tools\repack_v4_wex.py, deepseek_v4.c, expert_store_wex.c, backend_cuda_dsv4.cu, tests\test_wex_format.c, tests\test_expert_store_wex.c; src\host\ColibriFamily.cs; the application config.
   - Also in src\colibri\c\tools\: wex_neural_rans.py (WNR1 Python encoder + reference used by repack_v4_wex.py: chunks 256/512/1024, wex_nr_encode_gpu), bench_wex_cuda.cu and bench_wex_decode.c (WNR1/WEX2 benches).
 - **October lab**: `lab\wex-gpu-direct-20261019\`
   - REPORT.md, COMPARISON.md;
@@ -368,7 +368,7 @@ Line numbers `v4:NNNN` in this section are for KAIRA master cfb7ea0 (`git show c
 - **V4.1 lab**: `lab\v41-gpu-20261107\` PLAN.md (W1/W2/W3/F1/G2/D1/H1, 3.1/3.2), w1.md + w1\, m0.md + m0\ (drive_probe.log, run_m0.out.log, runs\), moves.log, F1.patch, laneG-g1.patch, P1.patch. Also `lab\v41-port-20261106\` (repack-wex1-20261107.log, phase1-carryforward.md, HANDOFF.md).
 - **Private repo**: `<Wex-WRN2>\`
   - README.md;
-  - c\ (mirror of KAIRA src\colibri\c, with tools\ and tests\), wex4\, scripts\, nr2\, models\, bench\, research\, integration\, fixtures\;
+  - c\ (mirror of the engine's src\colibri\c, with tools\ and tests\), wex4\, scripts\, nr2\, models\, bench\, research\, integration\, fixtures\;
   - docs\ (COLIBRI-INTEGRATION.md, WNR2-REFERENCE.md) and docs\reports\ (wex-architecture-20261018.it.md, wex2-scale-tiles-20261018.it.md, wnr2-wex3-when-compression-pays-20261105.it.md, wnr2-cache-decode-cpu-wddm-20261105.it.md, v41-reap-wnr2-build-20261107.md = w1.md, v41-reap-baseline-m0-20261107.md = m0.md, kaira-status-20261109.it.md, wnr3-research-20261107.it.md and wnr3-research-measurements-20261107.md (were research-wnr3-20261107\), wnr4-entropy-engine-evaluation-20261108.it.md, wex-prod-20261105.it.md, wnr2-reads-vs-ram-cache-20261109.md).
   - The `.cmd` build scripts take `VCVARS`, `NVCC` and `ARCH` from the environment; only the default of `VCVARS` is an absolute MSVC 18 path.
 
@@ -380,14 +380,14 @@ Line numbers `v4:NNNN` in this section are for KAIRA master cfb7ea0 (`git show c
 ## Owner decision 2026-11-08: keep WNR2
 - Same-drive A/B on U: (G2 GPU build, `--memory-gb 13`, bf16 head streamed from U:, `lab\v41-gpu-20261107\ab-samedrive-20261108`). In the first A1 vs B1 pair, WNR2 is about +1.7-3.6% tok/s per prompt and TTFT on the 2k-context prompt drops from 527 to 500 s.
 - The owner chose to keep WNR2 if the token ids are identical and it is not slower: WNR2 is the V4.1 container even below the +3% rule, as long as the token ids are identical and it is not slower. The rule is recorded in the PLAN.md UPDATE.
-- Done on 2026-11-09 with the owner's OK: the KAIRA profile v41gpu uses WNR2 with the U:+C: mirror, and the D: copy of WEX1 was deleted. WEX1 on U: (144 GB) stays until a short ABBA confirms the mirror; removing it needs the owner's OK.
+- Done on 2026-11-09 with the owner's OK: the engine profile v41gpu uses WNR2 with the U:+C: mirror, and the D: copy of WEX1 was deleted. WEX1 on U: (144 GB) stays until a short ABBA confirms the mirror; removing it needs the owner's OK.
 - ABBA final (2026-11-08 20:33-21:44, `--memory-gb 13`, G2 build deepseek_v4-fix3.exe 6493e16e): WNR2 vs WEX1 decode is +2.04% (paired, 95% CI +1.24..+2.85, 8/8 pairs positive; prompt-unit CI +0.77..+3.32). TTFT -4.4..-6.9%.
 - Tokens and logits are bit-identical in all 4 runs (sha256 4300486e...).
 - Under the owner's rule this result (+2.04%, --memory-gb 13, bf16 head streamed from U:, one ABBA) would have adopted WNR2. It was superseded by W3 on 11-09 (16 GB, ABBA x2): WNR2 -1.80% +/- 0.65%, so by the rule WEX1 won on a single drive. The owner nevertheless chose WNR2 striped over U:+C: (38/62) for the v41gpu profile (installed 06:17). That configuration has only an unpaired sanity run (code1 3.04, chat_it1 2.66 tok/s). The short ABBA against WEX1 U:-only is still open. Results: `lab\v41-gpu-20261107\ab-samedrive-20261108\results.md`. About 2/3 of the gain comes from less U: contention on the streamed bf16 head at 13 GB.
 
 ## U:+C: mirror set up (2026-11-09 05:00-05:20, approved by the owner)
 - The WEX1 copy on U: was re-verified (sha256 4C055238...). The duplicate WEX1 on D: was then deleted, freeing 144 GB.
-- Engram shard 47 moved from C:\models\DeepSeek-V4.1-Flash-1017-engram to D:\models\... with a junction left at the old C: path. 4 files, sha256 identical. kaira.json and COLI_MODEL_DIRS are unchanged.
+- Engram shard 47 moved from C:\models\DeepSeek-V4.1-Flash-1017-engram to D:\models\... with a junction left at the old C: path. 4 files, sha256 identical. the application config and COLI_MODEL_DIRS are unchanged.
 - WNR2 copied to C:\kaira_wex\v41-reap\v4_flash_experts.nr2.wex (sha256 3F703FA4..., .verified).
 - WNR2 copies now: U: (primary), C: (mirror), E: (original).
 - Engine env for the mirror: COLI_WEX_PATH=U:\kaira_wex\v41-reap\v4_flash_experts.nr2.wex, COLI_WEX_EXTRA_MIRRORS=C:\kaira_wex\v41-reap, COLI_WEX_WEIGHTS=38,62. COLI_DISK_WEIGHTS would NOT split a container-only mirror. Verified on 2026-11-09: see 'Deployed 2026-11-09' below.
@@ -405,19 +405,19 @@ Line numbers `v4:NNNN` in this section are for KAIRA master cfb7ea0 (`git show c
   - P1 ctx2k TTFT -23%;
   - W2 +0.5% (opt-in);
   - F1 code done, not measured.
-- At the time of REPORT.md (05:20) nothing was committed or installed. Later that morning the tree was committed (6be34da, cfb7ea0 at 05:25) and installed (06:05), as described below.
+- At the time of REPORT.md (05:20) nothing was committed or installed. Later that morning the tree was committed (two commits, the second at 05:25) and installed (06:05), as described below.
 
-- Commits (2026-11-09, local only, not pushed): 6be34da upstream dev fixes; cfb7ea0 V4.1 on the GPU tiers (G1/G2/G3, P1, F1 off, W2 opt-in). The owner's src/host RAM-guard edits remain uncommitted.
+- Commits (2026-11-09, local only, not pushed): upstream dev fixes; V4.1 on the GPU tiers (G1/G2/G3, P1, F1 off, W2 opt-in). The owner's src/host RAM-guard edits remain uncommitted.
 
-## Deployed 2026-11-09 (approved by the owner, then the mirror in kaira.json, also approved)
-- app\colibri-optimized now has the files built from cfb7ea0:
+## Deployed 2026-11-09 (approved by the owner, then the mirror in the application config, also approved)
+- app\colibri-optimized now has the files built from the engine of 2026-11-09:
   - deepseek_v4.exe 7a6f3e3f;
   - coli_cuda_dsv4_dg.dll b1b7cdb5;
   - coli_cuda_dsv4.dll 5483b6a7;
   - mcp_server.py.
   coli_cuda.dll was not replaced. Backup and rollback: lab\app-before-v41-gpu-20261109-060501 (rollback.ps1).
-- kaira.json has a new profile "v41gpu". COLI_FAMILY_ENGINE=deepseek_v4 is the host switch that makes V4.1 run on deepseek_v4.exe; without it the host filters out the WEX/DSV4 env vars. At deploy time (06:05) active_model was still v4. It became v41gpu at 16:47 and qwen38 at 17:08 (see the last entry).
-- Verified: launched the way the host launches it; 32 greedy tokens identical to W3; KAIRA.exe --selftest-dsv41 passes 63/63.
+- the application config has a new profile "v41gpu". COLI_FAMILY_ENGINE=deepseek_v4 is the host switch that makes V4.1 run on deepseek_v4.exe; without it the host filters out the WEX/DSV4 env vars. At deploy time (06:05) active_model was still v4. It became v41gpu at 16:47 and qwen38 at 17:08 (see the last entry).
+- Verified: launched the way the host launches it; 32 greedy tokens identical to W3; the host's --selftest-dsv41 passes 63/63.
 - Mirror switch (06:17): helper kaira_wex_cuda.dll a7977200 -> cceb4fb5 (the W1 build that W3 used). In v41gpu: COLI_WEX_PATH now points to WNR2 on U:, plus COLI_WEX_EXTRA_MIRRORS=C:\kaira_wex\v41-reap, COLI_WEX_WEIGHTS=38,62 and V4_WEX_BATCH=1.
   - Use COLI_WEX_WEIGHTS, not COLI_DISK_WEIGHTS. Without COLI_WEX_WEIGHTS a single container-only mirror is routed through coli_st_expert_route, which is inactive unless COLI_MODEL_MIRROR registers shard copies, so every read silently goes to the primary. The host also strips COLI_DISK_WEIGHTS when mirror_dir is null.
   - Backup: lab\app-before-mirror-20261109-061724.
@@ -437,7 +437,7 @@ Line numbers `v4:NNNN` in this section are for KAIRA master cfb7ea0 (`git show c
   - U: heats fast (+21-22 C in about 2.6 min: 36->57 and 38->60 C);
   - a proper short ABBA against WEX1 U:-only is still to do. *(Done 2026-11-10: +49%, NOTE-5; see "WNR3 in production" below.)*
 - 2026-11-09 06:00: the owner postponed the remaining tests. At 17:17 the fast-bench validation (lab\wnr2-fastbench-20261109\validate: replay ABBA, 3 variants, short ABBA WEX1 vs WNR2 on U:) was resumed and holds heavy.lock; check its results before planning the short ABBA mirror vs WEX1, which is still not scripted (use COLI_WEX_WEIGHTS=38,62).
-- 2026-11-09 16:47: active_model set to v41gpu with the owner's approval (backup lab\app-before-active-v41gpu-20261109-164704). At 17:08 the owner switched the active model to qwen38 in the UI (app\kaira.json:869), so KAIRA now starts qwen38, not V4.1. v41gpu (WNR2 + U:+C: mirror) stays configured but inactive. Same afternoon: the 11-07 qwen38.exe/qwen36.exe (HIP builds) were replaced at 17:07 by CUDA rebuilds from artifacts\qwen-cuda-fix-20261109 (rollback: lab\app-before-qwen-cuda-fix-20261109-170614; the -170740 folder already holds the new builds). The first CUDA qwen38 run exhausted RAM and the C: pagefile; a fix is in progress, so do not start qwen38 until it lands.
+- 2026-11-09 16:47: active_model set to v41gpu with the owner's approval (backup lab\app-before-active-v41gpu-20261109-164704). At 17:08 the owner switched the active model to qwen38 in the UI (the application config (line 869)), so the application now starts qwen38, not V4.1. v41gpu (WNR2 + U:+C: mirror) stays configured but inactive. Same afternoon: the 11-07 qwen38.exe/qwen36.exe (HIP builds) were replaced at 17:07 by CUDA rebuilds from artifacts\qwen-cuda-fix-20261109 (rollback: lab\app-before-qwen-cuda-fix-20261109-170614; the -170740 folder already holds the new builds). The first CUDA qwen38 run exhausted RAM and the C: pagefile; a fix is in progress, so do not start qwen38 until it lands.
 - 2026-11-09 evening: fast-bench results (research/wnr2-fastbench-20261109, VALIDATION.md):
   - The short ABBA reproduces W3's verdict in ~18 min. 16 GB, 3 prompts x 128 tok: WNR2 U:-only -2.69% (fixed-effects CI +-0.38, pair-means +-1.55), against W3 cut the same way at -2.44%. Token ids and logits are identical. After review the default became 7 prompts x 64 tok (W3 cut that way: -1.89%). The tool now has VRAM/RAM/quiet-machine gates, a stall guard, and needs both pair means on the verdict's side.
   - The trace replay is only a byte-checked drive exerciser. On a shared trace it ranks WNR2 9.5% faster, the wrong sign, because it measures bytes and its WNR2 scheduling differs from the engine's. Do not use it to compare formats.
@@ -448,12 +448,12 @@ Line numbers `v4:NNNN` in this section are for KAIRA master cfb7ea0 (`git show c
 ## WNR3 implemented (2026-11-10)
 
 - WNR3 = WNR2 record skeleton + ceil-form with rule-g anchors + canonical zero (optional, header flag 64) + a per-stream MurmurHash3 integrity hash (final state L + h23). Entry codec 5, header flag 32, record magic WNR3, owner in record bytes 28..31, helper feature 16 (features 31). Spec: [WNR3-SPEC.md](../WNR3-SPEC.md) (its "Implementation notes" list where the code deviates, e.g. the in-place per-block scale fix-up instead of the 64-block emask).
-- Code: KAIRA branch wnr3-20261110 (b7a49ff, fcbe820, 8ef9645, cade51d on master 3b604bb), not merged, not deployed *(both done later that day, next section)*. Synced here on branch wnr3-20261110: c\ (then src\), c\tools\wex_cuda_bridge.cu, c/tests/test_wex_format.c, c/tests/test_expert_store_wex.c, the files then in nr3\ (c\tools\build_nr3.py, c\tools\wex_nr3_tools.c, c\tests\test_v4_wex_nr3.c, c\tests\fake_wex_cuda.c, c\tests\test_wex_nr3_gpu.cu), integration/engine/deepseek_v4.wnr3.wex-excerpt.c, research\wnr3-20261110\.
+- Code: engine branch wnr3-20261110 (the CPU codec commit, the GPU decoder commit, the WNR3 review-fix commit, the WNR3 branch head, on the main branch of 2026-11-10), not merged, not deployed *(both done later that day, next section)*. Synced here on branch wnr3-20261110: c\ (then src\), c\tools\wex_cuda_bridge.cu, c/tests/test_wex_format.c, c/tests/test_expert_store_wex.c, the files then in nr3\ (c\tools\build_nr3.py, c\tools\wex_nr3_tools.c, c\tests\test_v4_wex_nr3.c, c\tests\fake_wex_cuda.c, c\tests\test_wex_nr3_gpu.cu), integration/engine/deepseek_v4.wnr3.wex-excerpt.c, research\wnr3-20261110\.
 - Measured on 103 real V4.1 records ([WNR3-VERIFY.md](WNR3-VERIFY.md)): WNR3-CZ 0.8545 of raw on the 40 held-out (WNR2 0.8994, WNR3 without CZ 0.8818); value-exact 103/103 on CPU and GPU; 0 wrong single-bit flips accepted (WNR2: 1.8-1.9% of random flips over a whole record, 0.13-0.43% in the exhaustive GPU regions); GPU decode at parity (batch-16 0.366-0.373 vs 0.376-0.377 ms/record). Full container estimate ~123.4 GB = 114.9 GiB.
 - NOT done: G7 (end-to-end per-step logits with V4_LAB_CANON_ZERO, ~55 min under heavy.lock) and the full container build (disk plan in WNR3-VERIFY section 5, owner decision). Production stays WNR2 (U:+C: mirror). *(Superseded the same day: G7 passed, container built, WNR3 in production; next section.)*
 
 ## WNR3 in production (2026-11-10, later)
 
-- G7 PASSED; full WNR3-CZ container built (123,306,192,896 B, 0.949 of WNR2, 7,680/7,680 read back exact); merged into KAIRA master (89bdc30).
-- KAIRA runs V4.1 REAP-192 from WNR3 on U: with a full C: mirror (38/62, GPU-direct 2, batch 1). Long turn (1,886 tokens): 2.92-2.96 tok/s vs WNR2 2.86 the same morning; short run 2.7-3.3 tok/s, logits bit-identical to the WNR2 reference.
+- G7 PASSED; full WNR3-CZ container built (123,306,192,896 B, 0.949 of WNR2, 7,680/7,680 read back exact); merged into the engine's main branch (2026-11-10).
+- The application runs V4.1 REAP-192 from WNR3 on U: with a full C: mirror (38/62, GPU-direct 2, batch 1). Long turn (1,886 tokens): 2.92-2.96 tok/s vs WNR2 2.86 the same morning; short run 2.7-3.3 tok/s, logits bit-identical to the WNR2 reference.
 - WEX1 and every WNR2 copy (U:, C:, E:) were deleted. A WNR2 rollback needs WEX1 regenerated from the safetensors and WNR2 rebuilt from it. Details: [WNR3-PRODUCTION-20261110.md](WNR3-PRODUCTION-20261110.md).

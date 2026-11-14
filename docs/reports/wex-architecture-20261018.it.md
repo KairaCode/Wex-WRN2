@@ -5,7 +5,7 @@
 > **Stato al 18-20 ottobre 2026 (DeepSeek V4).** Dal 9 novembre WEX3/WNR2 con GPU-direct (modo 2) e decode a batch è installato per DeepSeek V4.1 (profilo `v41gpu`, helper `kaira_wex_cuda.dll` cceb4fb5 in app\colibri-optimized). Il container V4 da 147 GB è stato cancellato. Dal 10 novembre il profilo `v41gpu` usa WNR3-CZ su U: con mirror su C: (helper 602e3f4d); WEX1 e WNR2 per V4.1 sono stati cancellati ([WNR3-PRODUCTION-20261110.md](WNR3-PRODUCTION-20261110.md)).
 
 > **Documento di Riferimento Ufficiale di Ingegneria del Software**  
-> **Repository:** KAIRA / Colibri Continuum  
+> **Repository:** albero dell'applicazione / Colibri Continuum  
 > **Data di Rilascio:** 18 Ottobre 2026  
 > **Stato dei Componenti:** v1 in produzione; v2 e v3 implementati ma non distribuiti. Test standalone WEX e suite nativa `tests/test_deepseek_v4` superati il 18 ottobre alle 23:50. Dettagli nella [sezione 8](#8-riepilogo-dei-risultati-di-validazione)  
 > **Target Hardware:** NVIDIA GeForce RTX 5090 (32 GB GDDR7 Blackwell SM120), AMD Ryzen 9 7950X3D (CCD0 3D V-Cache), Dual-NVMe PCIe Gen5 + Gen4  
@@ -356,4 +356,4 @@ Eseguita su una copia pulita di `src/colibri/c` (oggetti rimossi) con MinGW GCC 
 | `tests/test_wex_format` | superato: "V1/V2/V3, all bit widths, palette/scale boundaries, overlapping expansion and malformed streams passed" |
 | `tests/test_expert_store_wex` | superato: "ALL WEX STANDALONE TESTS PASSED" |
 
-Alle 22:27 la suite DeepSeek V4 non si collegava (`undefined reference to coli_wex_decode_record`): `deepseek_v4.c` chiamava il decoder definito in `expert_store_wex.c`, che la regola del test non collegava. Il decoder è stato spostato in `wex_decode.c` alle 23:39 (vedere l'esperimento lossy in KAIRA `docs\deepseek-lossy-topk-20261018.md`, non in questo repo); dopo lo spostamento i tre test passano.
+Alle 22:27 la suite DeepSeek V4 non si collegava (`undefined reference to coli_wex_decode_record`): `deepseek_v4.c` chiamava il decoder definito in `expert_store_wex.c`, che la regola del test non collegava. Il decoder è stato spostato in `wex_decode.c` alle 23:39 (vedere l'esperimento lossy in the maintainer's `docs\deepseek-lossy-topk-20261018.md`, non in questo repo); dopo lo spostamento i tre test passano.

@@ -20,7 +20,7 @@ Il confronto Python e quello del percorso HOT del motore verificano **ogni byte 
 
 È una misura su due esperti, non una conversione dell'intero modello e non un benchmark di token/s. Il decoder espande le scale prima dell'uso: **il risparmio riguarda file e trasferimenti dal disco, non automaticamente RAM o VRAM residenti**. La latenza aggiuntiva del decoder va misurata nel carico reale prima di attivare V2 come default.
 
-Risultati e comandi ripetibili: KAIRA `artifacts\wex-v2-20261018\` (non in questo repo): `real-sample-results.json` (campione reale), `native-checks.log` (test nativi), `python-tests.log` (test Python).
+Risultati e comandi ripetibili: the maintainer's `artifacts\wex-v2-20261018\` (non in questo repo): `real-sample-results.json` (campione reale), `native-checks.log` (test nativi), `python-tests.log` (test Python).
 
 ## Decoder CPU ottimizzato
 
@@ -48,7 +48,7 @@ Il [benchmark C](../../c/tools/bench_wex_decode.c) legge al massimo due record c
 C:\Python314\python.exe artifacts\wex-decode-20261018\verify_decode.py
 ```
 
-Risultati completi e hash dei decoder in KAIRA `artifacts\wex-decode-20261018\` (non in questo repo): `decode-results.json`, `native-checks.log` (test nativi), `standalone-tests.log` (test standalone), `fallback-results.json` (fallback).
+Risultati completi e hash dei decoder in the maintainer's `artifacts\wex-decode-20261018\` (non in questo repo): `decode-results.json`, `native-checks.log` (test nativi), `standalone-tests.log` (test standalone), `fallback-results.json` (fallback).
 
 ## Compatibilità
 
@@ -56,7 +56,7 @@ Risultati completi e hash dei decoder in KAIRA `artifacts\wex-decode-20261018\` 
 - WEX2 è esplicito: `--format-version 2`. Il nome predefinito è `v4_flash_experts.v2.wex`, separato dal file V1.
 - V2 usa un **magic differente**: i vecchi lettori ignoravano versione e flag, quindi cambiare soltanto il numero di versione avrebbe consentito una lettura errata dei dati compressi.
 - I vecchi lettori rifiutano il nuovo magic; il percorso planned può ripiegare sui safetensors. Per usare effettivamente V2 occorre il runtime aggiornato e `COLI_WEX_PATH` impostato al nuovo file.
-- Il binario completo con il decoder ottimizzato è stato costruito separatamente in KAIRA `artifacts\wex-decode-20261018\runtime\deepseek_v4.exe` (non in questo repo). La prova di avvio senza modello è in `launcher-smoke.log` nella stessa cartella. Non è stato distribuito al posto del runtime installato.
+- Il binario completo con il decoder ottimizzato è stato costruito separatamente in the maintainer's `artifacts\wex-decode-20261018\runtime\deepseek_v4.exe` (non in questo repo). La prova di avvio senza modello è in `launcher-smoke.log` nella stessa cartella. Non è stato distribuito al posto del runtime installato.
 
 ## Formato su disco
 
@@ -115,8 +115,8 @@ Il modulo autorevole è [`c/tools/repack_v4_wex.py`](../../c/tools/repack_v4_wex
 - **19 test Python:** codec, roundtrip V1/V2, record misti/raw fallback, dry-run, nomi mirror e preservazione del file precedente in caso di errore.
 - **Codec C:** larghezze 0–8, tile parziali, byte noti, overflow, metadata e stream malformati, pesi invariati.
 - **Store standalone:** lookup, cache, lease, eviction, prefetch e verifica mirror su file sintetici V1/V2.
-- **Percorso HOT reale:** due esperti reali, V1/V2, confronto completo dei byte, contatori I/O, cache/prefetch; fallback per header e stream corrotti in KAIRA `artifacts\wex-v2-20261018\fallback-results.json` (non in questo repo).
+- **Percorso HOT reale:** due esperti reali, V1/V2, confronto completo dei byte, contatori I/O, cache/prefetch; fallback per header e stream corrotti in the maintainer's `artifacts\wex-v2-20261018\fallback-results.json` (non in questo repo).
 - **Suite DeepSeek V4 esistente:** superata, comprendendo store, prewarm, pool di prefill, layout rows16, KV, layer e matematica.
-- **Build Windows completa isolata:** 31 oggetti compilati dai sorgenti correnti, incluso il decoder ottimizzato; manifest in KAIRA `artifacts\wex-decode-20261018\runtime\build-result.json` (non in questo repo).
+- **Build Windows completa isolata:** 31 oggetti compilati dai sorgenti correnti, incluso il decoder ottimizzato; manifest in the maintainer's `artifacts\wex-decode-20261018\runtime\build-result.json` (non in questo repo).
 
 Il compendio fornito dall'utente è stato usato come riferimento per distinguere compressione su disco e rappresentazione residente, e per mantenere i trasferimenti allineati. Questa implementazione usa Direct I/O Windows; non introduce un percorso Microsoft DirectStorage o un decoder GPU.

@@ -3,11 +3,11 @@
 > **Dated report (2026-11-08).** It evaluates two documents that are outside this repository; present-tense sentences are the state of that day. What runs today: [STATUS.md](../../STATUS.md).
 
 Documenti valutati:
-- **A** = `docs/ricerca-avanzata-lossless-wnr4-20261108.md` (KAIRA, non in questo repo) (proposta WNR4);
-- **B** = `KAIRA_Entropy_Engine_Architecture.pdf` (radice di KAIRA, non in questo repo) ("L'Entropia nell'Engine di KAIRA").
+- **A** = `docs/ricerca-avanzata-lossless-wnr4-20261108.md` (albero del maintainer, non in questo repo) (proposta WNR4);
+- **B** = un PDF sull'architettura del motore entropico (radice dell'albero del maintainer, non in questo repo).
 
 **Metodo.** Otto passate indipendenti: 4 controlli per gruppo di affermazioni (fonti citate, numeri WNR4, pipeline fusa, PDF) e 4 revisioni incaricate di smentirli.
-- **Dati di confronto:** misure reali sulla 5090 (`research/wnr3-5090-20261107/RESULTS.md`), ricerca sui 160 expert V4.1 (`docs/reports/wnr3-research-20261107.it.md`, `docs/reports/wnr3-research-measurements-20261107.md`), baseline M0 e log G2 (`lab/v41-gpu-20261107/` (solo KAIRA)), codice in `src/colibri/c`. Per le fonti, i paper originali online.
+- **Dati di confronto:** misure reali sulla 5090 (`research/wnr3-5090-20261107/RESULTS.md`), ricerca sui 160 expert V4.1 (`docs/reports/wnr3-research-20261107.it.md`, `docs/reports/wnr3-research-measurements-20261107.md`), baseline M0 e log G2 (`lab/v41-gpu-20261107/` (solo albero del maintainer)), codice in `src/colibri/c`. Per le fonti, i paper originali online.
 - **Vincoli:** nessuna lettura di pesi, nessun lavoro GPU, perché era in corso l'A/B V4.1.
 - **Revisione avversaria:** su ~110 verdetti ne ha ribaltati 9. Le correzioni sono già applicate qui sotto.
 
@@ -54,8 +54,8 @@ Documenti valutati:
 5. **Tabella del §5.**
    - "750 / 960 GB/s" sono velocità di decodifica del microbench espresse in byte BF16 equivalenti (2 B/peso): un'unità non dichiarata, non confrontabile con la banda GDDR7.
    - ">2,40 TB/s sopra la banda fisica" e "0 µs" non hanno basi.
-6. **Tabella di "convergenza"** (§3, KAIRA anticipa ISCA'26 / ZipServ / Unweight): i collegamenti sono inventati.
-   - Il ceil-form è lavoro originale KAIRA.
+6. **Tabella di "convergenza"** (§3, l'applicazione anticipa ISCA'26 / ZipServ / Unweight): i collegamenti sono inventati.
+   - Il ceil-form è lavoro originale di questo progetto.
    - La regola g non ha niente a che fare con Recoil, ma i suoi numeri sono corretti.
    - ZipServ e Unweight codificano gli esponenti BF16, che in E2M1 non esistono.
 
@@ -63,7 +63,7 @@ Documenti valutati:
 - **ISCA'26**, arXiv 2606.15789: gli autori sono Tan, Chen, Alonso, Wong e He, non "Shen". Usa rANS di ordine 0: su V4.1 darebbe 3,895 bit/peso, peggio di WNR2.
 - **ZipServ/ZipGEMM**, ASPLOS'26, arXiv 2603.17435: lavora solo su BF16. Il 2,21× è un picco su L40S, con media 1,36×. Sulla 5090 c'è solo un test di compatibilità.
 - **Unweight** (Cloudflare): uscito ad aprile 2026, non a gennaio. Solo BF16 e solo Hopper. A batch 1 è ~41% più lento.
-- **Recoil**, arXiv 2306.12141: reale, ma per KAIRA non dà niente al parallelismo che serve.
+- **Recoil**, arXiv 2306.12141: reale, ma qui non dà niente al parallelismo che serve.
 
 ## Documento B, interventi proposti
 
@@ -82,14 +82,14 @@ Documenti valutati:
   - "+42% RAM / +37% VRAM" diventa in realtà +2,6% con slot fissi, fino a ~+11% con slot impacchettati in byte.
 - **Tabella del §5** (480→22 ns, −62% PCIe, 7,2–8,4 tok/s): nessun numero è misurato. Il −62% verrebbe solo da expert scartati, cioè lossy.
 
-## Cosa vale davvero, in ordine di valore per KAIRA
+## Cosa vale davvero, in ordine di valore per questo progetto
 
 1. **Byte su NVMe e layout dei dischi.** L'attesa NVMe è circa metà del tempo per token. Contano:
    - W2 (decode WNR2 batched);
    - l'A/B WEX1 vs WNR2 sullo stesso disco veloce;
    - lo striping su due dischi (esiste già: `mirror_cut_256` in expert_store_wex.c, `COLI_MODEL_MIRROR`, `COLI_WEX_EXTRA_MIRRORS` + `COLI_WEX_WEIGHTS`, obbligatorio con un mirror del solo container);
    - F1 (prefetch con soglia di confidenza).
-2. **WNR3 byte-exact: ceil-form + regola g**, già portato nel kernel KAIRA in lab. −1,76% del raw, decode alla stessa velocità, decoder di produzione invariato per la sola regola g. Sopra si aggiungono:
+2. **WNR3 byte-exact: ceil-form + regola g**, già portato nel kernel del motore in lab. −1,76% del raw, decode alla stessa velocità, decoder di produzione invariato per la sola regola g. Sopra si aggiungono:
    - (d) tabella delle lunghezze codificata, −0,137%;
    - (e) hash per stream, +0,007%, chiude il buco dei flip di segno silenziosi;
    - accorciare il flush rANS (small_k0), −0,19% del raw: idea nuova emersa dalla verifica, dati in `team2/ans-prior-art/flushx.json`.
@@ -110,7 +110,7 @@ Il documento A ha copiato questi errori dal report:
 - **Percorso masked `dg_moe<256>`:** è escluso dal riepilogo e non è deterministico. Contiene −0 nelle uscite bf16, mentre il report dice "100% +0.0f".
 - **"tcgen05 su sm_120a":** probabilmente errato. sm_12x usa mma.sync con block_scale.
 
-## Errori nella nota di sintesi del 2026-11-08 (KAIRA docs, non in questo repo)
+## Errori nella nota di sintesi del 2026-11-08 (documenti del maintainer, non in questo repo)
 
 - RAM 64 GB invece di 32.
 - `prefill_tail_rows` e `v41_dspark_rollback_row_t` non esistono nel codice.

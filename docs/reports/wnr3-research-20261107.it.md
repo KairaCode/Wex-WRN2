@@ -49,7 +49,7 @@ Le dimensioni sono record rANS **reali**, codificati e decodificati: team 4, cei
 
 | # | Modifica | Tipo | Effetto | Costo di decodifica | Stato |
 |---|---|---|---|---|---|
-| 1 | **Ceil-form (f) + ancora fissa 120 (g0)** | byte-exact | **−1,79%** (IC −1,99…−1,64), ratio 0,8815 | +0…2% kernel (3070, patch differita); 0 B di shared | validato su CPU (736 record) e GPU (3070); mancano la 5090 e il codec KAIRA |
+| 1 | **Ceil-form (f) + ancora fissa 120 (g0)** | byte-exact | **−1,79%** (IC −1,99…−1,64), ratio 0,8815 | +0…2% kernel (3070, patch differita); 0 B di shared | validato su CPU (736 record) e GPU (3070); mancano la 5090 e il codec del motore |
 | 2 | **Zero canonico (c)** | value-exact | −2,74% in più sopra f; f+g0+c+d+e = **0,8528** (−4,66%) | 0 | 0 bit diversi su CPU e CUDA sm_86; mancano i tensor-core sm_120 e la decisione sulle logprob |
 | 3 | **Hash nello stato iniziale (e)** | robustezza | +0,007% (+1.352 B/record) | qualche moltiplicazione per simbolo (non misurato su GPU) | chiude il buco dei flip di segno silenziosi |
 | 4 | **Tabella lunghezze codificata (d)** | byte-exact | −0,137% (−25,8 KB) | un warp-scan per gruppo | misurato su CPU |
@@ -175,7 +175,7 @@ Il ceil-form è quindi una feature riutilizzabile per **ogni checkpoint MXFP4 na
   - l'accoppiamento dei mirror.
 
   Inoltre un container WNR2z **non può ricreare i byte originali**: cancellare WEX1 o safetensors dopo averlo creato è irreversibile.
-- **Proposta, da decidere.** La regola attuale chiede un confronto delle logprob prima della produzione. Il team 2 propone di sostituirlo con due test: un bit-test originale vs canonico sulla 5090 per ogni kernel che KAIRA può usare, e un memcmp dei logit a ogni passo end-to-end. Se entrambi danno 0 byte diversi, WNR2z è bit-identico per costruzione. I tool di verifica vanno adattati per confrontare con lo slab canonicalizzato.
+- **Proposta, da decidere.** La regola attuale chiede un confronto delle logprob prima della produzione. Il team 2 propone di sostituirlo con due test: un bit-test originale vs canonico sulla 5090 per ogni kernel che il motore può usare, e un memcmp dei logit a ogni passo end-to-end. Se entrambi danno 0 byte diversi, WNR2z è bit-identico per costruzione. I tool di verifica vanno adattati per confrontare con lo slab canonicalizzato.
 
 ## 3. Integrità: hash nello stato iniziale rANS
 
@@ -230,7 +230,7 @@ Il ceil-form è quindi una feature riutilizzabile per **ogni checkpoint MXFP4 na
 
 ## 5. Velocità di decodifica (prototipo RTX 3070)
 
-Il team 2 ha costruito un prototipo CuPy+NVRTC (sm_86) che decodifica byte-exact stream reali WNR2-like di 8 expert, in ogni variante e configurazione: 138.240 stream. Non include il ring cp.async di KAIRA. Tutti i numeri sono **misurati sul 3070** e non si trasferiscono 1:1 alla 5090.
+Il team 2 ha costruito un prototipo CuPy+NVRTC (sm_86) che decodifica byte-exact stream reali WNR2-like di 8 expert, in ogni variante e configurazione: 138.240 stream. Non include il ring cp.async del motore. Tutti i numeri sono **misurati sul 3070** e non si trasferiscono 1:1 alla 5090.
 
 | Variante | Byte | Tempo vs A |
 |---|---|---|
@@ -258,7 +258,7 @@ Modello del team 3 (`<RESEARCH-PC>\team3\capacity-value\`, 400 estrazioni Monte 
 - Contano di più due cose che non riguardano il formato:
   - W2 da solo: +3,6% su U:;
   - il drive: WNR2 su E: contro WEX1 su U: fa −52%.
-- Spazio: WNR3z (~125,4 GB) non entra nei 122,6 GB liberi su U: riportati dal reference alle 17:11. Le lettere dei drive di questo PC non sono quelle della macchina KAIRA.
+- Spazio: WNR3z (~125,4 GB) non entra nei 122,6 GB liberi su U: riportati dal reference alle 17:11. Le lettere dei drive di questo PC non sono quelle della macchina di produzione.
 
 **Rifatto con i record reali del team 4** (capacity-update; stesso modello, dati reali come delta accoppiati su WNR2 di produzione):
 
@@ -310,20 +310,20 @@ Fonte: team 3, other-tensors (misurato su campioni reali).
 
 ## 10. Prossimi passi
 
-**Decisioni che spettano al proprietario** (niente deploy né modifiche a kaira.json senza il suo OK):
+**Decisioni che spettano al proprietario** (niente deploy né modifiche a the application config senza il suo OK):
 1. Adottare il ceil-form (f) + l'ancora fissa (g0) come base di WNR3.
 2. Zero canonico: accettare il bit-test sulla 5090 più il memcmp dei logit a ogni passo al posto del confronto delle logprob, oppure tenere la regola attuale.
 3. Hash per stream (e) oppure TAIL+DIGEST per i 23 bit dello stato iniziale. La raccomandazione è l'hash.
 
 **Lavoro che resta, in ordine:**
-1. **Sul PC KAIRA (RTX 5090).**
+1. **Sul PC di produzione (RTX 5090).**
    - `bench2`/`ceilbench` del team 4 su A259, CF5, D e DB2.
-   - Porting del ceil-form nel kernel KAIRA (ring cp.async, 567 righe), con la scala finale scritta in un output separato.
-   - Bit-test dello zero canonico su ogni kernel che KAIRA può usare, inclusi DeepGEMM sm120 e cuBLASLt MXFP8.
-2. **WNR2 con ancora fissa (g0).** Codificare 40 record con la mediana fissata a 120 e un modello riaddestrato, poi verificare nei sorgenti KAIRA che niente ricalcoli `median[m]`. Se regge, sono −0,24…−0,29% senza toccare il decoder.
+   - Porting del ceil-form nel kernel del motore (ring cp.async, 567 righe), con la scala finale scritta in un output separato.
+   - Bit-test dello zero canonico su ogni kernel che il motore può usare, inclusi DeepGEMM sm120 e cuBLASLt MXFP8.
+2. **WNR2 con ancora fissa (g0).** Codificare 40 record con la mediana fissata a 120 e un modello riaddestrato, poi verificare nei sorgenti del motore che niente ricalcoli `median[m]`. Se regge, sono −0,24…−0,29% senza toccare il decoder.
 3. **Conformità.**
    - Un decoder scritto in modo indipendente (C, o il prototipo GPU) che decodifichi i record del team 4.
-   - Il confronto byte per byte dell'encoder Python WNR2 con quello C di KAIRA.
+   - Il confronto byte per byte dell'encoder Python WNR2 con quello C del motore.
    - I record codificati nel layout esatto della spec 0.2.1 (test T9, T13).
 4. **Integrità.** Audit di corruzione (casi A–J del team 2) su record ceil-form con l'hash, e, se si vuole TAIL, implementare e misurare il DIGEST prima di sceglierlo.
 5. ~~Correggere la spec v2 con gli errata del critic~~: fatto nella DRAFT 0.2.1, verificata da tre revisori.

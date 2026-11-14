@@ -4,7 +4,7 @@
 
 ## What is mirrored and what lives here
 
-The C reader **[`../c/wex4.h`](../c/wex4.h) is mirrored from KAIRA** (`src/colibri/c/wex4.h`) and is never edited in this repository. It is the header the engines include, through `deepseek_v4.c` and [`../c/qwen38_wex.h`](../c/qwen38_wex.h). Everything in `wex4/` exists only here:
+The C reader **[`../c/wex4.h`](../c/wex4.h) is the engine-side reader** (`src/colibri/c/wex4.h` in an engine tree). It is the header the engines include, through `deepseek_v4.c` and [`../c/qwen38_wex.h`](../c/qwen38_wex.h). Everything in `wex4/` exists only here:
 
 | File | What it is |
 |---|---|
@@ -16,7 +16,7 @@ The C reader **[`../c/wex4.h`](../c/wex4.h) is mirrored from KAIRA** (`src/colib
 | `vectors/` | conformance vectors: valid, invalid and legacy files with the verdict, error class and root a reader must give, in `MANIFEST.tsv` ([README](vectors/README.md)) |
 | `build_and_test.sh` | builds the two DLLs and the fixtures, then runs `test_wex4.py` |
 
-The engine side is not here: the loaders are in KAIRA, shown as patches in [`../integration/`](../integration/README.md) (`engine-wex4-loader-75932c1.patch`, `engine-wex4-first-read-4ba5568.patch`, `engine-q38-wex4-loader-de17198.patch`).
+The engine side is not here: the loaders are in the engine, shown as patches in [`../integration/`](../integration/README.md) (`engine-wex4-loader-75932c1.patch`, `engine-wex4-first-read-4ba5568.patch`, `engine-q38-wex4-loader-de17198.patch`).
 
 ## Run the tests
 
@@ -50,4 +50,4 @@ Runs on the real containers are with the other dated runs: [`../research/wex4-m3
 
 ## Old name
 
-[`../docs/NEXT-FORMAT-SPEC.md`](../docs/NEXT-FORMAT-SPEC.md) is a stub that points to the spec. It exists because `c/wex4.h` names that path in a comment, which can only be changed in KAIRA.
+[`../docs/NEXT-FORMAT-SPEC.md`](../docs/NEXT-FORMAT-SPEC.md) is a stub that points to the spec. It exists because `c/wex4.h` names that path in a comment, which is kept as it is.

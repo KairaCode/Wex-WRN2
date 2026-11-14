@@ -2,29 +2,29 @@
 
 > **Dated report (2026-11-10).** Since 2026-11-11 the same WNR3-CZ records sit in a WEX4 container, and the engine and helper builds are newer than the ones in "Production configuration": superseded for what runs today by [STATUS.md](../../STATUS.md). The rebuild steps below still apply; the WEX4 upgrade that follows them is [WEX4-SPEC.md](../WEX4-SPEC.md) section 13.1.
 
-Since 2026-11-10 KAIRA runs DeepSeek V4.1 REAP-192 from a **WNR3-CZ** container (codec 5, header flags 97) on U: with a full mirror on C:. WEX1 and every WNR2 copy were deleted afterwards, so WNR3 is now the only V4.1 expert container on the machine. Format: [WNR3-SPEC.md](../WNR3-SPEC.md); verification on real records and the G7 proof: [WNR3-VERIFY.md](WNR3-VERIFY.md); container build: [`research/wnr3-20261110/full-build/RESULT-20261110.md`](../../research/wnr3-20261110/full-build/RESULT-20261110.md).
+Since 2026-11-10 the maintainer's application runs DeepSeek V4.1 REAP-192 from a **WNR3-CZ** container (codec 5, header flags 97) on U: with a full mirror on C:. WEX1 and every WNR2 copy were deleted afterwards, so WNR3 is now the only V4.1 expert container on the machine. Format: [WNR3-SPEC.md](../WNR3-SPEC.md); verification on real records and the G7 proof: [WNR3-VERIFY.md](WNR3-VERIFY.md); container build: [`research/wnr3-20261110/full-build/RESULT-20261110.md`](../../research/wnr3-20261110/full-build/RESULT-20261110.md).
 
-Paths: `lab\...`, `app\...` and `artifacts\...` are relative to the KAIRA tree (`<KAIRA>`); the run folders named below stay there.
+Paths: `lab\...`, `app\...` and `artifacts\...` are relative to the maintainer's tree (`<TREE>`); the run folders named below stay there.
 
 ## Production configuration
 
 | item | value |
 |---|---|
-| model / profile | DeepSeek V4.1 REAP-192 MXFP4, KAIRA profile `v41gpu` (`COLI_FAMILY_ENGINE=deepseek_v4`) |
+| model / profile | DeepSeek V4.1 REAP-192 MXFP4, engine profile `v41gpu` (`COLI_FAMILY_ENGINE=deepseek_v4`) |
 | container | `U:\kaira_wex\v41-reap\v4_flash_experts.nr3.wex`, 123,306,192,896 B (114.8 GiB), model 0x27e8a1e0, sha256 490e8208... |
 | mirror | full byte copy `C:\kaira_wex\v41-reap\v4_flash_experts.nr3.wex`, hash-verified identical (`.verified`) |
 | WEX env | `COLI_WEX_PATH` = the U: container, `COLI_WEX_EXTRA_MIRRORS=C:\kaira_wex\v41-reap`, `COLI_WEX_WEIGHTS=38,62`, `COLI_WEX_GPU_DIRECT=2`, `V4_WEX_BATCH=1` |
-| engine / helper | installed now: `deepseek_v4.exe` b7c7b6a2 from KAIRA master bfa7b00 with the refit predictor gates (section *Later the same night*; same WEX code as cade51d); before that e3bde09 (2ab584d9, `lab\gpuload-20261110\ws-rel4`). Helper `kaira_wex_cuda.dll` 602e3f4d (feature 16 = WNR3). The switch itself (steps 3-6) used `deepseek_v4.exe` a55a4ce0 from cade51d; that engine and the helper are copied in `artifacts\wnr3-deploy-20261110` |
+| engine / helper | installed now: `deepseek_v4.exe` b7c7b6a2 from the predictor-gates engine of 2026-11-10 with the refit predictor gates (section *Later the same night*; same WEX code as the WNR3 branch head); before that the loader-fix engine (2ab584d9, `lab\gpuload-20261110\ws-rel4`). Helper `kaira_wex_cuda.dll` 602e3f4d (feature 16 = WNR3). The switch itself (steps 3-6) used `deepseek_v4.exe` a55a4ce0 from the WNR3 branch head; that engine and the helper are copied in `artifacts\wnr3-deploy-20261110` |
 | expected log lines | CUDA backend `deepgemm-sm120`, `Container v3 WNR3 value-exact active`, `Matching mirror container active`, decode on the gpu-pipeline |
 
-Deployment note: after the switch KAIRA master also got an engine loader fix (e3bde09: `COLI_DSV4_DLL` paths loaded as absolute files, `DSV4_CUDA_REQUIRE=1` makes the GPU mandatory instead of a silent CPU fallback). It is not WEX code; the profile sets `DSV4_CUDA_REQUIRE=1`.
+Deployment note: after the switch the engine's main branch also got an engine loader fix (`COLI_DSV4_DLL` paths loaded as absolute files, `DSV4_CUDA_REQUIRE=1` makes the GPU mandatory instead of a silent CPU fallback). It is not WEX code; the profile sets `DSV4_CUDA_REQUIRE=1`.
 
 ## Results (2026-11-10, RTX 5090)
 
 | measurement | before | after |
 |---|---|---|
 | container size, V4.1 REAP-192 | WEX1 144,389,472,256 B; WNR2 129,905,360,896 B | **WNR3-CZ 123,306,192,896 B** = 0.854 of WEX1, 0.949 of WNR2 |
-| KAIRA-identical launch, 1,886-token turn, TTFT | WNR2 U:+C: 326 s (same morning) | **339-352 s** (two launches) |
+| production-identical launch, 1,886-token turn, TTFT | WNR2 U:+C: 326 s (same morning) | **339-352 s** (two launches) |
 | same turn, decode | WNR2 U:+C: 2.86 tok/s | **2.92-2.96 tok/s**, same output text as the WNR2 run |
 | short run, 7 prompts x 64 tokens, final engine, GPU required | WNR2 reference logits sha a14761eb... | **2.7-3.3 tok/s (mean ~3.0)**, 8 RAM slots/layer, head resident, logits bit-identical to the WNR2 reference |
 
@@ -43,16 +43,16 @@ Read together: on this machine the second drive is the lever, not the format. WN
 2. **Read back.** `research/wnr3-20261110/full-build/readback.py`: every table entry read from disk and decoded, 7,680/7,680 equal to the builder's expected-slab sha256; whole-file sha256 into `<container>.verified`.
 3. **Pre-switch A/B** (`lab\wnr3-impl-20261110\deploy\ab-wnr2mirror-vs-wnr3u`): WNR2 + mirror vs WNR3 on U: only, results above. Checked: logits bit-identical, 0 WNR3 decode failures.
 4. **Mirror copy.** The container copied to `C:\kaira_wex\v41-reap\` under the same basename, sha256 compared with the U: file (identical), `.verified` written. The engine itself checks size, header and entry table of the mirror at open.
-5. **Install** (KAIRA closed). Backup of the replaced files in `lab\app-before-wnr3-20261110-165802` (with `ROLLBACK.txt`): `deepseek_v4.exe` a55a4ce0 and `kaira_wex_cuda.dll` 602e3f4d into `app\colibri-optimized`; in `app\kaira.json`, profile `v41gpu`, `COLI_WEX_PATH` now names `v4_flash_experts.nr3.wex`; the mirror and split variables stay as they were for WNR2.
-6. **KAIRA-identical launch** (gateway + the `kaira.json` env; `lab\wnr3-impl-20261110\deploy\kaira-real`): the expected log lines of the table above, two launches of the 1,886-token turn with equal ids, text and logits bytes, and the same text as the WNR2 run of the morning.
-7. **Engine update and short run** (KAIRA master e3bde09 build 2ab584d9, GPU required; `lab\gpuload-20261110\real-rel4`): 7 prompts x 64 tokens, logits bit-identical to the WNR2 reference a14761eb.... Backup before the engine update: `lab\app-before-gpurequire-20261110-185752`.
+5. **Install** (application closed). Backup of the replaced files in `lab\app-before-wnr3-20261110-165802` (with `ROLLBACK.txt`): `deepseek_v4.exe` a55a4ce0 and `kaira_wex_cuda.dll` 602e3f4d into `app\colibri-optimized`; in the application config, profile `v41gpu`, `COLI_WEX_PATH` now names `v4_flash_experts.nr3.wex`; the mirror and split variables stay as they were for WNR2.
+6. **production-identical launch** (gateway + the application config env; `lab\wnr3-impl-20261110\deploy\kaira-real`): the expected log lines of the table above, two launches of the 1,886-token turn with equal ids, text and logits bytes, and the same text as the WNR2 run of the morning.
+7. **Engine update and short run** (the loader-fix engine, build 2ab584d9, GPU required; `lab\gpuload-20261110\real-rel4`): 7 prompts x 64 tokens, logits bit-identical to the WNR2 reference a14761eb.... Backup before the engine update: `lab\app-before-gpurequire-20261110-185752`.
 8. **Deletions.** WEX1 (`U:\kaira_wex\v41-reap\v4_flash_experts.wex`) and every WNR2 copy (U:, C:, E:) deleted. Left on disk: the WNR3 container on U: and C:, and the REAP-192 safetensors on U:.
 
 ## Rollback limits
 
-- The bfa7b00 engine + gates update rolls back to e3bde09 with the backup `lab\app-before-v41gates-20261110-225421` (the container is unchanged).
-- The e3bde09 engine update rolls back to a55a4ce0 with `ROLLBACK.txt` in `lab\app-before-gpurequire-20261110-185752` (the container is unchanged).
-- The engine and helper roll back to WNR2 with `ROLLBACK.txt` in `lab\app-before-wnr3-20261110-165802`, but that restores a `kaira.json` pointing at a WNR2 container that no longer exists. Without a container the engine reads the safetensors (slower, see the README's M0 table).
+- The predictor-gates engine + gates update rolls back to the loader-fix engine with the backup `lab\app-before-v41gates-20261110-225421` (the container is unchanged).
+- The loader-fix engine update rolls back to a55a4ce0 with `ROLLBACK.txt` in `lab\app-before-gpurequire-20261110-185752` (the container is unchanged).
+- The engine and helper roll back to WNR2 with `ROLLBACK.txt` in `lab\app-before-wnr3-20261110-165802`, but that restores an application config pointing at a WNR2 container that no longer exists. Without a container the engine reads the safetensors (slower, see the README's M0 table).
 - The installed engine also reads WEX1 and WNR2, so a format rollback needs no old binaries: regenerate the container and point `COLI_WEX_PATH` at it.
 - WNR3-CZ cannot give back the WEX1 bytes (FP4 -0 is stored as +0; value-exact, not byte-exact). The only byte-exact source left is the safetensors on U:; do not delete them.
 
@@ -93,14 +93,14 @@ Only the scales compress, and they are about 6% of a slab. Compressed memory the
 
 ### Engine updates
 
-KAIRA master was fast-forwarded twice after the switch: e3bde09 (build 2ab584d9, GPU required, see above) and then bfa7b00 (build b7c7b6a2) = e3bde09 + the V4.1 online predictor sized by `n_routed_experts`. Neither change touches WEX code: `git diff --stat cade51d bfa7b00` over the WEX/WNR files is empty.
+the engine's main branch was fast-forwarded twice after the switch: the loader-fix engine (build 2ab584d9, GPU required, see above) and then the predictor-gates engine (build b7c7b6a2) = the loader-fix engine + the V4.1 online predictor sized by `n_routed_experts`. Neither change touches WEX code: `git diff --stat the WNR3 branch head the predictor-gates engine` over the WEX/WNR files is empty.
 
-bfa7b00 was installed with refit V4.1 predictor gates `v41_pred_gates.bin` (c2a280a0), fitted from a decode routing dump (6,834 decode forwards, 273,360 records): d1 recall@8 from 76-79% to **83.7%**, d2 77.5%. `app\kaira.json`, profile `v41gpu`, now sets `V4_NEXT_PREFETCH_GATES=app\colibri-optimized\v41_pred_gates.bin` and `V4_NP_ONLINE=1`. Backup: `lab\app-before-v41gates-20261110-225421`.
+the predictor-gates engine was installed with refit V4.1 predictor gates `v41_pred_gates.bin` (c2a280a0), fitted from a decode routing dump (6,834 decode forwards, 273,360 records): d1 recall@8 from 76-79% to **83.7%**, d2 77.5%. the application config, profile `v41gpu`, now sets `V4_NEXT_PREFETCH_GATES=app\colibri-optimized\v41_pred_gates.bin` and `V4_NP_ONLINE=1`. Backup: `lab\app-before-v41gates-20261110-225421`.
 
-| measurement (WNR3 U:+C:) | before (previous install) | after (bfa7b00 + refit gates) |
+| measurement (WNR3 U:+C:) | before (previous install) | after (the predictor-gates engine + refit gates) |
 |---|---|---|
 | ABBA, 14 pairs | baseline | **+6.55% ± 1.81% decode**, logits bit-identical |
-| KAIRA-identical 1,886-token turn | 2.83 tok/s | **3.06 tok/s**, logits identical |
+| production-identical 1,886-token turn | 2.83 tok/s | **3.06 tok/s**, logits identical |
 
 ### Other engine A/Bs (engine context, not WEX code)
 
@@ -113,6 +113,6 @@ bfa7b00 was installed with refit V4.1 predictor gates `v41_pred_gates.bin` (c2a2
 
 ### Compressed-record RAM cache: no gain, not adopted
 
-`COLI_WEX_RAM_CACHE_GB` keeps WNR3 records compressed in pinned host RAM and decodes them on the GPU on a hit. The new variable-size version (8 equal-count size classes; KAIRA branch `wnr3-ramcache-20261110`, not merged) holds, on the real V4.1 WNR3 record sizes (min 15.25, median 15.30, mean 15.31, max 16.61 MiB), **46 records** in one RAM step of 752,025,600 B, against 43 with max-size slots and 40 decoded slabs (+15% vs slabs), fill efficiency 0.991.
+`COLI_WEX_RAM_CACHE_GB` keeps WNR3 records compressed in pinned host RAM and decodes them on the GPU on a hit. The new variable-size version (8 equal-count size classes; engine branch `wnr3-ramcache-20261110`, not merged) holds, on the real V4.1 WNR3 record sizes (min 15.25, median 15.30, mean 15.31, max 16.61 MiB), **46 records** in one RAM step of 752,025,600 B, against 43 with max-size slots and 40 decoded slabs (+15% vs slabs), fill efficiency 0.991.
 
 Equal-RAM A/B on V4.1 (A: 8 decoded slots/layer; B: 7 slots + 0.7004 GiB record cache; ABBA): **-0.19% ± 0.72%**, logits bit-identical. The cache served 52 hits against 61,157 misses: the routing spread is far larger than 46 records. Prefill does not use the record cache. Details: [`research/wnr3-20261110/ram-record-cache/RESULT-20261110.md`](../../research/wnr3-20261110/ram-record-cache/RESULT-20261110.md).
