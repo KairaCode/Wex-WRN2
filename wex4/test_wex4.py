@@ -233,6 +233,115 @@ def test_wnr3_exact():
           f'rebuilt byte-identical through the fast and the reference decoder')
 
 
+def st_tensors(path):
+    """{name: (dtype, shape, bytes)} of a safetensors file."""
+    _, start, tensors = conv.st_index(path)
+    blob = open(path, 'rb').read()
+    return {name: (dtype, shape, blob[start + begin:start + end]) for name, dtype, shape, begin, end in tensors}
+
+
+def test_profiles():
+    """Every naming profile on its synthetic fixture (fixtures/make_synth_mxfp4.py --names): pack with expert
+    records and back, and the in-place upgrade of a WEX1 and a WNR3 container and back, byte for byte."""
+    names = sorted(os.listdir(os.path.join(WORK, 'prof')))
+    assert set(names) == set(conv.PROFILES) == set(conv.NAMES), 'a profile without a fixture, or a fixture without a profile'
+    nr3 = conv.Nr3(os.path.join(WORK, 'wex_nr3_tools.dll'), os.path.join(WORK, 'synth.wnm2'), False)
+    out, back, work = os.path.join(WORK, 'p.wex4'), os.path.join(WORK, 'pb'), os.path.join(WORK, 'p_up.wex')
+    grid = [layer << 16 | expert for layer in range(2) for expert in range(3)]
+    reference = [value for _, _, value in st_tensors(os.path.join(WORK, 'prof', 'deepseek', 'model.safetensors')).values()]
+    legacy = open(os.path.join(WORK, 'prof.wex'), 'rb').read()   # the WEX1 container c/tools/repack_v4_wex.py made
+    table_offset = conv.WEX_HEADER.unpack_from(legacy)[5]
+    slabs = [legacy[e[0]:e[0] + e[2] + e[3]] for e in (conv.ENTRY.unpack_from(legacy, table_offset + i * 72) for i in range(6))]
+    coded = 0
+    for name in names:
+        source = os.path.join(WORK, 'prof', name, 'model.safetensors')
+        original, expect = open(source, 'rb').read(), st_tensors(source)
+        assert [value for _, _, value in expect.values()] == reference, 'the fixtures must differ in names and dtypes only'
+        assert all(conv.expert_pattern(name).match(tensor) for tensor in expect), name
+        # 1. safetensors -> WEX4 with one EXPERT record per expert (raw, then WNR3) -> safetensors
+        for mode in ('raw', 'nr3'):
+            report = {}
+            conv.pack(out, [source], C, mode, nr3 if mode == 'nr3' else None, family=name, report=report)
+            data = open(out, 'rb').read()
+            status, digest = C.check(data, 3, True)
+            assert status == 0 and digest == wex4.check(data, True, C) and CREF.check(data, 3, True) == (0, digest), name
+            rd = wex4.Reader(io.BytesIO(data), C)
+            assert (rd.layers, rd.experts) == (2, 3) and [rec[6] for rec in rd.records] == grid, name
+            assert all(rec[4] & wex4.REC_EXPERT for rec in rd.records) and report == {'expert_records': 6, 'experts_as_tensors': 0}
+            assert all(rec[3] == 0 for rec in rd.records) if mode == 'raw' else any(rec[3] == 5 for rec in rd.records)
+            coded += sum(rec[3] == 5 for rec in rd.records)
+            assert [rd.record(r) for r in range(6)] == slabs, f'{name}: the slab is not scales w1 w2 w3, weights w1 w2 w3'
+            assert conv.unpack(out, back, C) == [('model.safetensors', True)]
+            assert open(os.path.join(back, 'model.safetensors'), 'rb').read() == original, name
+        # 2. a WEX1 and a WNR3 container of the same experts -> WEX4 in place with this profile's names -> back
+        for legacy in ('prof.wex', 'prof_nr3.wex'):
+            before = open(os.path.join(WORK, legacy), 'rb').read()
+            shutil.copyfile(os.path.join(WORK, legacy), work)
+            conv.upgrade(work, family=name)
+            data = open(work, 'rb').read()
+            assert data[4096:len(before)] == before[4096:]
+            status, digest = C.check(data, 3, True)
+            assert status == 0 and digest == wex4.check(data, True, C) and CREF.check(data, 3, True) == (0, digest), name
+            rd = wex4.Reader(io.BytesIO(data), C)
+            assert len(rd.tensors) == len(expect) and [rec[6] for rec in rd.records] == grid, name
+            for tensor, value in expect.items():   # the container answers to the checkpoint's own names
+                assert rd.tensor(tensor) == value, (name, tensor)
+            conv.downgrade(work)
+            assert open(work, 'rb').read() == before, name
+        # 3. a mixed checkpoint: layer 0 has no experts, layer 1 is MXFP4, layer 2 is float (three BF16 matrices)
+        source = os.path.join(WORK, 'mix', name, 'model.safetensors')
+        report = {}
+        conv.pack(out, [source], C, 'raw', family=name, report=report)
+        data = open(out, 'rb').read()
+        assert C.check(data, 3, True) == (0, wex4.check(data, True, C))
+        rd = wex4.Reader(io.BytesIO(data), C)
+        owners = [rec[6] for rec in rd.records if rec[4] & wex4.REC_EXPERT]
+        assert owners == [1 << 16, 1 << 16 | 1] and (rd.layers, rd.experts) == (2, 2), name
+        assert report == {'expert_records': 2, 'experts_as_tensors': 2}, report
+        assert conv.unpack(out, back, C) == [('model.safetensors', True)]
+        assert open(os.path.join(back, 'model.safetensors'), 'rb').read() == open(source, 'rb').read(), name
+    # another family's names: nothing is taken for an expert, and the file still comes back
+    source = os.path.join(WORK, 'prof', 'qwen3-moe', 'model.safetensors')
+    for name in names:
+        if name == 'qwen3-moe':
+            continue
+        report = {}
+        conv.pack(out, [source], C, 'raw', family=name, report=report)
+        rd = wex4.Reader(open(out, 'rb'), C)
+        assert not rd.layers and not any(rec[4] & wex4.REC_EXPERT for rec in rd.records) and not report['expert_records']
+        rd.f.close()
+    assert conv.unpack(out, back, C) == [('model.safetensors', True)]
+    # tensors that only look like experts stay ordinary tensors: a name with something before or after the
+    # pattern, an index with a leading zero, a slab with a missing tensor, a wrong dtype, a wrong shape
+    def slab(prefix, layer, expert, skip=(), dtype='U8', cols=2):
+        return [(f'{prefix}model.layers.{layer}.mlp.experts.{expert}.{matrix}.{suffix}', dtype, (4, cols * 16 if k else cols),
+                 skewed(4 * (cols * 16 if k else cols) * (2 if dtype == 'I16' else 1)))
+                for matrix in ('gate_proj', 'down_proj', 'up_proj') for k, suffix in enumerate(('weight_scale', 'weight'))
+                if (matrix, suffix) not in skip]
+    source = os.path.join(WORK, 'near.safetensors')
+    tensors = slab('', 0, 0) + slab('mtp.', 0, 0) + slab('', '00', 1) + slab('', 0, 2, [('up_proj', 'weight_scale')]) + \
+        slab('', 0, 3, dtype='I16', cols=1) + [(n + '.bias', d, s, v) for n, d, s, v in slab('', 0, 4)]
+    wrong = slab('', 1, 0)
+    wrong[1] = (wrong[1][0], 'U8', (4, 30), skewed(120))   # the weight is not 16 bytes per scale
+    st_write(source, tensors[1:] + wrong)
+    st_write(os.path.join(WORK, 'near2.safetensors'), tensors[:1])   # one tensor of the good expert is in a second file
+    report = {}
+    conv.pack(out, [source, os.path.join(WORK, 'near2.safetensors')], C, 'raw', family='qwen3-moe', report=report)
+    data = open(out, 'rb').read()
+    assert C.check(data, 3, True) == (0, wex4.check(data, True, C))
+    rd = wex4.Reader(io.BytesIO(data), C)
+    assert [rec[6] for rec in rd.records if rec[4] & wex4.REC_EXPERT] == [0] and (rd.layers, rd.experts) == (1, 1)
+    assert report == {'expert_records': 1, 'experts_as_tensors': 3}, report
+    assert conv.unpack(out, os.path.join(WORK, 'pb2'), C) == [('near.safetensors', True), ('near2.safetensors', True)]
+    for file in ('near.safetensors', 'near2.safetensors'):
+        assert open(os.path.join(WORK, 'pb2', file), 'rb').read() == open(os.path.join(WORK, file), 'rb').read()
+    assert rejected(conv.upgrade, work, True, 'no-such-profile') and rejected(conv.pack, out, [source], C, 'raw', None, 1 << 20, 'x')
+    print(f'naming profiles ({", ".join(names)}): on a synthetic fixture each (2 layers x 3 experts, the same expert '
+          f'bytes), pack with RAW and with WNR3 expert records ({coded} of {6 * len(names)} coded) and unpack byte-identical; '
+          f'upgrade of a WEX1 and a WNR3 container gives the fixture\'s tensors by name, downgrade exact; '
+          f'an expert split over two files is one record; a float layer and near-miss names stay ordinary tensors')
+
+
 def test_store():
     """The engine-side loader (wex4_store.h) on upgraded containers, and recovery from a torn header page."""
     for name, flags in (('tiny.wex', 0), ('tiny_cz.wex', 32 | 64), ('synth_nr3.wex', 32)):
@@ -630,6 +739,7 @@ def main():
     tiny = test_experts()
     upgraded = test_upgrade()
     test_wnr3_exact()
+    test_profiles()
     test_store()
     hostile = test_hostile(generic)
     expert_attacks = test_hostile_experts(upgraded)

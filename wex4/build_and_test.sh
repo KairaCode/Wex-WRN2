@@ -52,4 +52,13 @@ P=$("$PY" -I -c "print(','.join(f'{l}:{e}' for l in range(6) for e in range(8)))
 "$PY" -I "$ROOT/c/tools/repack_v4_wex.py" --model-dir synth --output synth.wex >> synth.log
 "$PY" -I "$ROOT/c/tools/build_nr3.py" ./wex_nr3_tools.dll synth.wex container synth_nr3.wex --layers 0 --train 0:0,0:1,0:2,0:3 \
     --save-model synth.wnm2 | tail -1
+# naming profiles: the same six experts under the tensor names of every profile (prof/), one WEX1 and one WNR3
+# container of them, and a mixed checkpoint per profile (mix/: a first layer without experts, an MXFP4 layer,
+# a float layer)
+for n in $("$PY" -I "$ROOT/fixtures/make_synth_mxfp4.py" --list-names | tr -d '\r'); do
+  "$PY" -I "$ROOT/fixtures/make_synth_mxfp4.py" "prof/$n" --names "$n" --layers 2 --experts 3 --seed 20261114 >> prof.log
+  "$PY" -I "$ROOT/fixtures/make_synth_mxfp4.py" "mix/$n" --names "$n" --layers 3 --experts 2 --first-layer 1 --float-layer 2 >> prof.log
+done
+"$PY" -I "$ROOT/c/tools/repack_v4_wex.py" --model-dir prof/deepseek --output prof.wex >> prof.log
+"$PY" -I "$ROOT/c/tools/build_nr3.py" ./wex_nr3_tools.dll prof.wex container prof_nr3.wex --layers 0,1 --model synth.wnm2 | tail -1
 "$PY" -I -u "$ROOT/wex4/test_wex4.py" "$S" "$@"

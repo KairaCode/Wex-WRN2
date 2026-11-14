@@ -58,12 +58,28 @@ Labels you may see on issues: **good first issue** (a few hours, little context)
 
 ## 5. Converters for more models (help wanted)
 
-- **Today:** [wex4_convert.py](../wex4/wex4_convert.py) knows the tensor names of two families
-  (`--names deepseek|qwen38`).
-- **What:** naming profiles for other MoE checkpoints in safetensors (for example Mixtral, Qwen MoE
-  variants, GLM, Kimi-style models), with a tiny synthetic fixture for each, as
-  `fixtures/make_synth_mxfp4.py` does.
-- **Done when:** convert → verify → downgrade round-trips byte for byte on the fixture.
+- **Today:** [wex4_convert.py](../wex4/wex4_convert.py) has eight naming profiles (`--names`, for `pack`
+  and for `upgrade`): `deepseek`, `deepseek-quark`, `qwen38`, `qwen3-moe` (also Kimi K2, GLM-4.7 and 5.1,
+  DeepSeek R1 and V3.2), `kimi-k26`, `mixtral` (also MiniMax-M2), `minimax-m3` (also Kimi K3) and
+  `mistral-large4`. The table, with the checkpoint each profile's names were read in, is in
+  [wex4/README.md](../wex4/README.md#naming-profiles). Each has a synthetic fixture
+  (`fixtures/make_synth_mxfp4.py --names`) on which pack → verify → unpack and upgrade → verify →
+  downgrade round-trip byte for byte.
+- **Still open, most wanted:** a run on a real checkpoint. The profiles were tested on the synthetic
+  fixtures only, and the names were read in two shards per checkpoint. Pack a real MXFP4 checkpoint of
+  one of these families with `pack --experts raw --names PROFILE`, run `wex4.py verify` and `unpack`, and
+  report the line `pack` prints (expert records, experts kept as ordinary tensors), the sizes and
+  whether every file came back with its SHA-256.
+- **Still open:** a profile for a family that is not in the table. It has to be an MXFP4 checkpoint with
+  three matrices per expert and one group of tensors per expert, which is what an expert record holds.
+  Add its row to `PROFILES` in the converter and to `NAMES` in the fixture script (the test fails when
+  one of the two is missing), and name the checkpoint and the shard the names were read in.
+- **Does not fit without a format change** (open an issue first): expert records for float or FP8
+  experts (Mixtral, Qwen3 MoE and GLM-4.5 as published in BF16, Kimi K2 as published in FP8), and for
+  gpt-oss, which holds all the experts of a layer in one tensor and has two matrices per expert. Today
+  `pack` stores those as ordinary tensors.
+- **Done when:** convert → verify → downgrade round-trips byte for byte on the fixture, and for a real
+  checkpoint on the checkpoint.
 
 ## 6. Port the WNR3 GPU decode to Vulkan (help wanted, priority)
 
@@ -114,6 +130,8 @@ listed above as well.
   - a full ABBA set for it on DeepSeek V4.1;
   - tuning the two-drive split for Qwen3.8;
   - MTP together with MXFP4 experts.
+- **Converter profiles for more model families:** eight naming profiles are in, tested on synthetic
+  fixtures; a run on a real checkpoint of the new families is open *(open to you, section 5)*.
 - **A first tagged release** of the specifications (WEX4 4.0, WNR3 v1) with the conformance vectors, so
   other implementations can name the version they pass.
 

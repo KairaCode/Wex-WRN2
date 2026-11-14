@@ -5,14 +5,16 @@
   pack      safetensors -> WEX4. The source headers are kept verbatim, so unpack rebuilds every
             source file with the same SHA-256 (unless the container is value-exact).
       python -I wex4_convert.py pack OUT.wex4 SRC.safetensors [SRC2 ...] [--dll wex4_tools.dll]
-             [--experts raw|nr3 --nr3-dll wex_nr3_tools.dll --model FILE.wnm2 [--cz]] [--part-mib 64]
+             [--experts raw|nr3 [--names PROFILE] --nr3-dll wex_nr3_tools.dll --model FILE.wnm2 [--cz]] [--part-mib 64]
   unpack    WEX4 -> the source safetensors files, each checked against its recorded SHA-256.
       python -I wex4_convert.py unpack IN.wex4 OUT_DIR [--dll wex4_tools.dll]
   upgrade   WEX1 (raw) or WEX3/WNR3 expert container -> WEX4, in place and non-destructive: the records
             stay where they are, the old header page and table are kept as hashed blobs, the index is appended.
-      python -I wex4_convert.py upgrade FILE.wex [--names deepseek|qwen38]
+      python -I wex4_convert.py upgrade FILE.wex [--names PROFILE]
   downgrade undo an upgrade (restores the old header page, truncates the appended part).
       python -I wex4_convert.py downgrade FILE.wex
+PROFILE is a naming profile (PROFILES below): how a model family names the six tensors of a routed expert.
+Default deepseek.
 """
 import ctypes
 import hashlib
@@ -31,7 +33,57 @@ ST_MAX_HEADER = 100_000_000
 SMALL, GROUP = 64 << 10, 4 << 20      # tensors under SMALL share a record of up to GROUP bytes
 ENTRY = struct.Struct('<QIII6H6H3I3II')   # legacy WEX3 entry, 72 B
 WEX_HEADER = struct.Struct('<IIIIQQII')
-EXPERT_NAME = re.compile(rb'layers\.(0|[1-9]\d*)\.ffn\.experts\.(0|[1-9]\d*)\.w([123])\.(weight|scale)\Z')
+# Naming profiles: how a model family names the six tensors of a routed expert in an MXFP4 checkpoint.
+# name -> (prefix with {L} = layer and {e} = expert, names of the matrices w1, w2, w3 of the slab, suffix of the
+# weight tensor, suffix of the scale tensor, scale dtype, weight dtype). The two dtypes are what upgrade writes
+# (a WEX1/WEX3 container does not record them); pack takes the dtypes of the source. The names were read from
+# the safetensors headers of published checkpoints: the table with the sources is in wex4/README.md.
+_W, _PROJ = ('w1', 'w2', 'w3'), ('gate_proj', 'down_proj', 'up_proj')
+PROFILES = {
+    'deepseek': ('layers.{L}.ffn.experts.{e}.', _W, 'weight', 'scale', 'F8_E8M0', 'I8'),
+    'deepseek-quark': ('layers.{L}.ffn.experts.{e}.', _W, 'weight', 'weight_scale', 'U8', 'U8'),
+    'qwen38': ('model.language_model.layers.{L}.mlp.experts.{e}.', _PROJ, 'weight', 'weight_scale', 'U8', 'U8'),
+    'qwen3-moe': ('model.layers.{L}.mlp.experts.{e}.', _PROJ, 'weight', 'weight_scale', 'U8', 'U8'),
+    'kimi-k26': ('language_model.model.layers.{L}.mlp.experts.{e}.', _PROJ, 'weight', 'weight_scale', 'U8', 'U8'),
+    'mixtral': ('model.layers.{L}.block_sparse_moe.experts.{e}.', _W, 'weight', 'weight_scale', 'U8', 'U8'),
+    'minimax-m3': ('language_model.model.layers.{L}.block_sparse_moe.experts.{e}.', _W, 'weight', 'weight_scale', 'U8', 'U8'),
+    'mistral-large4': ('layers.{L}.experts.{e}.', _W, 'weight', 'weight_scale', 'U8', 'U8'),
+}
+
+
+def expert_name(family, layer, expert, matrix, weight):
+    """Tensor name of matrix 0..2 (w1, w2, w3) of one expert: its weight tensor, or its scale tensor."""
+    prefix, matrices, weight_suffix, scale_suffix = PROFILES[family][:4]
+    return f'{prefix.format(L=layer, e=expert)}{matrices[matrix]}.{weight_suffix if weight else scale_suffix}'
+
+
+def expert_pattern(family):
+    """Compiled pattern of a profile's expert tensor names: groups layer, expert, matrix name, suffix."""
+    prefix, matrices, weight_suffix, scale_suffix = PROFILES[family][:4]
+    before, rest = prefix.split('{L}')
+    between, after = rest.split('{e}')
+    number = '(0|[1-9][0-9]*)'
+    text = re.escape(before) + number + re.escape(between) + number + re.escape(after)
+    text += f'({"|".join(map(re.escape, matrices))})\\.({re.escape(weight_suffix)}|{re.escape(scale_suffix)})\\Z'
+    return re.compile(text.encode())
+
+
+def mxfp4_slab(parts):
+    """True when the tensors found for one expert, {(matrix, is weight): (Tensor, read)}, are a whole MXFP4 slab
+    as an EXPERT record needs it (WEX4-SPEC section 5.5)."""
+    if len(parts) != 6:
+        return False
+    for m in range(3):
+        scale, weight = parts[(m, False)][0], parts[(m, True)][0]
+        if not (scale.dtype in (wex4.DTYPE_CODE['U8'], wex4.DTYPE_CODE['F8_E8M0']) and
+                weight.dtype in (wex4.DTYPE_CODE['U8'], wex4.DTYPE_CODE['I8']) and
+                len(scale.shape) == 2 and all(0 < d <= 65535 for d in scale.shape + weight.shape) and
+                weight.shape == (scale.shape[0], 16 * scale.shape[1])):
+            return False
+    return sum(spec.nbytes for spec, _ in parts.values()) <= wex4.MAX_DECODED
+
+
+EXPERT_NAME = expert_pattern('deepseek')
 BLOB_LEGACY_PAGE, BLOB_LEGACY_TABLE, BLOB_LEGACY_GAP = 16, 17, 18
 FLOATS = ('F16', 'BF16', 'F32', 'F64')
 
@@ -141,9 +193,12 @@ def expert_entry(scales, weights):
                       *offsets, 0)
 
 
-def pack(out_path, sources, clib=None, experts=None, nr3=None, part_bytes=64 << 20):
-    """safetensors files -> one WEX4 file. experts: None (tensors as they come), 'raw' or 'nr3' (expert records)."""
-    files, records, empty, meta_sources, groups = [], [], [], [], {}
+def pack(out_path, sources, clib=None, experts=None, nr3=None, part_bytes=64 << 20, family='deepseek', report=None):
+    """safetensors files -> one WEX4 file. experts: None (tensors as they come), 'raw' or 'nr3' (expert records).
+    family: the naming profile that says which tensors are routed experts. An expert whose tensors are not a
+    whole MXFP4 slab (a float or FP8 layer of a mixed checkpoint, a missing tensor) stays ordinary tensors.
+    report: a dict that receives 'expert_records' and 'experts_as_tensors'."""
+    records, empty, meta_sources, indexed = [], [], [], []
     seen = set()
     expert_groups = {}
 
@@ -156,24 +211,38 @@ def pack(out_path, sources, clib=None, experts=None, nr3=None, part_bytes=64 << 
 
     need(sources and part_bytes > 0, 'pack: no source file or bad part size')
     need(len({os.path.normcase(os.path.basename(p)) for p in sources}) == len(sources), 'two sources have the same file name')
-    for path in sources:
+    need(family in PROFILES, f'unknown naming profile {family!r}: one of {", ".join(PROFILES)}')
+    pattern, (_, matrices, weight_suffix) = expert_pattern(family), PROFILES[family][:3]
+    for path in sources:   # every header first: the six tensors of one expert may sit in two files
         raw, start, tensors = st_index(path)
         meta_sources.append({'name': os.path.basename(path), 'bytes': os.path.getsize(path),
                              'sha256': file_sha256(path), 'header': raw.decode('utf-8')})
+        indexed.append((path, start, tensors))
+        for name, dtype, shape, begin, end in tensors:
+            need(name not in seen, f'tensor {name!r} appears twice')
+            seen.add(name)
+            match = experts and pattern.match(name)
+            if match:
+                key = (int(match[1]), int(match[2]))
+                part = (matrices.index(match[3].decode()), match[4].decode() == weight_suffix)
+                expert_groups.setdefault(key, {})[part] = (wex4.Tensor(name, dtype, shape, end - begin),
+                                                           reader(path, start, begin, end))
+    as_tensors = [key for key, parts in expert_groups.items() if not mxfp4_slab(parts)]
+    for key in as_tensors:
+        del expert_groups[key]
+    in_slab = {spec.name for parts in expert_groups.values() for spec, _ in parts.values()}
+    if report is not None:
+        report.update(expert_records=len(expert_groups), experts_as_tensors=len(as_tensors))
+    for path, start, tensors in indexed:
         pending = {}   # element width -> (tensors, readers, bytes) of the open small-tensor group
 
         def flush(width):
             specs, reads, size = pending.pop(width)
             records.append(wex4.Record(specs, size, lambda reads=reads: b''.join(r() for r in reads), ('bp', width, 0)))
         for name, dtype, shape, begin, end in tensors:
-            need(name not in seen, f'tensor {name!r} appears twice')
-            seen.add(name)
-            spec, read, size = wex4.Tensor(name, dtype, shape, end - begin), reader(path, start, begin, end), end - begin
-            match = experts and EXPERT_NAME.match(name)
-            if match:
-                key = (int(match[1]), int(match[2]))
-                expert_groups.setdefault(key, {})[(int(match[3]), match[4])] = (spec, read)
+            if name in in_slab:
                 continue
+            spec, read, size = wex4.Tensor(name, dtype, shape, end - begin), reader(path, start, begin, end), end - begin
             if not size:
                 empty.append(spec)
                 continue
@@ -193,7 +262,6 @@ def pack(out_path, sources, clib=None, experts=None, nr3=None, part_bytes=64 << 
                                            codec, parts=parts))
         for width in list(pending):
             flush(width)
-        files.append(path)
 
     blobs, layers, n_experts, required = [], 0, 0, 0
     if expert_groups:
@@ -203,10 +271,8 @@ def pack(out_path, sources, clib=None, experts=None, nr3=None, part_bytes=64 << 
         layers, n_experts = max(k[0] for k in expert_groups) + 1, max(k[1] for k in expert_groups) + 1
         need(layers <= 65536 and n_experts <= 65536, 'expert grid too large')
         for (layer, expert), parts in sorted(expert_groups.items()):
-            need(len(parts) == 6, f'L{layer} E{expert}: incomplete expert')
-            order = [parts[(m, b'scale')] for m in (1, 2, 3)] + [parts[(m, b'weight')] for m in (1, 2, 3)]
+            order = [parts[(m, False)] for m in range(3)] + [parts[(m, True)] for m in range(3)]
             specs, reads = [s for s, _ in order], [r for _, r in order]
-            need(all(len(s.shape) == 2 and all(0 < d <= 65535 for d in s.shape) for s in specs), f'L{layer} E{expert}: expert tensor shape')
             entry = expert_entry([s.shape for s in specs[:3]], [s.shape for s in specs[3:]])
 
             def slab(reads=reads):
@@ -311,18 +377,16 @@ class _Probe:
         return self.parts[self.at][:n]
 
 
-# tensor names and dtypes of an upgraded expert container, per model family (matrices w1, w2, w3)
-NAMES = {
-    'deepseek': (lambda L, e, m, w: f'layers.{L}.ffn.experts.{e}.w{m + 1}.{"weight" if w else "scale"}', 'F8_E8M0', 'I8'),
-    'qwen38': (lambda L, e, m, w: f'model.language_model.layers.{L}.mlp.experts.{e}.'
-                                  f'{("gate_proj", "down_proj", "up_proj")[m]}.weight{"" if w else "_scale"}', 'U8', 'U8'),
-}
+# tensor names and dtypes of an upgraded expert container, per naming profile (matrices w1, w2, w3)
+NAMES = {family: (lambda L, e, m, w, family=family: expert_name(family, L, e, m, w), profile[4], profile[5])
+         for family, profile in PROFILES.items()}
 
 
 def upgrade(path, hash_records=True, family='deepseek'):
     """WEX1 / WEX3-WNR3 container -> WEX4 in place: appends the old header page and the index, then rewrites
     the header page. Nothing else is touched; downgrade() restores the file byte for byte.
     path may be an open binary file object (r+b) instead of a path."""
+    need(family in NAMES, f'unknown naming profile {family!r}: one of {", ".join(NAMES)}')
     with (open(path, 'r+b') if isinstance(path, (str, os.PathLike)) else path) as f:
         f.seek(0, os.SEEK_END)
         old_bytes = f.tell()
@@ -476,7 +540,12 @@ def main(argv):
         mode = option('--experts')
         need(mode in (None, 'raw', 'nr3'), '--experts takes raw or nr3')
         nr3 = Nr3(option('--nr3-dll'), option('--model'), '--cz' in argv) if mode == 'nr3' else None
-        root = pack(positional[0], positional[1:], clib, mode, nr3, int(option('--part-mib', '64')) << 20)
+        report = {}
+        root = pack(positional[0], positional[1:], clib, mode, nr3, int(option('--part-mib', '64')) << 20,
+                    option('--names', 'deepseek'), report)
+        if mode:
+            print(f'{report["expert_records"]} expert records; {report["experts_as_tensors"]} experts kept as ordinary '
+                  f'tensors (not a whole MXFP4 slab)')
         print('root', root.hex())
     elif argv[1] == 'unpack':
         for name, ok in unpack(positional[0], positional[1], clib):
