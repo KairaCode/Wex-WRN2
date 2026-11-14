@@ -9,6 +9,11 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:   # any other branch, by hand
+    inputs:
+      linux_io_bench:
+        description: "Also run the full bench/wex_io.py (Linux read paths; a measurement, not a check)"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -32,6 +37,10 @@ jobs:
           persist-credentials: false   # the checks never talk to the remote: keep the token out of .git/config
       - name: All CPU checks
         run: bash scripts/check_all.sh
+      # seconds: a 10 MB container, every read path of bench/wex_io.c checked against the index's SHA-256 and
+      # run once. It shows that the benchmark still builds and reads right, not how fast anything is
+      - name: Linux read-path benchmark, smoke run
+        run: python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --smoke
 
   # the same checks on a 64-bit ARM CPU: no AVX2, so wex4/build_and_test.sh builds the scalar kernel of the fast
   # WNR3 decoder, and plain char is unsigned there
@@ -101,3 +110,25 @@ jobs:
           LD_PRELOAD=$(gcc -print-file-name=libasan.so)
           export LD_PRELOAD
           bash scripts/check_all.sh
+      # bench/wex_io.py appends WEX_CFLAGS too: its pread and io_uring paths under the sanitizers
+      - name: Linux read-path benchmark, smoke run under ASan and UBSan
+        run: python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --smoke
+
+  # A measurement, not a check: the full bench/wex_io.py, only when a manual run asks for it
+  # (gh workflow run ci.yml --ref <branch> -f linux_io_bench=true). The runner is a shared cloud VM with a
+  # virtual disk: its numbers say how the read paths compare there, not what an NVMe drive gives. The table
+  # goes to the job summary, every pass to the log (bench/out/wex_io.json)
+  linux-io-bench:
+    if: github.event_name == 'workflow_dispatch' && inputs.linux_io_bench
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
+      - name: Linux read paths (bench/wex_io.py)
+        run: |
+          python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --drop-caches
+          jq -r .table_markdown bench/out/wex_io.json >> "$GITHUB_STEP_SUMMARY"
+          echo "----- bench/out/wex_io.json"
+          cat bench/out/wex_io.json
