@@ -1,5 +1,5 @@
 # CPU checks of the repository: check_repo.py, the stdlib tests, the WEX1-3/WNR3 CPU check and the
-# WEX4 tests (scripts/check_all.sh). No GPU, no model weights, no secrets.
+# WEX4 tests (scripts/check_all.sh), and the Go reader on the conformance vectors. No GPU, no model weights, no secrets.
 name: CI
 
 on:
@@ -101,3 +101,17 @@ jobs:
           LD_PRELOAD=$(gcc -print-file-name=libasan.so)
           export LD_PRELOAD
           bash scripts/check_all.sh
+
+  # the second WEX4 reader (impl/go-wex4: Go, standard library only, written from the specifications and not
+  # from the reference code): gofmt, go vet, its tests, and every row of wex4/vectors/MANIFEST.tsv. It is not
+  # part of scripts/check_all.sh, so that Go is not needed for the repository's checks. The runner's own Go
+  # is used (the code needs Go 1.21 or newer and no module)
+  go-reader:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
+      - name: Go reader on the conformance vectors
+        run: bash impl/go-wex4/run.sh

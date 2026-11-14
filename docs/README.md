@@ -35,7 +35,7 @@ Summary of 2026-11-13; the page of record for what runs is [STATUS.md](../STATUS
 
 **...implement a reader or a writer.** One page per layer:
 
-- WEX4 container: [WEX4-SPEC.md](WEX4-SPEC.md), sections 3 to 6 (layout, header page, index, validation) and 17 (conformance, with the vectors in [wex4/vectors/](../wex4/vectors/README.md)). Reference code: `c/wex4.h` and the independent Python reader in [wex4/](../wex4/README.md).
+- WEX4 container: [WEX4-SPEC.md](WEX4-SPEC.md), sections 3 to 6 (layout, header page, index, validation) and 17 (conformance, with the vectors in [wex4/vectors/](../wex4/vectors/README.md)). Reference code: `c/wex4.h` and the independent Python reader in [wex4/](../wex4/README.md). A reader written from these pages alone, in Go, and its list of what they left open: [impl/go-wex4/](../impl/go-wex4/README.md), [SPEC-NOTES.md](../impl/go-wex4/SPEC-NOTES.md).
 - WNR3 record: [WNR3-SPEC.md](WNR3-SPEC.md), sections 2 to 4, after the errata at its top (where they differ, the errata and the code win).
 - WEX1 / WEX2 / WEX3 header and entry table, WNR2 record, WNM2 model, helper API: [WNR2-REFERENCE.md](WNR2-REFERENCE.md), sections 5 to 10. Reference code: `c/wex_format.h`, `c/wex_neural_rans.h`.
 

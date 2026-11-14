@@ -17,6 +17,7 @@ How the pieces of this repository fit together: which file reads or writes what,
 | WNR3 builder | `c/tools/build_nr3.py`, `c/tools/wex_nr3_tools.c` -> `wex_nr3_tools.dll` | trains a WNM2 model and writes WNR3 records (`--cz` for canonical zero) into a WEX3 container; checks every record on the CPU |
 | WEX4 reference and converter | `wex4/wex4.py`, `wex4/wex4_convert.py` | an independent Python reader and writer (written apart from `c/wex4.h`, so that the two can be compared), and `upgrade` / `downgrade` / `pack` |
 | WEX4 test library | `wex4/wex4_tools.c` -> `wex4_tools.dll` | `c/wex4.h` behind a C ABI for the Python tests, with the fast WNR3 CPU decoder and an in-process fuzzer |
+| Second WEX4 reader | `impl/go-wex4/` | a reader and verifier in Go (standard library only) written from the specification pages and not from the two readers above: header page, index, every hash, the RAW, WBP1 and WNR3 decoders. It gives the verdicts of the conformance vectors; no engine uses it |
 | Checks | `check_repo.py`, `scripts/`, `wex4/build_and_test.sh`, `wex4/vectors/` | the repository self-check, the CPU builds and tests, the conformance vectors |
 
 ## Write path

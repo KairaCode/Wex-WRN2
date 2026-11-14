@@ -7,6 +7,7 @@ A WEX file is untrusted input: it can be damaged, or built by someone who has re
 | Code | Untrusted files | Fixes |
 |---|---|---|
 | WEX4 4.0 readers: `c/wex4.h` (C) and `wex4/wex4.py` (Python reference); the checker `c/tools/wex4_verify.c`; the converter `wex4/wex4_convert.py` | yes: this is what they are written and fuzzed for ([WEX4-SPEC](docs/WEX4-SPEC.md), section 9) | yes |
+| The second WEX4 reader `impl/go-wex4/` (Go), with its WBP1 and WNR3 decoders | yes: it validates as [WEX4-SPEC](docs/WEX4-SPEC.md) section 6 asks and checks every hash. It is tested with the conformance vectors and with seeded mutations only, not with a coverage-guided fuzzer ([its README](impl/go-wex4/README.md), "Limits") | yes |
 | WNR3 record decoders (`c/wex_neural_rans.h`, `c/wex_cuda.cuh`), when reached through a WEX4 reader | yes: every stream carries a 23-bit hash, and the record is covered by its SHA-256 | yes |
 | WEX1, WEX2 and WEX3 readers (`c/wex_format.h`, `c/expert_store_wex.c`, `scripts/verify_wex1.py`) | **no.** These containers have no hashes, and WNR2 records accepted 1.8-1.9% of random bit flips without noticing. Open only files you built yourself | crashes are fixed as bugs |
 | `archive/`, `research/` | no: lab code, kept for the record | no |
@@ -39,6 +40,7 @@ From [WEX4-SPEC](docs/WEX4-SPEC.md), sections 8.4 and 9:
 ## Testing, and its gaps
 
 - `bash wex4/build_and_test.sh` runs 94 hand-made hostile files, mutation fuzzing in three modes in C and in Python, and a differential test in which the C and Python readers must agree on every verdict and content digest.
+- `bash impl/go-wex4/run.sh` (the `go-reader` job of CI) runs the Go reader on the conformance vectors and on 35,000 seeded mutations of nine valid files: bit flips with the hashes left alone, header and index bytes with the hashes recomputed, bytes of compressed records with the record hash recomputed.
 - `bash wex4/fuzz/run.sh [SECONDS]` runs three coverage-guided harnesses (libFuzzer with AddressSanitizer and UndefinedBehaviorSanitizer) on the C reader, the WNR3 decoders and `wex4_verify`, seeded with the conformance vectors ([wex4/fuzz/README.md](wex4/fuzz/README.md)). CI runs each for 60 seconds on every pull request; nothing runs them for hours on a schedule.
 - An adversarial review of the spec and the prototype was made on 2026-11-11: [wex4/review/REVIEW.md](wex4/review/REVIEW.md).
 - The guard pages that turn an out-of-bounds access into a crash during fuzzing exist only in the Windows build of `wex4/wex4_tools.c` (`VirtualAlloc`); elsewhere the fuzzer runs without them. On Linux, CI runs every CPU check, the fuzzer included, under AddressSanitizer and UndefinedBehaviorSanitizer (the `linux-sanitizers` job). No fuzzing runs for hours on a schedule.

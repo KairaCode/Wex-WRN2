@@ -49,12 +49,24 @@ Labels you may see on issues: **good first issue** (a few hours, little context)
 
 ## 4. A second, independent implementation
 
-- **What:** a WEX4 reader and verifier in another language (Rust, Go, C++, Zig…) written **from the
-  spec only**, not by porting `wex4.py`.
-- **Done when:** it gives the same verdict as the reference on every file in
-  [wex4/vectors](../wex4/vectors/README.md), and the same root for the valid ones. Every disagreement
-  is either a bug in the new reader or an ambiguity in the spec, and both are worth an issue.
-- **Optional:** the WNR3 decoder as well, checked byte for byte against the reference on the vectors.
+- **Done once, in Go:** [impl/go-wex4](../impl/go-wex4/README.md) is a reader and verifier written from
+  the specification pages only, with the WBP1 and the WNR3 decoder. It gives the manifest's verdict,
+  reject class and root on all 112 rows of [wex4/vectors](../wex4/vectors/README.md) (2026-11-14; the
+  `go-reader` job of CI runs it). Its [SPEC-NOTES.md](../impl/go-wex4/SPEC-NOTES.md) lists what the
+  pages left open and what the vectors do not exercise.
+- **Still wanted, a reader in another language** (Rust, C++, Zig…) written **from the spec only**, not
+  by porting `wex4.py` or the Go reader. Done when it gives the same verdict as the reference on every
+  file in [wex4/vectors](../wex4/vectors/README.md), and the same root for the valid ones. Every
+  disagreement is either a bug in the new reader or an ambiguity in the spec, and both are worth an
+  issue. Optional: the WNR3 decoder as well; the vectors alone do not prove it (they have no record in
+  ceil form), so use the two files of [impl/go-wex4/testdata](../impl/go-wex4/testdata/README.md) too.
+- **Still wanted, a writer from the spec only:** no writer exists outside the reference code. Done when
+  a conforming reader accepts its files and, with the same choices as the reference writer, the file
+  equals `valid/generic.wex4` byte for byte (WEX4-SPEC section 5: the index encoding is canonical).
+- **Still wanted, the notes turned into text and vectors:** each open reading of
+  [SPEC-NOTES.md](../impl/go-wex4/SPEC-NOTES.md) parts A to C as a sentence of the specification, and
+  a conformance vector for each gap of part D. A change of the specification or of the vectors goes
+  through an issue first.
 
 ## 5. Converters for more models (help wanted)
 
@@ -114,6 +126,10 @@ listed above as well.
   - a full ABBA set for it on DeepSeek V4.1;
   - tuning the two-drive split for Qwen3.8;
   - MTP together with MXFP4 experts.
+- **The specifications after the second reader:** the Go reader of `impl/go-wex4` found no wrong
+  verdict, and a list of sentences that can be read two ways and of cases the vectors do not exercise
+  ([SPEC-NOTES.md](../impl/go-wex4/SPEC-NOTES.md)). Writing them into WEX4-SPEC and WNR3-SPEC and adding
+  the vectors is not done *(open to you, section 4)*.
 - **A first tagged release** of the specifications (WEX4 4.0, WNR3 v1) with the conformance vectors, so
   other implementations can name the version they pass.
 

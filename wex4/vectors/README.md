@@ -41,4 +41,6 @@ One case is left out on purpose: a record that is neither EXPERT nor VALUE_EXACT
 
 `bash wex4/build_and_test.sh` (and `bash scripts/check_all.sh`) ends with a check of every row: the file hash, the C reader's verdict and class, the Python reader's verdict, the root, and the upgrade. The vectors are written by `wex4/test_wex4.py` itself, from the same files its tests build; after a change of the format, a maintainer runs `bash wex4/build_and_test.sh --write-vectors "$PWD/wex4/vectors"` and commits the new files with the specification change. A vector whose verdict changes is a format change.
 
+A third reader checks the same rows in CI: [impl/go-wex4/](../../impl/go-wex4/README.md), written in Go from the specification pages and not from the two readers above. `bash impl/go-wex4/run.sh` gives the manifest's verdict, class and root on all 112 rows (2026-11-14; it needs Go and is not part of `scripts/check_all.sh`). What the vectors do not exercise, found while it was written, is in part D of its [SPEC-NOTES.md](../../impl/go-wex4/SPEC-NOTES.md): no rANS-coded data with the byte 255, no WNR3 record in ceil form, no WBP1 record of 4 or 8 planes.
+
 Size: 102 files in this folder (the manifest has 112 rows: these and the 10 review files), 14,764,033 B; the invalid files are near copies of two valid files, so git packs the folder into about 0.75 MB.
