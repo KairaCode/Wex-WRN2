@@ -22,8 +22,8 @@ layout(std430, set = 0, binding = 5) buffer Errors { uint err[]; };             
 layout(push_constant) uniform Push { uint record; } pc;
 
 const uint PLAN_WORDS = 32u;
-const uint P_SCALE_OUT = 0u;      // [3] byte offset in outw of the scales of matrix m (multiple of 4)
-const uint P_WEIGHT_OUT = 3u;     // [3] byte offset in outw of the packed weights of matrix m (multiple of 4)
+const uint P_SCALE_OUT = 0u;      // [3] byte offset in outw of the scales of matrix m (multiple of 16)
+const uint P_WEIGHT_OUT = 3u;     // [3] byte offset in outw of the packed weights of matrix m (multiple of 16)
 const uint P_SCALE_COUNT = 6u;    // [3] scales of matrix m
 const uint P_SYMBOL_COUNT = 9u;   // [3] 4-bit weights of matrix m (a multiple of 32)
 const uint P_SCALE_CHUNK = 12u;   // Cs

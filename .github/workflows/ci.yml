@@ -102,8 +102,22 @@ jobs:
         run: bash wex4/build_and_test.sh --fuzz 10
       - name: WNR3 on Vulkan against the CPU reference, validation layer on
         run: WNR3_VK_VALIDATE=1 bash wex4/research/vulkan-decode/run.sh wex4/out/tiny_nr3_cz.wex4 wex4/out/synth.wex4
-      - name: Negative control (seven broken shaders must fail)
+      - name: Negative control (eleven broken shaders must fail)
         run: bash wex4/research/vulkan-decode/negative_control.sh wex4/out/tiny_nr3_cz.wex4 wex4/out/synth.wex4
+      # the records of synth.wex4 behind 5 GiB of blobs: the host program must find them at 64-bit offsets
+      - name: A file above 4 GiB
+        run: |
+          python3 -I wex4/research/vulkan-decode/big_file.py wex4/out/synth.wex4 "$RUNNER_TEMP/big.wex4"
+          WNR3_VK_SHADERS=wex4/research/vulkan-decode/out wex4/research/vulkan-decode/out/wnr3_vk decode "$RUNNER_TEMP/big.wex4"
+          rm -f "$RUNNER_TEMP/big.wex4"
+      # last, because it rebuilds out/wnr3_vk: the host program under AddressSanitizer and UndefinedBehaviorSanitizer
+      # (the Vulkan driver is not instrumented; leak detection is off, the driver keeps memory until exit)
+      - name: The same checks with the host program under the sanitizers
+        env:
+          WEX_CFLAGS: -g -fno-omit-frame-pointer -fsanitize=address,undefined -fno-sanitize-recover=undefined
+          ASAN_OPTIONS: detect_leaks=0:abort_on_error=1
+          UBSAN_OPTIONS: print_stacktrace=1
+        run: bash wex4/research/vulkan-decode/run.sh wex4/out/tiny_nr3_cz.wex4 wex4/out/synth.wex4
 
   # the same checks with every C file they build compiled under AddressSanitizer and UndefinedBehaviorSanitizer: an out-of-bounds
   # read or write, a use after free or undefined behaviour in a reader, a decoder or the in-process fuzzer stops

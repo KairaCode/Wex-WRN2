@@ -13,8 +13,11 @@
 # Usage: bash wex4/research/vulkan-decode/run.sh [FILE.wex4 ...]
 #   paths relative to the repository root, or absolute. Every WNR3 record of the extra files must decode (for
 #   example wex4/out/tiny_nr3_cz.wex4 and wex4/out/synth.wex4, which wex4/build_and_test.sh leaves behind);
-#   they are also the input of the mutation test.
-#   MUTATIONS = mutated copies per record (default 20). WNR3_VK_DEVICE, WNR3_VK_VALIDATE: see wnr3_vk.c.
+#   they are also the input of the mutation test. A file is read record by record, so its size is not a limit.
+#   MUTATIONS = mutated copies per record (default 20; 0 = no mutation test). WNR3_VK_EVERY = N takes one
+#   WNR3 record in N of each file. WNR3_VK_BATCH_BYTES, WNR3_VK_DEVICE, WNR3_VK_VALIDATE: see wnr3_vk.c.
+#   On a container of a real model the CPU reference is the slow part (every record and every mutated copy
+#   is decoded by it too): start with MUTATIONS=0, or with WNR3_VK_EVERY.
 #   WNR3_VK_SHADER = another shader source (negative_control.sh uses it). VULKAN_LIB = the loader's library name.
 # Last line on success: vulkan-decode: all checks passed
 set -eu
@@ -37,10 +40,24 @@ export WNR3_VK_SHADERS="$OUT"
 X="$OUT/wnr3_vk"
 "$X" selftest
 "$X" decode "$V/valid/tiny2-cz-upgraded.wex4" "$@"
+# the batch cut: the same records again with a batch limit of 256 KiB, which cuts a file into several
+# batches (files above 16 MiB are left out: a second pass over a real container would only cost time)
+small() {
+  WNR3_VK_BATCH_BYTES=262144 "$X" decode "$1" > "$OUT/small.log" || { cat "$OUT/small.log"; exit 1; }
+  grep -E 'WNR3 records' "$OUT/small.log" | sed 's/^/batch limit 256 KiB: /'
+}
+small "$V/valid/tiny2-cz-upgraded.wex4"
+for f in "$@"; do
+  if [ "$(wc -c < "$f")" -le 16777216 ]; then small "$f"; fi
+done
 # the three vectors whose WNR3 data is refused by a reader that decodes (WEX4_E_DATA); the first two are
 # refused by the host checks, the third by the device
 "$X" reject "$V/invalid/canonical-zero-wnr3-data-without-the-value-exact-flag.wex4" \
             "$V/invalid/wnr3-record-owner-differs-from-the-owner-in-its-data.wex4" \
             "$V/invalid/wnr3-stream-damaged-record-hash-fixed.wex4"
-"$X" mutate "${MUTATIONS:-20}" 20261114 "$V/valid/tiny2-cz-upgraded.wex4" "$@"
+if [ "${MUTATIONS:-20}" != 0 ]; then
+  "$X" mutate "${MUTATIONS:-20}" 20261114 "$V/valid/tiny2-cz-upgraded.wex4" "$@"
+else
+  echo "mutation test left out (MUTATIONS=0)"
+fi
 echo "vulkan-decode: all checks passed"
