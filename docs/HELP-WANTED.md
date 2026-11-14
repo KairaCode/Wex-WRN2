@@ -59,14 +59,19 @@ Labels you may see on issues: **good first issue** (a few hours, little context)
   `fixtures/make_synth_mxfp4.py` does.
 - **Done when:** convert → verify → downgrade round-trips byte for byte on the fixture.
 
-## 6. GPU decode beyond CUDA (help wanted, larger)
+## 6. Port the WNR3 GPU decode to Vulkan (help wanted, priority)
 
 - **Today:** WNR3 records are decoded on the GPU only through CUDA (`c/tools/wex_cuda_bridge.cu`). On
-  Intel and AMD GPUs the CPU decoder runs.
-- **What:** a Vulkan compute (or HIP, or Metal) version of the WNR3 decode into device memory.
+  Intel (Arc) and AMD GPUs the CPU decoder runs instead, so those cards cannot decode compressed experts
+  straight into VRAM.
+- **What:** a Vulkan compute version of the WNR3 decode into device memory, following the CUDA kernels
+  (one record = many independent rANS streams, then the canonical-zero and scale handling of
+  [WNR3-SPEC](WNR3-SPEC.md)). colibri already has a Vulkan backend to hook it into.
 - **Done when:** its output is byte-identical to the CPU reference on every record of a real container,
-  and there is a speed number against the CPU path on the same machine.
-- **Start with:** a design note in an issue, including how the rANS state is split across threads.
+  there is a speed number against the CPU path on the same machine, and it builds without the CUDA
+  toolkit.
+- **Start with:** a design note in an issue (how streams map to workgroups, where the model tables live,
+  how records are batched). HIP and Metal ports are welcome after it, on the same tests.
 
 ## 7. I/O on Linux and macOS (help wanted)
 
@@ -82,6 +87,29 @@ Labels you may see on issues: **good first issue** (a few hours, little context)
   ratio and decode speed with WNR3 on the same records. Honest negative results are welcome too.
 - **Ideas for a next codec:** see [NEXT-FORMAT-SPEC](NEXT-FORMAT-SPEC.md) and the research reports in
   [docs/reports](reports/). Any proposal has to stay lossless (bit-identical weights).
+
+## Roadmap: what is still open on the maintainer's side
+
+So you can see where things are going and avoid duplicating work. Items marked *(open to you)* are
+listed above as well.
+
+- **Integration into colibri.** The format and its readers are being upstreamed into
+  [colibri](https://github.com/JustVugg/colibri) `dev` as a series of small pull requests: Qwen3.8 MXFP4
+  experts first (#2822-#2825 are open), then the WEX4 container, the WNR3 codec and its GPU decode, and
+  the I/O switches. Reviewing or testing those PRs on your hardware helps directly.
+- **WNR3 decode on Vulkan** *(open to you, section 6)*.
+- **ARM:** a CPU decoder path without AVX2 (reference only first, then NEON), and an ARM CI job
+  *(open to you, section 3)*.
+- **Linux I/O in the engine:** the fast read paths were built and measured on Windows; Linux needs its
+  own measurements and tuning *(open to you, section 7)*.
+- **Measurements not done yet** (they need the full models, so they stay with the maintainer, see
+  [STATUS.md](../STATUS.md)):
+  - the SHA-256 of each record at its first read on Qwen3.8;
+  - a full ABBA set for it on DeepSeek V4.1;
+  - tuning the two-drive split for Qwen3.8;
+  - MTP together with MXFP4 experts.
+- **A first tagged release** of the specifications (WEX4 4.0, WNR3 v1) with the conformance vectors, so
+  other implementations can name the version they pass.
 
 ## Not in scope here
 
