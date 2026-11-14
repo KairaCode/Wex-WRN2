@@ -2,8 +2,8 @@
  * Derived from colibri c/deepseek_v4.c (https://github.com/JustVugg/colibri), Copyright 2026 Vincenzo Fornaro.
  * Modified by Ludovico Zanichelli, 2026. */
 /* REFERENCE EXCERPT, not compilable on its own.
- * Source: KAIRA src/colibri/c/deepseek_v4.c at commit 88ddb07 (2026-11-07), as committed.
- * Line numbers are of that commit; the live tree moves them. Code between ranges is omitted.
+ * Source: the maintainer's engine tree, src/colibri/c/deepseek_v4.c as of 2026-11-07, as committed.
+ * Line numbers are of that version; the live tree moves them. Code between ranges is omitted.
  * WEX store hooks for mode 0 (host slab): container open, WNR2 guard, mirrors, drive pick, record read.
  * All of it sits in the expert-store unit (COLI_V4_UNIT_EXPERT_STORE_HOT_ROWS16), Windows only.
  * Enough on its own for WEX1/WEX2/WEX3/WNR2 decode into the RAM slab (GPU-direct off).

@@ -5,9 +5,9 @@ rem coli_cuda_dsv4_dg.dll (the DeepGEMM backend with the WEX direct-upload expor
 rem The backend source is engine code and is not in this repo, so the two source locations are required:
 rem   COLIBRI_C      the engine's c\ folder, the one that holds backend_cuda_dsv4.cu and dsv4.def
 rem   DEEPGEMM_ROOT  a DeepGEMM checkout (deep_gemm\include, cutlass\include, third-party\cutlass\include)
-rem   CUDA_PATH      the CUDA toolkit root (the CUDA installer sets it); KAIRA builds with v13.4
+rem   CUDA_PATH      the CUDA toolkit root (the CUDA installer sets it); the maintainer builds with v13.4
 rem usage: integration\backend\build_backend_dg.cmd [OUT_DIR]      (default: [repo]\out, git-ignored)
-rem Override (environment): VCVARS (vcvars64.bat; found with vswhere when unset). The -gencode target is sm_120a (RTX 50xx), as in KAIRA.
+rem Override (environment): VCVARS (vcvars64.bat; found with vswhere when unset). The -gencode target is sm_120a (RTX 50xx), as in the maintainer's build.
 setlocal
 if not defined COLIBRI_C (echo set COLIBRI_C to the engine c\ folder that holds backend_cuda_dsv4.cu and dsv4.def & exit /b 1)
 if not exist "%COLIBRI_C%\backend_cuda_dsv4.cu" (echo not found: "%COLIBRI_C%\backend_cuda_dsv4.cu" & exit /b 1)

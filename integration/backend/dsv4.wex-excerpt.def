@@ -2,8 +2,8 @@
 ; Derived from colibri c/dsv4.def (https://github.com/JustVugg/colibri), Copyright 2026 Vincenzo Fornaro.
 ; Modified by Ludovico Zanichelli, 2026.
 ; REFERENCE EXCERPT, not compilable on its own.
-; Source: KAIRA src/colibri/c/dsv4.def at commit 88ddb07 (2026-11-07), as committed.
-; Line numbers are of that commit; the live tree moves them. Code between ranges is omitted.
+; Source: the maintainer's engine tree, src/colibri/c/dsv4.def as of 2026-11-07, as committed.
+; Line numbers are of that version; the live tree moves them. Code between ranges is omitted.
 ; Export list of coli_cuda_dsv4*.dll (nvcc -Xlinker /DEF:dsv4.def): the two WEX lines plus stream_drain.
 
 ; ==== dsv4.def:55-64  dsv4_cuda_tensor_alloc_fp4, dsv4_cuda_tensor_fp4_buffers (WEX), dsv4_cuda_stream_drain (upstream) ====

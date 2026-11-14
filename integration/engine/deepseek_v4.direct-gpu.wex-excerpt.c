@@ -2,11 +2,11 @@
  * Derived from colibri c/deepseek_v4.c (https://github.com/JustVugg/colibri), Copyright 2026 Vincenzo Fornaro.
  * Modified by Ludovico Zanichelli, 2026. */
 /* REFERENCE EXCERPT, not compilable on its own.
- * Source: KAIRA src/colibri/c/deepseek_v4.c at commit 88ddb07 (2026-11-07), as committed.
- * Line numbers are of that commit; the live tree moves them. Code between ranges is omitted.
+ * Source: the maintainer's engine tree, src/colibri/c/deepseek_v4.c as of 2026-11-07, as committed.
+ * Line numbers are of that version; the live tree moves them. Code between ranges is omitted.
  * GPU unit (COLI_V4_UNIT_GPU) for GPU-direct: mirror-cache busy/epoch/pool extensions, the fill producer,
  * v4_wex_fill_mirror, the attach/prefetch entry points, and their three call sites.
- * Uses KAIRA-only helpers that upstream colibri lacks: v4_vram_first_enabled, coli_v4_gpu_expert_peek_routed,
+ * Uses helpers of the maintainer's tree that upstream colibri lacks: v4_vram_first_enabled, coli_v4_gpu_expert_peek_routed,
  * coli_v4_expert_store_frequency, coli_v4_gpu_mirror_bitmap, v4_cuda_priority_mark, v4ap_* (attach profiler).
  */
 

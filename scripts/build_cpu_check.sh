@@ -8,11 +8,11 @@
 #   2. c/tools/wex_nr3_tools.c -> wex_nr3_tools.dll and c/tests/fake_wex_cuda.c -> fake_wex_cuda.dll (compile only)
 #   3. c/tools/build_nr3.py smoke: a WEX1 of fixtures/v41-tiny (c/tools/repack_v4_wex.py), then WNR3-CZ bins and a
 #      WNR3-CZ container from it, every record CPU-verified by the builder
-#   4. with a KAIRA src/colibri/c tree as $1: c/tests/test_expert_store_wex.c too (it needs expert_store_registry.c
+#   4. with an engine c/ tree as $1: c/tests/test_expert_store_wex.c too (it needs expert_store_registry.c
 #      and the engine headers, which are not in this repo)
 # c/ has the colibri c/ layout, so the sources build where they are; everything built goes to out/cpu-check.
 # Windows: MSYS2 MINGW64 or UCRT64 gcc on PATH, python 3 (stdlib only). Linux: gcc and PYTHON=python3.
-# Usage: bash scripts/build_cpu_check.sh [KAIRA_C]
+# Usage: bash scripts/build_cpu_check.sh [ENGINE_C]
 set -eu
 set -o pipefail   # the builder and the store test are piped into tail: their exit status must count
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
@@ -43,7 +43,7 @@ P=$("$PY" -I -c "print(','.join(f'{l}:{e}' for l in range(6) for e in range(8)))
 "$PY" -I "$C/tools/build_nr3.py" ./wex_nr3_tools.dll tiny.wex bins tiny_cz.bin --experts "$P" --train "$P" --cz | tail -2
 "$PY" -I "$C/tools/build_nr3.py" ./wex_nr3_tools.dll tiny.wex container tiny_cz.wex --layers 0,1,2,3,4,5 --train "$P" --cz | tail -2
 if [ $# -ge 1 ]; then
-  # the engine headers come from the KAIRA tree: "x.h" through -I $K, a test's "../x.h" through -I $K/tests
+  # the engine headers come from that engine tree: "x.h" through -I $K, a test's "../x.h" through -I $K/tests
   F="-D_FILE_OFFSET_BITS=64 $W -fopenmp"
   gcc $F -I "$K" -c "$K/expert_store_registry.c" -o r.o
   gcc $F -I "$K" -c "$C/expert_store_wex.c" -o w.o

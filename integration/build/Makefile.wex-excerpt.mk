@@ -2,8 +2,8 @@
 # Derived from colibri c/Makefile (https://github.com/JustVugg/colibri), Copyright 2026 Vincenzo Fornaro.
 # Modified by Ludovico Zanichelli, 2026.
 # REFERENCE EXCERPT, not compilable on its own.
-# Source: KAIRA src/colibri/c/Makefile at commit 88ddb07 (2026-11-07), as committed.
-# Line numbers are of that commit; the live tree moves them. Code between ranges is omitted.
+# Source: the maintainer's engine tree, src/colibri/c/Makefile as of 2026-11-07, as committed.
+# Line numbers are of that version; the live tree moves them. Code between ranges is omitted.
 # Top-level Makefile rules for the WEX unit tests and for wex_decode.o in the test/segment builds.
 
 # ==== Makefile:2447-2452  segment build links wex_decode.o ====
@@ -81,7 +81,7 @@ tests/test_deepseek_v4$(EXE): tests/test_deepseek_v4.c sse41_kernels.h deepseek_
 	$(CC) $(CFLAGS) -DCOLI_V4_TEST_HOOKS $< $(V4_TEST_LINK_OBJS) \
 		-o $@ -pthread $(LDFLAGS)
 
-# ==== Makefile:2655-2657  KAIRA-only test tests/test_v4_gpu_priority (WEX prefetch pool test + KAIRA GPU hooks) ====
+# ==== Makefile:2655-2657  test only in the maintainer's tree: tests/test_v4_gpu_priority (WEX prefetch pool test + its GPU hooks) ====
 tests/test_v4_gpu_priority$(EXE): tests/test_v4_gpu_priority.c tests/test_deepseek_v4$(EXE) | v4-test-objs
 	$(CC) $(CFLAGS) -DCOLI_V4_TEST_HOOKS $< $(V4_TEST_LINK_OBJS) \
 		-o $@ -pthread $(LDFLAGS)
@@ -97,7 +97,7 @@ AUTODEP_OBJS      = backend_vulkan.o vk_tier.o backend_loader.o backend_xdna.o q
 	qwen36_qpack.o qpack.o tests/qwen36_qpack.o tests/qpack_qwen36.o tests/qpack.o \
 
 
-# ==== Makefile:2667-2676 at commit cade51d (branch wnr3-20261110; the ranges above are 88ddb07)  KAIRA-only WNR3 engine-store test tests/test_v4_wex_nr3 (repo copy: c/tests/test_v4_wex_nr3.c) and its CPU stand-in helper tests/fake_wex_cuda.dll (c/tests/fake_wex_cuda.c) ====
+# ==== Makefile:2667-2676 as of 2026-11-10 on the WNR3 branch (the ranges above are of 2026-11-07)  maintainer-tree-only WNR3 engine-store test tests/test_v4_wex_nr3 (repo copy: c/tests/test_v4_wex_nr3.c) and its CPU stand-in helper tests/fake_wex_cuda.dll (c/tests/fake_wex_cuda.c) ====
 # WNR3 records on the engine's own expert store (Windows): a CPU stand-in for
 # kaira_wex_cuda.dll is built next to the test, which loads it by path.
 ifneq ($(IS_WIN),)

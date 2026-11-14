@@ -2,8 +2,8 @@
 # Derived from colibri c/Makefile.deepseek-v4 (https://github.com/JustVugg/colibri), Copyright 2026 Vincenzo Fornaro.
 # Modified by Ludovico Zanichelli, 2026.
 # REFERENCE EXCERPT, not compilable on its own.
-# Source: KAIRA src/colibri/c/Makefile.deepseek-v4 at commit 88ddb07 (2026-11-07), as committed.
-# Line numbers are of that commit; the live tree moves them. Code between ranges is omitted.
+# Source: the maintainer's engine tree, src/colibri/c/Makefile.deepseek-v4 as of 2026-11-07, as committed.
+# Line numbers are of that version; the live tree moves them. Code between ranges is omitted.
 # Engine build rules that link the WEX objects into deepseek_v4.exe (Windows only).
 
 # ==== Makefile.deepseek-v4:57-62  Windows block: V4_WIN_EXTRA_OBJS gains expert_store_wex.o wex_decode.o ====

@@ -7,7 +7,7 @@
  * With -DWEX4_FAST_NR3 -I wex4/research/fast-cpu-decode (and -O3 -march=haswell -fopenmp)
  * wex4_decode_record decodes WNR3 records with wex_fast_decode instead of the reference. */
 #ifdef WEX4_FAST_NR3
-/* c/wex4.h is KAIRA's file and always names the reference decoder (WEX4_NR3_DECODE = wex_nr2_decode),
+/* c/wex4.h is the engine-side file and always names the reference decoder (WEX4_NR3_DECODE = wex_nr2_decode),
  * so the fast one is put under that name here. wex_fast_decode.h is included first: its own fallback
  * call to wex_nr2_decode stays the reference. build_and_test.sh checks that the call site changed. */
 #include "wex_fast_decode.h"

@@ -4,6 +4,10 @@ Format-level changes only, newest first: container versions, record codecs, flag
 
 Every commit id on this page is KAIRA's, where the code lives (`c/` mirrors it). The history of this repository starts on 2026-11-12, when the earlier work (from 2026-11-09) was gathered into one commit; an entry is identified by its date. There are no release tags yet. Specification versions: WEX4 4.0 ([docs/WEX4-SPEC.md](docs/WEX4-SPEC.md)) and WNR3 v1 ([docs/WNR3-SPEC.md](docs/WNR3-SPEC.md)); WEX1 to WEX3 and WNR2 are described in [docs/WNR2-REFERENCE.md](docs/WNR2-REFERENCE.md). The entries before 2026-11-09 come from the timeline and measurement sections of [docs/reports/wnr2-history-20261110.md](docs/reports/wnr2-history-20261110.md) and were not re-verified.
 
+## 2026-11-14
+
+- **2026-11-14** Tooling, no format byte changed: `kaira-sync.tsv` is now `sync-map.tsv`, its line 1 `# source_commit <sha> <date>`; `check_repo.py` compares `c/` with another tree through `--source <TREE>` (the old `--kaira` still works) and no longer requires `STATUS.md` and `integration/README.md` to name the recorded commit. The three loader patches in `integration/` are now named `engine-*.patch` (same bytes, same suffixes). Files under `c/` may be changed by pull requests like any other code.
+
 ## 2026-11-13
 
 - **2026-11-13** Licence, no format byte changed: the repository is under the Apache License 2.0 (`LICENSE`, `NOTICE`, `THIRD_PARTY_NOTICES.md`). Source files outside `research/` start with an SPDX header; the files derived from colibri (listed in `NOTICE`) name their source and their modification; `check_repo.py` gains the `licence` check. The headers of the files under `c/` (37 after the sync below) still have to reach KAIRA `src/colibri/c`.

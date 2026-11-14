@@ -1,6 +1,6 @@
 # archive/
 
-**Archived, kept for the record.** The lab code of the WNR2 period, copied from the KAIRA lab folder:
+**Archived, kept for the record.** The lab code of the WNR2 period, copied from the maintainer's lab folder:
 
 - [`nr2/`](nr2/README.md): the WNR2 GPU trainer and encoder, the container builders, the checkers and their tests;
 - [`bench/`](bench/README.md): the decode, rechunk, host-to-device and stream-priority benchmarks of 2026-11-05.

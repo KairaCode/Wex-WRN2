@@ -14,11 +14,11 @@ State of the body: 2026-11-09. Sections 1-11 quote engine code from KAIRA 88ddb0
 > | 2026-11-11 | **Striped reads**: one record read from two drives at once, cut on a 4096-byte page in the proportion of `COLI_WEX_WEIGHTS` | qwen38: the header comment of `c/qwen38_wex.h`. DeepSeek: the code is in KAIRA `deepseek_v4.c` only; its test is `c/tests/test_v4_wex_nr3.c` | `V4_WEX_STRIPE=1` (DeepSeek demand batches) and `COLI_WEX_STRIPE=1` (qwen38, a lone decode miss), both off by default. Measured on V4.1: -8.72% ± 2.66% (ABBA, 3 prompts, identical tokens), so it stays off ([STATUS.md](../../STATUS.md), "In KAIRA master, switched off or not measured") |
 > | 2026-11-11 | **Helper feature bit 32** (`WEX_CUDA_FEATURE_BATCH_HOST`): `wex_cuda_decode_batch_to_host`, a batch of WNR2 or WNR3 records decoded on the GPU into host buffers | `c/tools/wex_cuda_bridge.cu`, `c/wex_decode.h` | The bridge now returns features 63. The qwen38 store uses bit 32 for a load wave of WNR3 records. Table in 4.3 |
 >
-> **Which commit each file in `integration/` shows.** None of them shows KAIRA master as it is today. The files kept identical to KAIRA master are the 37 under `c/` (`kaira-sync.tsv`; `python -I check_repo.py --kaira <KAIRA>` compares them).
+> **Which commit each file in `integration/` shows.** None of them shows KAIRA master as it is today. The files kept identical to KAIRA master are the 37 under `c/` (`sync-map.tsv`; `python -I check_repo.py --source <TREE>` compares them).
 >
 > - 14 excerpts quote KAIRA **88ddb07** (2026-11-07): `engine/deepseek_v4.mode0-store`, `.direct-store` and `.direct-gpu`, `engine/deepseek_v4_internal`, the four in `backend/`, the two `build/*.mk` (`Makefile.wex-excerpt.mk` also has one range from cade51d) and the four in `host/`. Sections 1-11 use their line numbers.
 > - `engine/deepseek_v4.wnr3.wex-excerpt.c` quotes KAIRA **cade51d** (2026-11-10): the WNR3 and canonical-zero hooks, on top of the three engine excerpts.
-> - `kaira-wex4-loader-75932c1.patch`, `kaira-wex4-first-read-4ba5568.patch` and `kaira-q38-wex4-loader-de17198.patch` are the KAIRA commits of those names (2026-11-11). Their paths are KAIRA's (`src/colibri/c/...`): they are the reference for a WEX4 loader and do not apply to stock colibri.
+> - `engine-wex4-loader-75932c1.patch`, `engine-wex4-first-read-4ba5568.patch` and `engine-q38-wex4-loader-de17198.patch` are the KAIRA commits of those names (2026-11-11). Their paths are KAIRA's (`src/colibri/c/...`): they are the reference for a WEX4 loader and do not apply to stock colibri.
 > - `upstream-561966ec-levelA.patch` is level A (WEX1 and WNR2, section 5.1) for stock colibri 561966ec, taken from 88ddb07 and verified on 2026-11-08 with the `c/` files of that date. It has not been rebuilt with today's `c/` files. No upstream patch exists for WNR3, WEX4 or Qwen3.8.
 > - Shown by no file here: the batched decode of cfb7ea0 (it is in `research/v41-w2-20261109/laneW-w2.patch`), striped reads, and the other engine changes of 2026-11-11.
 
@@ -133,7 +133,7 @@ colibri keeps its C sources in one folder (`c/` upstream, `src/colibri/c` in KAI
 
 | Repo path | Goes to (colibri `c/`) | Notes |
 |---|---|---|
-| `c/wex_*.h`, `c/wex_decode.c`, `c/wex_cuda.cuh`, `c/expert_store_wex.*` | `c/` | 8 files. Like every file under `c/` they are byte-identical to KAIRA master at the commit recorded in `kaira-sync.tsv` (they were at 88ddb07 when sections 1-11 were written and have gained WNR3 since) |
+| `c/wex_*.h`, `c/wex_decode.c`, `c/wex_cuda.cuh`, `c/expert_store_wex.*` | `c/` | 8 files. Like every file under `c/` they are byte-identical to KAIRA master at the commit recorded in `sync-map.tsv` (they were at 88ddb07 when sections 1-11 were written and have gained WNR3 since) |
 | `c/wex4.h` | `c/` | the WEX4 reader, needed only to open WEX4 containers; includes `wex_format.h` |
 | `c/qwen38_wex.h` | `c/`, with a qwen38 engine that has KAIRA's MXFP4 code | the qwen38 store; includes `wex_format.h`, `wex_decode.h`, `wex_decode.c` and `wex4.h` |
 | `c/tools/build_nr3.py`, `c/tools/wex_nr3_tools.c`, `c/tools/repack_q38_mxfp4_wex.py`, `c/tools/make_qwen38_tiny_mxfp4.py` | `c/tools/`, or run them from the repo | WNR3 builder and its CPU encoder DLL; Qwen3.8 repacker and tiny-fixture maker |
@@ -404,8 +404,8 @@ Excerpt: `integration/engine/deepseek_v4.direct-gpu.wex-excerpt.c`.
 | `COLI_WEX_RAM_CACHE_GB` | 0 | RAM cache of compressed codec 3/4 records; needs `COLI_WEX_GPU_DIRECT>=1` | `v4_wex_crc` |
 | `COLI_WEX_RAM_CACHE_PIN` | on | `0` = do not page-lock the arena | `v4_wex_crc` |
 | `COLI_WEX_RAM_CACHE_VERIFY` | 0 | 1 = checksum on fill and on every hit (diagnostic) | `v4_wex_crc` |
-| `COLI_WEX_ROOT` | unset | WEX4 only: 64 hex digits of the expected root (the SHA-256 of the header page). A container with another root is refused with `WEX4 root ... is not the pinned COLI_WEX_ROOT`. Not in the 88ddb07 excerpts | KAIRA 75932c1 `v4_wex4_load_manifest` (`integration/kaira-wex4-loader-75932c1.patch`); `c/qwen38_wex.h` |
-| `COLI_WEX_VERIFY` | on when `COLI_WEX_ROOT` is set, else off | WEX4 only, DeepSeek engine: `1` = the SHA-256 of each record is checked the first time the process reads it, and a record that fails is refused and served from the safetensors; `0` = off. Not in the 88ddb07 excerpts | KAIRA 4ba5568 (`integration/kaira-wex4-first-read-4ba5568.patch`) |
+| `COLI_WEX_ROOT` | unset | WEX4 only: 64 hex digits of the expected root (the SHA-256 of the header page). A container with another root is refused with `WEX4 root ... is not the pinned COLI_WEX_ROOT`. Not in the 88ddb07 excerpts | KAIRA 75932c1 `v4_wex4_load_manifest` (`integration/engine-wex4-loader-75932c1.patch`); `c/qwen38_wex.h` |
+| `COLI_WEX_VERIFY` | on when `COLI_WEX_ROOT` is set, else off | WEX4 only, DeepSeek engine: `1` = the SHA-256 of each record is checked the first time the process reads it, and a record that fails is refused and served from the safetensors; `0` = off. Not in the 88ddb07 excerpts | KAIRA 4ba5568 (`integration/engine-wex4-first-read-4ba5568.patch`) |
 | `V4_WEX_STRIPE` (DeepSeek), `COLI_WEX_STRIPE` (qwen38) | 0 | 1 = with a replica, a record is read from two drives at once (the box at the top of this guide). In no excerpt or patch of `integration/` | KAIRA `deepseek_v4.c` (not in this repo); `c/qwen38_wex.h` |
 | `COLI_EXPERT_STORE` | `auto` | `wex` is the registry alias. With an engine it is the same as `auto` (section 5.6). | registry |
 | `DSV4_CUDA_STREAM_PRIORITY` | 0 | 1 = inference streams at top priority, so helper kernels yield (trims tails only) | backend |

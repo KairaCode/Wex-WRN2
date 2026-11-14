@@ -24,7 +24,7 @@ W="-O2 -Wall -Wextra -Wno-unused-parameter -Wno-unused-function"
 gcc $W $SO -I "$ROOT/c" "$ROOT/wex4/wex4_tools.c" -o "$S/wex4_tools_ref.dll"
 F="-O3 -march=haswell -fopenmp -DWEX4_FAST_NR3"
 gcc $W $F $STATIC_SO -I "$ROOT/c" -I "$ROOT/wex4/research/fast-cpu-decode" "$ROOT/wex4/wex4_tools.c" -o "$S/wex4_tools.dll"
-# c/wex4.h comes from KAIRA and can change in a sync: prove that the two DLLs really hold two decoders
+# c/wex4.h is the engine-side file and can change with the engine: prove that the two DLLs really hold two decoders
 # (a sync once dropped the hook, and the fast-versus-reference tests compared the reference with itself)
 site() { gcc $1 -E -I "$ROOT/c" -I "$ROOT/wex4/research/fast-cpu-decode" "$ROOT/wex4/wex4_tools.c" | grep -c "return $2(&view, &layout, model, scales, weights)" || true; }
 if [ "$(site "$F" wex_fast_decode)" != 1 ] || [ "$(site "" wex_nr2_decode)" != 1 ]; then

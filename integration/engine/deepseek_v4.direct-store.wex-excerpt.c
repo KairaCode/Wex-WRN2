@@ -2,8 +2,8 @@
  * Derived from colibri c/deepseek_v4.c (https://github.com/JustVugg/colibri), Copyright 2026 Vincenzo Fornaro.
  * Modified by Ludovico Zanichelli, 2026. */
 /* REFERENCE EXCERPT, not compilable on its own.
- * Source: KAIRA src/colibri/c/deepseek_v4.c at commit 88ddb07 (2026-11-07), as committed.
- * Line numbers are of that commit; the live tree moves them. Code between ranges is omitted.
+ * Source: the maintainer's engine tree, src/colibri/c/deepseek_v4.c as of 2026-11-07, as committed.
+ * Line numbers are of that version; the live tree moves them. Code between ranges is omitted.
  * Store side of GPU-direct (COLI_WEX_GPU_DIRECT=1/2) and the compressed-record RAM cache
  * (COLI_WEX_RAM_CACHE_GB). Same unit as deepseek_v4.mode0-store.wex-excerpt.c (level A); needs it.
  */

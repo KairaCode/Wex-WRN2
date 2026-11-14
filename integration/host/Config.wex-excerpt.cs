@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 Ludovico Zanichelli
 // REFERENCE EXCERPT, not compilable on its own.
-// Source: KAIRA src/host/Config.cs at commit 88ddb07 (2026-11-07), as committed.
-// Line numbers are of that commit; the live tree moves them. Code between ranges is omitted.
+// Source: the maintainer's application tree, src/host/Config.cs as of 2026-11-07, as committed.
+// Line numbers are of that version; the live tree moves them. Code between ranges is omitted.
 // One value is not verbatim: the path of COLI_SETUP_HOME is shortened to <HOME>\...\colibri-state.
-// KAIRA host (C#, outside colibri): profile defaults. COLI_WEX_PATH here is STALE (deleted V4-0731 container).
+// Application host (C#, outside colibri): profile defaults. COLI_WEX_PATH here is STALE (deleted V4-0731 container).
 
 // ==== Config.cs:193-215  ColibriConfig.MirrorDir and DefaultEnv (COLI_EXPERT_STORE=wex, COLI_WEX_PATH, COLI_DISK_WEIGHTS) ====
     [JsonPropertyName("model_dir")] public string? ModelDir { get; set; } = @"C:\models\DeepSeek-V4-Flash-0731";

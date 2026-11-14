@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 Ludovico Zanichelli
 # Build test_wex_planned.exe: the engine's HOT expert store (COLI_V4_TEST_HOOKS) reading a WEX container.
-# For a KAIRA-style colibri c/ tree (88ddb07) with the repo's c/ copied over it (guide section 2).
+# For a colibri c/ tree laid out like the maintainer's (as of 2026-11-07) with the repo's c/ copied over it (guide section 2).
 # Run it in an MSYS2 UCRT64 login shell; from Git Bash gcc fails with "Cannot create temporary file in C:\WINDOWS\".
 #   MSYSTEM=UCRT64 C:/msys64/usr/bin/bash.exe -lc "sh <repo>/integration/build/build_test_wex_planned.sh <colibri c> [OUT_DIR]"
 # Then: OUT_DIR/test_wex_planned.exe MODEL_DIR sample-vN.wex [--expect-fallback|--expect-cuda]

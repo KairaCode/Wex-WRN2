@@ -3,7 +3,7 @@
 # Copyright 2026 Ludovico Zanichelli
 """Repository self-check. Python 3 standard library only.
 
-    python -I check_repo.py [--kaira <KAIRA checkout> [--ref master]] [--self-test]
+    python -I check_repo.py [--source <TREE> [--ref master]] [--self-test]
 
 One line per check, details indented below it; exit code 1 when links, mirror, licence or a strict
 privacy pattern fail. Tracked files only: run it after `git add`.
@@ -11,14 +11,14 @@ privacy pattern fail. Tracked files only: run it after `git add`.
            a tracked path, and its #anchor, when it points into a Markdown page, to a heading of that
            page (GitHub's slugs) or an <a id/name>. Links inside research/<run>/ folders are frozen:
            counted and listed, never a failure.
-  mirror   every row of kaira-sync.tsv is `c/<path><TAB>src/colibri/c/<path>` of a tracked file and
-           every tracked file under c/ has a row; line 1 of STATUS.md and the text above the first
-           section of integration/README.md name the recorded sync (7 hex digits). With --kaira a
-           KAIRA file under src/colibri/c whose name looks like format code and that has no row is
-           listed (a warning: a new file to mirror?), and every row has the git blob id of
-           <ref>:<KAIRA path> (the file bytes, no filter applied), and line 1 names a KAIRA commit
-           in which the mirrored files are the ones of <ref>. Until KAIRA carries the licence header
-           too, a file equal to KAIRA's once that header is removed counts as identical (and is counted).
+  mirror   every row of sync-map.tsv is `c/<path><TAB>src/colibri/c/<path>` of a tracked file and
+           every tracked file under c/ has a row. With --source TREE (maintainer only: a git checkout
+           of an application tree that carries the same engine files under src/colibri/c) a file
+           there whose name looks like format code and that has no row is listed (a warning: a new
+           file to sync?), every row has the git blob id of <ref>:<tree path> (the file bytes, no
+           filter applied), and line 1 names a commit of that tree in which the synced files are the
+           ones of <ref>. A file equal to the tree's once this repository's licence header is
+           removed counts as identical (and is counted).
   licence  LICENSE and NOTICE are tracked, and every source file outside research/ (c/ included)
            names its licence with `SPDX-License-Identifier:` in its first 5 lines.
   privacy  one line per pattern, with count and first files. A user-profile path (binary files
@@ -38,7 +38,7 @@ LINK = re.compile(r'\]\(\s*(<[^>\n]+>|[^)\s]+)'                 # [text](target)
                   r'|\b(?:href|src|srcset)="([^"\n]+)"', re.M)   # html in Markdown
 HEADING = re.compile(r'^[ ]{0,3}#{1,6}[ \t]+(.+?)(?:[ \t]+#+)?[ \t]*$', re.M)
 ANCHOR_TAG = re.compile(r'<a\s+(?:id|name)="([^"]+)"', re.I)
-WEX_NAME = re.compile(r'(?i)wex|nr3|wnr|neural_rans|palette')   # KAIRA files that look like format code
+WEX_NAME = re.compile(r'(?i)wex|nr3|wnr|neural_rans|palette')   # source-tree files that look like format code
 HOLDER = b'Ludovico Zanichelli'   # the copyright holder named in the licence header of every source file
 OCTET = r'(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)'
 # names read from the environment at run time, so that they are never written into this file
@@ -147,10 +147,10 @@ def check_links(files):
 
 
 def parse_sync(text):
-    """(sha, date), rows and errors of kaira-sync.tsv."""
+    """(sha, date), rows and errors of sync-map.tsv."""
     lines = text.splitlines() or ['']
-    head = re.fullmatch(r'# kaira_commit ([0-9a-f]{40}) (\d{4}-\d\d-\d\d)', lines[0])
-    errors = [] if head else ['line 1 is not "# kaira_commit <40-hex sha> <YYYY-MM-DD>"']
+    head = re.fullmatch(r'# source_commit ([0-9a-f]{40}) (\d{4}-\d\d-\d\d)', lines[0])
+    errors = [] if head else ['line 1 is not "# source_commit <40-hex sha> <YYYY-MM-DD>"']
     rows = [l.split('\t') for l in lines[1:] if l.strip() and not l.startswith('#')]
     errors += [f'row is not c/<path><TAB>src/colibri/c/<path>: {" | ".join(r)}' for r in rows
                if len(r) != 2 or not r[0].startswith('c/') or r[1] != 'src/colibri/' + r[0]]
@@ -174,29 +174,17 @@ def blob_id(data):
     return hashlib.sha1(b'blob %d\0' % len(data) + data).hexdigest()
 
 
-def sync_named(sha, status, integration):
-    """Errors when STATUS.md line 1, or integration/README.md above its first section, does not name the sync."""
-    short = sha[:7]
-    errors = [] if short in status.split('\n', 1)[0] else [f'STATUS.md line 1 does not name the recorded sync {short}']
-    if short not in integration.split('\n## ', 1)[0]:
-        errors.append(f'integration/README.md does not name the recorded sync {short} above its first section')
-    return errors
-
-
-def check_mirror(files, kaira, ref):
-    (sha, date), rows, errors = parse_sync(read('kaira-sync.tsv').decode('utf-8'))
+def check_mirror(files, source, ref):
+    (sha, date), rows, errors = parse_sync(read('sync-map.tsv').decode('utf-8'))
     listed = [r[0] for r in rows]
     errors += [f'listed twice: {p}' for p in sorted(set(listed)) if listed.count(p) > 1]
     errors += [f'not tracked: {p}' for p in listed if p not in files]
     mirrored = [f for f in files if f.startswith('c/')]
-    errors += [f'under c/ but not in kaira-sync.tsv: {f}' for f in mirrored if f not in listed]
-    if sha != '?' and {'STATUS.md', 'integration/README.md'} <= set(files):
-        errors += sync_named(sha, read('STATUS.md').decode('utf-8', 'replace'),
-                             read('integration/README.md').decode('utf-8', 'replace'))
-    note, warnings = f'recorded sync {sha[:12]} {date}; identity not checked (no --kaira)', []
-    if kaira:
+    errors += [f'under c/ but not in sync-map.tsv: {f}' for f in mirrored if f not in listed]
+    note, warnings = f'recorded sync {sha[:12]} {date}; identity not checked (no --source)', []
+    if source:
         def blobs(rev):
-            tree = git('ls-tree', '-r', '-z', rev, cwd=kaira).split('\0')
+            tree = git('ls-tree', '-r', '-z', rev, cwd=source).split('\0')
             return {l.split('\t', 1)[1]: l.split()[2] for l in tree if l}
         theirs = blobs(ref)
         rows_of = {r[1] for r in rows}
@@ -204,21 +192,21 @@ def check_mirror(files, kaira, ref):
                     if t.startswith('src/colibri/c/') and WEX_NAME.search(t.rsplit('/', 1)[1]) and t not in rows_of]
         present = [r for r in rows if r[0] in files]
         ours = git('hash-object', '--no-filters', '--', *[r[0] for r in present]).split()
-        # shortcut: KAIRA does not carry the licence header yet; drop `headed` once its files have it
+        # shortcut: the source tree does not carry the licence header yet; drop `headed` once its files have it
         headed = [m for (m, t), blob in zip(present, ours)
                   if theirs.get(t) != blob and theirs.get(t) == blob_id(without_licence(read(m)))]
         differ = [(mine, their) for (mine, their), blob in zip(present, ours)
                   if theirs.get(their) != blob and mine not in headed]
-        errors += [f'{"differs from" if t in theirs else "missing in"} KAIRA {ref}: {m} <- {t}' for m, t in differ]
-        try:   # line 1 must name a commit in which the mirrored files are the ones of <ref>
+        errors += [f'{"differs from" if t in theirs else "missing in"} source {ref}: {m} <- {t}' for m, t in differ]
+        try:   # line 1 must name a commit in which the synced files are the ones of <ref>
             then = blobs(sha) if sha != '?' else theirs
-            errors += [f'line 1 is stale: {t} changed in KAIRA after {sha[:12]}' for _, t in rows if then.get(t) != theirs.get(t)]
+            errors += [f'line 1 is stale: {t} changed in the source tree after {sha[:12]}' for _, t in rows if then.get(t) != theirs.get(t)]
         except subprocess.CalledProcessError:
-            errors.append(f'line 1: KAIRA has no commit {sha}')
-        note = (f'{len(present) - len(differ)} identical to KAIRA {ref} {git("rev-parse", ref, cwd=kaira)[:12]} '
-                f'(recorded sync {sha[:12]} {date}; {len(headed)} of them once the licence header KAIRA lacks '
+            errors.append(f'line 1: the source tree has no commit {sha}')
+        note = (f'{len(present) - len(differ)} identical to source {ref} {git("rev-parse", ref, cwd=source)[:12]} '
+                f'(recorded sync {sha[:12]} {date}; {len(headed)} of them once the licence header the source lacks '
                 f'is removed)')
-    print(f'mirror   {"FAIL" if errors else "ok"}: {len(rows)} rows in kaira-sync.tsv, {len(mirrored)} files under c/, '
+    print(f'mirror   {"FAIL" if errors else "ok"}: {len(rows)} rows in sync-map.tsv, {len(mirrored)} files under c/, '
           f'{note}, {len(errors)} errors, {len(warnings)} warnings')
     print(''.join(f'    {e}\n' for e in errors + warnings), end='')
     return not errors
@@ -276,7 +264,7 @@ def self_test():
     assert not mail.search('1+bot@users.noreply.github.com') and not mail.search('noreply@example.org')
     assert words.search('Session-ID') and words.search('ScratchPad')
     assert token.search('ghp_' + 'a1' * 18) and token.search('Bearer ' + 'x' * 24) and not token.search('task-' + 'a' * 24)
-    for hit in ('<KAIRA>\\.claude\\worktrees\\x', 'C:\\Temp\\x', '%TEMP%\\x', 'AppData\\Local'):
+    for hit in ('<TREE>\\.claude\\worktrees\\x', 'C:\\Temp\\x', '%TEMP%\\x', 'AppData\\Local'):
         assert spath.search(hit), hit
     assert not spath.search('temperature 0.6') and not spath.search('prefix-store/template')
     for hit in ('asked Claude to', 'the main session', 'two sub-agents', 'a memory note', 'wf_2af1fd28-820'):
@@ -286,17 +274,18 @@ def self_test():
     assert privacy_counts(binary) == {'profile path': 1}, 'binary files: profile paths only'
     assert [privacy_counts(text)[k] for k in ('profile path', 'e-mail', 'token')] == [1, 1, 0]
     sha = '0123456789abcdef' * 2 + '01234567'
-    good = f'# kaira_commit {sha} 2026-11-11\nc/a.h\tsrc/colibri/c/a.h\n\n# note\nc/t/b.c\tsrc/colibri/c/t/b.c\n'
+    good = f'# source_commit {sha} 2026-11-11\nc/a.h\tsrc/colibri/c/a.h\n\n# note\nc/t/b.c\tsrc/colibri/c/t/b.c\n'
     assert parse_sync(good) == ((sha, '2026-11-11'), [['c/a.h', 'src/colibri/c/a.h'], ['c/t/b.c', 'src/colibri/c/t/b.c']], [])
-    assert len(parse_sync('')[2]) == 1 and len(parse_sync('# kaira_commit notasha yesterday\n')[2]) == 1
-    bad = f'# kaira_commit {sha} 2026-11-11\nscripts/a.h\tsrc/colibri/c/a.h\nc/a.h\tsrc/colibri/c/b.h\nc/a.h\n'
+    assert len(parse_sync('')[2]) == 1 and len(parse_sync('# source_commit notasha yesterday\n')[2]) == 1
+    assert len(parse_sync(f'# kaira_commit {sha} 2026-11-11\n')[2]) == 1, 'the old header name is refused'
+    bad = f'# source_commit {sha} 2026-11-11\nscripts/a.h\tsrc/colibri/c/a.h\nc/a.h\tsrc/colibri/c/b.h\nc/a.h\n'
     assert len(parse_sync(bad)[2]) == 3 and len(parse_sync(bad)[1]) == 2
     head = b'#!/bin/sh\r\n# SPDX-License-Identifier: Apache-2.0\r\n# Copyright 2026 ' + HOLDER + b'\r\nx\r\n'
     assert without_licence(head) == b'#!/bin/sh\r\nx\r\n', 'licence header removed, line ends kept'
     assert without_licence(b'x\n# SPDX-License-Identifier: X\ny\nz\n') == b'x\n# SPDX-License-Identifier: X\ny\nz\n'
     assert blob_id(b'') == 'e69de29bb2d1d6434b8b29ae775ad8c2e48c5391'
     assert has_spdx(b'#!/bin/sh\n# SPDX-License-Identifier: Apache-2.0\n') and not has_spdx(b'x\n' * 5 + b'# SPDX-License-Identifier: X')
-    assert slug('13.3 `app\\kaira.json`') == '133-appkairajson' and slug('The [`c/`](c/) mirror') == 'the-c-mirror'
+    assert slug('13.3 `app\\config.json`') == '133-appconfigjson' and slug('The [`c/`](c/) mirror') == 'the-c-mirror'
     page = '# A\n## 5. Index (v4)\n```\n# not a heading\n```\n## 5. Index (v4)\n<a id="here"></a>\n## Done ##\n'
     assert anchors(page) == {'a', '5-index-v4', '5-index-v4-1', 'here', 'done'}
     lan = PRIVACY[6][1]
@@ -304,17 +293,15 @@ def self_test():
         assert lan.search(hit), hit
     for miss in ('Windows 10.0.26300.1234', '172.15.0.1', 'v1.10.0.1.5', '10.1.2.3.4', '127.0.0.1'):
         assert not lan.search(miss), miss
-    status, integ = 'Last verified: 2026-11-13, KAIRA master 0123456789ab\n', 'x\nrecords master 0123456 here\n## T\n'
-    assert sync_named(sha, status, integ) == [] and len(sync_named('f' * 40, status, integ)) == 2
-    assert len(sync_named(sha, status, 'x\n## T\nmaster 0123456\n')) == 1, 'the sync must be named above the first section'
     print('self-test ok')
     return 0
 
 
 def main(argv):
-    ap = argparse.ArgumentParser(usage='python -I check_repo.py [--kaira <KAIRA checkout> [--ref master]] [--self-test]',
+    ap = argparse.ArgumentParser(usage='python -I check_repo.py [--source <TREE> [--ref master]] [--self-test]',
                                  allow_abbrev=False)
-    ap.add_argument('--kaira')
+    ap.add_argument('--source')
+    ap.add_argument('--kaira', dest='source', help=argparse.SUPPRESS)   # old name, kept so existing commands work
     ap.add_argument('--ref', default='master')
     ap.add_argument('--self-test', action='store_true')
     args = ap.parse_args(argv)
@@ -322,7 +309,7 @@ def main(argv):
         return self_test()
     try:
         files = sorted(f for f in git('ls-files', '-z').split('\0') if f and os.path.isfile(os.path.join(ROOT, f)))
-        ok = [check_links(files), check_mirror(files, args.kaira, args.ref), check_licence(files), check_privacy(files)]
+        ok = [check_links(files), check_mirror(files, args.source, args.ref), check_licence(files), check_privacy(files)]
     except (subprocess.CalledProcessError, OSError) as e:
         sys.exit(f'check_repo.py: {e}')
     return 0 if all(ok) else 1

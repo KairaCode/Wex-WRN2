@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 Ludovico Zanichelli
 // REFERENCE EXCERPT, not compilable on its own.
-// Source: KAIRA src/host/Engine.cs at commit 88ddb07 (2026-11-07), as committed.
-// Line numbers are of that commit; the live tree moves them. Code between ranges is omitted.
-// KAIRA host: how the profile env and mirror_dir reach the engine process.
+// Source: the maintainer's application tree, src/host/Engine.cs as of 2026-11-07, as committed.
+// Line numbers are of that version; the live tree moves them. Code between ranges is omitted.
+// Application host: how the profile env and mirror_dir reach the engine process.
 
 // ==== Engine.cs:58-78  ApplyProfileEnv: V4.1 on deepseek_v41.exe gets only IsV41Env names (drops every WEX variable) ====
 

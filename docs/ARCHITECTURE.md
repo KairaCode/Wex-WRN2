@@ -94,7 +94,7 @@ The pages name a few things of the test machine: **U:** and **C:** are its two N
 
 ## The `c/` mirror
 
-The 37 files under `c/` are KAIRA's, at the commit in `kaira-sync.tsv`, with this repository's two- or three-line licence header on top (KAIRA does not carry it yet; `check_repo.py --kaira` compares them without it). Many of them build only inside the KAIRA tree, because they include engine files that are not here.
+The 37 files under `c/` are KAIRA's, at the commit in `sync-map.tsv`, with this repository's two- or three-line licence header on top (KAIRA does not carry it yet; `check_repo.py --source` compares them without it). Many of them build only inside the KAIRA tree, because they include engine files that are not here.
 
 | Files | Builds or runs here | Needs the KAIRA tree | Needs a GPU |
 |---|---|---|---|

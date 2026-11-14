@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 Ludovico Zanichelli
 // REFERENCE EXCERPT, not compilable on its own.
-// Source: KAIRA src/host/DeepSeekV41Preflight.cs at commit 88ddb07 (2026-11-07), as committed.
-// Line numbers are of that commit; the live tree moves them. Code between ranges is omitted.
-// KAIRA host: preflight warning on COLI_EXPERT_STORE/COLI_WEX_PATH for V4.1 (STALE since the V4.1 WEX1/WNR2 exist).
+// Source: the maintainer's application tree, src/host/DeepSeekV41Preflight.cs as of 2026-11-07, as committed.
+// Line numbers are of that version; the live tree moves them. Code between ranges is omitted.
+// Application host: preflight warning on COLI_EXPERT_STORE/COLI_WEX_PATH for V4.1 (STALE since the V4.1 WEX1/WNR2 exist).
 
 // ==== DeepSeekV41Preflight.cs:242-247  WEX warning ====
         }

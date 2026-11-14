@@ -2,15 +2,15 @@
  * Derived from colibri c/deepseek_v4.c and c/deepseek_v4_internal.h (https://github.com/JustVugg/colibri), Copyright 2026 Vincenzo Fornaro.
  * Modified by Ludovico Zanichelli, 2026. */
 /* REFERENCE EXCERPT, not compilable on its own.
- * Source: KAIRA src/colibri/c/deepseek_v4.c and deepseek_v4_internal.h at commit cade51d
- * (branch wnr3-20261110, 2026-11-10, on top of master 3b604bb), as committed.
- * Line numbers are of that commit; the live tree moves them. Code between ranges is omitted.
+ * Source: the maintainer's engine tree, src/colibri/c/deepseek_v4.c and deepseek_v4_internal.h
+ * on its WNR3 branch as of 2026-11-10, as committed.
+ * Line numbers are of that version; the live tree moves them. Code between ranges is omitted.
  * WNR3 (header flag 32, entry codec 5) and canonical zero (header flag 64) in the engine's own
  * expert store: container checks at open (helper feature 16, coli_wex_container_refused in
  * c/wex_decode.c), the record owner/profile check (wex_nr3_owner_ok in c/wex_format.h)
  * before every decode (host slab, GPU-direct fill, batch), a RAM-cache record that is rejected
  * leaves the cache, codec 5 in cache sizing / prewarm / batch, and the lab-only
- * V4_LAB_CANON_ZERO switch (WNR3 gate G7, never set by KAIRA). Needs the level A + direct
+ * V4_LAB_CANON_ZERO switch (WNR3 gate G7, never set by the application). Needs the level A + direct
  * excerpts (deepseek_v4.mode0-store / direct-store / direct-gpu).
  */
 

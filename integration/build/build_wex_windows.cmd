@@ -1,7 +1,7 @@
 @echo off
 rem SPDX-License-Identifier: Apache-2.0
 rem Copyright 2026 Ludovico Zanichelli
-rem Builds the WEX/WNR2 Windows binaries from this repo alone (no KAIRA or colibri tree needed):
+rem Builds the WEX/WNR2 Windows binaries from this repo alone (no engine or colibri tree needed):
 rem   OUT\kaira_wex_cuda.dll     engine helper (c\tools\wex_cuda_bridge.cu, ABI 1, features 1|2|4|8|16|32);
 rem                              deploy it next to deepseek_v4.exe or point COLI_WEX_CUDA_LIB at it
 rem   archive\nr2\wex_nr2_tools.dll  WNR2 trainer/encoder/verifier used by archive\nr2\*.py (nr2lib.py loads it from there)

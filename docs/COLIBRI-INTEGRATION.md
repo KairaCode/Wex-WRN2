@@ -68,7 +68,7 @@ From a checkpoint to a verified WEX4 file. Every command runs from the repositor
 - **Qwen3.8.** `c/qwen38_wex.h` is the complete store: WEX1, WNR3 and WEX4, mirrors, split reads, the root pin and the first-read SHA-256. Its header comment documents every variable. The rest of the qwen38 engine (`qwen38.c`, `qwen38_core.h`) is KAIRA's.
 - **DeepSeek V4 / V4.1.** The store is in KAIRA's `deepseek_v4.c`, which is not in this repository. What it takes to add WEX4 to it:
   - the WEX1-WEX3 store first: [integration/](../integration/README.md) has the excerpts of KAIRA 88ddb07 (levels A to C of the [2026-11-09 guide](reports/colibri-integration-20261109.md), section 5) and, for stock colibri 561966ec, `upstream-561966ec-levelA.patch`;
-  - then the three WEX4 patches, in order: `kaira-wex4-loader-75932c1.patch` (open a WEX4 file, pin the root), `kaira-wex4-first-read-4ba5568.patch` (SHA-256 at the first read) and, for qwen38 only, `kaira-q38-wex4-loader-de17198.patch`;
+  - then the three WEX4 patches, in order: `engine-wex4-loader-75932c1.patch` (open a WEX4 file, pin the root), `engine-wex4-first-read-4ba5568.patch` (SHA-256 at the first read) and, for qwen38 only, `engine-q38-wex4-loader-de17198.patch`;
   - then what came after them, shown in `integration/engine/deepseek_v4.wex4.wex-excerpt.c` (KAIRA 24f7e72): the refusal of a legacy file under a pinned root, the hash pool, sub-reads and the batched tier prewarm.
 
   The patches are KAIRA commits with KAIRA paths (`src/colibri/c/...`); they apply to a KAIRA-like tree, and are the reference for a port to another one.

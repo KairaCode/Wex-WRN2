@@ -2,9 +2,9 @@
  * Derived from colibri c/deepseek_v4.c (https://github.com/JustVugg/colibri), Copyright 2026 Vincenzo Fornaro.
  * Modified by Ludovico Zanichelli, 2026. */
 /* REFERENCE EXCERPT, not compilable on its own.
- * Source: KAIRA src/colibri/c/deepseek_v4.c at commit 24f7e72 (master, 2026-11-13), as committed.
- * Line numbers are of that commit; the live tree moves them. Code between ranges is omitted.
- * The WEX4 side of the DeepSeek expert store after the three kaira-* patches: opening a WEX4
+ * Source: the maintainer's engine tree, src/colibri/c/deepseek_v4.c as of 2026-11-13, as committed.
+ * Line numbers are of that version; the live tree moves them. Code between ranges is omitted.
+ * The WEX4 side of the DeepSeek expert store after the three engine-* patches: opening a WEX4
  * container and pinning its root, the first-read SHA-256 of every record and its hash pool
  * (V4_WEX_SHA_ASYNC), the refusal of a legacy container under a pinned root, the sub-reads
  * (V4_WEX_SUBREADS) and the batched VRAM tier prewarm (V4_PREWARM_BATCH). Needs the level A +

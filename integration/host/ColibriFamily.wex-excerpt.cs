@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 Ludovico Zanichelli
 // REFERENCE EXCERPT, not compilable on its own.
-// Source: KAIRA src/host/ColibriFamily.cs at commit 88ddb07 (2026-11-07), as committed.
-// Line numbers are of that commit; the live tree moves them. Code between ranges is omitted.
-// KAIRA host: the V4.1 env allow-list (item H1: no WEX name in it).
+// Source: the maintainer's application tree, src/host/ColibriFamily.cs as of 2026-11-07, as committed.
+// Line numbers are of that version; the live tree moves them. Code between ranges is omitted.
+// Application host: the V4.1 env allow-list (item H1: no WEX name in it).
 
 // ==== ColibriFamily.cs:22-40  V41EnvNames ====
     private static readonly string[] V4ModelTypes = { "deepseek_v4" };

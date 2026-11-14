@@ -148,7 +148,7 @@ The index of every page, with its kind, language and state, is [docs/README.md](
 README.md  STATUS.md  CHANGELOG.md  CONTRIBUTING.md   front page, what runs today, format changes, rules
 SECURITY.md  CITATION.cff     how to report a vulnerability, how to cite
 LICENSE  NOTICE  THIRD_PARTY_NOTICES.md              Apache-2.0 text, attribution notices, third-party material
-check_repo.py  kaira-sync.tsv    self-check (links, mirror identity, licence headers, privacy) and the list of mirrored files
+check_repo.py  sync-map.tsv    self-check (links, mirror identity, licence headers, privacy) and the list of mirrored files
 assets/        the logo (light and dark), the mark, and the source image of the social preview (set in the repository settings)
 .github/       CI workflow (Linux and Windows CPU checks), issue forms, pull-request checklist
 c/             MIRROR of KAIRA src/colibri/c: same relative paths, byte-identical, never edited here
@@ -170,10 +170,10 @@ docs/NEXT-FORMAT-SPEC.md         stub: a comment in the mirrored c/wex4.h still 
 
 ## Source of truth and sync
 
-The live copies of the 37 files under `c/` are in KAIRA, under `src/colibri/c/` at the same relative paths. They are copied whole and never edited here; `kaira-sync.tsv` lists them with the KAIRA commit they were last compared with. Nothing outside `c/` is mirrored: `archive/` came from the KAIRA lab folder, `integration/` quotes KAIRA code, `research/`, `models/` and `fixtures/v41-tiny` are copies of lab results, the rest was written here. To check the mirror, the links and the privacy patterns:
+The live copies of the 37 files under `c/` are in KAIRA, under `src/colibri/c/` at the same relative paths. They are copied whole and never edited here; `sync-map.tsv` lists them with the KAIRA commit they were last compared with. Nothing outside `c/` is mirrored: `archive/` came from the KAIRA lab folder, `integration/` quotes KAIRA code, `research/`, `models/` and `fixtures/v41-tiny` are copies of lab results, the rest was written here. To check the mirror, the links and the privacy patterns:
 
 ```sh
-python -I check_repo.py --kaira "<KAIRA checkout>"
+python -I check_repo.py --source "<TREE>"
 ```
 
 It exits with 1 when a relative Markdown link or its anchor is broken, when a mirrored file differs from KAIRA `master` (apart from the licence header, which KAIRA does not carry yet), when `STATUS.md` or `integration/README.md` does not name the recorded sync, when a source file outside `research/` has no SPDX licence header, or when a tracked file holds a user-profile path, a personal e-mail address or an access token. How to sync, and what may be written here: [CONTRIBUTING.md](CONTRIBUTING.md).

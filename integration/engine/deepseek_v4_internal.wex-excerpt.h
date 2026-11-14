@@ -2,8 +2,8 @@
  * Derived from colibri c/deepseek_v4_internal.h (https://github.com/JustVugg/colibri), Copyright 2026 Vincenzo Fornaro.
  * Modified by Ludovico Zanichelli, 2026. */
 /* REFERENCE EXCERPT, not compilable on its own.
- * Source: KAIRA src/colibri/c/deepseek_v4_internal.h at commit 88ddb07 (2026-11-07), as committed.
- * Line numbers are of that commit; the live tree moves them. Code between ranges is omitted.
+ * Source: the maintainer's engine tree, src/colibri/c/deepseek_v4_internal.h as of 2026-11-07, as committed.
+ * Line numbers are of that version; the live tree moves them. Code between ranges is omitted.
  * Declarations of the WEX engine hooks. expert_store_wex.h includes deepseek_v4_internal.h.
  */
 
