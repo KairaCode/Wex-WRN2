@@ -29,9 +29,12 @@ Labels you may see on issues: **good first issue** (a few hours, little context)
 
 ## 3. Tests and fuzzing
 
-- **Fuzzing harnesses:** a libFuzzer/AFL++ harness for the C WEX4 reader (`c/wex4.h`, `c/tools/wex4_verify.c`)
-  and the WNR3 decoder. Run it for hours, not seconds. The in-process fuzzer in `wex4/wex4_tools.c` is a
-  starting point. Done when it builds in CI and any crash comes with a reproducer.
+- **Fuzzing:** the libFuzzer harnesses for the C WEX4 reader (`c/wex4.h`), `c/tools/wex4_verify.c` and the
+  WNR3 decoders are in [`wex4/fuzz/`](../wex4/fuzz/README.md); CI builds them and runs each for 60 seconds.
+  What is wanted now is machine time: run `bash wex4/fuzz/run.sh 14400` (hours, not seconds) and report
+  what stops it, with the reproducer it leaves. Also open: harnesses for the engine store
+  (`c/expert_store_wex.c`, `c/qwen38_wex.h`) and a dictionary or a custom mutator that keeps the WNR3
+  stream hashes right.
 - **Sanitizers:** CI runs the CPU checks under ASan and UBSan on Linux (the `linux-sanitizers` job of
   `.github/workflows/ci.yml`, which holds the exact `WEX_CFLAGS`, the sanitizer options and the preload
   of the ASan runtime). Still open: MemorySanitizer or ThreadSanitizer runs (clang), and the GPU code.

@@ -1,0 +1,44 @@
+# Coverage-guided fuzzing of the C readers and decoders (wex4/fuzz/): the three libFuzzer harnesses are built with
+# AddressSanitizer and UndefinedBehaviorSanitizer and each runs for a short time from the conformance vectors.
+# No GPU, no model weights, no secrets.
+name: Fuzz
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:   # a longer run, by hand
+    inputs:
+      seconds:
+        description: seconds per harness, at least 1 (three harnesses; the job stops after 6 hours, so at most about 7000)
+        default: "60"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fuzz-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  libfuzzer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      PYTHON: python3
+      SECONDS_EACH: ${{ inputs.seconds || '60' }}   # read from the environment, never pasted into the script
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
+      - name: Build the harnesses and fuzz
+        run: bash wex4/fuzz/run.sh "$SECONDS_EACH"
+      - name: Keep the reproducers and the logs
+        if: failure() || cancelled()   # also a run stopped by the job timeout: an earlier harness may have crashed
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7.0.2
+        with:
+          name: fuzz-crashes
+          path: |
+            wex4/fuzz/out/crashes
+            wex4/fuzz/out/*.log
+          if-no-files-found: ignore

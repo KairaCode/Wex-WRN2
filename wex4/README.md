@@ -15,6 +15,7 @@ The C reader **[`../c/wex4.h`](../c/wex4.h) is the engine-side reader** (`src/co
 | `test_wex4.py` | round trips, C against Python, hostile files, mutation fuzzing, and the check of the conformance vectors |
 | `vectors/` | conformance vectors: valid, invalid and legacy files with the verdict, error class and root a reader must give, in `MANIFEST.tsv` ([README](vectors/README.md)) |
 | `build_and_test.sh` | builds the two DLLs and the fixtures, then runs `test_wex4.py` |
+| `fuzz/` | libFuzzer harnesses for the C reader, the WNR3 decoders (reference against fast) and `wex4_verify`, seeded with the vectors; `bash wex4/fuzz/run.sh` ([README](fuzz/README.md)) |
 
 The engine side is not here: the loaders are in the engine, shown as patches in [`../integration/`](../integration/README.md) (`engine-wex4-loader-75932c1.patch`, `engine-wex4-first-read-4ba5568.patch`, `engine-q38-wex4-loader-de17198.patch`).
 

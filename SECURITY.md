@@ -39,6 +39,7 @@ From [WEX4-SPEC](docs/WEX4-SPEC.md), sections 8.4 and 9:
 ## Testing, and its gaps
 
 - `bash wex4/build_and_test.sh` runs 94 hand-made hostile files, mutation fuzzing in three modes in C and in Python, and a differential test in which the C and Python readers must agree on every verdict and content digest.
+- `bash wex4/fuzz/run.sh [SECONDS]` runs three coverage-guided harnesses (libFuzzer with AddressSanitizer and UndefinedBehaviorSanitizer) on the C reader, the WNR3 decoders and `wex4_verify`, seeded with the conformance vectors ([wex4/fuzz/README.md](wex4/fuzz/README.md)). CI runs each for 60 seconds on every pull request; nothing runs them for hours on a schedule.
 - An adversarial review of the spec and the prototype was made on 2026-11-11: [wex4/review/REVIEW.md](wex4/review/REVIEW.md).
-- The guard pages that turn an out-of-bounds access into a crash during fuzzing exist only in the Windows build of `wex4/wex4_tools.c` (`VirtualAlloc`); elsewhere the fuzzer runs without them. On Linux, CI runs every CPU check, the fuzzer included, under AddressSanitizer and UndefinedBehaviorSanitizer (the `linux-sanitizers` job). There is no continuous fuzzing.
+- The guard pages that turn an out-of-bounds access into a crash during fuzzing exist only in the Windows build of `wex4/wex4_tools.c` (`VirtualAlloc`); elsewhere the fuzzer runs without them. On Linux, CI runs every CPU check, the fuzzer included, under AddressSanitizer and UndefinedBehaviorSanitizer (the `linux-sanitizers` job). No fuzzing runs for hours on a schedule.
 - The Python tools load whatever library path they are given (`wex4.py --dll`, `c/tools/build_nr3.py`): only pass them a library you built yourself.
