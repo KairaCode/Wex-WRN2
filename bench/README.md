@@ -5,6 +5,22 @@ runs on a machine: RAM bandwidth, host ↔ GPU copies, reads from the volume the
 repository's own CPU checks. It needs only `gcc`, `python3` (standard library) and, for the GPU copy
 test, `nvcc`. It installs nothing and sends nothing anywhere.
 
+## What you need first
+
+Nothing is downloaded or installed by the benchmark itself. A standard Linux box needs:
+
+| Needed for | Debian / Ubuntu | Fedora | Check |
+|---|---|---|---|
+| everything | `sudo apt install git gcc python3 make` | `sudo dnf install git gcc python3 make` | `gcc --version`, `python3 --version` (3.8 or later) |
+| GPU copy test (NVIDIA only, optional) | the CUDA toolkit (`nvcc`); DGX OS already has it | same | `nvcc --version`; if it is installed but not found: `export PATH=/usr/local/cuda/bin:$PATH` |
+| extra details in the report (optional) | `sudo apt install pciutils` (`lspci`); `zfsutils-linux` if you use ZFS | `pciutils` | not required, the fields just stay empty |
+
+Also make sure that:
+- the directory you pass to `--dir` has **about 20 GB free** (or use `--size-gb 4` / `--quick`);
+- nothing heavy is running during the run (other benchmarks, downloads, model inference), since it would show up in the numbers.
+
+No root, no Python packages, no model download: OpenMP comes with gcc, and the repository's checks generate their own small test files.
+
 ## Run it (Linux)
 
 ```bash
