@@ -1,0 +1,27 @@
+name: Benchmark results
+description: Share the results of bench/bench.py from your machine
+title: "Bench: <CPU> / <GPU> / <filesystem>"
+labels: ["benchmark"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for testing. Run `python3 bench/bench.py --dir /path/on/your/model/volume` (see `bench/README.md`),
+        read `bench/out/results.json`, then attach it below.
+  - type: textarea
+    id: results
+    attributes:
+      label: results.json
+      description: Drag the file here, or paste its content.
+    validations:
+      required: true
+  - type: input
+    id: command
+    attributes:
+      label: Command line you ran
+      placeholder: python3 bench/bench.py --dir /tank/models --size-gb 16
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else
+      description: Other load on the machine during the run, RAID/ZFS layout, power profile, problems you hit.
