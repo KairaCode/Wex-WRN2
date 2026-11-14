@@ -88,17 +88,21 @@ Labels you may see on issues: **good first issue** (a few hours, little context)
   synthetic WEX4 container and reads its expert records through 20 read paths (page cache or `O_DIRECT`,
   `posix_fadvise` hints, 1 to 8 threads, `io_uring` with records or sub-reads in flight), each checked
   against the index's SHA-256 and timed over several cold passes.
-- **Measured so far:** only two GitHub Actions runners, shared cloud VMs with a virtual disk
-  ([research/linux-io-20261114](../research/linux-io-20261114/README.md), one run of 5 passes per path on
-  each). No read path won on both: `POSIX_FADV_RANDOM` and `O_DIRECT` were 19% and 16% faster than the
-  store's path on the first and 5% and 4% slower on the second; more reads in flight changed nothing on
-  either (418 to 481 and 511 to 540 MB/s at every depth). So the store was not changed.
+- **Measured so far:** only GitHub Actions runners, shared cloud VMs with a virtual disk
+  ([research/linux-io-20261114](../research/linux-io-20261114/README.md): two kinds of VM, three runs of
+  5 passes per path). No read path won on both kinds: `POSIX_FADV_RANDOM` and `O_DIRECT` were 19% and
+  16% faster than the store's path on the first and 5% and 4% slower on the second; more reads in flight
+  gained at most 11% over one read of the same kind on the first and at most 4% on the second (418 to
+  481 and 511 to 540 MB/s at every depth). So the store was not changed. The `POSIX_FADV_WILLNEED` rows
+  do not show what a prefetch of the next record gives: where it was measured, the kernel had loaded 1.0%
+  of the announced record before its read.
 - **What:** run `bench/wex_io.py` on real drives (NVMe first; also SATA, ZFS, btrfs, XFS, ARM) and share
   `bench/out/wex_io.json` through the "Benchmark results" issue template. Then, if a path wins on real
   drives: the change in the store (candidates the two runs point at but do not support yet:
   `posix_fadvise(POSIX_FADV_RANDOM)` or `O_DIRECT` in `c/expert_store_wex.c`, and several records in
-  flight for a prefetch batch), with an engine A/B. Still unmeasured: striping across drives with
-  different speeds, and everything on macOS.
+  flight for a prefetch batch), with an engine A/B. Still unmeasured: a prefetch through the page cache
+  that loads the whole record (a read path to add to `bench/wex_io.c`: `readahead(2)` or `WILLNEED` in
+  chunks), striping across drives with different speeds, and everything on macOS.
 - **Done when:** the table of `bench/wex_io.py` from at least one NVMe machine is in the repository, and
   a change of the store comes with its before/after from the same benchmark, stated as CONTRIBUTING
   section 5 asks.
@@ -123,7 +127,7 @@ listed above as well.
 - **ARM:** the CPU decoder path without AVX2 and the ARM CI job are in (scalar kernel); a NEON version
   is still open *(open to you, section 3)*.
 - **Linux I/O in the engine:** the fast read paths were built and measured on Windows. The Linux
-  benchmark is in (`bench/wex_io.py`), run so far only on two cloud VMs, where it gave no reason to
+  benchmark is in (`bench/wex_io.py`), run so far only on two kinds of cloud VM, where it gave no reason to
   change the store; runs on real drives and the tuning that follows from them are still open *(open to
   you, section 7)*.
 - **Measurements not done yet** (they need the full models, so they stay with the maintainer, see

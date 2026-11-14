@@ -72,17 +72,22 @@ What it does:
 
 1. It writes a synthetic WEX4 container in `--dir` with the reference writer (`wex4/wex4.py`): 8 x 48 expert
    records of 13,369,344 bytes of seeded random bytes, 5.1 GB, no model weights. `--layers`, `--experts`,
-   `--rows` and `--cols` change the size; `--file` reads an existing container instead. The file is removed
-   at the end unless `--keep` is given.
+   `--rows` and `--cols` change the size. The file is removed at the end unless `--keep` is given.
+   `--file FILE` reads an existing container instead; `--dir` is then left out, and the filesystem and
+   block device in the JSON are those of the file. CI runs `--file` on the smoke container; it was not
+   run on a container with real weights.
 2. It builds `bench/wex_io.c`, which opens the header page and the index with `c/wex4.h`, as the engine
    stores do, and reads whole expert records at their 4096-aligned offsets, in a seeded random order
    without repeats.
 3. **Identity first:** every read path reads 8 records and compares their SHA-256 with the index. A path
-   that the machine cannot run (no `O_DIRECT` on the filesystem, `io_uring` switched off) is reported as not
-   run, with the reason.
+   that the machine cannot run (no `O_DIRECT` on the filesystem, `io_uring` switched off or older than
+   Linux 5.6) is reported as not run, with the reason; a path that fails the check is not timed and the
+   script ends with `FAILED`. With `--strict` a path that was not run is a failure too (CI uses it,
+   because all 20 paths run on its runners). The skip for an old kernel was not tried on one.
 4. **Then speed:** `--runs` timed passes per path (default 5) of `--records` records each (default 48). The
    runs of all paths are interleaved and the order rotates, a run reads the same records on every path, and
-   the buffers are allocated and touched before the clock starts.
+   the buffers are allocated and touched and the `io_uring` ring is set up before the clock starts. The
+   worker threads of the multi-thread paths are created after it starts.
 
 The read paths:
 
@@ -90,7 +95,7 @@ The read paths:
 |---|---|
 | page cache, `pread`, 1 thread | what `c/expert_store_wex.c` and `c/tools/wex4_verify.c` do on Linux today |
 | the same with `POSIX_FADV_RANDOM` or `POSIX_FADV_SEQUENTIAL` | the kernel's readahead switched off or doubled |
-| the same with `POSIX_FADV_WILLNEED` on the record 1 or 4 reads ahead | a readahead hint for records the engine already knows it will need |
+| the same with `POSIX_FADV_WILLNEED` on the record 1 or 4 reads ahead | a hint for records the engine already knows it will need. The kernel may load only part of the record; the script measures how much (below) |
 | page cache, `pread`, 4 and 8 threads; `io_uring`, 8 records in flight | several misses at once through the page cache |
 | `O_DIRECT`, `pread`, 1 thread | what `c/qwen38_wex.h` does on Linux today for one read |
 | `O_DIRECT`, `pread`, 2, 4 and 8 threads | one blocking read per thread |
@@ -105,15 +110,27 @@ last. `--drop-caches` also writes `/proc/sys/vm/drop_caches` before every pass w
 `sudo` without a password). Neither reaches a cache below the kernel: the ARC of ZFS, a RAID controller,
 or the host of a virtual machine.
 
+**What `WILLNEED` loads.** In the two `WILLNEED` paths one `mincore` call just before each announced
+record is read counts how many of its pages are in the page cache (inside the timed pass, outside the
+record's own time). The share is printed under the table and stored per pass as `ahead_cached`. In the
+only full run that has it (a cloud VM, block device with `read_ahead_kb` 128) it was 1.0%: the kernel had
+loaded about 130 KB of each 13.4 MB record, so those two rows did not measure a prefetch of the record.
+Pages whose read is still under way may not be counted. The measurement needs 4096-byte pages.
+
 The script prints a Markdown table (median, minimum and maximum MB/s over the runs, MB = 10^6 bytes, and
 the median time of one record) and writes `bench/out/wex_io.json` with every pass, the CPU, the kernel,
 the filesystem and the block-device queue settings (`read_ahead_kb`, scheduler), but no host name, user
 name or path. Results from real NVMe drives are wanted: attach the JSON to a **Benchmark results** issue.
 
 What it does not measure: the decode of a record, the engine's own caches, two drives (mirror, stripe),
-and anything on Windows or macOS. The only runs so far are two on GitHub Actions runners, shared cloud VMs
-with a virtual disk, where no read path won on both:
-[research/linux-io-20261114](../research/linux-io-20261114/README.md). CI builds `wex_io.c` and runs
-`--smoke` (a 10 MB container, every path checked and run once) in its `linux` and `linux-sanitizers` jobs;
-the full run is the job `linux-io-bench`, started by hand with
-`gh workflow run ci.yml --ref <branch> -f linux_io_bench=true`.
+and anything on Windows or macOS. The only runs so far are three on GitHub Actions runners, shared cloud
+VMs with a virtual disk of two kinds, where no read path won on both kinds:
+[research/linux-io-20261114](../research/linux-io-20261114/README.md).
+
+What CI covers: the `linux`, `linux-arm` and `linux-sanitizers` jobs build `wex_io.c` and run
+`--smoke --strict` (a 10 MB container, every path checked and run once; the `linux` job then reads the
+same container again through `--file`). The full benchmark was not run on ARM. `scripts/check_all.sh`
+does not build `wex_io.c`, so the Windows job does not see it: its stub for systems other than Linux
+(it prints one `skipped` line) was built by hand with MinGW `gcc` and `clang`
+(`-std=c99 -pedantic -Wall -Wextra`, no warning) and is not built by CI. The full run is the job
+`linux-io-bench`, started by hand with `gh workflow run ci.yml --ref <branch> -f linux_io_bench=true`.
