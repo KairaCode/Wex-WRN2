@@ -57,3 +57,63 @@ Notes:
   were in.
 - On ARM (for example a DGX Spark) the `wex_check` section runs the scalar kernel of the fast CPU decoder: the AVX2 kernels are x86-64 only and there is no NEON version yet, so it checks correctness there, not speed.
 - The GPU copy test is CUDA-only. On Intel Arc or AMD it reports `skipped`, which is expected.
+
+## Read paths for expert records (Linux): `wex_io.py`
+
+`bench.py` reads a plain file with one call per read. `wex_io.py` asks a narrower question: through which
+Linux read path should an engine read the expert records of a WEX4 container? It needs `gcc` and `python3`
+only, and Linux (`io_uring` is called through its system calls, so there is no liburing to install).
+
+```bash
+python3 -I bench/wex_io.py --dir /path/on/your/model/volume --drop-caches
+```
+
+What it does:
+
+1. It writes a synthetic WEX4 container in `--dir` with the reference writer (`wex4/wex4.py`): 8 x 48 expert
+   records of 13,369,344 bytes of seeded random bytes, 5.1 GB, no model weights. `--layers`, `--experts`,
+   `--rows` and `--cols` change the size; `--file` reads an existing container instead. The file is removed
+   at the end unless `--keep` is given.
+2. It builds `bench/wex_io.c`, which opens the header page and the index with `c/wex4.h`, as the engine
+   stores do, and reads whole expert records at their 4096-aligned offsets, in a seeded random order
+   without repeats.
+3. **Identity first:** every read path reads 8 records and compares their SHA-256 with the index. A path
+   that the machine cannot run (no `O_DIRECT` on the filesystem, `io_uring` switched off) is reported as not
+   run, with the reason.
+4. **Then speed:** `--runs` timed passes per path (default 5) of `--records` records each (default 48). The
+   runs of all paths are interleaved and the order rotates, a run reads the same records on every path, and
+   the buffers are allocated and touched before the clock starts.
+
+The read paths:
+
+| Path | What it stands for |
+|---|---|
+| page cache, `pread`, 1 thread | what `c/expert_store_wex.c` and `c/tools/wex4_verify.c` do on Linux today |
+| the same with `POSIX_FADV_RANDOM` or `POSIX_FADV_SEQUENTIAL` | the kernel's readahead switched off or doubled |
+| the same with `POSIX_FADV_WILLNEED` on the record 1 or 4 reads ahead | a readahead hint for records the engine already knows it will need |
+| page cache, `pread`, 4 and 8 threads; `io_uring`, 8 records in flight | several misses at once through the page cache |
+| `O_DIRECT`, `pread`, 1 thread | what `c/qwen38_wex.h` does on Linux today for one read |
+| `O_DIRECT`, `pread`, 2, 4 and 8 threads | one blocking read per thread |
+| `O_DIRECT`, `io_uring`, 1 record in flight, whole or as 4 or 16 sub-reads | a lone miss; the sub-reads are what `V4_WEX_SUBREADS` does with overlapped I/O on Windows |
+| `O_DIRECT`, `io_uring`, 4, 8 and 16 records in flight, and 8 records as 4 sub-reads each | a batch of misses from one thread |
+| page cache already warm | the records are in RAM: a ceiling with no drive in it |
+
+**Cold cache.** Before every pass `wex_io` asks the kernel to drop the file's pages
+(`POSIX_FADV_DONTNEED`, no root needed), then measures with `mincore` how much of the pass is still in the
+page cache; that share is the column "in page cache before" and must be about 0% for every row but the
+last. `--drop-caches` also writes `/proc/sys/vm/drop_caches` before every pass when the user may (root, or
+`sudo` without a password). Neither reaches a cache below the kernel: the ARC of ZFS, a RAID controller,
+or the host of a virtual machine.
+
+The script prints a Markdown table (median, minimum and maximum MB/s over the runs, MB = 10^6 bytes, and
+the median time of one record) and writes `bench/out/wex_io.json` with every pass, the CPU, the kernel,
+the filesystem and the block-device queue settings (`read_ahead_kb`, scheduler), but no host name, user
+name or path. Results from real NVMe drives are wanted: attach the JSON to a **Benchmark results** issue.
+
+What it does not measure: the decode of a record, the engine's own caches, two drives (mirror, stripe),
+and anything on Windows or macOS. The only runs so far are two on GitHub Actions runners, shared cloud VMs
+with a virtual disk, where no read path won on both:
+[research/linux-io-20261114](../research/linux-io-20261114/README.md). CI builds `wex_io.c` and runs
+`--smoke` (a 10 MB container, every path checked and run once) in its `linux` and `linux-sanitizers` jobs;
+the full run is the job `linux-io-bench`, started by hand with
+`gh workflow run ci.yml --ref <branch> -f linux_io_bench=true`.
