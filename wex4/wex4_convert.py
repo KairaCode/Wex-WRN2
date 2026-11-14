@@ -68,19 +68,26 @@ def expert_pattern(family):
     return re.compile(text.encode())
 
 
+def mxfp4_dtypes(parts):
+    """True when every tensor found for one expert, {(matrix, is weight): (Tensor, read)}, has a dtype of an
+    MXFP4 slab: scale U8 or F8_E8M0, weight U8 or I8. False for a float or FP8 expert."""
+    allowed = ((wex4.DTYPE_CODE['U8'], wex4.DTYPE_CODE['F8_E8M0']), (wex4.DTYPE_CODE['U8'], wex4.DTYPE_CODE['I8']))
+    return all(spec.dtype in allowed[is_weight] for (_, is_weight), (spec, _) in parts.items())
+
+
 def mxfp4_slab(parts):
-    """True when the tensors found for one expert, {(matrix, is weight): (Tensor, read)}, are a whole MXFP4 slab
-    as an EXPERT record needs it (WEX4-SPEC section 5.5)."""
+    """Why the six MXFP4 tensors of one expert are not a slab as an EXPERT record needs it (WEX4-SPEC section
+    5.5), or None when they are."""
     if len(parts) != 6:
-        return False
+        return f'incomplete expert ({len(parts)} of 6 tensors)'
     for m in range(3):
         scale, weight = parts[(m, False)][0], parts[(m, True)][0]
-        if not (scale.dtype in (wex4.DTYPE_CODE['U8'], wex4.DTYPE_CODE['F8_E8M0']) and
-                weight.dtype in (wex4.DTYPE_CODE['U8'], wex4.DTYPE_CODE['I8']) and
-                len(scale.shape) == 2 and all(0 < d <= 65535 for d in scale.shape + weight.shape) and
+        if not (len(scale.shape) == 2 and all(0 < d <= 65535 for d in scale.shape + weight.shape) and
                 weight.shape == (scale.shape[0], 16 * scale.shape[1])):
-            return False
-    return sum(spec.nbytes for spec, _ in parts.values()) <= wex4.MAX_DECODED
+            return 'expert tensor shape'
+    if sum(spec.nbytes for spec, _ in parts.values()) > wex4.MAX_DECODED:
+        return 'expert larger than a record'
+    return None
 
 
 EXPERT_NAME = expert_pattern('deepseek')
@@ -195,8 +202,9 @@ def expert_entry(scales, weights):
 
 def pack(out_path, sources, clib=None, experts=None, nr3=None, part_bytes=64 << 20, family='deepseek', report=None):
     """safetensors files -> one WEX4 file. experts: None (tensors as they come), 'raw' or 'nr3' (expert records).
-    family: the naming profile that says which tensors are routed experts. An expert whose tensors are not a
-    whole MXFP4 slab (a float or FP8 layer of a mixed checkpoint, a missing tensor) stays ordinary tensors.
+    family: the naming profile that says which tensors are routed experts. An expert with a tensor that is not
+    MXFP4 (a float or FP8 layer of a mixed checkpoint) stays ordinary tensors. An expert whose tensors are all
+    MXFP4 must be a whole slab: a missing tensor (a missing shard, the wrong profile) or a wrong shape is refused.
     report: a dict that receives 'expert_records' and 'experts_as_tensors'."""
     records, empty, meta_sources, indexed = [], [], [], []
     seen = set()
@@ -227,9 +235,12 @@ def pack(out_path, sources, clib=None, experts=None, nr3=None, part_bytes=64 << 
                 part = (matrices.index(match[3].decode()), match[4].decode() == weight_suffix)
                 expert_groups.setdefault(key, {})[part] = (wex4.Tensor(name, dtype, shape, end - begin),
                                                            reader(path, start, begin, end))
-    as_tensors = [key for key, parts in expert_groups.items() if not mxfp4_slab(parts)]
+    as_tensors = [key for key, parts in expert_groups.items() if not mxfp4_dtypes(parts)]
     for key in as_tensors:
         del expert_groups[key]
+    for (layer, expert), parts in sorted(expert_groups.items()):
+        problem = mxfp4_slab(parts)
+        need(not problem, f'L{layer} E{expert}: {problem} under naming profile {family!r}')
     in_slab = {spec.name for parts in expert_groups.values() for spec, _ in parts.values()}
     if report is not None:
         report.update(expert_records=len(expert_groups), experts_as_tensors=len(as_tensors))
@@ -540,12 +551,15 @@ def main(argv):
         mode = option('--experts')
         need(mode in (None, 'raw', 'nr3'), '--experts takes raw or nr3')
         nr3 = Nr3(option('--nr3-dll'), option('--model'), '--cz' in argv) if mode == 'nr3' else None
-        report = {}
-        root = pack(positional[0], positional[1:], clib, mode, nr3, int(option('--part-mib', '64')) << 20,
-                    option('--names', 'deepseek'), report)
+        need(mode or '--names' not in argv, 'pack: --names needs --experts raw or nr3')
+        report, family = {}, option('--names', 'deepseek')
+        root = pack(positional[0], positional[1:], clib, mode, nr3, int(option('--part-mib', '64')) << 20, family, report)
         if mode:
             print(f'{report["expert_records"]} expert records; {report["experts_as_tensors"]} experts kept as ordinary '
-                  f'tensors (not a whole MXFP4 slab)')
+                  f'tensors (float or FP8, not MXFP4)')
+            if not report['expert_records']:
+                print(f'warning: --experts made no expert record: no MXFP4 expert has the names of profile {family!r} '
+                      f'(--names; one of {", ".join(PROFILES)})', file=sys.stderr)
         print('root', root.hex())
     elif argv[1] == 'unpack':
         for name, ok in unpack(positional[0], positional[1], clib):

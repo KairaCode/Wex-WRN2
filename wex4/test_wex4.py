@@ -19,6 +19,7 @@ import os
 import random
 import shutil
 import struct
+import subprocess
 import sys
 import time
 
@@ -51,6 +52,15 @@ def rejected(fn, *args):
     except wex4.FormatError:
         return True
     return False
+
+
+def refusal(fn, *args):
+    """The message of the FormatError fn raises; '' when it raises none."""
+    try:
+        fn(*args)
+    except wex4.FormatError as error:
+        return str(error)
+    return ''
 
 
 def py_verdict(data):
@@ -311,35 +321,62 @@ def test_profiles():
         assert not rd.layers and not any(rec[4] & wex4.REC_EXPERT for rec in rd.records) and not report['expert_records']
         rd.f.close()
     assert conv.unpack(out, back, C) == [('model.safetensors', True)]
+    # the command line: the right profile is silent on stderr; a profile that finds no expert warns there;
+    # --names without --experts is refused
+    def run(*args):
+        done = subprocess.run([sys.executable, '-I', os.path.join(HERE, 'wex4_convert.py'), 'pack', out, source,
+                               '--dll', os.path.join(WORK, 'wex4_tools.dll'), *args],
+                              capture_output=True, text=True)
+        return done.returncode, done.stdout, done.stderr
+    code, text, errors = run('--experts', 'raw', '--names', 'qwen3-moe')
+    assert code == 0 and text.startswith('6 expert records; 0 experts kept') and not errors, (code, text, errors)
+    code, text, errors = run('--experts', 'raw')
+    assert code == 0 and text.startswith('0 expert records; 0 experts kept') and errors.startswith('warning: '), (code, text, errors)
+    code, text, errors = run('--names', 'qwen3-moe')
+    assert code != 0 and '--names needs --experts' in errors, (code, text, errors)
+    # AMD's export of DeepSeek under DeepSeek's own names: three of the six tensors match, which is refused
+    quark = os.path.join(WORK, 'prof', 'deepseek-quark', 'model.safetensors')
+    assert refusal(conv.pack, out, [quark], C, 'raw').startswith('L0 E0: incomplete expert (3 of 6 tensors)')
     # tensors that only look like experts stay ordinary tensors: a name with something before or after the
-    # pattern, an index with a leading zero, a slab with a missing tensor, a wrong dtype, a wrong shape
+    # pattern, an index with a leading zero, a dtype that is not MXFP4
     def slab(prefix, layer, expert, skip=(), dtype='U8', cols=2):
         return [(f'{prefix}model.layers.{layer}.mlp.experts.{expert}.{matrix}.{suffix}', dtype, (4, cols * 16 if k else cols),
-                 skewed(4 * (cols * 16 if k else cols) * (2 if dtype == 'I16' else 1)))
+                 skewed(4 * (cols * 16 if k else cols) * (1 if dtype == 'U8' else 2)))
                 for matrix in ('gate_proj', 'down_proj', 'up_proj') for k, suffix in enumerate(('weight_scale', 'weight'))
                 if (matrix, suffix) not in skip]
     source = os.path.join(WORK, 'near.safetensors')
-    tensors = slab('', 0, 0) + slab('mtp.', 0, 0) + slab('', '00', 1) + slab('', 0, 2, [('up_proj', 'weight_scale')]) + \
-        slab('', 0, 3, dtype='I16', cols=1) + [(n + '.bias', d, s, v) for n, d, s, v in slab('', 0, 4)]
-    wrong = slab('', 1, 0)
-    wrong[1] = (wrong[1][0], 'U8', (4, 30), skewed(120))   # the weight is not 16 bytes per scale
-    st_write(source, tensors[1:] + wrong)
-    st_write(os.path.join(WORK, 'near2.safetensors'), tensors[:1])   # one tensor of the good expert is in a second file
+    tensors = slab('', 0, 0) + slab('mtp.', 0, 0) + slab('', '00', 1) + slab('', 0, 3, dtype='I16', cols=1) + \
+        slab('', 0, 5, [('up_proj', 'weight_scale')], dtype='BF16') + [(n + '.bias', d, s, v) for n, d, s, v in slab('', 0, 4)]
+    second = os.path.join(WORK, 'near2.safetensors')
+    st_write(source, tensors[1:])
+    st_write(second, tensors[:1])   # one tensor of the good expert is in a second file
     report = {}
-    conv.pack(out, [source, os.path.join(WORK, 'near2.safetensors')], C, 'raw', family='qwen3-moe', report=report)
+    conv.pack(out, [source, second], C, 'raw', family='qwen3-moe', report=report)
     data = open(out, 'rb').read()
     assert C.check(data, 3, True) == (0, wex4.check(data, True, C))
     rd = wex4.Reader(io.BytesIO(data), C)
     assert [rec[6] for rec in rd.records if rec[4] & wex4.REC_EXPERT] == [0] and (rd.layers, rd.experts) == (1, 1)
-    assert report == {'expert_records': 1, 'experts_as_tensors': 3}, report
+    assert report == {'expert_records': 1, 'experts_as_tensors': 2}, report
     assert conv.unpack(out, os.path.join(WORK, 'pb2'), C) == [('near.safetensors', True), ('near2.safetensors', True)]
     for file in ('near.safetensors', 'near2.safetensors'):
         assert open(os.path.join(WORK, 'pb2', file), 'rb').read() == open(os.path.join(WORK, file), 'rb').read()
+    # an MXFP4 expert that is not a whole slab is refused, and no output file is left: a missing file (the
+    # expert above without its second file), a missing tensor, a weight that is not 16 bytes per scale byte
+    os.remove(out)
+    assert refusal(conv.pack, out, [source], C, 'raw', None, 64 << 20, 'qwen3-moe').startswith('L0 E0: incomplete expert (5 of 6')
+    st_write(source, slab('', 0, 0) + slab('', 1, 2, [('up_proj', 'weight_scale')]))
+    assert refusal(conv.pack, out, [source], C, 'raw', None, 64 << 20, 'qwen3-moe').startswith('L1 E2: incomplete expert (5 of 6')
+    wrong = slab('', 1, 0)
+    wrong[1] = (wrong[1][0], 'U8', (4, 30), skewed(120))
+    st_write(source, slab('', 0, 0) + wrong)
+    assert refusal(conv.pack, out, [source], C, 'nr3', nr3, 64 << 20, 'qwen3-moe').startswith('L1 E0: expert tensor shape')
+    assert not os.path.exists(out)
     assert rejected(conv.upgrade, work, True, 'no-such-profile') and rejected(conv.pack, out, [source], C, 'raw', None, 1 << 20, 'x')
     print(f'naming profiles ({", ".join(names)}): on a synthetic fixture each (2 layers x 3 experts, the same expert '
           f'bytes), pack with RAW and with WNR3 expert records ({coded} of {6 * len(names)} coded) and unpack byte-identical; '
           f'upgrade of a WEX1 and a WNR3 container gives the fixture\'s tensors by name, downgrade exact; '
-          f'an expert split over two files is one record; a float layer and near-miss names stay ordinary tensors')
+          f'an expert split over two files is one record; a float layer and near-miss names stay ordinary tensors; '
+          f'an MXFP4 expert with a missing tensor or a wrong shape is refused; a profile that finds no expert warns')
 
 
 def test_store():

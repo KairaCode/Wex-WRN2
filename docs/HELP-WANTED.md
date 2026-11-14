@@ -60,7 +60,7 @@ Labels you may see on issues: **good first issue** (a few hours, little context)
 
 - **Today:** [wex4_convert.py](../wex4/wex4_convert.py) has eight naming profiles (`--names`, for `pack`
   and for `upgrade`): `deepseek`, `deepseek-quark`, `qwen38`, `qwen3-moe` (also Kimi K2, GLM-4.7 and 5.1,
-  DeepSeek R1 and V3.2), `kimi-k26`, `mixtral` (also MiniMax-M2), `minimax-m3` (also Kimi K3) and
+  DeepSeek R1 and V3.2), `kimi-k26`, `mixtral` (also MiniMax-M2.1), `minimax-m3` (also Kimi K3) and
   `mistral-large4`. The table, with the checkpoint each profile's names were read in, is in
   [wex4/README.md](../wex4/README.md#naming-profiles). Each has a synthetic fixture
   (`fixtures/make_synth_mxfp4.py --names`) on which pack → verify → unpack and upgrade → verify →
@@ -69,7 +69,11 @@ Labels you may see on issues: **good first issue** (a few hours, little context)
   fixtures only, and the names were read in two shards per checkpoint. Pack a real MXFP4 checkpoint of
   one of these families with `pack --experts raw --names PROFILE`, run `wex4.py verify` and `unpack`, and
   report the line `pack` prints (expert records, experts kept as ordinary tensors), the sizes and
-  whether every file came back with its SHA-256.
+  whether every file came back with its SHA-256. If `pack` stops with `incomplete expert` although all
+  the shards were given, the profile does not fit that export: report the names.
+- **Still open:** which of w1, w2, w3 is the gate, the down and the up matrix for `mixtral`,
+  `minimax-m3` and `mistral-large4`, checked against the model code. The slab order is by number; an
+  engine needs the answer, the converter does not.
 - **Still open:** a profile for a family that is not in the table. It has to be an MXFP4 checkpoint with
   three matrices per expert and one group of tensors per expert, which is what an expert record holds.
   Add its row to `PROFILES` in the converter and to `NAMES` in the fixture script (the test fails when
