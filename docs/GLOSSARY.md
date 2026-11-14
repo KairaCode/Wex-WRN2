@@ -95,7 +95,7 @@ Back to the [documentation index](README.md).
 
 ## Engine and host
 
-**colibri.** The inference engine these formats plug into: C sources in one folder (`c/` upstream, `src/colibri/c` in the maintainer's tree), one executable per model family. `deepseek_v4` and `qwen38` are the two that read these containers. "Stock" or "upstream" colibri is the public engine without the maintainer's changes. *Source: `docs/reports/colibri-integration-20261109.md` section 2.*
+**colibri.** The inference engine these formats plug into: C sources in one folder (`c/` upstream, `src/colibri/c` in the maintainer's tree), one executable per model family. `deepseek_v4` and `qwen38` are the two that read these containers. "Stock" or "upstream" colibri is the public engine without the maintainer's changes; "the fork" is the maintainer's tree with them. *Source: `docs/reports/colibri-integration-20261109.md` section 2.*
 
 **U: and C:.** The two NVMe drives of the test machine, U: on PCIe 4 and C: on PCIe 5, each holding a full copy of the production containers; the engines split reads 38/62 between them. *Source: `docs/BENCHMARKS.md`.*
 
