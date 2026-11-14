@@ -38,7 +38,7 @@ From [WEX4-SPEC](docs/WEX4-SPEC.md), sections 8.4 and 9:
 
 ## Testing, and its gaps
 
-- `bash wex4/build_and_test.sh` runs 46 hand-made hostile files, mutation fuzzing in three modes in C and in Python, and a differential test in which the C and Python readers must agree on every verdict and content digest.
+- `bash wex4/build_and_test.sh` runs 94 hand-made hostile files, mutation fuzzing in three modes in C and in Python, and a differential test in which the C and Python readers must agree on every verdict and content digest.
 - An adversarial review of the spec and the prototype was made on 2026-11-11: [wex4/review/REVIEW.md](wex4/review/REVIEW.md).
 - The guard pages that turn an out-of-bounds access into a crash during fuzzing exist only in the Windows build of `wex4/wex4_tools.c` (`VirtualAlloc`); elsewhere the fuzzer runs without them. There is no sanitizer build and no continuous fuzzing.
 - The Python tools load whatever library path they are given (`wex4.py --dll`, `c/tools/build_nr3.py`): only pass them a library you built yourself.

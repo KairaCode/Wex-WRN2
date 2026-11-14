@@ -161,7 +161,7 @@ The index encoding is **canonical**: once the writer has fixed the layout, the g
 | 16 | 2 | codec | 0 RAW, 5 WNR3, 6 WBP1 (section 7). Unknown, on a record that is neither EXPERT nor VALUE_EXACT: the file is still valid, that record cannot be decoded |
 | 18 | 2 | flags | bit 0 VALUE_EXACT, bit 1 EXPERT. Any other bit: the file is refused |
 | 20 | 4 | blob | 0 = none, else 1 + index of the record's blob (codec 5: its WNM2 model) |
-| 24 | 4 | owner | EXPERT: `layer << 16 | expert`, strictly increasing over the expert records. Else: the record's own index |
+| 24 | 4 | owner | EXPERT: `layer << 16 | expert` with `layer < num_layers` and `expert < num_experts`, strictly increasing over the expert records. Else: the record's own index |
 | 28 | 4 | first_tensor | index of the record's first tensor; for a continuation part, the index of the tensor it belongs to |
 | 32 | 4 | tensor_count | tensors that tile this record (>= 1), or 0 for a continuation part |
 | 36 | 32 | sha256 | of the `stored_bytes` bytes on disk |
@@ -620,7 +620,7 @@ A **conforming reader**:
 
 A **conforming writer** produces files that a conforming reader accepts: they pass every rule of section 6, every extent is 4096-aligned and the file is tiled exactly, every hash is correct, and the index is in the canonical encoding of section 5.
 
-The reference outcomes are the files of `wex4/vectors/` and their `MANIFEST.tsv` ([wex4/vectors/README.md](../wex4/vectors/README.md)): 7 valid files with their roots, 46 invalid ones, a WEX3 file whose in-place upgrade must give one of the valid files byte for byte, and the trigger files of the 2026-11-11 security review. `c/wex4.h` and `wex4/wex4.py`, written independently of each other, give the verdicts of the manifest; `bash wex4/build_and_test.sh` checks this on every run.
+The reference outcomes are the files of `wex4/vectors/` and their `MANIFEST.tsv` ([wex4/vectors/README.md](../wex4/vectors/README.md)): 7 valid files with their roots, 94 invalid ones, a WEX3 file whose in-place upgrade must give one of the valid files byte for byte, and the trigger files of the 2026-11-11 security review. `c/wex4.h` and `wex4/wex4.py`, written independently of each other, give the verdicts of the manifest; `bash wex4/build_and_test.sh` checks this on every run.
 
 ---
 
@@ -631,3 +631,4 @@ The reference outcomes are the files of `wex4/vectors/` and their `MANIFEST.tsv`
 | 2026-11-11 | Format version 4.0 frozen after the adversarial review; in production for DeepSeek V4.1 and Qwen3.8 |
 | 2026-11-12 | The document moved from `docs/NEXT-FORMAT-SPEC.md` (now a stub) to this file; no format change |
 | 2026-11-13 | Revision: version header and conventions; informative sections marked; sections 8.2, 13.2, 13.3 and 16 brought to the engine of 2026-11-13 (qwen38 first-read SHA-256, refusal of a legacy file under a pinned root, `wex4_verify`, hash pool measured); section 17, conformance, added with the vectors. No format change |
+| 2026-11-14 | Section 17: 94 invalid vectors (48 added). Section 5.2, `owner` of an EXPERT record: the bound by the expert grid, which both readers already enforced, is now written. No format change |

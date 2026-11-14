@@ -322,10 +322,17 @@ def test_hostile(base):
     ten0 = rec0 + nr * 72
     order0 = ten0 + nt * 96
 
-    def patch(edits, seal=True):
+    names0 = order0 + nt * 4
+    rec = rd.records
+    order = struct.unpack_from('<2I', base, order0)
+
+    def patch(edits, seal=True, record=None):
         blob = bytearray(base)
         for at, fmt, value in edits:
             struct.pack_into(fmt, blob, at, value)
+        if record is not None:   # the edit is inside a record: its own SHA-256 follows, so the decoder is reached
+            entry = rec0 + record * 72
+            blob[entry + 36:entry + 68] = hashlib.sha256(blob[rec[record][0]:rec[record][0] + rec[record][1]]).digest()
         return bytes(reseal(blob) if seal else blob)
     attacks = {
         'bad magic': patch([(0, '<I', 0x57455833)]),
@@ -372,6 +379,37 @@ def test_hostile(base):
         'truncated file': base[:-4096],
         'appended bytes (polyglot tail)': base + bytes(4096),
         'only half a header page': base[:2048],
+        # hashes, padding and record data (the last three reach the decoders: WEX4_E_DATA)
+        'non-zero byte in the index padding': patch([(rd.index_offset + rd.index_bytes, '<B', 1)], False),
+        'index bit flip, hash not fixed': patch([(rec0 + 12, '<I', rec[0][2] ^ 1)], False),
+        'record bit flip, hash not fixed': patch([(rec[0][0] + 100, '<B', base[rec[0][0] + 100] ^ 1)], False),
+        'non-zero byte in the padding of a raw record, record hash fixed': patch([(rec[0][0] + rec[0][2], '<B', 1)], record=0),
+        'WBP1 record header damaged, record hash fixed': patch([(rec[2][0] + 5, '<B', base[rec[2][0] + 5] ^ 0x40)], record=2),
+        'WBP1 record stream damaged, record hash fixed':
+            patch([(rec[2][0] + 9000, '<B', base[rec[2][0] + 9000] ^ 0x40)], record=2),
+        # header and record entries
+        'file size not a multiple of 4096': bytes(reseal(bytearray(base[:24] + struct.pack('<Q', len(base) + 1) +
+                                                                    base[32:] + b'\0'))),
+        'index offset 0': patch([(32, '<Q', 0)]),
+        'meta_bytes above the cap': patch([(80, '<Q', (1 << 28) + 1)]),
+        'non-zero reserved bytes after a record hash': patch([(rec0 + 68, '<I', 1)]),
+        'record decoded_bytes 0': patch([(rec0 + 12, '<I', 0)]),
+        'unknown codec on a record of raw size': patch([(rec0 + 16, '<H', 7)]),
+        'WNR3 record without the expert flag': patch([(rec0 + 2 * 72 + 16, '<H', 5)]),
+        'continuation record with a tensor': patch([(rec0 + 5 * 72 + 32, '<I', 1)]),
+        'split tensor one part short': patch([(ten0 + 6 * 96 + 76, '<I', 2)]),
+        'records out of file order': patch([(rec0, '<Q', rec[1][0]), (rec0 + 72, '<Q', rec[0][0])]),
+        # tensor entries and names
+        'tensor dtype and size disagree': patch([(ten0 + 6, '<B', 13)]),
+        'tensor nbytes 0 for a non-empty shape': patch([(ten0 + 88, '<Q', 0)]),
+        'tensor shape beyond its rank': patch([(ten0 + 8 + 16, '<Q', 1)]),
+        'zero-size tensor that names a record': patch([(ten0 + 10 * 96 + 72, '<I', 1)]),
+        'opaque tensor of zero bytes inside a record': patch([(ten0 + 9 * 96 + 88, '<Q', 0)]),
+        'name order not sorted': patch([(order0, '<I', order[1]), (order0 + 4, '<I', order[0])]),
+        'tensor names shorter than the name pool': patch([
+            (ten0 + 10 * 96 + 4, '<H', 4), (ten0 + 11 * 96, '<I', struct.unpack_from('<I', base, ten0 + 11 * 96)[0] - 1)]),
+        'tensor name with a UTF-8 surrogate': patch([(names0, '<B', 0xed), (names0 + 1, '<B', 0xa0), (names0 + 2, '<B', 0x80)]),
+        'tensor name with an overlong UTF-8 form': patch([(names0, '<B', 0xc0), (names0 + 1, '<B', 0xae)]),
     }
     names = bytearray(base)
     names[order0 + nt * 4] = 0   # NUL in a name
@@ -394,7 +432,62 @@ def test_hostile(base):
     return attacks, accepted
 
 
-C_STATUS = {0: '-', -1: 'WEX4_E_ARG', -2: 'WEX4_E_MAGIC', -3: 'WEX4_E_HASH', -4: 'WEX4_E_VERSION', -5: 'WEX4_E_FEATURE',
+def test_hostile_experts(base):
+    """Hand-made attacks on a container with a model blob and WNR3 expert records (the upgraded 2-expert file)."""
+    rd = wex4.Reader(io.BytesIO(base), C)
+    blob0 = rd.index_offset
+    rec0 = blob0 + len(rd.blobs) * 64
+    ten0 = rec0 + len(rd.records) * 72
+    rec, model = rd.records, rd.blobs[0]
+    assert model[0] == wex4.BLOB_WNM2 and len(rd.blobs) == 3 and [r[3] for r in rec] == [5, 5], 'base file changed'
+
+    def patch(edits, seal=True, record=None):
+        blob = bytearray(base)
+        for at, fmt, value in edits:
+            struct.pack_into(fmt, blob, at, value)
+        if record is not None:
+            entry = rec0 + record * 72
+            blob[entry + 36:entry + 68] = hashlib.sha256(blob[rec[record][0]:rec[record][0] + rec[record][1]]).digest()
+        return bytes(reseal(blob) if seal else blob)
+    attacks = {
+        # blob entries and blob bytes
+        'WNM2 blob of the wrong size': patch([(blob0 + 16, '<Q', model[3] + 1)]),
+        'WNM2 blob with id 0': patch([(blob0 + 4, '<I', 0)]),
+        'WNM2 blob id differs from its model': patch([(blob0 + 4, '<I', model[1] ^ 1)]),
+        'blob of zero bytes': patch([(blob0 + 64 + 16, '<Q', 0)]),
+        'non-zero reserved bytes after a blob hash': patch([(blob0 + 56, '<Q', 1)]),
+        'blob bit flip, hash not fixed': patch([(model[2] + 100, '<B', base[model[2] + 100] ^ 1)], False),
+        'non-zero byte in the padding of a blob': patch([(model[2] + model[3], '<B', 1)], False),
+        # WNR3 record entries
+        'WNR3 record without a model blob': patch([(rec0 + 20, '<I', 0)]),
+        'WNR3 record whose blob is not a WNM2 model': patch([(rec0 + 20, '<I', 2)]),
+        'record blob index past the blob table': patch([(rec0 + 20, '<I', len(rd.blobs) + 1)]),
+        'value-exact record without the required feature': patch([(8, '<Q', 0)]),
+        'expert record stored as WBP1': patch([(rec0 + 16, '<H', 6)]),
+        'raw expert record with a model blob': patch([(rec0 + 16, '<H', 0)]),
+        # the expert grid and the six tensors of an expert
+        'expert owner layer outside the grid': patch([(rec0 + 72 + 24, '<I', rd.layers << 16)]),
+        'expert owner expert outside the grid': patch([(rec0 + 72 + 24, '<I', rd.experts)]),
+        'expert grid smaller than the owners': patch([(64, '<I', 1)]),
+        'expert owners not increasing': patch([(rec0 + 72 + 24, '<I', 0)]),
+        'expert tensor of rank 1': patch([(ten0 + 7, '<B', 1), (ten0 + 8, '<Q', 256), (ten0 + 16, '<Q', 0)]),
+        'expert scale tensor with another dtype': patch([(ten0 + 6, '<B', 3)]),
+        'expert weight tensor with another dtype': patch([(ten0 + 3 * 96 + 6, '<B', 5)]),
+        # record data against the index (they reach the WNR3 decoder: WEX4_E_DATA)
+        'canonical-zero WNR3 data without the value-exact flag': patch([(rec0 + 18, '<H', 2)]),
+        'WNR3 record owner differs from the owner in its data': patch([(rec0 + 24, '<I', 1), (rec0 + 72 + 24, '<I', 2)]),
+        'WNR3 stream damaged, record hash fixed': patch([(rec[0][0] + 6000, '<B', base[rec[0][0] + 6000] ^ 1)], record=0),
+    }
+    for label, blob in attacks.items():
+        c_status = C.check(blob, 3, True)[0]
+        assert c_status != 0 and CREF.check(blob, 3, True)[0] == c_status and py_verdict(blob)[0] != 0, \
+            f'{label}: C {c_status}, Python {py_verdict(blob)[0]}'
+    print(f'hostile expert files: {len(attacks)} hand-made attacks on blobs, WNR3 records and the expert grid '
+          f'rejected by C (fast and reference decoder) and Python')
+    return attacks
+
+
+C_STATUS ={0: '-', -1: 'WEX4_E_ARG', -2: 'WEX4_E_MAGIC', -3: 'WEX4_E_HASH', -4: 'WEX4_E_VERSION', -5: 'WEX4_E_FEATURE',
             -6: 'WEX4_E_HEADER', -7: 'WEX4_E_INDEX', -8: 'WEX4_E_BLOB', -9: 'WEX4_E_RECORD', -10: 'WEX4_E_TENSOR',
             -11: 'WEX4_E_NAME', -12: 'WEX4_E_LAYOUT', -13: 'WEX4_E_EXPERT', -14: 'WEX4_E_DATA', -15: 'WEX4_E_UNSUPPORTED'}
 
@@ -539,6 +632,9 @@ def main():
     test_wnr3_exact()
     test_store()
     hostile = test_hostile(generic)
+    expert_attacks = test_hostile_experts(upgraded)
+    assert not set(expert_attacks) & set(hostile[0])
+    hostile[0].update(expert_attacks)   # one vector per attack, whatever its base file
     test_fuzz([('generic', generic), ('upgraded WNR3-CZ, 2 experts', upgraded), ('tiny model, WNR3-CZ', tiny)])
     if '--write-vectors' in sys.argv:
         write_vectors(sys.argv[sys.argv.index('--write-vectors') + 1], generic, hostile)
