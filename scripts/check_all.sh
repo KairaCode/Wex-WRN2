@@ -3,6 +3,7 @@
 # Copyright 2026 Ludovico Zanichelli
 # Every check that needs no GPU, no model and no engine tree, in one command; the entry point of README,
 # CONTRIBUTING and CI. Windows: MSYS2 UCRT64 or MINGW64 gcc and python on PATH. Linux: gcc and PYTHON=python3.
+# macOS: PYTHON=python3 and a GNU gcc in CC (Homebrew: CC=gcc-15); the two build scripts read CC, default gcc.
 # Usage: bash scripts/check_all.sh     (last line on success: all checks passed)
 set -eu
 cd "$(dirname "$0")/.."

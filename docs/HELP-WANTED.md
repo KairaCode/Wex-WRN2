@@ -40,12 +40,14 @@ Labels you may see on issues: **good first issue** (a few hours, little context)
   of the ASan runtime). Still open: MemorySanitizer or ThreadSanitizer runs (clang), and the GPU code.
 - **More test vectors:** hostile files that [wex4/vectors](../wex4/vectors/README.md) does not cover yet
   (each with its `MANIFEST.tsv` row and the expected verdict from both readers).
-- **macOS job in CI, NEON decoder:** CI runs on Linux (x86-64 and ARM64) and Windows. On a CPU that is
-  not x86 `wex4/build_and_test.sh` drops `-march=haswell`, so the fast CPU decoder builds its scalar
-  kernel only. Still open: a macOS job (the scripts call `gcc` and link with `-fopenmp`), good first
-  issue; a NEON version of the AVX2 kernels in `wex4/research/fast-cpu-decode/wex_fast_decode.h`,
-  byte-identical to the reference on the vectors and with a speed number against the scalar kernel,
-  help wanted.
+- **NEON decoder, more of macOS:** CI runs on Linux (x86-64 and ARM64), macOS (Apple silicon) and
+  Windows. On a CPU that is not x86 `wex4/build_and_test.sh` drops `-march=haswell`, so the fast CPU
+  decoder builds its scalar kernel only. Still open: a NEON version of the AVX2 kernels in
+  `wex4/research/fast-cpu-decode/wex_fast_decode.h`, byte-identical to the reference on the vectors and
+  with a speed number against the scalar kernel, help wanted. On macOS the `macos` job builds with a
+  Homebrew GNU gcc named in `CC`; not tried, and a good first issue each: Apple clang with `libomp`
+  (Apple clang ships no OpenMP runtime of its own), an Intel Mac, and the libFuzzer harnesses of
+  `wex4/fuzz/` there (only `wex4/fuzz/run.sh --replay` was run on macOS, once).
 
 ## 4. A second, independent implementation
 
@@ -104,8 +106,8 @@ listed above as well.
   experts first (#2822-#2825 are open), then the WEX4 container, the WNR3 codec and its GPU decode, and
   the I/O switches. Reviewing or testing those PRs on your hardware helps directly.
 - **WNR3 decode on Vulkan** *(open to you, section 6)*.
-- **ARM:** the CPU decoder path without AVX2 and the ARM CI job are in (scalar kernel); a NEON version
-  is still open *(open to you, section 3)*.
+- **ARM:** the CPU decoder path without AVX2 and the ARM CI jobs (Linux, and macOS on Apple silicon)
+  are in (scalar kernel); a NEON version is still open *(open to you, section 3)*.
 - **Linux I/O in the engine:** the fast read paths were built and measured on Windows; Linux needs its
   own measurements and tuning *(open to you, section 7)*.
 - **Measurements not done yet** (they need the full models, so they stay with the maintainer, see

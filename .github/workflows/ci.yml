@@ -1,5 +1,5 @@
 # CPU checks of the repository: check_repo.py, the stdlib tests, the WEX1-3/WNR3 CPU check and the
-# WEX4 tests (scripts/check_all.sh). No GPU, no model weights, no secrets.
+# WEX4 tests (scripts/check_all.sh), on Linux (x86-64, ARM64), macOS (Apple silicon) and Windows. No GPU, no model weights, no secrets.
 name: CI
 
 on:
@@ -48,6 +48,27 @@ jobs:
           persist-credentials: false
       - name: All CPU checks
         run: bash scripts/check_all.sh
+
+  # the same checks on macOS, Apple silicon: ARM64 again (scalar kernel), with 16 KiB memory pages and the Mach-O
+  # linker. The gcc of Xcode is Apple clang, which has no OpenMP runtime, so CC names a GNU gcc of Homebrew: the
+  # runner image ships several (gcc-13, gcc-14, ...) and the step takes the newest, so no package is downloaded
+  macos:
+    runs-on: macos-15
+    timeout-minutes: 15   # a green run takes about 3 minutes (two runs)
+    env:
+      PYTHON: python3
+      USER: ""
+      USERNAME: ""
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
+      - name: All CPU checks
+        run: |
+          CC=$(ls "$(brew --prefix)"/bin/gcc-[0-9]* | sort -t- -k2 -n | tail -1)
+          export CC
+          uname -sm; getconf PAGESIZE; "$CC" --version | head -1; "$PYTHON" --version
+          bash scripts/check_all.sh
 
   windows:
     runs-on: windows-2022
