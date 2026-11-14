@@ -1,6 +1,7 @@
 # CPU checks of the repository: check_repo.py, the stdlib tests, the WEX1-3/WNR3 CPU check and the
 # WEX4 tests (scripts/check_all.sh), then the fuzzing harnesses replayed on their seeds (wex4/fuzz/run.sh --replay),
-# on Linux (x86-64, ARM64), macOS (Apple silicon) and Windows. No GPU, no model weights, no secrets.
+# on Linux (x86-64, ARM64), macOS (Apple silicon) and Windows; and the Go reader on the conformance vectors.
+# No GPU, no model weights, no secrets.
 name: CI
 
 on:
@@ -207,3 +208,17 @@ jobs:
           persist-credentials: false
       - name: C tests under MemorySanitizer
         run: bash scripts/sanitize_c.sh msan
+
+  # the Go reader of WEX4 (impl/go-wex4: Go, standard library only, written from the specifications and not
+  # from the reference code): gofmt, go vet, its tests, and every row of wex4/vectors/MANIFEST.tsv. It is not
+  # part of scripts/check_all.sh, so that Go is not needed for the repository's checks. The runner's own Go
+  # is used (the code needs the min and max builtins of Go 1.21 and no module)
+  go-reader:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
+      - name: Go reader on the conformance vectors
+        run: bash impl/go-wex4/run.sh
