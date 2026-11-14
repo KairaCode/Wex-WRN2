@@ -1,5 +1,6 @@
 # CPU checks of the repository: check_repo.py, the stdlib tests, the WEX1-3/WNR3 CPU check and the
-# WEX4 tests (scripts/check_all.sh). No GPU, no model weights, no secrets.
+# WEX4 tests (scripts/check_all.sh). No GPU, no model weights, no secrets. A run started by hand also has
+# the linux-vulkan job (the WNR3 Vulkan prototype on a CPU Vulkan device).
 name: CI
 
 on:

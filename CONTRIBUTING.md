@@ -69,7 +69,7 @@ A committed run folder is frozen. A later correction is a dated note at the top 
 
 | Kind | Where | Rule |
 |---|---|---|
-| Living page | `README.md`, `STATUS.md`, `CHANGELOG.md`, `SECURITY.md`, the folder READMEs, `docs/*.md` (index, architecture, glossary, benchmarks, integration guide, WNR2 reference, WNR3 and WEX4 specifications) | says what is true today; edited whenever that changes. What runs in production is decided in `STATUS.md`; another page may repeat it only as a dated summary with a link to `STATUS.md`, and is corrected from it |
+| Living page | `README.md`, `STATUS.md`, `CHANGELOG.md`, `SECURITY.md`, the folder READMEs, `docs/*.md` (index, architecture, glossary, benchmarks, integration guide, WNR2 reference, WNR3 and WEX4 specifications, the Vulkan design note) | says what is true today; edited whenever that changes. What runs in production is decided in `STATUS.md`; another page may repeat it only as a dated summary with a link to `STATUS.md`, and is corrected from it |
 | Dated report | `docs/reports/<topic>-YYYYMMDD.md` (`.it.md` when Italian) | records one moment; not edited afterwards, except for a note on top that names what superseded it |
 | Research run | `research/<topic>-YYYYMMDD/` | rule 4 |
 
