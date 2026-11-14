@@ -115,7 +115,7 @@ Every measurement table: [docs/BENCHMARKS.md](docs/BENCHMARKS.md). Format change
 
 ## Try it in ten minutes
 
-No GPU and no model are needed. Prerequisites: an x86-64 CPU with AVX2 (one test builds with `-march=haswell`) or a 64-bit ARM CPU (there that test builds the scalar kernel of the fast decoder instead), `bash`, `gcc` and Python 3 (standard library only).
+No GPU and no model are needed. Prerequisites: an x86-64 CPU with AVX2 (one test builds with `-march=haswell`) or a 64-bit ARM CPU (there that test builds the NEON kernel of the fast decoder instead), `bash`, `gcc` and Python 3 (standard library only).
 
 - **Windows:** [MSYS2](https://www.msys2.org/) with the UCRT64 packages `mingw-w64-ucrt-x86_64-gcc`, `mingw-w64-ucrt-x86_64-libgomp` (two tests link with `-fopenmp`) and `mingw-w64-ucrt-x86_64-python` (or Git Bash with that `gcc` on `PATH`).
 - **Linux:** `gcc` and `python3`, and `export PYTHON=python3`. Linux is checked by CI (ubuntu-24.04, on x86-64 and on ARM64); the maintainer's machines are Windows.

@@ -3,7 +3,7 @@
 # Copyright 2026 Ludovico Zanichelli
 # WEX4 prototype: build the tools and run every test. CPU only, no real model needed.
 #   1. wex4/wex4_tools.c -> wex4_tools.dll (validator, codecs, in-process fuzzer) with the fast WNR3 CPU decoder
-#      (AVX2 + OpenMP on x86, scalar + OpenMP elsewhere), and wex4_tools_ref.dll with the reference decoder: the tests require the same results
+#      (AVX2 + OpenMP on x86, NEON + OpenMP on AArch64, scalar + OpenMP elsewhere), and wex4_tools_ref.dll with the reference decoder: the tests require the same results
 #   2. c/tools/wex_nr3_tools.c -> wex_nr3_tools.dll; fixtures/v41-tiny -> tiny.wex (WEX1) -> tiny_cz.wex (WNR3-CZ)
 #   3. wex4/test_wex4.py
 # Windows: MSYS2 UCRT64 or MINGW64 gcc on PATH, python 3 (stdlib only). Linux: gcc and PYTHON=python3.
@@ -24,16 +24,21 @@ esac
 # -fsanitize=address,undefined there)
 W="-O2 -Wall -Wextra -Wno-unused-parameter -Wno-unused-function ${WEX_CFLAGS-}"
 gcc $W $SO -I "$ROOT/c" "$ROOT/wex4/wex4_tools.c" -o "$S/wex4_tools_ref.dll"
-# the AVX2 kernels of the fast decoder exist on x86 only (-march=haswell: AVX2, BMI, BMI2, LZCNT). On any other
-# CPU (ARM, RISC-V, ...) the same source builds its scalar kernel 0: the reference loop per stream, parallel
-# across streams, so the fast-versus-reference tests still compare two decoders. WEX4_MARCH overrides the choice
-# (WEX4_MARCH= on x86 runs the scalar kernel there).
+# the fast decoder picks its kernels when it is compiled: AVX2 on x86 (-march=haswell: AVX2, BMI, BMI2, LZCNT),
+# NEON on AArch64 (part of the base instruction set, no flag). On any other CPU (RISC-V, ...) the same source
+# builds its scalar kernel 0: the reference loop per stream, parallel across streams, so the fast-versus-reference
+# tests still compare two decoders. WEX4_MARCH replaces the flag: WEX4_MARCH= builds the scalar kernel on x86,
+# WEX4_MARCH=-DWEX_FAST_SCALAR builds it on any CPU.
 case $(uname -m) in
   x86_64|amd64|i?86) MARCH=${WEX4_MARCH--march=haswell} ;;
   *) MARCH=${WEX4_MARCH-} ;;
 esac
 F="-O3 $MARCH -fopenmp -DWEX4_FAST_NR3"
 gcc $W $F $STATIC_SO -I "$ROOT/c" -I "$ROOT/wex4/research/fast-cpu-decode" "$ROOT/wex4/wex4_tools.c" -o "$S/wex4_tools.dll"
+# which kernels that was (WEXF_KERNELS of wex_fast_decode.h under the same flags): AVX2, NEON or scalar
+KERNELS=$(printf '#include "wex_fast_decode.h"\nkernels WEXF_KERNELS\n' |
+          gcc $F -E -P -I "$ROOT/c" -I "$ROOT/wex4/research/fast-cpu-decode" -x c - | sed -n 's/^kernels "\(.*\)"$/\1/p')
+echo "fast WNR3 decoder of wex4_tools.dll: $KERNELS kernels"
 # c/wex4.h is the engine-side file and can change with the engine: prove that the two DLLs really hold two decoders
 # (a sync once dropped the hook, and the fast-versus-reference tests compared the reference with itself)
 site() { gcc $1 -E -I "$ROOT/c" -I "$ROOT/wex4/research/fast-cpu-decode" "$ROOT/wex4/wex4_tools.c" | grep -c "return $2(&view, &layout, model, scales, weights)" || true; }

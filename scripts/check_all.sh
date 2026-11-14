@@ -14,4 +14,5 @@ for t in scripts/test_verify_wex1.py c/tests/test_repack_v4_wex.py c/tests/test_
 done
 bash scripts/build_cpu_check.sh
 bash wex4/build_and_test.sh
+bash wex4/research/fast-cpu-decode/synth.sh check
 echo "all checks passed"

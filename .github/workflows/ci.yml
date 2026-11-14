@@ -33,8 +33,10 @@ jobs:
       - name: All CPU checks
         run: bash scripts/check_all.sh
 
-  # the same checks on a 64-bit ARM CPU: no AVX2, so wex4/build_and_test.sh builds the scalar kernel of the fast
-  # WNR3 decoder, and plain char is unsigned there
+  # the same checks on a 64-bit ARM CPU: the fast WNR3 decoder builds its NEON kernel there (the step fails if it
+  # built another one), and plain char is unsigned. Then the WEX4 tests once more with the scalar kernel forced,
+  # so both kernels are compared with the reference decoder on ARM, and the speed of both (printed, never judged:
+  # a shared runner is not a benchmark machine)
   linux-arm:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 15
@@ -46,8 +48,22 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
         with:
           persist-credentials: false
-      - name: All CPU checks
-        run: bash scripts/check_all.sh
+      - name: All CPU checks (NEON kernel of the fast decoder)
+        run: |
+          set -o pipefail
+          bash scripts/check_all.sh | tee "$RUNNER_TEMP/check.log"
+          grep -q '^fast WNR3 decoder of wex4_tools.dll: NEON kernels$' "$RUNNER_TEMP/check.log"
+          grep -q '^build: NEON kernels' "$RUNNER_TEMP/check.log"
+      - name: WEX4 tests with the scalar kernel forced
+        run: |
+          set -o pipefail
+          WEX4_MARCH=-DWEX_FAST_SCALAR bash wex4/build_and_test.sh | tee "$RUNNER_TEMP/scalar.log"
+          grep -q '^fast WNR3 decoder of wex4_tools.dll: scalar kernels$' "$RUNNER_TEMP/scalar.log"
+      - name: Speed of the NEON kernel and of the scalar kernel (printed only)
+        run: |
+          bash wex4/research/fast-cpu-decode/synth.sh speed 21
+          cd wex4/research/fast-cpu-decode/out/synth
+          ./t_simd.exe bench model.wnm2 15 L0_E0.rec L0_E1.rec L0_E2.rec L0_E3.rec
 
   windows:
     runs-on: windows-2022

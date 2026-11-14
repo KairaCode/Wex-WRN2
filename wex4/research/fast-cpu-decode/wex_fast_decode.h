@@ -18,12 +18,13 @@
  *      prefix-summed once into at most WEXF_MAX_TASKS task offsets, no allocation;
  *  (b) symbol search without branches. Weights (kernel 1): each (matrix, srel, maximum, previous) context has
  *      a 128-byte table entry {upper[16], start[16], freq[16], next[16]}; one AVX2 compare of the slot with
- *      upper[] + tzcnt gives the symbol, next[] gives the following context (no arithmetic on previous /
- *      maximum). Scales: a 16384-entry slot -> symbol table per matrix;
+ *      upper[] + tzcnt gives the symbol (NEON: two 8-lane compares narrowed to a 64-bit mask + ctz), next[]
+ *      gives the following context (no arithmetic on previous / maximum). Scales: a 16384-entry slot ->
+ *      symbol table per matrix;
  *  (c) N streams are decoded in one loop (kernel 1) so the long per-symbol dependency chain of one stream
  *      overlaps with the others';
  *  (d) kernel 2 decodes 8 streams per AVX2 vector with gathers (binary search over the 16 CDF entries of the
- *      model blob);
+ *      model blob). AVX2 only: NEON has no gather load, a request for kernel 2 runs kernel 1 with 4 streams;
  *  (e) fuse = 1 computes the MurmurHash3 of each stream and undoes the ceil form inside the decode loop.
  *
  * Renormalisation is branchless and reads 4 bytes ahead; a stream that runs past its end is noticed at the
@@ -34,9 +35,11 @@
  * (valid model: every frequency >= 1), hence at most 2 renormalisation bytes per symbol; the code is
  * memory-safe (3 bytes per symbol at most) even if that did not hold.
  *
- * Build: -O3 -march=haswell (AVX2, BMI, BMI2, LZCNT) selects the AVX2 kernels; without them, or with
- * -DWEX_FAST_SCALAR, only kernel 0 exists (the reference loop per stream, still parallel across streams).
- * The AVX2 path assumes a little-endian target (x86). */
+ * Build: -O3 -march=haswell (AVX2, BMI, BMI2, LZCNT) selects the AVX2 kernels; a little-endian AArch64 target
+ * selects the NEON kernel 1 (NEON is part of the base AArch64 instruction set, no -march needed); on any other
+ * target, or with -DWEX_FAST_SCALAR, only kernel 0 exists (the reference loop per stream, still parallel
+ * across streams). WEXF_SIMD is 1 (AVX2), 2 (NEON) or 0; WEXF_KERNELS names the choice. The SIMD paths
+ * assume a little-endian target. */
 #include "wex_format.h"
 #ifdef _OPENMP
 #include <omp.h>
@@ -44,8 +47,15 @@
 #if defined(__AVX2__) && defined(__BMI__) && defined(__BMI2__) && defined(__LZCNT__) && !defined(WEX_FAST_SCALAR)
 #include <immintrin.h>
 #define WEXF_SIMD 1
+#define WEXF_KERNELS "AVX2"
+#elif defined(__aarch64__) && defined(__ARM_NEON) && defined(__BYTE_ORDER__) && \
+    __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__ && !defined(WEX_FAST_SCALAR)
+#include <arm_neon.h>
+#define WEXF_SIMD 2
+#define WEXF_KERNELS "NEON"
 #else
 #define WEXF_SIMD 0
+#define WEXF_KERNELS "scalar"
 #endif
 
 #define WEXF_MAX_TASKS 256u
@@ -57,12 +67,12 @@
 
 typedef struct {
     int threads;   /* OpenMP threads, 0 = the runtime's default; ignored without OpenMP */
-    int kernel;    /* 0 checked scalar loop, 1 AVX2 search + interleaved streams, 2 AVX2 gathers */
+    int kernel;    /* 0 checked scalar loop, 1 AVX2 or NEON search + interleaved streams, 2 AVX2 gathers */
     int lanes;     /* kernel 1: streams per loop (1, 2, 3, 4, 6, 8); kernel 2: vectors of 8 streams per loop (1, 2, 3) */
     int fuse;      /* kernels 1, 2: hash and ceil inverse inside the decode loop */
 } WexFastOptions;
 
-/* Decode tables of one model (AVX2 kernels). Read-only after wex_fast_model_init, shareable between threads.
+/* Decode tables of one model (AVX2 and NEON kernels). Read-only after wex_fast_model_init, shareable between threads.
  * The entries start 64-byte aligned inside `raw`; a byte copy of the struct still decodes correctly (unaligned). */
 typedef struct {
     uint32_t id, skew;                         /* model id, offset of the first entry in raw */
@@ -143,7 +153,11 @@ static inline int wexf_stream_checked(const WexfJob *J, const WexfStream *s, int
 /* Branchless byte renormalisation with the next bytes at p: 0, 1 or 2 are used on a valid model (never more
  * than 3); *spare = 3 - bytes used. */
 WEXF_INLINE uint32_t wexf_renorm(uint32_t x, const unsigned char *p, uint32_t *spare) {
+#if WEXF_SIMD == 2
+    const uint32_t keep = (0u - (x ? (uint32_t)__builtin_clz(x) : 32u)) & 24u;   /* one CLZ instruction */
+#else
     const uint32_t keep = (0u - _lzcnt_u32(x)) & 24u;   /* leading zeros 1..8 -> 24, 9..16 -> 16, 17..24 -> 8 */
+#endif
     uint32_t next;
     uint64_t wide;
     memcpy(&next, p, 4);
@@ -206,7 +220,9 @@ WEXF_INLINE int wexf_ceil_fused(unsigned char *q, unsigned char *scale) {
 WEXF_INLINE int wexf_weights_n(const WexfJob *J, const WexfStream *s, const uint32_t N, const int fuse) {
     const uint32_t m = s[0].matrix, blocks = s[0].count / 32u, median = J->v->median[m], ceil = J->ceil >> m & 1u;
     const unsigned char *table = J->fm->raw + J->fm->skew + (size_t)m * (7u * WEXF_SREL_BYTES);
+#if WEXF_SIMD == 1
     const uint64_t nibbles = UINT64_C(0x1e1e1e1e1e1e1e1e);   /* 2 x symbol in each byte of s2 */
+#endif
     const unsigned char *p, *e[8], *base[8], *ctx[8];
     unsigned char *out[8], *sc[8], s2[8][16];
     uintptr_t q[8];   /* read position of a stream minus 3 x (symbols done in the current half block) */
@@ -229,8 +245,19 @@ WEXF_INLINE int wexf_weights_n(const WexfJob *J, const WexfStream *s, const uint
             for (j = 0; j < 16u; j++)
                 for (k = 0; k < N; k++) {
                     const uint32_t slot = x[k] & (WEX_NR2_TOTAL - 1u);
+#if WEXF_SIMD == 2
+                    /* the same signed compare as AVX2 on the 16 upper[] values, in two halves; one byte of each
+                     * 16-bit lane is kept (uzp1), then 4 bits of each byte (shrn): bit 4 x symbol is the lowest
+                     * set bit of the mask, which is never 0 because upper[15] = 0x7fff > slot */
+                    const int16x8_t slots = vdupq_n_s16((int16_t)slot);
+                    const uint8x16_t gt_lo = vreinterpretq_u8_u16(vcgtq_s16(vreinterpretq_s16_u8(vld1q_u8(ctx[k])), slots));
+                    const uint8x16_t gt_hi = vreinterpretq_u8_u16(vcgtq_s16(vreinterpretq_s16_u8(vld1q_u8(ctx[k] + 16)), slots));
+                    const uint64_t found = vget_lane_u64(vreinterpret_u64_u8(vshrn_n_u16(vreinterpretq_u16_u8(vuzp1q_u8(gt_lo, gt_hi)), 4)), 0);
+                    const uint32_t t = (uint32_t)__builtin_ctzll(found) >> 1;
+#else
                     const __m256i upper = _mm256_loadu_si256((const __m256i *)(const void *)ctx[k]);
                     const uint32_t t = _tzcnt_u32((uint32_t)_mm256_movemask_epi8(_mm256_cmpgt_epi16(upper, _mm256_set1_epi16((short)slot))));
+#endif
                     uint16_t start, freq, next;   /* t = 2 x symbol <= 30 */
                     uint32_t spare;
                     memcpy(&start, ctx[k] + 32u + t, 2); memcpy(&freq, ctx[k] + 64u + t, 2); memcpy(&next, ctx[k] + 96u + t, 2);
@@ -240,9 +267,15 @@ WEXF_INLINE int wexf_weights_n(const WexfJob *J, const WexfStream *s, const uint
                     ctx[k] = base[k] + 8u * (size_t)next;
                 }
             for (k = 0; k < N; k++) {
+#if WEXF_SIMD == 2
+                /* a symbol per byte, then the two symbols of each 16-bit lane into its low byte: a + (a >> 4) */
+                const uint16x8_t pair = vreinterpretq_u16_u8(vshrq_n_u8(vld1q_u8(s2[k]), 1));
+                const uint64_t acc = vget_lane_u64(vreinterpret_u64_u8(vmovn_u16(vsraq_n_u16(pair, pair, 4))), 0);
+#else
                 uint64_t lo, hi, acc;
                 memcpy(&lo, s2[k], 8); memcpy(&hi, s2[k] + 8, 8);
                 acc = _pext_u64(lo, nibbles) | _pext_u64(hi, nibbles) << 32;
+#endif
                 memcpy(out[k] + (size_t)b * 16u + half * 8u, &acc, 8);
                 bad |= wexf_has8(acc);
                 if (fuse) h[k] = wex_nr3_h32_block(wex_nr3_h32_block(h[k], (uint32_t)acc), (uint32_t)(acc >> 32));
@@ -294,6 +327,7 @@ WEXF_INLINE int wexf_scales_n(const WexfJob *J, const WexfStream *s, const uint3
     return 0;
 }
 
+#if WEXF_SIMD == 1
 /* Kernel 2, weights: G vectors of 8 streams (one matrix, same count). Per symbol: 4 gathers binary-search the
  * 16-entry CDF and leave cdf[symbol] / cdf[symbol + 1] in start / end, 1 gather fetches the next bytes. */
 WEXF_INLINE int wexf_weights_g8(const WexfJob *J, const WexfStream *s, const uint32_t G, const int fuse) {
@@ -401,6 +435,7 @@ WEXF_INLINE int wexf_weights_g8(const WexfJob *J, const WexfStream *s, const uin
     }
     return 0;
 }
+#endif
 
 /* Out-of-line instances: the group size and the fuse flag are compile-time constants inside each. */
 static int wexf_group(const WexfJob *J, const WexfStream *s, int weights, uint32_t n) {
@@ -413,6 +448,7 @@ static int wexf_group(const WexfJob *J, const WexfStream *s, int weights, uint32
         case 6: return wexf_scales_n(J, s, 6);
         default: return wexf_scales_n(J, s, 8);
     }
+#if WEXF_SIMD == 1
     if (J->o.kernel == 2 && n >= 8u) switch (n * 2u + (uint32_t)fuse) {
         case 16: return wexf_weights_g8(J, s, 1, 0);
         case 17: return wexf_weights_g8(J, s, 1, 1);
@@ -421,6 +457,7 @@ static int wexf_group(const WexfJob *J, const WexfStream *s, int weights, uint32
         case 48: return wexf_weights_g8(J, s, 3, 0);
         default: return wexf_weights_g8(J, s, 3, 1);
     }
+#endif
     switch (n * 2u + (uint32_t)fuse) {
         case 2: return wexf_weights_n(J, s, 1, 0);
         case 3: return wexf_weights_n(J, s, 1, 1);
@@ -525,6 +562,9 @@ static inline int wex_fast_decode_with(const WexFastModel *tables, const WexNr2R
 #if WEXF_SIMD
     if (!tables || tables->id != model->id) J.o.kernel = 0;
     if (J.o.kernel < 0 || J.o.kernel > 2) J.o.kernel = 1;
+#if WEXF_SIMD == 2
+    if (J.o.kernel == 2) { J.o.kernel = 1; J.o.lanes = 4; }   /* no gather kernel on NEON */
+#endif
     if (J.o.kernel == 1 && J.o.lanes != 1 && J.o.lanes != 2 && J.o.lanes != 3 && J.o.lanes != 6 && J.o.lanes != 8) J.o.lanes = 4;
     if (J.o.kernel == 2 && (J.o.lanes < 1 || J.o.lanes > 3)) J.o.lanes = 1;
     J.o.fuse = J.o.fuse != 0;

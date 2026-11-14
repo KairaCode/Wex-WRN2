@@ -21,13 +21,17 @@ single-threaded reference: 36.6x (desktop), 28.3x (laptop); against 8 reference 
 For scale: the GPU batch decode figure quoted in the repo docs is about 0.37 ms per record (not measured
 here), i.e. the fast CPU path with 8 desktop threads is about 37x slower than that.
 
+These numbers are x86 (AVX2). Kernel 1 also has a NEON version for 64-bit ARM, added on 2026-11-14 and
+measured on synthetic records only: see "NEON kernel (AArch64)" below.
+
 ## Files
 
 | file | purpose |
 |---|---|
 | `wex_fast_decode.h` | the decoder (C11 + GNU builtins, includes `wex_format.h`) |
-| `test_fast_decode.c` | harness: `equal`, `mutate`, `bench` |
-| `build.sh` | builds the harness three ways into `out/` (AVX2 + OpenMP, scalar fallback, UBSan trap build) |
+| `test_fast_decode.c` | harness: `equal`, `mutate`, `bench`, `speed` |
+| `build.sh` | x86: builds the harness three ways into `out/` (AVX2 + OpenMP, scalar fallback, UBSan trap build) |
+| `synth.sh` | any CPU, no real model: builds the harness with the SIMD kernels of the CPU and with the scalar kernel into `out/synth/` and runs it on the 4 synthetic records of `wex4/out/synth_nr3.wex` (`check`, run by `scripts/check_all.sh`, or `speed`) |
 | `negative_control.sh` | removes one check at a time from a copy of the header and expects the mutation test to notice |
 | `extract.py` | copies the model blob and chosen records out of a container opened read-only |
 | `out/` | build products, data copies, logs (not in git) |
@@ -202,6 +206,85 @@ streams spills state to the stack.
 Thread scaling on the desktop is 5.2x from 1 to 8 threads for the default configuration; 16 and 32 threads
 were not measured.
 
+## NEON kernel (AArch64)
+
+Added on 2026-11-14. Kernel 1 is the same loop on x86 and on 64-bit ARM: same tables, same scale kernel,
+same hash and ceil inverse, same bound checks and slack rule. Three steps use other instructions:
+
+| step | AVX2 build | NEON build |
+|---|---|---|
+| symbol search over the 16 `upper[]` values of a context | one 256-bit signed compare, `movemask`, `tzcnt` | two 128-bit signed compares (`vcgtq_s16`), one byte kept of each 16-bit lane (`vuzp1q_u8`), 4 bits kept of each byte (`vshrn_n_u16`), trailing zeros of the 64-bit mask |
+| renormalisation shift | `lzcnt` | `clz` |
+| 16 symbols into 8 bytes | two `pext` | `vsraq_n_u16` and `vmovn_u16` |
+
+Kernel 2 is not ported: NEON has no gather load. A NEON build that is asked for kernel 2 runs kernel 1
+with 4 streams. `-DWEX_FAST_SCALAR` builds kernel 0 alone, as on x86.
+
+### What was run on ARM
+
+Everything below ran on 2026-11-14 in the `linux-arm` job of `.github/workflows/ci.yml`: GitHub runner
+`ubuntu-24.04-arm`, Neoverse-N2, 4 logical CPUs, gcc 13.3.0, `-O3 -fopenmp`. Data: the 4 records of
+`wex4/out/synth_nr3.wex`, which `wex4/build_and_test.sh` writes from `fixtures/make_synth_mxfp4.py`
+(208,896 decoded bytes each, 24 scale and 192 weight streams, flags 0x00, model trained on the same 4
+records). No real record was decoded on ARM.
+
+- `synth.sh check`, NEON build: `equal` on 4 records x 13 variants x {1, 8} threads + default, 0
+  mismatches; `mutate` with 600 mini-records (205 accepted and 395 rejected by the reference), 7,800 fast
+  decodes, 0 mismatches. The scalar build of the same run: 0 mismatches. The job fails if the build is
+  not the NEON one.
+- `wex4/build_and_test.sh`, where `wex4_tools.dll` holds the fast decoder and `wex4_tools_ref.dll` the
+  reference: all tests passed with the NEON kernel and again with `WEX4_MARCH=-DWEX_FAST_SCALAR`
+  (112,399 C mutations each time, same verdicts from both decoders).
+- Once, not part of the job as committed: `negative_control.sh` on the synthetic records caught 5 of 5
+  broken decoders (the kernel 2 control does not apply); the harness built with clang 18.1.3 without
+  OpenMP gave 0 mismatches in `equal` and in `mutate` with 3,000 mini-records (39,000 fast decodes).
+- From this change on the harness has guard pages off Windows too (`mmap` + `mprotect`). No fault in any
+  of these runs.
+
+Source records without the CZ flag, such as the synthetic ones, can hold -0 nibbles; `mutate` now sets
+them to +0 before it cuts mini-records (the production records have none, so nothing changes for them).
+
+### Speed on the CI runner
+
+`bash synth.sh speed 21`: one thread, one run is one pass over the 4 records after a pass that is not
+counted, the table gives the median and the best of 21 runs. Same runner, compiler and flags as above; a
+shared virtual machine, load unknown.
+
+| decoder | median ms/record | MB/s | best ms/record | scalar kernel median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.633 | 37.1 | 5.621 | 0.98 |
+| k0: reference loop per stream (the scalar kernel) | 5.540 | 37.7 | 5.482 | 1.00 |
+| k1: NEON search, 1 stream | 3.723 | 56.1 | 3.719 | 1.49 |
+| k1: 2 streams interleaved | 2.111 | 99.0 | 2.110 | 2.62 |
+| k1: 3 streams interleaved | 1.684 | 124.1 | 1.682 | 3.29 |
+| k1: 4 streams interleaved | 1.403 | 148.9 | 1.400 | 3.95 |
+| k1: 6 streams interleaved | 1.396 | 149.7 | 1.394 | 3.97 |
+| k1: 8 streams interleaved | 1.859 | 112.4 | 1.857 | 2.98 |
+| k1: 1 stream, fused | 3.678 | 56.8 | 3.676 | 1.51 |
+| k1: 2 streams, fused | 2.050 | 101.9 | 2.047 | 2.70 |
+| k1: 3 streams, fused | 1.673 | 124.9 | 1.671 | 3.31 |
+| k1: 4 streams, fused (the `wex_fast_decode` configuration) | 1.406 | 148.6 | 1.404 | 3.94 |
+| k1: 6 streams, fused | 1.392 | 150.0 | 1.391 | 3.98 |
+| k1: 8 streams, fused | 1.826 | 114.4 | 1.824 | 3.03 |
+
+- NEON kernel 1 against the scalar kernel, default configuration: 5.54 -> 1.41 ms per record, 3.9x. An
+  earlier run of the job the same day gave 5.542 -> 1.408 ms. The scalar build of the same source
+  measured 5.48 and 5.46 ms for kernel 0 in the two runs.
+- 4 and 6 streams are equal within 1%; the default stays at 4 streams, as on x86.
+- Fusing the hash into the loop changes nothing measurable here (1.403 against 1.406 ms), unlike on the
+  x86 desktop with real records (-21%).
+- `bench` in the same job (best of 15): the default configuration with 8 threads on the 4 CPUs took 0.47
+  ms per record against 1.41 ms on one thread. The records are small (216 streams), so this says little
+  about thread scaling on full records.
+- The harness built with clang 18.1.3 (no OpenMP), one run: 5.97 -> 1.48 ms, 4.0x.
+- For scale, the same script on the x86 desktop (AVX2, gcc 16.2, one run, machine not idle): 6.87 -> 1.16
+  ms, 5.9x, where real records gave 7.1x. Whether the synthetic records understate the gain on ARM too
+  was not measured.
+
+Not checked on ARM: real records; any CPU other than the Neoverse-N2 of the runner (no Apple silicon, no
+Ampere, no Cortex-A); macOS and Apple clang; big-endian AArch64 (it builds the scalar kernel, never run);
+32-bit ARM (scalar kernel, never run); UBSan and ASan (the sanitizer job is x86-64).
+
 ## Semantics and safety notes
 
 - Same accept / reject as the reference for WNR3 views produced by `wex_nr3_parse`; views with another magic
@@ -218,8 +301,11 @@ were not measured.
 - `wex_fast_decode` allocates its tables with `malloc`; if that fails it falls back to kernel 0 (same
   result, slower). Not exercised by a test.
 - Compile-time selection: AVX2 kernels need `__AVX2__`, `__BMI__`, `__BMI2__`, `__LZCNT__` (`-march=haswell`);
+  the NEON kernel 1 needs `__aarch64__`, `__ARM_NEON` and a little-endian target (no flag);
   otherwise, or with `-DWEX_FAST_SCALAR`, only kernel 0 is compiled (portable C, still parallel across
-  streams). GNU extensions used: `always_inline`, `__builtin_bswap32`. The AVX2 path assumes little-endian.
+  streams). `WEXF_SIMD` is 1, 2 or 0 and `WEXF_KERNELS` is "AVX2", "NEON" or "scalar". GNU extensions
+  used: `always_inline`, `__builtin_bswap32`, on ARM `__builtin_clz` and `__builtin_ctzll`. The SIMD
+  paths assume little-endian.
 - Parallel region inside an existing OpenMP parallel region runs serially unless nesting is enabled.
 
 ## Not checked
@@ -228,7 +314,9 @@ were not measured.
   reference decoder, not with the safetensors source.
 - Mini-records in the mutation test come from the same 6 records plus synthetic data; no full-size mutated
   record was decoded by the reference.
-- No compiler other than gcc 16.2 on Windows; no Linux build; no MSVC, no clang, no big-endian.
+- Real records were decoded only by builds of gcc 16.2 on Windows (x86). On Linux the harness runs on
+  synthetic records only, in CI: gcc 13.3 on x86-64 (also under ASan and UBSan) and on ARM64. No MSVC, no
+  big-endian; clang once, on ARM (see the NEON section).
 - WNR2 records (delegated to the reference), the `malloc` failure path and unvalidated models.
 - Thread counts other than 1, 3 (mutation test) and 8; no run pinned to physical cores; the desktop was busy.
 - Laptop: one record and 3,000 mutation cases only.

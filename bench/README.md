@@ -55,5 +55,5 @@ Notes:
 - On ZFS, `O_DIRECT` is honoured only from OpenZFS 2.3 with `direct=standard` or `always`. Otherwise the
   reads go through the ARC, and the second pass mostly measures RAM. The JSON records which case you
   were in.
-- On ARM (for example a DGX Spark) the `wex_check` section runs the scalar kernel of the fast CPU decoder: the AVX2 kernels are x86-64 only and there is no NEON version yet, so it checks correctness there, not speed.
+- On ARM (for example a DGX Spark) the `wex_check` section runs the NEON kernel of the fast CPU decoder. It reports pass or fail and seconds, not a decode speed. For the decode speed of the NEON kernel against the scalar kernel on your CPU, run `bash wex4/research/fast-cpu-decode/synth.sh speed` after it (synthetic records, no model needed) and add its output to the issue.
 - The GPU copy test is CUDA-only. On Intel Arc or AMD it reports `skipped`, which is expected.

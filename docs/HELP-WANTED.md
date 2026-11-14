@@ -40,12 +40,17 @@ Labels you may see on issues: **good first issue** (a few hours, little context)
   of the ASan runtime). Still open: MemorySanitizer or ThreadSanitizer runs (clang), and the GPU code.
 - **More test vectors:** hostile files that [wex4/vectors](../wex4/vectors/README.md) does not cover yet
   (each with its `MANIFEST.tsv` row and the expected verdict from both readers).
-- **macOS job in CI, NEON decoder:** CI runs on Linux (x86-64 and ARM64) and Windows. On a CPU that is
-  not x86 `wex4/build_and_test.sh` drops `-march=haswell`, so the fast CPU decoder builds its scalar
-  kernel only. Still open: a macOS job (the scripts call `gcc` and link with `-fopenmp`), good first
-  issue; a NEON version of the AVX2 kernels in `wex4/research/fast-cpu-decode/wex_fast_decode.h`,
-  byte-identical to the reference on the vectors and with a speed number against the scalar kernel,
-  help wanted.
+- **macOS job in CI:** CI runs on Linux (x86-64 and ARM64) and Windows. Still open: a macOS job (the
+  scripts call `gcc` and link with `-fopenmp`), good first issue.
+- **NEON decoder, what is left:** kernel 1 of the fast CPU decoder
+  (`wex4/research/fast-cpu-decode/wex_fast_decode.h`) has a NEON version since 2026-11-14. In the
+  `linux-arm` CI job it is byte-identical to the reference decoder and 3.9 times faster than the scalar
+  kernel on one thread, on synthetic records and on that runner only
+  ([results](../wex4/research/fast-cpu-decode/RESULTS.md), section "NEON kernel"). Still open, help
+  wanted: its speed on other ARM CPUs (Apple silicon, Ampere, DGX Spark), which needs no model
+  (`bash scripts/check_all.sh`, then `bash wex4/research/fast-cpu-decode/synth.sh speed`); its speed on
+  real records; a build with Apple clang; the number of interleaved streams that is best on each CPU;
+  kernel 2 for SVE, which has gather loads (NEON has none, so kernel 2 is AVX2 only).
 
 ## 4. A second, independent implementation
 
@@ -104,8 +109,9 @@ listed above as well.
   experts first (#2822-#2825 are open), then the WEX4 container, the WNR3 codec and its GPU decode, and
   the I/O switches. Reviewing or testing those PRs on your hardware helps directly.
 - **WNR3 decode on Vulkan** *(open to you, section 6)*.
-- **ARM:** the CPU decoder path without AVX2 and the ARM CI job are in (scalar kernel); a NEON version
-  is still open *(open to you, section 3)*.
+- **ARM:** the ARM CI job and a NEON version of kernel 1 of the fast CPU decoder are in. Its speed on
+  real records and on ARM CPUs other than the CI runner, and an SVE version of kernel 2, are still open
+  *(open to you, section 3)*.
 - **Linux I/O in the engine:** the fast read paths were built and measured on Windows; Linux needs its
   own measurements and tuning *(open to you, section 7)*.
 - **Measurements not done yet** (they need the full models, so they stay with the maintainer, see
