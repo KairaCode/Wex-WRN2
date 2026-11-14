@@ -7,10 +7,11 @@
 # was caught). MODEL and REC may be relative to the calling directory. A file that cannot be read stops the
 # script with exit 2 before any build, so it is never reported as a decoder that was not caught.
 # Built with the SIMD kernels of this CPU: -march=haswell on x86 (AVX2), no flag elsewhere (NEON on AArch64).
-# The kernel 2 control is skipped where kernel 2 does not exist (it is AVX2 only).
+# The kernel 2 control is skipped where kernel 2 does not exist (it is AVX2 only). CC names the compiler (default gcc).
 set -eu
 HERE=$(cd "$(dirname "$0")" && pwd)
 SRC=${WEX_SRC:-$HERE/../../../c}
+CC=${CC:-gcc}
 if [ $# -lt 2 ]; then echo "usage: sh negative_control.sh MODEL.wnm2 REC..." >&2; exit 2; fi
 n=$#
 for a in "$@"; do   # the script changes directory below: make every path absolute first
@@ -28,7 +29,7 @@ case $(uname -m) in
   x86_64|amd64|i?86) MARCH=-march=haswell ;;
   *) MARCH= ;;
 esac
-SIMD=$(printf '#include "wex_fast_decode.h"\nsimd WEXF_SIMD\n' | gcc $MARCH -E -P -I"$SRC" -I"$HERE" -x c - | sed -n 's/^simd //p')
+SIMD=$(printf '#include "wex_fast_decode.h"\nsimd WEXF_SIMD\n' | "$CC" $MARCH -E -P -I"$SRC" -I"$HERE" -x c - | sed -n 's/^simd //p')
 fail=0
 check() {   # name, sed expression, records
     name=$1; edit=$2; shift 2
@@ -36,7 +37,7 @@ check() {   # name, sed expression, records
     sed "$edit" wex_fast_decode.h > "$N/wex_fast_decode.h"
     if [ "$(cksum < wex_fast_decode.h)" = "$(cksum < "$N/wex_fast_decode.h")" ]; then echo "$name: the edit did not apply"; fail=1; return; fi
     cp test_fast_decode.c "$N/"
-    gcc -std=c11 -O3 $MARCH -fopenmp -I"$SRC" "$N/test_fast_decode.c" -o "$N/t.exe"
+    "$CC" -std=c11 -O3 $MARCH -fopenmp -I"$SRC" "$N/test_fast_decode.c" -o "$N/t.exe"
     "$N/t.exe" mutate "$MODEL" 6000 99 "$@" > "$N/mutate.log" 2>&1 || true
     if grep -q 'cannot read' "$N/mutate.log"; then cat "$N/mutate.log"; echo "$name: the harness did not run"; exit 2; fi
     if grep -q MISMATCH "$N/mutate.log"; then echo "$name: caught"; else echo "$name: NOT caught"; fail=1; fi
