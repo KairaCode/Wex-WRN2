@@ -169,12 +169,15 @@ def wnr3_decode(rec, scale_shapes, model, expect_owner, expect_cz, mx_literal=Fa
                     else:
                         ctx['mx'] = x & 7 if ctx['mx'] == 8 else max(ctx['mx'], x & 7)
                 return wcdf(m, (ctx['srel'] * 9 + ctx['pm']) * 9 + ctx['mx'])
-            syms, state = rans_stream(rec, pos, lengths[g], n, cdf_of)
+            try:
+                syms, state = rans_stream(rec, pos, lengths[g], n, cdf_of)
+            except Bad as ex:
+                raise Bad(f'weight stream {g - S}: {ex}') from None
             if flags & 8 and 8 in syms:
                 raise Bad('CZ nibble 8')
             packed = bytes(syms[2 * k] | syms[2 * k + 1] << 4 for k in range(n // 2))
             if state != L + h23(g, packed):
-                raise Bad(f'weight stream {g} hash')
+                raise Bad(f'weight stream {g - S}: hash')
             q += syms
             pos += lengths[g]
             g += 1
@@ -204,7 +207,7 @@ def wnr3_files():
         with open(path, 'rb') as f:
             rd = wex4.Reader(f, CREF)
             done = literal_fail = inv = 0
-            flagset = set()
+            flagset, reasons = set(), set()
             for r, rec in enumerate(rd.records):
                 if rec[3] != wex4.CODEC_WNR3 or done >= limit:
                     continue
@@ -216,15 +219,17 @@ def wnr3_files():
                 assert all(a <= 254 for a in anchor)
                 try:
                     wnr3_decode(stored, e['scale_shapes'], model, rec[6], bool(rec[4] & 1), mx_literal=True)
-                except Bad:
+                except Bad as ex:               # the decoder stops at the first stream it refuses
                     literal_fail += 1
+                    reasons.add(str(ex))
                 done += 1
                 inv += inverted
                 flagset.add(flags)
             total += done
             print(f'R1 {os.path.basename(path)}: {done} WNR3 records decoded by the decoder written from the spec, '
                   f'byte-identical to the C reference; record flags {sorted(flagset)}, ceil-inverted blocks {inv}; '
-                  f'with "mx = max(mx, x & 7)" read literally {literal_fail} of {done} fail')
+                  f'with "mx = max(mx, x & 7)" read literally {literal_fail} of {done} are refused, '
+                  f'where and why: {sorted(reasons)}')
     return total
 
 
@@ -277,12 +282,12 @@ def wbp1_cases():
     good = wex4.bp_encode(data, 1, 12, owner)
     print('W2 WBP1 record as encoded ->', both_bp(good, len(data), owner), '; the same plus one zero page ->',
           both_bp(good + bytes(4096), len(data), owner))
-    # W17: state is big-endian
+    # W-state (finding 1): the stream state is big-endian
     at = 16 + 514
     streams = -(-len(data) // 4096)
     first = at + 2 * streams
     be, le = int.from_bytes(good[first:first + 4], 'big'), int.from_bytes(good[first:first + 4], 'little')
-    print(f'W17 first stream state of that record: big-endian 0x{be:08x} in [2^23, 2^31): {L <= be < 256 * L}; '
+    print(f'W-state first stream state of that record: big-endian 0x{be:08x} in [2^23, 2^31): {L <= be < 256 * L}; '
           f'little-endian 0x{le:08x} in range: {L <= le < 256 * L}')
 
 

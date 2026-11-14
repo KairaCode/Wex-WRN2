@@ -10,7 +10,7 @@ Which sentences of [WEX4-SPEC](../../docs/WEX4-SPEC.md) and [WNR3-SPEC](../../do
 
 - Tree: this repository at the commit that adds this folder. Line numbers below are those of that commit.
 - Machine: Windows 10, MSYS2 UCRT64, gcc 16.2, Python 3.14; no GPU used.
-- Command: `bash wex4/build_and_test.sh`, then `python -I research/spec-review-20261114/spec_check.py` from the repository root. One run; its output is `spec_check.log`.
+- Command: `bash wex4/build_and_test.sh`, then `python -I research/spec-review-20261114/spec_check.py` from the repository root. Its output is `spec_check.log`.
 - `spec_check.py` holds a WNR3 decoder and a MurmurHash3 written from WNR3-SPEC sections 1 to 4 (with errata 9 to 12, which this review added), not from the C code. It compares that decoder with `wex_nr2_decode` (through `wex4/out/wex4_tools_ref.dll`), and gives hand-made WEX4 files and WBP1 records to both WEX4 readers.
 
 ## Result
@@ -20,7 +20,7 @@ Which sentences of [WEX4-SPEC](../../docs/WEX4-SPEC.md) and [WNR3-SPEC](../../do
 | Check (line of `spec_check.log`) | Result |
 |---|---|
 | R0: the five hash values of WNR3-SPEC 4.5 | all reproduce |
-| R1: the decoder written from the spec against the C reference | 9 of 9 WNR3 records byte-identical (2 of the valid vector `tiny2-cz-upgraded.wex4`, 4 of `wex4/out/synth.wex4`, 3 of `wex4/out/tiny_nr3_cz.wex4`); with the `mx` sentence of 4.1 read literally, 9 of 9 fail |
+| R1: the decoder written from the spec against the C reference | 9 of 9 WNR3 records byte-identical (2 of the valid vector `tiny2-cz-upgraded.wex4`, 4 of `wex4/out/synth.wex4`, 3 of `wex4/out/tiny_nr3_cz.wex4`); with the `mx` sentence of 4.1 read literally, 9 of 9 are refused, each in its first weight stream, which runs out of bytes (the decoder stops at the first stream it refuses) |
 | R2: ceil-form (4.2) on one synthetic expert, encoded by `c/tools/wex_nr3_tools.c` | record flags `0x03` and `0x0B`, 1,220 blocks inverted, output equal to the source and to Z(source) |
 | W1, W2: WBP1 records | a mask bit on an empty plane and a trailing zero page are refused by both decoders |
 | W5: content digest from the stated field widths | equals the C and the Python digest of `generic.wex4` |
@@ -44,7 +44,7 @@ Each row: where, the sentence, the problem, the evidence, and the wording now in
 | 10 | WEX4 5.3 | "name_offset: ... must equal the sum of the previous names' lengths" | that the names use the whole pool is checked and not stated | `c/wex4.h:334`, `wex4/wex4.py:401`; vector `tensor-names-shorter-than-the-name-pool.wex4` | "(and the names of all tensors fill the pool exactly)" |
 | 11 | WEX4 15.1 | "every blob and record against its SHA-256, zero padding, in one read-only unbuffered pass" | the checker tests the padding of the index and of blobs, not the padding inside a record; its reads are unbuffered on Windows only | `c/tools/wex4_verify.c:26`, `:51`, `:63-79`, `:119`; `wex4/vectors/README.md` (the seven files it passes) | both stated in 15.1 |
 | 12 | WEX4 header | "Document revision: 2026-11-13" | the history already had a row of 2026-11-14 | the document history | "2026-11-14" |
-| 13 | WNR3 4.1 | "`pm = mx = 8`, after symbol x `pm = x & 7`, `mx = max(mx, x & 7)`" | read as written, `mx` stays 8 for the whole block; in the code 8 means "none" and the first symbol replaces it | `c/wex_neural_rans.h:512`, `:592`, `:684`; log R1 (9 of 9 records fail when read literally) | erratum 9; the same words added to WNR2-REFERENCE section 7 |
+| 13 | WNR3 4.1 | "`pm = mx = 8`, after symbol x `pm = x & 7`, `mx = max(mx, x & 7)`" | read as written, `mx` stays 8 for the whole block; in the code 8 means "none" and the first symbol replaces it | `c/wex_neural_rans.h:512`, `:592`, `:684`; log R1 (9 of 9 records are refused when read literally) | erratum 9; the same words added to WNR2-REFERENCE section 7 |
 | 14 | WNR3 1 | "rANS exactly as WNR2: 32-bit state, `L = 2^23`, 14-bit CDFs, byte renormalisation ..." | the decode step itself is in no page, only in the code | `c/wex_neural_rans.h:356-380`; log R1, R2 | erratum 10 |
 | 15 | WNR3 3 | "`[32, 32 + 2(S+W))` u16 stream lengths"; "anchor[m]: srel anchor of matrix m" | `S`, `W`, `scount_m`, `count_m` are used and not defined; range of the anchor byte and whether a decoder checks it not stated | `c/wex_neural_rans.h:308-316` (the parser copies the byte and requires 32 nibbles per scale), `:399-405` (rule g gives 0..254) | erratum 11 |
 | 16 | WNR3 2.1 and 5 | "no new model format"; "Format unchanged (WNM2 ...)" | a reader with only this file cannot parse the model: the layout is in WNR2-REFERENCE, the order of the tables and the 0 -> 1 rule of the id only in the code | `c/wex_neural_rans.h:235-274`, `wex4/wex4.py:277-288`; log R1 | erratum 12; WEX4-SPEC section 6, step 3 points to it |
@@ -60,10 +60,12 @@ Each row: where, the sentence, the problem, the evidence, and the wording now in
 
 ## Limits
 
-- One reviewer pass, one run of the script, on one machine. No GPU: `c/wex_cuda.cuh` was not compared with the text.
+- One reviewer pass, on one machine. No GPU: `c/wex_cuda.cuh` was not compared with the text.
+- `spec_check.py` is not run by `scripts/check_all.sh` or by CI, and was run on Windows only. The log is from a second run, made after the script was changed to print where and why the literal reading is refused and after the label `W-state` replaced `W17`; the other lines are the same as in the first run.
+- The log labels are not finding numbers for R0 to R2, W1 (finding 3), W2 (finding 4) and W-state (finding 1); W5, W6, W7 and W9 carry the number of their finding.
 - Read against the code: WEX4-SPEC sections 2 to 10, 15.1 and 17; WNR3-SPEC sections 1 to 4 and the errata. Not reviewed: the numbers of the informative sections of WEX4-SPEC (11, 12, 13.5, 15.2, 15.3, 16), sections 13.1 and 14 against `wex4/wex4_convert.py`, sections 5 to 11 of WNR3-SPEC (model training, gates and the historical plan), and WNR2-REFERENCE apart from the one sentence of finding 13.
 - The decoder written from the spec was run on 9 records of test containers and one synthetic expert, all small (the synthetic record has 54 streams and 53,248 raw bytes). No real production record was decoded with it. The error paths of a decoder (a max-5 block at coded scale 0, a nibble 8 in a canonical-zero record, a wrong owner) were not exercised by it; `c/tests/test_wex_format.c` covers them for the C decoder.
-- Finding 1 rests on the code lines, not on a test: in the one record looked at, the first stream state is in `[2^23, 2^31)` in both byte orders (log W17), so the range check alone would not have shown the difference.
+- Finding 1 rests on the code lines, not on a test: in the one record looked at, the first stream state is in `[2^23, 2^31)` in both byte orders (log W-state), so the range check alone would not have shown the difference.
 - Finding 11 rests on reading `wex4_verify.c` and on the note in `wex4/vectors/README.md`; the checker was not run again for this review.
 - The earlier review ([wex4/review/REVIEW.md](../../wex4/review/REVIEW.md), 2026-11-11) had already compared the WEX4 tables with both readers field by field; that work was not repeated. Three of its spec-only proposals for section 7.2 had not reached the text; they are in findings 1, 3 and 4 here.
 
