@@ -32,8 +32,9 @@ Labels you may see on issues: **good first issue** (a few hours, little context)
 - **Fuzzing harnesses:** a libFuzzer/AFL++ harness for the C WEX4 reader (`c/wex4.h`, `c/tools/wex4_verify.c`)
   and the WNR3 decoder. Run it for hours, not seconds. The in-process fuzzer in `wex4/wex4_tools.c` is a
   starting point. Done when it builds in CI and any crash comes with a reproducer.
-- **Sanitizers in CI:** run the CPU checks under ASan/UBSan on Linux (`scripts/check_all.sh` with
-  `-fsanitize=address,undefined`).
+- **Sanitizers:** CI runs the CPU checks under ASan and UBSan on Linux (the `linux-sanitizers` job of
+  `.github/workflows/ci.yml`, which holds the exact `WEX_CFLAGS`, the sanitizer options and the preload
+  of the ASan runtime). Still open: MemorySanitizer or ThreadSanitizer runs (clang), and the GPU code.
 - **More test vectors:** hostile files that [wex4/vectors](../wex4/vectors/README.md) does not cover yet
   (each with its `MANIFEST.tsv` row and the expected verdict from both readers).
 - **macOS job in CI, NEON decoder:** CI runs on Linux (x86-64 and ARM64) and Windows. On a CPU that is

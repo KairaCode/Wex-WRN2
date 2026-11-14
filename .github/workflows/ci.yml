@@ -76,3 +76,28 @@ jobs:
         run: |
           export PATH="$PATH:/c/Program Files/Git/cmd"
           bash scripts/check_all.sh
+
+  # the same checks with every C file they build compiled under AddressSanitizer and UndefinedBehaviorSanitizer: an out-of-bounds
+  # read or write, a use after free or undefined behaviour in a reader, a decoder or the in-process fuzzer stops
+  # the run with a report. The tests load the instrumented libraries into Python (ctypes), which is not
+  # instrumented, so the ASan runtime is preloaded; leak detection is off (the Python interpreter and gcc itself
+  # do not free everything at exit)
+  linux-sanitizers:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30   # an estimate: the fuzz runs are expected to be several times slower under the sanitizers
+    env:
+      PYTHON: python3
+      USER: ""
+      USERNAME: ""
+      WEX_CFLAGS: -g -fno-omit-frame-pointer -fsanitize=address,undefined -fno-sanitize-recover=undefined
+      ASAN_OPTIONS: detect_leaks=0:abort_on_error=1
+      UBSAN_OPTIONS: print_stacktrace=1
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
+      - name: All CPU checks under ASan and UBSan
+        run: |
+          LD_PRELOAD=$(gcc -print-file-name=libasan.so)
+          export LD_PRELOAD
+          bash scripts/check_all.sh

@@ -20,7 +20,9 @@ case $(uname -s) in
   MINGW*|MSYS*|CYGWIN*) SO="-shared"; STATIC_SO="-static -shared" ;;
   *) SO="-shared -fPIC"; STATIC_SO="-shared -fPIC" ;;
 esac
-W="-O2 -Wall -Wextra -Wno-unused-parameter -Wno-unused-function"
+# WEX_CFLAGS: extra flags for every compile and link, empty by default (the sanitizer CI job sets
+# -fsanitize=address,undefined there)
+W="-O2 -Wall -Wextra -Wno-unused-parameter -Wno-unused-function ${WEX_CFLAGS-}"
 gcc $W $SO -I "$ROOT/c" "$ROOT/wex4/wex4_tools.c" -o "$S/wex4_tools_ref.dll"
 # the AVX2 kernels of the fast decoder exist on x86 only (-march=haswell: AVX2, BMI, BMI2, LZCNT). On any other
 # CPU (ARM, RISC-V, ...) the same source builds its scalar kernel 0: the reference loop per stream, parallel

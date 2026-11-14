@@ -30,11 +30,16 @@ case $(uname -s) in
   *) SO="-shared -fPIC"; FAKE_EXPORT="-D__declspec(x)=" ;;
 esac
 cd "$O"
-W="-O2 -Wall -Wextra -Wno-unused-parameter -Wno-unused-function"
+# WEX_CFLAGS: extra flags for every compile and link, empty by default (the sanitizer CI job sets
+# -fsanitize=address,undefined there)
+W="-O2 -Wall -Wextra -Wno-unused-parameter -Wno-unused-function ${WEX_CFLAGS-}"
 gcc $W "$C/tests/test_wex_format.c" -o test_wex_format.exe
 ./test_wex_format.exe
 gcc $W -fopenmp "$C/tests/test_wex4_verify.c" -o test_wex4_verify.exe
-./test_wex4_verify.exe 2>&1 | tail -1   # it prints the expected failures; its temporary .wex file stays here
+# it prints the expected failures, so only its summary line is shown; when it fails the whole output is, since
+# a sanitizer report would be in it. its temporary .wex file stays here
+./test_wex4_verify.exe > test_wex4_verify.log 2>&1 || { cat test_wex4_verify.log; exit 1; }
+tail -1 test_wex4_verify.log
 gcc $W -fopenmp -c "$C/tools/wex4_verify.c" -o wex4_verify.o
 gcc $W $SO "$C/tools/wex_nr3_tools.c" -o wex_nr3_tools.dll
 gcc $W $SO -static-libgcc $FAKE_EXPORT "$C/tests/fake_wex_cuda.c" -o fake_wex_cuda.dll
