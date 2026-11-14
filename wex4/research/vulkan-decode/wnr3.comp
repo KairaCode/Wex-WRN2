@@ -1,0 +1,186 @@
+#version 450
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 Ludovico Zanichelli
+//
+// WNR3 decode as a Vulkan compute shader (prototype, docs/WNR3-VULKAN.md). One invocation decodes one rANS
+// stream of one record; the record is named by the push constant. The file builds twice:
+//   glslangValidator -V wnr3.comp -o scales.spv              pass A: the scale streams
+//   glslangValidator -V -DWEIGHTS wnr3.comp -o weights.spv   pass B: the weight streams, after pass A
+// Arithmetic is 32-bit unsigned only, as in the CPU reference wex_nr2_decode (c/wex_neural_rans.h): the state
+// stays below 2^31, a frequency is at most 2^14 and state >> 14 is below 2^17, so no product overflows.
+// The host validates the record (wex_nrx_parse) and the model (wex_nr2_model_open) before it uploads them;
+// the shader relies on that for every index it forms.
+
+layout(local_size_x = 32) in;
+
+layout(std430, set = 0, binding = 0) readonly buffer RecordBytes { uint rec[]; };   // records, as LE words
+layout(std430, set = 0, binding = 1) readonly buffer ModelBlobs { uint tab[]; };    // WNM2 blobs, as LE words
+layout(std430, set = 0, binding = 2) readonly buffer Plans { uint plan[]; };        // PLAN_WORDS per record
+layout(std430, set = 0, binding = 3) readonly buffer Offsets { uint offs[]; };      // streams + 1 per record
+layout(std430, set = 0, binding = 4) buffer Decoded { uint outw[]; };               // decoded bytes, as LE words
+layout(std430, set = 0, binding = 5) buffer Errors { uint err[]; };                 // one word per record
+layout(push_constant) uniform Push { uint record; } pc;
+
+const uint PLAN_WORDS = 32u;
+const uint P_SCALE_OUT = 0u;      // [3] byte offset in outw of the scales of matrix m (multiple of 4)
+const uint P_WEIGHT_OUT = 3u;     // [3] byte offset in outw of the packed weights of matrix m (multiple of 4)
+const uint P_SCALE_COUNT = 6u;    // [3] scales of matrix m
+const uint P_SYMBOL_COUNT = 9u;   // [3] 4-bit weights of matrix m (a multiple of 32)
+const uint P_SCALE_CHUNK = 12u;   // Cs
+const uint P_WEIGHT_CHUNK = 13u;  // Cw
+const uint P_MODEL_ID = 14u;      // record bytes 4..7
+const uint P_OWNER = 15u;         // record bytes 28..31
+const uint P_WORD24 = 16u;        // record bytes 24..27: anchors and flags
+const uint P_TABLE = 17u;         // word index in tab of the record's WNM2 blob
+const uint P_OFFSETS = 18u;       // index in offs of the record's stream 0
+const uint P_SCALE_BASE = 19u;    // [4] first scale stream of matrix m; [3] = scale streams S
+const uint P_WEIGHT_BASE = 23u;   // [4] first weight stream of matrix m, counted from S; [3] = weight streams W
+
+const uint L = 1u << 23;          // WEX_NR_L
+const uint PRECISION = 14u;       // WEX_NR2_PRECISION
+const uint CONTEXTS = 567u;       // WEX_NR2_CONTEXTS
+const uint ERR_STRUCT = 1u;       // the error bits of c/wex_cuda.cuh
+const uint ERR_HASH = 2u;
+const uint ERR_CEIL = 4u;
+const uint ERR_CZ = 8u;
+const uint FLAG_CZ = 8u;          // WEX_NR3_FLAG_CZ
+
+uint record_byte(uint position) { return (rec[position >> 2] >> ((position & 3u) * 8u)) & 255u; }
+
+// u16 number k of the model's CDF area (the blob after its 32-byte header)
+uint cdf(uint table, uint k) { return (tab[table + 8u + (k >> 1)] >> ((k & 1u) * 16u)) & 0xffffu; }
+
+uint rotl(uint x, uint r) { return (x << r) | (x >> (32u - r)); }
+uint h32_tail(uint h, uint k) {
+    k *= 0xcc9e2d51u; k = rotl(k, 15u); k *= 0x1b873593u;
+    return h ^ k;
+}
+uint h32_block(uint h, uint k) { return rotl(h32_tail(h, k), 13u) * 5u + 0xe6546b64u; }
+uint h32_final(uint h, uint len) {
+    h ^= len;
+    h ^= h >> 16; h *= 0x85ebca6bu; h ^= h >> 13; h *= 0xc2b2ae35u; h ^= h >> 16;
+    return h;
+}
+
+void fail(uint bits) { atomicOr(err[pc.record], bits); }
+
+#ifdef WEIGHTS
+// magnitudes 0..5 -> 0, 2, 4, 5, 6, 7 (a + min(a, 2)) in each of 8 nibbles, sign bits kept
+uint ceil_double(uint w) {
+    uint m = w & 0x77777777u;
+    uint g = ((m >> 1) | (m >> 2)) & 0x11111111u;
+    uint mn = (g << 1) | (m & 0x11111111u & ~g);
+    return (w & 0x88888888u) | (m + mn);
+}
+// nonzero iff a nibble of w is 8
+uint has_nibble8(uint w) {
+    uint t = w ^ 0x88888888u;
+    return (t - 0x11111111u) & ~t & 0x88888888u;
+}
+#endif
+
+void main() {
+    uint p = pc.record * PLAN_WORDS;
+    uint j = gl_GlobalInvocationID.x;
+#ifdef WEIGHTS
+    uint base = P_WEIGHT_BASE, chunk = plan[p + P_WEIGHT_CHUNK];
+#else
+    uint base = P_SCALE_BASE, chunk = plan[p + P_SCALE_CHUNK];
+#endif
+    if (j >= plan[p + base + 3u]) return;
+    uint m = j >= plan[p + base + 2u] ? 2u : j >= plan[p + base + 1u] ? 1u : 0u;
+    uint first = (j - plan[p + base + m]) * chunk;
+#ifdef WEIGHTS
+    uint g = plan[p + P_SCALE_BASE + 3u] + j;
+    uint count = min(chunk, plan[p + P_SYMBOL_COUNT + m] - first);
+#else
+    uint g = j;
+    uint count = min(chunk, plan[p + P_SCALE_COUNT + m] - first);
+#endif
+    uint position = offs[plan[p + P_OFFSETS] + g], end = offs[plan[p + P_OFFSETS] + g + 1u];
+    uint table = plan[p + P_TABLE], word24 = plan[p + P_WORD24];
+    uint state = record_byte(position) << 24 | record_byte(position + 1u) << 16 |
+                 record_byte(position + 2u) << 8 | record_byte(position + 3u);
+    position += 4u;
+    if (state < L || state >= (L << 8)) { fail(ERR_STRUCT); return; }
+    // MurmurHash3 of {model_id, owner, g, bytes 24..27}, then of the stream's coded bytes
+    uint hash = h32_block(h32_block(h32_block(h32_block(0x33524e57u, plan[p + P_MODEL_ID]),
+                    plan[p + P_OWNER]), g), word24);
+
+#ifdef WEIGHTS
+    uint blocks = count / 32u;
+    uint scale_at = plan[p + P_SCALE_OUT + m] + first / 32u;          // this stream's own scale bytes
+    uint store = (plan[p + P_WEIGHT_OUT + m] + first / 2u) >> 2;      // and its own weight words
+    int anchor = int((word24 >> (m * 8u)) & 255u);
+    bool cz = ((word24 >> 24) & FLAG_CZ) != 0u;
+    bool ceil_matrix = ((word24 >> (24u + m)) & 1u) != 0u;
+    for (uint block = 0u; block < blocks; block++) {
+        uint scale_word = outw[(scale_at + block) >> 2], shift = ((scale_at + block) & 3u) * 8u;
+        uint scale = (scale_word >> shift) & 255u;                    // the coded scale, from pass A
+        uint srel = uint(clamp(int(scale) - anchor, -3, 3) + 3);
+        uint previous = 8u, maximum = 8u;
+        uint w[4] = uint[4](0u, 0u, 0u, 0u);
+        for (uint k = 0u; k < 32u; k++) {
+            uint row = (m * CONTEXTS + (srel * 9u + previous) * 9u + maximum) * 17u;
+            uint slot = state & ((1u << PRECISION) - 1u), lo = 0u, hi = 16u;
+            while (lo + 1u < hi) {                                     // the reference binary search
+                uint mid = (lo + hi) / 2u;
+                if (cdf(table, row + mid) <= slot) lo = mid; else hi = mid;
+            }
+            uint start = cdf(table, row + lo);
+            state = (cdf(table, row + lo + 1u) - start) * (state >> PRECISION) + slot - start;
+            while (state < L) {
+                if (position == end) { fail(ERR_STRUCT); return; }
+                state = (state << 8) | record_byte(position);
+                position++;
+            }
+            w[k >> 3] |= lo << ((k & 7u) * 4u);                        // symbol 2i is the low nibble of byte i
+            previous = lo & 7u;
+            if (maximum == 8u || previous > maximum) maximum = previous;
+        }
+        // coded bytes: hash, canonical-zero check, then the ceil-form inverse
+        hash = h32_block(h32_block(h32_block(h32_block(hash, w[0]), w[1]), w[2]), w[3]);
+        if (cz && (has_nibble8(w[0]) | has_nibble8(w[1]) | has_nibble8(w[2]) | has_nibble8(w[3])) != 0u) {
+            fail(ERR_CZ); return;
+        }
+        if (ceil_matrix && maximum == 5u) {
+            if (scale == 0u) { fail(ERR_CEIL); return; }
+            for (uint i = 0u; i < 4u; i++) w[i] = ceil_double(w[i]);
+            outw[(scale_at + block) >> 2] = (scale_word & ~(255u << shift)) | ((scale - 1u) << shift);
+        }
+        for (uint i = 0u; i < 4u; i++) outw[store + block * 4u + i] = w[i];
+    }
+    uint expect = L + (h32_final(hash, 16u + blocks * 16u) & 0x007fffffu);
+#else
+    uint row = 3u * CONTEXTS * 17u + m * 257u;                         // the scale CDF of matrix m
+    uint store = (plan[p + P_SCALE_OUT + m] + first) >> 2;             // this stream's own scale words
+    uint pending = 0u, held = 0u;
+    for (uint i = 0u; i < count; i++) {
+        uint slot = state & ((1u << PRECISION) - 1u), lo = 0u, hi = 256u;
+        while (lo + 1u < hi) {
+            uint mid = (lo + hi) / 2u;
+            if (cdf(table, row + mid) <= slot) lo = mid; else hi = mid;
+        }
+        uint start = cdf(table, row + lo);
+        state = (cdf(table, row + lo + 1u) - start) * (state >> PRECISION) + slot - start;
+        while (state < L) {
+            if (position == end) { fail(ERR_STRUCT); return; }
+            state = (state << 8) | record_byte(position);
+            position++;
+        }
+        pending |= lo << (held * 8u);
+        if (++held == 4u) {
+            outw[store++] = pending;
+            hash = h32_block(hash, pending);
+            pending = 0u; held = 0u;
+        }
+    }
+    if (held != 0u) {                                                   // the last word of a matrix
+        outw[store] = pending;
+        hash = h32_tail(hash, pending);
+    }
+    uint expect = L + (h32_final(hash, 16u + count) & 0x007fffffu);
+#endif
+    if (position != end) fail(ERR_STRUCT);
+    else if (state != expect) fail(ERR_HASH);
+}

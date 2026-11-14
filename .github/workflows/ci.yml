@@ -77,6 +77,33 @@ jobs:
           export PATH="$PATH:/c/Program Files/Git/cmd"
           bash scripts/check_all.sh
 
+  # opt-in: only a run started by hand (workflow_dispatch) has this job. The WNR3 decode as a Vulkan compute
+  # shader (wex4/research/vulkan-decode, docs/WNR3-VULKAN.md) against the CPU reference, on Mesa lavapipe: a
+  # Vulkan device that runs on the runner's CPU. It checks that the shader decodes the right bytes and refuses
+  # what the reference refuses; it says nothing about speed on a GPU
+  linux-vulkan:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHON: python3
+      USER: ""
+      USERNAME: ""
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
+      - name: Vulkan headers, loader, shader compiler, lavapipe and the validation layer
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libvulkan-dev glslang-tools mesa-vulkan-drivers vulkan-validationlayers
+      - name: Containers with WNR3 records (wex4/out)
+        run: bash wex4/build_and_test.sh --fuzz 10
+      - name: WNR3 on Vulkan against the CPU reference, validation layer on
+        run: WNR3_VK_VALIDATE=1 bash wex4/research/vulkan-decode/run.sh wex4/out/tiny_nr3_cz.wex4 wex4/out/synth.wex4
+      - name: Negative control (seven broken shaders must fail)
+        run: bash wex4/research/vulkan-decode/negative_control.sh wex4/out/tiny_nr3_cz.wex4 wex4/out/synth.wex4
+
   # the same checks with every C file they build compiled under AddressSanitizer and UndefinedBehaviorSanitizer: an out-of-bounds
   # read or write, a use after free or undefined behaviour in a reader, a decoder or the in-process fuzzer stops
   # the run with a report. The tests load the instrumented libraries into Python (ctypes), which is not
