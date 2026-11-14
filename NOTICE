@@ -55,6 +55,8 @@ Zanichelli in 2026; each one names its colibri source in its header:
     research/wnr3-20261107/team2/zero-safety/scripts/zs_cpu.c
     research/wnr3-20261107/team2/zero-safety/scripts/zs_gpu_kernels.cu
     research/wnr3-20261107/team2/zero-safety/scripts/zs_kern.c
+    wex4/fuzz/engine/deepseek_v4_internal.h
+    wex4/fuzz/engine/expert_store.h
 
 These files are patches against colibri sources (the maintainer's engine tree or stock
 colibri); they quote colibri lines as diff context:

@@ -20,7 +20,7 @@
 #   3. c/tools/wex4_verify.c over the valid conformance vectors and over a WEX4 file of 4 synthetic WNR3 records
 #      (fixtures/make_synth_mxfp4.py, c/tools/build_nr3.py, wex4/wex4_convert.py upgrade): on 8 threads under
 #      tsan, on one thread under msan, whose build has no OpenMP
-#   4. the three harnesses of wex4/fuzz/ on their seeds (wex4/fuzz/run.sh --replay), fuzz_wex4_file with the fast
+#   4. the five harnesses of wex4/fuzz/ on their seeds (wex4/fuzz/run.sh --replay), fuzz_wex4_file with the fast
 #      WNR3 decoder (-DWEX4_FAST_NR3); then fuzz_wex4_file on the synthetic file and fuzz_wnr3_record on its first
 #      record, where the fast decoder has enough streams for several OpenMP tasks (the records of the vectors
 #      have one task per section). Before that a small program prints the streams and the tasks of that record,
