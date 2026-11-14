@@ -157,7 +157,7 @@ c/             engine-side WEX code in the colibri c/ layout; pull requests may 
   tests/          format, store, repack, WNR3 and Qwen3.8 tests; several build only inside a full engine tree
 wex4/          WEX4, repo-only: Python reference, converter, C tools, tests, reviews, research
   vectors/        conformance vectors: valid and invalid files with the verdict a reader must give
-scripts/       repo-only checks: check_all.sh (every CPU check), build_cpu_check.sh, verify_wex1.py and its test
+scripts/       repo-only checks: check_all.sh (every CPU check), build_cpu_check.sh, sanitize_c.sh, verify_wex1.py and its test
 archive/       the WNR2 lab code (encoder, trainer, checks) and its benches, kept for the record
 models/        trained WNM2 models: DeepSeek V4 Flash 0731 and V4.1 REAP-192
 fixtures/      the tiny V4.1 model and the makers of synthetic experts

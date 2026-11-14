@@ -37,12 +37,19 @@ Labels you may see on issues: **good first issue** (a few hours, little context)
   stream hashes right.
 - **Sanitizers:** CI runs the CPU checks under ASan and UBSan on Linux (the `linux-sanitizers` job of
   `.github/workflows/ci.yml`, which holds the exact `WEX_CFLAGS`, the sanitizer options and the preload
-  of the ASan runtime). Still open: MemorySanitizer or ThreadSanitizer runs (clang), and the GPU code.
+  of the ASan runtime). The jobs `linux-tsan` and `linux-msan` run the C test executables under
+  ThreadSanitizer (clang, OpenMP on) and MemorySanitizer (clang, OpenMP off) through
+  `bash scripts/sanitize_c.sh tsan|msan`, whose header lists what runs: `test_wex_format`,
+  `test_wex4_verify`, `wex4_verify` on 8 threads and the three fuzzing harnesses on their seeds and on
+  a file of synthetic WNR3 records. Still open: the libraries that the tests load into Python
+  (`wex4_tools.dll` with the fast decoder, the WNR3 encoder) under these two sanitizers, which needs
+  the same tests driven from C or an instrumented Python; the engine store (`c/expert_store_wex.c`,
+  `c/qwen38_wex.h`), which builds only inside an engine tree; ARM64 and macOS; and the GPU code.
 - **More test vectors:** hostile files that [wex4/vectors](../wex4/vectors/README.md) does not cover yet
   (each with its `MANIFEST.tsv` row and the expected verdict from both readers).
 - **macOS job in CI, NEON decoder:** CI runs on Linux (x86-64 and ARM64) and Windows. On a CPU that is
   not x86 `wex4/build_and_test.sh` drops `-march=haswell`, so the fast CPU decoder builds its scalar
-  kernel only. Still open: a macOS job (the scripts call `gcc` and link with `-fopenmp`), good first
+  kernel only. Still open: a macOS job (the scripts take the compiler from `CC`, `gcc` by default, and link with `-fopenmp`), good first
   issue; a NEON version of the AVX2 kernels in `wex4/research/fast-cpu-decode/wex_fast_decode.h`,
   byte-identical to the reference on the vectors and with a speed number against the scalar kernel,
   help wanted.

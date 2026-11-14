@@ -101,3 +101,43 @@ jobs:
           LD_PRELOAD=$(gcc -print-file-name=libasan.so)
           export LD_PRELOAD
           bash scripts/check_all.sh
+
+  # the C test executables under ThreadSanitizer: clang with its own OpenMP runtime and Archer, the tool of that
+  # runtime that tells ThreadSanitizer what OpenMP synchronizes. A data race in the OpenMP loops of
+  # c/tools/wex4_verify.c or of the fast WNR3 decoder stops the run. Executables only: a library loaded into
+  # Python, which is not instrumented, cannot be checked this way (scripts/sanitize_c.sh lists what runs).
+  # The last step is not a sanitizer run: every CPU check built with clang, so that CC=clang keeps working
+  linux-tsan:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHON: python3
+      USER: ""
+      USERNAME: ""
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
+      - name: OpenMP runtime of the installed clang
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends "libomp-$(clang -dumpversion | cut -d. -f1)-dev"
+      - name: C tests under ThreadSanitizer
+        run: bash scripts/sanitize_c.sh tsan
+      - name: All CPU checks built with clang
+        run: CC=clang bash scripts/check_all.sh
+
+  # the same executables under MemorySanitizer (clang), built without OpenMP, so that no library that is not
+  # instrumented is in the process: a branch, a pointer or a system call that depends on a byte nobody wrote
+  # stops the run
+  linux-msan:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHON: python3
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
+      - name: C tests under MemorySanitizer
+        run: bash scripts/sanitize_c.sh msan

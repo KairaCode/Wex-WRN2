@@ -6,7 +6,8 @@
 #   bash wex4/fuzz/run.sh [SECONDS]     libFuzzer: clang with -fsanitize=fuzzer,address,undefined; every harness
 #                                       fuzzes for SECONDS (default 60) from the seed corpus. CC names the clang.
 #   bash wex4/fuzz/run.sh --replay      no fuzzing engine: gcc, each harness runs every seed once (a regression
-#                                       test that needs no clang; WEX_CFLAGS adds flags, as in the other scripts)
+#                                       test that needs no clang; CC names another compiler and WEX_CFLAGS adds
+#                                       flags, as in the other scripts: scripts/sanitize_c.sh runs it that way)
 #
 # Everything goes to wex4/fuzz/out/ (git-ignored): the harnesses, seeds/ (wex4/fuzz/make_seeds.py), corpus/NAME
 # (the inputs libFuzzer keeps: it grows from run to run until out/ is deleted) and crashes/ (the reproducers).
@@ -39,7 +40,7 @@ seeds_of() { if [ "$1" = fuzz_wnr3_record ]; then echo "$O/seeds/wnr3"; else ech
 
 if [ "${1-}" = --replay ]; then
   for h in $HARNESSES; do
-    gcc -O2 $W ${WEX_CFLAGS-} $MARCH -DWEX_FUZZ_STANDALONE $INC "$ROOT/wex4/fuzz/$h.c" -o "$O/$h-replay$EXE"
+    "${CC:-gcc}" -O2 $W ${WEX_CFLAGS-} $MARCH -DWEX_FUZZ_STANDALONE $INC "$ROOT/wex4/fuzz/$h.c" -o "$O/$h-replay$EXE"
     echo "== $h"
     "$O/$h-replay$EXE" "$(seeds_of "$h")"/*
   done

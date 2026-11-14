@@ -34,6 +34,6 @@ A crash file is a hostile input by construction. One found on your own machine i
 
 - `fuzz_wex4_file.c` does not decode a file whose header claims more than 64 MiB for one record (`FUZZ_MAX_DECODED`). The format allows 2^30 bytes; the harness would spend its time filling memory. Such a file is still validated up to that point.
 - A WNR3 stream carries a 23-bit hash of its decoded symbols, checked after the stream is decoded; a mutated stream is therefore decoded and then refused. The fuzzer reaches the decode loops, rarely what follows a stream that passed.
-- The harnesses run on one thread and are built without `-fopenmp`: the parallel paths of `wex4_verify.c` and of the fast decoder are not fuzzed.
+- The harnesses run on one thread and are built without `-fopenmp`: the parallel paths of `wex4_verify.c` and of the fast decoder are not fuzzed. They are run once on the seeds, not fuzzed, under ThreadSanitizer with `-fopenmp` and under MemorySanitizer by [`../../scripts/sanitize_c.sh`](../../scripts/README.md), which calls `run.sh --replay` with `CC=clang` and its flags in `WEX_CFLAGS`.
 - The GPU decoder (`c/wex_cuda.cuh`) and the engine store (`c/expert_store_wex.c`, `c/qwen38_wex.h`) have no harness.
 - CI (`.github/workflows/fuzz.yml`) runs each harness for 60 seconds: enough to notice a harness that no longer builds or a shallow bug, not a substitute for a long run.
