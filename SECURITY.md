@@ -11,6 +11,7 @@ A WEX file is untrusted input: it can be damaged, or built by someone who has re
 | WNR3 record decoders (`c/wex_neural_rans.h`, `c/wex_cuda.cuh`), when reached through a WEX4 reader | yes: every stream carries a 23-bit hash, and the record is covered by its SHA-256 | yes |
 | WEX1, WEX2 and WEX3 readers (`c/wex_format.h`, `c/expert_store_wex.c`, `scripts/verify_wex1.py`) | **no.** These containers have no hashes, and WNR2 records accepted 1.8-1.9% of random bit flips without noticing. Open only files you built yourself | crashes are fixed as bugs |
 | `archive/`, `research/` | no: lab code, kept for the record | no |
+| WNR3 decoder on Vulkan, `wex4/research/vulkan-decode/` (prototype, in no engine) | no. The shader does not bound-check: it is safe only on records and models that its host program validated first, and that program is a test tool that no fuzzer drives ([docs/WNR3-VULKAN.md](docs/WNR3-VULKAN.md), section 6) | no |
 
 The engines that read these files in production (the DeepSeek loader and the maintainer's application host) are not in this repository; see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 

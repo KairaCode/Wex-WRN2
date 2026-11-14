@@ -141,6 +141,7 @@ The index of every page, with its kind, language and state, is [docs/README.md](
 
 - **Integrate the formats into a colibri tree and run them:** [docs/COLIBRI-INTEGRATION.md](docs/COLIBRI-INTEGRATION.md). `integration/` holds the engine, backend and host excerpts, the read-path patch for stock colibri at 561966ec (`upstream-561966ec-levelA.patch`: WEX1 and WNR2) and the three WEX4 loader patches. `integration\build\build_wex_windows.cmd` builds the CUDA helper and the checkers (MSVC and CUDA needed).
 - **Implement a reader or a writer:** [docs/WEX4-SPEC.md](docs/WEX4-SPEC.md) for the container, [docs/WNR3-SPEC.md](docs/WNR3-SPEC.md) for the record codec, [docs/WNR2-REFERENCE.md](docs/WNR2-REFERENCE.md) for WEX1 to WEX3 and WNR2. Reference code: `c/wex4.h` and `wex4/wex4.py` (written independently of each other), `c/wex_format.h`, `c/wex_neural_rans.h`. The Go reader, written from those pages alone, with what they left open: [impl/go-wex4/](impl/go-wex4/README.md).
+- **Decode WNR3 on a GPU that is not NVIDIA:** today only the CUDA helper decodes on a GPU. [docs/WNR3-VULKAN.md](docs/WNR3-VULKAN.md) is the design note for a Vulkan compute decoder, with a prototype in `wex4/research/vulkan-decode/` that matches the CPU reference on a CPU Vulkan device (Mesa lavapipe); it has not run on a GPU, has no speed number and is not in any engine.
 - **Check a result:** [docs/BENCHMARKS.md](docs/BENCHMARKS.md) for the measurement tables, `docs/reports/` for the dated reports behind them, [research/README.md](research/README.md) for the runs with their scripts and raw output.
 
 ## Layout
@@ -151,7 +152,7 @@ SECURITY.md  CITATION.cff     how to report a vulnerability, how to cite
 LICENSE  NOTICE  THIRD_PARTY_NOTICES.md              Apache-2.0 text, attribution notices, third-party material
 check_repo.py  sync-map.tsv    self-check (links, c/ file map, licence headers, privacy) and the map of c/ files to the maintainer's tree
 assets/        the logo (light and dark), the mark, and the source image of the social preview (set in the repository settings)
-.github/       CI workflows (Linux, macOS and Windows CPU checks, the Go reader on the vectors; the libFuzzer harnesses of wex4/fuzz/), issue forms, pull-request checklist
+.github/       CI workflows (Linux, macOS and Windows CPU checks, the Go reader on the vectors, an opt-in Vulkan job on a CPU device; the libFuzzer harnesses of wex4/fuzz/), issue forms, pull-request checklist
 c/             engine-side WEX code in the colibri c/ layout; pull requests may change it
   *.h *.c *.cuh   format, codecs, CPU and CUDA decoders, the standalone store, wex4.h, qwen38_wex.h
   tools/          container writers, the WNR3 builder and its encoder DLL, the CUDA helper, benches

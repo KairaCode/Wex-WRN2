@@ -1,7 +1,8 @@
 # CPU checks of the repository: check_repo.py, the stdlib tests, the WEX1-3/WNR3 CPU check and the
 # WEX4 tests (scripts/check_all.sh), then the fuzzing harnesses replayed on their seeds (wex4/fuzz/run.sh --replay),
 # on Linux (x86-64, ARM64), macOS (Apple silicon) and Windows; and the Go reader on the conformance vectors.
-# No GPU, no model weights, no secrets.
+# No GPU, no model weights, no secrets. A run started by hand can also have the linux-io-bench job (the full
+# Linux read-path benchmark) and the linux-vulkan job (the WNR3 Vulkan prototype on a CPU Vulkan device).
 name: CI
 
 on:
@@ -260,3 +261,44 @@ jobs:
           jq -r .table_markdown bench/out/wex_io.json >> "$GITHUB_STEP_SUMMARY"
           echo "----- bench/out/wex_io.json"
           cat bench/out/wex_io.json
+
+  # opt-in: only a run started by hand (workflow_dispatch) has this job. The WNR3 decode as a Vulkan compute
+  # shader (wex4/research/vulkan-decode, docs/WNR3-VULKAN.md) against the CPU reference, on Mesa lavapipe: a
+  # Vulkan device that runs on the runner's CPU. It checks that the shader decodes the right bytes and refuses
+  # what the reference refuses; it says nothing about speed on a GPU
+  linux-vulkan:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHON: python3
+      USER: ""
+      USERNAME: ""
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
+      - name: Vulkan headers, loader, shader compiler, lavapipe and the validation layer
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libvulkan-dev glslang-tools mesa-vulkan-drivers vulkan-validationlayers
+      - name: Containers with WNR3 records (wex4/out)
+        run: bash wex4/build_and_test.sh --fuzz 10
+      - name: WNR3 on Vulkan against the CPU reference, validation layer on
+        run: WNR3_VK_VALIDATE=1 bash wex4/research/vulkan-decode/run.sh wex4/out/tiny_nr3_cz.wex4 wex4/out/synth.wex4
+      - name: Negative control (eleven broken shaders must fail)
+        run: bash wex4/research/vulkan-decode/negative_control.sh wex4/out/tiny_nr3_cz.wex4 wex4/out/synth.wex4
+      # the records of synth.wex4 behind 5 GiB of blobs: the host program must find them at 64-bit offsets
+      - name: A file above 4 GiB
+        run: |
+          python3 -I wex4/research/vulkan-decode/big_file.py wex4/out/synth.wex4 "$RUNNER_TEMP/big.wex4"
+          WNR3_VK_SHADERS=wex4/research/vulkan-decode/out wex4/research/vulkan-decode/out/wnr3_vk decode "$RUNNER_TEMP/big.wex4"
+          rm -f "$RUNNER_TEMP/big.wex4"
+      # last, because it rebuilds out/wnr3_vk: the host program under AddressSanitizer and UndefinedBehaviorSanitizer
+      # (the Vulkan driver is not instrumented; leak detection is off, the driver keeps memory until exit)
+      - name: The same checks with the host program under the sanitizers
+        env:
+          WEX_CFLAGS: -g -fno-omit-frame-pointer -fsanitize=address,undefined -fno-sanitize-recover=undefined
+          ASAN_OPTIONS: detect_leaks=0:abort_on_error=1
+          UBSAN_OPTIONS: print_stacktrace=1
+        run: bash wex4/research/vulkan-decode/run.sh wex4/out/tiny_nr3_cz.wex4 wex4/out/synth.wex4

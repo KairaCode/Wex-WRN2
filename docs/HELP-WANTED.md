@@ -139,11 +139,29 @@ Labels you may see on issues: **good first issue** (a few hours, little context)
 - **What:** a Vulkan compute version of the WNR3 decode into device memory, following the CUDA kernels
   (one record = many independent rANS streams, then the canonical-zero and scale handling of
   [WNR3-SPEC](WNR3-SPEC.md)). colibri already has a Vulkan backend to hook it into.
+- **Already there:** the design note [WNR3-VULKAN](WNR3-VULKAN.md) (how streams map to workgroups, the
+  buffers, the model tables, batching, what differs from CUDA) and a prototype in
+  [`wex4/research/vulkan-decode/`](../wex4/research/vulkan-decode/README.md): a compute shader and a C99
+  host program that build without the CUDA toolkit and agree with the CPU reference, in bytes and in
+  verdicts, on synthetic records, on the tiny-model containers and a conformance vector, and on mutated
+  copies of them. It ran only on Mesa lavapipe, a Vulkan device on the CPU (the opt-in `linux-vulkan` job
+  of `.github/workflows/ci.yml`).
+- **Still open, most wanted first:**
+  - run `bash wex4/research/vulkan-decode/run.sh <container.wex4>` on a real GPU (Intel, AMD, NVIDIA,
+    Apple through MoltenVK) and report the last lines and the device line; a real container with WNR3
+    records is the test that counts, and none was decoded yet. The host program reads the file record
+    by record and cuts its batches to the device's buffer limit, so the file size is not a limit (a
+    5.4 GB test file was read; no record of a real model was). The slow part is the CPU reference,
+    which decodes every record too: start with `MUTATIONS=0 WNR3_VK_EVERY=64` (no mutated copies, one
+    record in 64), as the folder's README says;
+  - a speed number against the CPU path on the same machine. The prototype looks symbols up with the
+    reference binary search; the design note, section 5, lists the tables the CUDA kernels use instead;
+  - the commit step (copy the decoded regions to the engine's buffers only when the record's error word
+    is zero) and the hook into colibri's Vulkan backend (design note, sections 8 and 11).
 - **Done when:** its output is byte-identical to the CPU reference on every record of a real container,
   there is a speed number against the CPU path on the same machine, and it builds without the CUDA
-  toolkit.
-- **Start with:** a design note in an issue (how streams map to workgroups, where the model tables live,
-  how records are batched). HIP and Metal ports are welcome after it, on the same tests.
+  toolkit. Today only the third holds.
+- HIP and Metal ports are welcome after it, on the same tests.
 
 ## 7. I/O on Linux and macOS (help wanted)
 
@@ -188,7 +206,8 @@ listed above as well.
   [colibri](https://github.com/JustVugg/colibri) `dev` as a series of small pull requests: Qwen3.8 MXFP4
   experts first (#2822-#2825 are open), then the WEX4 container, the WNR3 codec and its GPU decode, and
   the I/O switches. Reviewing or testing those PRs on your hardware helps directly.
-- **WNR3 decode on Vulkan** *(open to you, section 6)*.
+- **WNR3 decode on Vulkan:** the design note and a prototype checked on a CPU Vulkan device are in; a run
+  on a GPU, a speed number, a real container and the engine hook are open *(open to you, section 6)*.
 - **ARM:** the ARM CI job and a NEON version of kernel 1 of the fast CPU decoder are in. Its speed on
   real records and on ARM CPUs other than the CI runner, and an SVE version of kernel 2, are still open
   *(open to you, section 3)*.
