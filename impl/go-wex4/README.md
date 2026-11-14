@@ -37,7 +37,7 @@ The reject classes are the names the manifest uses for the C reader (`WEX4_E_HEA
 
 ## What was checked, and how
 
-All on 2026-11-14. Local: Windows 10 desktop, Go 1.27.4 from MSYS2 UCRT64, one run each unless said. Linux: the `go-reader` job of CI (ubuntu-24.04, the runner's Go).
+All on 2026-11-14. Local: Windows 10 desktop, Go 1.27.4 from MSYS2 UCRT64, one run each unless said. Linux: the `go-reader` job of CI (ubuntu-24.04, x86-64, the runner's Go, 1.24.13 on that day) runs `run.sh`: the tests and the 112 rows passed there too; the files of `wex4/out/` and the reference's `verify` were run locally only.
 
 | Check | Result |
 |---|---|
