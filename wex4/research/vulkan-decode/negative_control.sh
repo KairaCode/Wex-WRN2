@@ -29,9 +29,9 @@ control "no canonical-zero check" 's/if (cz && /if (false \&\& /' "${A[@]+"${A[@
 control "no error for a coded scale 0 in a max-5 block" 's/if (scale == 0u) { fail(ERR_CEIL); return; }//' "${A[@]+"${A[@]}"}"
 control "ceil-form inverse: the weights are not doubled back" 's/w\[i\] = ceil_double(w\[i\])/w[i] = w[i]/' "${A[@]+"${A[@]}"}"
 control "ceil-form inverse: the scale is not decremented" 's/((scale - 1u) << shift)/(scale << shift)/' "${A[@]+"${A[@]}"}"
-control "a stream may be longer than its symbols need" 's/if (position != end) fail(ERR_STRUCT);/if (false) fail(ERR_STRUCT);/' "${A[@]+"${A[@]}"}"
-control "no lower bound on the initial state" 's/if (state < L || state >= (L << 8))/if (state >= (L << 8))/' "${A[@]+"${A[@]}"}"
-control "no upper bound on the initial state" 's/if (state < L || state >= (L << 8))/if (state < L)/' "${A[@]+"${A[@]}"}"
+control "a stream may be longer than its symbols need" 's/else if (position != end) fail(ERR_STRUCT);/else if (false) fail(ERR_STRUCT);/' "${A[@]+"${A[@]}"}"
+control "no lower bound on the initial state" 's/bool bad = state < L || state >= (L << 8);/bool bad = state >= (L << 8);/' "${A[@]+"${A[@]}"}"
+control "no upper bound on the initial state" 's/bool bad = state < L || state >= (L << 8);/bool bad = state < L;/' "${A[@]+"${A[@]}"}"
 rm -f "$COPY"
 bash "$HERE/run.sh" "$@" > "$HERE/out/control-0.log" 2>&1 || { echo "the unchanged shader fails (out/control-0.log)"; exit 1; }
 echo "negative control: $noticed of $total broken shaders noticed"

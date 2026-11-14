@@ -102,7 +102,11 @@ void main() {
     uint state = record_byte(position) << 24 | record_byte(position + 1u) << 16 |
                  record_byte(position + 2u) << 8 | record_byte(position + 3u);
     position += 4u;
-    if (state < L || state >= (L << 8)) { fail(ERR_STRUCT); return; }
+    // An initial state out of range is reported at the end, and the stream is decoded all the same: whatever
+    // it decodes, the record is refused. Every index below stays in bounds for any state (a product may then
+    // wrap, which uint arithmetic allows). Stopping here instead (a return, or count = 0) crashed llvmpipe of
+    // Mesa 25.2.8 with LLVM 20.1.2 when the stream was scale stream 0 or 8: docs/WNR3-VULKAN.md, section 6.
+    bool bad = state < L || state >= (L << 8);
     // MurmurHash3 of {model_id, owner, g, bytes 24..27}, then of the stream's coded bytes
     uint hash = h32_block(h32_block(h32_block(h32_block(0x33524e57u, plan[p + P_MODEL_ID]),
                     plan[p + P_OWNER]), g), word24);
@@ -181,6 +185,7 @@ void main() {
     }
     uint expect = L + (h32_final(hash, 16u + count) & 0x007fffffu);
 #endif
-    if (position != end) fail(ERR_STRUCT);
+    if (bad) fail(ERR_STRUCT);
+    else if (position != end) fail(ERR_STRUCT);
     else if (state != expect) fail(ERR_HASH);
 }

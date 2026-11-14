@@ -1006,6 +1006,7 @@ int main(int argc, char **argv) {
         fprintf(stderr, "usage: wnr3_vk selftest | decode FILE.wex4 ... | reject FILE.wex4 ... | mutate N SEED FILE.wex4 ...\n");
         return 2;
     }
+    setvbuf(stdout, NULL, _IONBF, 0);   /* a log that is a pipe shows how far a run came */
     gpu_open(&gpu);
     if (mode == 3) failures += selftest(&gpu);
     else for (i = first; i < argc; i++) failures += run_file(&gpu, argv[i], mode, copies);
