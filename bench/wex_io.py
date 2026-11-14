@@ -15,8 +15,10 @@ records in the same order on every path.
 
 Prints a Markdown table (median, minimum and maximum MB/s over the runs) and writes bench/out/wex_io.json,
 which holds every pass, the CPU, the kernel, the filesystem and the block device, but no host name, user
-name or path. --file reads an existing WEX4 container instead of writing one. --smoke is a seconds-long
-run on a tiny container that only shows that every path works (CI).
+name or path. --file reads an existing WEX4 container instead of writing one (no --dir needed: the
+filesystem and the block device recorded are those of the file). --smoke is a seconds-long run on a tiny
+container that only shows that every path works; --strict makes a path that was skipped a failure (CI
+uses both).
 """
 import argparse
 import json
@@ -41,8 +43,10 @@ CONFIGS = [
     ('page cache, pread, 1 thread', 'path=sync direct=0', 'c/expert_store_wex.c and c/tools/wex4_verify.c on Linux today'),
     ('page cache, pread, FADV_RANDOM', 'path=sync direct=0 advise=random', 'kernel readahead off'),
     ('page cache, pread, FADV_SEQUENTIAL', 'path=sync direct=0 advise=sequential', 'kernel readahead doubled'),
-    ('page cache, pread, WILLNEED 1 record ahead', 'path=sync direct=0 ahead=1', 'the next record is announced'),
-    ('page cache, pread, WILLNEED 4 records ahead', 'path=sync direct=0 ahead=4', 'the next 4 records are announced'),
+    ('page cache, pread, WILLNEED 1 record ahead', 'path=sync direct=0 ahead=1',
+     'the next record is announced; how much of it the kernel then holds is measured (ahead_cached)'),
+    ('page cache, pread, WILLNEED 4 records ahead', 'path=sync direct=0 ahead=4',
+     'the next 4 records are announced; how much of them the kernel then holds is measured (ahead_cached)'),
     ('page cache, pread, 4 threads', 'path=sync direct=0 threads=4', ''),
     ('page cache, pread, 8 threads', 'path=sync direct=0 threads=8', ''),
     ('page cache, io_uring, 8 records in flight', 'path=uring direct=0 depth=8', ''),
@@ -119,8 +123,8 @@ def one_pass(exe, container, options, **more):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument('--dir', required=True, help='a directory on the volume to measure; the container is written there')
-    ap.add_argument('--file', help='an existing WEX4 container with expert records to read instead')
+    ap.add_argument('--dir', help='a directory on the volume to measure; the container is written there')
+    ap.add_argument('--file', help='an existing WEX4 container with expert records to read instead (then no --dir)')
     ap.add_argument('--layers', type=int, default=8)
     ap.add_argument('--experts', type=int, default=48, help='experts per layer (default 8 x 48 = 384 records)')
     ap.add_argument('--rows', type=int, default=2048)
@@ -130,11 +134,17 @@ def main():
     ap.add_argument('--drop-caches', action='store_true', help='also drop the page cache of the machine before every pass')
     ap.add_argument('--keep', action='store_true', help='leave the container in --dir')
     ap.add_argument('--smoke', action='store_true', help='tiny container, 1 run: only shows that every path works')
+    ap.add_argument('--strict', action='store_true', help='a read path that is skipped counts as a failure')
     a = ap.parse_args()
     if not sys.platform.startswith('linux'):
         sys.exit('bench/wex_io.py measures the Linux read paths; it does nothing on this system')
-    if not os.path.isdir(a.dir):
+    if bool(a.dir) == bool(a.file):
+        sys.exit('give --dir (a container is written there) or --file (an existing container), not both')
+    if a.file and not os.path.isfile(a.file):
+        sys.exit(f'--file {a.file}: not a file')
+    if a.dir and not os.path.isdir(a.dir):
         sys.exit(f'--dir {a.dir}: not a directory')
+    where = a.dir or os.path.dirname(os.path.abspath(a.file))   # the volume that is read
     if a.smoke:
         a.layers, a.experts, a.rows, a.cols, a.runs, a.records = 2, 12, 256, 1024, 1, 8
 
@@ -146,9 +156,9 @@ def main():
     if r.returncode != 0 or r.stderr.strip():
         sys.exit('bench/wex_io.c does not build without warnings:\n' + r.stderr)
 
-    res = {'bench': 'wex_io', 'version': 1, 'started': time.strftime('%Y-%m-%dT%H:%M:%S%z'),
-           'sysinfo': bench.sysinfo(a.dir), 'block_device': block_device(a.dir),
-           'runs': a.runs, 'records_per_pass': a.records, 'smoke': a.smoke}
+    res = {'bench': 'wex_io', 'version': 2, 'started': time.strftime('%Y-%m-%dT%H:%M:%S%z'),
+           'sysinfo': bench.sysinfo(where), 'block_device': block_device(where),
+           'runs': a.runs, 'records_per_pass': a.records, 'smoke': a.smoke, 'strict': a.strict}
     container, made = a.file, None
     if not container:
         container = made = os.path.join(a.dir, 'wex-io-bench.wex4')
@@ -167,16 +177,24 @@ def main():
     try:
         # 1. identity: every path returns the bytes the index names
         res['check'] = {}
-        for label, options, _ in CONFIGS:
+        todo = []   # the paths that passed the check: only these are timed
+        for config in CONFIGS:
+            label, options, _ = config
             got = one_pass(exe, container, options, records=min(8, a.records), seed=99, verify=1)
-            res['check'][options] = got.get('skipped') or got.get('failed') or f"{got['records']} records match their SHA-256"
             if 'failed' in got:
+                res['check'][options] = 'failed: ' + got['failed']
                 failed.append(f'{label}: {got["failed"]}')
+            elif 'skipped' in got:
+                res['check'][options] = 'skipped: ' + got['skipped']
+                if a.strict:
+                    failed.append(f'{label}: skipped ({got["skipped"]}), and --strict was given')
+            else:
+                res['check'][options] = f"{got['records']} records match their SHA-256"
+                todo.append(config)
             print(f'check  {label}: {res["check"][options]}', flush=True)
         # 2. speed: the runs of all paths interleaved, the order rotated from run to run
         res['drop_caches'] = bool(a.drop_caches and drop_caches())
         res['passes'] = {options: [] for _, options, _ in CONFIGS}
-        todo = [c for c in CONFIGS if 'records' in res['check'][c[1]]]
         for run in range(a.runs):
             for label, options, _ in todo[run % len(todo):] + todo[:run % len(todo)] if todo else []:
                 if res['drop_caches']:
@@ -186,13 +204,14 @@ def main():
                     failed.append(f'{label}, run {run + 1}: {got}')
                     continue
                 res['passes'][options].append(got)
-                print(f'run {run + 1}  {label}: {got["mb_s"]} MB/s, cached before {got["cached_before"]}', flush=True)
+                seen = f', announced records in page cache before their read {got["ahead_cached"]}' if got.get('ahead') else ''
+                print(f'run {run + 1}  {label}: {got["mb_s"]} MB/s, cached before {got["cached_before"]}{seen}', flush=True)
     finally:
         if made and not a.keep and os.path.exists(made):
             os.remove(made)
 
     # 3. the table
-    base = None
+    base, notes = None, []   # base: the median of row 1; the column stays empty when row 1 did not run
     rows = ['| Read path | MB/s, median | min to max | against row 1 | ms per record, median | in page cache before | bytes checked |',
             '|---|---|---|---|---|---|---|']
     res['summary'] = {}
@@ -205,12 +224,21 @@ def main():
         s = {'label': label, 'mb_s_median': round(statistics.median(speeds), 1), 'mb_s_min': min(speeds), 'mb_s_max': max(speeds),
              'record_ms_p50_median': round(statistics.median(p['record_ms_p50'] for p in passes), 2),
              'cached_before_max': max(p['cached_before'] for p in passes), 'runs': len(passes), 'note': note}
+        seen = [p['ahead_cached'] for p in passes if p.get('ahead') and p.get('ahead_cached', -1) >= 0]
+        if seen:
+            s['ahead_cached_median'], s['ahead_cached_min'], s['ahead_cached_max'] = statistics.median(seen), min(seen), max(seen)
+            notes.append(f'{label}: {s["ahead_cached_median"] * 100:.1f}% ({min(seen) * 100:.1f}% to {max(seen) * 100:.1f}%) '
+                         f'of the pages of the announced records were in the page cache just before their read')
+        elif any(p.get('ahead') for p in passes):
+            notes.append(f'{label}: what the kernel read ahead was not measured (mincore failed or pages are not 4096 bytes)')
         res['summary'][options] = s
-        base = base or s['mb_s_median']
+        if options == CONFIGS[0][1]:
+            base = s['mb_s_median']
+        against = f'{s["mb_s_median"] / base:.2f}x' if base else ''
         rows.append(f'| {label} | {s["mb_s_median"]:.0f} | {s["mb_s_min"]:.0f} to {s["mb_s_max"]:.0f} | '
-                    f'{s["mb_s_median"] / base:.2f}x | {s["record_ms_p50_median"]:.1f} | {s["cached_before_max"] * 100:.1f}% | '
+                    f'{against} | {s["record_ms_p50_median"]:.1f} | {s["cached_before_max"] * 100:.1f}% | '
                     f'{res["check"][options]} |')
-    table = '\n'.join(rows)
+    table = '\n'.join(rows + [''] + ['- ' + x for x in notes]) if notes else '\n'.join(rows)
     res['table_markdown'] = table
     path = os.path.join(OUT, 'wex_io.json')
     with open(path, 'w') as f:

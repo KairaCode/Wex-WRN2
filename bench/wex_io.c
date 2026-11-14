@@ -13,7 +13,11 @@
  *                     in flight, each cut into `split` page-aligned sub-reads that are in flight together
  *   direct=0|1        open the file with O_DIRECT (1) or read through the page cache (0)
  *   advise=none|random|sequential     posix_fadvise on the whole file before the pass (page cache only)
- *   ahead=K           sync, 1 thread, page cache: POSIX_FADV_WILLNEED on the record K reads ahead
+ *   ahead=K           sync, 1 thread, page cache: POSIX_FADV_WILLNEED on the record K reads ahead. How much
+ *                     of an announced record the kernel then holds is measured, not assumed: one mincore
+ *                     call on the record just before its read (inside the timed pass, outside the record's
+ *                     own time) gives ahead_cached, the share of the announced records' pages found in
+ *                     the page cache at that moment (-1 when not measured)
  *   records=N seed=S  N records of the permutation S (0 = every expert record)
  *   evict=0|1         1 (default): POSIX_FADV_DONTNEED on the whole file before the pass
  *   warm=0|1          1: the same records are read once through the page cache before the timed pass
@@ -22,7 +26,10 @@
  *
  * cached_before / cached_after: the share of the pass's pages that mincore finds in the page cache,
  * so a cold pass can be told from a warm one without root. A path this machine cannot run prints
- * {"skipped": "<why>"} and exits 0. io_uring is used through its three system calls, no liburing.
+ * {"skipped": "<why>"} and exits 0: O_DIRECT refused by the filesystem (EINVAL at open), io_uring_setup
+ * refused, or an io_uring without IORING_OP_READ (Linux older than 5.6). Any other error is a failure
+ * (exit 1). io_uring is used through its three system calls, no liburing. The ring is set up and the
+ * buffers are touched before the clock starts; the worker threads are created after it starts.
  * Build: gcc -O2 -pthread bench/wex_io.c -o wex_io */
 #define _GNU_SOURCE
 #define _FILE_OFFSET_BITS 64
@@ -53,6 +60,9 @@ typedef struct {
     uint32_t n, next;
     int verify, ahead;
     double *lat;               /* seconds per record, by plan position */
+    const unsigned char *map;  /* ahead only: the file mapped (never touched), for mincore; or NULL */
+    unsigned char *vec;        /* ahead only: one byte per page of the largest record */
+    uint64_t ahead_in, ahead_all;   /* pages of announced records in the page cache before their read / all */
 } WioPass;
 
 typedef struct { WioPass *pass; unsigned char *buf; uint64_t bytes; uint32_t bad; } WioWorker;
@@ -90,6 +100,18 @@ static int wio_sha_ok(const WioRec *r, const unsigned char *buf) {
     return !memcmp(digest, r->sha, 32u);
 }
 
+/* how many pages of an announced record are in the page cache now (Linux; a no-op elsewhere) */
+static void wio_ahead_seen(WioPass *p, const WioRec *r) {
+#ifdef __linux__
+    uint32_t pages = r->stored / WEX4_PAGE;
+    if (!p->map || !p->vec || mincore((void *)(uintptr_t)(p->map + r->offset), r->stored, p->vec)) return;
+    for (uint32_t k = 0; k < pages; k++) p->ahead_in += p->vec[k] & 1u;
+    p->ahead_all += pages;
+#else
+    (void)p; (void)r;
+#endif
+}
+
 static void *wio_worker(void *arg) {
     WioWorker *w = (WioWorker *)arg;
     WioPass *p = w->pass;
@@ -97,6 +119,7 @@ static void *wio_worker(void *arg) {
         uint32_t i = __sync_fetch_and_add(&p->next, 1u);
         if (i >= p->n) break;
         const WioRec *r = &p->recs[p->plan[i]];
+        if (p->ahead && i) wio_ahead_seen(p, r);   /* every record but the first was announced earlier */
         double t0 = wio_now();
         if (p->ahead && i + (uint32_t)p->ahead < p->n) {
             const WioRec *a = &p->recs[p->plan[i + (uint32_t)p->ahead]];
@@ -145,6 +168,8 @@ static int wio_sync(WioPass *p, unsigned char **bufs, unsigned threads, uint64_t
 
 typedef struct {
     int fd;
+    void *sq, *cq, *sqe_map;   /* the three mappings of the ring, MAP_FAILED when not mapped */
+    size_t sq_len, cq_len, sqe_len;
     unsigned *sq_head, *sq_tail, *sq_mask, *sq_array, *cq_head, *cq_tail, *cq_mask;
     struct io_uring_sqe *sqes;
     struct io_uring_cqe *cqes;
@@ -157,21 +182,41 @@ typedef struct {
     uint32_t pos[WIO_MAX_SPLIT], end[WIO_MAX_SPLIT];
 } WioSlot;
 
-static int wio_ring_open(WioRing *r, unsigned entries) {
+static void wio_ring_close(WioRing *r) {
+    if (r->sq != MAP_FAILED) munmap(r->sq, r->sq_len);
+    if (r->cq != MAP_FAILED) munmap(r->cq, r->cq_len);
+    if (r->sqe_map != MAP_FAILED) munmap(r->sqe_map, r->sqe_len);
+    if (r->fd >= 0) close(r->fd);
+    r->fd = -1; r->sq = r->cq = r->sqe_map = MAP_FAILED;
+}
+
+/* 0: ready. -2: this machine has no usable io_uring, *why says which (a skip). -1: an error (errno) */
+static int wio_ring_open(WioRing *r, unsigned entries, const char **why) {
     struct io_uring_params p;
     memset(&p, 0, sizeof p);
     memset(r, 0, sizeof *r);
+    r->sq = r->cq = r->sqe_map = MAP_FAILED;
     r->fd = (int)syscall(__NR_io_uring_setup, entries, &p);
-    if (r->fd < 0) return -1;
-    size_t sq_len = p.sq_off.array + p.sq_entries * sizeof(unsigned);
-    size_t cq_len = p.cq_off.cqes + p.cq_entries * sizeof(struct io_uring_cqe);
-    unsigned char *sq = (unsigned char *)mmap(NULL, sq_len, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE, r->fd,
-                                              IORING_OFF_SQ_RING);
-    unsigned char *cq = (unsigned char *)mmap(NULL, cq_len, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE, r->fd,
-                                              IORING_OFF_CQ_RING);
-    void *sqes = mmap(NULL, p.sq_entries * sizeof(struct io_uring_sqe), PROT_READ | PROT_WRITE,
-                      MAP_SHARED | MAP_POPULATE, r->fd, IORING_OFF_SQES);
-    if (sq == MAP_FAILED || cq == MAP_FAILED || sqes == MAP_FAILED) return -1;
+    if (r->fd < 0) { *why = strerror(errno); return -2; }   /* ENOSYS, EPERM (switched off), ENOMEM (memlock limit) */
+    if (!(p.features & IORING_FEAT_RW_CUR_POS)) {           /* the feature bit that came with IORING_OP_READ */
+        wio_ring_close(r);
+        *why = "this kernel has no IORING_OP_READ, Linux older than 5.6";
+        return -2;
+    }
+    r->sq_len = p.sq_off.array + p.sq_entries * sizeof(unsigned);
+    r->cq_len = p.cq_off.cqes + p.cq_entries * sizeof(struct io_uring_cqe);
+    r->sqe_len = p.sq_entries * sizeof(struct io_uring_sqe);
+    r->sq = mmap(NULL, r->sq_len, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE, r->fd, IORING_OFF_SQ_RING);
+    r->cq = mmap(NULL, r->cq_len, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE, r->fd, IORING_OFF_CQ_RING);
+    r->sqe_map = mmap(NULL, r->sqe_len, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE, r->fd, IORING_OFF_SQES);
+    if (r->sq == MAP_FAILED || r->cq == MAP_FAILED || r->sqe_map == MAP_FAILED) {
+        int e = errno;
+        wio_ring_close(r);
+        errno = e;
+        return -1;
+    }
+    unsigned char *sq = (unsigned char *)r->sq, *cq = (unsigned char *)r->cq;
+    void *sqes = r->sqe_map;
     r->sq_head = (unsigned *)(sq + p.sq_off.head); r->sq_tail = (unsigned *)(sq + p.sq_off.tail);
     r->sq_mask = (unsigned *)(sq + p.sq_off.ring_mask); r->sq_array = (unsigned *)(sq + p.sq_off.array);
     r->cq_head = (unsigned *)(cq + p.cq_off.head); r->cq_tail = (unsigned *)(cq + p.cq_off.tail);
@@ -202,14 +247,13 @@ static int wio_ring_enter(WioRing *r) {
     }
 }
 
-/* one thread, `depth` records in flight, each as `split` sub-reads; a short sub-read is continued */
-static int wio_uring(WioPass *p, unsigned char **bufs, unsigned depth, unsigned split, uint64_t *bytes, uint32_t *bad) {
-    WioRing ring;
-    WioSlot *slots = (WioSlot *)calloc(depth, sizeof *slots);
+/* one thread, `depth` records in flight, each as `split` sub-reads; a short sub-read is continued.
+ * `slots` holds `depth` entries; the caller opens and closes the ring */
+static int wio_uring(WioPass *p, WioRing *rp, WioSlot *slots, unsigned char **bufs, unsigned depth, unsigned split,
+                     uint64_t *bytes, uint32_t *bad) {
+    WioRing ring = *rp;
     unsigned free_slots[WIO_MAX_SLOTS], nfree = depth;
     uint32_t done = 0;
-    if (!slots) return -1;
-    if (wio_ring_open(&ring, depth * split)) { free(slots); return -2; }
     for (unsigned k = 0; k < depth; k++) free_slots[k] = depth - 1u - k;
     while (done < p->n) {
         while (nfree && p->next < p->n) {
@@ -225,7 +269,7 @@ static int wio_uring(WioPass *p, unsigned char **bufs, unsigned depth, unsigned 
                               (uint64_t)s * WIO_MAX_SPLIT + k);
             }
         }
-        if (wio_ring_enter(&ring)) { free(slots); return -1; }
+        if (wio_ring_enter(&ring)) return -1;
         unsigned head = *ring.cq_head;
         while (head != __atomic_load_n(ring.cq_tail, __ATOMIC_ACQUIRE)) {
             const struct io_uring_cqe *c = &ring.cqes[head & *ring.cq_mask];
@@ -247,8 +291,6 @@ static int wio_uring(WioPass *p, unsigned char **bufs, unsigned depth, unsigned 
         }
         __atomic_store_n(ring.cq_head, head, __ATOMIC_RELEASE);
     }
-    free(slots);
-    close(ring.fd);
     return 0;
 }
 
@@ -271,9 +313,18 @@ static double wio_cached(int fd, uint64_t file_bytes, const WioPass *p) {
     return share;
 }
 #else
-static int wio_uring(WioPass *p, unsigned char **bufs, unsigned depth, unsigned split, uint64_t *bytes, uint32_t *bad) {
-    (void)p; (void)bufs; (void)depth; (void)split; (void)bytes; (void)bad;
+typedef struct { int fd; } WioRing;
+typedef struct { int unused; } WioSlot;
+static int wio_ring_open(WioRing *r, unsigned entries, const char **why) {
+    (void)r; (void)entries;
+    *why = "not built in";
     return -2;
+}
+static void wio_ring_close(WioRing *r) { (void)r; }
+static int wio_uring(WioPass *p, WioRing *rp, WioSlot *slots, unsigned char **bufs, unsigned depth, unsigned split,
+                     uint64_t *bytes, uint32_t *bad) {
+    (void)p; (void)rp; (void)slots; (void)bufs; (void)depth; (void)split; (void)bytes; (void)bad;
+    return -1;
 }
 static double wio_cached(int fd, uint64_t file_bytes, const WioPass *p) {
     (void)fd; (void)file_bytes; (void)p;
@@ -356,7 +407,8 @@ int main(int argc, char **argv) {
     uint32_t n = want && want < count ? want : count;
 
     int fd = open(argv[1], O_RDONLY | (direct ? O_DIRECT : 0));
-    if (fd < 0) return direct ? wio_skip("the filesystem refuses O_DIRECT") : wio_fail("cannot open the container");
+    if (fd < 0)   /* EINVAL is how a filesystem without O_DIRECT answers; anything else is an error */
+        return direct && errno == EINVAL ? wio_skip("the filesystem refuses O_DIRECT") : wio_fail("cannot open the container");
     WioPass pass;
     memset(&pass, 0, sizeof pass);
     pass.fd = fd; pass.recs = recs; pass.plan = plan; pass.n = n; pass.verify = verify; pass.ahead = ahead;
@@ -372,6 +424,28 @@ int main(int argc, char **argv) {
         bufs[k] = (unsigned char *)b;
     }
 
+    /* the ring, its slots and the mapping for ahead_cached: all before the clock starts */
+    WioRing ring;
+    WioSlot *slots = NULL;
+    if (uring) {
+        const char *why = "";
+        char text[160];
+        int ro = wio_ring_open(&ring, depth * split, &why);
+        if (ro == -2) {
+            snprintf(text, sizeof text, "io_uring is not available here (%s)", why);
+            return wio_skip(text);
+        }
+        slots = (WioSlot *)calloc(depth, sizeof *slots);
+        if (ro || !slots) return wio_fail("io_uring set-up");
+    }
+#ifdef __linux__
+    if (ahead && sysconf(_SC_PAGESIZE) == (long)WEX4_PAGE) {   /* mincore counts in system pages */
+        void *map = mmap(NULL, (size_t)file_bytes, PROT_READ, MAP_SHARED, cfd, 0);
+        pass.vec = (unsigned char *)malloc((size_t)(max_stored / WEX4_PAGE) + 1u);
+        if (map != MAP_FAILED) pass.map = (const unsigned char *)map;
+    }
+#endif
+
     if (evict && !warm) posix_fadvise(cfd, 0, 0, POSIX_FADV_DONTNEED);
     if (warm)
         for (uint32_t i = 0; i < n; i++)
@@ -384,12 +458,14 @@ int main(int argc, char **argv) {
     uint32_t bad = 0;
     errno = 0;
     double t0 = wio_now();
-    int rc = uring ? wio_uring(&pass, bufs, depth, split, &bytes, &bad) : wio_sync(&pass, bufs, threads, &bytes, &bad);
+    int rc = uring ? wio_uring(&pass, &ring, slots, bufs, depth, split, &bytes, &bad)
+                   : wio_sync(&pass, bufs, threads, &bytes, &bad);
     double seconds = wio_now() - t0;
-    if (rc == -2) {
-        char why[96];
-        snprintf(why, sizeof why, "io_uring is not available here (%s)", errno ? strerror(errno) : "not built in");
-        return wio_skip(why);
+    if (uring) {
+        int e = errno;
+        wio_ring_close(&ring);
+        free(slots);
+        errno = e;
     }
     if (rc || bad) {
         fprintf(stderr, "wex_io: %u of %u records failed%s (%s)\n", bad, n, verify ? " or do not match their SHA-256" : "",
@@ -400,10 +476,11 @@ int main(int argc, char **argv) {
     qsort(pass.lat, n, sizeof(double), wio_cmp);
     printf("{\"path\": \"%s\", \"direct\": %d, \"threads\": %u, \"depth\": %u, \"split\": %u, \"advise\": \"%s\", \"ahead\": %d, "
            "\"warm\": %d, \"verified\": %d, \"records\": %u, \"bytes\": %llu, \"seconds\": %.6f, \"mb_s\": %.1f, "
-           "\"record_ms_p50\": %.3f, \"record_ms_max\": %.3f, \"cached_before\": %.4f, \"cached_after\": %.4f}\n",
+           "\"record_ms_p50\": %.3f, \"record_ms_max\": %.3f, \"cached_before\": %.4f, \"cached_after\": %.4f, "
+           "\"ahead_cached\": %.4f}\n",
            path, direct, uring ? 1u : threads, uring ? depth : 1u, uring ? split : 1u, advise, ahead, warm, verify, n,
            (unsigned long long)bytes, seconds, (double)bytes / seconds / 1e6, pass.lat[n / 2u] * 1e3, pass.lat[n - 1u] * 1e3,
-           cached_before, cached_after);
+           cached_before, cached_after, pass.ahead_all ? (double)pass.ahead_in / (double)pass.ahead_all : -1.0);
     return 0;
 }
 #else

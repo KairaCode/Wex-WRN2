@@ -38,12 +38,17 @@ jobs:
       - name: All CPU checks
         run: bash scripts/check_all.sh
       # seconds: a 10 MB container, every read path of bench/wex_io.c checked against the index's SHA-256 and
-      # run once. It shows that the benchmark still builds and reads right, not how fast anything is
+      # run once. It shows that the benchmark still builds and reads right, not how fast anything is.
+      # --strict: all 20 paths run on this runner, so a path that reports "skipped" (O_DIRECT or io_uring
+      # set-up broken) fails the step. The second call reads the container the first one left (--file)
       - name: Linux read-path benchmark, smoke run
-        run: python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --smoke
+        run: |
+          python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --smoke --strict --keep
+          python3 -I bench/wex_io.py --file "$RUNNER_TEMP/wex-io-bench.wex4" --smoke --strict
 
   # the same checks on a 64-bit ARM CPU: no AVX2, so wex4/build_and_test.sh builds the scalar kernel of the fast
-  # WNR3 decoder, and plain char is unsigned there
+  # WNR3 decoder, and plain char is unsigned there. The smoke run builds bench/wex_io.c for ARM and runs its
+  # 20 read paths once (the full benchmark was not run on ARM)
   linux-arm:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 15
@@ -57,6 +62,8 @@ jobs:
           persist-credentials: false
       - name: All CPU checks
         run: bash scripts/check_all.sh
+      - name: Linux read-path benchmark, smoke run
+        run: python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --smoke --strict
 
   windows:
     runs-on: windows-2022
@@ -112,7 +119,7 @@ jobs:
           bash scripts/check_all.sh
       # bench/wex_io.py appends WEX_CFLAGS too: its pread and io_uring paths under the sanitizers
       - name: Linux read-path benchmark, smoke run under ASan and UBSan
-        run: python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --smoke
+        run: python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --smoke --strict
 
   # A measurement, not a check: the full bench/wex_io.py, only when a manual run asks for it
   # (gh workflow run ci.yml --ref <branch> -f linux_io_bench=true). The runner is a shared cloud VM with a
