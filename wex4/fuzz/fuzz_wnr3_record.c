@@ -12,7 +12,8 @@
  * Besides what the sanitizers catch, the two decoders must agree: the same verdict, and on success the same
  * decoded bytes. The fast decoder states that contract ("same bytes in, same bytes out, same accept/reject
  * as the reference"); the outputs are not compared after a failure, where both may be partially written.
- * Built with -march=haswell the fast decoder runs its AVX2 kernels, without it the scalar kernel. */
+ * Built with -march=haswell the fast decoder runs its AVX2 kernels, on AArch64 its NEON kernel, otherwise the
+ * scalar kernel. */
 #include "wex_fast_decode.h"
 #include "wex4.h"
 #include "fuzz_common.h"

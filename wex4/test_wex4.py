@@ -29,7 +29,7 @@ import wex4_convert as conv  # noqa: E402
 
 WORK = sys.argv[1]
 FUZZ = int(sys.argv[sys.argv.index('--fuzz') + 1]) if '--fuzz' in sys.argv else 1000
-C = wex4.CLib(os.path.join(WORK, 'wex4_tools.dll'))             # fast WNR3 decoder (AVX2 + OpenMP)
+C = wex4.CLib(os.path.join(WORK, 'wex4_tools.dll'))             # fast WNR3 decoder (AVX2 or NEON, + OpenMP)
 CREF = wex4.CLib(os.path.join(WORK, 'wex4_tools_ref.dll'))     # reference WNR3 decoder
 FIXTURE = os.path.join(HERE, '..', 'fixtures', 'v41-tiny', 'model.safetensors')
 VECTORS = os.path.join(HERE, 'vectors')

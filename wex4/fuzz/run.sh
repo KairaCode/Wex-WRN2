@@ -23,7 +23,8 @@ HARNESSES="fuzz_wex4_file fuzz_wnr3_record fuzz_wex4_verify"
 # unless WEX_CFLAGS brings it in the --replay mode (scripts/sanitize_c.sh tsan does)
 W="-Wall -Wextra -Wno-unused-parameter -Wno-unused-function -Wno-unknown-pragmas"
 INC="-I $ROOT/c -I $ROOT/wex4/research/fast-cpu-decode"
-# the AVX2 kernels of the fast WNR3 decoder exist on x86 only; elsewhere fuzz_wnr3_record compares its scalar kernel
+# the AVX2 kernels of the fast WNR3 decoder need -march=haswell on x86; on AArch64 the same source builds its NEON
+# kernel with no flag, on any other CPU fuzz_wnr3_record compares its scalar kernel
 case $(uname -m) in
   x86_64|amd64|i?86) MARCH="-march=haswell" ;;
   *) MARCH="" ;;

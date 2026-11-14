@@ -4,7 +4,7 @@
  * Build: gcc -O2 -shared -I c wex4/wex4_tools.c -o wex4_tools.dll
  * Everything works on a whole file held in memory: the tests use small files;
  * a real reader reads the header page, the index and single records instead.
- * With -DWEX4_FAST_NR3 -I wex4/research/fast-cpu-decode (and -O3 -march=haswell -fopenmp)
+ * With -DWEX4_FAST_NR3 -I wex4/research/fast-cpu-decode (and -O3 -fopenmp, on x86 -march=haswell too)
  * wex4_decode_record decodes WNR3 records with wex_fast_decode instead of the reference. */
 #ifdef WEX4_FAST_NR3
 /* c/wex4.h is the engine-side file and always names the reference decoder (WEX4_NR3_DECODE = wex_nr2_decode),

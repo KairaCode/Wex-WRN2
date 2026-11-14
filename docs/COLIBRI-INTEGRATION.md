@@ -35,7 +35,7 @@ The bridge in `c/tools/` reports 63 (all six). The full helper API is in [WNR2-R
 
 ## 2. Build
 
-**CPU checks, from this repository.** `bash scripts/check_all.sh` builds and runs every test that needs no engine tree and no GPU, and ends with `all checks passed`. Windows: MSYS2 UCRT64 or MINGW64 `gcc` and Python 3 on `PATH`, run from Git Bash or an MSYS2 shell. Linux: `gcc`, Python 3 and `PYTHON=python3`. macOS: Python 3, `PYTHON=python3` and a Homebrew GNU gcc named in `CC` (for example `CC=gcc-15`; the `gcc` of Xcode is Apple clang, without OpenMP). The CPU is x86-64 with AVX2 (one test builds with `-march=haswell`) or, under Linux or macOS, 64-bit ARM, where that test builds the scalar kernel of the fast decoder instead (the `linux-arm` and `macos` CI jobs).
+**CPU checks, from this repository.** `bash scripts/check_all.sh` builds and runs every test that needs no engine tree and no GPU, and ends with `all checks passed`. Windows: MSYS2 UCRT64 or MINGW64 `gcc` and Python 3 on `PATH`, run from Git Bash or an MSYS2 shell. Linux: `gcc`, Python 3 and `PYTHON=python3` (checked by CI on ubuntu-24.04, x86-64 and ARM64). macOS: Python 3, `PYTHON=python3` and a Homebrew GNU gcc named in `CC` (for example `CC=gcc-15`; the `gcc` of Xcode is Apple clang, without OpenMP). The CPU is x86-64 with AVX2 (one test builds with `-march=haswell`) or, under Linux or macOS, 64-bit ARM, where that test builds the NEON kernel of the fast decoder instead (the `linux-arm` and `macos` CI jobs).
 
 **The helper and the GPU checkers, from this repository (Windows):**
 

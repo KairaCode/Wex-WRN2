@@ -6,34 +6,46 @@
  *   test_fast_decode mutate MODEL.wnm2 N SEED REC... N mini-records at the decoders: valid by construction (some with
  *                                                    a semantic twist) or byte-mutated; same status, same bytes
  *   test_fast_decode bench  MODEL.wnm2 REPS REC...   timing table (best of REPS)
+ *   test_fast_decode speed  MODEL.wnm2 RUNS REC...   one thread: median and best of RUNS passes over the records,
+ *                                                    and the ratio of each median to the scalar kernel's (k0)
  *
  * REC = 72-byte WexEntry followed by the record bytes (extract.py writes them).
- * Every buffer a decoder touches sits between two PAGE_NOACCESS pages (Windows): the record is copied
- * WITHOUT its zero padding flush against the upper guard page and outputs are flush against the upper or the
- * lower one, so a read or write one byte outside faults. */
+ * Every buffer a decoder touches sits between two pages without access (Windows: PAGE_NOACCESS; elsewhere
+ * mmap + mprotect PROT_NONE): the record is copied WITHOUT its zero padding flush against the upper guard page
+ * and outputs are flush against the upper or the lower one, so a read or write one byte outside faults. */
+#if !defined(_WIN32) && !defined(_DEFAULT_SOURCE)
+#define _DEFAULT_SOURCE   /* glibc with -std=c11: clock_gettime, MAP_ANONYMOUS */
+#endif
 #include "wex_fast_decode.h"
 #include <stdio.h>
 #ifdef _WIN32
 #include <windows.h>
 #else
+#include <sys/mman.h>
 #include <time.h>
+#include <unistd.h>
+#ifndef MAP_ANONYMOUS
+#define MAP_ANONYMOUS MAP_ANON
+#endif
 #endif
 
 typedef struct { unsigned char *lo, *hi; } Guard;   /* usable [lo, hi) */
 
 static Guard guard_alloc(size_t bytes) {
     Guard g;
-    size_t pages = (bytes + 4095u) / 4096u + !bytes;
 #ifdef _WIN32
+    const size_t page = 4096u, pages = (bytes + page - 1u) / page + !bytes;
     DWORD old;
     unsigned char *base = (unsigned char *)VirtualAlloc(NULL, (pages + 2u) * 4096u, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
     if (!base || !VirtualProtect(base, 4096, PAGE_NOACCESS, &old) ||
         !VirtualProtect(base + (pages + 1u) * 4096u, 4096, PAGE_NOACCESS, &old)) { fprintf(stderr, "guard_alloc\n"); exit(2); }
 #else
-    unsigned char *base = (unsigned char *)malloc((pages + 2u) * 4096u);   /* no guard pages off Windows */
-    if (!base) exit(2);
+    const size_t page = (size_t)sysconf(_SC_PAGESIZE), pages = (bytes + page - 1u) / page + !bytes;   /* 4, 16 or 64 KiB */
+    unsigned char *base = (unsigned char *)mmap(NULL, (pages + 2u) * page, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    if (base == (unsigned char *)MAP_FAILED || mprotect(base, page, PROT_NONE) ||
+        mprotect(base + (pages + 1u) * page, page, PROT_NONE)) { fprintf(stderr, "guard_alloc\n"); exit(2); }
 #endif
-    g.lo = base + 4096; g.hi = g.lo + pages * 4096u;
+    g.lo = base + page; g.hi = g.lo + pages * page;
     return g;
 }
 
@@ -76,7 +88,7 @@ typedef struct { const char *name; WexFastOptions o; } Variant;
 static const Variant variants[] = {
     {"k0: reference loop per stream", {1, 0, 1, 0}},
 #if WEXF_SIMD
-    {"k1: AVX2 search, 1 stream", {1, 1, 1, 0}},
+    {"k1: " WEXF_KERNELS " search, 1 stream", {1, 1, 1, 0}},
     {"k1: 2 streams interleaved", {1, 1, 2, 0}},
     {"k1: 3 streams interleaved", {1, 1, 3, 0}},
     {"k1: 4 streams interleaved", {1, 1, 4, 0}},
@@ -88,6 +100,8 @@ static const Variant variants[] = {
     {"k1: 4 streams, fused", {1, 1, 4, 1}},
     {"k1: 6 streams, fused", {1, 1, 6, 1}},
     {"k1: 8 streams, fused", {1, 1, 8, 1}},
+#endif
+#if WEXF_SIMD == 1
     {"k2: gather 8 streams", {1, 2, 1, 0}},
     {"k2: gather 16 streams", {1, 2, 2, 0}},
     {"k2: gather 24 streams", {1, 2, 3, 0}},
@@ -395,6 +409,14 @@ static int cmd_mutate(const WexNr2Model *model, long wanted, int count, char **p
         }
         if (wex_nr3_parse(r.record, r.total, &r.layout, model->id, &view) ||
             wex_fast_decode(&view, &r.layout, model, src_scales[i], src_weights[i])) { printf("%s: decode failed\n", paths[i]); return 1; }
+        for (m = 0; m < 3u; m++) {   /* a record without the CZ flag can hold -0 nibbles: make_mini wants none in its source */
+            size_t k;
+            for (k = 0; k < r.layout.symbol_count[m] / 2u; k++) {
+                unsigned char *b = src_weights[i][m] + k;
+                if ((*b & 15u) == 8u) *b &= 0xf0u;
+                if ((*b >> 4) == 8u) *b &= 0x0fu;
+            }
+        }
         src_layout = r.layout;
         free(r.record - sizeof(WexEntry));
     }
@@ -531,12 +553,57 @@ static int cmd_bench(const WexNr2Model *model, int reps, int count, char **paths
     return 0;
 }
 
+/* ---- speed ----------------------------------------------------------------- */
+static int by_value(const void *a, const void *b) {
+    const double x = *(const double *)a, y = *(const double *)b;
+    return x < y ? -1 : x > y;
+}
+
+/* One thread. A run is one pass over the records; a row is the reference (row 0) or a variant. */
+static int cmd_speed(const WexNr2Model *model, int runs, int count, char **paths) {
+    Real real[16];
+    WexNr2Record view[16];
+    Out out;
+    double raw = 0, median[VARIANTS + 1u], best[VARIANTS + 1u], *t;
+    int i, run, n = count < 16 ? count : 16;
+    size_t row;
+    if (runs < 1 || !(t = (double *)malloc((size_t)runs * sizeof(*t)))) return 2;
+    poison = 0;
+    for (i = 0; i < n; i++) {
+        load_real(paths[i], &real[i]);
+        if (wex_nr3_parse(real[i].record, real[i].total, &real[i].layout, model->id, &view[i])) return 1;
+        raw += real[i].entry.scale_bytes + real[i].entry.weight_bytes;
+    }
+    out_alloc(&out, &real[0].layout); out_place(&out, &real[0].layout, 0);
+    raw /= n;
+    for (row = 0; row <= VARIANTS; row++) {
+        for (run = -1; run < runs; run++) {   /* run -1 warms up and is not counted */
+            const double start = now_ms();
+            for (i = 0; i < n; i++)
+                if (row ? decode_fast(&view[i], &real[i].layout, model, &out, variants[row - 1u].o, 1)
+                        : decode_ref(&view[i], &real[i].layout, model, &out)) return 1;
+            if (run >= 0) t[run] = (now_ms() - start) / n;
+        }
+        qsort(t, (size_t)runs, sizeof(*t), by_value);
+        best[row] = t[0];
+        median[row] = runs & 1 ? t[runs / 2] : (t[runs / 2 - 1] + t[runs / 2]) / 2.0;
+    }
+    printf("%d records, %.0f decoded bytes each, 1 thread, %d runs (one run = one pass over the records, after one\n"
+           "pass that is not counted); MB = 10^6 bytes\n", n, raw, runs);
+    printf("| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |\n|---|---:|---:|---:|---:|\n");
+    for (row = 0; row <= VARIANTS; row++)
+        printf("| %s | %.3f | %.1f | %.3f | %.2f |\n", row ? variants[row - 1u].name : "reference wex_nr2_decode",
+               median[row], raw / median[row] / 1000.0, best[row], median[1] / median[row]);
+    free(t);
+    return 0;
+}
+
 int main(int argc, char **argv) {
     WexNr2Model model;
     size_t bytes;
     unsigned char *blob;
     Guard g;
-    if (argc < 4) { fprintf(stderr, "usage: %s equal|mutate|bench MODEL.wnm2 [N SEED | REPS] REC...\n", argv[0]); return 2; }
+    if (argc < 4) { fprintf(stderr, "usage: %s equal|mutate|bench|speed MODEL.wnm2 [N SEED | REPS | RUNS] REC...\n", argv[0]); return 2; }
     blob = read_file(argv[2], &bytes);
     g = guard_alloc(bytes);   /* the model flush against a guard page too */
     memcpy(g.hi - bytes, blob, bytes);
@@ -551,7 +618,7 @@ int main(int argc, char **argv) {
         tables = &built;
     }
 #endif
-    printf("build: %s, %s; model id 0x%08x\n", WEXF_SIMD ? "AVX2 kernels" : "scalar only",
+    printf("build: %s, %s; model id 0x%08x\n", WEXF_SIMD ? WEXF_KERNELS " kernels" : "scalar only",
 #ifdef _OPENMP
            "OpenMP",
 #else
@@ -561,5 +628,6 @@ int main(int argc, char **argv) {
     if (!strcmp(argv[1], "equal")) return cmd_equal(&model, argc - 3, argv + 3);
     if (!strcmp(argv[1], "mutate") && argc >= 6) { rng_state = strtoull(argv[4], NULL, 0) | 1u; return cmd_mutate(&model, atol(argv[3]), argc - 5, argv + 5); }
     if (!strcmp(argv[1], "bench") && argc >= 5) return cmd_bench(&model, atoi(argv[3]), argc - 4, argv + 4);
+    if (!strcmp(argv[1], "speed") && argc >= 5) return cmd_speed(&model, atoi(argv[3]), argc - 4, argv + 4);
     return 2;
 }

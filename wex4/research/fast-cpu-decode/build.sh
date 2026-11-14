@@ -5,6 +5,8 @@
 #   test_fast.exe    AVX2 kernels + OpenMP (-march=haswell: AVX2, BMI, BMI2)
 #   test_scalar.exe  -DWEX_FAST_SCALAR: the portable fallback (kernel 0 only) + OpenMP
 #   test_ubsan.exe   AVX2 kernels with -fsanitize=undefined -fsanitize-trap=all (traps, no runtime library)
+# x86 only (-march=haswell). On AArch64 the NEON kernel needs no flag: synth.sh builds the harness for the CPU it
+# runs on.
 # Usage: sh build.sh   (gcc on PATH; WEX_SRC = directory of wex_format.h, default ../../../c)
 set -eu
 HERE=$(cd "$(dirname "$0")" && pwd)
