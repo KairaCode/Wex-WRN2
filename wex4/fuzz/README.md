@@ -38,11 +38,28 @@ Four harnesses define `LLVMFuzzerCustomMutator` with it; every other call is lib
 
 `wex.dict` is a libFuzzer dictionary with the magic numbers of the containers, records and blobs and a few field values; `run.sh` passes it to the four harnesses whose input is a whole file.
 
-Each harness with a mutator prints one line at exit with what the run reached. Measured on GitHub Actions (`ubuntu-24.04` runner, the distribution's `clang`, `-fsanitize=fuzzer,address,undefined`, 60 s per harness from the seeds, an empty corpus), one run with the mutators and one with `WEX_FUZZ_MUTATOR=0`, not repeated:
+Each harness with a mutator prints one line at exit with what the run reached. Measured on 2026-11-14 on GitHub Actions (`ubuntu-24.04` runner, the distribution's `clang`, `-fsanitize=fuzzer,address,undefined`, 60 s per harness from the seeds, an empty corpus), one run with the mutators ([43641976259](https://github.com/KairaCode/Wex-WRN2/actions/runs/43641976259)) and one with `WEX_FUZZ_MUTATOR=0` ([43642516736](https://github.com/KairaCode/Wex-WRN2/actions/runs/43642516736)), same source, each run once:
 
-MEASUREMENT_TABLE
+| Harness | What is counted | With the mutators | `WEX_FUZZ_MUTATOR=0` |
+|---|---|---|---|
+| `fuzz_wnr3_record` | inputs run | 6,595 | 123,139 |
+| | records both decoders accepted | 4,297 | 30 |
+| | different decoded records among them | 4,242 | 2 |
+| | `cov` / `ft` | 287 / 924 | 246 / 582 |
+| `fuzz_store_wex` | inputs run | 32,556 | 64,423 |
+| | WNR3 records the store served | 2,270 | 626 |
+| | different decoded records among them | 405 | 2 |
+| | `cov` / `ft` | 409 / 1,001 | 403 / 924 |
+| `fuzz_q38_wex` | inputs run | 38,487 | 60,321 |
+| | WNR3 records loaded | 2,329 | 422 |
+| | different decoded records among them | 392 | 2 |
+| | `cov` / `ft` | 580 / 1,610 | 575 / 1,534 |
+| `fuzz_wex4_file` | inputs run | 57,715 | 87,804 |
+| | files accepted with the header and index hashes recomputed | 614 | 633 |
+| | different content digests among them | 444 | 442 |
+| | `cov` / `ft` | 513 / 2,056 | 506 / 1,987 |
 
-The runs are named in [CHANGELOG.md](../../CHANGELOG.md). `cov` is libFuzzer's count of instrumented edges reached, in the harness and the code under test together. The runner is shared hardware: the number of inputs per 60 s varies from run to run, and a structured call costs a decode and an encode. Not measured: line coverage of the code under test, and runs longer than 60 s.
+`cov` is libFuzzer's count of instrumented edges reached and `ft` its count of features, in the harness and the code under test together. What the numbers show: without the mutator no WNR3 record other than the two of the seeds was accepted, in any of the three harnesses that count them; with it the record harness decoded 4,242 different accepted records and reached 41 more edges. In the three file harnesses the edge counts differ by 5 to 7, which one run of each cannot tell from the variation between runs: an earlier pair of runs, with their structured calls at 1 in 2 instead of 1 in 4, gave `fuzz_store_wex` 401 edges with the mutators and 423 without. The runner is shared hardware, and a structured call costs a decode and an encode under the sanitizers, so a run with the mutators executes fewer inputs. Not measured: line coverage of the code under test, repeated runs, and runs longer than 60 s.
 
 ## Running them
 

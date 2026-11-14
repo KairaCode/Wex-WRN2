@@ -29,12 +29,15 @@ Labels you may see on issues: **good first issue** (a few hours, little context)
 
 ## 3. Tests and fuzzing
 
-- **Fuzzing:** the libFuzzer harnesses for the C WEX4 reader (`c/wex4.h`), `c/tools/wex4_verify.c` and the
-  WNR3 decoders are in [`wex4/fuzz/`](../wex4/fuzz/README.md); CI builds them and runs each for 60 seconds.
-  What is wanted now is machine time: run `bash wex4/fuzz/run.sh 14400` (hours, not seconds) and report
-  what stops it, with the reproducer it leaves. Also open: harnesses for the engine store
-  (`c/expert_store_wex.c`, `c/qwen38_wex.h`) and a dictionary or a custom mutator that keeps the WNR3
-  stream hashes right.
+- **Fuzzing:** the libFuzzer harnesses for the C WEX4 reader (`c/wex4.h`), `c/tools/wex4_verify.c`, the
+  WNR3 decoders and the engine store (`c/expert_store_wex.c`, `c/qwen38_wex.h`, built against stand-ins
+  for the engine headers) are in [`wex4/fuzz/`](../wex4/fuzz/README.md), with a custom mutator that keeps
+  the WNR3 stream hashes right; CI builds them and runs each for 60 seconds. What is wanted now is
+  machine time: run `bash wex4/fuzz/run.sh 14400` (hours, not seconds) and report what stops it, with the
+  reproducer it leaves. Also open: seeds and a mutator for palette, WNR and WNR2 records (the store
+  decodes them, no harness gets one accepted); the store's mirror, striped-read and CUDA-helper paths;
+  `c/qwen38_wex.h` built inside the real engine instead of against inferred types; a harness for the GPU
+  decoder (`c/wex_cuda.cuh`).
 - **Sanitizers:** CI runs the CPU checks under ASan and UBSan on Linux (the `linux-sanitizers` job of
   `.github/workflows/ci.yml`, which holds the exact `WEX_CFLAGS`, the sanitizer options and the preload
   of the ASan runtime). Still open: MemorySanitizer or ThreadSanitizer runs (clang), and the GPU code.
