@@ -1,6 +1,6 @@
 # WEX4 specification (format version 4.0)
 
-**Format version:** 4.0, frozen on 2026-11-11. **Document revision:** 2026-11-13. **Status:** stable, in production. **Change log:** "Document history" at the end.
+**Format version:** 4.0, frozen on 2026-11-11. **Document revision:** 2026-11-14. **Status:** stable, in production. **Change log:** "Document history" at the end.
 
 **In production** since 2026-11-11 for both models that use these containers: DeepSeek V4.1 REAP-192 (WNR3-CZ records) and Qwen3.8-Flash-Next MXFP4 (RAW records). What runs today, with files, roots and builds: [STATUS.md](../STATUS.md).
 
@@ -12,7 +12,7 @@ Paths: `wex4/...`, `c/...`, `docs/...` are in this repository; `<TREE>` is the m
 
 **Conventions.**
 
-- All integers are little-endian and are read byte by byte, never through a cast of an unaligned pointer. All offsets are from the start of the file unless a field says otherwise.
+- All integers are little-endian and are read byte by byte, never through a cast of an unaligned pointer. The one exception is inside a record: the 4-byte state that opens a rANS stream is big-endian (section 7.2, and `docs/WNR3-SPEC.md` section 1). All offsets are from the start of the file unless a field says otherwise.
 - "Must" and "must not" are requirements on a conforming reader or writer (section 17); "should" is advice. Sections and paragraphs marked *Informative* describe measurements, the engine and the history of the format: they are not needed to implement a reader or a writer.
 - The format was built for the maintainer's private application, whose engines are builds of the colibri C engine. Where this document describes what those engines do, it is informative. `<TREE>/lab` paths name files of the maintainer's lab that are not in this repository; copies of the runs that are quoted are under `research/`.
 
@@ -121,7 +121,7 @@ Readers do not care which one they get: they read the header page, then the inde
 | 128 | 3936 | reserved | written as zero; **ignored by readers** (later minor versions may put optional fields here; the header hash covers them) |
 | 4064 | 32 | header_sha256 | SHA-256 of bytes `[0, 4064)` = the **root** |
 
-`index_bytes` must equal `64*blob_count + 72*record_count + 100*tensor_count + names_bytes + meta_bytes` exactly. The counts are capped first, so the sum cannot overflow 64 bits. The 2^28 cap on the index is the binding one: at 100 bytes per tensor plus its name it allows about 1.5 million tensors. `index_offset` is 4096 when the index is empty.
+`index_bytes` must equal `64*blob_count + 72*record_count + 100*tensor_count + names_bytes + meta_bytes` exactly. The counts are capped first, so the sum cannot overflow 64 bits. The 2^28 cap on the index is the binding one: at 100 bytes per tensor plus its name it allows about 1.5 million tensors. `index_offset` is 4096 when the index is empty. `max_decoded` and `total_decoded` are 0 when `record_count` is 0.
 
 ---
 
@@ -138,14 +138,14 @@ Four tables and two byte areas, in this order, with no padding between them:
 | name pool | names_bytes | the names, concatenated in tensor-table order |
 | metadata | meta_bytes | opaque to readers; hashed |
 
-The index encoding is **canonical**: once the writer has fixed the layout, the grouping of tensors into records, the codecs and their parameters, and the metadata, the index has exactly one byte representation (no optional fields, no free ordering, no padding choices). Two writers that make the same choices produce the same file and the same root (tested: the C and the Python codec, section 15). The root identifies a file, not a set of tensors: the same tensors packed with other choices give another root. A layout-independent identity is the **content digest** used by the tests: SHA-256 over, for each tensor in table order, its name length, name, dtype, rank, shape, size and bytes (it does not cover metadata, blobs or feature bits).
+The index encoding is **canonical**: once the writer has fixed the layout, the grouping of tensors into records, the codecs and their parameters, and the metadata, the index has exactly one byte representation (no optional fields, no free ordering, no padding choices). Two writers that make the same choices produce the same file and the same root (tested: the C and the Python codec, section 15). The root identifies a file, not a set of tensors: the same tensors packed with other choices give another root. A layout-independent identity is the **content digest** used by the tests: SHA-256 over, for each tensor in table order, its name length, name, dtype, rank, shape, size and bytes (it does not cover metadata, blobs or feature bits). The fields are hashed in these widths, little-endian: name length u16, the name bytes, dtype u8, rank u8, the 8 shape slots as u64 (0 at and after `rank`), `nbytes` u64, then the tensor's decoded bytes; a split tensor's bytes are those of its records in order, and a zero-size tensor adds its fields and no bytes.
 
 ### 5.1 Blob entry (64 bytes)
 
 | off | size | field | rule |
 |---|---|---|---|
 | 0 | 4 | kind | 1 = WNM2 model (must be 59,408 bytes, id != 0). Other kinds are opaque to readers. Used by the upgrade: 16 = old WEX header page, 17 = old WEX entry table, 18 = other old bytes |
-| 4 | 4 | id | kind 1: the model's FNV-1a id (checked when the blob is loaded) |
+| 4 | 4 | id | kind 1: the model's FNV-1a id (checked when the blob is loaded). Other kinds: any value, not read by readers (the upgrade writes 0) |
 | 8 | 8 | offset | start of the extent |
 | 16 | 8 | bytes | 1 .. 2^30; the extent is `align(bytes)`, zero-padded |
 | 24 | 32 | sha256 | of the `bytes` bytes |
@@ -160,20 +160,20 @@ The index encoding is **canonical**: once the writer has fixed the layout, the g
 | 12 | 4 | decoded_bytes | 1 .. 2^30 |
 | 16 | 2 | codec | 0 RAW, 5 WNR3, 6 WBP1 (section 7). Unknown, on a record that is neither EXPERT nor VALUE_EXACT: the file is still valid, that record cannot be decoded |
 | 18 | 2 | flags | bit 0 VALUE_EXACT, bit 1 EXPERT. Any other bit: the file is refused |
-| 20 | 4 | blob | 0 = none, else 1 + index of the record's blob (codec 5: its WNM2 model) |
+| 20 | 4 | blob | 0 = none, else 1 + index of the record's blob (codec 5: its WNM2 model); `<= blob_count` |
 | 24 | 4 | owner | EXPERT: `layer << 16 | expert` with `layer < num_layers` and `expert < num_experts`, strictly increasing over the expert records. Else: the record's own index |
 | 28 | 4 | first_tensor | index of the record's first tensor; for a continuation part, the index of the tensor it belongs to |
 | 32 | 4 | tensor_count | tensors that tile this record (>= 1), or 0 for a continuation part |
 | 36 | 32 | sha256 | of the `stored_bytes` bytes on disk |
 | 68 | 4 | reserved | 0 |
 
-Codec rules at open time: RAW has `stored_bytes == align(decoded_bytes)` and no blob. Every other codec has `stored_bytes < align(decoded_bytes)`: **a compressed record is strictly smaller than raw**, or the writer stores it raw. WNR3 needs EXPERT and a WNM2 blob, and at least `align(32 + 6 * streams)` bytes (streams counted at the longest chunk, as WEX3 does). WBP1 has no blob and no flags, and at least `align(16 + 6 * ceil(decoded_bytes / 32768))` bytes. VALUE_EXACT is legal only on a WNR3 record and only when the header's required bit 0 is set. EXPERT allows codec 0 or 5 only.
+Codec rules at open time: RAW has `stored_bytes == align(decoded_bytes)` and no blob. Every other codec has `stored_bytes < align(decoded_bytes)`: **a compressed record is strictly smaller than raw**, or the writer stores it raw. WNR3 needs EXPERT and a WNM2 blob, and at least `align(32 + 6 * streams)` bytes (streams counted at the longest chunk, as WEX3 does: `streams` is the sum over the three matrices of `ceil(scales / 16384) + ceil(32 * scales / 16384)`, where `scales` = rows x cols of that matrix's scale tensor). WBP1 has no blob and no flags, and at least `align(16 + 6 * ceil(decoded_bytes / 32768))` bytes. VALUE_EXACT is legal only on a WNR3 record and only when the header's required bit 0 is set. EXPERT allows codec 0 or 5 only.
 
 ### 5.3 Tensor entry (96 bytes)
 
 | off | size | field | rule |
 |---|---|---|---|
-| 0 | 4 | name_offset | into the name pool; must equal the sum of the previous names' lengths |
+| 0 | 4 | name_offset | into the name pool; must equal the sum of the previous names' lengths (and the names of all tensors fill the pool exactly) |
 | 4 | 2 | name_bytes | 0 .. 65535 |
 | 6 | 1 | dtype | section 5.4 |
 | 7 | 1 | rank | 0 .. 8 |
@@ -187,7 +187,7 @@ Tensors are stored in data order: record by record, and inside a record by incre
 
 - **Tiling:** the tensors of a record cover `[0, decoded_bytes)` exactly once, in order: the first starts at 0, each next one starts where the previous ends, the last ends at `decoded_bytes`.
 - **Split tensor:** a tensor with `record_count = k >= 2` is the only tensor of its first record; the next `k - 1` records are its continuation parts (`tensor_count = 0`, `first_tensor` = that tensor); `nbytes` is the sum of the `k` decoded sizes.
-- **Zero-size tensors** (a dimension is 0) have `record_count = 0`, `record = 0`, `offset = 0`, and come after all data tensors.
+- **Zero-size tensors** (`nbytes = 0`; for a known dtype that is exactly when a dimension is 0) have `record_count = 0`, `record = 0`, `offset = 0`, and come after all data tensors. A tensor inside a record has `nbytes > 0`. For an opaque dtype the shape does not decide: both readers go by `nbytes` alone.
 - **Size:** for a known dtype, `nbytes * 8 == product(shape) * bits(dtype)` with every multiplication checked for overflow (as safetensors: the total must be a whole number of bytes). For every dtype, opaque ones included, the product of the shape must fit in 64 bits.
 - **Names:** valid UTF-8 (shortest form, no surrogates), no NUL byte, unique. Uniqueness is not searched for: the name-order table lists every tensor once in strictly increasing name order, which a reader checks with one comparison per tensor, and then uses for binary search.
 
@@ -205,13 +205,13 @@ An EXPERT record has exactly 6 tensors: scales of w1, w2, w3 (dtype U8 or F8_E8M
 
 A reader works in three steps and uses nothing from a step that failed.
 
-**Step 1: header page** (`wex4_parse_header`). Read 4096 bytes at offset 0 and the real file size. Refuse unless, in this order: magic; `header_sha256`; major = 4; no unknown required feature; `file_bytes` equals the real size and is a multiple of 4096; the three counts and the two sizes are within their caps; the expert grid is consistent and `num_layers * num_experts <= 2^24`; `max_decoded <= 2^30`; `index_bytes` equals the sum of section 4 and is `<= 2^28`; `index_offset` is aligned, `>= 4096`, and `align(index_bytes)` fits before `file_bytes`.
+**Step 1: header page** (`wex4_parse_header`). Read 4096 bytes at offset 0 and the real file size. Refuse unless, in this order: magic; `header_sha256`; major = 4; no unknown required feature; `file_bytes` equals the real size and is a multiple of 4096; the three counts and the two sizes are within their caps; the expert grid is consistent and `num_layers * num_experts <= 2^24`; `max_decoded <= 2^30`, and `max_decoded` and `total_decoded` are 0 when `record_count` is 0; `index_bytes` equals the sum of section 4 and is `<= 2^28`; `index_offset` is aligned, `>= 4096`, and `align(index_bytes)` fits before `file_bytes`.
 
 **Step 2: index** (`wex4_open`). Read `align(index_bytes)` bytes at `index_offset`. Refuse unless: `index_sha256` matches; the padding is zero; every tensor entry satisfies 5.3 (names, rank, shape, size); the name order is strictly increasing; every blob entry satisfies 5.1; every record entry satisfies 5.2 and its tensors tile it; expert records satisfy 5.5; continuation parts add up; the totals equal `max_decoded` and `total_decoded`; a non-zero grid has at least one expert record; the extents tile the file (section 3).
 
 After step 2 every offset, size and name in the index is in bounds and consistent. Step 2 allocates nothing and takes time linear in the index size (measured in section 11).
 
-**Step 3: data.** Per blob, when it is first used: read it, check its SHA-256 and zero padding; a WNM2 model also passes `wex_nr2_model_open` and its FNV-1a id must equal the entry's id. Per record: read `stored_bytes` at `offset` into a buffer of `align(decoded_bytes)`; optionally check its SHA-256 (section 8.2); decode with its codec into `decoded_bytes` bytes. Any failure returns an error and the output must not be used ("fail closed"); the CPU and the GPU decoder give the same verdict (WNR3: tested in `docs/reports/WNR3-VERIFY.md`).
+**Step 3: data.** Per blob, when it is first used: read it, check its SHA-256 and zero padding; a WNM2 model also passes `wex_nr2_model_open` (the layout and the checks are written out in `docs/WNR3-SPEC.md`, erratum 12) and its FNV-1a id must equal the entry's id. Per record: read `stored_bytes` at `offset` into a buffer of `align(decoded_bytes)`; optionally check its SHA-256 (section 8.2); decode with its codec into `decoded_bytes` bytes. Any failure returns an error and the output must not be used ("fail closed"); the CPU and the GPU decoder give the same verdict (WNR3: tested in `docs/reports/WNR3-VERIFY.md`).
 
 **Memory budget.** Before step 3 the caller knows from the hashed header everything it will be asked to allocate: `max_decoded` (one decode buffer), `total_decoded` (a full load), `index_bytes`, and `num_layers * num_experts * 72` (the entry table). It compares them with its budget and refuses a file it cannot afford; the prototype leaves that comparison to the caller.
 
@@ -258,7 +258,9 @@ Record layout (`stored_bytes` in total, zero padding at the end):
 | | per plane | stream table | rANS plane: `S_p` x u16 stream lengths (each >= 4). Raw plane: `S_p` x u32 chunk hashes |
 | | per plane | payload | rANS plane: its streams, concatenated. Raw plane: its `n_p` bytes |
 
-`n_p` = number of bytes in plane p = `ceil((decoded_bytes - p) / P)`, `S_p = ceil(n_p / C)`. Streams and chunks are numbered globally: `g` counts through plane 0, then plane 1, and so on.
+`n_p` = number of bytes in plane p = `ceil((decoded_bytes - p) / P)`, and 0 when `decoded_bytes <= p`; `S_p = ceil(n_p / C)`. Streams and chunks are numbered globally: `g` counts through plane 0, then plane 1, and so on.
+
+The three parts after the header are grouped, not interleaved: first the CDFs of all rANS planes, then the stream tables of all planes, then the payloads of all planes, each group in plane order. A plane whose mask bit is set must not be empty (`n_p > 0`). `stored_bytes` must equal `align(end of the last payload)`: the zero padding is shorter than 4096 bytes, and a record followed by a whole page of zeros is refused. A rANS stream starts with its 4-byte state, big-endian, in `[2^23, 2^31)`, and is decoded as `docs/WNR3-SPEC.md` erratum 10 says, with the plane's CDF for every symbol.
 
 **Transform 1 (floats).** Before the split every little-endian element is rotated left by one bit. For BF16 and F32 this moves the whole 8-bit exponent into the top byte and the sign next to the mantissa bits, which are incompressible anyway. Estimated from an entropy survey of the production model's BF16 tensors (extrapolated): 0.6615 of raw with one rANS symbol per element, against 0.6687 with two for plain byte planes (section 12.1); one real shard through the codec gave 0.6625. The decoder rotates right after all planes are decoded; hashes are computed on the coded (rotated) bytes.
 
@@ -541,7 +543,7 @@ No change for experts: the helper takes a `WexEntry` and the record bytes, both 
 | file | what |
 |---|---|
 | `c/wex4.h` | C header: format constants, SHA-256, `wex4_parse_header`, `wex4_open` (in-place validation), `wex4_find`, `wex4_expert_entry` (legacy `WexEntry`), WBP1 encoder and decoder, `wex4_decode_record`. Includes `c/wex_format.h` for the WNR3 codec and the rANS primitives; it always calls the reference WNR3 decoder |
-| `c/tools/wex4_verify.c` | the checker of a whole WEX4 file: header page, index, every blob and record against its SHA-256, zero padding, in one read-only unbuffered pass on N threads (OpenMP, 8 by default); prints `COLI_WEX_ROOT=<root>`; exit 0 pass, 1 mismatch, 2 not WEX4. It hashes and does not decode. Tested by `c/tests/test_wex4_verify.c` with the in-memory fixture `c/tests/wex4_fixture.h` |
+| `c/tools/wex4_verify.c` | the checker of a whole WEX4 file: header page, index, every blob and record against its SHA-256, the zero padding of the index and of every blob (not the padding inside a record, which only a decoder checks), in one read-only pass on N threads (OpenMP, 8 by default; the reads are unbuffered on Windows and ordinary buffered reads elsewhere); prints `COLI_WEX_ROOT=<root>`; exit 0 pass, 1 mismatch, 2 not WEX4. It hashes and does not decode. Tested by `c/tests/test_wex4_verify.c` with the in-memory fixture `c/tests/wex4_fixture.h` |
 | `wex4/wex4_store.h` | the engine-side loader of section 13.2 as a reference with its tests; the engines carry the same steps in their own stores (section 13.2) and do not include this file |
 | `wex4/wex4_tools.c` | DLL for the tests and the converters: whole-file check with content digest, reader-style entry points, legacy table, guard-page fuzz entry, in-process mutation fuzzer. Built with `-DWEX4_FAST_NR3` it puts the fast CPU decoder (`wex4/research/fast-cpu-decode/wex_fast_decode.h`) in place of the reference inside `wex4_decode_record`; `wex4/build_and_test.sh` checks that the two DLLs differ there |
 | `wex4/wex4.py` | Python reference, standard library only, written independently of the C code: reader, validator, writer, WBP1 codec, WNM2 check. `info` / `verify` command line |
@@ -632,3 +634,4 @@ The reference outcomes are the files of `wex4/vectors/` and their `MANIFEST.tsv`
 | 2026-11-12 | The document moved from `docs/NEXT-FORMAT-SPEC.md` (now a stub) to this file; no format change |
 | 2026-11-13 | Revision: version header and conventions; informative sections marked; sections 8.2, 13.2, 13.3 and 16 brought to the engine of 2026-11-13 (qwen38 first-read SHA-256, refusal of a legacy file under a pinned root, `wex4_verify`, hash pool measured); section 17, conformance, added with the vectors. No format change |
 | 2026-11-14 | Section 17: 94 invalid vectors (48 added). Section 5.2, `owner` of an EXPERT record: the bound by the expert grid, which both readers already enforced, is now written. No format change |
+| 2026-11-14 | Spec review ([spec-review-20261114](../research/spec-review-20261114/README.md)): rules that `c/wex4.h` and `wex4/wex4.py` already enforced are now written. Conventions: the rANS stream state is big-endian. Section 4 and step 1 of section 6: `max_decoded` and `total_decoded` are 0 without records. Section 5: field widths of the content digest. 5.1: `id` of a blob that is not a model. 5.2: range of `blob`, the stream count of the WNR3 minimum size. 5.3: the names fill the pool; a zero-size tensor is one with `nbytes = 0`. 7.2: order of the three parts of a WBP1 record, no empty rANS plane, exact `stored_bytes`, the stream state. 15.1: what `wex4_verify` checks of the padding, and where its reads are unbuffered. No format change, no verdict of a vector changed |

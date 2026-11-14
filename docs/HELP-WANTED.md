@@ -22,8 +22,16 @@ Labels you may see on issues: **good first issue** (a few hours, little context)
 - **Spec review:** read [WEX4-SPEC](WEX4-SPEC.md) and [WNR3-SPEC](WNR3-SPEC.md) as if you were
   writing a reader from scratch. Open an issue for every sentence that is ambiguous, every field
   whose range is not stated, and every place where the spec and the code disagree. This is the most
-  valuable review there is.
-- **Glossary:** add missing terms to [GLOSSARY.md](GLOSSARY.md).
+  valuable review there is. A first pass was made on 2026-11-14
+  ([research/spec-review-20261114](../research/spec-review-20261114/README.md)): 16 clarifications went
+  into the two specifications, and 4 findings are open there (no vector has a WNR3 record with a CEIL
+  matrix or without canonical zero; WNR3-SPEC has no conformance section; the error classes are defined
+  in the code only; whether a decoder may accept any anchor byte). Not reviewed yet: WEX4-SPEC sections
+  13.1 and 14 against `wex4/wex4_convert.py` and the numbers of its informative sections, WNR3-SPEC
+  sections 5 to 11, WNR2-REFERENCE, and the GPU decoder against the text.
+- **Glossary:** add missing terms to [GLOSSARY.md](GLOSSARY.md). 32 terms of the specifications and of
+  the tests were added on 2026-11-14; the engine and host words of
+  [COLIBRI-INTEGRATION](COLIBRI-INTEGRATION.md) and of the dated reports were not gone through.
 - **Translations:** a short README in your language (the Italian summary at the end of the README
   shows the expected size).
 
@@ -39,7 +47,10 @@ Labels you may see on issues: **good first issue** (a few hours, little context)
   `.github/workflows/ci.yml`, which holds the exact `WEX_CFLAGS`, the sanitizer options and the preload
   of the ASan runtime). Still open: MemorySanitizer or ThreadSanitizer runs (clang), and the GPU code.
 - **More test vectors:** hostile files that [wex4/vectors](../wex4/vectors/README.md) does not cover yet
-  (each with its `MANIFEST.tsv` row and the expected verdict from both readers).
+  (each with its `MANIFEST.tsv` row and the expected verdict from both readers). Valid files are wanted
+  too: the one valid vector with WNR3 records has canonical zero and no CEIL matrix, so no vector tests
+  the ceil inverse or a WNR3 record without canonical zero
+  ([spec review](../research/spec-review-20261114/README.md), finding 17).
 - **macOS job in CI, NEON decoder:** CI runs on Linux (x86-64 and ARM64) and Windows. On a CPU that is
   not x86 `wex4/build_and_test.sh` drops `-march=haswell`, so the fast CPU decoder builds its scalar
   kernel only. Still open: a macOS job (the scripts call `gcc` and link with `-fopenmp`), good first

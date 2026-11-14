@@ -1,0 +1,19 @@
+R0 hash vectors of WNR3-SPEC 4.5: all five reproduce (SMHasher value, 3 function values, 2 stream values)
+R1 tiny2-cz-upgraded.wex4: 2 WNR3 records decoded by the decoder written from the spec, byte-identical to the C reference; record flags [8], ceil-inverted blocks 0; with "mx = max(mx, x & 7)" read literally 2 of 2 fail
+R1 synth.wex4: 4 WNR3 records decoded by the decoder written from the spec, byte-identical to the C reference; record flags [0], ceil-inverted blocks 0; with "mx = max(mx, x & 7)" read literally 4 of 4 fail
+R1 tiny_nr3_cz.wex4: 3 WNR3 records decoded by the decoder written from the spec, byte-identical to the C reference; record flags [8], ceil-inverted blocks 0; with "mx = max(mx, x & 7)" read literally 3 of 3 fail
+R2 synthetic ceil record, cz=0: record flags 0x03, 45056 B of 53248 raw, 6 scale + 48 weight streams, C encoder stats transformed/max5/kept255 per matrix [621, 0, 6, 599, 0, 7, 0, 1, 0]; decoder from the spec inverted 1220 blocks; output == source: True
+R2 synthetic ceil record, cz=1: record flags 0x0b, 45056 B of 53248 raw, 6 scale + 48 weight streams, C encoder stats transformed/max5/kept255 per matrix [621, 0, 6, 599, 0, 7, 0, 1, 0]; decoder from the spec inverted 1220 blocks; output == Z(source): True
+W1 WBP1, decoded_bytes 1, P 2: mask 0 -> ['accept', 'accept'] ; mask bit 1 set on the empty plane 1 -> ['reject', 'reject'] (Python, C)
+W2 WBP1 record as encoded -> ['accept', 'accept'] ; the same plus one zero page -> ['reject', 'reject']
+W17 first stream state of that record: big-endian 0x67ecc967 in [2^23, 2^31): True; little-endian 0x67c9ec67 in range: True
+W6a opaque tensor, shape (3,), nbytes 0, in the zero-size tail -> C 0 , Python 0
+W6b opaque tensor, shape (0, 5), nbytes 5, inside a record -> C 0 , Python 0
+W6c known dtype U8, shape (0,), nbytes 0, in the zero-size tail -> C 0 , Python 0
+W7 blob of kind 99 with id 0xdeadbeef, and one of kind 99 with id 0 -> C 0 , Python 0
+W9 empty container (header page only) -> C 0 , Python 0
+W9 the same with max_decoded = 5, resealed -> C -6 , Python header totals
+W9 the same with total_decoded = 5, resealed -> C -6 , Python header totals
+W5 content digest of generic.wex4 from the field widths u16, bytes, u8, u8, 8 x u64, u64, data: equals the C digest and the Python digest
+W7 blobs of tiny2-cz-upgraded.wex4: kinds [1, 17, 16] ids ['0x7d79f608', '0x0', '0x0']
+done

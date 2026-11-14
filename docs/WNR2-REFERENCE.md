@@ -82,7 +82,7 @@ WNR2 is a lossless entropy coding of MXFP4 MoE expert records (FP4 E2M1 weights 
 - **Weight context**:
   - Symbols are row-major 4-bit FP4 codes; symbol 2k is in the low nibble.
   - For each 32-weight block with UE8M0 scale s, at block start: srel = clamp(s - median_m, -3, 3) + 3 (7 values), previous magnitude pm = 8 (none), block max mx = 8 (none).
-  - After symbol x: pm = x&7, mx = max(mx, x&7).
+  - After symbol x: pm = x&7, mx = max(mx, x&7), where the 8 of a block start is "none", not a number: the first symbol of a block sets mx = x&7 (`if (maximum == 8u || previous > maximum) maximum = previous;`).
   - context = (srel*9 + pm)*9 + mx, giving WEX_NR2_CONTEXTS = 567 contexts per matrix (7x9x9), each a 16-symbol CDF.
   - median_m is the lower median of the matrix's scales (wex_nr2_median), stored per record.
   - Contexts depend only on FP4 nibble and E8M0 statistics; geometry comes from each WexEntry.
