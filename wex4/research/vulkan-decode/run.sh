@@ -5,10 +5,11 @@
 # the device against the CPU reference on synthetic records, on the conformance vectors and on any WEX4 file
 # named on the command line. Not part of scripts/check_all.sh: it needs a Vulkan device.
 #
-# Needs: gcc, glslangValidator, the Vulkan headers and loader, and a Vulkan device. Any driver will do; Mesa
-# lavapipe runs it on the CPU. Debian and Ubuntu: apt install libvulkan-dev glslang-tools mesa-vulkan-drivers
-# (and vulkan-validationlayers for WNR3_VK_VALIDATE=1). MSYS2 UCRT64: the packages vulkan-headers,
-# vulkan-loader, glslang and mesa, with VK_DRIVER_FILES naming lvp_icd.x86_64.json when no other driver is installed.
+# Needs: gcc (CC names another compiler; only gcc was run), glslangValidator, the Vulkan headers and loader, and
+# a Vulkan device. Any driver will do; Mesa lavapipe runs it on the CPU. Debian and Ubuntu: apt install
+# libvulkan-dev glslang-tools mesa-vulkan-drivers (and vulkan-validationlayers for WNR3_VK_VALIDATE=1). MSYS2
+# UCRT64: the packages vulkan-headers, vulkan-loader, glslang and mesa, with VK_DRIVER_FILES naming
+# lvp_icd.x86_64.json when no other driver is installed.
 #
 # Usage: bash wex4/research/vulkan-decode/run.sh [FILE.wex4 ...]
 #   paths relative to the repository root, or absolute. Every WNR3 record of the extra files must decode (for
@@ -35,7 +36,7 @@ esac
 SHADER=${WNR3_VK_SHADER:-$HERE/wnr3.comp}
 glslangValidator -V "$SHADER" -o "$OUT/scales.spv" > "$OUT/glslang.log"
 glslangValidator -V -DWEIGHTS "$SHADER" -o "$OUT/weights.spv" >> "$OUT/glslang.log"
-gcc -std=c99 -O2 -Wall -Wextra -Wno-unused-function ${WEX_CFLAGS-} -I "$ROOT/c" "$HERE/wnr3_vk.c" -o "$OUT/wnr3_vk" -l"$LIB"
+"${CC:-gcc}" -std=c99 -O2 -Wall -Wextra -Wno-unused-function ${WEX_CFLAGS-} -I "$ROOT/c" "$HERE/wnr3_vk.c" -o "$OUT/wnr3_vk" -l"$LIB"
 export WNR3_VK_SHADERS="$OUT"
 X="$OUT/wnr3_vk"
 "$X" selftest

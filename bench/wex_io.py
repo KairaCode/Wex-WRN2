@@ -150,7 +150,8 @@ def main():
 
     os.makedirs(OUT, exist_ok=True)
     exe = os.path.join(OUT, 'wex_io')
-    cc = ['gcc', '-O2', '-Wall', '-Wextra', '-Wno-unused-function', '-Wno-unused-parameter', '-pthread'] + \
+    # CC names the compiler as in the build scripts (default gcc; only gcc was run), WEX_CFLAGS adds flags
+    cc = [os.environ.get('CC') or 'gcc', '-O2', '-Wall', '-Wextra', '-Wno-unused-function', '-Wno-unused-parameter', '-pthread'] + \
         shlex.split(os.environ.get('WEX_CFLAGS', '')) + [os.path.join(HERE, 'wex_io.c'), '-o', exe]
     r = subprocess.run(cc, capture_output=True, text=True)
     if r.returncode != 0 or r.stderr.strip():
