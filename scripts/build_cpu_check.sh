@@ -13,6 +13,7 @@
 # c/ has the colibri c/ layout, so the sources build where they are; everything built goes to out/cpu-check.
 # Windows: MSYS2 MINGW64 or UCRT64 gcc on PATH, python 3 (stdlib only). Linux: gcc and PYTHON=python3.
 # macOS: a GNU gcc in CC (Homebrew: CC=gcc-15) and PYTHON=python3; the gcc of Xcode is clang and has no OpenMP.
+# CC names another compiler (CC=clang, which needs its OpenMP runtime: CI runs that on Linux).
 # Usage: bash scripts/build_cpu_check.sh [ENGINE_C]
 set -eu
 set -o pipefail   # the builder and the store test are piped into tail: their exit status must count

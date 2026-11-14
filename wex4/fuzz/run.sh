@@ -6,8 +6,8 @@
 #   bash wex4/fuzz/run.sh [SECONDS]     libFuzzer: clang with -fsanitize=fuzzer,address,undefined; every harness
 #                                       fuzzes for SECONDS (default 60) from the seed corpus. CC names the clang.
 #   bash wex4/fuzz/run.sh --replay      no fuzzing engine: gcc, each harness runs every seed once (a regression
-#                                       test that needs no clang; WEX_CFLAGS adds flags, as in the other scripts;
-#                                       CC names another compiler)
+#                                       test that needs no clang; CC names another compiler and WEX_CFLAGS adds
+#                                       flags, as in the other scripts: scripts/sanitize_c.sh runs it that way)
 #
 # Everything goes to wex4/fuzz/out/ (git-ignored): the harnesses, seeds/ (wex4/fuzz/make_seeds.py), corpus/NAME
 # (the inputs libFuzzer keeps: it grows from run to run until out/ is deleted) and crashes/ (the reproducers).
@@ -19,7 +19,8 @@ ROOT=$(cd "$(dirname "$0")/../.." && pwd)
 O=$ROOT/wex4/fuzz/out
 PY=${PYTHON:-python}
 HARNESSES="fuzz_wex4_file fuzz_wnr3_record fuzz_wex4_verify"
-# no -fopenmp: one thread per harness, so the OpenMP pragmas of wex4_verify.c and of the fast decoder are skipped
+# no -fopenmp: one thread per harness, so the OpenMP pragmas of wex4_verify.c and of the fast decoder are skipped,
+# unless WEX_CFLAGS brings it in the --replay mode (scripts/sanitize_c.sh tsan does)
 W="-Wall -Wextra -Wno-unused-parameter -Wno-unused-function -Wno-unknown-pragmas"
 INC="-I $ROOT/c -I $ROOT/wex4/research/fast-cpu-decode"
 # the AVX2 kernels of the fast WNR3 decoder exist on x86 only; elsewhere fuzz_wnr3_record compares its scalar kernel

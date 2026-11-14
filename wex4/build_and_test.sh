@@ -8,6 +8,7 @@
 #   3. wex4/test_wex4.py
 # Windows: MSYS2 UCRT64 or MINGW64 gcc on PATH, python 3 (stdlib only). Linux: gcc and PYTHON=python3.
 # macOS: a GNU gcc in CC (Homebrew: CC=gcc-15) and PYTHON=python3; the gcc of Xcode is clang and has no OpenMP.
+# CC names another compiler (CC=clang, which needs its OpenMP runtime: CI runs that on Linux).
 # Usage: bash wex4/build_and_test.sh [--fuzz N] [--write-vectors DIR]
 set -eu
 set -o pipefail
