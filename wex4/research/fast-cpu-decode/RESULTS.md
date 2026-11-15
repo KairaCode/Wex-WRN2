@@ -391,12 +391,20 @@ matrix).
   kernel 2 returns -1 at once and ran `equal`. Every kernel 2 variant then reported mismatches at 128 bits
   (hardware) and at 256 and 512 bits (QEMU); at 1024 bits the variants with 1 and 2 vectors, at 2048 bits
   the one with 1 vector. A group holds streams of one matrix with the same count, so with 64 streams per
-  matrix the wider groups do not form, and those variants ran kernel 1 alone on these records. `mutate`
-  reaches kernel 2 at 128 bits: the three SVE negative controls change nothing else and are caught.
-  Whether its mini-records form full groups at 256, 512 and 2048 bits under QEMU was not checked.
+  matrix the wider groups do not form, and those variants ran kernel 1 alone on these records.
+- Which groups the checks reach, per group size (a step of the `linux-arm` job since run 43769703428).
+  Three copies of the header return -1 where the SVE kernel 2 takes a group of 1, 2 or 3 vectors; a copy
+  is reached when `equal` (4 records) or `mutate` (200 mini-records, seed 20261115) reports a mismatch.
+  At 128 bits (hardware) and at 256 and 512 bits (QEMU) both reach all three group sizes; `equal` gives
+  16 mismatching decodes each time (2 variants x {1, 8} threads x 4 records). At 2048 bits `equal` reaches
+  the 1-vector groups only (16 mismatching decodes, 0 for 2 and 3 vectors), and `mutate` the 1- and
+  2-vector groups but not the 3-vector ones: a group of 3 vectors is 192 streams of one matrix, and a
+  mini-record has at most 157 weight streams per matrix (2,499 blocks of 32 symbols, chunks of 512 or
+  more). So the 3-vector code at 2048 bits never ran, and the 2-vector code at 2048 bits ran in `mutate`
+  only. The step fails if a group size that was reached here is no longer reached.
 
-All of these are steps of the `linux-arm` job now. The probe of the runner, the comparison of machine code
-and the test of the last bullet were temporary steps.
+All of these are steps of the `linux-arm` job now, except the test of 1024 bits in the "Does kernel 2 run at
+all?" bullet. The probe of the runner, the comparison of machine code and that test were temporary steps.
 
 ### Speed on the CI runner
 
@@ -439,8 +447,9 @@ Neoverse V1, 512 bits on A64FX) is not known: no such CPU was available.
 
 Not checked for the SVE kernel: real records; any CPU other than the Neoverse-N2 of the runner; the speed
 at any vector length but 128 bits; sanitizers (the sanitizer jobs are x86-64); macOS (the `macos` job
-builds NEON only); the libFuzzer harnesses (they call the default entry point). `mutate` ran 600
-mini-records per build on the hardware and 200 per vector length under QEMU.
+builds NEON only); the libFuzzer harnesses (they call the default entry point); the groups of 3 vectors at
+2048 bits (no record of the checks forms one). `mutate` ran 600 mini-records per build on the hardware and
+200 per vector length under QEMU.
 
 ## Semantics and safety notes
 
