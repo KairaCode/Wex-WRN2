@@ -1,10 +1,11 @@
 # Prefetch of the next expert record on Linux, GitHub Actions runners (2026-11-15)
 
-Nine runs of [`bench/wex_io.py`](../../bench/README.md) with three read paths that try to load the
+Eleven runs of [`bench/wex_io.py`](../../bench/README.md) with three read paths that try to load the
 whole next record into the page cache before it is read, and four rows with 20 ms of work between
 records. All ran on GitHub-hosted runners: shared cloud virtual machines with a virtual disk. **They are
 not NVMe hardware and say nothing about it.** No Linux machine with a real drive was available. The
-nine runs landed on six kinds of virtual machine, called A to F below.
+eleven runs landed on six kinds of virtual machine, called A to F below. Runs 10 and 11 were started to
+get the rows with work on kind A; they landed on kinds D and C, and are recorded like the others.
 
 ## Question
 
@@ -20,7 +21,7 @@ and with 20 ms of work after each record? Is any gain large and steady enough to
 
 - **Machines:** `ubuntu-24.04` runners of GitHub Actions, one per run: 4 logical CPUs, about 16 GB of RAM
   (`MemTotal` 16,078,424 to 16,367,528 kB), ext4. Runner image 20261111.127.1 (run 1) and 20261111.370.1
-  (runs 2 to 9).
+  (runs 2 to 11).
 
   | Run | Kind | CPU | Kernel | Block device: model, `rotational`, `read_ahead_kb`, `max_sectors_kb`, `nr_requests` |
   |---|---|---|---|---|
@@ -33,6 +34,8 @@ and with 20 ms of work after each record? Is any gain large and steady enough to
   | 7 | F | AMD EPYC 9V45 | 7.0.0-1017-azure | `MSFT NVMe Accelerator v1.0`, 0, 128, 256, 255 |
   | 8 | C | AMD EPYC 9V74 | 7.0.0-1017-azure | `MSFT NVMe Accelerator v1.0`, 0, 128, 256, 255 |
   | 9 | F | AMD EPYC 9V45 | 7.0.0-1017-azure | `MSFT NVMe Accelerator v1.0`, 0, 128, 256, 255 |
+  | 10 | D | AMD EPYC 7763 | 7.0.0-1017-azure | `Virtual Disk`, 1, 128, 2048, 316 |
+  | 11 | C | AMD EPYC 9V74 | 7.0.0-1017-azure | `MSFT NVMe Accelerator v1.0`, 0, 128, 256, 255 |
 
   A kind is a CPU model with a block device and its settings. Kind A has the CPU, kernel and block-device
   settings of runs 2 and 3 of 2026-11-14, kind D those of its run 1. `MSFT NVMe Accelerator v1.0` is the
@@ -40,10 +43,11 @@ and with 20 ms of work after each record? Is any gain large and steady enough to
   shared a host, and what else ran on the hosts, is not known.
 - **Container:** synthetic, written by the script with the reference writer: WEX4 4.0, 8 x 48 RAW expert
   records of 13,369,344 bytes (3,264 pages) of seeded random bytes, 5,134,127,104 bytes, root
-  `13389132...8cd61d` in all nine runs, the same as on 2026-11-14. No model weights.
-- **Build:** this repository at commit 5372032 (run 1) and 13181df (runs 2 to 9), `gcc -O2` of the runner
-  image (version not recorded). 13181df adds `gap_ms` and the four rows with work; the other paths read
-  as at 5372032.
+  `13389132...8cd61d` in all eleven runs, the same as on 2026-11-14. No model weights.
+- **Build:** this repository at commit 5372032 (run 1), 13181df (runs 2 to 9) and 3842c0d (runs 10 and
+  11), `gcc -O2` of the runner image (version not recorded). 13181df adds `gap_ms` and the four rows with
+  work; the other paths read as at 5372032. 3842c0d changes only documentation and this folder:
+  `bench/wex_io.c` and `bench/wex_io.py` are as at 13181df.
 - **Command:** `python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --drop-caches` (job `linux-io-bench` of
   `.github/workflows/ci.yml`, dispatched by hand): 5 timed passes per read path, 48 records
   (641,728,512 bytes) per pass, the passes of all paths interleaved, a pass reading the same records on
@@ -93,19 +97,21 @@ in the 102 calls per record of the chunked path, median per pass.
 | 1 (A) | 128 KiB, 0.98% | 1.0% (1.0 to 1.0) | 1.0% (1.0 to 1.0) | 25.5% (22.8 to 31.1) | 2.5% (2.5 to 2.6) | 1,124 |
 | 2 (B) | 256 KiB, 1.96% | 2.0% (2.0 to 2.1) | 2.0% (2.0 to 2.1) | 20.9% (18.5 to 23.5) | 2.3% (2.2 to 2.5) | 152 |
 | 3 (C) | 256 KiB, 1.96% | 2.0% (2.0 to 2.1) | 2.0% (2.0 to 2.1) | 37.4% (24.9 to 47.2) | 2.4% (1.7 to 2.4) | 135 |
-| 4 (D) | 2 MiB, 15.69% | 15.8% (15.8 to 16.1) | 15.8% (15.8 to 16.1) | 65.8% (62.4 to 69.3) | 2.8% (2.2 to 3.5) | 192 |
+| 4 (D) | 2 MiB, 15.69% | 15.8% (15.8 to 16.1) | 15.8% (15.8 to 16.1) | 65.8% (62.4 to 69.3) | 2.8% (2.2 to 3.5) | 191 |
 | 5 (D) | 2 MiB, 15.69% | 15.8% (15.8 to 16.1) | 15.8% (15.8 to 16.1) | 61.5% (57.6 to 65.5) | 2.8% (2.0 to 3.7) | 186 |
 | 6 (E) | 256 KiB, 1.96% | 2.0% (2.0 to 2.1) | 2.0% (2.0 to 2.1) | 29.5% (26.1 to 48.5) | 2.4% (2.3 to 2.5) | 141 |
 | 7 (F) | 256 KiB, 1.96% | 2.0% (2.0 to 2.1) | 2.0% (2.0 to 2.1) | 22.5% (21.1 to 23.2) | 2.3% (2.2 to 2.4) | 121 |
 | 8 (C) | 256 KiB, 1.96% | 2.0% (2.0 to 2.1) | 2.0% (2.0 to 2.1) | 46.0% (40.2 to 52.1) | 2.2% (2.1 to 2.4) | 132 |
 | 9 (F) | 256 KiB, 1.96% | 2.0% (2.0 to 2.1) | 2.0% (2.0 to 2.1) | 31.5% (26.0 to 34.9) | 2.3% (2.2 to 2.4) | 123 |
+| 10 (D) | 2 MiB, 15.69% | 15.8% (15.8 to 16.1) | 15.8% (15.8 to 16.1) | 59.8% (57.7 to 63.1) | 2.8% (2.0 to 3.5) | 186 |
+| 11 (C) | 256 KiB, 1.96% | 2.0% (2.0 to 2.1) | 2.0% (2.0 to 2.1) | 30.9% (16.4 to 38.2) | 2.2% (1.8 to 2.4) | 133 |
 
 - **One `WILLNEED` and one `readahead(2)` on the whole record left the same share in every run**, and
   that share is close to the limit that the kernel source above gives: about 33, 66 and 516 of the 3,264
   pages, against a limit of 32, 64 and 512 pages (128 KiB, 256 KiB, 2 MiB). Where the few pages above the limit come from
   was not looked into. The `WILLNEED` row with 4 records ahead left the same shares.
 - **In chunks** the 102 calls asked for the whole record; 20.9% to 65.8% of it was in the page cache when
-  its read began. On kinds B to F the calls took 121 to 192 ms of each pass (6% to 14% of it); on kind A
+  its read began. On kinds B to F the calls took 121 to 191 ms of each pass (6% to 14% of it); on kind A
   they took 1,124 ms, 89% to 91% of each pass of about 1.25 s: there the reading thread spent most of
   the pass inside `posix_fadvise`. Why the calls take that long on kind A was not looked into.
 - **The helper thread** had 2.2% to 2.8% of the next record loaded when its read began: with no work
@@ -127,22 +133,24 @@ page cache, no prefetch, what `c/expert_store_wex.c` does on Linux).
 | 7 (F) | 438 (431 to 475) | 421 (419 to 440), 0.96x | 421 (418 to 425), 0.96x | 442 (434 to 446), 1.01x | 442 (435 to 445), 1.01x | 444 (436 to 448), 1.01x |
 | 8 (C) | 378 (333 to 461) | 417 (240 to 466), 1.10x | 405 (298 to 420), 1.07x | 441 (292 to 500), 1.17x | 383 (217 to 413), 1.01x | 452 (322 to 492), 1.20x |
 | 9 (F) | 456 (448 to 460) | 434 (413 to 459), 0.95x | 438 (413 to 442), 0.96x | 447 (430 to 454), 0.98x | 454 (428 to 462), 1.00x | 448 (442 to 459), 0.98x |
+| 10 (D) | 394 (382 to 411) | 385 (382 to 400), 0.98x | 387 (375 to 388), 0.98x | 456 (452 to 473), 1.16x | 391 (379 to 401), 0.99x | 456 (451 to 464), 1.15x |
+| 11 (C) | 452 (416 to 475) | 418 (375 to 473), 0.93x | 419 (325 to 434), 0.93x | 431 (392 to 475), 0.95x | 427 (297 to 476), 0.94x | 451 (421 to 502), 1.00x |
 
-- **No prefetch path was faster than row 1 on every kind.** In run 1 (kind A), run 6 (kind E) and run 9
-  (kind F) row 1 was the fastest column of the table. `WILLNEED` in chunks was faster with ranges apart
-  only on kind D (1.15x and 1.16x), where `POSIX_FADV_RANDOM` (1.17x and 1.15x) and `O_DIRECT` (1.18x and
-  1.19x) were as fast, as in run 1 of 2026-11-14. On kinds B and F every column is within 5% of row 1.
-  On kind C the passes of every row spread widely (row 1 from 328 to 480 and from 333 to 461 MB/s) and
-  no range is apart from row 1's.
+- **No prefetch path was faster than row 1 on every kind.** In runs 1, 6, 9 and 11 (kinds A, E, F and
+  C) row 1 was the fastest column of the table. `WILLNEED` in chunks was faster with ranges apart only
+  on kind D (1.15x, 1.16x and 1.16x), where `POSIX_FADV_RANDOM` (1.17x, 1.15x and 1.18x) and `O_DIRECT`
+  (1.18x, 1.19x and 1.15x) were as fast, as in run 1 of 2026-11-14. On kinds B and F every column is
+  within 5% of row 1. On kind C the passes of every row spread widely (row 1 from 328 to 480, 333 to 461
+  and 416 to 475 MB/s) and no range is apart from row 1's.
 - `readahead(2)` and one `WILLNEED` on the whole record read at the same speed (within 2%) in every run
-  but the two on kind C (runs 3 and 8), whose passes spread most.
+  but runs 3 and 8, two of the three on kind C, whose passes spread most.
 
 ### Speed with 20 ms of work after each record
 
 MB/s median (minimum to maximum), against the row with the same work and no prefetch. The second table
 gives the median time of one record's read (the median over the 5 passes of the pass's median) and the
 share of the next record found in the page cache before its read. Kind A has no such rows: run 1 was at
-commit 5372032, which does not have them, and no later run landed on kind A.
+commit 5372032, which does not have them, and none of the ten later runs landed on kind A.
 
 | Run (kind) | no prefetch | `WILLNEED` on the whole record | `WILLNEED` in chunks | helper thread |
 |---|---|---|---|---|
@@ -154,6 +162,8 @@ commit 5372032, which does not have them, and no later run landed on kind A.
 | 7 (F) | 322 (316 to 326) | 323 (319 to 324), 1.00x | 482 (478 to 484), 1.49x | 447 (443 to 450), 1.39x |
 | 8 (C) | 248 (239 to 312) | 292 (133 to 300), 1.17x | 474 (268 to 481), 1.91x | 426 (292 to 467), 1.72x |
 | 9 (F) | 333 (321 to 335) | 334 (318 to 335), 1.00x | 481 (474 to 494), 1.44x | 461 (428 to 477), 1.38x |
+| 10 (D) | 367 (357 to 368) | 386 (378 to 389), 1.05x | 454 (453 to 465), 1.24x | 391 (383 to 400), 1.06x |
+| 11 (C) | 280 (159 to 310) | 264 (212 to 311), 0.94x | 469 (390 to 492), 1.68x | 432 (275 to 456), 1.54x |
 
 | Run (kind) | no prefetch: ms per record | `WILLNEED`: ms, share loaded | in chunks: ms, share loaded | helper thread: ms, share loaded |
 |---|---|---|---|---|
@@ -165,30 +175,33 @@ commit 5372032, which does not have them, and no later run landed on kind A.
 | 7 (F) | 19.9 | 19.7, 2.1% | 3.4, 88.3% (86.4 to 91.3) | 7.5, 75.2% (71.9 to 76.4) |
 | 8 (C) | 20.2 | 20.4, 2.1% | 3.8, 94.9% (93.2 to 96.7) | 7.2, 76.0% (71.2 to 76.4) |
 | 9 (F) | 20.1 | 20.0, 2.1% | 3.6, 89.5% (88.1 to 93.1) | 7.5, 76.3% (72.5 to 78.6) |
+| 10 (D) | 20.7 | 5.7, 15.8% | 5.1, 83.8% (82.2 to 86.6) | 9.7, 68.2% (65.5 to 71.7) |
+| 11 (C) | 22.1 | 22.0, 2.1% | 4.5, 92.0% (88.2 to 99.2) | 5.7, 76.8% (72.6 to 77.3) |
 
-- **`WILLNEED` in chunks had the highest median of the four rows in every run with them** (runs 2 to 9,
-  five kinds): 1.27x to 2.32x the MB/s of the same work without prefetch, with ranges apart from it in
+- **`WILLNEED` in chunks had the highest median of the four rows in every run with them** (runs 2 to 11,
+  five kinds): 1.24x to 2.32x the MB/s of the same work without prefetch, with ranges apart from it in
   every run but run 8 (kind C: its slowest pass, 268 MB/s, is below the fastest pass without prefetch,
-  312). 85.8% to 96.5% of the next record was in the page cache before its read, except on kind B
+  312). 83.8% to 96.5% of the next record was in the page cache before its read, except on kind B
   (55.6%), and one record's read took 3.4 to 5.6 ms (kind B: 30.1 ms, against 50.0 without prefetch).
 - **The helper thread** gained 1.05x to 2.12x, with 34.8% to 76.9% of the next record loaded. Its median
-  is below that of the chunks in every run; the ranges are apart in runs 4 to 7.
-- **One `WILLNEED` on the whole record** gained 1.00x on kinds B, E and F (2.1% loaded), 1.05x and 1.07x
-  on kind D (15.8% loaded), and 1.22x and 1.17x on kind C, where it also loaded 2.1%. What it loaded does
-  not explain the gain on kind C; the passes of that kind spread most.
-- On kind D the reads with work between them took 8.3 and 19.2 ms without prefetch, against 45 ms per
-  record with no work. Why is not known: a cache or a throughput limit of the host under the virtual
-  disk would both fit, and neither can be seen from inside the VM.
+  is below that of the chunks in every run; the ranges are apart in runs 4 to 7 and 10.
+- **One `WILLNEED` on the whole record** gained 1.00x on kinds B, E and F (2.1% loaded) and 1.05x to
+  1.07x on kind D (15.8% loaded). On kind C, where it also loaded 2.1%, it gave 1.22x, 1.17x and 0.94x:
+  what it loaded does not explain these; the passes of that kind spread most.
+- On kind D the reads with work between them took 8.3, 19.2 and 20.7 ms without prefetch, against about
+  45 ms per record with no work. Why is not known: a cache or a throughput limit of the host under the
+  virtual disk would both fit, and neither can be seen from inside the VM.
 
 ### The other rows
 
-The rows that were also in the runs of 2026-11-14 tell the same story. On kind D (runs 4 and 5)
-`POSIX_FADV_RANDOM` was 1.17x and 1.15x row 1, `O_DIRECT` `pread` on one thread 1.18x and 1.19x, and
-`O_DIRECT` `io_uring` with 16 records in flight 1.20x and 1.25x (run 1 of 2026-11-14, same kind: 1.19x,
-1.16x and 1.22x). On kind A (run 1) the fastest cold paths were row 1 and `O_DIRECT` `io_uring` with 16
-records in flight, both 544 MB/s (the latter 0.99x and 1.00x of row 1 in runs 2 and 3 of 2026-11-14).
-On kinds B, E and F every cold row was between 0.93x and 1.06x of row 1. The warm page cache read 8,999
-to 30,865 MB/s. All 27 rows (23 in run 1) of each run are in its JSON file.
+The rows that were also in the runs of 2026-11-14 tell the same story. On kind D (runs 4, 5 and 10)
+`POSIX_FADV_RANDOM` was 1.17x, 1.15x and 1.18x row 1, `O_DIRECT` `pread` on one thread 1.18x, 1.19x and
+1.15x, and `O_DIRECT` `io_uring` with 16 records in flight 1.20x, 1.25x and 1.20x (run 1 of 2026-11-14,
+same kind: 1.19x, 1.16x and 1.22x). On kind A (run 1) the fastest cold paths were row 1 and `O_DIRECT`
+`io_uring` with 16 records in flight, both 544 MB/s (the latter 0.99x and 1.00x of row 1 in runs 2 and 3
+of 2026-11-14). On kinds B, E and F every cold row without work was between 0.93x and 1.06x of row 1.
+The warm page cache read 8,999 to 30,865 MB/s. All 27 rows (23 in run 1) of each run are in its JSON
+file.
 
 ## What the runs show, and what they do not
 
@@ -203,7 +216,7 @@ to 30,865 MB/s. All 27 rows (23 in run 1) of each run are in its JSON file.
   with the read it should get ahead of, is an interpretation; it fits the helper thread, which with no
   work was not ahead of the reading thread.
 - **With 20 ms of work after each record, `WILLNEED` in chunks was the fastest of the three prefetches
-  in every run where it ran** (eight runs, five kinds): 1.27x to 2.32x. The helper thread came second
+  in every run where it ran** (ten runs, five kinds): 1.24x to 2.32x. The helper thread came second
   (1.05x to 2.12x). The work is a spin on one CPU, not a decode, and the rows were not run on kind A.
 - **The chunked calls can hold the thread that makes them:** on kind A the reading thread spent about
   90% of each pass in them. An engine would make them on a thread other than its decode thread; that was
@@ -216,8 +229,9 @@ to 30,865 MB/s. All 27 rows (23 in run 1) of each run are in its JSON file.
 
 ## Limits
 
-- Six kinds of machine, nine runs of the script, 5 passes per path in a run. Kinds C, D and F were seen
-  twice, the others once; kind A once, without the rows with work. All are cloud VMs with a virtual disk.
+- Six kinds of machine, eleven runs of the script, 5 passes per path in a run. Kinds C and D were seen
+  three times, F twice, the others once; kind A once, without the rows with work. All are cloud VMs with
+  a virtual disk.
 - The work between records is a spin of 20 ms on the reading thread. A real decode takes another time,
   may use more cores, memory bandwidth or a GPU, and was not run.
 - One chunk size (128 KiB, the `read_ahead_kb` of all six kinds) and one record ahead (`ahead=1`) for the
@@ -226,7 +240,7 @@ to 30,865 MB/s. All 27 rows (23 in run 1) of each run are in its JSON file.
 - `mincore` counts the pages that are in the page cache and read; pages whose read is still under way
   may be missed, so the shares may be low.
 - The kernel source read is that of Linux 7.0, not the vendor kernels of the runners.
-- A cold pass reads 642 MB and lasts 1.1 to 3.5 s; no longer pass was run.
+- A cold pass reads 642 MB and lasts 1.1 to 4.8 s; no longer pass was run.
 - The benchmark reads records the way the stores do, but it is not the stores: no decode, no engine
   cache, no eviction, no SHA-256 at the first read in the timed passes. No engine ran.
 - Not run: any NVMe or SATA drive, ARM, a filesystem other than ext4, ZFS, two drives.
@@ -245,7 +259,10 @@ to 30,865 MB/s. All 27 rows (23 in run 1) of each run are in its JSON file.
 | `run7-wex_io.json` | run 7, <https://github.com/KairaCode/Wex-WRN2/actions/runs/43715447113> |
 | `run8-wex_io.json` | run 8, <https://github.com/KairaCode/Wex-WRN2/actions/runs/43716110067> |
 | `run9-wex_io.json` | run 9, <https://github.com/KairaCode/Wex-WRN2/actions/runs/43716777105> |
+| `run10-wex_io.json` | run 10, <https://github.com/KairaCode/Wex-WRN2/actions/runs/43740267418> |
+| `run11-wex_io.json` | run 11, <https://github.com/KairaCode/Wex-WRN2/actions/runs/43740848880> |
 
-All nine files are JSON `version` 3. The script and the C program are `bench/wex_io.py` and
-`bench/wex_io.c` at commit 5372032 (run 1) and 13181df (runs 2 to 9). The job logs on GitHub expire; the
-JSON files are the record.
+All eleven files are JSON `version` 3. The script and the C program are `bench/wex_io.py` and
+`bench/wex_io.c` at commit 5372032 (run 1) and 13181df (runs 2 to 11; runs 10 and 11 were built at
+3842c0d, where these two files are as at 13181df). The job logs on GitHub expire; the JSON files are the
+record.
