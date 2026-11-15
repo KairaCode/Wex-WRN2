@@ -42,14 +42,17 @@ The same lines on Windows, in the MSYS2 UCRT64 shell; there the folder `D:\model
 - `--file BIG_FILE`: read an existing large file instead, for example a model file you have not read for
   a while. That is the closest thing to a cold read on ZFS, whose ARC cache cannot be dropped without
   root.
-- `--quick`: about 2 minutes instead of about 10.
+- `--quick`: about 2 minutes instead of about 10. It does not shorten `wex_check`: on the Windows machine of
+  the notes below a default run took 5 to 7.5 minutes, 2.5 to 4.7 of them in `wex_check` (six runs, with
+  other jobs on the CPU).
 - `--skip h2d,wex_check`: skip sections.
 
 The script prints each section as it goes and writes `bench/out/results.json`. **Read it before sharing
 it.** It holds the CPU, GPU, RAM and filesystem details and the numbers, but no host name, user name or
 paths: where a message holds them (an error, the last lines of a failed check), the script writes
 `<FILE>`, `<Wex-WRN2>` (the checkout), `<DIR>`, `<HOME>`, `<HOST>` and `<USER>` in their place, in the file
-and in what it prints. The start time keeps its UTC offset. Then open a **Benchmark results** issue and
+and in the lines it prints. A Python traceback, which you see only if the script itself stops with an
+error, is not filtered. The start time keeps its UTC offset. Then open a **Benchmark results** issue and
 attach the file.
 
 ## What each section measures
@@ -73,6 +76,11 @@ Notes:
 - Windows was run on one machine (Windows 10 22H2, MSYS2 UCRT64 gcc 16.2 and Python 3.14, NTFS on an NVMe
   drive, 2026-11-15). Not tried: Windows 11, the bash of Git for Windows, a Python from python.org, a
   volume other than NTFS, and `h2d` on Windows.
+- CI: the `windows` job runs `bench.py --quick --skip h2d,wex_check` on its runner. It checks that every
+  section gave its numbers through the Windows calls, that `wex_check` (its command caught, not run, with
+  `System32` first on `PATH`) starts the full path of the MSYS2 `bash` and not the WSL launcher, and that
+  the error of a `--file` that does not exist is written with `<FILE>`; it does not
+  judge the numbers. No Linux or macOS job runs `bench.py` (the `wex_io.py` smoke runs use its `sysinfo`).
 - On ZFS, `O_DIRECT` is honoured only from OpenZFS 2.3 with `direct=standard` or `always`. Otherwise the
   reads go through the ARC, and the second pass mostly measures RAM. The JSON records which case you
   were in.

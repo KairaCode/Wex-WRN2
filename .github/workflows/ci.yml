@@ -145,7 +145,7 @@ jobs:
 
   windows:
     runs-on: windows-2022
-    timeout-minutes: 15   # a green run takes 3 to 5.5 minutes
+    timeout-minutes: 15   # a green run took 3 to 5.5 minutes before the bench.py step, which adds about 1
     env:
       USER: ""
       USERNAME: ""
@@ -172,6 +172,23 @@ jobs:
           bash scripts/check_all.sh
       - name: Fuzz harnesses, seeds and mutators replayed
         run: bash wex4/fuzz/run.sh --replay
+      # the Windows code of bench/bench.py: a --quick run (a 4 GiB file in RUNNER_TEMP, about a minute) without h2d
+      # (no CUDA here) and wex_check (the step above ran the same checks). Its numbers are not judged (a shared
+      # runner), only that every section gave them through the Windows calls: CPU name, AVX2 and RAM from the
+      # Windows API, both passes of every read with FILE_FLAG_NO_BUFFERING. wex_check, with its command line
+      # caught instead of run and System32 put first on PATH: it must start the full path of the MSYS2 bash, not
+      # the WSL launcher of System32 (this runner has one), which a bare "bash" would give. A --file that does not
+      # exist: its error must reach results.json with <FILE> in place of the path and no user-profile folder
+      - name: Hardware benchmark (bench.py), quick run
+        run: |
+          set -e
+          python bench/bench.py --dir "$RUNNER_TEMP" --quick --skip h2d,wex_check
+          cat bench/out/results.json
+          python -I -c "import json; r = json.load(open('bench/out/results.json')); s, d = r['sysinfo'], r['disk']; assert s['cpu'] and s['cpu_avx2'] and s['MemTotal'] and s['test_fs']['type'] and r['ram_bw']['read_gbs_all'] > 0 and all(d[k][p]['o_direct'] and d[k][p]['gbs'] > 0 for k in ('seq_8mib', 'rand_1mib', 'rand_18mib') for p in ('first', 'second')), r"
+          PATH="/c/Windows/System32:$PATH" python -I -c "import sys; sys.path.insert(0, 'bench'); import bench; c = []; bench.sh = lambda cmd, **k: (c.append(cmd), (0, 'all checks passed', ''))[1]; r = bench.wex_check(); print(c); assert r['passed'] and c and c[0][0] == bench.find_bash() and 'system32' not in c[0][0].lower(), c"
+          python bench/bench.py --dir "$RUNNER_TEMP" --file "$RUNNER_TEMP/no-such-file" --skip ram_bw,h2d,wex_check
+          grep -q '<FILE>' bench/out/results.json
+          ! grep -n -i -e 'users[\\/]' -e 'runneradmin' bench/out/results.json
 
   # the same checks with every C file they build compiled under AddressSanitizer and UndefinedBehaviorSanitizer: an out-of-bounds
   # read or write, a use after free or undefined behaviour in a reader, a decoder or the in-process fuzzer stops
