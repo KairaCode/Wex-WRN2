@@ -5,7 +5,8 @@ Parts A to D were written on 2026-11-15 while the reader was written from
 [WNR2-REFERENCE](../../docs/WNR2-REFERENCE.md), [GLOSSARY](../../docs/GLOSSARY.md),
 [wex4/vectors/README.md](../../wex4/vectors/README.md) and `MANIFEST.tsv`, and before any of
 `wex4/wex4.py`, `wex4/wex4_tools.c`, `wex4/test_wex4.py`, `c/` or the Go reader's code and notes was
-opened. Part E was written after the reader passed all 112 rows, when those were compared.
+opened. Part E was written after the reader passed all 112 rows, when those were compared. Parts A to D
+are left as they were written; where part E changed what the reader does, the note says so in brackets.
 
 Section numbers are those of WEX4-SPEC unless a note names WNR3-SPEC.
 
@@ -20,7 +21,8 @@ Section numbers are those of WEX4-SPEC unless a note names WNR3-SPEC.
   `index_offset + align(index_bytes) <= file_bytes`, computed without overflow.
 - **A3. The empty index.** Section 4 says "`index_offset` is 4096 when the index is empty". It is
   written as a fact, not as a rule a reader checks. This reader checks it (`WEX4_E_LAYOUT`). No vector
-  has an empty index (a file of only the header page).
+  has an empty index (a file of only the header page). [Since part E: `WEX4_E_HEADER`, at the end of
+  step 1; the C reader refuses such a file too, with that class (E3).]
 - **A4. Where a tensor's place is checked.** Step 2 lists "every tensor entry satisfies 5.3 (names,
   rank, shape, size)" before "every record entry satisfies 5.2 and its tensors tile it". The table of
   5.3 holds `record` and `offset` too. This reader checks name, rank, shape and size in the pass over
@@ -78,7 +80,8 @@ Section numbers are those of WEX4-SPEC unless a note names WNR3-SPEC.
 
 The specifications do not define the classes; `MANIFEST.tsv` gives one per rejected file, and the
 vectors README says another reader only has to refuse. This reader names its refusals with the same
-`WEX4_E_*` names and gives the manifest's class on all 104 rejected rows. Where a rule falls:
+`WEX4_E_*` names and gives the manifest's class on all 104 rejected rows. Where a rule falls (the
+table as it is since part E; the six rules marked E3 had another class before):
 
 | class | rules |
 |---|---|
@@ -86,21 +89,23 @@ vectors README says another reader only has to refuse. This reader names its ref
 | `HASH` | header SHA-256, index SHA-256, a blob's or a record's SHA-256 |
 | `VERSION` | `version_major` |
 | `FEATURE` | an unknown required feature bit |
-| `HEADER` | a file shorter than a page, and every other rule of step 1 |
+| `HEADER` | a file shorter than a page, every other rule of step 1, and the empty index at 4096 (E3) |
 | `INDEX` | a non-zero byte in the index padding |
 | `NAME` | name offset and length, UTF-8, NUL, the names filling the pool, the name order |
-| `TENSOR` | rank, shape, size, zero-size tensors; and in the record pass, a tensor's record, offset, end and part count |
+| `TENSOR` | rank, shape, size, zero-size tensors; and in the record pass, a tensor's record, offset, end and part count, a zero-size tensor listed by a record (E3), a split tensor that is not alone in its record (E3) or whose next record is not a part (E3), and the tiling of a record (E3) |
 | `BLOB` | the rules of 5.1; in step 3 a blob's padding, its WNM2 model and id |
-| `RECORD` | the rules of 5.2 (codec, flags, sizes, blob, own owner, VALUE_EXACT), `first_tensor` and `tensor_count`, the tiling of a record, continuation parts, the two totals, the WNR3 minimum size |
-| `EXPERT` | the rules of 5.5, the owner of an EXPERT record inside the grid and increasing, a grid without an expert record |
-| `LAYOUT` | the tiling of the file by its extents (section 3), the empty index at 4096 |
+| `RECORD` | the rules of 5.2 (codec, flags, sizes, blob, own owner, VALUE_EXACT), `first_tensor` and `tensor_count`, continuation parts (an orphan part, the part of another tensor, the sum of the parts), the two totals, the WNR3 minimum size |
+| `EXPERT` | the rules of 5.5, "EXPERT allows codec 0 or 5" (E3), the owner of an EXPERT record inside the grid and increasing, a grid without an expert record |
+| `LAYOUT` | the tiling of the file by its extents (section 3) |
 | `DATA` | a record that its decoder refuses, with the cross-checks of 7.1 |
 
-Three of these placements come from the manifest, not from the text: the owner of an EXPERT record is
-a rule of 5.2 but its class is `EXPERT`; "EXPERT allows codec 0 or 5" is next to the expert rules but
-its class is `RECORD` (`expert-record-stored-as-wbp1.wex4`); and a file shorter than a page is
-`HEADER` (A1). The order inside each pass is the order of the section's sentences where there is one,
-else the order of the table's fields.
+Two of these placements come from the manifest, not from the text: the owner of an EXPERT record is a
+rule of 5.2 but its class is `EXPERT`, and a file shorter than a page is `HEADER` (A1). [Before part E
+this paragraph named a third, "EXPERT allows codec 0 or 5" as `RECORD` from
+`expert-record-stored-as-wbp1.wex4`. That was a misreading: the file is refused by the WBP1 rule of 5.2
+(no blob, no flags) before that sentence is reached, so the manifest does not decide its class.] The
+order inside each pass is the order of the section's sentences where there is one, else the order of
+the table's fields.
 
 ## C. What the vectors do not exercise, seen from this reader
 
@@ -133,4 +138,118 @@ for the tensor pass (A4); with the place of a tensor checked in the record pass,
 
 ## E. After all rows passed
 
-To be written: the comparison with the Go reader's notes, its test files and mutated vectors.
+Written on 2026-11-15, after the reader gave the manifest's verdict, class and root on all 112 rows.
+Only then were the Go reader's notes read and the other readers run, as black boxes, on files built
+here. "The C reader" is `c/wex4.h` inside `wex4/out/wex4_tools.dll` (built by
+`bash wex4/build_and_test.sh`, gcc 16.2), called as `wex4.CLib(...).check(data, 3, True)`; "the Python
+reader" is `wex4.check(data, True, C)` of `wex4/wex4.py`; "the Go reader" is `impl/go-wex4` built with
+Go 1.27. All runs on one Windows 10 desktop (Intel Core i7-7700K, MSYS2 UCRT64, Rust 1.99.1,
+Python 3.14), one run each; the same checks on Linux are the `rust-reader` job of CI.
+
+### E1. What was run
+
+- **The files of [impl/go-wex4/testdata](../go-wex4/testdata/README.md).** `ceil-form.wex4`,
+  `planes.wex4` and `ragged.wex4` are accepted with the roots of that README. With `check -v` both WNR3
+  records of `ceil-form.wex4` and the 17 tensors of the other two have the SHA-256 that the Go reader's
+  tests take from the sources (`wex4_test.go`). `extra-page.wex4` is refused (`WEX4_E_DATA`,
+  `stored_bytes` 8192 is not `align(3356)`), as the C and the Go reader refuse it. That file is the
+  question of the Go reader's note A9; the sentence that answers it was already in the revision of 7.2
+  this reader was written from.
+- **The content digest** (section 5) that this reader prints equals the one that
+  `python -I wex4/wex4.py verify FILE --dll wex4/out/wex4_tools.dll` prints, on 18 files: the 7 valid
+  vectors, those three files, and the 8 containers that `wex4/build_and_test.sh` leaves in `wex4/out/`
+  (RAW, WBP1 and WNR3 records; 48 WNR3 records with canonical zero in `tiny_nr3_cz.wex4`, 4 without in
+  `synth.wex4`). `run.sh` checks the digests of the 10 tracked files.
+- **[differential.py](differential.py)**, seed 20261115, with the Go reader:
+  - 35 hand-made files (its list `EDGES` and five files built whole: a header page alone, two empty
+    indexes, a 4-byte and a 100-byte file). The C reader accepts 7, refuses 27, and cannot decode one
+    (an unknown codec). This reader and the Go reader give the C reader's verdict on all 35, and the
+    Python reader gives it on the 34 that the C reader can decode.
+  - 21,000 mutated files, of which 20,596 differ from their base. The C reader accepts 2,111, refuses
+    18,378 and cannot decode 107. This reader and the Go reader give its verdict on all 20,596; the C
+    and the Python reader agree on every one that the C reader can decode; this reader never panicked.
+
+### E2. The verdicts agree; some classes do not
+
+No verdict differs. The class is the C reader's on 24 of the 27 refused hand-made files and on 18,363 of
+the 18,378 refused mutated files (the Go reader's is on 21 of the 27). The hand-made files where it is
+not:
+
+| file (`differential.py`, `EDGES`) | broken sentence | C | this reader | Go |
+|---|---|---|---|---|
+| `split-tensor-k4-record-7-not-a-part` | 5.3, "the next `k - 1` records are its continuation parts" | `RECORD` | `TENSOR` | `RECORD` |
+| `first-part-larger-than-the-tensor` | 5.3, "`nbytes` is the sum of the `k` decoded sizes" | `TENSOR` | `RECORD` | `RECORD` |
+| `expert-flag-on-a-continuation-part` | 5.5, "exactly 6 tensors" | `RECORD` | `EXPERT` | `EXPERT` |
+
+The first row is the same sentence as `tensor-2-k2-record-2-not-a-part`, which the C reader refuses
+with `TENSOR`; so do 12 of the 13 mutated files that break it (the thirteenth is the first row's case).
+No class can agree with the C reader on both, and this reader gives `TENSOR` to both. The 15 mutated
+files are 4 files of these three kinds and 11 files with two changed fields, where each reader gives the
+class of the rule it checks first.
+
+### E3. What the comparison changed in the code
+
+No verdict changed. Six rules moved to the class the C reader gives, on files where the text does
+not decide it (the table of part B marks them):
+
+| rule | before | now | C | Go |
+|---|---|---|---|---|
+| an empty index whose `index_offset` is not 4096 | `LAYOUT` | `HEADER` | `HEADER` | `LAYOUT` |
+| "EXPERT allows codec 0 or 5 only" | `RECORD` | `EXPERT` | `EXPERT` | `RECORD` |
+| a record whose `tensor_count` reaches the zero-size tensors | `RECORD` | `TENSOR` | `TENSOR` | `RECORD` |
+| a split tensor that is not alone in its first record | `RECORD` | `TENSOR` | `TENSOR` | `TENSOR` |
+| a record after the first part of a split tensor that is not a part | `RECORD` | `TENSOR` | `TENSOR` on 13 of 15 files (E2) | `RECORD` |
+| the tensors of a record do not reach its `decoded_bytes` | `RECORD` | `TENSOR` | `TENSOR` | `TENSOR` |
+
+The first version (the commit that added this folder), built apart and put through the same run
+(same seed, same 35 + 20,596 files), gives the same verdicts on every file; its class is the C
+reader's on 18 of the 27 hand-made files and on 18,003 of the 18,378 mutated ones (now 24 and 18,363).
+`check -v` was added: the SHA-256 of every decoded record and tensor, for the comparison of E1.
+
+### E4. The Go reader's notes, side by side
+
+| Go note | Now in the text | This reader |
+|---|---|---|
+| A1, A3, A4, A8 (the weight context, the rANS step, the WNM2 layout and checks) | WNR3-SPEC errata 9, 10, 12 | written from the errata; no question left |
+| A2 (the order of a WBP1 record) | WEX4-SPEC 7.2 | the same |
+| A5 (the order of the overflow check of a shape) | no | the same reading: left to right, refused at the first overflow even when a later dimension is 0. `[0, 2^32, 2^32]` is accepted and `[2^32, 2^32, 0]` refused, by all four readers (E1). Parts A to D did not list it as a question: the loop was the obvious one |
+| A6 (a zero-size tensor is one of 0 bytes) | 5.3 | the same; three hand-made files with an opaque dtype, 0 bytes and no 0 dimension are accepted by all four |
+| A7 (`blob <= blob_count`) | 5.2 | the same |
+| A9 (the exact `stored_bytes` of a WBP1 record) | 7.2 | the same; `extra-page.wex4` is refused |
+| B2 (`n_p` when `p >= decoded_bytes`) | 7.2 | the same |
+| B3 (the weight shape of 5.5, and the bound on `16 * cols`) | no | the same reading: `[rows_m, 16 * cols_m]` of scale tensor m, and `16 * cols_m <= 65535`. Not listed in parts A to D either |
+| B4 (the stream count of the WNR3 minimum) | 5.2 | the same |
+| B5 (an unknown codec that names a blob) | no | the same (A6 here) |
+| B6 (the fields of the content digest) | 5 | computed, and equal to the Python reader's on 18 files (E1) |
+| B7 (the classes) | no | part B and E2 |
+| B8 (a blob's offset is aligned only through the tiling) | no | the same |
+| C (the pages a reader needs) | - | the same three pages; WNR2-REFERENCE for the stream framing and the WNM2 model (A16 to A18 here) |
+| D (what the vectors do not exercise) | - | part C here lists the same gaps, and four of the index: no empty index, no blob of kind 18, no file above 4 GiB, no unknown codec |
+
+Notes of this reader that the Go reader does not have, with what the comparison showed: A1 (a file
+shorter than a page: `HEADER` in all three readers that give classes, on a 4-byte and a 100-byte
+file); A3 (an empty index elsewhere than 4096: refused by all four, classes in E3); A7 (a record of an
+unknown codec: the C reader returns its status for "unsupported", the Go reader and this one report the
+file valid with one record not decoded, and `wex4.py verify` prints `REFUSED: unsupported codec 7` and
+exits 1); A8 (U+10FFFF is accepted in a name and the next code point refused, by all four); A20 (the
+anchor byte: set to 255 or to 0 in a valid record with its hash recomputed, the record is refused by all
+four readers, `WEX4_E_DATA` where there is a class; the Go reader and this one name the first scale
+stream, whose hash fails: record bytes 24 to 27 are part of every stream's hash ident (WNR3-SPEC 4.5).
+So these files do not show whether a record encoded with the anchor 255 is valid; that needs an
+encoder that writes it, and none was run).
+
+### E5. Open for the specification
+
+What the comparison left undecided, each a sentence the specification could add:
+
+1. **The reject classes.** The C, the Go and this reader do not give one class on 7 of the 27 refused
+   hand-made files, and the C reader gives two classes to one sentence (E2). Either the specification
+   defines a class per rule, or it says that the class is informative and only the verdict is
+   conformance (as the vectors README already says).
+2. **The order of the overflow check of a shape** (Go A5): all four readers refuse
+   `[2^32, 2^32, 0]` and accept `[0, 2^32, 2^32]`; the text does not say so.
+3. **The bound on `16 * cols`** of an expert weight tensor (Go B3).
+4. **The empty index at 4096** (A3): written as a fact of section 4, not as a rule of step 1.
+5. **What a verifier reports for a record of an unknown codec** (A7): section 10, rule 6 says the file
+   is valid; the two reference readers report it differently from each other.
+6. **The anchor byte 255** of a WNR3 record (A20, WNR3-SPEC erratum 11): not tested by any reader here.

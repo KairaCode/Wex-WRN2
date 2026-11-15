@@ -244,6 +244,8 @@ pub fn parse_header(page: &[u8], real_size: u64) -> Res<Header> {
         align(h.index_bytes),
         h.file_bytes
     );
+    // section 4: "index_offset is 4096 when the index is empty"
+    ensure!(h.index_bytes != 0 || h.index_offset == PAGE, Header, "an empty index at {}, not 4096", h.index_offset);
     Ok(h)
 }
 
@@ -586,13 +588,6 @@ pub fn check_index(h: &Header, ix: &Index, raw_padded: &[u8]) -> Res<Checked> {
             );
         }
         ensure!(!vexact || (e.codec == CODEC_WNR3 && vexact_ok), Record, "record {}: VALUE_EXACT not allowed here", r);
-        ensure!(
-            !expert || e.codec == CODEC_RAW || e.codec == CODEC_WNR3,
-            Record,
-            "record {}: EXPERT with codec {}",
-            r,
-            e.codec
-        );
         if !expert {
             ensure!(e.owner as usize == r, Record, "record {}: owner {} is not its index", r, e.owner);
         }
@@ -625,25 +620,40 @@ pub fn check_index(h: &Header, ix: &Index, raw_padded: &[u8]) -> Res<Checked> {
                 split = Some((t, left - 1, sum));
             }
         } else {
-            ensure!(split.is_none(), Record, "record {}: tensors where a split tensor still needs parts", r);
             let f = e.first_tensor as usize;
             ensure!(f == next_tensor, Record, "record {}: first_tensor {} is not {}", r, f, next_tensor);
+            if let Some((t, left, _)) = split {
+                // 5.3: the records after the first part of a split tensor are its parts. A tensor class, as the
+                // C reader gives on most such files (SPEC-NOTES, part E)
+                return Err(Reject {
+                    class: Class::Tensor,
+                    why: format!("tensor {}: {} more parts expected, record {} holds tensors", t, left, r),
+                });
+            }
             ensure!(
-                e.tensor_count as usize <= data_tensors - f,
+                e.tensor_count as usize <= nt - f,
                 Record,
-                "record {}: {} tensors from {} of {} data tensors",
+                "record {}: {} tensors from {} of {}",
                 r,
                 e.tensor_count,
                 f,
-                data_tensors
+                nt
             );
             let mut at = 0u64;
             let d = e.decoded as u64;
             for j in f..f + e.tensor_count as usize {
                 let t = ix.tensor(j);
                 ensure!(t.record as usize == r, Tensor, "tensor {}: in record {}, listed by record {}", j, t.record, r);
+                ensure!(t.record_count != 0, Tensor, "tensor {}: a zero-size tensor listed by record {}", j, r);
                 if t.record_count >= 2 {
-                    ensure!(e.tensor_count == 1, Record, "record {}: split tensor {} is not alone", r, j);
+                    // 5.3, split tensor: alone in its first record, and the next records are its parts
+                    ensure!(
+                        e.tensor_count == 1,
+                        Tensor,
+                        "tensor {}: a split tensor that is not alone in record {}",
+                        j,
+                        r
+                    );
                     ensure!(
                         t.record_count as usize <= nr - r,
                         Tensor,
@@ -678,7 +688,7 @@ pub fn check_index(h: &Header, ix: &Index, raw_padded: &[u8]) -> Res<Checked> {
                     at += t.nbytes;
                 }
             }
-            ensure!(at == e.decoded as u64, Record, "record {}: tensors cover {} of {} bytes", r, at, e.decoded);
+            ensure!(at == e.decoded as u64, Tensor, "record {}: its tensors cover {} of {} bytes", r, at, e.decoded);
             next_tensor = f + e.tensor_count as usize;
         }
 
@@ -749,6 +759,7 @@ pub fn check_index(h: &Header, ix: &Index, raw_padded: &[u8]) -> Res<Checked> {
 
 /// 5.5 on an EXPERT record, and its owner inside the grid.
 fn check_expert(ix: &Index, h: &Header, r: usize, e: &Rec) -> Res<()> {
+    ensure!(e.codec == CODEC_RAW || e.codec == CODEC_WNR3, Expert, "record {}: EXPERT with codec {}", r, e.codec);
     ensure!(e.tensor_count == 6, Expert, "record {}: an expert record with {} tensors", r, e.tensor_count);
     let f = e.first_tensor as usize;
     let dim_ok = |d: u64| (1..=65535).contains(&d);
@@ -805,10 +816,7 @@ fn check_tiling(h: &Header, ix: &Index) -> Res<()> {
     let mut at = PAGE;
     let (mut bi, mut ri) = (0usize, 0usize);
     let index_len = align(h.index_bytes);
-    let mut index_done = index_len == 0;
-    if index_done {
-        ensure!(h.index_offset == PAGE, Layout, "an empty index at {}, not 4096", h.index_offset);
-    }
+    let mut index_done = index_len == 0; // then it is at 4096 (step 1)
     while at < h.file_bytes || bi < ix.nb || ri < ix.nr || !index_done {
         let len;
         if !index_done && h.index_offset == at {
@@ -860,10 +868,13 @@ pub struct Report {
     pub undecodable: Vec<usize>,
     /// The content digest of section 5, when every record was decoded.
     pub digest: Option<[u8; 32]>,
+    /// With `Options::list`: the SHA-256 of every decoded record and tensor.
+    pub listing: Vec<String>,
 }
 
 pub struct Options {
     pub decode: bool,
+    pub list: bool,
 }
 
 /// Steps 1, 2 and 3 of section 6 on a whole file: every hash, every blob and, with `decode`, every
@@ -905,6 +916,8 @@ pub fn check_file(path: &str, opt: &Options) -> Res<Report> {
     let mut digest = Some(Sha256::new());
     let mut undecodable = Vec::new();
     let mut decoded = 0usize;
+    let mut listing = Vec::new();
+    let mut part: Option<(usize, u32, Sha256)> = None; // a split tensor: its index, parts to come, its hash
     for r in 0..ix.nr {
         let e = ix.record(r);
         let stored = read_at(&mut f, e.offset, e.stored as u64)?;
@@ -925,6 +938,35 @@ pub fn check_file(path: &str, opt: &Options) -> Res<Report> {
             }
         };
         decoded += 1;
+        if opt.list {
+            listing.push(format!(
+                "  record {} codec {} decoded {} sha256 {}",
+                r,
+                e.codec,
+                out.len(),
+                hex(&sha256(&out))
+            ));
+            if e.tensor_count == 0 {
+                if let Some((j, left, mut s)) = part.take() {
+                    s.update(&out);
+                    if left == 1 {
+                        listing.push(tensor_line(&ix, j, s.finish()));
+                    } else {
+                        part = Some((j, left - 1, s));
+                    }
+                }
+            }
+            for j in e.first_tensor as usize..(e.first_tensor + e.tensor_count) as usize {
+                let t = ix.tensor(j);
+                if t.record_count == 1 {
+                    listing.push(tensor_line(&ix, j, sha256(&out[t.offset as usize..(t.offset + t.nbytes) as usize])));
+                } else {
+                    let mut s = Sha256::new();
+                    s.update(&out);
+                    part = Some((j, t.record_count - 1, s));
+                }
+            }
+        }
         if let Some(d) = digest.as_mut() {
             if e.tensor_count == 0 {
                 d.update(&out);
@@ -946,6 +988,11 @@ pub fn check_file(path: &str, opt: &Options) -> Res<Report> {
         }
         d.finish()
     });
+    if opt.list && opt.decode {
+        for j in checked.data_tensors..ix.nt {
+            listing.push(tensor_line(&ix, j, sha256(&[])));
+        }
+    }
     Ok(Report {
         header: h,
         records: ix.nr,
@@ -955,7 +1002,13 @@ pub fn check_file(path: &str, opt: &Options) -> Res<Report> {
         decoded,
         undecodable,
         digest,
+        listing,
     })
+}
+
+fn tensor_line(ix: &Index, j: usize, sha: [u8; 32]) -> String {
+    let t = ix.tensor(j);
+    format!("  tensor {} {:?} nbytes {} sha256 {}", j, String::from_utf8_lossy(ix.name(&t)), t.nbytes, hex(&sha))
 }
 
 /// The fields of a tensor in the content digest: name length u16, name, dtype u8, rank u8, the 8

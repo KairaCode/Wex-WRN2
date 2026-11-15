@@ -9,7 +9,8 @@ the WNR3 decoder and the WNM2 model, [WNR2-REFERENCE](../../docs/WNR2-REFERENCE.
 [GLOSSARY](../../docs/GLOSSARY.md), [wex4/vectors/README.md](../../wex4/vectors/README.md) and
 `MANIFEST.tsv`. `wex4/wex4.py`, `wex4/wex4_tools.c`, `wex4/test_wex4.py`, `c/` and the Go reader's
 code and notes were not opened until this reader gave the manifest's verdict, class and root on all
-112 rows. What the text did not decide is in [SPEC-NOTES.md](SPEC-NOTES.md).
+112 rows. What the text did not decide is in [SPEC-NOTES.md](SPEC-NOTES.md); its part E is the
+comparison with the other readers that came after, with [differential.py](differential.py).
 
 ## What it checks
 
@@ -46,19 +47,37 @@ bash impl/rust-wex4/run.sh FILE.wex4   # the same, then checks FILE.wex4 too
 ```
 
 `run.sh` needs `cargo` and nothing else; it builds into `impl/rust-wex4/out/target` (git-ignored),
-checks the formatting when `rustfmt` is installed, runs the unit tests, every row of
-`wex4/vectors/MANIFEST.tsv` (file SHA-256, verdict, class, root) and the valid files. It is not part of
-`scripts/check_all.sh`, so that Rust is not needed for the repository's checks; the `rust-reader` job
-of `.github/workflows/ci.yml` runs it on ubuntu-24.04 with the runner's own cargo. Other commands:
+checks the formatting when `rustfmt` is installed, runs the unit tests and every row of
+`wex4/vectors/MANIFEST.tsv` (file SHA-256, verdict, class, root). Then the valid files and three files
+of [impl/go-wex4/testdata](../go-wex4/testdata/README.md) (ceil form, 4 and 8 planes, sizes that are
+not a multiple of the plane count) must be accepted with the content digest that the Python reader
+with the C codec printed for them, and `extra-page.wex4` of that folder must be refused. It is not
+part of `scripts/check_all.sh`, so that Rust is not needed for the repository's checks; the
+`rust-reader` job of `.github/workflows/ci.yml` runs it on ubuntu-24.04 with the runner's own cargo,
+then the differential run below. Other commands:
 
 ```bash
-wex4r check [--no-decode] FILE...   # --no-decode: hashes only, like wex4_verify
+wex4r check [-v] [--no-decode] FILE...   # -v: SHA-256 of every decoded record and tensor; --no-decode: hashes only
 wex4r manifest [-v] wex4/vectors/MANIFEST.tsv
-wex4r dump FILE                      # header page and index tables as read, after step 1
+wex4r dump FILE                           # header page and index tables as read, after step 1
 ```
 
 Exit status: 0 all accepted, or every row as the manifest says; 1 a refusal or a row that disagrees;
 2 usage; 3 a file with a record of an unknown codec.
+
+The differential run compares this reader's verdicts with those of the C and the Python reader (and of
+the Go reader with `--go`) on 35 hand-made files and on as many mutated ones as `--count` asks for
+(7,000 by default; files equal to their base are dropped). It needs the library that
+`wex4/build_and_test.sh` builds:
+
+```bash
+bash wex4/build_and_test.sh
+python -I impl/rust-wex4/differential.py [--count 7000] [--go impl/go-wex4/out/wex4check] \
+    impl/rust-wex4/out/target/release/wex4r OUTDIR
+```
+
+It fails when a verdict differs, when the C and the Python reader disagree or when this reader panics.
+It counts the classes that differ and does not fail on them.
 
 ## Results
 
@@ -67,8 +86,15 @@ Exit status: 0 all accepted, or every row as the manifest says; 1 a refusal or a
   WNR3 records with all their stream hashes. The five valid files made from `generic.wex4` (index
   first, index last, minor 9, unknown optional bits, bytes in the reserved area) give one content
   digest, as section 5 says the two layouts must.
-- **Where it ran:** Windows 10 with MSYS2 UCRT64 and Rust 1.99.1; ubuntu-24.04 in CI. Not run on
-  macOS, on ARM or on a big-endian host.
+- **After the rows passed** (2026-11-15, SPEC-NOTES part E, one run each): the content digest is the
+  Python reader's on 18 files (the valid vectors, three files of `impl/go-wex4/testdata`, the eight
+  containers that `wex4/build_and_test.sh` writes), and every record and tensor of those testdata files
+  has the SHA-256 that the Go reader's tests expect. On 35 hand-made files and on 20,596 mutated copies
+  of seven valid files (seed 20261115), the verdict is the C reader's on every file, as is the Go
+  reader's; the class differs from the C reader's on 3 of the 27 and 15 of the 18,378 files that both
+  refuse. No panic.
+- **Where it ran:** Windows 10 (Intel Core i7-7700K) with MSYS2 UCRT64 and Rust 1.99.1; ubuntu-24.04
+  in CI. Not run on macOS, on ARM or on a big-endian host.
 
 ## Limits
 
@@ -80,5 +106,11 @@ Exit status: 0 all accepted, or every row as the manifest says; 1 a refusal or a
   accepted nor refused.
 - The test encoders of `src/testenc.rs` are not canonical: their records show that this encoder and
   this decoder agree, not that they agree with the reference.
+- The reject classes are this reader's choice where the text does not decide (SPEC-NOTES, parts B and
+  E). Six of them were moved after the comparison to the class the C reader gives; no verdict was
+  changed by it.
+- Tested with the vectors, hand-made and mutated files and its unit tests, not with a coverage-guided
+  fuzzer. It is not in the support table of [SECURITY.md](../../SECURITY.md), so no fix is promised
+  for it there.
 - By reading, the code uses nothing newer than Rust 1.61 (`std::process::ExitCode`); it was compiled
   only with 1.99.1 and with the CI runner's version.

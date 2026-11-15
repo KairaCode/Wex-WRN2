@@ -20,7 +20,9 @@ use std::panic;
 use std::process::ExitCode;
 
 const USAGE: &str = "usage:
-  wex4r check [--no-decode] FILE...   check each file in full; one line per file
+  wex4r check [-v] [--no-decode] FILE...
+                                      check each file in full; one line per file, and with -v the
+                                      SHA-256 of every decoded record and tensor
   wex4r manifest [-v] MANIFEST.tsv    every row: file SHA-256, verdict, class and root
   wex4r dump FILE                     the header page and the index tables, as read
 exit status: 0 every file accepted (check) or every row as the manifest says (manifest);
@@ -78,11 +80,12 @@ fn line(path: &str, v: &Verdict) -> String {
 }
 
 fn cmd_check(args: &[String]) -> ExitCode {
-    let mut opt = wex4::Options { decode: true };
+    let mut opt = wex4::Options { decode: true, list: false };
     let mut files = Vec::new();
     for a in args {
         match a.as_str() {
             "--no-decode" => opt.decode = false,
+            "-v" => opt.list = true,
             _ => files.push(a.clone()),
         }
     }
@@ -90,17 +93,27 @@ fn cmd_check(args: &[String]) -> ExitCode {
         eprintln!("{}", USAGE);
         return ExitCode::from(2);
     }
-    let mut status = 0u8;
+    let (mut refused, mut undecodable) = (false, false);
     for f in &files {
         let v = judge(f, &opt);
         println!("{}", line(f, &v));
-        status = status.max(match &v {
-            Verdict::Accept(r) if r.undecodable.is_empty() => 0,
-            Verdict::Accept(_) => 3,
-            _ => 1,
-        });
+        match &v {
+            Verdict::Accept(r) => {
+                undecodable |= !r.undecodable.is_empty();
+                for l in &r.listing {
+                    println!("{}", l);
+                }
+            }
+            _ => refused = true,
+        }
     }
-    ExitCode::from(status)
+    ExitCode::from(if refused {
+        1
+    } else if undecodable {
+        3
+    } else {
+        0
+    })
 }
 
 fn cmd_manifest(args: &[String]) -> ExitCode {
@@ -120,7 +133,7 @@ fn cmd_manifest(args: &[String]) -> ExitCode {
         }
     };
     let dir = std::path::Path::new(&path).parent().map(|p| p.to_path_buf()).unwrap_or_default();
-    let opt = wex4::Options { decode: true };
+    let opt = wex4::Options { decode: true, list: false };
     let (mut rows, mut bad, mut roots, mut classes, mut rejects, mut accepts) = (0, 0, 0, 0, 0, 0);
     for raw in text.lines() {
         if raw.starts_with('#') || raw.trim().is_empty() {
