@@ -72,8 +72,9 @@ A committed run folder is frozen. A later correction is a dated note at the top 
 | Living page | `README.md`, `STATUS.md`, `CHANGELOG.md`, `SECURITY.md`, the folder READMEs, `docs/*.md` (index, architecture, glossary, benchmarks, integration guide, WNR2 reference, WNR3 and WEX4 specifications, the Vulkan design note) | says what is true today; edited whenever that changes. What runs in production is decided in `STATUS.md`; another page may repeat it only as a dated summary with a link to `STATUS.md`, and is corrected from it |
 | Dated report | `docs/reports/<topic>-YYYYMMDD.md` (`.it.md` when Italian) | records one moment; not edited afterwards, except for a note on top that names what superseded it |
 | Research run | `research/<topic>-YYYYMMDD/` | rule 4 |
+| Translation | `docs/i18n/README.<lang>.md`, and the Italian summary at the end of `README.md` | a short summary of `README.md` with, at its top, the date of the English text it follows. `README.md` is the reference and wins where they differ. A translation that falls behind is corrected from `README.md`; until then its date says which README it follows |
 
-New pages are written in English. The Italian reports stay in Italian. New report names are lower case; the upper-case names given before 2026-11-13 (`WNR3-VERIFY.md`, `WNR3-PRODUCTION-20261110.md`, `QWEN38-MXFP4-20261111.md`) stay as they are, because frozen pages link them.
+New pages are written in English, except the translations of the row above. The Italian reports stay in Italian. New report names are lower case; the upper-case names given before 2026-11-13 (`WNR3-VERIFY.md`, `WNR3-PRODUCTION-20261110.md`, `QWEN38-MXFP4-20261111.md`) stay as they are, because frozen pages link them.
 
 ## 7. Licence and sign-off
 
