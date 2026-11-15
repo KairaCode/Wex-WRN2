@@ -88,7 +88,7 @@ It counts the classes that differ and does not fail on them.
   digest, as section 5 says the two layouts must.
 - **After the rows passed** (2026-11-15, SPEC-NOTES part E, one run each): the content digest is the
   Python reader's on 18 files (the valid vectors, three files of `impl/go-wex4/testdata`, the eight
-  containers that `wex4/build_and_test.sh` writes), and every record and tensor of those testdata files
+  WEX4 files that `wex4/build_and_test.sh` writes), and every record and tensor of those testdata files
   has the SHA-256 that the Go reader's tests expect. On 35 hand-made files and on 20,596 mutated copies
   of seven valid files (seed 20261115), the verdict is the C reader's on every file, as is the Go
   reader's; the class differs from the C reader's on 3 of the 27 and 15 of the 18,378 files that both

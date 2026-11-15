@@ -157,7 +157,7 @@ Python 3.14), one run each; the same checks on Linux are the `rust-reader` job o
   this reader was written from.
 - **The content digest** (section 5) that this reader prints equals the one that
   `python -I wex4/wex4.py verify FILE --dll wex4/out/wex4_tools.dll` prints, on 18 files: the 7 valid
-  vectors, those three files, and the 8 containers that `wex4/build_and_test.sh` leaves in `wex4/out/`
+  vectors, those three files, and the 8 WEX4 files that `wex4/build_and_test.sh` leaves in `wex4/out/`
   (RAW, WBP1 and WNR3 records; 48 WNR3 records with canonical zero in `tiny_nr3_cz.wex4`, 4 without in
   `synth.wex4`). `run.sh` checks the digests of the 10 tracked files.
 - **[differential.py](differential.py)**, seed 20261115, with the Go reader:
