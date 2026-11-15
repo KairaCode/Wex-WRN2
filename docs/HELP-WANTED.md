@@ -71,7 +71,8 @@ measured; it is not known to fail.
     OpenMP off) through `bash scripts/sanitize_c.sh tsan|msan`, whose header lists what runs:
     `test_wex_format` (msan only), `test_wex4_verify`, `wex4_verify` (8 threads under tsan, one
     under msan), and the five fuzzing harnesses on their seeds, two of them also on a file of
-    synthetic WNR3 records.
+    synthetic WNR3 records. `linux-tsan` also runs the smoke mode of `bench/wex_io.py`, whose
+    `pread` paths have their own threads, under ThreadSanitizer.
   - **Still open:** the libraries that the tests load into Python (`wex4_tools.dll` with the fast
     decoder, the WNR3 encoder) under these two sanitizers, which needs the same tests driven from C
     or an instrumented Python; the engine-side readers inside an engine tree (here they run only
@@ -208,7 +209,7 @@ measured; it is not known to fail.
   `posix_fadvise` hints, 1 to 8 threads, `io_uring` with records or sub-reads in flight), each checked
   against the index's SHA-256 and timed over several cold passes.
 - **Measured so far:** only GitHub Actions runners, shared cloud VMs with a virtual disk
-  ([research/linux-io-20261114](../research/linux-io-20261114/README.md): two kinds of VM, three runs of
+  ([research/linux-io-20261114](../research/linux-io-20261114/README.md): two kinds of VM, three recorded runs of
   5 passes per path). No read path won on both kinds: `POSIX_FADV_RANDOM` and `O_DIRECT` were 19% and
   16% faster than the store's path on the first and 5% and 4% slower on the second; more reads in flight
   gained at most 11% over one read of the same kind on the first and at most 4% on the second (418 to

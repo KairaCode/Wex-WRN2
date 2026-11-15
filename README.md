@@ -119,7 +119,7 @@ No GPU and no model are needed. Prerequisites: an x86-64 CPU with AVX2 (one test
 
 - **Windows:** [MSYS2](https://www.msys2.org/) with the UCRT64 packages `mingw-w64-ucrt-x86_64-gcc`, `mingw-w64-ucrt-x86_64-libgomp` (two tests link with `-fopenmp`) and `mingw-w64-ucrt-x86_64-python` (or Git Bash with that `gcc` on `PATH`).
 - **Linux:** `gcc` and `python3`, and `export PYTHON=python3`. Linux is checked by CI (ubuntu-24.04, on x86-64 and on ARM64); the maintainer's machines are Windows.
-- **macOS:** Homebrew `gcc` (`brew install gcc`) and `python3`, then `export PYTHON=python3 CC=gcc-15` (the number is the major version Homebrew installed). The `gcc` command of Xcode is Apple clang, which has no OpenMP runtime, so the two build scripts take the compiler from `CC` (default `gcc`). macOS is checked by CI on Apple silicon only (macos-15; the job takes the newest Homebrew GCC of the runner image, 15.3.0 on 2026-11-14). These steps were not run as written on a Mac: CI uses the Homebrew gcc already on the runner image, not a fresh `brew install gcc`. An Intel Mac and Apple clang with `libomp` were not tried.
+- **macOS:** Homebrew `gcc` (`brew install gcc`) and `python3`, then `export PYTHON=python3 CC=gcc-15` (the number is the major version Homebrew installed). The `gcc` command of Xcode is Apple clang, which has no OpenMP runtime, so the build scripts take the compiler from `CC` (default `gcc`). macOS is checked by CI on Apple silicon only (macos-15; the job takes the newest Homebrew GCC of the runner image, 15.3.0 on 2026-11-14). These steps were not run as written on a Mac: CI uses the Homebrew gcc already on the runner image, not a fresh `brew install gcc`. An Intel Mac and Apple clang with `libomp` were not tried.
 
 From the repository root:
 
@@ -127,7 +127,7 @@ From the repository root:
 bash scripts/check_all.sh
 ```
 
-It runs the repository check, the standard-library tests, the WEX1-3 and WNR3 CPU check (format tests, `wex4_verify`, the encoder DLL, a WNR3 container built from `fixtures/v41-tiny`) and the WEX4 tests (reader, converters, 94 hostile files, mutation fuzzing in C and in Python, the conformance vectors). The last line on success is `all checks passed`, exit code 0; one run took 2 min 5 s on 2026-11-13 (RTX 5090 desktop, gcc 16.2, Python 3.14; the GPU is not used). Output goes to `out/cpu-check/` and `wex4/out/`, which git ignores. To look at a WEX4 file, upgrade a tiny container that the WEX4 tests left behind, and put it back:
+It runs the repository check, the standard-library tests, the WEX1-3 and WNR3 CPU check (format tests, `wex4_verify`, the encoder DLL, a WNR3 container built from `fixtures/v41-tiny`) and the WEX4 tests (reader, converters, 94 hostile files, mutation fuzzing in C and in Python, the conformance vectors), then the fast WNR3 decoder's own harness on 4 synthetic records (its SIMD build and its scalar build against the reference decoder). The last line on success is `all checks passed`, exit code 0; one run took 2 min 5 s on 2026-11-13 (RTX 5090 desktop, gcc 16.2, Python 3.14; the GPU is not used). Output goes to `out/cpu-check/` and `wex4/out/`, which git ignores. To look at a WEX4 file, upgrade a tiny container that the WEX4 tests left behind, and put it back:
 
 ```sh
 python -I wex4/wex4_convert.py upgrade wex4/out/tiny_cz.wex      # WEX3 with WNR3 records -> WEX4, in place
@@ -152,7 +152,7 @@ SECURITY.md  CITATION.cff     how to report a vulnerability, how to cite
 LICENSE  NOTICE  THIRD_PARTY_NOTICES.md              Apache-2.0 text, attribution notices, third-party material
 check_repo.py  sync-map.tsv    self-check (links, c/ file map, licence headers, privacy) and the map of c/ files to the maintainer's tree
 assets/        the logo (light and dark), the mark, and the source image of the social preview (set in the repository settings)
-.github/       CI workflows (Linux, macOS and Windows CPU checks, the Go reader on the vectors, an opt-in Vulkan job on a CPU device; the libFuzzer harnesses of wex4/fuzz/), issue forms, pull-request checklist
+.github/       CI workflows (Linux, macOS and Windows CPU checks, three sanitizer jobs, the Go reader on the vectors, an opt-in Vulkan job on a CPU device, an opt-in Linux read-path benchmark; the libFuzzer harnesses of wex4/fuzz/), issue forms, pull-request checklist
 c/             engine-side WEX code in the colibri c/ layout; pull requests may change it
   *.h *.c *.cuh   format, codecs, CPU and CUDA decoders, the standalone store, wex4.h, qwen38_wex.h
   tools/          container writers, the WNR3 builder and its encoder DLL, the CUDA helper, benches

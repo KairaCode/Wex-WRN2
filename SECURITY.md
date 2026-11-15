@@ -26,7 +26,7 @@ Include the smallest file that shows the problem (or the script that builds it f
 
 ## What to expect
 
-There is one maintainer and no fixed response time; reports are handled on a best-effort basis. A confirmed problem is fixed in both WEX4 readers together (they must keep agreeing on every verdict), gets a hostile test case in `wex4/test_wex4.py` or a conformance vector in [wex4/vectors/](wex4/vectors/README.md), and is published as a GitHub security advisory once the fix is in `main`.
+There is one maintainer and no fixed response time; reports are handled on a best-effort basis. A confirmed problem is fixed in the two reference readers together (they must keep agreeing on every verdict) and in the Go reader when it is affected, gets a hostile test case in `wex4/test_wex4.py` or a conformance vector in [wex4/vectors/](wex4/vectors/README.md), and is published as a GitHub security advisory once the fix is in `main`.
 
 ## What the formats do not protect against
 

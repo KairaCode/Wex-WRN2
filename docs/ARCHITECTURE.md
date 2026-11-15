@@ -106,9 +106,9 @@ The 37 files under `c/` are this repository's engine-side code. The maintainer's
 | `tools/wex_nr3_tools.c`, `tools/build_nr3.py`, `tools/repack_v4_wex.py`, `tools/wex_neural_rans.py`, `tools/wex_palette.py` | yes: both CPU scripts build a WNR3 container from `fixtures/v41-tiny` | no | no |
 | `tests/test_repack_v4_wex.py`, `tests/test_build_nr3_picks.py` | yes: `scripts/check_all.sh` | no | no |
 | `tests/fake_wex_cuda.c` | compile only: `scripts/build_cpu_check.sh` | its users do (`test_v4_wex_nr3.c`, `test_qwen38_mxfp4.py`) | no |
-| `wex_decode.c`, `wex_decode.h` | compiled by `scripts/build_cpu_check.sh` only when it is given an engine tree | no for the file itself | no (the helper is optional) |
-| `expert_store_wex.c`, `expert_store_wex.h`, `tests/test_expert_store_wex.c` | `scripts/build_cpu_check.sh <TREE>/src/colibri/c` | yes: `expert_store.h`, `expert_store_registry.c`, `deepseek_v4_internal.h`, `compat.h` | no |
-| `qwen38_wex.h`, `tests/test_qwen38_mxfp4.c` | no | yes: `qwen38.c`, `qwen38_core.h`, `compat.h` | no |
+| `wex_decode.c`, `wex_decode.h` | compiled by `scripts/build_cpu_check.sh` only when it is given an engine tree; built and run without one by the two engine harnesses of `wex4/fuzz/` (`fuzz_store_wex.c`, `fuzz_q38_wex.c`) | no for the file itself | no (the helper is optional) |
+| `expert_store_wex.c`, `expert_store_wex.h`, `tests/test_expert_store_wex.c` | `scripts/build_cpu_check.sh <TREE>/src/colibri/c`; `expert_store_wex.c` also without an engine tree, in `wex4/fuzz/fuzz_store_wex.c`, against the stand-in headers of `wex4/fuzz/engine/` | yes for the test: `expert_store.h`, `expert_store_registry.c`, `deepseek_v4_internal.h`, `compat.h` | no |
+| `qwen38_wex.h`, `tests/test_qwen38_mxfp4.c` | the test: no; `qwen38_wex.h` in `wex4/fuzz/fuzz_q38_wex.c`, against a stand-in header whose engine types are inferred | yes for the test: `qwen38.c`, `qwen38_core.h`, `compat.h` | no |
 | `tests/test_v4_wex_nr3.c`, `tests/test_v4_gpu_priority.c` | no | yes: `tests/test_deepseek_v4.c` and `deepseek_v4.c` | no |
 | `tests/test_wex_planned.c` | `integration/build/build_test_wex_planned.sh`, in an engine tree | yes: `deepseek_v4_internal.h` | no |
 | `tests/test_v4_mirror_guard_source.py` | no | yes: it reads `deepseek_v4.c` | no |
@@ -120,7 +120,7 @@ The 37 files under `c/` are this repository's engine-side code. The maintainer's
 | `tools/bench_wex_decode.c` | Windows only, by hand (`windows.h`); takes two container files | no | no |
 | `tools/wexio_probe.py` | Windows only: `--self-test` reads a synthetic temp file; its default inputs are the lab's container paths on U: and C: | no | no |
 
-`scripts/check_all.sh` runs everything in the "yes" rows. The rest is exercised in the maintainer's engine tree.
+`scripts/check_all.sh` runs everything in the "yes" rows. `wex4/fuzz/run.sh --replay` (CI runs it after the checks) and the Fuzz workflow run `expert_store_wex.c`, `qwen38_wex.h` and `wex_decode.c` through the stand-in headers of `wex4/fuzz/engine/` ([wex4/fuzz/README.md](../wex4/fuzz/README.md)); their own tests and the rest are exercised in the maintainer's engine tree.
 
 ## How a change to `c/` gets in
 

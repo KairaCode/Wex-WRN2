@@ -62,7 +62,8 @@ Notes:
 
 `bench.py` reads a plain file with one call per read. `wex_io.py` asks a narrower question: through which
 Linux read path should an engine read the expert records of a WEX4 container? It needs `gcc` and `python3`
-only, and Linux (`io_uring` is called through its system calls, so there is no liburing to install).
+only (`CC` names another compiler, `WEX_CFLAGS` adds flags; besides gcc only the clang of the `linux-tsan`
+CI job was run), and Linux (`io_uring` is called through its system calls, so there is no liburing to install).
 
 ```bash
 python3 -I bench/wex_io.py --dir /path/on/your/model/volume --drop-caches
@@ -123,13 +124,15 @@ the filesystem and the block-device queue settings (`read_ahead_kb`, scheduler),
 name or path. Results from real NVMe drives are wanted: attach the JSON to a **Benchmark results** issue.
 
 What it does not measure: the decode of a record, the engine's own caches, two drives (mirror, stripe),
-and anything on Windows or macOS. The only runs so far are three on GitHub Actions runners, shared cloud
+and anything on Windows or macOS. The only recorded runs are three on GitHub Actions runners, shared cloud
 VMs with a virtual disk of two kinds, where no read path won on both kinds:
-[research/linux-io-20261114](../research/linux-io-20261114/README.md).
+[research/linux-io-20261114](../research/linux-io-20261114/README.md). Later runs of the
+`linux-io-bench` job started by hand on the same kind of runner are not recorded.
 
 What CI covers: the `linux`, `linux-arm` and `linux-sanitizers` jobs build `wex_io.c` and run
 `--smoke --strict` (a 10 MB container, every path checked and run once; the `linux` job then reads the
-same container again through `--file`). The full benchmark was not run on ARM. `scripts/check_all.sh`
+same container again through `--file`). The `linux-tsan` job runs the same smoke run built with clang under
+ThreadSanitizer (the `pread` threads). The full benchmark was not run on ARM. `scripts/check_all.sh`
 does not build `wex_io.c`, so the Windows job does not see it: its stub for systems other than Linux
 (it prints one `skipped` line) was built by hand with MinGW `gcc` and `clang`
 (`-std=c99 -pedantic -Wall -Wextra`, no warning) and is not built by CI. The full run is the job

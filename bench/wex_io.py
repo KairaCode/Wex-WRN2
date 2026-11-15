@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 Ludovico Zanichelli
-"""Linux benchmark of the read paths for expert records (Python 3 stdlib only, gcc; Linux only).
+"""Linux benchmark of the read paths for expert records (Python 3 stdlib only, gcc or the compiler named in CC; Linux only).
 
 Writes a synthetic WEX4 container (random bytes, no model weights), builds bench/wex_io.c and reads the
 container's expert records through each read path: pread through the page cache (with and without
@@ -150,7 +150,7 @@ def main():
 
     os.makedirs(OUT, exist_ok=True)
     exe = os.path.join(OUT, 'wex_io')
-    # CC names the compiler as in the build scripts (default gcc; only gcc was run), WEX_CFLAGS adds flags
+    # CC names the compiler as in the build scripts (default gcc; CI also builds with clang, under ThreadSanitizer), WEX_CFLAGS adds flags
     cc = [os.environ.get('CC') or 'gcc', '-O2', '-Wall', '-Wextra', '-Wno-unused-function', '-Wno-unused-parameter', '-pthread'] + \
         shlex.split(os.environ.get('WEX_CFLAGS', '')) + [os.path.join(HERE, 'wex_io.c'), '-o', exe]
     r = subprocess.run(cc, capture_output=True, text=True)

@@ -338,9 +338,11 @@ clang build: those are steps of `linux-arm` only.
   reference decoder, not with the safetensors source.
 - Mini-records in the mutation test come from the same 6 records plus synthetic data; no full-size mutated
   record was decoded by the reference.
-- Real records were decoded only by builds of gcc 16.2 on Windows (x86). On Linux the harness runs on
-  synthetic records only, in CI: gcc 13.3 on x86-64 (also under ASan and UBSan) and on ARM64. No MSVC, no
-  big-endian; clang only on ARM, in CI (see the NEON section).
+- Real records were decoded only by builds of gcc 16.2 on Windows (x86). Elsewhere the harness runs on
+  synthetic records only, in CI: gcc 13.3 on x86-64 Linux (also under ASan and UBSan) and on ARM64 Linux;
+  clang 18 on x86-64 Linux (the `linux-tsan` job, `CC=clang`: the AVX2 and the scalar build) and on ARM64
+  Linux (the NEON build without OpenMP, see the NEON section); Homebrew GCC 15 on macOS arm64. No MSVC, no
+  big-endian, no Apple clang.
 - WNR2 records (delegated to the reference), the `malloc` failure path and unvalidated models.
 - Thread counts other than 1, 3 (mutation test) and 8; no run pinned to physical cores; the desktop was busy.
 - Laptop: one record and 3,000 mutation cases only.
