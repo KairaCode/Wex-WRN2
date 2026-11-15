@@ -172,6 +172,40 @@ jobs:
             grep -q "^SVE vector length: $((bytes * 8)) bits" "$RUNNER_TEMP/qemu.log"
             $Q ./t_simd.exe mutate model.wnm2 200 20261115 L0_E0.rec L0_E1.rec L0_E2.rec L0_E3.rec
           done
+      # a check passes trivially when no group of kernel 2 forms (the streams of a group are of one matrix, with
+      # one count). Three copies of the header return -1 where the SVE kernel 2 takes a group of 1, 2 or 3 vectors;
+      # a copy is reached when `equal` or `mutate` reports a mismatch. At 2048 bits (64 streams per vector) the
+      # synthetic records (64 weight streams per matrix) reach the 1-vector groups only, and the mini-records of
+      # `mutate` (at most 157 weight streams per matrix) the 1- and 2-vector groups only: those are not required
+      - name: SVE build, which kernel 2 groups the checks reach (128 bits on the CPU, 3 lengths under QEMU)
+        run: |
+          set -o pipefail
+          cd wex4/research/fast-cpu-decode/out/synth
+          R=$RUNNER_TEMP/reach
+          for g in 1 2 3; do
+            mkdir -p "$R/g$g"
+            if [ $g = 3 ]; then f='default'; else f="case $((2 * g + 1))"; fi
+            sed -e "s/^        case $((2 * g)): return wexf_weights_sve(J, s, $g, 0);/        case $((2 * g)): return -1;/" \
+                -e "s/^        $f: return wexf_weights_sve(J, s, $g, 1);/        $f: return -1;/" ../../wex_fast_decode.h > "$R/g$g/wex_fast_decode.h"
+            [ "$(grep -c -E '^        (case [0-9]+|default): return -1;$' "$R/g$g/wex_fast_decode.h")" = 2 ]
+            cp ../../test_fast_decode.c "$R/g$g/"
+            gcc -std=c11 -O3 -march=armv8-a+sve -fopenmp -I../../../../../c "$R/g$g/test_fast_decode.c" -o "$R/g$g/t.exe"
+          done
+          fail=0
+          for bytes in 16 32 64 256; do
+            if [ $bytes = 16 ]; then Q=; else Q="qemu-aarch64 -cpu max,sve-default-vector-length=$bytes"; fi
+            for g in 1 2 3; do
+              $Q "$R/g$g/t.exe" equal model.wnm2 L0_E0.rec L0_E1.rec L0_E2.rec L0_E3.rec > "$R/equal.log" 2>&1 || true
+              grep -q "^SVE vector length: $((bytes * 8)) bits" "$R/equal.log"
+              e=$(grep -c 'MISMATCH k2: SVE gather' "$R/equal.log" || true)
+              $Q "$R/g$g/t.exe" mutate model.wnm2 200 20261115 L0_E0.rec L0_E1.rec L0_E2.rec L0_E3.rec > "$R/mutate.log" 2>&1 || true
+              if grep -q '^MISMATCH.*SVE gather' "$R/mutate.log"; then m=reached; else m='not reached'; fi
+              echo "$((bytes * 8)) bits, $g-vector groups: equal $e mismatching decodes, mutate $m"
+              if [ $bytes = 256 ] && [ $g -gt 1 ]; then [ "$e" = 0 ] || fail=1; else [ "$e" != 0 ] || fail=1; fi
+              if [ $bytes != 256 ] || [ $g -lt 3 ]; then [ "$m" = reached ] || fail=1; fi
+            done
+          done
+          exit $fail
 
   # the same checks on macOS, Apple silicon: ARM64 again (the NEON kernel of the fast WNR3 decoder, built by
   # GNU gcc here; both steps fail if they built another one), with 16 KiB memory pages and the Mach-O
