@@ -227,7 +227,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends "libomp-$(clang -dumpversion | cut -d. -f1)-dev"
-      - name: C tests under ThreadSanitizer
+      - name: C tests and the libraries of the Python tests under ThreadSanitizer
         run: bash scripts/sanitize_c.sh tsan
       - name: Linux read-path benchmark, smoke run under ThreadSanitizer
         run: CC=clang WEX_CFLAGS="-g -fsanitize=thread" python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --smoke --strict
@@ -251,7 +251,7 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
         with:
           persist-credentials: false
-      - name: C tests under MemorySanitizer
+      - name: C tests and the libraries of the Python tests under MemorySanitizer
         run: bash scripts/sanitize_c.sh msan
 
   # the Go reader of WEX4 (impl/go-wex4: Go, standard library only, written from the specifications and not

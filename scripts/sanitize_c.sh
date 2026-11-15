@@ -34,10 +34,12 @@
 #      file through every function that wex4/wex4.py binds, wex4_fuzz_run from 4 threads at once, the WNR3
 #      encoder trained and run on the synthetic experts from 4 threads (its model and records must be those of
 #      c/tools/build_nr3.py), and its records decoded by the fast decoder. Before that a control: a library with
-#      a deliberate data race and a branch on a byte nobody wrote, loaded the same way, must be reported
+#      a deliberate data race and a branch on a byte nobody wrote, loaded the same way, must be reported; and the
+#      preprocessed source must show that one build calls the fast decoder and the other the reference one
 #   6. tsan only: wex4/build_and_test.sh --fuzz 100 (wex4/test_wex4.py, c/tools/build_nr3.py) with its libraries
 #      built under ThreadSanitizer and the shared runtime of the clang preloaded into Python, after two controls
-#      through Python (the deliberate race reported, the correct OpenMP loop clean). It writes wex4/out
+#      through Python (the deliberate race reported, on stderr and in a log_path file as the real run writes
+#      them; the correct OpenMP loop clean). It writes wex4/out
 # The log of a tsan run also names the Archer library and shows what the OpenMP runtime says about loading it.
 # CC names the clang (default clang), PYTHON the interpreter, WEX_CFLAGS adds flags. TSAN_OPTIONS and
 # MSAN_OPTIONS are passed through; without TSAN_OPTIONS the script sets ignore_noninstrumented_modules=1, which
@@ -230,11 +232,19 @@ case $(uname -m) in
   x86_64|amd64|i?86) MARCH=-march=haswell ;;
   *) MARCH= ;;
 esac
-L="-g -fno-omit-frame-pointer $SAN ${WEX_CFLAGS-} -shared -fPIC"
+L="-g -fno-omit-frame-pointer $SAN ${WEX_CFLAGS-}"
+REF="-O2 $L -I $C"
+FAST="-O3 $MARCH -DWEX4_FAST_NR3 $L -I $C -I $ROOT/wex4/research/fast-cpu-decode"
+# as in wex4/build_and_test.sh: prove that the two builds of wex4_tools.c hold two decoders, or the fast decoder
+# would drop out of this step without a failure
+site() { "$CC" $1 -E "$ROOT/wex4/wex4_tools.c" | grep -c "return $2(&view, &layout, model, scales, weights)" || true; }
+if [ "$(site "$FAST" wex_fast_decode)" != 1 ] || [ "$(site "$REF" wex_nr2_decode)" != 1 ]; then
+  echo "wex4_decode_record does not call wex_fast_decode in libs/wex4_tools.dll and wex_nr2_decode in libs/wex4_tools_ref.dll" >&2; exit 1
+fi
+L="$L -shared -fPIC"
 mkdir -p libs
-"$CC" $W -O2 $L -I "$C" "$ROOT/wex4/wex4_tools.c" -o libs/wex4_tools_ref.dll
-"$CC" $W -O3 $MARCH -DWEX4_FAST_NR3 $L -I "$C" -I "$ROOT/wex4/research/fast-cpu-decode" "$ROOT/wex4/wex4_tools.c" \
-    -o libs/wex4_tools.dll
+"$CC" $W $REF -shared -fPIC "$ROOT/wex4/wex4_tools.c" -o libs/wex4_tools_ref.dll
+"$CC" $W $FAST -shared -fPIC "$ROOT/wex4/wex4_tools.c" -o libs/wex4_tools.dll
 "$CC" $W -O2 $L "$C/tools/wex_nr3_tools.c" -o libs/wex_nr3_tools.dll
 "$CC" $W $S -I "$C" "$ROOT/scripts/sanitize_libs.c" -o sanitize_libs -pthread -ldl
 # the control: a library built the same way, with a data race and a branch on a byte nobody wrote, loaded and
@@ -268,7 +278,8 @@ echo "controls: the deliberate defect in a loaded library is reported ($REPORT)"
 #    ThreadSanitizer, loaded into a Python that is not instrumented: the shared runtime of the same clang is
 #    preloaded into every Python process of the run (libgcc_s too, which the runtime needs to print a crash). Each
 #    process writes its reports to a file of py-reports/; one file fails the step. Two controls through the same
-#    Python first: race() of libdefect.c on 2 threads must be reported, the correct OpenMP loop of step 1 (a call
+#    Python first: race() of libdefect.c on 2 threads must be reported (on stderr, then in a file of py-control/
+#    with the same log_path setting as the real run), the correct OpenMP loop of step 1 (a call
 #    on the main thread, then 4 threads at once) must not. No MemorySanitizer counterpart: this clang has no shared
 #    MSan runtime, and MSan would take every byte that Python writes for one nobody wrote
 if [ "$MODE" = tsan ]; then
@@ -293,6 +304,13 @@ for t in threads: t.join()
 assert len(out) == int(sys.argv[3]) and (sys.argv[4] != "first" or not any(out))'
   if ./py-tsan -I -c "$CALL" libs/defect.dll race 2 - > control_py.log 2>&1 || ! grep -q "$REPORT" control_py.log; then
     cat control_py.log; echo "the library with a deliberate data race was not reported through Python" >&2; exit 1
+  fi
+  # the same control with the log_path of the real run below: the report must land in a file of that kind
+  rm -rf py-control && mkdir py-control
+  if TSAN_OPTIONS="$TSAN_OPTIONS log_path=$O/py-control/tsan" ./py-tsan -I -c "$CALL" libs/defect.dll race 2 - \
+      > control_py_file.log 2>&1 || ! grep -qs "$REPORT" py-control/*; then
+    cat control_py_file.log; ls py-control
+    echo "the deliberate data race through Python left no report file with log_path" >&2; exit 1
   fi
   ./py-tsan -I -c "$CALL" libs/clean.dll clean_main 4 first > clean_py.log 2>&1 || {
     cat clean_py.log; echo "the correct OpenMP control does not pass in Python under ThreadSanitizer" >&2; exit 1; }
