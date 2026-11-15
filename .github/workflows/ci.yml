@@ -254,7 +254,8 @@ jobs:
         run: bash scripts/sanitize_c.sh msan
 
   # the Go reader of WEX4 (impl/go-wex4: Go, standard library only, written from the specifications and not
-  # from the reference code): gofmt, go vet, its tests, and every row of wex4/vectors/MANIFEST.tsv. It is not
+  # from the reference code, apart from its content digest of 2026-11-15): gofmt, go vet, its tests, and every
+  # row of wex4/vectors/MANIFEST.tsv. It is not
   # part of scripts/check_all.sh, so that Go is not needed for the repository's checks. The runner's own Go
   # is used (the code needs the min and max builtins of Go 1.21 and no module)
   go-reader:

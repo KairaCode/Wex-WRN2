@@ -127,7 +127,7 @@ From the repository root:
 bash scripts/check_all.sh
 ```
 
-It runs the repository check, the standard-library tests, the WEX1-3 and WNR3 CPU check (format tests, `wex4_verify`, the encoder DLL, a WNR3 container built from `fixtures/v41-tiny`) and the WEX4 tests (reader, converters, 108 hostile files, mutation fuzzing in C and in Python, the conformance vectors), then the fast WNR3 decoder's own harness on 4 synthetic records (its SIMD build and its scalar build against the reference decoder). The last line on success is `all checks passed`, exit code 0; one run took 2 min 5 s on 2026-11-13 (RTX 5090 desktop, gcc 16.2, Python 3.14; the GPU is not used). Output goes to `out/cpu-check/` and `wex4/out/`, which git ignores. To look at a WEX4 file, upgrade a tiny container that the WEX4 tests left behind, and put it back:
+It runs the repository check, the standard-library tests, the WEX1-3 and WNR3 CPU check (format tests, `wex4_verify`, the encoder DLL, a WNR3 container built from `fixtures/v41-tiny`) and the WEX4 tests (reader, converters, 110 hostile files, mutation fuzzing in C and in Python, the conformance vectors), then the fast WNR3 decoder's own harness on 4 synthetic records (its SIMD build and its scalar build against the reference decoder). The last line on success is `all checks passed`, exit code 0; one run took 2 min 5 s on 2026-11-13 (RTX 5090 desktop, gcc 16.2, Python 3.14; the GPU is not used). Output goes to `out/cpu-check/` and `wex4/out/`, which git ignores. To look at a WEX4 file, upgrade a tiny container that the WEX4 tests left behind, and put it back:
 
 ```sh
 python -I wex4/wex4_convert.py upgrade wex4/out/tiny_cz.wex      # WEX3 with WNR3 records -> WEX4, in place
@@ -140,7 +140,7 @@ python -I wex4/wex4_convert.py downgrade wex4/out/tiny_cz.wex    # the same byte
 The index of every page, with its kind, language and state, is [docs/README.md](docs/README.md); the terms are in [docs/GLOSSARY.md](docs/GLOSSARY.md).
 
 - **Integrate the formats into a colibri tree and run them:** [docs/COLIBRI-INTEGRATION.md](docs/COLIBRI-INTEGRATION.md). `integration/` holds the engine, backend and host excerpts, the read-path patch for stock colibri at 561966ec (`upstream-561966ec-levelA.patch`: WEX1 and WNR2) and the three WEX4 loader patches. `integration\build\build_wex_windows.cmd` builds the CUDA helper and the checkers (MSVC and CUDA needed).
-- **Implement a reader or a writer:** [docs/WEX4-SPEC.md](docs/WEX4-SPEC.md) for the container, [docs/WNR3-SPEC.md](docs/WNR3-SPEC.md) for the record codec, [docs/WNR2-REFERENCE.md](docs/WNR2-REFERENCE.md) for WEX1 to WEX3 and WNR2. Reference code: `c/wex4.h` and `wex4/wex4.py` (written independently of each other), `c/wex_format.h`, `c/wex_neural_rans.h`. The Go reader, written from those pages alone, with what they left open: [impl/go-wex4/](impl/go-wex4/README.md).
+- **Implement a reader or a writer:** [docs/WEX4-SPEC.md](docs/WEX4-SPEC.md) for the container, [docs/WNR3-SPEC.md](docs/WNR3-SPEC.md) for the record codec, [docs/WNR2-REFERENCE.md](docs/WNR2-REFERENCE.md) for WEX1 to WEX3 and WNR2. Reference code: `c/wex4.h` and `wex4/wex4.py` (written independently of each other), `c/wex_format.h`, `c/wex_neural_rans.h`. The Go reader, written from those pages alone (apart from its content digest, added on 2026-11-15 after the reference code had been read), with what they left open: [impl/go-wex4/](impl/go-wex4/README.md).
 - **Decode WNR3 on a GPU that is not NVIDIA:** today only the CUDA helper decodes on a GPU. [docs/WNR3-VULKAN.md](docs/WNR3-VULKAN.md) is the design note for a Vulkan compute decoder, with a prototype in `wex4/research/vulkan-decode/` that matches the CPU reference on a CPU Vulkan device (Mesa lavapipe); it has not run on a GPU, has no speed number and is not in any engine.
 - **Check a result:** [docs/BENCHMARKS.md](docs/BENCHMARKS.md) for the measurement tables, `docs/reports/` for the dated reports behind them, [research/README.md](research/README.md) for the runs with their scripts and raw output.
 
@@ -159,7 +159,7 @@ c/             engine-side WEX code in the colibri c/ layout; pull requests may 
   tests/          format, store, repack, WNR3 and Qwen3.8 tests; several build only inside a full engine tree
 wex4/          WEX4, repo-only: Python reference, converter, C tools, tests, reviews, research
   vectors/        conformance vectors: valid and invalid files with the verdict a reader must give
-impl/          readers written from the specifications alone, not from the code here
+impl/          readers written from the specifications, not from the code here (exceptions in each README)
   go-wex4/        WEX4 reader and verifier in Go, with WBP1 and WNR3 decoders; SPEC-NOTES.md: what the specs left open
 scripts/       repo-only checks: check_all.sh (every CPU check), build_cpu_check.sh, sanitize_c.sh, verify_wex1.py and its test
 bench/         hardware benchmark for testers (bench.py) and the Linux read paths for expert records (wex_io.py)

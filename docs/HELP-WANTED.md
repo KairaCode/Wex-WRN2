@@ -33,14 +33,16 @@ measured; it is not known to fail.
     went into the two specifications. The same day a reader was written from the pages alone
     (section 4); its [SPEC-NOTES.md](../impl/go-wex4/SPEC-NOTES.md) says which of its questions the
     text now answers. On 2026-11-15 the 4 findings the review had left open and the notes the text
-    did not answer yet got sentences and 22 conformance vectors, after both reference readers were
+    did not answer yet got sentences and 24 conformance vectors, after both reference readers were
     given files made for each point (they agreed on all, so no rule changed): WNR3-SPEC has a
     conformance section (section 12) and errata 13 and 14, the reject classes are informative
     (WEX4-SPEC section 17), and the table "After the sentences and vectors of 2026-11-15" of
     SPEC-NOTES says where each note went.
   - **Still open:** not reviewed: WEX4-SPEC sections 13.1 and 14 against `wex4/wex4_convert.py` and
     the numbers of its informative sections, WNR3-SPEC sections 5 to 11, WNR2-REFERENCE apart from
-    what WNR3-SPEC section 12 names, and the GPU decoders against the text.
+    the one sentence of finding 13 of the review (WNR3-SPEC section 12 now names its sections 6 and 7
+    as required reading; they were not reviewed against the code either), and the GPU decoders
+    against the text.
 - **Glossary:** add missing terms to [GLOSSARY.md](GLOSSARY.md). 32 terms of the specifications and of
   the tests were added on 2026-11-14. Still open: the engine and host words of
   [COLIBRI-INTEGRATION](COLIBRI-INTEGRATION.md) and of the dated reports, which were not gone
@@ -84,14 +86,15 @@ measured; it is not known to fail.
   yet, each with its `MANIFEST.tsv` row and the expected verdict from both reference readers; the
   `go-reader` job of CI then runs the Go reader on the new rows too. Valid files are wanted as
   well. A new vector goes through an issue first.
-  - **Today:** 134 rows since 2026-11-15. The 22 files added that day cover the two lists of what
+  - **Today:** 136 rows since 2026-11-15. The 24 files added that day cover the two lists of what
     the 112 rows did not exercise (finding 17 of the
     [spec review](../research/spec-review-20261114/README.md) and part D of the Go reader's
     [SPEC-NOTES.md](../impl/go-wex4/SPEC-NOTES.md)): the byte 255 in rANS-coded data, WNR3
     records in ceil form, without canonical zero and with other chunk pairs, WBP1 records of 4 and
     8 planes and of sizes that are not a multiple of the plane count, a page of zeros too many,
-    tensors of 0 bytes, and one refused file for each check of a WNR3 decoder that no vector had.
-    The manifest gives the content digest of every accepted file.
+    tensors of 0 bytes, and one refused file for each check of a WNR3 decoder that no vector had
+    (among them a WNR3 record under its minimum size and a WNM2 blob with a table that is not
+    increasing). The manifest gives the content digest of every accepted file.
   - **Still open:** the checks of a WNR3 decoder that WNR3-SPEC section 12 lists under "What no
     vector exercises" (an initial state outside `[L, 256L)`, a stream shorter than 4 bytes, a
     stream that ends early or runs out of bytes, each alone); `chunk_log2` other than 10, 11 and
@@ -121,8 +124,9 @@ measured; it is not known to fail.
 ## 4. A second, independent implementation
 
 - **Today, a reader in Go:** [impl/go-wex4](../impl/go-wex4/README.md) is a reader and verifier
-  written from the specification pages only, with the WBP1 and the WNR3 decoder. It gives the
-  manifest's verdict, reject class and root on all 134 rows of
+  written from the specification pages only, with the WBP1 and the WNR3 decoder; the exception is
+  its content digest, added on 2026-11-15 after the reference code had been read. It gives the
+  manifest's verdict, reject class and root on all 136 rows of
   [wex4/vectors](../wex4/vectors/README.md), and since 2026-11-15 the content digest of the
   accepted ones (the `go-reader` job of CI runs it). Passing the 112 rows of 2026-11-14 was not
   enough: on two kinds of file outside the manifest its first version gave another verdict than the
@@ -274,7 +278,7 @@ listed above as well.
   WEX4-SPEC and WNR3-SPEC and left 4 findings open; the Go reader of `impl/go-wex4` found no wrong
   verdict in the 112 manifest rows of that day, and a list of sentences that can be read two ways
   and of cases the vectors did not exercise. On 2026-11-15 the 4 findings and the rest of that list
-  got sentences and 22 vectors, with no rule changed. Open: the WNR3 checks no vector exercises
+  got sentences and 24 vectors, with no rule changed. Open: the WNR3 checks no vector exercises
   alone, and the sections nobody reviewed *(open to you, sections 2 and 3)*.
 - **Fuzzing for hours:** the harnesses run for 60 seconds each in CI; no run longer than that is
   recorded in this repository *(open to you, section 3)*.
