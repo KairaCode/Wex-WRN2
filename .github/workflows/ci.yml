@@ -1,8 +1,9 @@
 # CPU checks of the repository: check_repo.py, the stdlib tests, the WEX1-3/WNR3 CPU check, the WEX4 tests and
 # the fast decoder's harness on synthetic records (scripts/check_all.sh), then the fuzzing harnesses replayed on
-# their seeds (wex4/fuzz/run.sh --replay), on Linux (x86-64, ARM64), macOS (Apple silicon) and Windows. The same
-# on Linux under ASan and UBSan (linux-sanitizers); the C test executables under TSan and MSan with clang
-# (linux-tsan, linux-msan); and the Go reader on the conformance vectors (go-reader).
+# their seeds (wex4/fuzz/run.sh --replay), on Linux (x86-64, ARM64), macOS (Apple silicon) and Windows, and on
+# macOS once more with Apple clang (macos-clang). The same under ASan and UBSan on x86-64 Linux, on ARM64 Linux and
+# with Apple clang on macOS (linux-sanitizers, linux-arm-sanitizers, macos-clang); the C test executables under
+# TSan and MSan with clang (linux-tsan, linux-msan); and the Go reader on the conformance vectors (go-reader).
 # No GPU, no model weights, no secrets. A run started by hand can also have the linux-io-bench job (the full
 # Linux read-path benchmark) and the linux-vulkan job (the WNR3 Vulkan prototype on a CPU Vulkan device).
 name: CI
@@ -143,6 +144,75 @@ jobs:
           bash wex4/fuzz/run.sh --replay | tee "$RUNNER_TEMP/replay.log"
           grep -q '^fast WNR3 decoder of fuzz_wnr3_record: NEON kernels$' "$RUNNER_TEMP/replay.log"
 
+  # macOS again, with the compiler of Xcode: Apple clang, which refuses -fopenmp and ships no OpenMP runtime.
+  # WEX_OPENMP gives the scripts the flags that turn OpenMP on in the compiler and the libomp of Homebrew to
+  # link (the first step installs it when the runner image has none, as on 2026-11-15). The CPU checks fail
+  # unless the three scripts that build C name Apple clang and the fast decoder's harness is NEON with OpenMP.
+  # Then the sanitizers on macOS, with Apple clang: the fuzz replay and every CPU check under ASan and UBSan
+  macos-clang:
+    runs-on: macos-15
+    timeout-minutes: 20   # a green run took 7.3 minutes (one run, 2026-11-15)
+    env:
+      PYTHON: python3
+      USER: ""
+      USERNAME: ""
+      CC: clang
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
+      - name: OpenMP runtime for Apple clang (libomp of Homebrew)
+        run: |
+          brew list libomp > /dev/null 2>&1 || HOMEBREW_NO_AUTO_UPDATE=1 brew install libomp
+          P=$(brew --prefix libomp)
+          # the last flag only keeps the log clean: without it every compile-only and preprocessor call warns
+          # that -L and -lomp were not used
+          echo "WEX_OPENMP=-Xclang -fopenmp -I$P/include -L$P/lib -lomp -Wno-unused-command-line-argument" >> "$GITHUB_ENV"
+          uname -sm; clang --version | head -1; brew list --versions libomp; "$PYTHON" --version
+      - name: All CPU checks (Apple clang, libomp, NEON kernel of the fast decoder)
+        run: |
+          set -o pipefail
+          bash scripts/check_all.sh | tee "$RUNNER_TEMP/check.log"
+          grep -q '^fast WNR3 decoder of wex4_tools.dll: NEON kernels$' "$RUNNER_TEMP/check.log"
+          grep -q '^build: NEON kernels, OpenMP;' "$RUNNER_TEMP/check.log"
+          test "$(grep -c '^compiler: Apple clang' "$RUNNER_TEMP/check.log")" = 3
+      - name: Fuzz harnesses, seeds and mutators replayed (Apple clang)
+        run: |
+          set -o pipefail
+          bash wex4/fuzz/run.sh --replay | tee "$RUNNER_TEMP/replay.log"
+          grep -q '^compiler: Apple clang' "$RUNNER_TEMP/replay.log"
+          grep -q '^fast WNR3 decoder of fuzz_wnr3_record: NEON kernels$' "$RUNNER_TEMP/replay.log"
+      # the harnesses are executables built with WEX_CFLAGS, so they carry the sanitizer runtime themselves
+      - name: Fuzz harnesses, seeds and mutators replayed under ASan and UBSan (NEON kernel of the fast decoder)
+        env:
+          WEX_CFLAGS: -g -fno-omit-frame-pointer -fsanitize=address,undefined -fno-sanitize-recover=undefined
+          ASAN_OPTIONS: detect_leaks=0:abort_on_error=1
+          UBSAN_OPTIONS: print_stacktrace=1
+        run: |
+          set -o pipefail
+          bash wex4/fuzz/run.sh --replay | tee "$RUNNER_TEMP/replay-asan.log"
+          grep -q '^fast WNR3 decoder of fuzz_wnr3_record: NEON kernels$' "$RUNNER_TEMP/replay-asan.log"
+      # the tests load the instrumented libraries into Python, so the ASan runtime must be in the interpreter
+      # from its start (loaded later, with the first library, it stops: "Interceptors are not working").
+      # PYTHON names a two-line script that starts python3 with DYLD_INSERT_LIBRARIES. strip_env=0 keeps that
+      # variable for the processes Python starts, which the runtime would otherwise remove: the python3 of
+      # Homebrew is a launcher that starts the interpreter of its framework as a new program, and
+      # wex4/test_wex4.py runs wex4_convert.py in a child Python that loads wex4_tools.dll
+      - name: All CPU checks under ASan and UBSan (NEON kernel of the fast decoder)
+        env:
+          WEX_CFLAGS: -g -fno-omit-frame-pointer -fsanitize=address,undefined -fno-sanitize-recover=undefined
+          ASAN_OPTIONS: detect_leaks=0:abort_on_error=1:strip_env=0
+          UBSAN_OPTIONS: print_stacktrace=1
+        run: |
+          ASAN_LIB=$(clang -print-resource-dir)/lib/darwin/libclang_rt.asan_osx_dynamic.dylib
+          test -f "$ASAN_LIB"
+          printf '#!/bin/bash\nDYLD_INSERT_LIBRARIES="%s" exec "%s" "$@"\n' "$ASAN_LIB" "$(command -v "$PYTHON")" > "$RUNNER_TEMP/python-asan"
+          chmod +x "$RUNNER_TEMP/python-asan"
+          set -o pipefail
+          PYTHON=$RUNNER_TEMP/python-asan bash scripts/check_all.sh | tee "$RUNNER_TEMP/asan.log"
+          grep -q '^fast WNR3 decoder of wex4_tools.dll: NEON kernels$' "$RUNNER_TEMP/asan.log"
+          grep -q '^build: NEON kernels, OpenMP;' "$RUNNER_TEMP/asan.log"
+
   windows:
     runs-on: windows-2022
     timeout-minutes: 15   # a green run takes 3 to 5.5 minutes
@@ -201,6 +271,39 @@ jobs:
       - name: Fuzz harnesses, seeds and mutators replayed under ASan and UBSan
         run: bash wex4/fuzz/run.sh --replay
       # bench/wex_io.py appends WEX_CFLAGS too: its pread and io_uring paths under the sanitizers
+      - name: Linux read-path benchmark, smoke run under ASan and UBSan
+        run: python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --smoke --strict
+
+  # linux-sanitizers on a 64-bit ARM CPU: the same flags, options and preload, so the NEON kernel of the fast WNR3
+  # decoder runs under ASan and UBSan, in the library the tests load into Python, in its own harness and in the
+  # fuzz replay. Two steps fail unless the kernel they built is NEON
+  linux-arm-sanitizers:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 30   # a green run took 8.5 to 8.7 minutes (three runs, 2026-11-15), the longest job
+    env:
+      PYTHON: python3
+      USER: ""
+      USERNAME: ""
+      WEX_CFLAGS: -g -fno-omit-frame-pointer -fsanitize=address,undefined -fno-sanitize-recover=undefined
+      ASAN_OPTIONS: detect_leaks=0:abort_on_error=1
+      UBSAN_OPTIONS: print_stacktrace=1
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
+      - name: All CPU checks under ASan and UBSan (NEON kernel of the fast decoder)
+        run: |
+          LD_PRELOAD=$(gcc -print-file-name=libasan.so)
+          export LD_PRELOAD
+          set -o pipefail
+          bash scripts/check_all.sh | tee "$RUNNER_TEMP/check.log"
+          grep -q '^fast WNR3 decoder of wex4_tools.dll: NEON kernels$' "$RUNNER_TEMP/check.log"
+          grep -q '^build: NEON kernels' "$RUNNER_TEMP/check.log"
+      - name: Fuzz harnesses, seeds and mutators replayed under ASan and UBSan (NEON kernel of the fast decoder)
+        run: |
+          set -o pipefail
+          bash wex4/fuzz/run.sh --replay | tee "$RUNNER_TEMP/replay.log"
+          grep -q '^fast WNR3 decoder of fuzz_wnr3_record: NEON kernels$' "$RUNNER_TEMP/replay.log"
       - name: Linux read-path benchmark, smoke run under ASan and UBSan
         run: python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --smoke --strict
 
