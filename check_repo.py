@@ -233,7 +233,7 @@ def check_mirror(files, source, ref):
     return not errors
 
 
-SOURCE = ('.c', '.h', '.cu', '.cuh', '.inc', '.cpp', '.py', '.sh', '.mk', '.ps1', '.cmd', '.bat', '.def', '.cs', '.js', '.go', '.comp')
+SOURCE = ('.c', '.h', '.cu', '.cuh', '.inc', '.cpp', '.py', '.sh', '.mk', '.ps1', '.cmd', '.bat', '.def', '.cs', '.js', '.go', 'go.mod', '.comp')
 
 
 def has_spdx(data):
