@@ -26,6 +26,12 @@ privacy pattern fail. Tracked files only: run it after `git add`.
            check. Warnings: the words scratchpad / session id, session and temp paths, assistant
            and session words, a private IPv4 address, the login name and the machine name of whoever
            runs the check.
+           ALLOWED lists the few warning matches that stay, as (file, pattern, text, n): the matches
+           of that pattern on the first line of that file that holds the text are not counted when
+           there are exactly n of them. Every other match, in that file or any other, counts; a strict
+           pattern cannot be listed; an entry that leaves out nothing is reported (update or remove
+           it). The entries: the trailer line of the three engine-* patches (byte copies of engine
+           commits), one line of a third-party model card, the dump path in the code of a frozen run.
 """
 import argparse, hashlib, os, re, socket, subprocess, sys, urllib.parse
 
@@ -60,6 +66,20 @@ PRIVACY = (
                                         % (OCTET, OCTET, OCTET))),
     ('user name', re.compile(r'(?i)\b%s\b' % re.escape(LOGIN))),
     ('machine name', re.compile(r'(?i)\b%s\b' % re.escape(HOST))),
+)
+STRICT_NAMES = [name for name, _ in PRIVACY[:STRICT]]
+# Warning matches that stay (header): (file, pattern, text on the line, matches on that line).
+ALLOWED = (
+    # byte copies of engine commits (`git format-patch`, see integration/README.md): the commit's trailer line
+    ('integration/engine-q38-wex4-loader-de17198.patch', 'assistant / session words', 'Co-Authored-By: ', 2),
+    ('integration/engine-wex4-first-read-4ba5568.patch', 'assistant / session words', 'Co-Authored-By: ', 2),
+    ('integration/engine-wex4-loader-75932c1.patch', 'assistant / session words', 'Co-Authored-By: ', 2),
+    # a third-party model card copied unchanged (THIRD_PARTY_NOTICES.md): the line on its calibration data
+    ('research/wnr3-20261107/team3/other-tensors/data/code/README.md.txt', 'assistant / session words',
+     'filtered by licence in `ops/corpus_spec.py`', 1),
+    # code of a frozen run: the folder its logit dumps went to
+    ('research/wnr2-fastbench-20261109/short-abba/short_abba.sh', 'session path',
+     'DUMP=$(cygpath -m "${LOCALAPPDATA:?}")/Temp/', 1),
 )
 
 
@@ -249,30 +269,56 @@ def check_licence(files):
     return not errors
 
 
-def privacy_counts(data):
-    """{pattern name: matches} in one file's bytes; a binary file is searched for profile paths only."""
+def privacy_counts(data, path='', allowed=ALLOWED):
+    """{pattern name: matches} in one file's bytes; a binary file is searched for profile paths only. The
+    entries of `allowed` for `path` leave out the matches of their line (header)."""
     text = data.decode('utf-8', 'replace')
     low = fold(text)
-    return {name: len(p.findall(text)) if any(s in low for s in LITERALS[name]) else 0
-            for name, p in (PRIVACY[:1] if b'\0' in data[:8192] else PRIVACY)}
+    lines = []
+    for f, name, marker, n in allowed:
+        i = text.find(marker) if f == path and name not in STRICT_NAMES else -1
+        if i >= 0:
+            end = text.find('\n', i)
+            lines.append((name, text.rfind('\n', 0, i) + 1, len(text) if end < 0 else end, n))
+    counts = {}
+    for name, p in (PRIVACY[:1] if b'\0' in data[:8192] else PRIVACY):
+        starts = [m.start() for m in p.finditer(text)] if any(s in low for s in LITERALS[name]) else []
+        for _, a, b, n in (l for l in lines if l[0] == name):
+            if sum(a <= s < b for s in starts) == n:
+                starts = [s for s in starts if not a <= s < b]
+        counts[name] = len(starts)
+    return counts
 
 
 def check_privacy(files):
     hits = {name: [0, []] for name, _ in PRIVACY}
+    skipped, unused = dict.fromkeys(hits, 0), []
     for f in files:
         if f == os.path.basename(__file__):   # this file names the patterns and holds their test strings
             continue
-        for name, n in privacy_counts(read(f)).items():
+        data = read(f)
+        counts = privacy_counts(data, f)
+        mine = [e for e in ALLOWED if e[0] == f]
+        if mine:
+            full = privacy_counts(data, f, ())
+            unused += [f'{f} ({e[1]})' for e in mine if privacy_counts(data, f, (e,)).get(e[1]) == full.get(e[1])]
+            for name in full:
+                skipped[name] += full[name] - counts[name]
+        for name, n in counts.items():
             if n:
                 hits[name][0] += n
                 hits[name][1].append(f)
-    strict = [name for name, _ in PRIVACY[:STRICT]]
+    unused += [f'{f} ({name}): not tracked' for f, name, _, _ in ALLOWED if f not in files]
     for name, (n, where) in hits.items():
         where.sort(key=lambda f: f.startswith('research/'))   # living files first: a new one is among the five shown
         first = ', '.join(where[:5]) + (', ...' if len(where) > 5 else '')
-        state = 'ok' if not n else 'FAIL' if name in strict else 'warn'
-        print(f'privacy  {state}: {name}: {n} matches in {len(where)} files' + (f' ({first})' if n else ''))
-    return not any(hits[name][0] for name in strict)
+        state = 'ok' if not n else 'FAIL' if name in STRICT_NAMES else 'warn'
+        print(f'privacy  {state}: {name}: {n} matches in {len(where)} files' + (f' ({first})' if n else '')
+              + (f'; {skipped[name]} listed in ALLOWED not counted' if skipped[name] else ''))
+    if unused:
+        print(f'privacy  warn: {len(unused)} ALLOWED entries leave out nothing (update or remove them):')
+        print(''.join(f'    {u}\n' for u in unused), end='')
+    return not any(hits[name][0] for name in STRICT_NAMES)
 
 
 def self_test():
@@ -299,6 +345,16 @@ def self_test():
     mixed = 'C:\\U\u017fers\\x a@b.org ghp_' + 'a1' * 18 + ' Se\u017f\u017fion-\u0130D C:\\Temp\\x asked Claude wf_2af1fd28 192.168.1.20'
     assert privacy_counts(mixed.encode()) == {name: len(p.findall(mixed)) for name, p in PRIVACY}, 'LITERALS hide a match'
     assert all(privacy_counts(mixed.encode())[name] for name, _ in PRIVACY[:7])
+    entry = ('p/x.patch', 'assistant / session words', 'Trailer: ', 2)
+    line = b'Trailer: the main session, two sub-agents\n'
+    def counted(data, path):
+        return privacy_counts(data, path, (entry,))['assistant / session words']
+    assert counted(b'x\n' + line + b'a memory note\n', 'p/x.patch') == 1, 'ALLOWED: the line is left out'
+    assert counted(b'x\n' + line + b'a memory note\n', 'p/y.patch') == 3, 'ALLOWED: in that file only'
+    assert counted(line.replace(b'\n', b', a memory note\n'), 'p/x.patch') == 3, 'ALLOWED: another number of matches counts'
+    assert counted(line + line, 'p/x.patch') == 2, 'ALLOWED: the first such line only'
+    assert privacy_counts(b'a.b@example.org\n', 'p/x', (('p/x', 'e-mail', 'a.b@', 1),))['e-mail'] == 1, 'strict stays strict'
+    assert all(name in dict(PRIVACY) and name not in STRICT_NAMES and n > 0 for _, name, _, n in ALLOWED)
     sha = '0123456789abcdef' * 2 + '01234567'
     good = f'# source_commit {sha} 2026-11-11\nc/a.h\tsrc/colibri/c/a.h\n\n# note\nc/t/b.c\tsrc/colibri/c/t/b.c\n'
     assert parse_sync(good) == ((sha, '2026-11-11'), [['c/a.h', 'src/colibri/c/a.h'], ['c/t/b.c', 'src/colibri/c/t/b.c']], [])
