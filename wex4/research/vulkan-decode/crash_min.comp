@@ -1,0 +1,75 @@
+#version 450
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 Ludovico Zanichelli
+//
+// The smallest form of the llvmpipe crash that the reduction of crash_probe.sh found (crash.comp with every
+// switch off but F_PLAN_COUNT, F_NESTED and F_SEARCH), written out without the parts that do nothing.
+// crash_probe.sh builds it in place of scales.spv and runs it on one record of the selftest, of which it
+// reads only the scale chunk size (word 12 of the plan, 256 in the selftest records) as a loop count, and the
+// model blob; then with crash_min.c, a host of its own that gives it a loop count of 256 and an even CDF in
+// three small buffers.
+//   glslangValidator -V [-DSTOP=j] [-DF_VALUES=0] [-DF_STATE=n] [-DF_COUNT=0] crash_min.comp -o scales.spv
+// Invocation STOP (default 0) returns at once; the others run a loop whose count is read from a buffer, and
+// in it a binary search in another buffer. The defaults are the form that the reduction ended with:
+//   F_VALUES  1: the search reads the 16-bit values of the blob's first scale CDF, as the decoder does;
+//             0: whole words of the buffer
+//   F_STATE   2: the next state is the decoder's rANS step from the two values at the symbol found;
+//             1: it is the state times a constant plus the value at the symbol; 0: a fixed recurrence that
+//             reads nothing
+//   F_COUNT   1: the loop count is read from the plan; 0: the constant 256, the value the plan holds
+#ifndef STOP
+#define STOP 0
+#endif
+#ifndef F_VALUES
+#define F_VALUES 1
+#endif
+#ifndef F_STATE
+#define F_STATE 2
+#endif
+#ifndef F_COUNT
+#define F_COUNT 1
+#endif
+
+layout(local_size_x = 32) in;
+
+layout(std430, set = 0, binding = 1) readonly buffer ModelBlobs { uint tab[]; };
+layout(std430, set = 0, binding = 2) readonly buffer Plans { uint plan[]; };
+layout(std430, set = 0, binding = 5) buffer Errors { uint err[]; };
+
+uint value(uint k) {
+#if F_VALUES
+    k += 3u * 567u * 17u;
+    return (tab[8u + (k >> 1)] >> ((k & 1u) * 16u)) & 0xffffu;
+#else
+    return tab[k];
+#endif
+}
+
+void main() {
+    uint j = gl_GlobalInvocationID.x;
+    if (j == uint(STOP)) return;
+#if F_COUNT
+    uint count = plan[12u];
+#else
+    uint count = 256u;
+#endif
+    uint state = (j * 2654435761u >> 9) | (1u << 23), sum = 0u;
+    for (uint i = 0u; i < count; i++) {
+        uint slot = state & 16383u, lo = 0u, hi = 256u;
+        while (lo + 1u < hi) {
+            uint mid = (lo + hi) / 2u;
+            if (value(mid) <= slot) lo = mid; else hi = mid;
+        }
+        sum += lo;
+#if F_STATE == 2
+        uint start = value(lo);
+        state = (value(lo + 1u) - start) * (state >> 14) + slot - start;
+        if (state < (1u << 23)) state = (state << 8) | (i & 255u);
+#elif F_STATE == 1
+        state = state * 1664525u + value(lo);
+#else
+        state = state * 1664525u + 1013904223u;
+#endif
+    }
+    if (sum == 0xffffffffu) atomicOr(err[0], 2u);
+}

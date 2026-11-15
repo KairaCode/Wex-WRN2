@@ -302,14 +302,20 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
         with:
           persist-credentials: false
+      # spirv-tools and gdb only for the crash probe below
       - name: Vulkan headers, loader, shader compiler, lavapipe and the validation layer
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends libvulkan-dev glslang-tools mesa-vulkan-drivers vulkan-validationlayers
+          sudo apt-get install -y --no-install-recommends libvulkan-dev glslang-tools mesa-vulkan-drivers vulkan-validationlayers \
+              spirv-tools gdb
       - name: Containers with WNR3 records (wex4/out)
         run: bash wex4/build_and_test.sh --fuzz 10
       - name: WNR3 on Vulkan against the CPU reference, validation layer on
         run: WNR3_VK_VALIDATE=1 bash wex4/research/vulkan-decode/run.sh wex4/out/tiny_nr3_cz.wex4 wex4/out/synth.wex4
+      # not a check, it ends with status 0 whatever it finds: which forms of the scale pass crash the runner's
+      # llvmpipe (crash_probe.sh, issue 21). Its log is what the README reports under "The llvmpipe crash"
+      - name: Probe of the llvmpipe crash (not a check)
+        run: bash wex4/research/vulkan-decode/crash_probe.sh
       - name: Negative control (eleven broken shaders must fail)
         run: bash wex4/research/vulkan-decode/negative_control.sh wex4/out/tiny_nr3_cz.wex4 wex4/out/synth.wex4
       # the records of synth.wex4 behind 5 GiB of blobs: the host program must find them at 64-bit offsets
