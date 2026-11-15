@@ -84,7 +84,7 @@ What it does:
    that the machine cannot run (no `O_DIRECT` on the filesystem, `io_uring` switched off or older than
    Linux 5.6) is reported as not run, with the reason; a path that fails the check is not timed and the
    script ends with `FAILED`. With `--strict` a path that was not run is a failure too (CI uses it,
-   because all 20 paths run on its runners). The skip for an old kernel was not tried on one.
+   because all 27 paths run on its runners). The skip for an old kernel was not tried on one.
 4. **Then speed:** `--runs` timed passes per path (default 5) of `--records` records each (default 48). The
    runs of all paths are interleaved and the order rotates, a run reads the same records on every path, and
    the buffers are allocated and touched and the `io_uring` ring is set up before the clock starts. The
@@ -97,6 +97,7 @@ The read paths:
 | page cache, `pread`, 1 thread | what `c/expert_store_wex.c` and `c/tools/wex4_verify.c` do on Linux today |
 | the same with `POSIX_FADV_RANDOM` or `POSIX_FADV_SEQUENTIAL` | the kernel's readahead switched off or doubled |
 | the same with `POSIX_FADV_WILLNEED` on the record 1 or 4 reads ahead | a hint for records the engine already knows it will need. The kernel may load only part of the record; the script measures how much (below) |
+| the same with the next record prefetched: one `readahead(2)` on the whole record; `POSIX_FADV_WILLNEED` in chunks of the device's readahead; a helper thread that `pread`s it | three ways to load the whole next record into the page cache while this one is read (below) |
 | page cache, `pread`, 4 and 8 threads; `io_uring`, 8 records in flight | several misses at once through the page cache |
 | `O_DIRECT`, `pread`, 1 thread | what `c/qwen38_wex.h` does on Linux today for one read |
 | `O_DIRECT`, `pread`, 2, 4 and 8 threads | one blocking read per thread |

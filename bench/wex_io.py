@@ -5,7 +5,8 @@
 Writes a synthetic WEX4 container (random bytes, no model weights), builds bench/wex_io.c and reads the
 container's expert records through each read path: pread through the page cache (with and without
 posix_fadvise hints), pread through the page cache with the next record prefetched (POSIX_FADV_WILLNEED on
-the whole record or in chunks of the device readahead, readahead(2), or a helper thread that preads it),
+the whole record or in chunks of the device readahead, readahead(2), or a helper thread that preads it;
+some also with 20 ms of work after each record, a spin that stands for a decode),
 pread with O_DIRECT, both on 1 to 8 threads, and io_uring with several records or
 several sub-reads of one record in flight. Every path is first checked (SHA-256 of the records it reads
 against the index), then timed `--runs` times; the runs of all paths are interleaved, every pass starts
@@ -41,6 +42,7 @@ import bench   # noqa: E402  (sysinfo)
 import wex4    # noqa: E402  (the reference writer)
 
 # (label, options of wex_io, what it stands for)
+GAP_BASE = 'path=sync direct=0 gap_ms=20'   # the rows with work between records are compared with this one
 CONFIGS = [
     ('page cache, pread, 1 thread', 'path=sync direct=0', 'c/expert_store_wex.c and c/tools/wex4_verify.c on Linux today'),
     ('page cache, pread, FADV_RANDOM', 'path=sync direct=0 advise=random', 'kernel readahead off'),
@@ -55,6 +57,15 @@ CONFIGS = [
      'the next record announced as chunks of the device readahead, one POSIX_FADV_WILLNEED each (ahead_cached measured)'),
     ('page cache, pread, helper thread 1 record ahead', 'path=sync direct=0 ahead=1 prefetch=thread',
      'a second thread preads the next record into the page cache while the first reads (ahead_cached measured)'),
+    # the same with 20 ms of work after each record (a spin on the clock, no decode): time for a prefetch to land
+    ('page cache, pread, 1 thread, 20 ms of work per record', GAP_BASE,
+     'after each record the thread spins 20 ms, standing for a decode; the baseline of the next three rows'),
+    ('page cache, pread, WILLNEED 1 record ahead, 20 ms of work', 'path=sync direct=0 ahead=1 gap_ms=20',
+     'the hint of row 4 with time to land'),
+    ('page cache, pread, WILLNEED in chunks 1 record ahead, 20 ms of work', 'path=sync direct=0 ahead=1 prefetch=chunks gap_ms=20',
+     'the hint of row 7 with time to land'),
+    ('page cache, pread, helper thread 1 record ahead, 20 ms of work', 'path=sync direct=0 ahead=1 prefetch=thread gap_ms=20',
+     'the helper thread of row 8 with time to land'),
     ('page cache, pread, 4 threads', 'path=sync direct=0 threads=4', ''),
     ('page cache, pread, 8 threads', 'path=sync direct=0 threads=8', ''),
     ('page cache, io_uring, 8 records in flight', 'path=uring direct=0 depth=8', ''),
@@ -255,6 +266,10 @@ def main():
         res['summary'][options] = s
         if options == CONFIGS[0][1]:
             base = s['mb_s_median']
+        gap = res['summary'].get(GAP_BASE)
+        if 'gap_ms=' in options and options != GAP_BASE and gap and gap['mb_s_median'] > 0 and gap['record_ms_p50_median'] > 0:
+            notes.append(f'{label}: {s["mb_s_median"] / gap["mb_s_median"]:.2f}x the MB/s and '
+                         f'{s["record_ms_p50_median"] / gap["record_ms_p50_median"]:.2f}x the ms per record of "{gap["label"]}"')
         against = f'{s["mb_s_median"] / base:.2f}x' if base else ''
         rows.append(f'| {label} | {s["mb_s_median"]:.0f} | {s["mb_s_min"]:.0f} to {s["mb_s_max"]:.0f} | '
                     f'{against} | {s["record_ms_p50_median"]:.1f} | {s["cached_before_max"] * 100:.1f}% | '
