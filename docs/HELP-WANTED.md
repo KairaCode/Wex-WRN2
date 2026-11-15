@@ -52,17 +52,23 @@ measured; it is not known to fail.
   - **Today:** five libFuzzer harnesses are in [`wex4/fuzz/`](../wex4/fuzz/README.md): the C WEX4
     reader (`c/wex4.h`), `c/tools/wex4_verify.c`, the WNR3 decoders, and the two engine-side readers
     (`c/expert_store_wex.c`, `c/qwen38_wex.h`), which are built against stand-ins for the engine
-    headers. A custom mutator keeps the WNR3 stream hashes right. CI builds them with clang and runs
-    each for 60 seconds on x86-64 Linux, and replays their seeds and mutators with gcc
-    (`run.sh --replay`, no coverage guidance) on x86-64 Linux, ARM64 Linux, macOS (Apple silicon)
-    and Windows.
+    headers. A custom mutator keeps the WNR3 stream hashes right. Since 2026-11-15 the store
+    harness also has seed containers with palette, WNR and WNR2 records, and a mutator that
+    re-encodes those and scale-tile records so that they pass the checks of their codec. In four
+    60 s runs it served palette, WNR and WNR2 records, none of which it served before; the two
+    runs with the mutator gave 76 to 186 different WNR and WNR2 records, the two without 3 to 8
+    ([counts and conditions](../wex4/fuzz/README.md#the-custom-mutators-and-the-dictionary)). CI builds the harnesses with clang and runs each for 60 seconds on x86-64
+    Linux, and replays their seeds and mutators with gcc (`run.sh --replay`, no coverage guidance)
+    on x86-64 Linux, ARM64 Linux, macOS (Apple silicon) and Windows.
   - **What is wanted now** is machine time: run `bash wex4/fuzz/run.sh 14400` (hours, not seconds)
     and report what stops it, with the reproducer it leaves.
-  - **Still open:** seeds and a mutator for palette, WNR and WNR2 records (the store decodes them;
-    in the one 60 s run that counted them, the store harness served none); the store's mirror,
-    striped-read and CUDA-helper paths; `c/qwen38_wex.h` built inside the real engine instead of
-    against inferred types; a harness for the GPU decoder (`c/wex_cuda.cuh`); a coverage-guided run
-    on ARM64 or on macOS (only `--replay` runs there).
+  - **Still open:** WNR records from the repository's own WNR encoder, which needs CUDA (the seeds'
+    WNR records come from an encoder written in the harness, 4 classes each, and the mutation
+    keeps the count of classes); a seed container that mixes the older codecs; giving the store
+    harness its WNR3 time back (with the new seeds it reached 32 and 82 different WNR3 records in
+    60 s, 405 before); the store's mirror, striped-read and CUDA-helper paths; `c/qwen38_wex.h`
+    built inside the real engine instead of against inferred types; a harness for the GPU decoder
+    (`c/wex_cuda.cuh`); a coverage-guided run on ARM64 or on macOS (only `--replay` runs there).
 - **Sanitizers:**
   - **Today:** CI runs the CPU checks and the fuzz replay under ASan and UBSan on Linux (the
     `linux-sanitizers` job of `.github/workflows/ci.yml`, which holds the exact `WEX_CFLAGS`, the
