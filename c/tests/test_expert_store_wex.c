@@ -306,7 +306,7 @@ static void test_slab_bound(int version) {
     store->ops->destroy(store);
     free(fixture.data);
     assert(remove(path) == 0);
-    printf("WEX%d: a header slab size above twice the largest record refused, one at the bound served.\n", version);
+    printf("WEX%d: a header slab size above twice the largest aligned record refused, one at the bound served.\n", version);
 }
 
 static void test_mirror(const char *filename, int backslash) {
