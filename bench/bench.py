@@ -302,18 +302,22 @@ def wex_check():
 
 def placeholders(a):
     """(pattern, placeholder) pairs for scrub(): the paths of this run in the spellings a message can have
-    them in (also C:/..., /c/... and the doubled backslashes of a Python error), longest first, and the
-    user's and the machine's names as whole words."""
-    paths = []
+    them in (as given, absolute, with / or \\, as /c/... and with the doubled backslashes of a Python error),
+    longest first, then the folder of any other user profile (under "home" or "Users"), then the user's
+    and the machine's names as whole words."""
+    found = []
     for path, tag in ((a.file, '<FILE>'), (ROOT, '<Wex-WRN2>'), (a.dir, '<DIR>'), (os.path.expanduser('~'), '<HOME>')):
-        for p in {os.path.abspath(path), os.path.realpath(path)} if path else ():
-            if os.path.dirname(p) == p:   # a filesystem root: nothing private, and it is in every path
+        if not path:
+            continue
+        for p in {os.path.abspath(path), os.path.realpath(path)} | ({path} if os.path.isabs(path) else set()):
+            if os.path.dirname(os.path.abspath(p)) == os.path.abspath(p):   # a filesystem root: in every path
                 continue
-            forms = {p, p.replace('\\', '/'), p.replace('\\', '\\\\')}
-            if re.match(r'[A-Za-z]:\\', p):
-                forms.add('/' + p[0].lower() + p[2:].replace('\\', '/'))
-            paths += [(re.escape(f), tag) for f in forms]
-    paths.sort(key=lambda x: -len(x[0]))
+            for q in {p, p.replace('/', '\\'), p.replace('\\', '/')}:
+                found += [(q, tag), (q.replace('\\', '\\\\'), tag)]
+                if re.match(r'[A-Za-z]:[\\/]', q):
+                    found.append(('/' + q[0].lower() + q[2:].replace('\\', '/'), tag))
+    paths = [(re.escape(f), tag) for f, tag in sorted(set(found), key=lambda x: -len(x[0]))]
+    paths.append((r'(?i)(?:\b[a-z]:)?[\\/]+(?:users|home)[\\/]+[^\\/\s\'"]+', '<HOME>'))
     users = {os.environ.get(k, '') for k in ('USER', 'USERNAME', 'LOGNAME')} | {os.path.basename(os.path.expanduser('~'))}
     try:
         users.add(getpass.getuser())
@@ -348,9 +352,9 @@ def main():
     ap.add_argument('--skip', default='', help='comma list of sections to skip: ram_bw,h2d,disk,wex_check')
     a = ap.parse_args()
     skip = set(filter(None, a.skip.split(',')))
-    if not os.path.isdir(a.dir):
-        sys.exit(f'--dir {a.dir}: not a directory')
     paths, words = placeholders(a)
+    if not os.path.isdir(a.dir):
+        sys.exit(scrub(f'--dir {a.dir}: not a directory', paths + words))
     res = {'bench_version': 2, 'started': time.strftime('%Y-%m-%dT%H:%M:%S%z'), 'sysinfo': scrub(sysinfo(a.dir), paths)}
     steps = [
         ('ram_bw', lambda: build_run('ram_bw.c', 'ram_bw', ['gcc', '-O2', '-fopenmp'], ['256' if a.quick else '2048'])),
