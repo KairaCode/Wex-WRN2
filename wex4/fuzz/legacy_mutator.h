@@ -17,9 +17,10 @@
  * The mutations here work on the other side of each codec, as wnr3_mutator.h does for WNR3: they decode the
  * record, change the decoded scales and weights (and, for WNR, the model, the chunk size and the scale-only
  * flag; for a palette record, the tables and the packed weights), and encode it again, so the new record
- * passes the checks that its codec has. One time in four the tile stream is written loosely (a wider bit
- * width, a lower base: the decoder's checked path for a base near 255). A record is replaced in place, only
- * when the new one takes the same pages.
+ * passes the checks that its codec has. One tile in four of the tile stream is written loosely (a wider bit
+ * width, a lower base: the decoder's checked path for a base near 255). A few WNR edits make a record the
+ * decoder refuses, on purpose: a scale value taken out of the model, or the scale-only flag set over rows that
+ * differ. A record is replaced in place, only when the new one takes the same pages and differs from the old.
  *
  * No tool of this repository encodes WNR records on the CPU (c/tools/wex_neural_rans.py calls a CUDA
  * library): fuzz_wnr1_encode is written here from the decoder wex_nr_decode_weights. */
@@ -251,16 +252,19 @@ static void fuzz_wnr1_cdf(unsigned char *row, uint32_t *rng) {
 }
 
 /* A WNR record (codec 3): decoded, edited and encoded again. The edits: weight bytes and blocks, scales, the
- * class of a scale the record uses (to another class, or to none), a CDF row, the chunk size, the scale-only
- * flag (set with the rows of every class made equal, or only flipped: the parser refuses a scale-only record
- * whose rows differ). The result is `total`, or 0 with the record unchanged: the record does not decode, or
- * the new one takes other pages. */
+ * class of a scale the record uses (to another class, or one time in 8 to none), a CDF row, the chunk size,
+ * the scale-only flag (set with the rows of every class made equal, cleared, or one time in 4 only flipped:
+ * the parser refuses a scale-only record whose rows differ). A scale value that an edit of the scales brings
+ * in and that the model has no class for gets a class 7 times in 8 (the encoder codes a scale without one
+ * with class 0, and the decoder refuses the record when it reaches it). The result is `total`, or 0 with the
+ * record unchanged: the record does not decode, or the new one takes other pages. */
 static size_t fuzz_wnr1_mutate(unsigned char *record, size_t total, const WexEntry *e, uint32_t seed) {
     WexNeuralRans view;
-    unsigned char *data, *scales, *weights, *model, *stream, *out;
-    size_t model_bytes, written = 0, packed, result = 0;
-    uint32_t rng = seed, classes, chunk, scale_only, edits, c, p;
+    unsigned char *data, *scales, *weights, *model, *stream, *out, decided[256];
+    size_t model_bytes, written = 0, packed, result = 0, i;
+    uint32_t rng = seed, classes, chunk, scale_only, edits, c, p, v;
     if (!e->scale_bytes || !e->weight_bytes || wex_nr_parse(record, total, e->weight_bytes, &view)) return 0;
+    memset(decided, 0, sizeof decided);   /* the scale values whose class this call set to none, or chose to keep so */
     classes = view.classes; chunk = view.chunk_symbols; scale_only = view.scale_only;
     model_bytes = 512u + (size_t)classes * WEX_NR_CDF_BYTES;
     data = (unsigned char *)malloc((size_t)e->scale_bytes + e->weight_bytes);
@@ -284,8 +288,9 @@ static size_t fuzz_wnr1_mutate(unsigned char *record, size_t total, const WexEnt
             break;
         case 3: case 4: fuzz_scales_edit(scales, e->scale_bytes, &rng); break;
         case 5:
-            fuzz_put_u16(model + (size_t)scales[r % e->scale_bytes] * 2u,
-                         (r >> 12) % 8u ? (r >> 16) % classes : 65535u);
+            v = scales[r % e->scale_bytes];
+            if ((r >> 12) % 8u) fuzz_put_u16(model + (size_t)v * 2u, (r >> 16) % classes);
+            else { fuzz_put_u16(model + (size_t)v * 2u, 65535u); decided[v] = 1; }
             break;
         case 6:
             c = r % classes; p = (r >> 8) % 17u;
@@ -296,7 +301,8 @@ static size_t fuzz_wnr1_mutate(unsigned char *record, size_t total, const WexEnt
             break;
         case 7: chunk = 256u << (r % 3u); break;
         case 8:
-            if (r & 1u) scale_only = !scale_only;
+            if (!(r % 4u)) scale_only = !scale_only;
+            else if (r % 4u == 1u) scale_only = 0;
             else {
                 scale_only = 1u;
                 for (c = 0; c < classes; c++)
@@ -306,6 +312,12 @@ static size_t fuzz_wnr1_mutate(unsigned char *record, size_t total, const WexEnt
             break;
         default: weights[r % e->weight_bytes] = (unsigned char)(r & 0x10000u ? 0x88u : 0u); break;
         }
+    }
+    for (i = 0; i < e->scale_bytes; i++) {   /* a new scale value without a class: one, 7 times in 8 */
+        v = scales[i];
+        if (decided[v] || wex_nr_u16(model + (size_t)v * 2u) != 65535u) continue;
+        decided[v] = 1;
+        if (fuzz_rng(&rng) % 8u) fuzz_put_u16(model + (size_t)v * 2u, fuzz_rng(&rng) % classes);
     }
     packed = fuzz_tiles_pack(scales, e->scale_bytes, stream, &rng);
     if (!fuzz_wnr1_encode(model, classes, chunk, scale_only, stream, (uint32_t)packed, scales, weights, e->weight_bytes,
@@ -323,15 +335,41 @@ done:
     return result;
 }
 
-/* The records each structured mutation replaced, by codec (1 scale tiles .. 5 WNR3), for the exit line. */
-static unsigned long long fuzz_legacy_replaced[6];
+/* The records each structured mutation replaced, by codec (1 scale tiles .. 5 WNR3), and those of them that
+ * the store's checks refuse, for the exit line. A record whose decoded size is above FUZZ_LEGACY_CHECK_MAX is
+ * not checked (and counted in neither). */
+static unsigned long long fuzz_legacy_replaced[6], fuzz_legacy_refused[6];
+#define FUZZ_LEGACY_CHECK_MAX (UINT64_C(64) << 20)
+
+/* 1 when entry `index` of a container that opens would be served with `record` as its stored bytes: the owner
+ * check, then wex_decode_record or wex_decode_nr2_record, as fuzz_store_wex.c expects of the store. 0 refused,
+ * -1 not checked. */
+static int fuzz_legacy_accepted(const WexHeader *h, const WexEntry *e, size_t index, const unsigned char *record,
+                                const WexNr2Model *model, int has_model) {
+    uint64_t raw, aligned;
+    size_t at;
+    unsigned char *slab;
+    int ok;
+    if (wex_entry_raw_sizes(e, &raw, &aligned) || aligned > FUZZ_LEGACY_CHECK_MAX) return -1;
+    at = wex_record_read_offset(e);
+    if (at > aligned || e->total_bytes > aligned - at) return 0;
+    slab = (unsigned char *)calloc(1, (size_t)aligned);
+    if (!slab) abort();
+    memcpy(slab + at, record, e->total_bytes);
+    if (!wex_nr3_owner_ok(e, slab + at, (uint32_t)(index / h->num_experts), (uint32_t)(index % h->num_experts), h->flags))
+        ok = 0;
+    else if (!wex_entry_nr_model(e)) ok = !wex_decode_record(e, slab, (size_t)aligned);
+    else ok = has_model && wex_read_u32_le(slab + at + 4u) == model->id && !wex_decode_nr2_record(e, slab, (size_t)aligned, model);
+    free(slab);
+    return ok;
+}
 
 /* One coded record of a legacy container held in memory, picked by the seed and mutated in place with the
  * mutation of its codec: scale tiles, palette, WNR, WNR2 or WNR3. The container must validate as the store
  * requires (header, table, and the model of a WNR2 or WNR3 container). 1 when a record was replaced. 0, with
- * the file unchanged: not such a container, no coded record, or the new record takes other pages (the
- * records of a WEX3 file are contiguous, so its size is fixed). A record that two entries share (WEX3
- * deduplication) changes for both. */
+ * the file unchanged: not such a container, no coded record, the new record takes other pages (the records
+ * of a WEX3 file are contiguous, so its size is fixed), or it is the same bytes. A record that two entries
+ * share (WEX3 deduplication) changes for both. */
 static int fuzz_legacy_mutate(unsigned char *file, size_t size, uint32_t seed) {
     const WexHeader *h = (const WexHeader *)file;
     const WexEntry *entries, *entry = NULL;
@@ -366,12 +404,17 @@ static int fuzz_legacy_mutate(unsigned char *file, size_t size, uint32_t seed) {
     } else if (entry->flags == WEX_ENTRY_NEURAL_RANS) n = fuzz_wnr1_mutate(work, entry->total_bytes, entry, seed);
     else if (entry->flags == WEX_ENTRY_PALETTE3) n = fuzz_palette_mutate(work, entry->total_bytes, entry, seed);
     else if (codec == WEX_ENTRY_SCALE_TILES) n = fuzz_tiles_mutate(work, entry->total_bytes, entry, seed);
-    if (n == entry->total_bytes) {
+    if (n != entry->total_bytes || !memcmp(work, file + entry->file_offset, n)) n = 0;
+    else {
+        int accepted = fuzz_legacy_accepted(h, entry, (size_t)(entry - entries), work, &model, has_model);
         memcpy(file + entry->file_offset, work, n);
-        fuzz_legacy_replaced[codec]++;
+        if (accepted >= 0) {
+            fuzz_legacy_replaced[codec]++;
+            fuzz_legacy_refused[codec] += !accepted;
+        }
     }
     free(work);
-    return n == entry->total_bytes;
+    return n != 0;
 }
 
 #endif /* WEX_FUZZ_LEGACY_MUTATOR_H */

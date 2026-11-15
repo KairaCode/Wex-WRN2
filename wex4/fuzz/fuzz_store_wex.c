@@ -31,7 +31,9 @@
  * The custom mutator: one call in four, when the input is a container that opens and has coded records, one
  * of them is mutated with legacy_mutator.h by the rules of its codec (scale tiles, palette, WNR, WNR2, or
  * WNR3 through wnr3_mutator.h): decoded, edited, encoded again, so that it passes the checks its codec has,
- * and written back if it still takes the same pages. Every other call is libFuzzer's own mutation. */
+ * and written back if it still takes the same pages and is not the same bytes. Every other call is
+ * libFuzzer's own mutation. The exit line gives, by codec, the records replaced and how many of them the
+ * store's checks refuse (some edits make such records on purpose). */
 #define _FILE_OFFSET_BITS 64
 #include <stdio.h>
 static int fuzz_quiet(FILE *stream, const char *format, ...) { (void)stream; (void)format; return 0; }
@@ -73,15 +75,17 @@ static void fuzz_cleanup(void) {
             "them decoded from a coded record, %llu from a WNR3 record, %llu%s different WNR3 ones; served by codec: "
             "raw %llu, scale tiles %llu, palette %llu, WNR %llu, WNR2 %llu, WNR3 %llu; different decoded records "
             "by codec (each count stops at %u): raw %llu, scale tiles %llu, palette %llu, WNR %llu, WNR2 %llu, "
-            "WNR3 %llu; records replaced by a structured mutation: scale tiles %llu, palette %llu, WNR %llu, "
-            "WNR2 %llu, WNR3 %llu (structured mutations %s)\n",
+            "WNR3 %llu; records replaced by a structured mutation / of them refused by the store's checks: scale "
+            "tiles %llu/%llu, palette %llu/%llu, WNR %llu/%llu, WNR2 %llu/%llu, WNR3 %llu/%llu (structured "
+            "mutations %s)\n",
             count_inputs, count_opened, count_lookups, count_served, count_served_coded, count_served_wnr3,
             seen_codec[5].count, seen_codec[5].count >= FUZZ_SEEN_MAX ? " or more" : "", count_served_codec[0],
             count_served_codec[1], count_served_codec[2], count_served_codec[3], count_served_codec[4],
             count_served_codec[5], FUZZ_SEEN_MAX, seen_codec[0].count, seen_codec[1].count, seen_codec[2].count,
             seen_codec[3].count, seen_codec[4].count, seen_codec[5].count, fuzz_legacy_replaced[1],
-            fuzz_legacy_replaced[2], fuzz_legacy_replaced[3], fuzz_legacy_replaced[4], fuzz_legacy_replaced[5],
-            fuzz_structured() ? "on" : "off");
+            fuzz_legacy_refused[1], fuzz_legacy_replaced[2], fuzz_legacy_refused[2], fuzz_legacy_replaced[3],
+            fuzz_legacy_refused[3], fuzz_legacy_replaced[4], fuzz_legacy_refused[4], fuzz_legacy_replaced[5],
+            fuzz_legacy_refused[5], fuzz_structured() ? "on" : "off");
 }
 
 static void fuzz_setup(void) {
