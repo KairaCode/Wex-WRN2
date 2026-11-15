@@ -92,8 +92,9 @@ measured; it is not known to fail.
 - **macOS, what is left** (good first issue each):
   - **Today:** the `macos` job of CI (macos-15, Apple silicon) runs `scripts/check_all.sh` and
     `wex4/fuzz/run.sh --replay` with a Homebrew GNU gcc named in `CC`.
-  - **Still open, not tried:** Apple clang with `libomp` (Apple clang ships no OpenMP runtime of
-    its own); an Intel Mac; the libFuzzer harnesses of `wex4/fuzz/` on macOS; and the set-up lines
+  - **Still open, not tried:** `scripts/check_all.sh` with Apple clang and `libomp` (Apple clang
+    ships no OpenMP runtime of its own; only the fast decoder's harness was built that way, NEON
+    item below); an Intel Mac; the libFuzzer harnesses of `wex4/fuzz/` on macOS; and the set-up lines
     of the README on a Mac of your own (`brew install gcc`, `CC=gcc-15`), which CI does not run as
     written.
 - **NEON decoder, what is left** (help wanted):
@@ -103,12 +104,22 @@ measured; it is not known to fail.
     only ([results](../wex4/research/fast-cpu-decode/RESULTS.md), section "NEON kernel"). The
     `macos` job builds the same kernel with GNU gcc and passes the comparisons with the reference
     decoder that `scripts/check_all.sh` and the fuzz replay make (not the other steps of
-    `linux-arm`); no speed was measured there.
-  - **Still open:** its speed on other ARM CPUs (Apple silicon, Ampere, DGX Spark), which needs no
-    model (`bash scripts/check_all.sh`, then `bash wex4/research/fast-cpu-decode/synth.sh speed`);
-    its speed on real records; a build with Apple clang; the number of interleaved streams that is
-    best on each CPU; kernel 2 for SVE, which has gather loads (NEON has none, so kernel 2 is AVX2
-    only).
+    `linux-arm`). On 2026-11-15 the `arm-speed` jobs (only in a CI run started by hand) built it
+    with each number of interleaved streams (`-DWEX_FAST_LANES` = 1, 2, 3, 4, 6 or 8), compared
+    each build with the reference decoder (byte-identical every time) and timed it: 18 calls of
+    `synth.sh speed` per compiler on 6 VMs each of ubuntu-24.04-arm and of macos-15 (an Apple M1
+    under virtualization), there with Homebrew GCC 15.3 and with Apple clang 17 and Homebrew's
+    `libomp`. On the M1 VMs the default configuration was 4.8 (GCC) and 5.0 (Apple clang) times
+    faster than the scalar kernel. The fastest number of streams was 6 on the Neoverse-N2 (0.8%
+    under 4) and 8 on the M1 VMs (11% and 16% under 4 by the medians, the ranges of the calls
+    overlapping); 4 is fastest on the two x86 machines, so the default stays 4 (RESULTS, "Streams
+    per CPU, Apple silicon, Apple clang").
+  - **Still open:** its speed on other ARM CPUs (Apple silicon outside a VM, M2 and later, Ampere,
+    DGX Spark), which needs no model (`bash scripts/check_all.sh`, then
+    `bash wex4/research/fast-cpu-decode/synth.sh speed` three times or more and `speed_runs.py` on
+    the outputs); its speed on real records, and with them whether 6 or 8 streams beat 4 on an ARM
+    CPU (no real record is in CI); kernel 2 for SVE, which has gather loads (NEON has none, so
+    kernel 2 is AVX2 only).
 
 ## 4. A second, independent implementation
 
@@ -247,8 +258,10 @@ listed above as well.
 - **WNR3 decode on Vulkan:** the design note and a prototype checked on a CPU Vulkan device are in; a run
   on a GPU, a speed number, a real container and the engine hook are open *(open to you, section 6)*.
 - **ARM and macOS:** the ARM CI jobs (Linux, and macOS on Apple silicon) and a NEON version of kernel 1
-  of the fast CPU decoder are in. Its speed on real records and on ARM CPUs other than the Linux CI
-  runner, an SVE version of kernel 2, and Apple clang are still open *(open to you, section 3)*.
+  of the fast CPU decoder are in; its speed on synthetic records was measured on the Linux runner and on
+  the macOS runner's Apple M1 VM, also built with Apple clang, for every number of interleaved streams
+  (the default stays 4). Its speed on real records and on other ARM CPUs, an SVE version of kernel 2,
+  and the whole check with Apple clang are still open *(open to you, section 3)*.
 - **Linux I/O in the engine:** the fast read paths were built and measured on Windows. The Linux
   benchmark is in (`bench/wex_io.py`), run so far only on two kinds of cloud VM, where it gave no reason to
   change the store; runs on real drives and the tuning that follows from them are still open *(open to

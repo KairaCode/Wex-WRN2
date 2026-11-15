@@ -1,0 +1,1830 @@
+# The output of `bash synth.sh speed 21` in the arm-speed jobs of .github/workflows/ci.yml on 2026-11-15
+# (RESULTS.md, section "Streams per CPU, Apple silicon, Apple clang"). Copied from the job logs of the two
+# GitHub Actions runs named below: the time stamps that GitHub puts before each line are removed, nothing
+# else is changed; the lines of the other steps are left out. The tables of RESULTS.md come from
+#   python -I speed_runs.py --compiler TEXT arm-speed-20261115.txt
+# with TEXT one of "gcc (Ubuntu", "Homebrew GCC", "Apple clang".
+
+## run 43717734347, job arm-speed (ubuntu-24.04-arm, 1), runner image: ubuntu24-arm64 20261111.182.1
+machine: Linux aarch64, 4 logical CPUs
+Vendor ID:                               ARM
+Model name:                              Neoverse-N2
+BogoMIPS:                                2000.00
+compiler: gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 16.5 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.601 | 37.3 | 5.571 | 1.01 |
+| k0: reference loop per stream | 5.666 | 36.9 | 5.626 | 1.00 |
+| k1: NEON search, 1 stream | 3.723 | 56.1 | 3.718 | 1.52 |
+| k1: 2 streams interleaved | 2.097 | 99.6 | 2.095 | 2.70 |
+| k1: 3 streams interleaved | 1.686 | 123.9 | 1.683 | 3.36 |
+| k1: 4 streams interleaved | 1.405 | 148.7 | 1.403 | 4.03 |
+| k1: 6 streams interleaved | 1.396 | 149.6 | 1.393 | 4.06 |
+| k1: 8 streams interleaved | 1.874 | 111.5 | 1.872 | 3.02 |
+| k1: 1 stream, fused | 3.748 | 55.7 | 3.745 | 1.51 |
+| k1: 2 streams, fused | 2.054 | 101.7 | 2.051 | 2.76 |
+| k1: 3 streams, fused | 1.678 | 124.5 | 1.676 | 3.38 |
+| k1: 4 streams, fused | 1.409 | 148.3 | 1.407 | 4.02 |
+| k1: 6 streams, fused | 1.399 | 149.4 | 1.397 | 4.05 |
+| k1: 8 streams, fused | 1.829 | 114.2 | 1.828 | 3.10 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.508 | 37.9 | 5.483 | 1.00 |
+| k0: reference loop per stream | 5.499 | 38.0 | 5.476 | 1.00 |
+machine: Linux aarch64, 4 logical CPUs
+Vendor ID:                               ARM
+Model name:                              Neoverse-N2
+BogoMIPS:                                2000.00
+compiler: gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 15.8 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.637 | 37.1 | 5.606 | 1.01 |
+| k0: reference loop per stream | 5.666 | 36.9 | 5.623 | 1.00 |
+| k1: NEON search, 1 stream | 3.725 | 56.1 | 3.723 | 1.52 |
+| k1: 2 streams interleaved | 2.101 | 99.4 | 2.098 | 2.70 |
+| k1: 3 streams interleaved | 1.686 | 123.9 | 1.684 | 3.36 |
+| k1: 4 streams interleaved | 1.405 | 148.7 | 1.404 | 4.03 |
+| k1: 6 streams interleaved | 1.399 | 149.4 | 1.397 | 4.05 |
+| k1: 8 streams interleaved | 1.876 | 111.4 | 1.875 | 3.02 |
+| k1: 1 stream, fused | 3.751 | 55.7 | 3.748 | 1.51 |
+| k1: 2 streams, fused | 2.058 | 101.5 | 2.056 | 2.75 |
+| k1: 3 streams, fused | 1.681 | 124.3 | 1.679 | 3.37 |
+| k1: 4 streams, fused | 1.411 | 148.1 | 1.409 | 4.02 |
+| k1: 6 streams, fused | 1.402 | 149.0 | 1.400 | 4.04 |
+| k1: 8 streams, fused | 1.835 | 113.9 | 1.831 | 3.09 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.504 | 38.0 | 5.465 | 0.99 |
+| k0: reference loop per stream | 5.458 | 38.3 | 5.421 | 1.00 |
+machine: Linux aarch64, 4 logical CPUs
+Vendor ID:                               ARM
+Model name:                              Neoverse-N2
+BogoMIPS:                                2000.00
+compiler: gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 15.9 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.630 | 37.1 | 5.567 | 1.01 |
+| k0: reference loop per stream | 5.670 | 36.8 | 5.642 | 1.00 |
+| k1: NEON search, 1 stream | 3.724 | 56.1 | 3.722 | 1.52 |
+| k1: 2 streams interleaved | 2.100 | 99.5 | 2.098 | 2.70 |
+| k1: 3 streams interleaved | 1.686 | 123.9 | 1.685 | 3.36 |
+| k1: 4 streams interleaved | 1.404 | 148.8 | 1.402 | 4.04 |
+| k1: 6 streams interleaved | 1.396 | 149.6 | 1.395 | 4.06 |
+| k1: 8 streams interleaved | 1.875 | 111.4 | 1.873 | 3.02 |
+| k1: 1 stream, fused | 3.745 | 55.8 | 3.742 | 1.51 |
+| k1: 2 streams, fused | 2.059 | 101.4 | 2.055 | 2.75 |
+| k1: 3 streams, fused | 1.681 | 124.3 | 1.679 | 3.37 |
+| k1: 4 streams, fused | 1.411 | 148.1 | 1.409 | 4.02 |
+| k1: 6 streams, fused | 1.399 | 149.3 | 1.397 | 4.05 |
+| k1: 8 streams, fused | 1.832 | 114.0 | 1.831 | 3.09 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.504 | 38.0 | 5.466 | 0.99 |
+| k0: reference loop per stream | 5.431 | 38.5 | 5.406 | 1.00 |
+
+## run 43717734347, job arm-speed (ubuntu-24.04-arm, 2), runner image: ubuntu24-arm64 20261111.182.1
+machine: Linux aarch64, 4 logical CPUs
+Vendor ID:                               ARM
+Model name:                              Neoverse-N2
+BogoMIPS:                                2000.00
+compiler: gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 15.5 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.622 | 37.2 | 5.581 | 1.01 |
+| k0: reference loop per stream | 5.667 | 36.9 | 5.635 | 1.00 |
+| k1: NEON search, 1 stream | 3.724 | 56.1 | 3.718 | 1.52 |
+| k1: 2 streams interleaved | 2.098 | 99.6 | 2.096 | 2.70 |
+| k1: 3 streams interleaved | 1.684 | 124.0 | 1.682 | 3.36 |
+| k1: 4 streams interleaved | 1.404 | 148.8 | 1.402 | 4.04 |
+| k1: 6 streams interleaved | 1.396 | 149.7 | 1.394 | 4.06 |
+| k1: 8 streams interleaved | 1.875 | 111.4 | 1.873 | 3.02 |
+| k1: 1 stream, fused | 3.746 | 55.8 | 3.744 | 1.51 |
+| k1: 2 streams, fused | 2.057 | 101.5 | 2.055 | 2.75 |
+| k1: 3 streams, fused | 1.679 | 124.4 | 1.678 | 3.37 |
+| k1: 4 streams, fused | 1.407 | 148.4 | 1.406 | 4.03 |
+| k1: 6 streams, fused | 1.400 | 149.2 | 1.398 | 4.05 |
+| k1: 8 streams, fused | 1.832 | 114.1 | 1.829 | 3.09 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.513 | 37.9 | 5.433 | 0.99 |
+| k0: reference loop per stream | 5.432 | 38.5 | 5.420 | 1.00 |
+machine: Linux aarch64, 4 logical CPUs
+Vendor ID:                               ARM
+Model name:                              Neoverse-N2
+BogoMIPS:                                2000.00
+compiler: gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 16.1 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.591 | 37.4 | 5.576 | 1.01 |
+| k0: reference loop per stream | 5.672 | 36.8 | 5.636 | 1.00 |
+| k1: NEON search, 1 stream | 3.721 | 56.1 | 3.719 | 1.52 |
+| k1: 2 streams interleaved | 2.098 | 99.6 | 2.096 | 2.70 |
+| k1: 3 streams interleaved | 1.685 | 124.0 | 1.683 | 3.37 |
+| k1: 4 streams interleaved | 1.403 | 148.9 | 1.402 | 4.04 |
+| k1: 6 streams interleaved | 1.396 | 149.7 | 1.394 | 4.06 |
+| k1: 8 streams interleaved | 1.873 | 111.5 | 1.871 | 3.03 |
+| k1: 1 stream, fused | 3.743 | 55.8 | 3.740 | 1.52 |
+| k1: 2 streams, fused | 2.055 | 101.6 | 2.052 | 2.76 |
+| k1: 3 streams, fused | 1.678 | 124.5 | 1.676 | 3.38 |
+| k1: 4 streams, fused | 1.408 | 148.3 | 1.407 | 4.03 |
+| k1: 6 streams, fused | 1.398 | 149.4 | 1.397 | 4.06 |
+| k1: 8 streams, fused | 1.829 | 114.2 | 1.828 | 3.10 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.506 | 37.9 | 5.477 | 0.99 |
+| k0: reference loop per stream | 5.470 | 38.2 | 5.454 | 1.00 |
+machine: Linux aarch64, 4 logical CPUs
+Vendor ID:                               ARM
+Model name:                              Neoverse-N2
+BogoMIPS:                                2000.00
+compiler: gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 15.4 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.598 | 37.3 | 5.576 | 1.01 |
+| k0: reference loop per stream | 5.677 | 36.8 | 5.650 | 1.00 |
+| k1: NEON search, 1 stream | 3.719 | 56.2 | 3.716 | 1.53 |
+| k1: 2 streams interleaved | 2.095 | 99.7 | 2.094 | 2.71 |
+| k1: 3 streams interleaved | 1.684 | 124.0 | 1.683 | 3.37 |
+| k1: 4 streams interleaved | 1.404 | 148.8 | 1.402 | 4.04 |
+| k1: 6 streams interleaved | 1.396 | 149.6 | 1.394 | 4.07 |
+| k1: 8 streams interleaved | 1.872 | 111.6 | 1.870 | 3.03 |
+| k1: 1 stream, fused | 3.746 | 55.8 | 3.743 | 1.52 |
+| k1: 2 streams, fused | 2.055 | 101.6 | 2.054 | 2.76 |
+| k1: 3 streams, fused | 1.678 | 124.5 | 1.676 | 3.38 |
+| k1: 4 streams, fused | 1.408 | 148.4 | 1.406 | 4.03 |
+| k1: 6 streams, fused | 1.399 | 149.3 | 1.397 | 4.06 |
+| k1: 8 streams, fused | 1.830 | 114.1 | 1.828 | 3.10 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.504 | 38.0 | 5.466 | 0.99 |
+| k0: reference loop per stream | 5.470 | 38.2 | 5.427 | 1.00 |
+
+## run 43717734347, job arm-speed (ubuntu-24.04-arm, 3), runner image: ubuntu24-arm64 20261111.182.1
+machine: Linux aarch64, 4 logical CPUs
+Vendor ID:                               ARM
+Model name:                              Neoverse-N2
+BogoMIPS:                                2000.00
+compiler: gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 16.2 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.636 | 37.1 | 5.568 | 1.01 |
+| k0: reference loop per stream | 5.669 | 36.8 | 5.622 | 1.00 |
+| k1: NEON search, 1 stream | 3.727 | 56.0 | 3.724 | 1.52 |
+| k1: 2 streams interleaved | 2.105 | 99.2 | 2.102 | 2.69 |
+| k1: 3 streams interleaved | 1.688 | 123.8 | 1.686 | 3.36 |
+| k1: 4 streams interleaved | 1.406 | 148.6 | 1.404 | 4.03 |
+| k1: 6 streams interleaved | 1.397 | 149.5 | 1.395 | 4.06 |
+| k1: 8 streams interleaved | 1.879 | 111.2 | 1.875 | 3.02 |
+| k1: 1 stream, fused | 3.749 | 55.7 | 3.744 | 1.51 |
+| k1: 2 streams, fused | 2.062 | 101.3 | 2.058 | 2.75 |
+| k1: 3 streams, fused | 1.683 | 124.1 | 1.680 | 3.37 |
+| k1: 4 streams, fused | 1.412 | 147.9 | 1.408 | 4.01 |
+| k1: 6 streams, fused | 1.399 | 149.3 | 1.397 | 4.05 |
+| k1: 8 streams, fused | 1.835 | 113.9 | 1.832 | 3.09 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.518 | 37.9 | 5.499 | 0.99 |
+| k0: reference loop per stream | 5.474 | 38.2 | 5.454 | 1.00 |
+machine: Linux aarch64, 4 logical CPUs
+Vendor ID:                               ARM
+Model name:                              Neoverse-N2
+BogoMIPS:                                2000.00
+compiler: gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 15.3 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.628 | 37.1 | 5.606 | 1.01 |
+| k0: reference loop per stream | 5.683 | 36.8 | 5.664 | 1.00 |
+| k1: NEON search, 1 stream | 3.725 | 56.1 | 3.721 | 1.53 |
+| k1: 2 streams interleaved | 2.105 | 99.2 | 2.102 | 2.70 |
+| k1: 3 streams interleaved | 1.690 | 123.6 | 1.686 | 3.36 |
+| k1: 4 streams interleaved | 1.409 | 148.3 | 1.406 | 4.03 |
+| k1: 6 streams interleaved | 1.399 | 149.3 | 1.398 | 4.06 |
+| k1: 8 streams interleaved | 1.878 | 111.2 | 1.877 | 3.03 |
+| k1: 1 stream, fused | 3.752 | 55.7 | 3.749 | 1.51 |
+| k1: 2 streams, fused | 2.065 | 101.1 | 2.062 | 2.75 |
+| k1: 3 streams, fused | 1.687 | 123.8 | 1.684 | 3.37 |
+| k1: 4 streams, fused | 1.414 | 147.7 | 1.412 | 4.02 |
+| k1: 6 streams, fused | 1.403 | 148.9 | 1.401 | 4.05 |
+| k1: 8 streams, fused | 1.834 | 113.9 | 1.832 | 3.10 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.511 | 37.9 | 5.442 | 0.99 |
+| k0: reference loop per stream | 5.477 | 38.1 | 5.469 | 1.00 |
+machine: Linux aarch64, 4 logical CPUs
+Vendor ID:                               ARM
+Model name:                              Neoverse-N2
+BogoMIPS:                                2000.00
+compiler: gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 16.1 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.632 | 37.1 | 5.610 | 1.01 |
+| k0: reference loop per stream | 5.682 | 36.8 | 5.653 | 1.00 |
+| k1: NEON search, 1 stream | 3.725 | 56.1 | 3.722 | 1.53 |
+| k1: 2 streams interleaved | 2.104 | 99.3 | 2.099 | 2.70 |
+| k1: 3 streams interleaved | 1.688 | 123.8 | 1.684 | 3.37 |
+| k1: 4 streams interleaved | 1.406 | 148.6 | 1.403 | 4.04 |
+| k1: 6 streams interleaved | 1.399 | 149.3 | 1.397 | 4.06 |
+| k1: 8 streams interleaved | 1.876 | 111.3 | 1.874 | 3.03 |
+| k1: 1 stream, fused | 3.750 | 55.7 | 3.749 | 1.51 |
+| k1: 2 streams, fused | 2.062 | 101.3 | 2.059 | 2.76 |
+| k1: 3 streams, fused | 1.681 | 124.3 | 1.679 | 3.38 |
+| k1: 4 streams, fused | 1.410 | 148.2 | 1.408 | 4.03 |
+| k1: 6 streams, fused | 1.402 | 149.0 | 1.400 | 4.05 |
+| k1: 8 streams, fused | 1.834 | 113.9 | 1.832 | 3.10 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.509 | 37.9 | 5.478 | 1.00 |
+| k0: reference loop per stream | 5.485 | 38.1 | 5.446 | 1.00 |
+
+## run 43717734347, job arm-speed (macos-15, 1), runner image: macos15 20261104.0514.1, Homebrew libomp 23.1.5
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: gcc-15 (Homebrew GCC 15.3.0) 15.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 11.3 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 8.280 | 25.2 | 7.683 | 1.03 |
+| k0: reference loop per stream | 8.523 | 24.5 | 7.391 | 1.00 |
+| k1: NEON search, 1 stream | 5.475 | 38.2 | 5.135 | 1.56 |
+| k1: 2 streams interleaved | 2.900 | 72.0 | 2.750 | 2.94 |
+| k1: 3 streams interleaved | 2.226 | 93.8 | 2.068 | 3.83 |
+| k1: 4 streams interleaved | 1.631 | 128.0 | 1.564 | 5.22 |
+| k1: 6 streams interleaved | 1.595 | 131.0 | 1.477 | 5.34 |
+| k1: 8 streams interleaved | 1.542 | 135.5 | 1.440 | 5.53 |
+| k1: 1 stream, fused | 5.773 | 36.2 | 5.397 | 1.48 |
+| k1: 2 streams, fused | 3.030 | 68.9 | 2.810 | 2.81 |
+| k1: 3 streams, fused | 2.285 | 91.4 | 2.099 | 3.73 |
+| k1: 4 streams, fused | 1.668 | 125.3 | 1.586 | 5.11 |
+| k1: 6 streams, fused | 1.587 | 131.7 | 1.465 | 5.37 |
+| k1: 8 streams, fused | 1.539 | 135.8 | 1.422 | 5.54 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 8.817 | 23.7 | 8.030 | 1.06 |
+| k0: reference loop per stream | 9.325 | 22.4 | 8.516 | 1.00 |
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: Apple clang version 17.0.0 (clang-1700.0.13.5), -O3  -Xclang -fopenmp -I/opt/homebrew/opt/libomp/include -L/opt/homebrew/opt/libomp/lib -lomp
+== t_simd speed 21
+wex_fast_model_init: 13.1 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 8.832 | 23.7 | 7.840 | 1.25 |
+| k0: reference loop per stream | 10.998 | 19.0 | 8.602 | 1.00 |
+| k1: NEON search, 1 stream | 6.583 | 31.7 | 5.717 | 1.67 |
+| k1: 2 streams interleaved | 3.856 | 54.2 | 2.815 | 2.85 |
+| k1: 3 streams interleaved | 3.029 | 69.0 | 2.094 | 3.63 |
+| k1: 4 streams interleaved | 2.194 | 95.2 | 1.725 | 5.01 |
+| k1: 6 streams interleaved | 2.180 | 95.8 | 1.465 | 5.04 |
+| k1: 8 streams interleaved | 1.795 | 116.4 | 1.355 | 6.13 |
+| k1: 1 stream, fused | 6.423 | 32.5 | 5.359 | 1.71 |
+| k1: 2 streams, fused | 3.941 | 53.0 | 2.689 | 2.79 |
+| k1: 3 streams, fused | 2.758 | 75.7 | 2.047 | 3.99 |
+| k1: 4 streams, fused | 2.263 | 92.3 | 1.470 | 4.86 |
+| k1: 6 streams, fused | 2.230 | 93.7 | 1.371 | 4.93 |
+| k1: 8 streams, fused | 2.783 | 75.0 | 1.453 | 3.95 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 10.901 | 19.2 | 8.378 | 1.17 |
+| k0: reference loop per stream | 12.742 | 16.4 | 8.380 | 1.00 |
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: gcc-15 (Homebrew GCC 15.3.0) 15.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 13.5 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 10.197 | 20.5 | 8.297 | 0.91 |
+| k0: reference loop per stream | 9.290 | 22.5 | 7.502 | 1.00 |
+| k1: NEON search, 1 stream | 6.380 | 32.7 | 5.365 | 1.46 |
+| k1: 2 streams interleaved | 3.131 | 66.7 | 2.866 | 2.97 |
+| k1: 3 streams interleaved | 2.487 | 84.0 | 2.057 | 3.74 |
+| k1: 4 streams interleaved | 1.701 | 122.8 | 1.629 | 5.46 |
+| k1: 6 streams interleaved | 1.566 | 133.4 | 1.492 | 5.93 |
+| k1: 8 streams interleaved | 1.528 | 136.7 | 1.444 | 6.08 |
+| k1: 1 stream, fused | 5.370 | 38.9 | 5.110 | 1.73 |
+| k1: 2 streams, fused | 2.797 | 74.7 | 2.695 | 3.32 |
+| k1: 3 streams, fused | 2.057 | 101.5 | 1.996 | 4.52 |
+| k1: 4 streams, fused | 1.629 | 128.2 | 1.515 | 5.70 |
+| k1: 6 streams, fused | 1.544 | 135.3 | 1.478 | 6.02 |
+| k1: 8 streams, fused | 1.413 | 147.9 | 1.380 | 6.58 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 8.035 | 26.0 | 7.341 | 0.99 |
+| k0: reference loop per stream | 7.991 | 26.1 | 7.164 | 1.00 |
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: Apple clang version 17.0.0 (clang-1700.0.13.5), -O3  -Xclang -fopenmp -I/opt/homebrew/opt/libomp/include -L/opt/homebrew/opt/libomp/lib -lomp
+== t_simd speed 21
+wex_fast_model_init: 27.7 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 8.486 | 24.6 | 7.552 | 1.11 |
+| k0: reference loop per stream | 9.418 | 22.2 | 7.883 | 1.00 |
+| k1: NEON search, 1 stream | 6.317 | 33.1 | 5.306 | 1.49 |
+| k1: 2 streams interleaved | 3.370 | 62.0 | 2.706 | 2.79 |
+| k1: 3 streams interleaved | 2.428 | 86.0 | 2.027 | 3.88 |
+| k1: 4 streams interleaved | 1.716 | 121.8 | 1.518 | 5.49 |
+| k1: 6 streams interleaved | 1.656 | 126.2 | 1.459 | 5.69 |
+| k1: 8 streams interleaved | 1.432 | 145.9 | 1.322 | 6.58 |
+| k1: 1 stream, fused | 5.342 | 39.1 | 4.953 | 1.76 |
+| k1: 2 streams, fused | 2.975 | 70.2 | 2.617 | 3.17 |
+| k1: 3 streams, fused | 2.611 | 80.0 | 1.909 | 3.61 |
+| k1: 4 streams, fused | 1.618 | 129.1 | 1.441 | 5.82 |
+| k1: 6 streams, fused | 1.423 | 146.8 | 1.332 | 6.62 |
+| k1: 8 streams, fused | 1.529 | 136.7 | 1.259 | 6.16 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 9.142 | 22.9 | 7.328 | 0.94 |
+| k0: reference loop per stream | 8.575 | 24.4 | 7.743 | 1.00 |
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: gcc-15 (Homebrew GCC 15.3.0) 15.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 10.8 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 7.886 | 26.5 | 7.201 | 0.95 |
+| k0: reference loop per stream | 7.497 | 27.9 | 7.256 | 1.00 |
+| k1: NEON search, 1 stream | 5.887 | 35.5 | 5.177 | 1.27 |
+| k1: 2 streams interleaved | 3.477 | 60.1 | 2.853 | 2.16 |
+| k1: 3 streams interleaved | 2.147 | 97.3 | 2.072 | 3.49 |
+| k1: 4 streams interleaved | 1.671 | 125.0 | 1.597 | 4.49 |
+| k1: 6 streams interleaved | 1.546 | 135.1 | 1.516 | 4.85 |
+| k1: 8 streams interleaved | 1.583 | 132.0 | 1.444 | 4.74 |
+| k1: 1 stream, fused | 5.173 | 40.4 | 5.139 | 1.45 |
+| k1: 2 streams, fused | 2.732 | 76.5 | 2.697 | 2.74 |
+| k1: 3 streams, fused | 1.986 | 105.2 | 1.902 | 3.77 |
+| k1: 4 streams, fused | 1.539 | 135.8 | 1.519 | 4.87 |
+| k1: 6 streams, fused | 1.438 | 145.3 | 1.400 | 5.21 |
+| k1: 8 streams, fused | 1.394 | 149.9 | 1.354 | 5.38 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 7.333 | 28.5 | 7.262 | 0.98 |
+| k0: reference loop per stream | 7.211 | 29.0 | 7.141 | 1.00 |
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: Apple clang version 17.0.0 (clang-1700.0.13.5), -O3  -Xclang -fopenmp -I/opt/homebrew/opt/libomp/include -L/opt/homebrew/opt/libomp/lib -lomp
+== t_simd speed 21
+wex_fast_model_init: 11.5 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 7.898 | 26.4 | 7.136 | 1.05 |
+| k0: reference loop per stream | 8.287 | 25.2 | 7.635 | 1.00 |
+| k1: NEON search, 1 stream | 5.340 | 39.1 | 5.008 | 1.55 |
+| k1: 2 streams interleaved | 2.934 | 71.2 | 2.620 | 2.82 |
+| k1: 3 streams interleaved | 2.086 | 100.2 | 2.009 | 3.97 |
+| k1: 4 streams interleaved | 1.582 | 132.1 | 1.516 | 5.24 |
+| k1: 6 streams interleaved | 1.484 | 140.8 | 1.465 | 5.58 |
+| k1: 8 streams interleaved | 1.388 | 150.5 | 1.354 | 5.97 |
+| k1: 1 stream, fused | 5.515 | 37.9 | 4.918 | 1.50 |
+| k1: 2 streams, fused | 3.113 | 67.1 | 2.539 | 2.66 |
+| k1: 3 streams, fused | 2.010 | 103.9 | 1.904 | 4.12 |
+| k1: 4 streams, fused | 1.507 | 138.6 | 1.445 | 5.50 |
+| k1: 6 streams, fused | 1.521 | 137.4 | 1.334 | 5.45 |
+| k1: 8 streams, fused | 1.305 | 160.1 | 1.249 | 6.35 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 7.907 | 26.4 | 7.204 | 1.05 |
+| k0: reference loop per stream | 8.275 | 25.2 | 7.702 | 1.00 |
+
+## run 43717734347, job arm-speed (macos-15, 2), runner image: macos15 20261104.0514.1, Homebrew libomp 23.1.5
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: gcc-15 (Homebrew GCC 15.3.0) 15.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 13.6 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 8.265 | 25.3 | 7.161 | 1.08 |
+| k0: reference loop per stream | 8.901 | 23.5 | 7.203 | 1.00 |
+| k1: NEON search, 1 stream | 5.852 | 35.7 | 5.248 | 1.52 |
+| k1: 2 streams interleaved | 3.189 | 65.5 | 2.723 | 2.79 |
+| k1: 3 streams interleaved | 2.357 | 88.6 | 2.053 | 3.78 |
+| k1: 4 streams interleaved | 2.104 | 99.3 | 1.665 | 4.23 |
+| k1: 6 streams interleaved | 1.835 | 113.8 | 1.537 | 4.85 |
+| k1: 8 streams interleaved | 1.621 | 128.9 | 1.418 | 5.49 |
+| k1: 1 stream, fused | 5.834 | 35.8 | 5.413 | 1.53 |
+| k1: 2 streams, fused | 3.082 | 67.8 | 2.841 | 2.89 |
+| k1: 3 streams, fused | 2.202 | 94.9 | 1.968 | 4.04 |
+| k1: 4 streams, fused | 1.807 | 115.6 | 1.666 | 4.93 |
+| k1: 6 streams, fused | 1.982 | 105.4 | 1.570 | 4.49 |
+| k1: 8 streams, fused | 1.482 | 141.0 | 1.336 | 6.01 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 9.235 | 22.6 | 7.451 | 0.84 |
+| k0: reference loop per stream | 7.723 | 27.1 | 7.176 | 1.00 |
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: Apple clang version 17.0.0 (clang-1700.0.13.5), -O3  -Xclang -fopenmp -I/opt/homebrew/opt/libomp/include -L/opt/homebrew/opt/libomp/lib -lomp
+== t_simd speed 21
+wex_fast_model_init: 11.6 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 7.965 | 26.2 | 7.410 | 1.09 |
+| k0: reference loop per stream | 8.711 | 24.0 | 7.689 | 1.00 |
+| k1: NEON search, 1 stream | 6.575 | 31.8 | 5.099 | 1.32 |
+| k1: 2 streams interleaved | 2.855 | 73.2 | 2.688 | 3.05 |
+| k1: 3 streams interleaved | 2.278 | 91.7 | 2.026 | 3.82 |
+| k1: 4 streams interleaved | 1.795 | 116.3 | 1.523 | 4.85 |
+| k1: 6 streams interleaved | 1.645 | 127.0 | 1.498 | 5.30 |
+| k1: 8 streams interleaved | 1.810 | 115.4 | 1.407 | 4.81 |
+| k1: 1 stream, fused | 5.980 | 34.9 | 5.166 | 1.46 |
+| k1: 2 streams, fused | 2.944 | 70.9 | 2.659 | 2.96 |
+| k1: 3 streams, fused | 2.043 | 102.2 | 1.956 | 4.26 |
+| k1: 4 streams, fused | 1.827 | 114.4 | 1.616 | 4.77 |
+| k1: 6 streams, fused | 1.622 | 128.8 | 1.409 | 5.37 |
+| k1: 8 streams, fused | 1.446 | 144.4 | 1.329 | 6.02 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 8.507 | 24.6 | 7.621 | 1.04 |
+| k0: reference loop per stream | 8.863 | 23.6 | 8.066 | 1.00 |
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: gcc-15 (Homebrew GCC 15.3.0) 15.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 12.2 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 8.109 | 25.8 | 7.221 | 1.00 |
+| k0: reference loop per stream | 8.133 | 25.7 | 7.455 | 1.00 |
+| k1: NEON search, 1 stream | 5.757 | 36.3 | 5.098 | 1.41 |
+| k1: 2 streams interleaved | 3.128 | 66.8 | 2.785 | 2.60 |
+| k1: 3 streams interleaved | 2.088 | 100.0 | 2.043 | 3.89 |
+| k1: 4 streams interleaved | 1.616 | 129.3 | 1.574 | 5.03 |
+| k1: 6 streams interleaved | 1.592 | 131.2 | 1.474 | 5.11 |
+| k1: 8 streams interleaved | 1.582 | 132.1 | 1.530 | 5.14 |
+| k1: 1 stream, fused | 5.438 | 38.4 | 4.882 | 1.50 |
+| k1: 2 streams, fused | 2.718 | 76.8 | 2.606 | 2.99 |
+| k1: 3 streams, fused | 2.001 | 104.4 | 1.965 | 4.06 |
+| k1: 4 streams, fused | 1.525 | 137.0 | 1.500 | 5.33 |
+| k1: 6 streams, fused | 1.552 | 134.6 | 1.445 | 5.24 |
+| k1: 8 streams, fused | 1.386 | 150.7 | 1.329 | 5.87 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 7.649 | 27.3 | 7.243 | 1.07 |
+| k0: reference loop per stream | 8.150 | 25.6 | 7.629 | 1.00 |
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: Apple clang version 17.0.0 (clang-1700.0.13.5), -O3  -Xclang -fopenmp -I/opt/homebrew/opt/libomp/include -L/opt/homebrew/opt/libomp/lib -lomp
+== t_simd speed 21
+wex_fast_model_init: 12.5 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 7.910 | 26.4 | 7.405 | 0.96 |
+| k0: reference loop per stream | 7.565 | 27.6 | 7.475 | 1.00 |
+| k1: NEON search, 1 stream | 5.158 | 40.5 | 5.005 | 1.47 |
+| k1: 2 streams interleaved | 3.562 | 58.6 | 2.808 | 2.12 |
+| k1: 3 streams interleaved | 2.097 | 99.6 | 1.985 | 3.61 |
+| k1: 4 streams interleaved | 1.990 | 105.0 | 1.487 | 3.80 |
+| k1: 6 streams interleaved | 2.277 | 91.7 | 1.760 | 3.32 |
+| k1: 8 streams interleaved | 1.846 | 113.1 | 1.451 | 4.10 |
+| k1: 1 stream, fused | 5.747 | 36.3 | 4.971 | 1.32 |
+| k1: 2 streams, fused | 3.110 | 67.2 | 2.569 | 2.43 |
+| k1: 3 streams, fused | 2.341 | 89.2 | 2.151 | 3.23 |
+| k1: 4 streams, fused | 2.284 | 91.5 | 1.522 | 3.31 |
+| k1: 6 streams, fused | 1.953 | 107.0 | 1.386 | 3.87 |
+| k1: 8 streams, fused | 1.499 | 139.4 | 1.261 | 5.05 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 8.173 | 25.6 | 7.457 | 1.10 |
+| k0: reference loop per stream | 8.950 | 23.3 | 7.920 | 1.00 |
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: gcc-15 (Homebrew GCC 15.3.0) 15.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 10.9 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 8.727 | 23.9 | 7.268 | 1.05 |
+| k0: reference loop per stream | 9.190 | 22.7 | 8.019 | 1.00 |
+| k1: NEON search, 1 stream | 5.664 | 36.9 | 5.303 | 1.62 |
+| k1: 2 streams interleaved | 3.450 | 60.5 | 3.152 | 2.66 |
+| k1: 3 streams interleaved | 2.319 | 90.1 | 2.221 | 3.96 |
+| k1: 4 streams interleaved | 2.288 | 91.3 | 1.782 | 4.02 |
+| k1: 6 streams interleaved | 1.624 | 128.7 | 1.514 | 5.66 |
+| k1: 8 streams interleaved | 1.761 | 118.6 | 1.472 | 5.22 |
+| k1: 1 stream, fused | 5.596 | 37.3 | 5.136 | 1.64 |
+| k1: 2 streams, fused | 2.965 | 70.5 | 2.683 | 3.10 |
+| k1: 3 streams, fused | 2.214 | 94.4 | 1.957 | 4.15 |
+| k1: 4 streams, fused | 1.552 | 134.6 | 1.487 | 5.92 |
+| k1: 6 streams, fused | 1.469 | 142.2 | 1.377 | 6.26 |
+| k1: 8 streams, fused | 1.554 | 134.4 | 1.389 | 5.91 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 9.974 | 20.9 | 7.467 | 0.84 |
+| k0: reference loop per stream | 8.402 | 24.9 | 7.428 | 1.00 |
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: Apple clang version 17.0.0 (clang-1700.0.13.5), -O3  -Xclang -fopenmp -I/opt/homebrew/opt/libomp/include -L/opt/homebrew/opt/libomp/lib -lomp
+== t_simd speed 21
+wex_fast_model_init: 11.5 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 7.855 | 26.6 | 7.269 | 1.06 |
+| k0: reference loop per stream | 8.293 | 25.2 | 7.626 | 1.00 |
+| k1: NEON search, 1 stream | 6.122 | 34.1 | 5.147 | 1.35 |
+| k1: 2 streams interleaved | 3.059 | 68.3 | 2.736 | 2.71 |
+| k1: 3 streams interleaved | 2.323 | 89.9 | 2.084 | 3.57 |
+| k1: 4 streams interleaved | 1.859 | 112.4 | 1.550 | 4.46 |
+| k1: 6 streams interleaved | 1.766 | 118.3 | 1.516 | 4.70 |
+| k1: 8 streams interleaved | 1.632 | 128.0 | 1.414 | 5.08 |
+| k1: 1 stream, fused | 5.594 | 37.3 | 5.038 | 1.48 |
+| k1: 2 streams, fused | 3.087 | 67.7 | 2.579 | 2.69 |
+| k1: 3 streams, fused | 2.471 | 84.5 | 2.141 | 3.36 |
+| k1: 4 streams, fused | 1.523 | 137.1 | 1.445 | 5.44 |
+| k1: 6 streams, fused | 1.896 | 110.2 | 1.523 | 4.37 |
+| k1: 8 streams, fused | 1.565 | 133.5 | 1.301 | 5.30 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 9.614 | 21.7 | 8.183 | 0.84 |
+| k0: reference loop per stream | 8.097 | 25.8 | 7.666 | 1.00 |
+
+## run 43717734347, job arm-speed (macos-15, 3), runner image: macos15 20261104.0514.1, Homebrew libomp 23.1.5
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: gcc-15 (Homebrew GCC 15.3.0) 15.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 11.8 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 10.342 | 20.2 | 7.453 | 0.90 |
+| k0: reference loop per stream | 9.355 | 22.3 | 7.394 | 1.00 |
+| k1: NEON search, 1 stream | 6.302 | 33.1 | 5.345 | 1.48 |
+| k1: 2 streams interleaved | 3.417 | 61.1 | 3.072 | 2.74 |
+| k1: 3 streams interleaved | 2.705 | 77.2 | 2.220 | 3.46 |
+| k1: 4 streams interleaved | 1.972 | 105.9 | 1.588 | 4.74 |
+| k1: 6 streams interleaved | 2.140 | 97.6 | 1.513 | 4.37 |
+| k1: 8 streams interleaved | 2.182 | 95.7 | 1.447 | 4.29 |
+| k1: 1 stream, fused | 6.174 | 33.8 | 5.429 | 1.52 |
+| k1: 2 streams, fused | 3.049 | 68.5 | 2.720 | 3.07 |
+| k1: 3 streams, fused | 2.325 | 89.8 | 1.993 | 4.02 |
+| k1: 4 streams, fused | 2.114 | 98.8 | 1.503 | 4.42 |
+| k1: 6 streams, fused | 1.789 | 116.8 | 1.400 | 5.23 |
+| k1: 8 streams, fused | 1.586 | 131.7 | 1.374 | 5.90 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 9.620 | 21.7 | 7.340 | 0.97 |
+| k0: reference loop per stream | 9.299 | 22.5 | 8.569 | 1.00 |
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: Apple clang version 17.0.0 (clang-1700.0.13.5), -O3  -Xclang -fopenmp -I/opt/homebrew/opt/libomp/include -L/opt/homebrew/opt/libomp/lib -lomp
+== t_simd speed 21
+wex_fast_model_init: 15.7 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 8.705 | 24.0 | 7.397 | 1.08 |
+| k0: reference loop per stream | 9.381 | 22.3 | 7.659 | 1.00 |
+| k1: NEON search, 1 stream | 5.918 | 35.3 | 5.069 | 1.59 |
+| k1: 2 streams interleaved | 2.879 | 72.6 | 2.645 | 3.26 |
+| k1: 3 streams interleaved | 2.082 | 100.3 | 2.002 | 4.51 |
+| k1: 4 streams interleaved | 2.169 | 96.3 | 1.500 | 4.32 |
+| k1: 6 streams interleaved | 1.553 | 134.5 | 1.439 | 6.04 |
+| k1: 8 streams interleaved | 1.623 | 128.7 | 1.337 | 5.78 |
+| k1: 1 stream, fused | 6.082 | 34.3 | 4.997 | 1.54 |
+| k1: 2 streams, fused | 3.516 | 59.4 | 2.739 | 2.67 |
+| k1: 3 streams, fused | 2.609 | 80.1 | 2.195 | 3.60 |
+| k1: 4 streams, fused | 2.007 | 104.1 | 1.612 | 4.67 |
+| k1: 6 streams, fused | 1.665 | 125.4 | 1.378 | 5.63 |
+| k1: 8 streams, fused | 2.163 | 96.6 | 1.416 | 4.34 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 9.248 | 22.6 | 8.201 | 1.08 |
+| k0: reference loop per stream | 9.992 | 20.9 | 7.760 | 1.00 |
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: gcc-15 (Homebrew GCC 15.3.0) 15.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 12.5 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 8.490 | 24.6 | 7.052 | 1.03 |
+| k0: reference loop per stream | 8.723 | 23.9 | 7.252 | 1.00 |
+| k1: NEON search, 1 stream | 6.030 | 34.6 | 5.142 | 1.45 |
+| k1: 2 streams interleaved | 3.370 | 62.0 | 2.827 | 2.59 |
+| k1: 3 streams interleaved | 2.976 | 70.2 | 2.121 | 2.93 |
+| k1: 4 streams interleaved | 1.716 | 121.7 | 1.566 | 5.08 |
+| k1: 6 streams interleaved | 1.697 | 123.1 | 1.486 | 5.14 |
+| k1: 8 streams interleaved | 2.088 | 100.0 | 1.455 | 4.18 |
+| k1: 1 stream, fused | 6.495 | 32.2 | 5.447 | 1.34 |
+| k1: 2 streams, fused | 3.588 | 58.2 | 2.961 | 2.43 |
+| k1: 3 streams, fused | 2.730 | 76.5 | 2.255 | 3.20 |
+| k1: 4 streams, fused | 2.075 | 100.7 | 1.688 | 4.20 |
+| k1: 6 streams, fused | 1.982 | 105.4 | 1.751 | 4.40 |
+| k1: 8 streams, fused | 1.761 | 118.6 | 1.424 | 4.95 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 9.709 | 21.5 | 8.733 | 0.95 |
+| k0: reference loop per stream | 9.225 | 22.6 | 8.490 | 1.00 |
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: Apple clang version 17.0.0 (clang-1700.0.13.5), -O3  -Xclang -fopenmp -I/opt/homebrew/opt/libomp/include -L/opt/homebrew/opt/libomp/lib -lomp
+== t_simd speed 21
+wex_fast_model_init: 14.8 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 9.403 | 22.2 | 7.729 | 1.21 |
+| k0: reference loop per stream | 11.371 | 18.4 | 8.757 | 1.00 |
+| k1: NEON search, 1 stream | 7.164 | 29.2 | 5.944 | 1.59 |
+| k1: 2 streams interleaved | 4.103 | 50.9 | 3.117 | 2.77 |
+| k1: 3 streams interleaved | 3.293 | 63.4 | 2.389 | 3.45 |
+| k1: 4 streams interleaved | 2.558 | 81.7 | 1.733 | 4.44 |
+| k1: 6 streams interleaved | 2.316 | 90.2 | 1.514 | 4.91 |
+| k1: 8 streams interleaved | 2.697 | 77.5 | 1.724 | 4.22 |
+| k1: 1 stream, fused | 7.024 | 29.7 | 5.929 | 1.62 |
+| k1: 2 streams, fused | 3.820 | 54.7 | 3.166 | 2.98 |
+| k1: 3 streams, fused | 3.154 | 66.2 | 2.271 | 3.61 |
+| k1: 4 streams, fused | 2.110 | 99.0 | 1.473 | 5.39 |
+| k1: 6 streams, fused | 2.409 | 86.7 | 1.480 | 4.72 |
+| k1: 8 streams, fused | 1.818 | 114.9 | 1.265 | 6.26 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 10.702 | 19.5 | 8.051 | 0.98 |
+| k0: reference loop per stream | 10.491 | 19.9 | 9.121 | 1.00 |
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: gcc-15 (Homebrew GCC 15.3.0) 15.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 11.9 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 9.259 | 22.6 | 8.130 | 1.03 |
+| k0: reference loop per stream | 9.508 | 22.0 | 7.373 | 1.00 |
+| k1: NEON search, 1 stream | 6.096 | 34.3 | 5.219 | 1.56 |
+| k1: 2 streams interleaved | 3.572 | 58.5 | 2.819 | 2.66 |
+| k1: 3 streams interleaved | 2.508 | 83.3 | 2.087 | 3.79 |
+| k1: 4 streams interleaved | 1.815 | 115.1 | 1.587 | 5.24 |
+| k1: 6 streams interleaved | 1.922 | 108.7 | 1.482 | 4.95 |
+| k1: 8 streams interleaved | 1.510 | 138.3 | 1.456 | 6.30 |
+| k1: 1 stream, fused | 6.064 | 34.5 | 5.251 | 1.57 |
+| k1: 2 streams, fused | 3.671 | 56.9 | 2.736 | 2.59 |
+| k1: 3 streams, fused | 2.539 | 82.3 | 2.199 | 3.74 |
+| k1: 4 streams, fused | 2.232 | 93.6 | 1.612 | 4.26 |
+| k1: 6 streams, fused | 1.741 | 120.0 | 1.432 | 5.46 |
+| k1: 8 streams, fused | 1.942 | 107.6 | 1.463 | 4.90 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 9.393 | 22.2 | 7.771 | 1.07 |
+| k0: reference loop per stream | 10.043 | 20.8 | 7.967 | 1.00 |
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: Apple clang version 17.0.0 (clang-1700.0.13.5), -O3  -Xclang -fopenmp -I/opt/homebrew/opt/libomp/include -L/opt/homebrew/opt/libomp/lib -lomp
+== t_simd speed 21
+wex_fast_model_init: 28.3 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 9.690 | 21.6 | 8.723 | 0.98 |
+| k0: reference loop per stream | 9.469 | 22.1 | 7.636 | 1.00 |
+| k1: NEON search, 1 stream | 6.276 | 33.3 | 5.092 | 1.51 |
+| k1: 2 streams interleaved | 3.390 | 61.6 | 2.935 | 2.79 |
+| k1: 3 streams interleaved | 2.667 | 78.3 | 2.215 | 3.55 |
+| k1: 4 streams interleaved | 2.017 | 103.6 | 1.579 | 4.69 |
+| k1: 6 streams interleaved | 2.064 | 101.2 | 1.458 | 4.59 |
+| k1: 8 streams interleaved | 1.958 | 106.7 | 1.450 | 4.84 |
+| k1: 1 stream, fused | 6.256 | 33.4 | 5.626 | 1.51 |
+| k1: 2 streams, fused | 3.450 | 60.6 | 2.868 | 2.74 |
+| k1: 3 streams, fused | 2.504 | 83.4 | 2.095 | 3.78 |
+| k1: 4 streams, fused | 2.246 | 93.0 | 1.486 | 4.22 |
+| k1: 6 streams, fused | 2.101 | 99.5 | 1.444 | 4.51 |
+| k1: 8 streams, fused | 1.944 | 107.5 | 1.332 | 4.87 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 9.495 | 22.0 | 7.549 | 0.90 |
+| k0: reference loop per stream | 8.556 | 24.4 | 7.525 | 1.00 |
+
+## run 43740953159, job arm-speed (ubuntu-24.04-arm, 1), runner image: ubuntu24-arm64 20261111.182.1
+machine: Linux aarch64, 4 logical CPUs
+Vendor ID:                               ARM
+Model name:                              Neoverse-N2
+BogoMIPS:                                2000.00
+compiler: gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 15.9 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.605 | 37.3 | 5.567 | 0.99 |
+| k0: reference loop per stream | 5.527 | 37.8 | 5.477 | 1.00 |
+| k1: NEON search, 1 stream | 3.724 | 56.1 | 3.721 | 1.48 |
+| k1: 2 streams interleaved | 2.110 | 99.0 | 2.108 | 2.62 |
+| k1: 3 streams interleaved | 1.681 | 124.3 | 1.679 | 3.29 |
+| k1: 4 streams interleaved | 1.403 | 148.9 | 1.401 | 3.94 |
+| k1: 6 streams interleaved | 1.396 | 149.7 | 1.394 | 3.96 |
+| k1: 8 streams interleaved | 1.860 | 112.3 | 1.858 | 2.97 |
+| k1: 1 stream, fused | 3.679 | 56.8 | 3.677 | 1.50 |
+| k1: 2 streams, fused | 2.048 | 102.0 | 2.046 | 2.70 |
+| k1: 3 streams, fused | 1.685 | 124.0 | 1.682 | 3.28 |
+| k1: 4 streams, fused | 1.416 | 147.5 | 1.412 | 3.90 |
+| k1: 6 streams, fused | 1.393 | 150.0 | 1.391 | 3.97 |
+| k1: 8 streams, fused | 1.828 | 114.3 | 1.826 | 3.02 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.502 | 38.0 | 5.466 | 0.99 |
+| k0: reference loop per stream | 5.472 | 38.2 | 5.457 | 1.00 |
+machine: Linux aarch64, 4 logical CPUs
+Vendor ID:                               ARM
+Model name:                              Neoverse-N2
+BogoMIPS:                                2000.00
+compiler: gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 16.0 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.635 | 37.1 | 5.566 | 0.99 |
+| k0: reference loop per stream | 5.572 | 37.5 | 5.544 | 1.00 |
+| k1: NEON search, 1 stream | 3.724 | 56.1 | 3.721 | 1.50 |
+| k1: 2 streams interleaved | 2.113 | 98.9 | 2.109 | 2.64 |
+| k1: 3 streams interleaved | 1.684 | 124.1 | 1.682 | 3.31 |
+| k1: 4 streams interleaved | 1.412 | 147.9 | 1.404 | 3.94 |
+| k1: 6 streams interleaved | 1.403 | 148.9 | 1.399 | 3.97 |
+| k1: 8 streams interleaved | 1.866 | 112.0 | 1.860 | 2.99 |
+| k1: 1 stream, fused | 3.679 | 56.8 | 3.676 | 1.51 |
+| k1: 2 streams, fused | 2.050 | 101.9 | 2.048 | 2.72 |
+| k1: 3 streams, fused | 1.675 | 124.7 | 1.673 | 3.33 |
+| k1: 4 streams, fused | 1.408 | 148.3 | 1.406 | 3.96 |
+| k1: 6 streams, fused | 1.393 | 149.9 | 1.392 | 4.00 |
+| k1: 8 streams, fused | 1.830 | 114.2 | 1.829 | 3.04 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.520 | 37.8 | 5.490 | 0.99 |
+| k0: reference loop per stream | 5.476 | 38.1 | 5.441 | 1.00 |
+machine: Linux aarch64, 4 logical CPUs
+Vendor ID:                               ARM
+Model name:                              Neoverse-N2
+BogoMIPS:                                2000.00
+compiler: gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 15.9 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.587 | 37.4 | 5.556 | 0.99 |
+| k0: reference loop per stream | 5.557 | 37.6 | 5.499 | 1.00 |
+| k1: NEON search, 1 stream | 3.724 | 56.1 | 3.721 | 1.49 |
+| k1: 2 streams interleaved | 2.114 | 98.8 | 2.110 | 2.63 |
+| k1: 3 streams interleaved | 1.682 | 124.2 | 1.680 | 3.30 |
+| k1: 4 streams interleaved | 1.403 | 148.8 | 1.402 | 3.96 |
+| k1: 6 streams interleaved | 1.396 | 149.7 | 1.395 | 3.98 |
+| k1: 8 streams interleaved | 1.860 | 112.3 | 1.859 | 2.99 |
+| k1: 1 stream, fused | 3.681 | 56.8 | 3.675 | 1.51 |
+| k1: 2 streams, fused | 2.050 | 101.9 | 2.048 | 2.71 |
+| k1: 3 streams, fused | 1.673 | 124.9 | 1.672 | 3.32 |
+| k1: 4 streams, fused | 1.407 | 148.4 | 1.405 | 3.95 |
+| k1: 6 streams, fused | 1.393 | 150.0 | 1.392 | 3.99 |
+| k1: 8 streams, fused | 1.828 | 114.3 | 1.825 | 3.04 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.500 | 38.0 | 5.455 | 1.00 |
+| k0: reference loop per stream | 5.490 | 38.1 | 5.445 | 1.00 |
+
+## run 43740953159, job arm-speed (ubuntu-24.04-arm, 2), runner image: ubuntu24-arm64 20261111.182.1
+machine: Linux aarch64, 4 logical CPUs
+Vendor ID:                               ARM
+Model name:                              Neoverse-N2
+BogoMIPS:                                2000.00
+compiler: gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 15.9 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.581 | 37.4 | 5.563 | 0.99 |
+| k0: reference loop per stream | 5.549 | 37.6 | 5.516 | 1.00 |
+| k1: NEON search, 1 stream | 3.728 | 56.0 | 3.720 | 1.49 |
+| k1: 2 streams interleaved | 2.130 | 98.1 | 2.116 | 2.61 |
+| k1: 3 streams interleaved | 1.697 | 123.1 | 1.690 | 3.27 |
+| k1: 4 streams interleaved | 1.406 | 148.6 | 1.403 | 3.95 |
+| k1: 6 streams interleaved | 1.397 | 149.5 | 1.395 | 3.97 |
+| k1: 8 streams interleaved | 1.862 | 112.2 | 1.861 | 2.98 |
+| k1: 1 stream, fused | 3.673 | 56.9 | 3.670 | 1.51 |
+| k1: 2 streams, fused | 2.054 | 101.7 | 2.052 | 2.70 |
+| k1: 3 streams, fused | 1.678 | 124.5 | 1.676 | 3.31 |
+| k1: 4 streams, fused | 1.409 | 148.3 | 1.407 | 3.94 |
+| k1: 6 streams, fused | 1.394 | 149.9 | 1.391 | 3.98 |
+| k1: 8 streams, fused | 1.830 | 114.2 | 1.827 | 3.03 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.504 | 38.0 | 5.474 | 1.00 |
+| k0: reference loop per stream | 5.482 | 38.1 | 5.426 | 1.00 |
+machine: Linux aarch64, 4 logical CPUs
+Vendor ID:                               ARM
+Model name:                              Neoverse-N2
+BogoMIPS:                                2000.00
+compiler: gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 15.5 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.633 | 37.1 | 5.580 | 0.99 |
+| k0: reference loop per stream | 5.555 | 37.6 | 5.522 | 1.00 |
+| k1: NEON search, 1 stream | 3.718 | 56.2 | 3.716 | 1.49 |
+| k1: 2 streams interleaved | 2.111 | 98.9 | 2.108 | 2.63 |
+| k1: 3 streams interleaved | 1.683 | 124.1 | 1.681 | 3.30 |
+| k1: 4 streams interleaved | 1.403 | 148.9 | 1.401 | 3.96 |
+| k1: 6 streams interleaved | 1.395 | 149.7 | 1.393 | 3.98 |
+| k1: 8 streams interleaved | 1.859 | 112.3 | 1.858 | 2.99 |
+| k1: 1 stream, fused | 3.674 | 56.9 | 3.672 | 1.51 |
+| k1: 2 streams, fused | 2.050 | 101.9 | 2.048 | 2.71 |
+| k1: 3 streams, fused | 1.674 | 124.8 | 1.673 | 3.32 |
+| k1: 4 streams, fused | 1.406 | 148.6 | 1.404 | 3.95 |
+| k1: 6 streams, fused | 1.394 | 149.9 | 1.391 | 3.99 |
+| k1: 8 streams, fused | 1.827 | 114.3 | 1.825 | 3.04 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.512 | 37.9 | 5.477 | 0.99 |
+| k0: reference loop per stream | 5.445 | 38.4 | 5.414 | 1.00 |
+machine: Linux aarch64, 4 logical CPUs
+Vendor ID:                               ARM
+Model name:                              Neoverse-N2
+BogoMIPS:                                2000.00
+compiler: gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 15.9 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.606 | 37.3 | 5.560 | 0.99 |
+| k0: reference loop per stream | 5.550 | 37.6 | 5.503 | 1.00 |
+| k1: NEON search, 1 stream | 3.717 | 56.2 | 3.714 | 1.49 |
+| k1: 2 streams interleaved | 2.109 | 99.1 | 2.107 | 2.63 |
+| k1: 3 streams interleaved | 1.681 | 124.2 | 1.680 | 3.30 |
+| k1: 4 streams interleaved | 1.404 | 148.8 | 1.402 | 3.95 |
+| k1: 6 streams interleaved | 1.397 | 149.6 | 1.395 | 3.97 |
+| k1: 8 streams interleaved | 1.861 | 112.3 | 1.859 | 2.98 |
+| k1: 1 stream, fused | 3.675 | 56.8 | 3.673 | 1.51 |
+| k1: 2 streams, fused | 2.047 | 102.1 | 2.045 | 2.71 |
+| k1: 3 streams, fused | 1.673 | 124.8 | 1.672 | 3.32 |
+| k1: 4 streams, fused | 1.407 | 148.5 | 1.406 | 3.94 |
+| k1: 6 streams, fused | 1.394 | 149.9 | 1.392 | 3.98 |
+| k1: 8 streams, fused | 1.829 | 114.2 | 1.827 | 3.04 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.519 | 37.9 | 5.488 | 0.99 |
+| k0: reference loop per stream | 5.483 | 38.1 | 5.468 | 1.00 |
+
+## run 43740953159, job arm-speed (ubuntu-24.04-arm, 3), runner image: ubuntu24-arm64 20261111.182.1
+machine: Linux aarch64, 4 logical CPUs
+Vendor ID:                               ARM
+Model name:                              Neoverse-N2
+BogoMIPS:                                2000.00
+compiler: gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 15.5 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.629 | 37.1 | 5.582 | 0.99 |
+| k0: reference loop per stream | 5.557 | 37.6 | 5.505 | 1.00 |
+| k1: NEON search, 1 stream | 3.718 | 56.2 | 3.717 | 1.49 |
+| k1: 2 streams interleaved | 2.111 | 99.0 | 2.109 | 2.63 |
+| k1: 3 streams interleaved | 1.681 | 124.3 | 1.680 | 3.31 |
+| k1: 4 streams interleaved | 1.403 | 148.9 | 1.402 | 3.96 |
+| k1: 6 streams interleaved | 1.397 | 149.5 | 1.395 | 3.98 |
+| k1: 8 streams interleaved | 1.862 | 112.2 | 1.859 | 2.98 |
+| k1: 1 stream, fused | 3.675 | 56.8 | 3.672 | 1.51 |
+| k1: 2 streams, fused | 2.050 | 101.9 | 2.047 | 2.71 |
+| k1: 3 streams, fused | 1.674 | 124.8 | 1.673 | 3.32 |
+| k1: 4 streams, fused | 1.407 | 148.5 | 1.405 | 3.95 |
+| k1: 6 streams, fused | 1.394 | 149.9 | 1.392 | 3.99 |
+| k1: 8 streams, fused | 1.830 | 114.2 | 1.828 | 3.04 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.512 | 37.9 | 5.466 | 0.99 |
+| k0: reference loop per stream | 5.474 | 38.2 | 5.436 | 1.00 |
+machine: Linux aarch64, 4 logical CPUs
+Vendor ID:                               ARM
+Model name:                              Neoverse-N2
+BogoMIPS:                                2000.00
+compiler: gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 15.6 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.598 | 37.3 | 5.564 | 0.99 |
+| k0: reference loop per stream | 5.549 | 37.6 | 5.485 | 1.00 |
+| k1: NEON search, 1 stream | 3.719 | 56.2 | 3.717 | 1.49 |
+| k1: 2 streams interleaved | 2.111 | 99.0 | 2.109 | 2.63 |
+| k1: 3 streams interleaved | 1.682 | 124.2 | 1.681 | 3.30 |
+| k1: 4 streams interleaved | 1.405 | 148.7 | 1.403 | 3.95 |
+| k1: 6 streams interleaved | 1.396 | 149.7 | 1.394 | 3.98 |
+| k1: 8 streams interleaved | 1.862 | 112.2 | 1.860 | 2.98 |
+| k1: 1 stream, fused | 3.675 | 56.8 | 3.673 | 1.51 |
+| k1: 2 streams, fused | 2.050 | 101.9 | 2.048 | 2.71 |
+| k1: 3 streams, fused | 1.676 | 124.6 | 1.674 | 3.31 |
+| k1: 4 streams, fused | 1.408 | 148.4 | 1.406 | 3.94 |
+| k1: 6 streams, fused | 1.393 | 149.9 | 1.392 | 3.98 |
+| k1: 8 streams, fused | 1.831 | 114.1 | 1.829 | 3.03 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.512 | 37.9 | 5.469 | 0.99 |
+| k0: reference loop per stream | 5.483 | 38.1 | 5.451 | 1.00 |
+machine: Linux aarch64, 4 logical CPUs
+Vendor ID:                               ARM
+Model name:                              Neoverse-N2
+BogoMIPS:                                2000.00
+compiler: gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 15.9 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.625 | 37.1 | 5.579 | 0.99 |
+| k0: reference loop per stream | 5.549 | 37.6 | 5.506 | 1.00 |
+| k1: NEON search, 1 stream | 3.724 | 56.1 | 3.721 | 1.49 |
+| k1: 2 streams interleaved | 2.112 | 98.9 | 2.109 | 2.63 |
+| k1: 3 streams interleaved | 1.684 | 124.1 | 1.681 | 3.30 |
+| k1: 4 streams interleaved | 1.405 | 148.7 | 1.403 | 3.95 |
+| k1: 6 streams interleaved | 1.397 | 149.5 | 1.396 | 3.97 |
+| k1: 8 streams interleaved | 1.862 | 112.2 | 1.859 | 2.98 |
+| k1: 1 stream, fused | 3.671 | 56.9 | 3.669 | 1.51 |
+| k1: 2 streams, fused | 2.051 | 101.9 | 2.050 | 2.71 |
+| k1: 3 streams, fused | 1.675 | 124.7 | 1.673 | 3.31 |
+| k1: 4 streams, fused | 1.408 | 148.4 | 1.406 | 3.94 |
+| k1: 6 streams, fused | 1.395 | 149.8 | 1.393 | 3.98 |
+| k1: 8 streams, fused | 1.830 | 114.2 | 1.828 | 3.03 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.511 | 37.9 | 5.454 | 0.99 |
+| k0: reference loop per stream | 5.473 | 38.2 | 5.420 | 1.00 |
+
+## run 43740953159, job arm-speed (macos-15, 1), runner image: macos15 20261104.0514.1, Homebrew libomp 23.1.5
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: gcc-15 (Homebrew GCC 15.3.0) 15.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 14.3 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 7.400 | 28.2 | 6.610 | 0.99 |
+| k0: reference loop per stream | 7.335 | 28.5 | 6.833 | 1.00 |
+| k1: NEON search, 1 stream | 5.280 | 39.6 | 4.903 | 1.39 |
+| k1: 2 streams interleaved | 2.710 | 77.1 | 2.537 | 2.71 |
+| k1: 3 streams interleaved | 2.027 | 103.1 | 1.903 | 3.62 |
+| k1: 4 streams interleaved | 1.635 | 127.7 | 1.443 | 4.49 |
+| k1: 6 streams interleaved | 1.513 | 138.1 | 1.361 | 4.85 |
+| k1: 8 streams interleaved | 1.444 | 144.7 | 1.318 | 5.08 |
+| k1: 1 stream, fused | 5.290 | 39.5 | 5.117 | 1.39 |
+| k1: 2 streams, fused | 2.800 | 74.6 | 2.663 | 2.62 |
+| k1: 3 streams, fused | 2.046 | 102.1 | 1.966 | 3.59 |
+| k1: 4 streams, fused | 1.509 | 138.4 | 1.437 | 4.86 |
+| k1: 6 streams, fused | 1.445 | 144.6 | 1.345 | 5.08 |
+| k1: 8 streams, fused | 1.440 | 145.0 | 1.271 | 5.09 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 7.511 | 27.8 | 7.167 | 1.10 |
+| k0: reference loop per stream | 8.229 | 25.4 | 7.230 | 1.00 |
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: Apple clang version 17.0.0 (clang-1700.0.13.5), -O3  -Xclang -fopenmp -I/opt/homebrew/opt/libomp/include -L/opt/homebrew/opt/libomp/lib -lomp
+== t_simd speed 21
+wex_fast_model_init: 11.6 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 8.765 | 23.8 | 7.384 | 0.93 |
+| k0: reference loop per stream | 8.118 | 25.7 | 7.576 | 1.00 |
+| k1: NEON search, 1 stream | 5.589 | 37.4 | 5.022 | 1.45 |
+| k1: 2 streams interleaved | 2.963 | 70.5 | 2.647 | 2.74 |
+| k1: 3 streams interleaved | 2.008 | 104.0 | 1.970 | 4.04 |
+| k1: 4 streams interleaved | 1.520 | 137.4 | 1.491 | 5.34 |
+| k1: 6 streams interleaved | 1.470 | 142.1 | 1.431 | 5.52 |
+| k1: 8 streams interleaved | 1.332 | 156.9 | 1.272 | 6.10 |
+| k1: 1 stream, fused | 4.960 | 42.1 | 4.808 | 1.64 |
+| k1: 2 streams, fused | 2.566 | 81.4 | 2.507 | 3.16 |
+| k1: 3 streams, fused | 1.931 | 108.2 | 1.893 | 4.21 |
+| k1: 4 streams, fused | 1.557 | 134.2 | 1.454 | 5.21 |
+| k1: 6 streams, fused | 1.946 | 107.3 | 1.347 | 4.17 |
+| k1: 8 streams, fused | 1.345 | 155.3 | 1.254 | 6.04 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 8.477 | 24.6 | 7.338 | 1.07 |
+| k0: reference loop per stream | 9.045 | 23.1 | 7.428 | 1.00 |
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: gcc-15 (Homebrew GCC 15.3.0) 15.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 11.4 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 7.573 | 27.6 | 7.065 | 1.26 |
+| k0: reference loop per stream | 9.518 | 21.9 | 8.256 | 1.00 |
+| k1: NEON search, 1 stream | 5.231 | 39.9 | 5.060 | 1.82 |
+| k1: 2 streams interleaved | 3.214 | 65.0 | 2.779 | 2.96 |
+| k1: 3 streams interleaved | 2.272 | 92.0 | 2.073 | 4.19 |
+| k1: 4 streams interleaved | 1.556 | 134.3 | 1.544 | 6.12 |
+| k1: 6 streams interleaved | 1.515 | 137.8 | 1.466 | 6.28 |
+| k1: 8 streams interleaved | 1.439 | 145.1 | 1.412 | 6.61 |
+| k1: 1 stream, fused | 5.167 | 40.4 | 5.033 | 1.84 |
+| k1: 2 streams, fused | 2.690 | 77.7 | 2.649 | 3.54 |
+| k1: 3 streams, fused | 1.982 | 105.4 | 1.951 | 4.80 |
+| k1: 4 streams, fused | 1.557 | 134.2 | 1.483 | 6.11 |
+| k1: 6 streams, fused | 1.412 | 147.9 | 1.379 | 6.74 |
+| k1: 8 streams, fused | 1.417 | 147.5 | 1.335 | 6.72 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 7.557 | 27.6 | 7.229 | 0.97 |
+| k0: reference loop per stream | 7.338 | 28.5 | 7.109 | 1.00 |
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: Apple clang version 17.0.0 (clang-1700.0.13.5), -O3  -Xclang -fopenmp -I/opt/homebrew/opt/libomp/include -L/opt/homebrew/opt/libomp/lib -lomp
+== t_simd speed 21
+wex_fast_model_init: 11.6 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 7.384 | 28.3 | 7.197 | 1.04 |
+| k0: reference loop per stream | 7.660 | 27.3 | 7.470 | 1.00 |
+| k1: NEON search, 1 stream | 5.743 | 36.4 | 4.957 | 1.33 |
+| k1: 2 streams interleaved | 3.004 | 69.6 | 2.598 | 2.55 |
+| k1: 3 streams interleaved | 2.132 | 98.0 | 2.004 | 3.59 |
+| k1: 4 streams interleaved | 1.776 | 117.6 | 1.497 | 4.31 |
+| k1: 6 streams interleaved | 1.629 | 128.2 | 1.459 | 4.70 |
+| k1: 8 streams interleaved | 1.367 | 152.8 | 1.300 | 5.60 |
+| k1: 1 stream, fused | 5.750 | 36.3 | 4.925 | 1.33 |
+| k1: 2 streams, fused | 3.093 | 67.5 | 2.548 | 2.48 |
+| k1: 3 streams, fused | 2.183 | 95.7 | 1.892 | 3.51 |
+| k1: 4 streams, fused | 1.463 | 142.7 | 1.420 | 5.23 |
+| k1: 6 streams, fused | 1.657 | 126.0 | 1.361 | 4.62 |
+| k1: 8 streams, fused | 1.378 | 151.6 | 1.264 | 5.56 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 8.739 | 23.9 | 7.409 | 1.02 |
+| k0: reference loop per stream | 8.923 | 23.4 | 7.530 | 1.00 |
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: gcc-15 (Homebrew GCC 15.3.0) 15.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 10.8 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 8.644 | 24.2 | 7.261 | 1.12 |
+| k0: reference loop per stream | 9.715 | 21.5 | 8.191 | 1.00 |
+| k1: NEON search, 1 stream | 6.620 | 31.6 | 5.978 | 1.47 |
+| k1: 2 streams interleaved | 3.209 | 65.1 | 2.859 | 3.03 |
+| k1: 3 streams interleaved | 2.734 | 76.4 | 2.098 | 3.55 |
+| k1: 4 streams interleaved | 1.907 | 109.6 | 1.555 | 5.10 |
+| k1: 6 streams interleaved | 1.821 | 114.7 | 1.483 | 5.34 |
+| k1: 8 streams interleaved | 1.521 | 137.3 | 1.444 | 6.39 |
+| k1: 1 stream, fused | 5.396 | 38.7 | 5.116 | 1.80 |
+| k1: 2 streams, fused | 3.235 | 64.6 | 2.668 | 3.00 |
+| k1: 3 streams, fused | 2.158 | 96.8 | 1.978 | 4.50 |
+| k1: 4 streams, fused | 1.791 | 116.6 | 1.512 | 5.42 |
+| k1: 6 streams, fused | 1.605 | 130.2 | 1.394 | 6.05 |
+| k1: 8 streams, fused | 1.620 | 129.0 | 1.355 | 6.00 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 9.009 | 23.2 | 7.310 | 0.93 |
+| k0: reference loop per stream | 8.334 | 25.1 | 7.505 | 1.00 |
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: Apple clang version 17.0.0 (clang-1700.0.13.5), -O3  -Xclang -fopenmp -I/opt/homebrew/opt/libomp/include -L/opt/homebrew/opt/libomp/lib -lomp
+== t_simd speed 21
+wex_fast_model_init: 12.6 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 7.941 | 26.3 | 7.243 | 1.10 |
+| k0: reference loop per stream | 8.723 | 23.9 | 7.752 | 1.00 |
+| k1: NEON search, 1 stream | 6.003 | 34.8 | 5.140 | 1.45 |
+| k1: 2 streams interleaved | 2.850 | 73.3 | 2.674 | 3.06 |
+| k1: 3 streams interleaved | 2.063 | 101.2 | 1.999 | 4.23 |
+| k1: 4 streams interleaved | 2.029 | 103.0 | 1.528 | 4.30 |
+| k1: 6 streams interleaved | 1.741 | 120.0 | 1.474 | 5.01 |
+| k1: 8 streams interleaved | 1.699 | 123.0 | 1.412 | 5.13 |
+| k1: 1 stream, fused | 5.932 | 35.2 | 5.037 | 1.47 |
+| k1: 2 streams, fused | 3.055 | 68.4 | 2.569 | 2.86 |
+| k1: 3 streams, fused | 2.098 | 99.6 | 1.915 | 4.16 |
+| k1: 4 streams, fused | 1.827 | 114.3 | 1.449 | 4.77 |
+| k1: 6 streams, fused | 1.922 | 108.7 | 1.357 | 4.54 |
+| k1: 8 streams, fused | 1.322 | 158.0 | 1.256 | 6.60 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 7.634 | 27.4 | 7.346 | 1.07 |
+| k0: reference loop per stream | 8.142 | 25.7 | 7.522 | 1.00 |
+
+## run 43740953159, job arm-speed (macos-15, 2), runner image: macos15 20261104.0514.1, Homebrew libomp 23.1.5
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: gcc-15 (Homebrew GCC 15.3.0) 15.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 17.2 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 9.147 | 22.8 | 7.150 | 1.04 |
+| k0: reference loop per stream | 9.468 | 22.1 | 7.737 | 1.00 |
+| k1: NEON search, 1 stream | 6.657 | 31.4 | 5.017 | 1.42 |
+| k1: 2 streams interleaved | 3.391 | 61.6 | 2.806 | 2.79 |
+| k1: 3 streams interleaved | 2.497 | 83.7 | 2.054 | 3.79 |
+| k1: 4 streams interleaved | 1.581 | 132.1 | 1.538 | 5.99 |
+| k1: 6 streams interleaved | 1.458 | 143.2 | 1.451 | 6.49 |
+| k1: 8 streams interleaved | 1.424 | 146.7 | 1.405 | 6.65 |
+| k1: 1 stream, fused | 5.759 | 36.3 | 5.094 | 1.64 |
+| k1: 2 streams, fused | 3.287 | 63.6 | 2.670 | 2.88 |
+| k1: 3 streams, fused | 2.705 | 77.2 | 1.966 | 3.50 |
+| k1: 4 streams, fused | 1.992 | 104.9 | 1.492 | 4.75 |
+| k1: 6 streams, fused | 1.799 | 116.1 | 1.401 | 5.26 |
+| k1: 8 streams, fused | 1.383 | 151.0 | 1.340 | 6.84 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 8.857 | 23.6 | 7.475 | 0.96 |
+| k0: reference loop per stream | 8.481 | 24.6 | 7.202 | 1.00 |
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: Apple clang version 17.0.0 (clang-1700.0.13.5), -O3  -Xclang -fopenmp -I/opt/homebrew/opt/libomp/include -L/opt/homebrew/opt/libomp/lib -lomp
+== t_simd speed 21
+wex_fast_model_init: 12.1 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 9.743 | 21.4 | 7.621 | 0.99 |
+| k0: reference loop per stream | 9.679 | 21.6 | 7.738 | 1.00 |
+| k1: NEON search, 1 stream | 5.394 | 38.7 | 5.016 | 1.79 |
+| k1: 2 streams interleaved | 3.281 | 63.7 | 2.635 | 2.95 |
+| k1: 3 streams interleaved | 2.158 | 96.8 | 1.976 | 4.49 |
+| k1: 4 streams interleaved | 1.513 | 138.1 | 1.492 | 6.40 |
+| k1: 6 streams interleaved | 2.706 | 77.2 | 1.480 | 3.58 |
+| k1: 8 streams interleaved | 1.499 | 139.4 | 1.311 | 6.46 |
+| k1: 1 stream, fused | 6.100 | 34.2 | 5.243 | 1.59 |
+| k1: 2 streams, fused | 3.353 | 62.3 | 2.685 | 2.89 |
+| k1: 3 streams, fused | 2.706 | 77.2 | 2.096 | 3.58 |
+| k1: 4 streams, fused | 1.753 | 119.2 | 1.622 | 5.52 |
+| k1: 6 streams, fused | 1.535 | 136.1 | 1.352 | 6.31 |
+| k1: 8 streams, fused | 1.806 | 115.7 | 1.315 | 5.36 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 8.969 | 23.3 | 8.112 | 1.01 |
+| k0: reference loop per stream | 9.090 | 23.0 | 7.781 | 1.00 |
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: gcc-15 (Homebrew GCC 15.3.0) 15.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 19.5 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 9.663 | 21.6 | 7.481 | 0.93 |
+| k0: reference loop per stream | 8.968 | 23.3 | 7.435 | 1.00 |
+| k1: NEON search, 1 stream | 6.316 | 33.1 | 5.108 | 1.42 |
+| k1: 2 streams interleaved | 3.580 | 58.3 | 2.773 | 2.50 |
+| k1: 3 streams interleaved | 2.395 | 87.2 | 2.100 | 3.75 |
+| k1: 4 streams interleaved | 1.775 | 117.7 | 1.589 | 5.05 |
+| k1: 6 streams interleaved | 1.705 | 122.6 | 1.499 | 5.26 |
+| k1: 8 streams interleaved | 1.903 | 109.8 | 1.454 | 4.71 |
+| k1: 1 stream, fused | 6.153 | 34.0 | 5.289 | 1.46 |
+| k1: 2 streams, fused | 3.035 | 68.8 | 2.733 | 2.96 |
+| k1: 3 streams, fused | 2.765 | 75.6 | 2.147 | 3.24 |
+| k1: 4 streams, fused | 2.099 | 99.5 | 1.526 | 4.27 |
+| k1: 6 streams, fused | 1.837 | 113.7 | 1.406 | 4.88 |
+| k1: 8 streams, fused | 2.158 | 96.8 | 1.524 | 4.16 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 9.265 | 22.5 | 8.274 | 1.01 |
+| k0: reference loop per stream | 9.351 | 22.3 | 8.364 | 1.00 |
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: Apple clang version 17.0.0 (clang-1700.0.13.5), -O3  -Xclang -fopenmp -I/opt/homebrew/opt/libomp/include -L/opt/homebrew/opt/libomp/lib -lomp
+== t_simd speed 21
+wex_fast_model_init: 26.6 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 8.037 | 26.0 | 7.206 | 1.09 |
+| k0: reference loop per stream | 8.744 | 23.9 | 7.875 | 1.00 |
+| k1: NEON search, 1 stream | 5.774 | 36.2 | 5.013 | 1.51 |
+| k1: 2 streams interleaved | 2.934 | 71.2 | 2.643 | 2.98 |
+| k1: 3 streams interleaved | 2.775 | 75.3 | 2.072 | 3.15 |
+| k1: 4 streams interleaved | 1.802 | 116.0 | 1.505 | 4.85 |
+| k1: 6 streams interleaved | 1.716 | 121.7 | 1.461 | 5.10 |
+| k1: 8 streams interleaved | 1.838 | 113.7 | 1.363 | 4.76 |
+| k1: 1 stream, fused | 6.138 | 34.0 | 5.596 | 1.42 |
+| k1: 2 streams, fused | 3.192 | 65.4 | 2.761 | 2.74 |
+| k1: 3 streams, fused | 2.951 | 70.8 | 2.094 | 2.96 |
+| k1: 4 streams, fused | 1.820 | 114.8 | 1.507 | 4.80 |
+| k1: 6 streams, fused | 2.169 | 96.3 | 1.597 | 4.03 |
+| k1: 8 streams, fused | 1.378 | 151.6 | 1.275 | 6.35 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 9.337 | 22.4 | 7.886 | 1.04 |
+| k0: reference loop per stream | 9.677 | 21.6 | 7.553 | 1.00 |
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: gcc-15 (Homebrew GCC 15.3.0) 15.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 13.7 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 8.784 | 23.8 | 7.404 | 1.07 |
+| k0: reference loop per stream | 9.392 | 22.2 | 7.910 | 1.00 |
+| k1: NEON search, 1 stream | 5.935 | 35.2 | 5.072 | 1.58 |
+| k1: 2 streams interleaved | 3.484 | 60.0 | 2.802 | 2.70 |
+| k1: 3 streams interleaved | 2.357 | 88.6 | 2.081 | 3.98 |
+| k1: 4 streams interleaved | 2.371 | 88.1 | 1.578 | 3.96 |
+| k1: 6 streams interleaved | 1.889 | 110.6 | 1.496 | 4.97 |
+| k1: 8 streams interleaved | 1.476 | 141.5 | 1.431 | 6.36 |
+| k1: 1 stream, fused | 5.925 | 35.3 | 5.232 | 1.59 |
+| k1: 2 streams, fused | 3.314 | 63.0 | 2.960 | 2.83 |
+| k1: 3 streams, fused | 2.468 | 84.7 | 2.016 | 3.81 |
+| k1: 4 streams, fused | 2.406 | 86.8 | 1.500 | 3.90 |
+| k1: 6 streams, fused | 1.821 | 114.7 | 1.390 | 5.16 |
+| k1: 8 streams, fused | 2.570 | 81.3 | 1.386 | 3.65 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 9.192 | 22.7 | 7.446 | 0.96 |
+| k0: reference loop per stream | 8.783 | 23.8 | 7.212 | 1.00 |
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: Apple clang version 17.0.0 (clang-1700.0.13.5), -O3  -Xclang -fopenmp -I/opt/homebrew/opt/libomp/include -L/opt/homebrew/opt/libomp/lib -lomp
+== t_simd speed 21
+wex_fast_model_init: 11.7 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 8.878 | 23.5 | 7.335 | 1.00 |
+| k0: reference loop per stream | 8.922 | 23.4 | 7.656 | 1.00 |
+| k1: NEON search, 1 stream | 5.670 | 36.8 | 5.083 | 1.57 |
+| k1: 2 streams interleaved | 3.079 | 67.8 | 2.680 | 2.90 |
+| k1: 3 streams interleaved | 2.367 | 88.3 | 1.999 | 3.77 |
+| k1: 4 streams interleaved | 1.574 | 132.7 | 1.525 | 5.67 |
+| k1: 6 streams interleaved | 1.832 | 114.0 | 1.466 | 4.87 |
+| k1: 8 streams interleaved | 1.533 | 136.2 | 1.331 | 5.82 |
+| k1: 1 stream, fused | 5.917 | 35.3 | 4.957 | 1.51 |
+| k1: 2 streams, fused | 3.172 | 65.9 | 2.581 | 2.81 |
+| k1: 3 streams, fused | 2.768 | 75.5 | 1.938 | 3.22 |
+| k1: 4 streams, fused | 1.795 | 116.4 | 1.487 | 4.97 |
+| k1: 6 streams, fused | 1.677 | 124.6 | 1.369 | 5.32 |
+| k1: 8 streams, fused | 1.340 | 155.9 | 1.258 | 6.66 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 9.005 | 23.2 | 7.492 | 1.15 |
+| k0: reference loop per stream | 10.334 | 20.2 | 8.397 | 1.00 |
+
+## run 43740953159, job arm-speed (macos-15, 3), runner image: macos15 20261104.0514.1, Homebrew libomp 23.1.5
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: gcc-15 (Homebrew GCC 15.3.0) 15.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 12.1 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 7.977 | 26.2 | 7.626 | 1.00 |
+| k0: reference loop per stream | 7.957 | 26.3 | 7.582 | 1.00 |
+| k1: NEON search, 1 stream | 5.552 | 37.6 | 4.841 | 1.43 |
+| k1: 2 streams interleaved | 2.840 | 73.6 | 2.780 | 2.80 |
+| k1: 3 streams interleaved | 2.187 | 95.5 | 2.098 | 3.64 |
+| k1: 4 streams interleaved | 1.648 | 126.8 | 1.572 | 4.83 |
+| k1: 6 streams interleaved | 1.577 | 132.5 | 1.499 | 5.05 |
+| k1: 8 streams interleaved | 1.470 | 142.1 | 1.429 | 5.41 |
+| k1: 1 stream, fused | 5.950 | 35.1 | 5.138 | 1.34 |
+| k1: 2 streams, fused | 2.911 | 71.8 | 2.645 | 2.73 |
+| k1: 3 streams, fused | 2.340 | 89.3 | 2.046 | 3.40 |
+| k1: 4 streams, fused | 1.673 | 124.9 | 1.599 | 4.76 |
+| k1: 6 streams, fused | 1.610 | 129.7 | 1.469 | 4.94 |
+| k1: 8 streams, fused | 1.502 | 139.1 | 1.445 | 5.30 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 8.370 | 25.0 | 7.275 | 0.98 |
+| k0: reference loop per stream | 8.215 | 25.4 | 7.525 | 1.00 |
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: Apple clang version 17.0.0 (clang-1700.0.13.5), -O3  -Xclang -fopenmp -I/opt/homebrew/opt/libomp/include -L/opt/homebrew/opt/libomp/lib -lomp
+== t_simd speed 21
+wex_fast_model_init: 27.4 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 7.965 | 26.2 | 7.312 | 0.97 |
+| k0: reference loop per stream | 7.760 | 26.9 | 7.579 | 1.00 |
+| k1: NEON search, 1 stream | 5.224 | 40.0 | 4.854 | 1.49 |
+| k1: 2 streams interleaved | 3.489 | 59.9 | 2.779 | 2.22 |
+| k1: 3 streams interleaved | 2.515 | 83.1 | 2.148 | 3.09 |
+| k1: 4 streams interleaved | 1.999 | 104.5 | 1.571 | 3.88 |
+| k1: 6 streams interleaved | 1.525 | 137.0 | 1.434 | 5.09 |
+| k1: 8 streams interleaved | 1.754 | 119.1 | 1.373 | 4.42 |
+| k1: 1 stream, fused | 5.732 | 36.4 | 5.067 | 1.35 |
+| k1: 2 streams, fused | 2.799 | 74.6 | 2.554 | 2.77 |
+| k1: 3 streams, fused | 2.178 | 95.9 | 1.908 | 3.56 |
+| k1: 4 streams, fused | 1.603 | 130.3 | 1.441 | 4.84 |
+| k1: 6 streams, fused | 1.580 | 132.2 | 1.391 | 4.91 |
+| k1: 8 streams, fused | 1.324 | 157.8 | 1.264 | 5.86 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 8.688 | 24.0 | 7.349 | 1.11 |
+| k0: reference loop per stream | 9.637 | 21.7 | 7.987 | 1.00 |
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: gcc-15 (Homebrew GCC 15.3.0) 15.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 24.7 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 8.573 | 24.4 | 7.483 | 0.97 |
+| k0: reference loop per stream | 8.322 | 25.1 | 7.897 | 1.00 |
+| k1: NEON search, 1 stream | 5.550 | 37.6 | 5.324 | 1.50 |
+| k1: 2 streams interleaved | 2.972 | 70.3 | 2.867 | 2.80 |
+| k1: 3 streams interleaved | 2.208 | 94.6 | 2.116 | 3.77 |
+| k1: 4 streams interleaved | 1.743 | 119.9 | 1.637 | 4.78 |
+| k1: 6 streams interleaved | 1.599 | 130.7 | 1.501 | 5.21 |
+| k1: 8 streams interleaved | 1.595 | 131.0 | 1.489 | 5.22 |
+| k1: 1 stream, fused | 5.692 | 36.7 | 5.417 | 1.46 |
+| k1: 2 streams, fused | 2.940 | 71.1 | 2.774 | 2.83 |
+| k1: 3 streams, fused | 2.197 | 95.1 | 2.060 | 3.79 |
+| k1: 4 streams, fused | 1.669 | 125.1 | 1.617 | 4.99 |
+| k1: 6 streams, fused | 1.564 | 133.6 | 1.508 | 5.32 |
+| k1: 8 streams, fused | 1.670 | 125.1 | 1.401 | 4.98 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 7.856 | 26.6 | 7.256 | 0.98 |
+| k0: reference loop per stream | 7.705 | 27.1 | 7.050 | 1.00 |
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: Apple clang version 17.0.0 (clang-1700.0.13.5), -O3  -Xclang -fopenmp -I/opt/homebrew/opt/libomp/include -L/opt/homebrew/opt/libomp/lib -lomp
+== t_simd speed 21
+wex_fast_model_init: 21.8 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 11.365 | 18.4 | 9.208 | 1.10 |
+| k0: reference loop per stream | 12.547 | 16.6 | 9.968 | 1.00 |
+| k1: NEON search, 1 stream | 8.425 | 24.8 | 6.070 | 1.49 |
+| k1: 2 streams interleaved | 3.712 | 56.3 | 2.849 | 3.38 |
+| k1: 3 streams interleaved | 2.746 | 76.1 | 2.152 | 4.57 |
+| k1: 4 streams interleaved | 2.792 | 74.8 | 2.066 | 4.49 |
+| k1: 6 streams interleaved | 2.740 | 76.2 | 1.627 | 4.58 |
+| k1: 8 streams interleaved | 2.174 | 96.1 | 1.390 | 5.77 |
+| k1: 1 stream, fused | 8.759 | 23.9 | 5.867 | 1.43 |
+| k1: 2 streams, fused | 4.027 | 51.9 | 3.067 | 3.12 |
+| k1: 3 streams, fused | 2.990 | 69.9 | 2.241 | 4.20 |
+| k1: 4 streams, fused | 2.994 | 69.8 | 1.762 | 4.19 |
+| k1: 6 streams, fused | 2.348 | 89.0 | 1.690 | 5.34 |
+| k1: 8 streams, fused | 2.136 | 97.8 | 1.537 | 5.87 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 13.029 | 16.0 | 8.488 | 1.20 |
+| k0: reference loop per stream | 15.662 | 13.3 | 10.334 | 1.00 |
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: gcc-15 (Homebrew GCC 15.3.0) 15.3.0, -O3  -fopenmp
+== t_simd speed 21
+wex_fast_model_init: 12.2 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 10.025 | 20.8 | 8.045 | 1.06 |
+| k0: reference loop per stream | 10.588 | 19.7 | 8.027 | 1.00 |
+| k1: NEON search, 1 stream | 7.023 | 29.7 | 5.721 | 1.51 |
+| k1: 2 streams interleaved | 4.016 | 52.0 | 2.983 | 2.64 |
+| k1: 3 streams interleaved | 2.926 | 71.4 | 2.377 | 3.62 |
+| k1: 4 streams interleaved | 2.166 | 96.5 | 1.585 | 4.89 |
+| k1: 6 streams interleaved | 2.387 | 87.5 | 1.499 | 4.43 |
+| k1: 8 streams interleaved | 2.058 | 101.5 | 1.494 | 5.14 |
+| k1: 1 stream, fused | 6.494 | 32.2 | 6.099 | 1.63 |
+| k1: 2 streams, fused | 3.859 | 54.1 | 3.062 | 2.74 |
+| k1: 3 streams, fused | 2.735 | 76.4 | 2.041 | 3.87 |
+| k1: 4 streams, fused | 2.175 | 96.0 | 1.703 | 4.87 |
+| k1: 6 streams, fused | 1.836 | 113.8 | 1.552 | 5.77 |
+| k1: 8 streams, fused | 1.896 | 110.2 | 1.524 | 5.58 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 9.353 | 22.3 | 8.312 | 1.06 |
+| k0: reference loop per stream | 9.938 | 21.0 | 8.746 | 1.00 |
+machine: Darwin arm64, 3 logical CPUs
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.model: VirtualMac2,1
+compiler: Apple clang version 17.0.0 (clang-1700.0.13.5), -O3  -Xclang -fopenmp -I/opt/homebrew/opt/libomp/include -L/opt/homebrew/opt/libomp/lib -lomp
+== t_simd speed 21
+wex_fast_model_init: 14.7 us per call (mean of 100), tables 223944 bytes
+build: NEON kernels, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 9.696 | 21.5 | 8.547 | 1.00 |
+| k0: reference loop per stream | 9.743 | 21.4 | 8.207 | 1.00 |
+| k1: NEON search, 1 stream | 6.106 | 34.2 | 5.259 | 1.60 |
+| k1: 2 streams interleaved | 3.300 | 63.3 | 3.131 | 2.95 |
+| k1: 3 streams interleaved | 2.692 | 77.6 | 2.403 | 3.62 |
+| k1: 4 streams interleaved | 2.141 | 97.5 | 1.810 | 4.55 |
+| k1: 6 streams interleaved | 1.913 | 109.2 | 1.612 | 5.09 |
+| k1: 8 streams interleaved | 1.652 | 126.4 | 1.370 | 5.90 |
+| k1: 1 stream, fused | 5.870 | 35.6 | 5.519 | 1.66 |
+| k1: 2 streams, fused | 3.294 | 63.4 | 2.898 | 2.96 |
+| k1: 3 streams, fused | 2.370 | 88.1 | 2.042 | 4.11 |
+| k1: 4 streams, fused | 1.793 | 116.5 | 1.550 | 5.43 |
+| k1: 6 streams, fused | 1.759 | 118.8 | 1.397 | 5.54 |
+| k1: 8 streams, fused | 2.799 | 74.6 | 1.362 | 3.48 |
+== t_scalar speed 21
+build: scalar only, OpenMP; model id 0x306ee979
+4 records, 208896 decoded bytes each, 1 thread, 21 runs (one run = one pass over the records, after one
+pass that is not counted); MB = 10^6 bytes
+| decoder | median ms/record | MB/s | best ms/record | k0 median / this median |
+|---|---:|---:|---:|---:|
+| reference wex_nr2_decode | 10.690 | 19.5 | 7.630 | 1.01 |
+| k0: reference loop per stream | 10.827 | 19.3 | 8.657 | 1.00 |
