@@ -4,8 +4,8 @@
 # The harness on synthetic records, so it runs with no real model: the 4 WNR3 records of wex4/out/synth_nr3.wex
 # (written by wex4/build_and_test.sh from fixtures/make_synth_mxfp4.py; 208,896 decoded bytes each).
 # Two builds into out/synth/: t_simd.exe with the SIMD kernels of this CPU (AVX2 on x86 through -march=haswell,
-# NEON on AArch64; WEX4_MARCH overrides the flag as in wex4/build_and_test.sh) and t_scalar.exe with
-# -DWEX_FAST_SCALAR (kernel 0 only).
+# NEON on AArch64; WEX4_MARCH overrides the flag as in wex4/build_and_test.sh, and WEX4_MARCH=-march=armv8-a+sve
+# adds the SVE kernel 2 on an AArch64 CPU with SVE) and t_scalar.exe with -DWEX_FAST_SCALAR (kernel 0 only).
 #   bash synth.sh check [CASES]   both builds: `equal` on the 4 records, then `mutate` with CASES mini-records
 #                                 (default 600). Last line on success: synth check passed
 #   bash synth.sh speed [RUNS]    both builds: the `speed` table (one thread, median of RUNS passes, default 21)

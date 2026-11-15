@@ -54,7 +54,7 @@ seeds_of() {   # sets SEEDS, the seed folders of one harness
 
 if [ "${1-}" = --replay ]; then
   # the compiler, and which kernels of the fast WNR3 decoder fuzz_wnr3_record compares with the reference under
-  # these flags (WEXF_KERNELS of wex_fast_decode.h): AVX2, NEON or scalar
+  # these flags (WEXF_KERNELS of wex_fast_decode.h): AVX2, NEON, NEON+SVE (WEX_CFLAGS=-march=armv8-a+sve) or scalar
   echo "compiler: $("${CC:-gcc}" --version | sed -n 1p)"
   KERNELS=$(printf '#include "wex_fast_decode.h"\nkernels WEXF_KERNELS\n' |
             "${CC:-gcc}" ${WEX_CFLAGS-} $MARCH -E -P $INC -x c - | sed -n 's/^kernels "\(.*\)"$/\1/p')

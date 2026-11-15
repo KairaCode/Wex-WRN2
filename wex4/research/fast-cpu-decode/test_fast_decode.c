@@ -85,10 +85,15 @@ static const WexFastModel *tables;   /* built once in main (NULL in a scalar bui
 
 /* ---- decoders under test ------------------------------------------------ */
 typedef struct { const char *name; WexFastOptions o; } Variant;
+#if WEXF_SIMD == 1
+#define K1_NAME "AVX2"
+#else
+#define K1_NAME "NEON"   /* also in a build with the SVE kernel 2 */
+#endif
 static const Variant variants[] = {
     {"k0: reference loop per stream", {1, 0, 1, 0}},
 #if WEXF_SIMD
-    {"k1: " WEXF_KERNELS " search, 1 stream", {1, 1, 1, 0}},
+    {"k1: " K1_NAME " search, 1 stream", {1, 1, 1, 0}},
     {"k1: 2 streams interleaved", {1, 1, 2, 0}},
     {"k1: 3 streams interleaved", {1, 1, 3, 0}},
     {"k1: 4 streams interleaved", {1, 1, 4, 0}},
@@ -108,6 +113,14 @@ static const Variant variants[] = {
     {"k2: gather 8 streams, fused", {1, 2, 1, 1}},
     {"k2: gather 16 streams, fused", {1, 2, 2, 1}},
     {"k2: gather 24 streams, fused", {1, 2, 3, 1}},
+#endif
+#if WEXF_SVE   /* svcntw() streams per vector: the build line prints the number */
+    {"k2: SVE gather 1 vector", {1, 2, 1, 0}},
+    {"k2: SVE gather 2 vectors", {1, 2, 2, 0}},
+    {"k2: SVE gather 3 vectors", {1, 2, 3, 0}},
+    {"k2: SVE gather 1 vector, fused", {1, 2, 1, 1}},
+    {"k2: SVE gather 2 vectors, fused", {1, 2, 2, 1}},
+    {"k2: SVE gather 3 vectors, fused", {1, 2, 3, 1}},
 #endif
 };
 #define VARIANTS (sizeof(variants) / sizeof(variants[0]))
@@ -625,6 +638,9 @@ int main(int argc, char **argv) {
            "no OpenMP",
 #endif
            model.id);
+#if WEXF_SVE
+    printf("SVE vector length: %u bits, %u streams per vector in kernel 2\n", (unsigned)svcntb() * 8u, (unsigned)svcntw());
+#endif
     if (!strcmp(argv[1], "equal")) return cmd_equal(&model, argc - 3, argv + 3);
     if (!strcmp(argv[1], "mutate") && argc >= 6) { rng_state = strtoull(argv[4], NULL, 0) | 1u; return cmd_mutate(&model, atol(argv[3]), argc - 5, argv + 5); }
     if (!strcmp(argv[1], "bench") && argc >= 5) return cmd_bench(&model, atoi(argv[3]), argc - 4, argv + 4);

@@ -6,8 +6,10 @@
 # Usage: sh negative_control.sh MODEL.wnm2 REC...   (after build.sh or synth.sh; exit 0 = every broken decoder
 # was caught). MODEL and REC may be relative to the calling directory. A file that cannot be read stops the
 # script with exit 2 before any build, so it is never reported as a decoder that was not caught.
-# Built with the SIMD kernels of this CPU: -march=haswell on x86 (AVX2), no flag elsewhere (NEON on AArch64).
-# The kernel 2 control is skipped where kernel 2 does not exist (it is AVX2 only). CC names the compiler (default gcc).
+# Built with the SIMD kernels of this CPU: -march=haswell on x86 (AVX2), no flag elsewhere (NEON on AArch64);
+# WEX4_MARCH replaces the flag, as in synth.sh (WEX4_MARCH=-march=armv8-a+sve: the SVE kernel 2 too). The AVX2
+# kernel 2 control runs in an AVX2 build only, the three SVE kernel 2 controls in an SVE build only. CC names the
+# compiler (default gcc).
 set -eu
 HERE=$(cd "$(dirname "$0")" && pwd)
 SRC=${WEX_SRC:-$HERE/../../../c}
@@ -26,10 +28,11 @@ mkdir -p "$HERE/out"
 export TMP="$HERE/out" TEMP="$HERE/out"
 cd "$HERE"
 case $(uname -m) in
-  x86_64|amd64|i?86) MARCH=-march=haswell ;;
-  *) MARCH= ;;
+  x86_64|amd64|i?86) MARCH=${WEX4_MARCH--march=haswell} ;;
+  *) MARCH=${WEX4_MARCH-} ;;
 esac
 SIMD=$(printf '#include "wex_fast_decode.h"\nsimd WEXF_SIMD\n' | "$CC" $MARCH -E -P -I"$SRC" -I"$HERE" -x c - | sed -n 's/^simd //p')
+SVE=$(printf '#include "wex_fast_decode.h"\nsve WEXF_SVE\n' | "$CC" $MARCH -E -P -I"$SRC" -I"$HERE" -x c - | sed -n 's/^sve //p')
 fail=0
 check() {   # name, sed expression, records
     name=$1; edit=$2; shift 2
@@ -48,5 +51,10 @@ check "no end-of-stream check (kernel 1 weights)" 's/        if (q\[k\] != (uint
 [ "$SIMD" != 1 ] || check "no end-of-stream check (kernel 2 weights)" 's/            if (pp\[k\] != ee\[k\] || st\[k\] != x0) return -1;/            if (st[k] != x0) return -1;/' "$@"
 check "no end-of-stream check (scales)" 's/        if (p\[k\] != e\[k\] || x\[k\] != wex_nr3_stream_x0(ident, out\[k\], count)) return -1;/        if (x[k] != wex_nr3_stream_x0(ident, out[k], count)) return -1;/' "$@"
 check "no stream hash (kernel 1 weights, fused)" 's/        if (fuse) x0 = WEX_NR_L + (wex_nr3_h32_final(h\[k\], 16u + blocks \* 16u) \& WEX_NR3_HASH_MASK);/        if (fuse) x0 = x[k];/' "$@"
+if [ "$SVE" = 1 ]; then
+    check "no canonical-zero check (SVE kernel 2)" 's/^    if (J->cz \&\& svptest_any(all, svcmpne_n_u32(all, bad, 0u))) return -1;/    (void)bad;/' "$@"
+    check "no end-of-stream check (SVE kernel 2 weights)" 's/^        if (pp\[k\] != ee\[k\] || st\[k\] != x0) return -1;/        if (st[k] != x0) return -1;/' "$@"
+    check "no stream hash (SVE kernel 2 weights, fused)" 's/^        if (fuse) x0 = WEX_NR_L + (wex_nr3_h32_final(hh\[k\], 16u + blocks \* 16u) \& WEX_NR3_HASH_MASK);/        if (fuse) x0 = st[k];/' "$@"
+fi
 rm -rf "$N"
 exit $fail

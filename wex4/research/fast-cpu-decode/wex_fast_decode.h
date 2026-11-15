@@ -24,7 +24,9 @@
  *  (c) N streams are decoded in one loop (kernel 1) so the long per-symbol dependency chain of one stream
  *      overlaps with the others';
  *  (d) kernel 2 decodes 8 streams per AVX2 vector with gathers (binary search over the 16 CDF entries of the
- *      model blob). AVX2 only: NEON has no gather load, a request for kernel 2 runs kernel 1 with 4 streams;
+ *      model blob). An AArch64 build for an SVE target has the same kernel on SVE vectors of any length
+ *      (svcntw() streams per vector: 4 at 128 bits). NEON has no gather load: in a NEON build without SVE a
+ *      request for kernel 2 runs kernel 1 with 4 streams;
  *  (e) fuse = 1 computes the MurmurHash3 of each stream and undoes the ceil form inside the decode loop.
  *
  * Renormalisation is branchless and reads 4 bytes ahead; a stream that runs past its end is noticed at the
@@ -39,7 +41,12 @@
  * selects the NEON kernel 1 (NEON is part of the base AArch64 instruction set, no -march needed); on any other
  * target, or with -DWEX_FAST_SCALAR, only kernel 0 exists (the reference loop per stream, still parallel
  * across streams). WEXF_SIMD is 1 (AVX2), 2 (NEON) or 0; WEXF_KERNELS names the choice. The SIMD paths
- * assume a little-endian target. */
+ * assume a little-endian target.
+ * SVE: the SVE kernel 2 is compiled only when the compiler targets SVE (__ARM_FEATURE_SVE: -march=armv8-a+sve,
+ * or -mcpu=native on a CPU that has SVE); then WEXF_SVE is 1 and WEXF_KERNELS is "NEON+SVE". Without such a
+ * flag the build is the NEON one, whatever the CPU. The choice is made when compiling, never at run time:
+ * a binary built for SVE needs a CPU with SVE (the compiler may use SVE anywhere in it). Kernel 1 (NEON) stays
+ * the default of wex_fast_decode in both builds; kernel 2 runs only when the options ask for it. */
 #include "wex_format.h"
 #ifdef _OPENMP
 #include <omp.h>
@@ -52,12 +59,27 @@
     __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__ && !defined(WEX_FAST_SCALAR)
 #include <arm_neon.h>
 #define WEXF_SIMD 2
+#ifdef __ARM_FEATURE_SVE
+#include <arm_sve.h>
+#define WEXF_SVE 1
+#define WEXF_KERNELS "NEON+SVE"
+#else
 #define WEXF_KERNELS "NEON"
+#endif
 #else
 #define WEXF_SIMD 0
 #define WEXF_KERNELS "scalar"
 #endif
+#ifndef WEXF_SVE
+#define WEXF_SVE 0
+#endif
 
+#if WEXF_SVE
+#define WEXF_SVE_LANES 64u                    /* 32-bit lanes of the longest SVE vector (2048 bits) */
+#define WEXF_GROUP_MAX (3u * WEXF_SVE_LANES)  /* streams of one call of a kernel */
+#else
+#define WEXF_GROUP_MAX 24u
+#endif
 #define WEXF_MAX_TASKS 256u
 #define WEXF_SLACK 104u         /* > 3 bytes x 32 symbols + a 4-byte read */
 #define WEXF_ENTRY 128u         /* bytes per weight context: u16 upper[16], start[16], freq[16], next[16] */
@@ -67,8 +89,9 @@
 
 typedef struct {
     int threads;   /* OpenMP threads, 0 = the runtime's default; ignored without OpenMP */
-    int kernel;    /* 0 checked scalar loop, 1 AVX2 or NEON search + interleaved streams, 2 AVX2 gathers */
-    int lanes;     /* kernel 1: streams per loop (1, 2, 3, 4, 6, 8); kernel 2: vectors of 8 streams per loop (1, 2, 3) */
+    int kernel;    /* 0 checked scalar loop, 1 AVX2 or NEON search + interleaved streams, 2 AVX2 or SVE gathers */
+    int lanes;     /* kernel 1: streams per loop (1, 2, 3, 4, 6, 8); kernel 2: vectors per loop (1, 2, 3) of 8
+                      streams (AVX2) or svcntw() streams (SVE) */
     int fuse;      /* kernels 1, 2: hash and ceil inverse inside the decode loop */
 } WexFastOptions;
 
@@ -437,6 +460,177 @@ WEXF_INLINE int wexf_weights_g8(const WexfJob *J, const WexfStream *s, const uin
 }
 #endif
 
+#if WEXF_SVE
+/* Kernel 2 on SVE: the steps of the AVX2 kernel 2 on vectors of any length, L = svcntw() streams per vector
+ * (stream g * L + k is lane k of vector g). Per lane: x state, p and e read and end offsets from s[0].begin, h
+ * hash, ctx = u16 index of cdf[0] of the current context in the matrix's weight CDFs, mx = block maximum (0 at
+ * a block start, as in the AVX2 kernel), acc = the symbols of the current 32-bit word. The gathers load 16-bit
+ * values (svld1uh), so nothing is masked and nothing past a CDF entry or past the 2 bytes of a renormalisation
+ * is read. SVE types cannot be array elements: each vector has its own variables, which the helpers below take
+ * by address (always inlined). */
+WEXF_INLINE int wexf_sve_open(const WexfJob *J, const WexfStream *s, const unsigned char *pay, unsigned char **out,
+                              unsigned char **sc, svuint32_t *x, svuint32_t *p, svuint32_t *e, svuint32_t *h) {
+    const svbool_t all = svptrue_b32();
+    const uint32_t L = (uint32_t)svcntw(), m = s[0].matrix;
+    uint32_t st[WEXF_SVE_LANES], pp[WEXF_SVE_LANES], ee[WEXF_SVE_LANES], hh[WEXF_SVE_LANES], ident[4], k;
+    for (k = 0; k < L; k++) {
+        const unsigned char *ptr, *end;
+        if (wex_nr2_stream_open(s[k].begin, s[k].length, &ptr, &end, &st[k])) return -1;
+        pp[k] = (uint32_t)(ptr - pay); ee[k] = (uint32_t)(end - pay);
+        out[k] = J->weights[m] + s[k].first / 2u; sc[k] = J->scales[m] + s[k].first / 32u;
+        wexf_ident(J, s[k].index, ident);
+        hh[k] = wex_nr3_ident_hash(ident);
+    }
+    *x = svld1_u32(all, st); *p = svld1_u32(all, pp); *e = svld1_u32(all, ee); *h = svld1_u32(all, hh);
+    return 0;
+}
+
+/* Start of block b: -1 if a stream read past its end; else base = index of the first CDF of each lane's srel. */
+WEXF_INLINE int wexf_sve_block(svuint32_t p, svuint32_t e, unsigned char *const *sc, uint32_t b, uint32_t median,
+                               svuint32_t *base) {
+    const svbool_t all = svptrue_b32();
+    const uint32_t L = (uint32_t)svcntw();
+    uint32_t t[WEXF_SVE_LANES], k;
+    if (svptest_any(all, svcmpgt_u32(all, p, e))) return -1;
+    for (k = 0; k < L; k++) t[k] = wex_nr2_srel(sc[k][b], median) * (81u * 17u);   /* 81 contexts of 17 u16 */
+    *base = svld1_u32(all, t);
+    return 0;
+}
+
+/* Symbol j (0..7) of the current word for every lane. */
+WEXF_INLINE void wexf_sve_symbol(const uint16_t *cdf, const unsigned char *pay, uint32_t j, svuint32_t base,
+                                 svuint32_t *x, svuint32_t *p, svuint32_t *ctx, svuint32_t *mx, svuint32_t *acc) {
+    const svbool_t all = svptrue_b32();
+    const svuint32_t slot = svand_n_u32_x(all, *x, WEX_NR2_TOTAL - 1u);
+    /* the next 2 bytes of each stream, big-endian: b0 << 8 | b1 (used only when the state needs them) */
+    const svuint32_t bytes = svlsr_n_u32_x(all, svrevb_u32_x(all, svld1uh_gather_u32offset_u32(all,
+                                           (const uint16_t *)(const void *)pay, *p)), 16);
+    svuint32_t pos = *ctx, start = svdup_n_u32(0), end = svdup_n_u32(WEX_NR2_TOTAL), lo, shift, a, c;
+    svbool_t lt;
+    uint32_t step;
+    for (step = 8u; step; step >>= 1) {   /* pos = ctx + lo; lo += step where cdf[lo + step] <= slot */
+        const svuint32_t mid = svadd_n_u32_x(all, pos, step);
+        const svuint32_t value = svld1uh_gather_u32index_u32(all, cdf, mid);
+        const svbool_t le = svcmple_u32(all, value, slot);
+        pos = svsel_u32(le, mid, pos);
+        start = svsel_u32(le, value, start);
+        end = svsel_u32(le, end, value);
+    }
+    lo = svsub_u32_x(all, pos, *ctx);   /* the symbol, 0..15 */
+    *x = svmla_u32_x(all, svsub_u32_x(all, slot, start), svsub_u32_x(all, end, start), svlsr_n_u32_x(all, *x, WEX_NR2_PRECISION));
+    /* (x < 2^23) + (x < 2^15) bytes: shift = 8 x bytes */
+    lt = svcmplt_n_u32(all, *x, WEX_NR_L);
+    shift = svdup_n_u32_z(lt, 8u);
+    *p = svadd_n_u32_m(lt, *p, 1u);
+    lt = svcmplt_n_u32(all, *x, WEX_NR_L >> 8);
+    shift = svadd_n_u32_m(lt, shift, 8u);
+    *p = svadd_n_u32_m(lt, *p, 1u);
+    *x = svorr_u32_x(all, svlsl_u32_x(all, *x, shift), svlsr_u32_x(all, bytes, svsubr_n_u32_x(all, shift, 16u)));
+    *acc = svorr_u32_x(all, *acc, svlsl_n_u32_x(all, lo, 4u * j));
+    a = svand_n_u32_x(all, lo, 7u);
+    *mx = svmax_u32_x(all, *mx, a);
+    c = svmla_n_u32_x(all, *mx, a, 9u);       /* previous * 9 + maximum */
+    *ctx = svmla_n_u32_x(all, base, c, 17u);
+}
+
+/* After 8 symbols: canonical-zero flags, the word of each lane into its output at byte `at`, the fused hash. */
+WEXF_INLINE void wexf_sve_word(svuint32_t acc, unsigned char *const *out, size_t at, const int fuse, svuint32_t *h,
+                               svuint32_t *bad) {
+    const svbool_t all = svptrue_b32();
+    const uint32_t L = (uint32_t)svcntw();
+    const svuint32_t z = sveor_n_u32_x(all, acc, 0x88888888u);   /* a zero nibble of z = a nibble 8 */
+    uint32_t t[WEXF_SVE_LANES], k;
+    *bad = svorr_u32_x(all, *bad, svand_n_u32_x(all, svbic_u32_x(all, svsub_n_u32_x(all, z, 0x11111111u), z), 0x88888888u));
+    svst1_u32(all, t, acc);
+    for (k = 0; k < L; k++) memcpy(out[k] + at, &t[k], 4);
+    if (fuse) {   /* wex_nr3_h32_block on every lane */
+        svuint32_t q = svmul_n_u32_x(all, acc, 0xcc9e2d51u);
+        q = svmul_n_u32_x(all, svorr_u32_x(all, svlsl_n_u32_x(all, q, 15), svlsr_n_u32_x(all, q, 17)), 0x1b873593u);
+        q = sveor_u32_x(all, *h, q);
+        q = svorr_u32_x(all, svlsl_n_u32_x(all, q, 13), svlsr_n_u32_x(all, q, 19));
+        *h = svmla_n_u32_x(all, svdup_n_u32(0xe6546b64u), q, 5u);
+    }
+}
+
+/* Fused ceil inverse of block b for the lanes whose block maximum is 5. */
+WEXF_INLINE int wexf_sve_ceil(svuint32_t mx, unsigned char *const *out, unsigned char *const *sc, uint32_t b) {
+    const svbool_t all = svptrue_b32();
+    uint32_t t[WEXF_SVE_LANES], k;
+    if (!svptest_any(all, svcmpeq_n_u32(all, mx, 5u))) return 0;
+    svst1_u32(all, t, mx);
+    for (k = 0; k < (uint32_t)svcntw(); k++)
+        if (t[k] == 5u && wexf_ceil_fused(out[k] + (size_t)b * 16u, sc[k] + b)) return -1;
+    return 0;
+}
+
+/* End of the streams of one vector: every one at its end, with the final state its hash gives. */
+WEXF_INLINE int wexf_sve_close(const WexfJob *J, const WexfStream *s, unsigned char *const *out, unsigned char *const *sc,
+                               uint32_t blocks, const int fuse, uint32_t ceil, svuint32_t x, svuint32_t p, svuint32_t e,
+                               svuint32_t h) {
+    const svbool_t all = svptrue_b32();
+    uint32_t st[WEXF_SVE_LANES], pp[WEXF_SVE_LANES], ee[WEXF_SVE_LANES], hh[WEXF_SVE_LANES], ident[4], k;
+    svst1_u32(all, st, x); svst1_u32(all, pp, p); svst1_u32(all, ee, e); svst1_u32(all, hh, h);
+    for (k = 0; k < (uint32_t)svcntw(); k++) {
+        uint32_t x0;
+        if (fuse) x0 = WEX_NR_L + (wex_nr3_h32_final(hh[k], 16u + blocks * 16u) & WEX_NR3_HASH_MASK);
+        else { wexf_ident(J, s[k].index, ident); x0 = wex_nr3_stream_x0(ident, out[k], blocks * 16u); }
+        if (pp[k] != ee[k] || st[k] != x0) return -1;
+        if (!fuse && ceil && wexf_ceil_blocks(out[k], sc[k], blocks)) return -1;
+    }
+    return 0;
+}
+
+/* Kernel 2 on SVE, weights: G vectors of svcntw() streams (one matrix, same count); the loop order of the AVX2
+ * kernel 2 (symbol j of vector 0, 1, 2, then symbol j + 1). */
+WEXF_INLINE int wexf_weights_sve(const WexfJob *J, const WexfStream *s, const uint32_t G, const int fuse) {
+    const uint32_t m = s[0].matrix, blocks = s[0].count / 32u, median = J->v->median[m], ceil = J->ceil >> m & 1u;
+    const uint32_t L = (uint32_t)svcntw();
+    const uint16_t *cdf = (const uint16_t *)(const void *)wex_nr2_weight_cdf(J->model, m, 0);
+    const unsigned char *pay = s[0].begin;
+    const svbool_t all = svptrue_b32();
+    const svuint32_t zero = svdup_n_u32(0);
+    svuint32_t x0 = zero, x1 = zero, x2 = zero, p0 = zero, p1 = zero, p2 = zero, e0 = zero, e1 = zero, e2 = zero;
+    svuint32_t h0 = zero, h1 = zero, h2 = zero, base0 = zero, base1 = zero, base2 = zero, ctx0, ctx1, ctx2;
+    svuint32_t mx0, mx1, mx2, acc0, acc1, acc2, bad = zero;
+    unsigned char *out[3u * WEXF_SVE_LANES], *sc[3u * WEXF_SVE_LANES];
+    uint32_t b, w, j;
+    if (wexf_sve_open(J, s, pay, out, sc, &x0, &p0, &e0, &h0)) return -1;
+    if (G > 1u && wexf_sve_open(J, s + L, pay, out + L, sc + L, &x1, &p1, &e1, &h1)) return -1;
+    if (G > 2u && wexf_sve_open(J, s + 2u * L, pay, out + 2u * L, sc + 2u * L, &x2, &p2, &e2, &h2)) return -1;
+    for (b = 0; b < blocks; b++) {
+        if (wexf_sve_block(p0, e0, sc, b, median, &base0)) return -1;
+        if (G > 1u && wexf_sve_block(p1, e1, sc + L, b, median, &base1)) return -1;
+        if (G > 2u && wexf_sve_block(p2, e2, sc + 2u * L, b, median, &base2)) return -1;
+        /* block start: previous = 8, maximum = 8 */
+        ctx0 = svadd_n_u32_x(all, base0, 80u * 17u); ctx1 = svadd_n_u32_x(all, base1, 80u * 17u);
+        ctx2 = svadd_n_u32_x(all, base2, 80u * 17u);
+        mx0 = mx1 = mx2 = zero;
+        for (w = 0; w < 4u; w++) {
+            const size_t at = (size_t)b * 16u + w * 4u;
+            acc0 = acc1 = acc2 = zero;
+            for (j = 0; j < 8u; j++) {
+                wexf_sve_symbol(cdf, pay, j, base0, &x0, &p0, &ctx0, &mx0, &acc0);
+                if (G > 1u) wexf_sve_symbol(cdf, pay, j, base1, &x1, &p1, &ctx1, &mx1, &acc1);
+                if (G > 2u) wexf_sve_symbol(cdf, pay, j, base2, &x2, &p2, &ctx2, &mx2, &acc2);
+            }
+            wexf_sve_word(acc0, out, at, fuse, &h0, &bad);
+            if (G > 1u) wexf_sve_word(acc1, out + L, at, fuse, &h1, &bad);
+            if (G > 2u) wexf_sve_word(acc2, out + 2u * L, at, fuse, &h2, &bad);
+        }
+        if (fuse && ceil) {
+            if (wexf_sve_ceil(mx0, out, sc, b)) return -1;
+            if (G > 1u && wexf_sve_ceil(mx1, out + L, sc + L, b)) return -1;
+            if (G > 2u && wexf_sve_ceil(mx2, out + 2u * L, sc + 2u * L, b)) return -1;
+        }
+    }
+    if (J->cz && svptest_any(all, svcmpne_n_u32(all, bad, 0u))) return -1;
+    if (wexf_sve_close(J, s, out, sc, blocks, fuse, ceil, x0, p0, e0, h0)) return -1;
+    if (G > 1u && wexf_sve_close(J, s + L, out + L, sc + L, blocks, fuse, ceil, x1, p1, e1, h1)) return -1;
+    if (G > 2u && wexf_sve_close(J, s + 2u * L, out + 2u * L, sc + 2u * L, blocks, fuse, ceil, x2, p2, e2, h2)) return -1;
+    return 0;
+}
+#endif
+
 /* Out-of-line instances: the group size and the fuse flag are compile-time constants inside each. */
 static int wexf_group(const WexfJob *J, const WexfStream *s, int weights, uint32_t n) {
     const int fuse = J->o.fuse;
@@ -456,6 +650,16 @@ static int wexf_group(const WexfJob *J, const WexfStream *s, int weights, uint32
         case 33: return wexf_weights_g8(J, s, 2, 1);
         case 48: return wexf_weights_g8(J, s, 3, 0);
         default: return wexf_weights_g8(J, s, 3, 1);
+    }
+#endif
+#if WEXF_SVE
+    if (J->o.kernel == 2 && n >= (uint32_t)svcntw()) switch (n / (uint32_t)svcntw() * 2u + (uint32_t)fuse) {
+        case 2: return wexf_weights_sve(J, s, 1, 0);
+        case 3: return wexf_weights_sve(J, s, 1, 1);
+        case 4: return wexf_weights_sve(J, s, 2, 0);
+        case 5: return wexf_weights_sve(J, s, 2, 1);
+        case 6: return wexf_weights_sve(J, s, 3, 0);
+        default: return wexf_weights_sve(J, s, 3, 1);
     }
 #endif
     switch (n * 2u + (uint32_t)fuse) {
@@ -484,10 +688,14 @@ static int wexf_run(const WexfJob *J, int weights, uint32_t s0, uint32_t s1, con
     uint32_t want = 1u;
 #if WEXF_SIMD
     if (J->o.kernel == 1) want = (uint32_t)J->o.lanes;
+#if WEXF_SVE
+    if (J->o.kernel == 2) want = weights ? (uint32_t)svcntw() * (uint32_t)J->o.lanes : 8u;
+#else
     if (J->o.kernel == 2) want = weights ? 8u * (uint32_t)J->o.lanes : 8u;
 #endif
+#endif
     while (s0 < s1) {
-        WexfStream g[24];
+        WexfStream g[WEXF_GROUP_MAX];
         const unsigned char *q = at;
         uint32_t n, fast = 0;
         for (n = 0; n < want && s0 + n < s1; n++) {
@@ -527,7 +735,14 @@ static int wexf_section(const WexfJob *J, int weights) {
     const uint64_t streams = (uint64_t)wex_nr2_streams(total[0], chunk) + wex_nr2_streams(total[1], chunk) +
                              wex_nr2_streams(total[2], chunk);
     /* tasks of `per` streams: a multiple of 48 so that full groups of any kernel fit, at most WEXF_MAX_TASKS */
+#if WEXF_SVE
+    /* the SVE kernel 2 takes groups of L, 2L or 3L streams, L = svcntw() (a multiple of 4): here the unit is the
+     * least common multiple of 48 and 6L, so 48 on vectors of 128 and 256 bits, as in the other builds */
+    const uint64_t unit = 6u * (uint64_t)svcntw() % 48u ? 12u * (uint64_t)svcntw() : 6u * (uint64_t)svcntw();
+    const uint64_t per = ((streams + WEXF_MAX_TASKS - 1u) / WEXF_MAX_TASKS + unit - 1u) / unit * unit;
+#else
     const uint64_t per = ((streams + WEXF_MAX_TASKS - 1u) / WEXF_MAX_TASKS + 47u) / 48u * 48u;
+#endif
     const int tasks = per ? (int)((streams + per - 1u) / per) : 0;
     const unsigned char *payload = weights ? J->v->weight_payload : J->v->scale_payload;
     uint64_t offset[WEXF_MAX_TASKS], at = 0, s = 0;
@@ -562,7 +777,7 @@ static inline int wex_fast_decode_with(const WexFastModel *tables, const WexNr2R
 #if WEXF_SIMD
     if (!tables || tables->id != model->id) J.o.kernel = 0;
     if (J.o.kernel < 0 || J.o.kernel > 2) J.o.kernel = 1;
-#if WEXF_SIMD == 2
+#if WEXF_SIMD == 2 && !WEXF_SVE
     if (J.o.kernel == 2) { J.o.kernel = 1; J.o.lanes = 4; }   /* no gather kernel on NEON */
 #endif
     if (J.o.kernel == 1 && J.o.lanes != 1 && J.o.lanes != 2 && J.o.lanes != 3 && J.o.lanes != 6 && J.o.lanes != 8) J.o.lanes = 4;
