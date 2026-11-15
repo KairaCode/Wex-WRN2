@@ -129,7 +129,7 @@ such call loads at most the larger of `read_ahead_kb` and `max_sectors_kb` (`for
 while the next record loads. With `gap_ms=20` the thread spins 20 ms on the clock after each record
 (inside the timed pass, outside the record's own time). The spin stands for a decode but is none, and
 20 ms is a chosen value, not a measured decode time. The note under the table compares each of the
-four rows with work with the row that has the same work and no prefetch.
+three rows with work and a prefetch with the row that has the same work and no prefetch.
 
 The script prints a Markdown table (median, minimum and maximum MB/s over the runs, MB = 10^6 bytes, and
 the median time of one record) and writes `bench/out/wex_io.json` with every pass, the CPU, the kernel,
@@ -144,10 +144,10 @@ What it does not measure: the decode of a record (the rows with work spin instea
 caches, two drives (mirror, stripe), and anything on Windows or macOS. The only recorded runs are on
 GitHub Actions runners, shared cloud VMs with a virtual disk. Three of 2026-11-14 on two kinds of VM,
 where no read path won on both kinds:
-[research/linux-io-20261114](../research/linux-io-20261114/README.md). Nine of 2026-11-15 on six kinds,
-with the prefetch paths: one hint on a whole record loaded one request of the device, with no work
+[research/linux-io-20261114](../research/linux-io-20261114/README.md). Eleven of 2026-11-15 on six
+kinds, with the prefetch paths: one hint on a whole record loaded one request of the device, with no work
 between records no prefetch helped on every kind, and with the 20 ms of work `WILLNEED` in chunks was
-the fastest prefetch in every run that had those rows (1.27x to 2.32x; not run on one kind):
+the fastest prefetch in every run that had those rows (1.24x to 2.32x; not run on one kind):
 [research/linux-prefetch-20261115](../research/linux-prefetch-20261115/README.md). Other runs of the
 `linux-io-bench` job started by hand are not recorded.
 
@@ -155,8 +155,8 @@ What CI covers: the `linux`, `linux-arm` and `linux-sanitizers` jobs build `wex_
 `--smoke --strict` (a 10 MB container, every path checked and run once; the `linux` job then reads the
 same container again through `--file`). The `linux-tsan` job runs the same smoke run built with clang under
 ThreadSanitizer (the `pread` threads and the helper thread of `prefetch=thread`). The full benchmark was
-not run on ARM. `scripts/check_all.sh`
-does not build `wex_io.c`, so the Windows job does not see it: its stub for systems other than Linux
+not run on ARM. `scripts/check_all.sh` does not build `wex_io.c`, so the Windows job does not see it: its
+stub for systems other than Linux
 (it prints one `skipped` line) was built by hand with MinGW `gcc` and `clang`
 (`-std=c99 -pedantic -Wall -Wextra`, no warning) and is not built by CI. The full run is the job
 `linux-io-bench`, started by hand with `gh workflow run ci.yml --ref <branch> -f linux_io_bench=true`.

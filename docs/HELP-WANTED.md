@@ -216,10 +216,10 @@ measured; it is not known to fail.
   flight gained at most 11% over one read of the same kind on the first and at most 4% on the second
   (418 to 481 and 511 to 540 MB/s at every depth).
   [research/linux-prefetch-20261115](../research/linux-prefetch-20261115/README.md) (six kinds of VM,
-  nine runs): one `POSIX_FADV_WILLNEED` or one `readahead(2)` on a whole record loaded only one request
+  eleven runs): one `POSIX_FADV_WILLNEED` or one `readahead(2)` on a whole record loaded only one request
   of the device (128 KiB to 2 MiB of 13.4 MB). With no work between records no prefetch beat the store's
   path on every kind. With 20 ms of work after each record (a spin, not a decode), `WILLNEED` in chunks
-  of the device's readahead was the fastest prefetch in every run that had those rows: 1.27x to 2.32x
+  of the device's readahead was the fastest prefetch in every run that had those rows: 1.24x to 2.32x
   the same work without prefetch, on five kinds; not run on the sixth. So the store was not changed.
 - **What:** run `bench/wex_io.py` on real drives (NVMe first; also SATA, ZFS, btrfs, XFS, ARM) and share
   `bench/out/wex_io.json` through the "Benchmark results" issue template. Then, if a path wins on real
@@ -229,10 +229,9 @@ measured; it is not known to fail.
   decodes), with an engine A/B. A page-cache prefetch would be new engine code: the store's prefetch call
   reads records into its own slots before it returns. Still unmeasured: the chunked hints from a thread
   of their own (on one kind of VM the calls held the reading thread for about 90% of the pass), other
-  chunk sizes, the rows with work on that kind of VM, a real decode between the reads instead of the
-  spin, striping across drives with
-  different speeds, and everything on macOS (the benchmark is Linux only; the `macos` CI job does not
-  build it).
+  chunk sizes, more than one record ahead for the new paths, the rows with work on that kind of VM, a
+  real decode between the reads instead of the spin, striping across drives with different speeds, and
+  everything on macOS (the benchmark is Linux only; the `macos` CI job does not build it).
 - **Done when:** the table of `bench/wex_io.py` from at least one NVMe machine is in the repository, and
   a change of the store comes with its before/after from the same benchmark, stated as CONTRIBUTING
   section 5 asks.
@@ -261,7 +260,7 @@ listed above as well.
 - **Linux I/O in the engine:** the fast read paths were built and measured on Windows. The Linux
   benchmark is in (`bench/wex_io.py`), run so far only on six kinds of cloud VM, where it gave no reason to
   change the store. A prefetch of the next record through the page cache gained there only with work
-  between the reads (`WILLNEED` in chunks, 1.27x to 2.32x with a 20 ms spin standing for a decode), which
+  between the reads (`WILLNEED` in chunks, 1.24x to 2.32x with a 20 ms spin standing for a decode), which
   only an engine A/B can confirm; runs on real drives and the tuning that follows from them are still open
   *(open to you, section 7)*.
 - **Measurements not done yet** (they need the full models, so they stay with the maintainer, see
