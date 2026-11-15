@@ -22,7 +22,7 @@ $nr2Sha = '3F703FA4D993ED46D2873676C71BE07CF11C11C7BAEF3E0BCE6428C30921EB9D'
 
 $deadline = (Get-Date).AddMinutes(240)
 while ($true) {
-    try { $fs = [IO.File]::Open($lock, 'CreateNew', 'Write'); $w = New-Object IO.StreamWriter($fs); $w.WriteLine("main session: U:+C: mirror setup (delete WEX1 on D:, engram 47 C:->D:, WNR2 E:->C:) $(Get-Date -Format s)"); $w.Close(); break }
+    try { $fs = [IO.File]::Open($lock, 'CreateNew', 'Write'); $w = New-Object IO.StreamWriter($fs); $w.WriteLine("coordinator: U:+C: mirror setup (delete WEX1 on D:, engram 47 C:->D:, WNR2 E:->C:) $(Get-Date -Format s)"); $w.Close(); break }
     catch [System.IO.IOException] { if ((Get-Date) -gt $deadline) { throw "lock: gave up after 240 min (held by: $(Get-Content $lock -ErrorAction SilentlyContinue))" }; Start-Sleep -Seconds 60 }
 }
 Log "lock taken (mirror setup)"

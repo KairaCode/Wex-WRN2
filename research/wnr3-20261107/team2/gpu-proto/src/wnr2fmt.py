@@ -1,10 +1,10 @@
 """WNR2-style weight-stream formats for the GPU prototype (team2/gpu-proto).
 
 Logic copied (not imported) from the team-1 scripts:
-  quantize()      <- scratchpad\\wnr2\\mxanalyze.py:19-38 (wex_nr2_quantize rule)
-  load_expert()   <- scratchpad\\wnr2\\mxcount.py:30-38
-  encode_ref()    <- scratchpad\\wnr2\\rans_check.py:24-36 (scalar reference rANS encoder)
-  context rule    <- scratchpad\\wnr2\\mxcount.py:45-67 / brief: ctx = (srel*9+pm)*9+mx
+  quantize()      <- <SCRATCH>\\wnr2\\mxanalyze.py:19-38 (wex_nr2_quantize rule)
+  load_expert()   <- <SCRATCH>\\wnr2\\mxcount.py:30-38
+  encode_ref()    <- <SCRATCH>\\wnr2\\rans_check.py:24-36 (scalar reference rANS encoder)
+  context rule    <- <SCRATCH>\\wnr2\\mxcount.py:45-67 / brief: ctx = (srel*9+pm)*9+mx
 
 rANS: 32-bit state, L = 2^23, 14-bit CDFs, byte renormalisation, initial state(s) flushed as 4-byte
 big-endian words at the start of each stream, final state(s) must equal L.

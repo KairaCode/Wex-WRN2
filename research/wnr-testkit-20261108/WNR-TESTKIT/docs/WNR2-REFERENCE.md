@@ -4,21 +4,21 @@ description: "Everything about WNR2 (KAIRA neural-rANS expert container): format
 metadata:
   node_type: memory
   type: project
-  origin: KAIRA private memory note (snapshot)
+  origin: KAIRA private working note (snapshot)
   modified: 2026-11-07T16:17:28.409Z
 ---
 
 # WNR2 complete reference (state at 2026-11-07; old snapshot kept so the kit's REF:<line> citations stay valid. Current version: docs/WNR2-REFERENCE.md at the repo root)
 
-**Why:** WNR2 work is spread over three lab folders, two reports, the private Wex-WRN2 repo and six memory notes, and those sources disagree on key numbers. This file is the single place that says what WNR2 is, where every container and model sits, what was measured under which conditions, and what the user allowed.
+**Why:** WNR2 work is spread over three lab folders, two reports, the private Wex-WRN2 repo and six working notes, and those sources disagree on key numbers. This file is the single place that says what WNR2 is, where every container and model sits, what was measured under which conditions, and what the user allowed.
 
 **How to apply:**
-- Before any WNR2/WEX task, read sections 1 (rules: no upstream, no deploy or kaira.json edit without OK, Opus agents, heavy.lock, no benchmarks during builds), 2 (disk state) and 3 (open work: W2 -> W3 order, G2 first). They come first because the file is larger than one Read (~80 KB); read sections 4-15 with offset/limit when needed (format/codec 4-7, build 8, decoders/helper 9-10, engine 11, measurements 12, timeline 13, contradictions 14, sources 15). Runs marked * are contaminated.
+- Before any WNR2/WEX task, read sections 1 (rules: no upstream, no deploy or kaira.json edit without OK, top-tier workers, heavy.lock, no benchmarks during builds), 2 (disk state) and 3 (open work: W2 -> W3 order, G2 first). They come first because the file is larger than one Read (~80 KB); read sections 4-15 with offset/limit when needed (format/codec 4-7, build 8, decoders/helper 9-10, engine 11, measurements 12, timeline 13, contradictions 14, sources 15). Runs marked * are contaminated.
 - Re-check disk free space and the existence of the files before relying on them.
 - Prefer measured V4.1 numbers (-10.03%, +11.1%) over older V4 estimates.
 - After any format change, update KAIRA src first, then re-sync Wex-WRN2.
 
-Related: private KAIRA memory notes (not in this repo).
+Related: private KAIRA working notes (not in this repo).
 
 ## 1. User decisions and rules
 
@@ -30,9 +30,9 @@ Related: private KAIRA memory notes (not in this repo).
   - Then V4 was replaced by DeepSeek V4.1 Flash 1017 REAP-192 MXFP4 (patrickbdevaney/...), not "Thor", because Thor's K-quant experts are unreadable by the engine and by WNR2.
   - Deletion of the old V4 WNR2 container was approved.
 - **2026-11-06**: containers go WEX1 raw on D:\kaira_wex and WNR2 on E:\kaira_wex.
-  - All V4.1 + WEX/WNR2 agents run on Opus (user rule).
+  - All V4.1 + WEX/WNR2 workers run on the top model tier (user rule).
   - Never commit, push, deploy to app\ or edit app\kaira.json without explicit OK.
-  - The user manages the Defender exclusions; Claude does not change security settings.
+  - The user manages the Defender exclusions; the workers do not change security settings.
   - No benchmark while a W1 encode or any build runs; take heavy.lock for big I/O.
 - **heavy.lock**: `<KAIRA>\lab\v41-gpu-20261107\heavy.lock`.
   - Take it by creating the file exclusively (New-Item fails while it exists) and writing `<label> <ISO time>` into it. `lab\v41-gpu-20261107\w1\take_lock.ps1 -Label '...'` does this, retrying every 60 s for up to 90 min (prints TAKEN or TIMEOUT).
@@ -54,7 +54,7 @@ Related: private KAIRA memory notes (not in this repo).
   - PLAN 3.2 for V4.1: WNR2 becomes the speed format only if >= +3% tok/s with the 95% CI excluding 0 AND token ids identical in every prompt of every run; otherwise WEX1 stays in production and WNR2 is a capacity format.
   - Any token difference stops the A/B and is treated as a bug.
 - **Measurement protocol** (PLAN 3.1):
-  - Quiet machine: no KAIRA/engine, sub-agents, builds or copies; Defender exclusions active; high-performance power plan.
+  - Quiet machine: no KAIRA/engine, other workers, builds or copies; Defender exclusions active; high-performance power plan.
   - Record hashes of the exe, both DSV4 DLLs and kaira_wex_cuda.dll; pin COLI_DSV4_DLL.
   - Lossless settings: V4_SKIP_COLD=0 (kaira.json forces 1 = lossy), V4_TOPK unset, V4_MTP=0, temperature 0.
   - Prompts: lab\v41-gpu-20261107\ab\prompts.jsonl (warm-up + code1, code2, chat_it1, chat_it2, reason1, reason2, ctx2k, short1; 256 tokens; no system prompt). Fresh process per run, ABBA x2.
@@ -617,7 +617,7 @@ WEX/WNR2 integration exists only in deepseek_v4.c and the standalone store exper
 
 ## 14. Contradictions between sources
 
-- **wex-gpu-direct-lab.md**: its description and first paragraph say "NOT deployed", but its body and the MEMORY.md index say engine/backend/helper were DEPLOYED on 2026-10-20 04:09. Resolution: the runtime binaries were deployed on WEX1; WNR2, GPU-direct and the RAM cache were never enabled. The same file also says E:\kaira_lab\wnr2-full is "the only copy now", but it was deleted later.
+- **wex-gpu-direct-lab.md**: its description and first paragraph say "NOT deployed", but its body and the notes index say engine/backend/helper were DEPLOYED on 2026-10-20 04:09. Resolution: the runtime binaries were deployed on WEX1; WNR2, GPU-direct and the RAM cache were never enabled. The same file also says E:\kaira_lab\wnr2-full is "the only copy now", but it was deleted later.
 - **Savings**: -12.69%/-12.7% (pilot), -12.78% (full V4), -13.4% (Nov report vs zstd), "13-14%" and "14-16%" (Nov), and -12.8% expected for V4.1, but V4.1 measured -10.03%.
   - Capacity: ~14% (Oct, PLAN 3.2), +14.7% (sim), "15% in piu" (Nov REPORT), ~10% (COMPARISON), but V4.1 measured +11.1%.
   - m0.md assumed ~16.4 MB records; actual 16,914,680 B. PLAN W1 estimated ~126 GB (117.7 GiB) of output; actual 129.9 GB (120.98 GiB).
@@ -641,7 +641,7 @@ WEX/WNR2 integration exists only in deepseek_v4.c and the standalone store exper
 - **Free space**: E: 15.3 GB after W1 (w1.md) vs 105.9 GB at 17:11 on 2026-11-07; U: 279 GB at 02:34 vs 122.6 GB at 17:11. Mind units: `df -h` prints GiB (E: 99G = 105.9 GB).
 - **zipmoe note**: its break-even of 55.7 GiB/s (B/r) is wrong. Serial break-even is ~380 GiB/s (B/(1-r)); pipelined it is D > B, ~49 GiB/s.
 - **qwen38**: memory says WEX was ported to Qwen3.8 (decision 2026-11-05), but qwen38_core.h has no WEX code.
-- **MEMORY.md** indexed wnr2-complete.md before this file existed. docs\handoff\memory\MEMORY.md lacks 4 index lines (wnr2-complete, wex-formats-own-repo, v41-port-done-20261107, v41-handoff-20261106); the other handoff memory files are byte-identical to the live ones.
+- **The notes index** listed wnr2-complete.md before this file existed. Its copy in docs\handoff\memory\ lacks 4 index lines (wnr2-complete, wex-formats-own-repo, v41-port-done-20261107, v41-handoff-20261106); the other handoff memory files are byte-identical to the live ones.
 
 ## 15. Source index
 
@@ -663,4 +663,4 @@ WEX/WNR2 integration exists only in deepseek_v4.c and the standalone store exper
   - src\, tools\, nr2\, models\, bench\, tests\;
   - docs\ (wex-architettura-completa.md, wex-v2.md, the two Nov reports, v41-reap-wnr2-build.md = w1.md, v41-reap-baseline-m0.md = m0.md).
   - Build scripts carry KAIRA absolute paths (MSYS2 ucrt64, CUDA 13.4, MSVC 18).
-- **Memory**: private KAIRA memory notes (not in this repo).
+- **Memory**: private KAIRA working notes (not in this repo).

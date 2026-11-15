@@ -324,7 +324,7 @@ Ho quindi provato 3 varianti sul **set di letture** e sul **calcolo**, non su la
 - Le NOTE-2/3/4 della sessione principale (braccio safetensors, mirror U:+C:, M+R) non fanno parte di questo passo e **non sono state eseguite**.
   - Gli script le supportano: `short_abba.sh --a/--b`, e per il mirror `--app-engine` con `--b-env 'COLI_WEX_EXTRA_MIRRORS=C:\kaira_wex\v41-reap COLI_WEX_WEIGHTS=38,62'`.
   - Correzione: la ripartizione viene da `COLI_WEX_WEIGHTS`, non da `COLI_DISK_WEIGHTS`. Senza `COLI_WEX_WEIGHTS` tutte le letture vanno su U:.
-- **Dump dei logits** in `%LOCALAPPDATA%\Temp\short-abba\` (1,6 GB, esecuzioni 054051 e 175141): ancora presenti, perché sono serviti a rianalizzare queste due esecuzioni. Non li ho cancellati io. Da ora `short_abba.sh` cancella i dump che crea, dopo l'analisi.
+- **Dump dei logits** in `<TMP>\short-abba\` (1,6 GB, esecuzioni 054051 e 175141): ancora presenti, perché sono serviti a rianalizzare queste due esecuzioni. Non li ho cancellati io. Da ora `short_abba.sh` cancella i dump che crea, dopo l'analisi.
 - **Lo short ABBA nuovo (7 prompt × 64 token) non è ancora stato eseguito.** Durata, ripetibilità e spread tra esecuzioni dello stesso braccio, sotto la soglia del 2%, sono da misurare. short1 finisce in EOS dopo 8 token, quindi il suo tok/s è il più rumoroso.
 - Nessuna modifica a `src/`, `deepseek_v4.c`, `app/` o `kaira.json`. Nessun commit. Nessuna scrittura su U:.
 

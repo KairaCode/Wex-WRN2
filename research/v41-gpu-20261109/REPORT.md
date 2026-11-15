@@ -20,7 +20,7 @@
 ## 2. Today cut and follow-ups
 | Package | Status | Planned | Measured / evidence |
 |---|---|---|---|
-| M0 | done | — | m0.md §6 (R0a/b/c, run by the main session after the lane could not run them); drive probe done |
+| M0 | done | — | m0.md §6 (R0a/b/c, run by the coordinator after the lane could not run them); drive probe done |
 | G1 | done | -100 to -190 ms/token | -143 ms/token (-15.6%) |
 | G2 | done | 1.1-2.5 tok/s | 1.53-2.27 tok/s (W3 WEX1 arm). Done criterion "GPU-direct 0 vs 2 token-identical" checked by me: see below |
 | P1 | done | TTFT 5-6x | 1.29x. Chunk invariance on the fixture passes |
@@ -31,7 +31,7 @@
 | Integration | done | — | 5.1 gates green, REAP 5.2 run |
 | W2 | done | — | ≈ -3 ms/token (batches of only 1.56 / 1.83 records) |
 | W3 | done | — | WNR2 -1.80% ± 0.65% |
-| F1 grid | NOT run | — | cancelled when the main session took heavy.lock at 05:00 |
+| F1 grid | NOT run | — | cancelled when the coordinator took heavy.lock at 05:00 |
 | W3 pilot C | NOT run | — | same cancellation |
 | D1 | superseded by user decisions | — | WEX1 copied to U: on 11-07; D: copy deleted 05:02 today; WNR2 U:+C: mirror being built now (approved by the user, 2026-11-09); effect not measured |
 | G8 / S1 / R1 / G4-G7 | not started | — | deferred in the plan |
@@ -69,7 +69,7 @@ GPU-direct 0 vs 2 check: the greedy text of w0/code1/chat_it1 is equal across:
 - **p5 (V4.1 CPU vs ref_vendor.json):** PASS. Greedy 8/8, max row rel 1.67e-5.
 - **fixture_g2 (V4.1 tiny GPU vs CPU):** both DLLs, plain plus prewarm 8 and 33. 32 tokens identical, logits diff 0, 186 MoE checks with rel_l2 0, cpu_layers 0.
 - **Python tests of the non-lane edits** all pass: mcp_server, experiment_manifest, glm_usage_path, tool_args_literal, windows_macro_names, vulkan_engine_counts, and openai_server (462 tests).
-- **heavy.lock** is held by the main session's mirror_uc_setup.ps1: PID 17032, Robocopy live, WNR2 E:->C: copy started 05:10. It is live, not stale, and I left it alone. heavy.lock.stale-0447 is only an inert record.
+- **heavy.lock** is held by the coordinator's mirror_uc_setup.ps1: PID 17032, Robocopy live, WNR2 E:->C: copy started 05:10. It is live, not stale, and I left it alone. heavy.lock.stale-0447 is only an inert record.
 - **Git index** is empty: nothing staged.
 
 ## 5. Not done or not verified
@@ -128,14 +128,14 @@ GPU-direct 0 vs 2 check: the greedy text of w0/code1/chat_it1 is equal across:
   - V4_PREFILL_CHUNK=128 no longer affects V4.1, which uses V41_PREFILL_CHUNK (default 1024).
 
 ## 7. Repository state
-- HEAD is 88ddb07 (a main-session commit; it does not touch deepseek_v4.c).
+- HEAD is 88ddb07 (a coordinator commit; it does not touch deepseek_v4.c).
 - 26 modified files (+2,902 / -429) and 7 new test files, in three groups:
   1. **V4.1 GPU lane work:**
      - Makefile, Makefile.deepseek-v4, backend_cuda_dsv4.cu/.h, backend_loader_dsv4.c, dsv4.def;
      - deepseek_v4.c (+1,987), deepseek_v4_internal.h;
      - tests: v41_on_v4 gpu_refusal / moe / schema / union_slots, np_queue, parity harness;
      - new tests: fp8_block32_cuda, head_cuda, prefill_pool, prefill_chunk.
-  2. **Main-session upstream ports (11-08 16:39):**
+  2. **Coordinator upstream ports (11-08 16:39):**
      - backend_vulkan.c, colibri.c, experiment_manifest.py, mcp_server.py, openai_server.py and their tests;
      - 3 untracked tests.
   3. **The user's host RAM-guard removal:** src\host\*.cs.

@@ -1,6 +1,6 @@
 """Shared helpers (team4/ceil-origin): MXFP4 fingerprint, ceil-form transform T, WNR2 base-context counts, costs.
 
-Copied/adapted from scratchpad/wnr2/mxceil.py (forward/inverse/ctx_counts) and mxanalyze.py (quantize/cost_bits).
+Copied/adapted from <SCRATCH>/wnr2/mxceil.py (forward/inverse/ctx_counts) and mxanalyze.py (quantize/cost_bits).
 Symbols: 4-bit E2M1 codes, bit 3 = sign, bits 0-2 = magnitude code (0,0.5,1,1.5,2,3,4,6). Blocks of 32 along a row.
 """
 import numpy as np
