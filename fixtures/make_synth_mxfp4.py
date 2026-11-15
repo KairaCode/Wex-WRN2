@@ -44,6 +44,18 @@ NAMES = {
     "minimax-m3": ("language_model.model.layers.{layer}.block_sparse_moe.experts.{expert}.", W, ".weight", ".weight_scale",
                    "U8", "U8"),
     "mistral-large4": ("layers.{layer}.experts.{expert}.", W, ".weight", ".weight_scale", "U8", "U8"),
+    "step3p5": ("model.layers.{layer}.moe.{expert}.", PROJ, ".weight", ".weight_scale", "U8", "U8"),
+    # compressed-tensors exports: the weight tensor is called weight_packed
+    "deepseek-ct": ("layers.{layer}.ffn.experts.{expert}.", W, ".weight_packed", ".weight_scale", "U8", "U8"),
+    "qwen38-ct": ("model.language_model.layers.{layer}.mlp.experts.{expert}.", PROJ, ".weight_packed", ".weight_scale",
+                  "U8", "U8"),
+    "qwen3-moe-ct": ("model.layers.{layer}.mlp.experts.{expert}.", PROJ, ".weight_packed", ".weight_scale", "U8", "U8"),
+    "kimi-k26-ct": ("language_model.model.layers.{layer}.mlp.experts.{expert}.", PROJ, ".weight_packed", ".weight_scale",
+                    "U8", "U8"),
+    "mixtral-ct": ("model.layers.{layer}.block_sparse_moe.experts.{expert}.", W, ".weight_packed", ".weight_scale", "U8", "U8"),
+    "minimax-m3-ct": ("language_model.model.layers.{layer}.block_sparse_moe.experts.{expert}.", W, ".weight_packed",
+                      ".weight_scale", "U8", "U8"),
+    "step3p7-ct": ("model.layers.{layer}.moe.experts.{expert}.", PROJ, ".weight_packed", ".weight_scale", "U8", "U8"),
 }
 
 

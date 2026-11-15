@@ -310,10 +310,17 @@ def test_profiles():
         assert report == {'expert_records': 2, 'experts_as_tensors': 2}, report
         assert conv.unpack(out, back, C) == [('model.safetensors', True)]
         assert open(os.path.join(back, 'model.safetensors'), 'rb').read() == open(source, 'rb').read(), name
-    # another family's names: nothing is taken for an expert, and the file still comes back
+    # another family's names: nothing is taken for an expert, and the file still comes back; a profile that
+    # matches the scale tensors only (the same names with another weight suffix) is refused
     source = os.path.join(WORK, 'prof', 'qwen3-moe', 'model.safetensors')
+    halves, fixture = 0, st_tensors(source)
     for name in names:
         if name == 'qwen3-moe':
+            continue
+        if any(conv.expert_pattern(name).match(tensor) for tensor in fixture):
+            message = refusal(conv.pack, out, [source], C, 'raw', None, 64 << 20, name)
+            assert message.startswith('L0 E0: incomplete expert (3 of 6 tensors)'), (name, message)
+            halves += 1
             continue
         report = {}
         conv.pack(out, [source], C, 'raw', family=name, report=report)
@@ -337,6 +344,15 @@ def test_profiles():
     # AMD's export of DeepSeek under DeepSeek's own names: three of the six tensors match, which is refused
     quark = os.path.join(WORK, 'prof', 'deepseek-quark', 'model.safetensors')
     assert refusal(conv.pack, out, [quark], C, 'raw').startswith('L0 E0: incomplete expert (3 of 6 tensors)')
+    # a compressed-tensors export under the profile of the Quark export of the same names: the scales match,
+    # weight_packed does not, which is refused the same way
+    assert halves == 1, halves   # qwen3-moe-ct, above
+    pairs = [(ct, base) for ct in names for base in names if conv.PROFILES[ct][2] == 'weight_packed' and
+             conv.PROFILES[base][:4] == conv.PROFILES[ct][:2] + ('weight', 'weight_scale')]
+    assert len(pairs) == 6, pairs
+    for ct, base in pairs:
+        message = refusal(conv.pack, out, [os.path.join(WORK, 'prof', ct, 'model.safetensors')], C, 'raw', None, 64 << 20, base)
+        assert message.startswith('L0 E0: incomplete expert (3 of 6 tensors)'), (ct, base, message)
     # tensors that only look like experts stay ordinary tensors: a name with something before or after the
     # pattern, an index with a leading zero, a dtype that is not MXFP4
     def slab(prefix, layer, expert, skip=(), dtype='U8', cols=2):
@@ -376,7 +392,9 @@ def test_profiles():
           f'bytes), pack with RAW and with WNR3 expert records ({coded} of {6 * len(names)} coded) and unpack byte-identical; '
           f'upgrade of a WEX1 and a WNR3 container gives the fixture\'s tensors by name, downgrade exact; '
           f'an expert split over two files is one record; a float layer and near-miss names stay ordinary tensors; '
-          f'an MXFP4 expert with a missing tensor or a wrong shape is refused; a profile that finds no expert warns')
+          f'an MXFP4 expert with a missing tensor or a wrong shape is refused, and so are {len(pairs) + halves} fixtures '
+          f'under a profile that matches their scale tensors only (weight against weight_packed); a profile that finds '
+          f'no expert warns')
 
 
 def test_store():

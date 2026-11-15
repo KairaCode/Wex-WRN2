@@ -38,6 +38,8 @@ WEX_HEADER = struct.Struct('<IIIIQQII')
 # weight tensor, suffix of the scale tensor, scale dtype, weight dtype). The two dtypes are what upgrade writes
 # (a WEX1/WEX3 container does not record them); pack takes the dtypes of the source. The names were read from
 # the safetensors headers of published checkpoints: the table with the sources is in wex4/README.md.
+# Roles: in every profile the three matrices are, in slab order, the gate, the down and the up matrix; by name for
+# gate_proj, down_proj, up_proj, and from the model code for w1, w2, w3 (wex4/README.md, "Matrix roles").
 _W, _PROJ = ('w1', 'w2', 'w3'), ('gate_proj', 'down_proj', 'up_proj')
 PROFILES = {
     'deepseek': ('layers.{L}.ffn.experts.{e}.', _W, 'weight', 'scale', 'F8_E8M0', 'I8'),
@@ -48,6 +50,16 @@ PROFILES = {
     'mixtral': ('model.layers.{L}.block_sparse_moe.experts.{e}.', _W, 'weight', 'weight_scale', 'U8', 'U8'),
     'minimax-m3': ('language_model.model.layers.{L}.block_sparse_moe.experts.{e}.', _W, 'weight', 'weight_scale', 'U8', 'U8'),
     'mistral-large4': ('layers.{L}.experts.{e}.', _W, 'weight', 'weight_scale', 'U8', 'U8'),
+    'step3p5': ('model.layers.{L}.moe.{e}.', _PROJ, 'weight', 'weight_scale', 'U8', 'U8'),
+    # exports in the compressed-tensors format (quant_method compressed-tensors): the weight is 'weight_packed'
+    'deepseek-ct': ('layers.{L}.ffn.experts.{e}.', _W, 'weight_packed', 'weight_scale', 'U8', 'U8'),
+    'qwen38-ct': ('model.language_model.layers.{L}.mlp.experts.{e}.', _PROJ, 'weight_packed', 'weight_scale', 'U8', 'U8'),
+    'qwen3-moe-ct': ('model.layers.{L}.mlp.experts.{e}.', _PROJ, 'weight_packed', 'weight_scale', 'U8', 'U8'),
+    'kimi-k26-ct': ('language_model.model.layers.{L}.mlp.experts.{e}.', _PROJ, 'weight_packed', 'weight_scale', 'U8', 'U8'),
+    'mixtral-ct': ('model.layers.{L}.block_sparse_moe.experts.{e}.', _W, 'weight_packed', 'weight_scale', 'U8', 'U8'),
+    'minimax-m3-ct': ('language_model.model.layers.{L}.block_sparse_moe.experts.{e}.', _W, 'weight_packed', 'weight_scale',
+                      'U8', 'U8'),
+    'step3p7-ct': ('model.layers.{L}.moe.experts.{e}.', _PROJ, 'weight_packed', 'weight_scale', 'U8', 'U8'),
 }
 
 
