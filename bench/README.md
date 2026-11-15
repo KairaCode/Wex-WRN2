@@ -15,19 +15,27 @@ Nothing is downloaded or installed by the benchmark itself. A standard Linux box
 | GPU copy test (NVIDIA only, optional) | the CUDA toolkit (`nvcc`); DGX OS already has it | same | `nvcc --version`; if it is installed but not found: `export PATH=/usr/local/cuda/bin:$PATH` |
 | extra details in the report (optional) | `sudo apt install pciutils` (`lspci`); `zfsutils-linux` if you use ZFS | `pciutils` | not required, the fields just stay empty |
 
+On Windows, the set-up of the repository's checks ([CONTRIBUTING.md](../CONTRIBUTING.md), section 0): MSYS2
+with the UCRT64 packages `mingw-w64-ucrt-x86_64-gcc`, `mingw-w64-ucrt-x86_64-libgomp` and
+`mingw-w64-ucrt-x86_64-python`, and `git`. Run everything from the MSYS2 UCRT64 shell. The GPU copy test needs
+`nvcc`, which on Windows also needs the C++ compiler of Visual Studio (`cl.exe`); without them the test reports
+`skipped`.
+
 Also make sure that:
 - the directory you pass to `--dir` has **about 20 GB free** (or use `--size-gb 4` / `--quick`);
 - nothing heavy is running during the run (other benchmarks, downloads, model inference), since it would show up in the numbers.
 
 No root, no Python packages, no model download: OpenMP comes with gcc, and the repository's checks generate their own small test files.
 
-## Run it (Linux)
+## Run it (Linux, Windows)
 
 ```bash
 git clone https://github.com/KairaCode/Wex-WRN2.git
 cd Wex-WRN2
 python3 bench/bench.py --dir /path/on/your/model/volume
 ```
+
+The same lines on Windows, in the MSYS2 UCRT64 shell; there the folder `D:\models` is written `/d/models`.
 
 - `--dir`: a directory on the volume your models are on. A 16 GiB test file is written there and
   removed at the end (`--size-gb N` to change it).
@@ -39,7 +47,10 @@ python3 bench/bench.py --dir /path/on/your/model/volume
 
 The script prints each section as it goes and writes `bench/out/results.json`. **Read it before sharing
 it.** It holds the CPU, GPU, RAM and filesystem details and the numbers, but no host name, user name or
-paths. Then open a **Benchmark results** issue and attach the file.
+paths: where a message holds them (an error, the last lines of a failed check), the script writes
+`<FILE>`, `<Wex-WRN2>` (the checkout), `<DIR>`, `<HOME>`, `<HOST>` and `<USER>` in their place, in the file
+and in what it prints. The start time keeps its UTC offset. Then open a **Benchmark results** issue and
+attach the file.
 
 ## What each section measures
 
@@ -48,10 +59,20 @@ paths. Then open a **Benchmark results** issue and attach the file.
 | `sysinfo` | CPU (and AVX2/AVX-512), RAM, GPUs, kernel, filesystem type; ZFS recordsize, compression, primarycache and `direct` when it is ZFS | explains the numbers below |
 | `ram_bw` | read / write / copy GB/s on 1 thread and on all threads | the RAM expert cache and CPU-computed experts are bound by it |
 | `h2d` | pinned and pageable host ↔ device copies at 1, 8, 32 and 256 MiB | moving experts to VRAM; skipped without CUDA (Intel and AMD GPUs for now) |
-| `disk` | sequential 8 MiB reads, random 1 MiB and 18 MiB (expert-sized) 4 KiB-aligned reads, with `O_DIRECT` when the filesystem accepts it; first and second pass | an expert miss is one such read; the second pass shows the cache (ZFS ARC, page cache) |
+| `disk` | sequential 8 MiB reads, random 1 MiB and 18 MiB (expert-sized) 4 KiB-aligned reads, one at a time, past the OS cache when the filesystem accepts it (`O_DIRECT` on Linux, `FILE_FLAG_NO_BUFFERING` on Windows; `o_direct` in the JSON says whether it did); first and second pass | an expert miss is one such read; the second pass shows the cache (ZFS ARC, page cache) |
 | `wex_check` | `scripts/check_all.sh`: pass/fail and seconds | the format code builds and works on your machine |
 
 Notes:
+- On Windows, `sysinfo` takes the CPU name from the registry, AVX2 and AVX-512F from
+  `IsProcessorFeaturePresent`, the RAM from `GlobalMemoryStatusEx` and the filesystem from
+  `GetVolumeInformationW`; `kernel` is the Windows version. `display_devices` stays empty there (no
+  `lspci`); `nvidia` lists NVIDIA GPUs through `nvidia-smi` as on Linux. With `FILE_FLAG_NO_BUFFERING` both
+  passes of `disk` read the drive, so the second pass does not show the file cache. `wex_check` runs the
+  first `bash` on `PATH` outside the Windows folder: the `bash.exe` there is the WSL launcher, which would
+  run the checks in a Linux system.
+- Windows was run on one machine (Windows 10 22H2, MSYS2 UCRT64 gcc 16.2 and Python 3.14, NTFS on an NVMe
+  drive, 2026-11-15). Not tried: Windows 11, the bash of Git for Windows, a Python from python.org, a
+  volume other than NTFS, and `h2d` on Windows.
 - On ZFS, `O_DIRECT` is honoured only from OpenZFS 2.3 with `direct=standard` or `always`. Otherwise the
   reads go through the ARC, and the second pass mostly measures RAM. The JSON records which case you
   were in.
