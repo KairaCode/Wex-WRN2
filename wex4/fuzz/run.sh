@@ -174,7 +174,7 @@ for h in $HARNESSES; do
       > "$O/$h.log" 2>&1 || failed="$failed $h"
   # the last progress line (cov: the instrumented edges reached), libFuzzer's counters, the harness's own summary
   grep -E '^#[0-9]+.* cov: ' "$O/$h.log" | tail -1 | sed -E 's/^#[0-9]+[[:space:]]+[A-Za-z]+[[:space:]]+(cov: [0-9]+ ft: [0-9]+ corp: [^ ]+).*/\1/' || true
-  grep -E '^(stat::number_of_executed_units|stat::new_units_added|stat::peak_rss_mb|fuzz_[a-z0-9_]+( other paths)?: )' "$O/$h.log" || true
+  grep -E '^(stat::number_of_executed_units|stat::new_units_added|stat::peak_rss_mb|fuzz_[a-z0-9_]+( other paths| failing reads)?: )' "$O/$h.log" || true
 done
 if [ -n "$failed" ]; then
   for h in $failed; do echo "== $h stopped; the end of its log:"; tail -40 "$O/$h.log"; done

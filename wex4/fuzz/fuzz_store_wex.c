@@ -37,6 +37,7 @@
 #include <stdio.h>
 static int fuzz_quiet(FILE *stream, const char *format, ...) { (void)stream; (void)format; return 0; }
 #define fprintf fuzz_quiet
+#include "read_faults.h"   /* the store's reads, failed on demand by the third pass of store_paths.h */
 #include "../../c/expert_store_wex.c"
 #include "../../c/wex_decode.c"
 #undef fprintf
@@ -233,6 +234,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
                  "the store's counters do not add up to the lookups");
     store->ops->destroy(store);
     fuzz_store_paths(temp_path, file, size, &model, has_model);
+    fuzz_store_faults(temp_path, file, size, &model, has_model);
     free(slab);
     free(file);
     return 0;

@@ -23,7 +23,8 @@
  *    input; a lookup succeeds exactly when the record's bytes of that file pass the owner check and decode,
  *    and the three matrices are the decoded bytes. A copy whose records differ (form RECORDS) shows a read
  *    from the wrong file. With WEX_READ_RETRY=1 a failed load fails again;
- *  - the request, hit and miss counters add up to the lookups made. */
+ *  - the request, hit and miss counters add up to the lookups made.
+ * fuzz_store_faults, at the end of this file, is a third pass: the same store with reads that fail. */
 
 #define FUZZ_PATHS_LOOKUPS 64u
 
@@ -187,6 +188,163 @@ static void fuzz_store_paths(const char *primary, const unsigned char *file, siz
     fuzz_setenv("WEX_READ_RETRY", "");
     free(slab);
     free(copy);
+}
+
+/* The third pass, over every input the store opened: reads that fail (read_faults.h). For one input in 2,
+ * COLI_MODEL_MIRROR names a copy of the same bytes, with COLI_DISK_WEIGHTS=1,1, so that a load reads from
+ * either file. The store is opened once to count its reads, opened again with one of them failed, then opened
+ * a third time: for one input in 2 the first expert with a record (from a point the input's hash picks) is
+ * prefetched with its read failed, then that expert is looked up with its read failed, WEX_READ_RETRY off
+ * (6 inputs in 8) or on with one read failed (1 in 8, so the second read succeeds) or two (1 in 8), then
+ * looked up again with no read failed. Each failed read waits 16 ms when WEX_READ_RETRY is on.
+ *
+ * Besides what the sanitizers catch (LeakSanitizer, under libFuzzer, sees what the failed open leaves):
+ *  - the open reads the header page, the table, the model of a WNR2 or WNR3 container, and the mirror's
+ *    header page and table, each once; with one of those reads failed it fails, with no store;
+ *  - a prefetch whose read failed does not publish the record;
+ *  - a lookup whose read failed returns no record, unless WEX_READ_RETRY gave it a second read that did not
+ *    fail: then it succeeds exactly when the record passes the owner check and decodes, with the decoded
+ *    matrices; the lookup after it gives the record's own verdict and matrices (a failed load left its slot
+ *    reusable);
+ *  - every read the pass failed was a read the store made, and the counters add up to the two lookups. */
+
+static unsigned long long faults_passes, faults_with_mirror, faults_open_reads, faults_open_refused, faults_prefetch,
+    faults_lookups, faults_retry_one, faults_retry_served, faults_retry_two, faults_served_after;
+
+static void fuzz_store_faults_report(void) {
+    fprintf(stderr, "fuzz_store_wex failing reads: %llu passes (%llu with a mirror), %llu reads to open, %llu opens "
+            "with a failed read refused, %llu prefetches with a failed read, %llu lookups with a failed read (%llu "
+            "read again by WEX_READ_RETRY, %llu of them served; %llu with the second read failed too), %llu "
+            "records served by the lookup after one\n",
+            faults_passes, faults_with_mirror, faults_open_reads, faults_open_refused, faults_prefetch, faults_lookups,
+            faults_retry_one, faults_retry_served, faults_retry_two, faults_served_after);
+}
+
+static ColiExpertStore *fuzz_store_open_plain(int *rc) {
+    ColiDeepSeekV4ExpertStoreOptions options;
+    ColiExpertStore *store = NULL;
+    char error[256] = {0};
+    memset(&options, 0, sizeof options);
+    options.model_dir = ".";
+    *rc = coli_v4_expert_store_open_wex(NULL, NULL, &options, &store, error, sizeof error);
+    return store;
+}
+
+/* 1 when the three matrices of a view are those of entry e in the decoded slab */
+static int fuzz_store_view_is(const ColiExpertView *view, const WexEntry *e, const unsigned char *slab) {
+    const ColiTensorView *matrix[3];
+    unsigned int m;
+    matrix[0] = &view->gate; matrix[1] = &view->down; matrix[2] = &view->up;
+    for (m = 0; m < 3u; m++) {
+        size_t scale_bytes = (size_t)e->scale_shapes[m][0] * e->scale_shapes[m][1];
+        size_t weight_bytes = (size_t)e->weight_shapes[m][0] * e->weight_shapes[m][1];
+        if (matrix[m]->scale_bytes != scale_bytes || matrix[m]->data_bytes != weight_bytes ||
+            memcmp(matrix[m]->scales, slab + e->scale_offsets[m], scale_bytes) ||
+            memcmp(matrix[m]->data, slab + e->weight_offsets[m], weight_bytes)) return 0;
+    }
+    return 1;
+}
+
+static void fuzz_store_faults(const char *primary, const unsigned char *file, size_t size, const WexNr2Model *model,
+                              int has_model) {
+    static int reported;
+    const WexHeader *h = (const WexHeader *)file;
+    const WexEntry *entries = (const WexEntry *)(file + h->table_offset);
+    uint64_t hash = fuzz_paths_mix(fuzz_paths_hash(file, size), 1000u);   /* not the second pass's choices */
+    size_t count = (size_t)h->num_layers * h->num_experts, i, pick = count;
+    int mirror = (int)(hash & 1u), mode = (int)((hash >> 24) % 8u), rc, fails;
+    unsigned long long reads, failed, want_reads;
+    ColiExpertStore *store;
+    FuzzExtent none = {0, 0};
+
+    if (!reported) { reported = 1; atexit(fuzz_store_faults_report); }
+    faults_passes++;
+    faults_with_mirror += (unsigned long long)mirror;
+    if (mirror) free(fuzz_mirror_write(0, primary, file, size, FUZZ_COPY_SAME, hash, NULL, 0, none));
+    fuzz_setenv("COLI_MODEL_MIRROR", mirror ? fuzz_mirror_dir(0) : "");
+    fuzz_setenv("COLI_DISK_WEIGHTS", "1,1");
+
+    /* the reads of an open, then the open with one of them failed */
+    want_reads = 2u + ((h->flags & (WEX_HEADER_NEURAL_RANS2 | WEX_HEADER_NEURAL_RANS3)) ? 1u : 0u) + 2u * (unsigned)mirror;
+    reads = fuzz_fault_reads;
+    store = fuzz_store_open_plain(&rc);
+    FUZZ_REQUIRE(!rc && store, "the store does not open again a container it opened (failing reads)");
+    reads = fuzz_fault_reads - reads;
+    FUZZ_REQUIRE(reads == want_reads, "the store's open does not read its header page, table, model and mirror once each");
+    store->ops->destroy(store);
+    failed = fuzz_fault_failed;
+    fuzz_fault_arm((long long)((hash >> 8) % reads), 1);
+    store = fuzz_store_open_plain(&rc);
+    fuzz_fault_disarm();
+    FUZZ_REQUIRE(fuzz_fault_failed == failed + 1u, "a read the pass failed was not made by the store's open");
+    FUZZ_REQUIRE(rc && !store, "the store opens although one of its reads failed");
+    faults_open_reads += reads;
+    faults_open_refused++;
+
+    /* a prefetch and a lookup whose read fails, then a lookup with no failure */
+    store = fuzz_store_open_plain(&rc);
+    FUZZ_REQUIRE(!rc && store, "the store does not open again a container it opened (failing reads)");
+    for (i = 0; i < count && pick == count; i++)
+        if (entries[((hash >> 32) + i) % count].total_bytes) pick = (size_t)(((hash >> 32) + i) % count);
+    if (pick < count) {
+        const WexEntry *e = &entries[pick];
+        ColiExpertKey key;
+        ColiExpertView view;
+        ColiExpertStoreStats stats;
+        unsigned char *slab = (unsigned char *)malloc((size_t)h->aligned_expert_bytes);
+        int want, got;
+        if (!slab) abort();
+        key.layer = (int)(pick / h->num_experts);
+        key.expert = (int)(pick % h->num_experts);
+        want = fuzz_store_expect(file, h, e, key.layer, key.expert, model, has_model, slab);
+        if ((hash >> 28) & 1u) {
+            failed = fuzz_fault_failed;
+            fuzz_fault_arm(0, 1);
+            got = store->ops->prefetch(store, &key, 1u);
+            fuzz_fault_disarm();
+            FUZZ_REQUIRE(fuzz_fault_failed == failed + 1u, "a prefetch of an expert with a record made no read");
+            FUZZ_REQUIRE(got == 0, "a prefetch whose read failed published the record");
+            faults_prefetch++;
+        }
+        fails = mode == 7 ? 2 : 1;
+        fuzz_setenv("WEX_READ_RETRY", mode >= 6 ? "1" : "");
+        failed = fuzz_fault_failed;
+        fuzz_fault_arm(0, fails);
+        memset(&view, 0, sizeof view);
+        got = coli_expert_lookup(store, key, &view);
+        fuzz_fault_disarm();
+        fuzz_setenv("WEX_READ_RETRY", "");
+        FUZZ_REQUIRE(fuzz_fault_failed == failed + (unsigned)fails, "a lookup did not make the reads the pass failed");
+        if (mode == 6)
+            FUZZ_REQUIRE(!got == !want, "a lookup read again after a failed read (WEX_READ_RETRY) and the decoders "
+                                        "disagree on a record");
+        else
+            FUZZ_REQUIRE(got != 0, "a lookup whose read failed, and was not read again without a failure, returns a record");
+        if (!got) {
+            FUZZ_REQUIRE(fuzz_store_view_is(&view, e, slab), "a lookup read again hands out a matrix that is not the decoded record");
+            coli_expert_release(store, &view);
+            faults_retry_served++;
+        }
+        memset(&view, 0, sizeof view);
+        got = coli_expert_lookup(store, key, &view);
+        FUZZ_REQUIRE(!got == !want, "a lookup after a failed read and the decoders disagree on a record");
+        if (!got) {
+            FUZZ_REQUIRE(fuzz_store_view_is(&view, e, slab), "a lookup after a failed read hands out a matrix that is "
+                                                             "not the decoded record");
+            coli_expert_release(store, &view);
+            faults_served_after++;
+        }
+        store->ops->stats(store, &stats);
+        FUZZ_REQUIRE(stats.requests == 2u && stats.hits + stats.misses == 2u,
+                     "the store's counters do not add up to the lookups (failing reads)");
+        faults_lookups++;
+        faults_retry_one += mode == 6;
+        faults_retry_two += mode == 7;
+        free(slab);
+    }
+    store->ops->destroy(store);
+    fuzz_setenv("COLI_MODEL_MIRROR", "");
+    fuzz_setenv("COLI_DISK_WEIGHTS", "");
 }
 
 #endif /* WEX_FUZZ_STORE_PATHS_H */

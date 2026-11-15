@@ -36,7 +36,10 @@
  * A wave takes only records that name the container's model: the stand-in helper keeps the models of every
  * input of the process, where the harness empties the registry of c/wex_decode.c before each one. A wave the
  * engine stops in leaks its five arrays (the longjmp skips their free); that happens on Windows only, where
- * no leak checker runs. */
+ * no leak checker runs.
+ *
+ * fuzz_q38_faults, at the end of this file, is a third pass: reads that fail (read_faults.h) and the root pin
+ * of COLI_WEX_ROOT. */
 
 #define FUZZ_Q38_PATHS_LOADS 32
 #define FUZZ_Q38_WAVE 8
@@ -325,6 +328,177 @@ static void fuzz_q38_paths(Model *m, const char *primary, const unsigned char *f
     free(x);
     m->x4 = NULL;
     for (k = 0; k < 4; k++) free(copies[k]);
+}
+
+/* The third pass, over every container that attached: reads that fail (read_faults.h) and the root pin.
+ *  - q38_wex_manifest is run once to count its reads, then with one of them failed. The harness calls it
+ *    itself: through the attach a refusal stops the engine, which exits there with the page, the table and
+ *    the descriptor it holds, and the harness, which goes on, would leak them;
+ *  - for a WNR3 container, q38_wex_model with its read failed;
+ *  - COLI_WEX_ROOT: q38_wex_manifest under the WEX4 file's own root (in capitals for one input in 2: the
+ *    comparison ignores case), under that root with one digit changed, and for a legacy file under a root of
+ *    zeros;
+ *  - the container is attached again, for one input in 2 with a copy of the same bytes as a mirror and
+ *    COLI_WEX_STRIPE=1, and one expert (from the input's hash) is loaded alone with one of its reads failed
+ *    (either half of a striped read), then loaded again with none failed.
+ *
+ * Besides what the sanitizers catch:
+ *  - the manifest reads the header page and its table or index (2 reads at least), and refuses the container
+ *    when one of its reads fails; the model's read failed stops the engine;
+ *  - the manifest takes a WEX4 file under its own root and refuses it under another, and refuses a legacy file
+ *    under any root;
+ *  - a load whose read failed stops the engine; the load after it stops exactly when the bytes of the drives
+ *    the split names fail the owner check or the decode, and otherwise the slot holds the decoded record;
+ *  - every read the pass failed was a read of c/qwen38_wex.h. */
+
+static unsigned long long q38f_passes, q38f_manifest_reads, q38f_manifest_refused, q38f_model_stops, q38f_pins_taken,
+    q38f_pins_refused, q38f_loads, q38f_loads_striped, q38f_loaded_after;
+
+static void fuzz_q38_faults_report(void) {
+    fprintf(stderr, "fuzz_q38_wex failing reads: %llu passes, %llu reads of a manifest, %llu manifests with a failed "
+            "read refused, %llu model reads failed (the engine stopped), COLI_WEX_ROOT: %llu pins taken, %llu refused; "
+            "%llu loads with a failed read stopped (%llu of them striped), %llu records loaded after one\n",
+            q38f_passes, q38f_manifest_reads, q38f_manifest_refused, q38f_model_stops, q38f_pins_taken,
+            q38f_pins_refused, q38f_loads, q38f_loads_striped, q38f_loaded_after);
+}
+
+/* 1 when the engine stopped (exit) inside the call */
+static int fuzz_q38_model_as(int fd, const unsigned char *page, const char *path) {
+    fuzz_armed = 1;
+    if (setjmp(fuzz_stop)) { fuzz_armed = 0; return 1; }
+    q38_wex_model(fd, page, path);
+    fuzz_armed = 0;
+    return 0;
+}
+/* q38_wex_manifest of fd, with its buffers freed: its result */
+static int fuzz_q38_manifest_rc(int fd, const Cfg *c) {
+    unsigned char *page = NULL, *table = NULL;
+    size_t table_bytes = 0;
+    int64_t file_bytes = 0;
+    int wex4 = 0, rc = q38_wex_manifest(fd, c, &page, &table, &table_bytes, &file_bytes, &wex4);
+    if (page) compat_aligned_free(page);
+    if (table) compat_aligned_free(table);
+    return rc;
+}
+
+static void fuzz_q38_faults(Model *m, const char *primary, const unsigned char *file, size_t size,
+                            const WexNr2Model *model) {
+    static int reported;
+    uint64_t hash = fuzz_paths_mix(fuzz_paths_hash(file, size), 1000u);   /* not the second pass's choices */
+    int fd, wex4 = 0, nr3, rc, stopped, want, i, layer, expert, r, s, n = m->c.layers * m->c.experts;
+    int striped = (int)(hash & 1u) && !strpbrk(fuzz_mirror_dir(0), ";,");
+    unsigned long long reads, failed;
+    unsigned char *page = NULL, *table = NULL, *copy = NULL, *slab, *drive[4];
+    size_t table_bytes = 0;
+    int64_t file_bytes = 0, cut;
+    const WexEntry *e;
+    Q38Int4Experts *x;
+    Slot slot;
+    FuzzExtent none = {0, 0};
+    char hex[65];
+
+    if (!reported) { reported = 1; atexit(fuzz_q38_faults_report); }
+    q38f_passes++;
+    fd = q38_wex_open(primary);
+    if (fd < 0) abort();
+
+    /* the manifest's reads, then the manifest with one of them failed */
+    reads = fuzz_fault_reads;
+    FUZZ_REQUIRE(!q38_wex_manifest(fd, &m->c, &page, &table, &table_bytes, &file_bytes, &wex4),
+                 "the manifest of a container that attached fails when it is read again");
+    reads = fuzz_fault_reads - reads;
+    FUZZ_REQUIRE(reads >= 2u, "the manifest takes a container without reading its header page and its table or index");
+    nr3 = !!(((const WexHeader *)page)->flags & WEX_HEADER_NEURAL_RANS3);
+    hex[0] = 0;
+    for (i = 0; wex4 && i < 32; i++)   /* the root, which the rewritten page keeps at byte 4064 */
+        snprintf(hex + 2 * i, 3, (hash >> 40) & 1u ? "%02X" : "%02x", page[WEX4_HEADER_HASHED + i]);
+    failed = fuzz_fault_failed;
+    fuzz_fault_arm((long long)((hash >> 8) % reads), 1);
+    rc = fuzz_q38_manifest_rc(fd, &m->c);
+    fuzz_fault_disarm();
+    FUZZ_REQUIRE(fuzz_fault_failed == failed + 1u, "a read the pass failed was not made by the manifest");
+    FUZZ_REQUIRE(rc != 0, "the manifest takes a container although one of its reads failed");
+    q38f_manifest_reads += reads;
+    q38f_manifest_refused++;
+
+    if (nr3) {   /* the model's read failed */
+        failed = fuzz_fault_failed;
+        fuzz_fault_arm(0, 1);
+        stopped = fuzz_q38_model_as(fd, page, primary);
+        fuzz_fault_disarm();
+        FUZZ_REQUIRE(fuzz_fault_failed == failed + 1u, "a read the pass failed was not made by the model's load");
+        FUZZ_REQUIRE(stopped, "the model of a WNR3 container registers although its read failed");
+        q38f_model_stops++;
+    }
+
+    if (wex4) {   /* COLI_WEX_ROOT */
+        int right, wrong;
+        fuzz_setenv("COLI_WEX_ROOT", hex);
+        right = fuzz_q38_manifest_rc(fd, &m->c);
+        i = (int)((hash >> 44) % 64u);
+        hex[i] = hex[i] == '0' ? '1' : '0';
+        fuzz_setenv("COLI_WEX_ROOT", hex);
+        wrong = fuzz_q38_manifest_rc(fd, &m->c);
+        fuzz_setenv("COLI_WEX_ROOT", "");
+        FUZZ_REQUIRE(right == 0, "a WEX4 container is refused under its own root (COLI_WEX_ROOT)");
+        FUZZ_REQUIRE(wrong != 0, "a WEX4 container is taken under another root (COLI_WEX_ROOT)");
+        q38f_pins_taken++;
+        q38f_pins_refused++;
+    } else {
+        fuzz_setenv("COLI_WEX_ROOT", "0000000000000000000000000000000000000000000000000000000000000000");
+        rc = fuzz_q38_manifest_rc(fd, &m->c);
+        fuzz_setenv("COLI_WEX_ROOT", "");
+        FUZZ_REQUIRE(rc != 0, "a container that is not WEX4 is taken under a pinned root (COLI_WEX_ROOT)");
+        q38f_pins_refused++;
+    }
+    compat_aligned_free(page);
+    compat_aligned_free(table);
+    close(fd);
+
+    /* one load with a failed read, then the same load with none */
+    if (striped) copy = fuzz_mirror_write(0, primary, file, size, FUZZ_COPY_SAME, hash, NULL, 0, none);
+    fuzz_setenv("COLI_WEX_EXTRA_MIRRORS", striped ? fuzz_mirror_dir(0) : "");
+    fuzz_setenv("COLI_WEX_STRIPE", striped ? "1" : "");
+    fuzz_setenv("COLI_WEX_VERIFY", "0");
+    m->x4 = NULL;
+    stopped = fuzz_q38_attach_as(m);
+    fuzz_setenv("COLI_WEX_EXTRA_MIRRORS", "");
+    fuzz_setenv("COLI_WEX_STRIPE", "");
+    FUZZ_REQUIRE(!stopped && m->x4, "the attach stops on a container it took before (failing reads)");
+    x = m->x4;
+    FUZZ_REQUIRE(x->wex_n == 1 + striped, "the attach does not take a copy of the same bytes as its mirror");
+    i = (int)((hash >> 16) % (uint64_t)n);
+    layer = i / m->c.experts;
+    expert = i % m->c.experts;
+    e = &x->wex_entry[i];
+    r = fuzz_q38_drive(x->wex_cut, (uint32_t)i);
+    s = (r + 1) % x->wex_n;
+    cut = x->wex_stripe ? fuzz_q38_stripe(x->wex_cut, r, s, (int64_t)e->total_bytes) : 0;
+    memset(&slot, 0, sizeof slot);
+    failed = fuzz_fault_failed;
+    fuzz_fault_arm(cut ? (long long)((hash >> 20) & 1u) : 0, 1);   /* a striped read: either half */
+    stopped = fuzz_q38_load_as(m, layer, expert, &slot, 0, 1);
+    fuzz_fault_disarm();
+    FUZZ_REQUIRE(fuzz_fault_failed == failed + 1u, "a read the pass failed was not made by the load");
+    FUZZ_REQUIRE(stopped, "a load goes on although its read failed");
+    slab = (unsigned char *)malloc((size_t)x->record_bytes);
+    if (!slab) abort();
+    drive[0] = drive[2] = drive[3] = (unsigned char *)file;
+    drive[1] = striped ? copy : (unsigned char *)file;
+    want = fuzz_q38_expect(x, (size_t)i, layer, expert, drive, r, s, cut, model, slab, 0);
+    stopped = fuzz_q38_load_as(m, layer, expert, &slot, 0, 1);
+    FUZZ_REQUIRE(stopped == want, "a load after a failed read and the checks of wex_format.h disagree on a record");
+    FUZZ_REQUIRE(stopped || !memcmp(q38_mx4_record(&slot), slab, (size_t)x->mx_raw),
+                 "a load after a failed read does not leave the decoded record in its slot");
+    q38f_loads++;
+    q38f_loads_striped += cut != 0;
+    q38f_loaded_after += !stopped;
+    free(slab);
+    free(slot.int4_slab);
+    q38_mx4_free(x);
+    free(x);
+    m->x4 = NULL;
+    free(copy);
 }
 
 #endif /* WEX_FUZZ_Q38_PATHS_H */
