@@ -4,7 +4,9 @@
 # Build the fuzzing harnesses of wex4/fuzz/ and run them. CPU only, no real model needed.
 #
 #   bash wex4/fuzz/run.sh [SECONDS]     libFuzzer: clang with -fsanitize=fuzzer,address,undefined; every harness
-#                                       fuzzes for SECONDS (default 60) from the seed corpus. CC names the clang.
+#                                       fuzzes for SECONDS (default 60) from the seed corpus. CC names the clang
+#                                       (macOS: the clang of a Homebrew LLVM; Apple clang has no libFuzzer).
+#                                       It prints the compiler and the kernels of the fast WNR3 decoder it built
 #   bash wex4/fuzz/run.sh --replay      no fuzzing engine: gcc, each harness runs every seed once, and a harness
 #                                       with a custom mutator also runs that mutator on its seeds (a regression
 #                                       test that needs no clang; CC names another compiler and WEX_CFLAGS adds
@@ -76,6 +78,11 @@ case $SECONDS_EACH in
   ''|*[!0-9]*|0*) echo "usage: bash wex4/fuzz/run.sh [SECONDS | --replay]" >&2; exit 2 ;;
 esac
 CC=${CC:-clang}
+# as in --replay: the compiler, and the kernels fuzz_wnr3_record compares with the reference under these flags
+echo "compiler: $("$CC" --version | sed -n 1p)"
+KERNELS=$(printf '#include "wex_fast_decode.h"\nkernels WEXF_KERNELS\n' |
+          "$CC" $MARCH -E -P $INC -x c - | sed -n 's/^kernels "\(.*\)"$/\1/p')
+echo "fast WNR3 decoder of fuzz_wnr3_record: $KERNELS kernels"
 SAN="-g -O1 -fno-omit-frame-pointer -fsanitize=fuzzer,address,undefined -fno-sanitize-recover=undefined"
 for h in $HARNESSES; do
   "$CC" $W $SAN $MARCH $INC "$ROOT/wex4/fuzz/$h.c" -o "$O/$h$EXE"
@@ -101,4 +108,4 @@ if [ -n "$failed" ]; then
   echo "FAILED:$failed (reproducers in $O/crashes)" >&2
   exit 1
 fi
-echo "fuzz run passed: $(echo $HARNESSES | wc -w) harnesses, $SECONDS_EACH s each"
+echo "fuzz run passed: $(echo $HARNESSES | wc -w | tr -d ' ') harnesses, $SECONDS_EACH s each"   # macOS pads wc
