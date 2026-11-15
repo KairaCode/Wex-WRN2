@@ -1,0 +1,104 @@
+== the copy of wnr3_vk.c with vulkan-diag.patch, the shaders of wnr3.comp, commit 1af6c0d
+<Wex-WRN2>/wex4/research/vulkan-decode/wnr3.comp
+<Wex-WRN2>/wex4/research/vulkan-decode/wnr3.comp
+== wnr3_vk_diag decode <SCRATCH>/w/deepseek-v41/nr3-all.wex4
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357)
+<SCRATCH>/w/deepseek-v41/nr3-all.wex4 record 0: accepted by both, the decoded bytes differ
+  matrix 0: 20401 of 368640 scale bytes differ (20401 of them hold the coded scale; ceil inverse changes 110143 scales), first at 8; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 1: 21552 of 368640 scale bytes differ (21552 of them hold the coded scale; ceil inverse changes 113523 scales), first at 41; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 2: 20969 of 368640 scale bytes differ (20969 of them hold the coded scale; ceil inverse changes 110593 scales), first at 2; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+<SCRATCH>/w/deepseek-v41/nr3-all.wex4 record 1: accepted by both, the decoded bytes differ
+  matrix 0: 22271 of 368640 scale bytes differ (22271 of them hold the coded scale; ceil inverse changes 114617 scales), first at 0; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 1: 22866 of 368640 scale bytes differ (22866 of them hold the coded scale; ceil inverse changes 116867 scales), first at 10; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 2: 22086 of 368640 scale bytes differ (22086 of them hold the coded scale; ceil inverse changes 114580 scales), first at 18; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+<SCRATCH>/w/deepseek-v41/nr3-all.wex4 record 2: accepted by both, the decoded bytes differ
+  matrix 0: 21663 of 368640 scale bytes differ (21663 of them hold the coded scale; ceil inverse changes 113405 scales), first at 8; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 1: 23024 of 368640 scale bytes differ (23024 of them hold the coded scale; ceil inverse changes 117454 scales), first at 14; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 2: 21491 of 368640 scale bytes differ (21491 of them hold the coded scale; ceil inverse changes 113118 scales), first at 40; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+<SCRATCH>/w/deepseek-v41/nr3-all.wex4 record 3: accepted by both, the decoded bytes differ
+  matrix 0: 20840 of 368640 scale bytes differ (20840 of them hold the coded scale; ceil inverse changes 110158 scales), first at 10; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 1: 21438 of 368640 scale bytes differ (21438 of them hold the coded scale; ceil inverse changes 112878 scales), first at 37; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 2: 20717 of 368640 scale bytes differ (20717 of them hold the coded scale; ceil inverse changes 110551 scales), first at 30; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+<SCRATCH>/w/deepseek-v41/nr3-all.wex4 record 4: accepted by both, the decoded bytes differ
+  matrix 0: 21443 of 368640 scale bytes differ (21443 of them hold the coded scale; ceil inverse changes 112426 scales), first at 32; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 1: 21135 of 368640 scale bytes differ (21135 of them hold the coded scale; ceil inverse changes 111854 scales), first at 1; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 2: 19672 of 368640 scale bytes differ (19672 of them hold the coded scale; ceil inverse changes 107288 scales), first at 2; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+<SCRATCH>/w/deepseek-v41/nr3-all.wex4 record 5: accepted by both, the decoded bytes differ
+  matrix 0: 22018 of 368640 scale bytes differ (22018 of them hold the coded scale; ceil inverse changes 114234 scales), first at 0; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 1: 22204 of 368640 scale bytes differ (22204 of them hold the coded scale; ceil inverse changes 114857 scales), first at 9; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 2: 21303 of 368640 scale bytes differ (21303 of them hold the coded scale; ceil inverse changes 112204 scales), first at 25; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+<SCRATCH>/w/deepseek-v41/nr3-all.wex4 record 6: accepted by both, the decoded bytes differ
+  matrix 0: 22608 of 368640 scale bytes differ (22608 of them hold the coded scale; ceil inverse changes 115774 scales), first at 17; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 1: 21770 of 368640 scale bytes differ (21770 of them hold the coded scale; ceil inverse changes 113935 scales), first at 9; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 2: 20854 of 368640 scale bytes differ (20854 of them hold the coded scale; ceil inverse changes 111210 scales), first at 0; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+<SCRATCH>/w/deepseek-v41/nr3-all.wex4 record 7: accepted by both, the decoded bytes differ
+  matrix 0: 21642 of 368640 scale bytes differ (21642 of them hold the coded scale; ceil inverse changes 112603 scales), first at 1; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 1: 21440 of 368640 scale bytes differ (21440 of them hold the coded scale; ceil inverse changes 113370 scales), first at 8; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 2: 20584 of 368640 scale bytes differ (20584 of them hold the coded scale; ceil inverse changes 110253 scales), first at 20; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+<SCRATCH>/w/deepseek-v41/nr3-all.wex4: 8 WNR3 records, 8 taken, 1 batches of at most 268435456 bytes; device and reference agree on 0 accepted (flag bytes:; 2707895 blocks undone by the ceil-form inverse) and 0 refused (error bits 0x0); 0 refused by the host checks; 8 differences
+wnr3_vk: FAILED (8)
+exit status 1
+== wnr3_vk_diag decode <SCRATCH>/w/deepseek-v41/pack-wnr3-cz.wex4
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357)
+<SCRATCH>/w/deepseek-v41/pack-wnr3-cz.wex4 record 0: accepted by both, the decoded bytes differ
+  matrix 0: 20401 of 368640 scale bytes differ (20401 of them hold the coded scale; ceil inverse changes 110143 scales), first at 8; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 1: 21552 of 368640 scale bytes differ (21552 of them hold the coded scale; ceil inverse changes 113523 scales), first at 41; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 2: 20969 of 368640 scale bytes differ (20969 of them hold the coded scale; ceil inverse changes 110593 scales), first at 2; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+<SCRATCH>/w/deepseek-v41/pack-wnr3-cz.wex4 record 1: accepted by both, the decoded bytes differ
+  matrix 0: 22271 of 368640 scale bytes differ (22271 of them hold the coded scale; ceil inverse changes 114617 scales), first at 0; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 1: 22866 of 368640 scale bytes differ (22866 of them hold the coded scale; ceil inverse changes 116867 scales), first at 10; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 2: 22086 of 368640 scale bytes differ (22086 of them hold the coded scale; ceil inverse changes 114580 scales), first at 18; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+<SCRATCH>/w/deepseek-v41/pack-wnr3-cz.wex4 record 2: accepted by both, the decoded bytes differ
+  matrix 0: 21663 of 368640 scale bytes differ (21663 of them hold the coded scale; ceil inverse changes 113405 scales), first at 8; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 1: 23024 of 368640 scale bytes differ (23024 of them hold the coded scale; ceil inverse changes 117454 scales), first at 14; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 2: 21491 of 368640 scale bytes differ (21491 of them hold the coded scale; ceil inverse changes 113118 scales), first at 40; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+<SCRATCH>/w/deepseek-v41/pack-wnr3-cz.wex4 record 3: accepted by both, the decoded bytes differ
+  matrix 0: 20840 of 368640 scale bytes differ (20840 of them hold the coded scale; ceil inverse changes 110158 scales), first at 10; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 1: 21438 of 368640 scale bytes differ (21438 of them hold the coded scale; ceil inverse changes 112878 scales), first at 37; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 2: 20717 of 368640 scale bytes differ (20717 of them hold the coded scale; ceil inverse changes 110551 scales), first at 30; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+<SCRATCH>/w/deepseek-v41/pack-wnr3-cz.wex4 record 4: accepted by both, the decoded bytes differ
+  matrix 0: 21443 of 368640 scale bytes differ (21443 of them hold the coded scale; ceil inverse changes 112426 scales), first at 32; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 1: 21135 of 368640 scale bytes differ (21135 of them hold the coded scale; ceil inverse changes 111854 scales), first at 1; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 2: 19672 of 368640 scale bytes differ (19672 of them hold the coded scale; ceil inverse changes 107288 scales), first at 2; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+<SCRATCH>/w/deepseek-v41/pack-wnr3-cz.wex4 record 5: accepted by both, the decoded bytes differ
+  matrix 0: 22018 of 368640 scale bytes differ (22018 of them hold the coded scale; ceil inverse changes 114234 scales), first at 0; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 1: 22204 of 368640 scale bytes differ (22204 of them hold the coded scale; ceil inverse changes 114857 scales), first at 9; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 2: 21303 of 368640 scale bytes differ (21303 of them hold the coded scale; ceil inverse changes 112204 scales), first at 25; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+<SCRATCH>/w/deepseek-v41/pack-wnr3-cz.wex4 record 6: accepted by both, the decoded bytes differ
+  matrix 0: 22608 of 368640 scale bytes differ (22608 of them hold the coded scale; ceil inverse changes 115774 scales), first at 17; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 1: 21770 of 368640 scale bytes differ (21770 of them hold the coded scale; ceil inverse changes 113935 scales), first at 9; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 2: 20854 of 368640 scale bytes differ (20854 of them hold the coded scale; ceil inverse changes 111210 scales), first at 0; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+<SCRATCH>/w/deepseek-v41/pack-wnr3-cz.wex4 record 7: accepted by both, the decoded bytes differ
+  matrix 0: 21642 of 368640 scale bytes differ (21642 of them hold the coded scale; ceil inverse changes 112603 scales), first at 1; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 1: 21440 of 368640 scale bytes differ (21440 of them hold the coded scale; ceil inverse changes 113370 scales), first at 8; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 2: 20584 of 368640 scale bytes differ (20584 of them hold the coded scale; ceil inverse changes 110253 scales), first at 20; 0 of 5898240 weight bytes differ (0 hold the coded bytes), first at -1
+<SCRATCH>/w/deepseek-v41/pack-wnr3-cz.wex4: 8 WNR3 records, 8 taken, 1 batches of at most 268435456 bytes; device and reference agree on 0 accepted (flag bytes:; 2707895 blocks undone by the ceil-form inverse) and 0 refused (error bits 0x0); 0 refused by the host checks; 8 differences
+wnr3_vk: FAILED (8)
+exit status 1
+== wnr3_vk_diag selftest
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357)
+selftest record 3: accepted by both, the decoded bytes differ
+  matrix 0: 15 of 500 scale bytes differ (15 of them hold the coded scale; ceil inverse changes 120 scales), first at 8; 0 of 8000 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 1: 13 of 301 scale bytes differ (13 of them hold the coded scale; ceil inverse changes 84 scales), first at 0; 0 of 4816 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 2: 0 of 1 scale bytes differ (0 of them hold the coded scale; ceil inverse changes 0 scales), first at -1; 0 of 16 weight bytes differ (0 hold the coded bytes), first at -1
+selftest record 4: accepted by both, the decoded bytes differ
+  matrix 0: 11 of 259 scale bytes differ (11 of them hold the coded scale; ceil inverse changes 65 scales), first at 9; 0 of 4144 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 1: 37 of 1026 scale bytes differ (37 of them hold the coded scale; ceil inverse changes 237 scales), first at 5; 0 of 16416 weight bytes differ (0 hold the coded bytes), first at -1
+  matrix 2: 2 of 130 scale bytes differ (2 of them hold the coded scale; ceil inverse changes 28 scales), first at 70; 0 of 2080 weight bytes differ (0 hold the coded bytes), first at -1
+selftest 0: plain, smallest chunks, odd scale counts: 9 + 101 streams, flags 0x00, error word 0x0
+selftest 1: plain, largest chunks: 3 + 6 streams, flags 0x00, error word 0x0
+selftest 2: canonical zero: 3 + 5 streams, flags 0x08, error word 0x0
+selftest 3: ceil form: 3 + 14 streams, flags 0x07, error word 0x0
+selftest 4: ceil form and canonical zero, chunk 4096: 4 + 14 streams, flags 0x0f, error word 0x0
+selftest 5: ceil form with a coded scale 0 in a max-5 block: 3 + 9 streams, flags 0x07, error word 0x4
+selftest 6: nibble 8 in a canonical-zero record: 3 + 9 streams, flags 0x08, error word 0x8
+selftest 7: one payload byte changed: 3 + 9 streams, flags 0x07, error word 0x1
+selftest 8: owner changed: every stream has a wrong hash and nothing else: 3 + 9 streams, flags 0x00, error word 0x2
+selftest 9: a scale stream one byte longer than its symbols: 15 + 53 streams, flags 0x00, error word 0x1
+selftest 10: a scale stream with an initial state below L: 15 + 53 streams, flags 0x00, error word 0x1
+selftest 11: a scale stream with an initial state of 256 L or more: 56 + 220 streams, flags 0x00, error word 0x1
+selftest: 3 accepted with the reference's bytes (534 blocks undone by the ceil-form inverse), 7 refused by both, 2 differences
+selftest: expected 5 accepted, 7 refused
+wnr3_vk: FAILED (3)
+exit status 1
+exit 0 after 46 s

@@ -1,0 +1,2037 @@
+{
+ "fetch_experts": 1,
+ "started_utc": "2026-11-15T09:19:26Z",
+ "budget_bytes": 1500000000,
+ "counted_bytes": 317018971,
+ "received_bytes": 317018971,
+ "retries": 0,
+ "checkpoints": [
+  {
+   "name": "deepseek-v41",
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "profile": "deepseek",
+   "layers": [
+    10,
+    30
+   ],
+   "experts": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "tensor_bytes": 150405120,
+   "outputs": [
+    {
+     "file": "deepseek-v41/model-00013-of-00048.experts.safetensors",
+     "bytes": 75205112,
+     "sha256": "0931ab59837af1086d160d29d9f20f5e06e7969e8daa6b5ad8428e93ebdc988a",
+     "tensors": 24,
+     "source": "model-00013-of-00048.safetensors"
+    },
+    {
+     "file": "deepseek-v41/model-00033-of-00048.experts.safetensors",
+     "bytes": 75205112,
+     "sha256": "eb51e921f6a4bf25c1704cb5250b5eebb6a1f26df13a24f1bf8417e56beee68c",
+     "tensors": 24,
+     "source": "model-00033-of-00048.safetensors"
+    }
+   ]
+  },
+  {
+   "name": "qwen3-235b",
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "profile": "qwen3-moe",
+   "layers": [
+    23,
+    70
+   ],
+   "experts": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "tensor_bytes": 80216064,
+   "outputs": [
+    {
+     "file": "qwen3-235b/model-00007-of-00026.experts.safetensors",
+     "bytes": 40110952,
+     "sha256": "4772d416936032444c2e758c4a1a104df7641c76dac9b96aa13bd051b29d132d",
+     "tensors": 24,
+     "source": "model-00007-of-00026.safetensors"
+    },
+    {
+     "file": "qwen3-235b/model-00019-of-00026.experts.safetensors",
+     "bytes": 40110952,
+     "sha256": "f37fe9e08b34cd6cfabcba28c6a8a06a73fcf921d0927d15684c43fdc3fe30e8",
+     "tensors": 24,
+     "source": "model-00019-of-00026.safetensors"
+    }
+   ]
+  },
+  {
+   "name": "minimax-m21",
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "profile": "mixtral",
+   "layers": [
+    15,
+    46
+   ],
+   "experts": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "tensor_bytes": 60162048,
+   "outputs": [
+    {
+     "file": "minimax-m21/model-00007-of-00026.experts.safetensors",
+     "bytes": 30084088,
+     "sha256": "32bd86f8aa074f28b65c6edf7b0cb84096b5d1dc2257dd61d865467edc41c3c9",
+     "tensors": 24,
+     "source": "model-00007-of-00026.safetensors"
+    },
+    {
+     "file": "minimax-m21/model-00019-of-00026.experts.safetensors",
+     "bytes": 30084088,
+     "sha256": "2699365b047fb2656b1f0a0aed826b333bb834883b0b479c7dc22bf305db2fc8",
+     "tensors": 24,
+     "source": "model-00019-of-00026.safetensors"
+    }
+   ]
+  }
+ ],
+ "requests": [
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "config.json",
+   "what": "config",
+   "range": null,
+   "bytes": 3311,
+   "sha256": "8be45ce0476004a3f529fd896115a4a2e800a129ad2d3ec05b16050f52e21879"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model.safetensors.index.json",
+   "what": "index",
+   "range": null,
+   "bytes": 7470294,
+   "sha256": "74b0686a3d2891980d5e303251b075a3bccae2c2ff650747db2620a649b98fa8"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00013-of-00048.safetensors",
+   "what": "header length",
+   "range": [
+    0,
+    7
+   ],
+   "bytes": 8,
+   "sha256": "68496b34d14cdd3a79c5d42456ab16fc1d80424c9062fa453219509c2b06e6ae"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00013-of-00048.safetensors",
+   "what": "header",
+   "range": [
+    8,
+    260479
+   ],
+   "bytes": 260472,
+   "sha256": "e9246f9e946c8b771d95640635c0cc01d295a312fc374fd87f7d0d67e9c7f0fc"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00033-of-00048.safetensors",
+   "what": "header length",
+   "range": [
+    0,
+    7
+   ],
+   "bytes": 8,
+   "sha256": "68496b34d14cdd3a79c5d42456ab16fc1d80424c9062fa453219509c2b06e6ae"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00033-of-00048.safetensors",
+   "what": "header",
+   "range": [
+    8,
+    260479
+   ],
+   "bytes": 260472,
+   "sha256": "2b3caec06921b098107c3757f81e6b5bd0c401809b19fa65e24ef27ca9eb505e"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00013-of-00048.safetensors",
+   "what": "layers.10.ffn.experts.0.w1.scale",
+   "range": [
+    8276056,
+    8644695
+   ],
+   "bytes": 368640,
+   "sha256": "c0776b5fbcffe8c8f1ee4d8566c5073996329df250fc852755f943d362d53033"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00013-of-00048.safetensors",
+   "what": "layers.10.ffn.experts.0.w2.scale",
+   "range": [
+    8644696,
+    9013335
+   ],
+   "bytes": 368640,
+   "sha256": "1ed3dbc24a873011ed680e81f9aec74ac9be76ca60a283fb71d24f3918ee8cf4"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00013-of-00048.safetensors",
+   "what": "layers.10.ffn.experts.0.w3.scale",
+   "range": [
+    9013336,
+    9381975
+   ],
+   "bytes": 368640,
+   "sha256": "beae2332f989938cc62ccf258d4ba7f8b700530d78afc3a5d7dd6dd4b62e3b6b"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00013-of-00048.safetensors",
+   "what": "layers.10.ffn.experts.1.w1.scale",
+   "range": [
+    9381976,
+    9750615
+   ],
+   "bytes": 368640,
+   "sha256": "d8b6ccc8106a89c30624b0d65935bba3a0607577f92fb4e666b2569ca27440dc"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00013-of-00048.safetensors",
+   "what": "layers.10.ffn.experts.1.w2.scale",
+   "range": [
+    9750616,
+    10119255
+   ],
+   "bytes": 368640,
+   "sha256": "c019e19737e5bf088f5085857fa01e790abaa590d8d620836517d01be2c4cfa9"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00013-of-00048.safetensors",
+   "what": "layers.10.ffn.experts.1.w3.scale",
+   "range": [
+    10119256,
+    10487895
+   ],
+   "bytes": 368640,
+   "sha256": "098b450c3b50e91de3f78ba588fe244c03d3fda3a16591df6b7ff446774120c0"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00013-of-00048.safetensors",
+   "what": "layers.10.ffn.experts.2.w1.scale",
+   "range": [
+    132139096,
+    132507735
+   ],
+   "bytes": 368640,
+   "sha256": "ecf3620aa12782a47aa051b972c2bad2e2e82e0bc04fd276673b2b798d523197"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00013-of-00048.safetensors",
+   "what": "layers.10.ffn.experts.2.w2.scale",
+   "range": [
+    132507736,
+    132876375
+   ],
+   "bytes": 368640,
+   "sha256": "2a41e1fcdde546f6c1a6f6e7a73f4563356dd0d51922b9f6a55cfbbceb9f8484"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00013-of-00048.safetensors",
+   "what": "layers.10.ffn.experts.2.w3.scale",
+   "range": [
+    132876376,
+    133245015
+   ],
+   "bytes": 368640,
+   "sha256": "3d67be9582c8d88cfa0f8972fed0968ac1ae3a4b66e0a82c7f6f71eee66c4826"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00013-of-00048.safetensors",
+   "what": "layers.10.ffn.experts.3.w1.scale",
+   "range": [
+    254896216,
+    255264855
+   ],
+   "bytes": 368640,
+   "sha256": "edc94c6dfde84998ff6fabd1530aad331c23f6337916dd315eeb884b866d334f"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00013-of-00048.safetensors",
+   "what": "layers.10.ffn.experts.3.w2.scale",
+   "range": [
+    255264856,
+    255633495
+   ],
+   "bytes": 368640,
+   "sha256": "c8410a404b0bf50982f4bc38bf0fe46bc355f60503b823e11ed7f71f264c228f"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00013-of-00048.safetensors",
+   "what": "layers.10.ffn.experts.3.w3.scale",
+   "range": [
+    255633496,
+    256002135
+   ],
+   "bytes": 368640,
+   "sha256": "892fc0726a6d86d1336634695dc4fd4b5bbe451dcf17b7cebc5f06b2581b7d86"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00013-of-00048.safetensors",
+   "what": "layers.10.ffn.experts.0.w1.weight",
+   "range": [
+    594988888,
+    600887127
+   ],
+   "bytes": 5898240,
+   "sha256": "542874eb4ed442c28e050a2a7007b61057937acf4cce55145c6c1be74216166f"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00013-of-00048.safetensors",
+   "what": "layers.10.ffn.experts.0.w2.weight",
+   "range": [
+    600887128,
+    606785367
+   ],
+   "bytes": 5898240,
+   "sha256": "f84b2bd81bfbf6c527e9a036bece9bc038e59e9b0cd77c2ee0d4a230c23e82f7"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00013-of-00048.safetensors",
+   "what": "layers.10.ffn.experts.0.w3.weight",
+   "range": [
+    606785368,
+    612683607
+   ],
+   "bytes": 5898240,
+   "sha256": "04aa59ba0f78cef77b4199f8f7d56f97a042a30a4a77ebead75b725c5f0f866a"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00013-of-00048.safetensors",
+   "what": "layers.10.ffn.experts.1.w1.weight",
+   "range": [
+    612683608,
+    618581847
+   ],
+   "bytes": 5898240,
+   "sha256": "28e3c4a4ce847202bc0ff94f21aaceb2eea359dfb98ac1b62df29a14b7d512d3"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00013-of-00048.safetensors",
+   "what": "layers.10.ffn.experts.1.w2.weight",
+   "range": [
+    618581848,
+    624480087
+   ],
+   "bytes": 5898240,
+   "sha256": "30c2bd98688de883d17971cda8e446215802ae6faf5b7b9e182df3f1b59802ce"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00013-of-00048.safetensors",
+   "what": "layers.10.ffn.experts.1.w3.weight",
+   "range": [
+    624480088,
+    630378327
+   ],
+   "bytes": 5898240,
+   "sha256": "752b744760724567103bf6a0f0f666a64eb330e03c8d9184cc23dc04edd32765"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00013-of-00048.safetensors",
+   "what": "layers.10.ffn.experts.2.w1.weight",
+   "range": [
+    2576797528,
+    2582695767
+   ],
+   "bytes": 5898240,
+   "sha256": "d52bada764b4a739839d56a0325f98b8f596b26e33f7cf19eb0842da6d024565"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00013-of-00048.safetensors",
+   "what": "layers.10.ffn.experts.2.w2.weight",
+   "range": [
+    2582695768,
+    2588594007
+   ],
+   "bytes": 5898240,
+   "sha256": "a9a24c4ca82cc05663725c30cfd59536381575157945db9fcb9762d7b4cad911"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00013-of-00048.safetensors",
+   "what": "layers.10.ffn.experts.2.w3.weight",
+   "range": [
+    2588594008,
+    2594492247
+   ],
+   "bytes": 5898240,
+   "sha256": "c15eba2b4067a112121573a7d9d6094627bb5155ae550d96403ae16b3e70d3dc"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00013-of-00048.safetensors",
+   "what": "layers.10.ffn.experts.3.w1.weight",
+   "range": [
+    4540911448,
+    4546809687
+   ],
+   "bytes": 5898240,
+   "sha256": "b6859a327ea5c1e4a19378baf79f82f56d501e86edf6d581418b144c61c098b5"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00013-of-00048.safetensors",
+   "what": "layers.10.ffn.experts.3.w2.weight",
+   "range": [
+    4546809688,
+    4552707927
+   ],
+   "bytes": 5898240,
+   "sha256": "bc54dcff6e59a8347851a5b24b8321d173a4bc814eeb7713156b074322990c69"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00013-of-00048.safetensors",
+   "what": "layers.10.ffn.experts.3.w3.weight",
+   "range": [
+    4552707928,
+    4558606167
+   ],
+   "bytes": 5898240,
+   "sha256": "8377fb9445e2787002610ec92c51e45a158911622822d87cdfd5beeb396694ba"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00033-of-00048.safetensors",
+   "what": "layers.30.ffn.experts.0.w1.scale",
+   "range": [
+    8276056,
+    8644695
+   ],
+   "bytes": 368640,
+   "sha256": "9042c236088e774ccca450e427644e2bd614779a3070007ff3b2c01af1711492"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00033-of-00048.safetensors",
+   "what": "layers.30.ffn.experts.0.w2.scale",
+   "range": [
+    8644696,
+    9013335
+   ],
+   "bytes": 368640,
+   "sha256": "8d6ff0aa7727b8c829de0b9f675c19b537a1029835bedb399ef74d0dd24c2b5f"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00033-of-00048.safetensors",
+   "what": "layers.30.ffn.experts.0.w3.scale",
+   "range": [
+    9013336,
+    9381975
+   ],
+   "bytes": 368640,
+   "sha256": "879b170dbc1a5dd25ca99e06ad8539a8166eac90f4d1d99f51f82fda9f92140d"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00033-of-00048.safetensors",
+   "what": "layers.30.ffn.experts.1.w1.scale",
+   "range": [
+    9381976,
+    9750615
+   ],
+   "bytes": 368640,
+   "sha256": "13afea3dc91dd08d03e8353ac1f74961cd4347023895462ec7c052f529ed618b"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00033-of-00048.safetensors",
+   "what": "layers.30.ffn.experts.1.w2.scale",
+   "range": [
+    9750616,
+    10119255
+   ],
+   "bytes": 368640,
+   "sha256": "1a2a70da7153bcaf14cf692b880f36ba19a3add54a3ca37382df77acbc1535c9"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00033-of-00048.safetensors",
+   "what": "layers.30.ffn.experts.1.w3.scale",
+   "range": [
+    10119256,
+    10487895
+   ],
+   "bytes": 368640,
+   "sha256": "ec933e42cdece518995a31548ae4678f2cc25942edb121fdfdd7d0741daa43b2"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00033-of-00048.safetensors",
+   "what": "layers.30.ffn.experts.2.w1.scale",
+   "range": [
+    132139096,
+    132507735
+   ],
+   "bytes": 368640,
+   "sha256": "4468ee6cace49d0919897843bfd1e4513ab98e1026c49141ddeab3b32a46c4da"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00033-of-00048.safetensors",
+   "what": "layers.30.ffn.experts.2.w2.scale",
+   "range": [
+    132507736,
+    132876375
+   ],
+   "bytes": 368640,
+   "sha256": "d2b27b0a4c588897667cb190106b9c14baec1a2e10ba0431a02121ac062430a8"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00033-of-00048.safetensors",
+   "what": "layers.30.ffn.experts.2.w3.scale",
+   "range": [
+    132876376,
+    133245015
+   ],
+   "bytes": 368640,
+   "sha256": "e274fee21b4b3b0a58a552e420f00bd0f0fc23e9210e38c1ccf5573054b6ffa4"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00033-of-00048.safetensors",
+   "what": "layers.30.ffn.experts.3.w1.scale",
+   "range": [
+    254896216,
+    255264855
+   ],
+   "bytes": 368640,
+   "sha256": "aae9d17f3511f9e7451c15f7ec4b53a394caf999e6d8e041c92aea0c6bba82fb"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00033-of-00048.safetensors",
+   "what": "layers.30.ffn.experts.3.w2.scale",
+   "range": [
+    255264856,
+    255633495
+   ],
+   "bytes": 368640,
+   "sha256": "1f78fd285acfa742699462b3553907796d95974353adcc2ee17072b70d49be1c"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00033-of-00048.safetensors",
+   "what": "layers.30.ffn.experts.3.w3.scale",
+   "range": [
+    255633496,
+    256002135
+   ],
+   "bytes": 368640,
+   "sha256": "4ed19d2d5ead5bad837db164819c67cdeb5233e93dfb6c4595cce1534c754375"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00033-of-00048.safetensors",
+   "what": "layers.30.ffn.experts.0.w1.weight",
+   "range": [
+    594988888,
+    600887127
+   ],
+   "bytes": 5898240,
+   "sha256": "10c02c039cb6a1ff60a23e6a35009dfa211b81fa23780c531120fb5e62b2a702"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00033-of-00048.safetensors",
+   "what": "layers.30.ffn.experts.0.w2.weight",
+   "range": [
+    600887128,
+    606785367
+   ],
+   "bytes": 5898240,
+   "sha256": "b0d4e0727477802b8e94475c9323f5d023634a09fe944635569dd3c24498e0f9"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00033-of-00048.safetensors",
+   "what": "layers.30.ffn.experts.0.w3.weight",
+   "range": [
+    606785368,
+    612683607
+   ],
+   "bytes": 5898240,
+   "sha256": "76231d322109640a062324344f3bf4368d3129d2d5df5d6f985d38ce634e009e"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00033-of-00048.safetensors",
+   "what": "layers.30.ffn.experts.1.w1.weight",
+   "range": [
+    612683608,
+    618581847
+   ],
+   "bytes": 5898240,
+   "sha256": "33afbf58845d9e56d00333c70e937b33dcf12c3eaf10fc64548efca504cea5f2"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00033-of-00048.safetensors",
+   "what": "layers.30.ffn.experts.1.w2.weight",
+   "range": [
+    618581848,
+    624480087
+   ],
+   "bytes": 5898240,
+   "sha256": "57e090b498eaf6d31256cbc40ed672bf22d14074f7e5d94c7ef59af32005695f"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00033-of-00048.safetensors",
+   "what": "layers.30.ffn.experts.1.w3.weight",
+   "range": [
+    624480088,
+    630378327
+   ],
+   "bytes": 5898240,
+   "sha256": "dd664171455d425ecd766c29c8096133465e99ec5d0c6db9bc1fe8ec20593684"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00033-of-00048.safetensors",
+   "what": "layers.30.ffn.experts.2.w1.weight",
+   "range": [
+    2576797528,
+    2582695767
+   ],
+   "bytes": 5898240,
+   "sha256": "f3688b8534f0bd2796a6b207c067b6e2198ef5e0e93e340d470b09241e81888b"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00033-of-00048.safetensors",
+   "what": "layers.30.ffn.experts.2.w2.weight",
+   "range": [
+    2582695768,
+    2588594007
+   ],
+   "bytes": 5898240,
+   "sha256": "38edfddfa13533ee682e67f34fdfbfd3d6d584f79ff988ea8ac37670d3d479dc"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00033-of-00048.safetensors",
+   "what": "layers.30.ffn.experts.2.w3.weight",
+   "range": [
+    2588594008,
+    2594492247
+   ],
+   "bytes": 5898240,
+   "sha256": "13158f94aa786e9a5228bc33f13c0fb62e4258aa873821017491cd2ac265e0db"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00033-of-00048.safetensors",
+   "what": "layers.30.ffn.experts.3.w1.weight",
+   "range": [
+    4540911448,
+    4546809687
+   ],
+   "bytes": 5898240,
+   "sha256": "445bef1bbfb1ad79ebc2cd69ad077c003847f864299af945fca3832e158aa9c9"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00033-of-00048.safetensors",
+   "what": "layers.30.ffn.experts.3.w2.weight",
+   "range": [
+    4546809688,
+    4552707927
+   ],
+   "bytes": 5898240,
+   "sha256": "5f8ab07167d6e97e7071ec96bd8deb128fa79c56eb226dd5de134ec64e8a42ec"
+  },
+  {
+   "repo": "deepseek-ai/DeepSeek-V4.1-Flash",
+   "revision": "314113f8a7dadb388215396ba5fbee2c610a04d6",
+   "file": "model-00033-of-00048.safetensors",
+   "what": "layers.30.ffn.experts.3.w3.weight",
+   "range": [
+    4552707928,
+    4558606167
+   ],
+   "bytes": 5898240,
+   "sha256": "e365d81851757fe17a3fd301709848b7079a97b81c77ea927c83e6e478cc41a2"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "config.json",
+   "what": "config",
+   "range": null,
+   "bytes": 5691,
+   "sha256": "cc8c0b94a2b387cf5ac75cef82cbc96997cae2a337dfc9d9930a177848a9609c"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model.safetensors.index.json",
+   "what": "index",
+   "range": null,
+   "bytes": 6844153,
+   "sha256": "58cfc464b2a5b6e4a2253b2fd83418c3512b62d97260951cb1a287f3b0b1c7e5"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "header length",
+   "range": [
+    0,
+    7
+   ],
+   "bytes": 8,
+   "sha256": "8aeb0394e9e24939e453ef0a566f10344f319d24c73dfd7524392fa7904649eb"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "header",
+   "range": [
+    8,
+    368767
+   ],
+   "bytes": 368760,
+   "sha256": "aeee4b1f38302de9a9ad244cef3de37d2e611082e32c34ed9f7da274627f89d2"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "header length",
+   "range": [
+    0,
+    7
+   ],
+   "bytes": 8,
+   "sha256": "99523cd886ed85a1fc81dbd4b0ce1bbdc4caa59261555ea08a296a67e0cb6843"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "header",
+   "range": [
+    8,
+    370255
+   ],
+   "bytes": 370248,
+   "sha256": "0a2d3970b167e618e285193cd36f94b7d6ecbba2ed0a7f5bc32a7f4115fac624"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.23.mlp.experts.0.down_proj.weight",
+   "range": [
+    1670228096,
+    1673373823
+   ],
+   "bytes": 3145728,
+   "sha256": "3cddd3af11ac57e4d5f3daf6994b84abe5616c6f4c4900feea401ec655259b0f"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.23.mlp.experts.0.down_proj.weight_scale",
+   "range": [
+    1673373824,
+    1673570431
+   ],
+   "bytes": 196608,
+   "sha256": "396ef514a49ef3287be4a9192afb8be9460955cbdd50847371210b01e1b76a45"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.23.mlp.experts.0.gate_proj.weight",
+   "range": [
+    1673570432,
+    1676716159
+   ],
+   "bytes": 3145728,
+   "sha256": "d3467b668f164c3bda87bed1d2532050eb8120b6a6c7bfb0a9e22eadfbd4cfd8"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.23.mlp.experts.0.gate_proj.weight_scale",
+   "range": [
+    1676716160,
+    1676912767
+   ],
+   "bytes": 196608,
+   "sha256": "1c139ca4acb47c6ebd1ddb46210a4baa3ea11991c18177c51d733f9e1a776c06"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.23.mlp.experts.0.up_proj.weight",
+   "range": [
+    1676912768,
+    1680058495
+   ],
+   "bytes": 3145728,
+   "sha256": "4b883a53f2b68356713ce7c96dcd99b6abdf95850e40657cbbba06bc694dab6a"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.23.mlp.experts.0.up_proj.weight_scale",
+   "range": [
+    1680058496,
+    1680255103
+   ],
+   "bytes": 196608,
+   "sha256": "01b39e532214e6edb2416e8bd02dbc1a49b09b034122cece29397c8e57195d69"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.23.mlp.experts.1.down_proj.weight",
+   "range": [
+    1680255104,
+    1683400831
+   ],
+   "bytes": 3145728,
+   "sha256": "2350dc67769cc53f5d43e47cc78a7f338b57bc1beb31624d55c2b2342c8e33fd"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.23.mlp.experts.1.down_proj.weight_scale",
+   "range": [
+    1683400832,
+    1683597439
+   ],
+   "bytes": 196608,
+   "sha256": "ee33e21c6a69f5dc58175bc5fd3a78abdb2537f9b566543ed07aa330cd68d8d8"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.23.mlp.experts.1.gate_proj.weight",
+   "range": [
+    1683597440,
+    1686743167
+   ],
+   "bytes": 3145728,
+   "sha256": "2117f076d11ea579dbb0580d8bab586d071518296ea5c53f830161755ad13852"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.23.mlp.experts.1.gate_proj.weight_scale",
+   "range": [
+    1686743168,
+    1686939775
+   ],
+   "bytes": 196608,
+   "sha256": "fcfa843123ee873dfe5fafda77c94c7aa9013b62609958880c3cbff3e3e2ca50"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.23.mlp.experts.1.up_proj.weight",
+   "range": [
+    1686939776,
+    1690085503
+   ],
+   "bytes": 3145728,
+   "sha256": "0c1c4e6b6ce26cd209e76726d131409b527214fb5d255002ec6435aa3df70312"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.23.mlp.experts.1.up_proj.weight_scale",
+   "range": [
+    1690085504,
+    1690282111
+   ],
+   "bytes": 196608,
+   "sha256": "cd9937ba18ded04956af9b15764ccc92ae143fcb98a9ca22e9e447f5fe23303a"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.23.mlp.experts.2.down_proj.weight",
+   "range": [
+    2071308416,
+    2074454143
+   ],
+   "bytes": 3145728,
+   "sha256": "894ea9b85c93cf9907e071f090d79f384dcf4c3865edff375e94a39bce8b7232"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.23.mlp.experts.2.down_proj.weight_scale",
+   "range": [
+    2074454144,
+    2074650751
+   ],
+   "bytes": 196608,
+   "sha256": "1176a783f712627f2078e6fb07cfb241eec57757f3083da6ac63880b506df5e8"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.23.mlp.experts.2.gate_proj.weight",
+   "range": [
+    2074650752,
+    2077796479
+   ],
+   "bytes": 3145728,
+   "sha256": "a98c384e4c2022d0253a91526a58cc3454eaebf895decd2aa1a054f34a9817bd"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.23.mlp.experts.2.gate_proj.weight_scale",
+   "range": [
+    2077796480,
+    2077993087
+   ],
+   "bytes": 196608,
+   "sha256": "dfca20c04e08be4fb7b032bf8fe56bbbe022a3e1f6a915491187274806bb22f3"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.23.mlp.experts.2.up_proj.weight",
+   "range": [
+    2077993088,
+    2081138815
+   ],
+   "bytes": 3145728,
+   "sha256": "3a5f147ddcb7fcdf4e491b4ac2fa549137158cce9c455713833667cc7e91af62"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.23.mlp.experts.2.up_proj.weight_scale",
+   "range": [
+    2081138816,
+    2081335423
+   ],
+   "bytes": 196608,
+   "sha256": "60993c1244d3951315a5f464d71c2b115d94d4042177a6d13d60ef2230e50b69"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.23.mlp.experts.3.down_proj.weight",
+   "range": [
+    2181605504,
+    2184751231
+   ],
+   "bytes": 3145728,
+   "sha256": "7d709605cdaf91866f703998296ff241698d8452d92020c06dd267e96a782771"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.23.mlp.experts.3.down_proj.weight_scale",
+   "range": [
+    2184751232,
+    2184947839
+   ],
+   "bytes": 196608,
+   "sha256": "bbf6d38e3ad1dbf61219a5a59d7fe0d446a72f9d473742d64a8bdee55761bfb9"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.23.mlp.experts.3.gate_proj.weight",
+   "range": [
+    2184947840,
+    2188093567
+   ],
+   "bytes": 3145728,
+   "sha256": "2d25eb543b148b7ad24144753e6421bca144b80c138cc8f0f882f9a285a373a8"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.23.mlp.experts.3.gate_proj.weight_scale",
+   "range": [
+    2188093568,
+    2188290175
+   ],
+   "bytes": 196608,
+   "sha256": "f85aa245375c7ffb7bd701119152d1547ba74319f624c9678b06cab9ade27f40"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.23.mlp.experts.3.up_proj.weight",
+   "range": [
+    2188290176,
+    2191435903
+   ],
+   "bytes": 3145728,
+   "sha256": "987bb41a28ef0d88f838b5edb75bace8b80b9132a2bf75f92bdb30f39c5604ca"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.23.mlp.experts.3.up_proj.weight_scale",
+   "range": [
+    2191435904,
+    2191632511
+   ],
+   "bytes": 196608,
+   "sha256": "d9c89678b7114893132f7e758e112e6bf97f94f959e37cc804ef0c69637e7a91"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.70.mlp.experts.0.down_proj.weight",
+   "range": [
+    3832769616,
+    3835915343
+   ],
+   "bytes": 3145728,
+   "sha256": "b756b1363959d460714fa22141dcf0dc6ccde7f323329ee237cabec0de494a68"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.70.mlp.experts.0.down_proj.weight_scale",
+   "range": [
+    3835915344,
+    3836111951
+   ],
+   "bytes": 196608,
+   "sha256": "04598cdc358b14b5d6b31e1d2b09779e032d0bc2d71987343be79cd23375806e"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.70.mlp.experts.0.gate_proj.weight",
+   "range": [
+    3836111952,
+    3839257679
+   ],
+   "bytes": 3145728,
+   "sha256": "862dec925a2cd14fd95e1972e0ff04325b8799f2982d91c60022ab2e75cbfcdb"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.70.mlp.experts.0.gate_proj.weight_scale",
+   "range": [
+    3839257680,
+    3839454287
+   ],
+   "bytes": 196608,
+   "sha256": "43c09b92697a28490f2b622ad0bd38581f7cb6ab2945916c30e8b186f249af60"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.70.mlp.experts.0.up_proj.weight",
+   "range": [
+    3839454288,
+    3842600015
+   ],
+   "bytes": 3145728,
+   "sha256": "e13d5a92ff3a08fdfcc2418701e2e7d297b26e3c133d6a8c9621fb0f7f8e3156"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.70.mlp.experts.0.up_proj.weight_scale",
+   "range": [
+    3842600016,
+    3842796623
+   ],
+   "bytes": 196608,
+   "sha256": "cc1007fa0fe24456347253f967e51c1c6658d10795176aba6a0d15d59f42ab0c"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.70.mlp.experts.1.down_proj.weight",
+   "range": [
+    3842796624,
+    3845942351
+   ],
+   "bytes": 3145728,
+   "sha256": "b3c7f4fa41e17c5762267584b25cfa54fa3c0362da70d8a8b3d6d13ce0db1c9c"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.70.mlp.experts.1.down_proj.weight_scale",
+   "range": [
+    3845942352,
+    3846138959
+   ],
+   "bytes": 196608,
+   "sha256": "b9e2d5c2d761bb4b665d2bbaff180924d6c7015ce7a0eb005e57974a8932a295"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.70.mlp.experts.1.gate_proj.weight",
+   "range": [
+    3846138960,
+    3849284687
+   ],
+   "bytes": 3145728,
+   "sha256": "6a4631fce5c6a09d0a3f6e4095d492f69547fcb938a6e066f5dba8fd81961821"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.70.mlp.experts.1.gate_proj.weight_scale",
+   "range": [
+    3849284688,
+    3849481295
+   ],
+   "bytes": 196608,
+   "sha256": "85ed07867903f10494e6bee456a17d7f9faee8918211db42993a51c1dbfe2a1a"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.70.mlp.experts.1.up_proj.weight",
+   "range": [
+    3849481296,
+    3852627023
+   ],
+   "bytes": 3145728,
+   "sha256": "20ef3fe63b51b375e51c1c4cc6327492542ba53ba91695d4567e1a69ecc976ac"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.70.mlp.experts.1.up_proj.weight_scale",
+   "range": [
+    3852627024,
+    3852823631
+   ],
+   "bytes": 196608,
+   "sha256": "9e7591ba6c319ab8a76503b9b24b459fe88589c4713919dea6810059692d088a"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.70.mlp.experts.2.down_proj.weight",
+   "range": [
+    4080102480,
+    4083248207
+   ],
+   "bytes": 3145728,
+   "sha256": "f307e6e74d1eb892246eef5f13ed7fc4c36692f2ca3637b49fe38e8761846349"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.70.mlp.experts.2.down_proj.weight_scale",
+   "range": [
+    4083248208,
+    4083444815
+   ],
+   "bytes": 196608,
+   "sha256": "06a87945da003ca52e34167a232f08b5996c695b4f5979bf54d2066d19c0f520"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.70.mlp.experts.2.gate_proj.weight",
+   "range": [
+    4083444816,
+    4086590543
+   ],
+   "bytes": 3145728,
+   "sha256": "c7d3a833d6d0d7697b933dfeaac4bfe83ca63f0e507ae6ca4800bdf7e42de3dc"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.70.mlp.experts.2.gate_proj.weight_scale",
+   "range": [
+    4086590544,
+    4086787151
+   ],
+   "bytes": 196608,
+   "sha256": "f13c57fa040ae67948ff2284fb17538f40b27ad79cb9ce2bc76e11824fc10ff2"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.70.mlp.experts.2.up_proj.weight",
+   "range": [
+    4086787152,
+    4089932879
+   ],
+   "bytes": 3145728,
+   "sha256": "c341a66ba25b5de32d80f3f3c546cbf801fc03b27ece27175d3bd31d0071e925"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.70.mlp.experts.2.up_proj.weight_scale",
+   "range": [
+    4089932880,
+    4090129487
+   ],
+   "bytes": 196608,
+   "sha256": "b269e5153304df9eab2637deb60b1b625c8332102d5f29ea90b1ca335f03f3b4"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.70.mlp.experts.3.down_proj.weight",
+   "range": [
+    4190399568,
+    4193545295
+   ],
+   "bytes": 3145728,
+   "sha256": "51a40cc08061ec2f0eaf42619bc529b9c6b3acb0f758859f66c2f780c68becec"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.70.mlp.experts.3.down_proj.weight_scale",
+   "range": [
+    4193545296,
+    4193741903
+   ],
+   "bytes": 196608,
+   "sha256": "764fdbb508ea2612c2593aeb7c812878f4dd8c74556c8d26ccc8fd7c8cffb8b0"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.70.mlp.experts.3.gate_proj.weight",
+   "range": [
+    4193741904,
+    4196887631
+   ],
+   "bytes": 3145728,
+   "sha256": "43c5dffa8d5ba02c49a446168a841ce5406751eb60fb71d31ce1597250619284"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.70.mlp.experts.3.gate_proj.weight_scale",
+   "range": [
+    4196887632,
+    4197084239
+   ],
+   "bytes": 196608,
+   "sha256": "00b5c6c55c3c8021941943fcedd3e36ccf7a990dbba15fe66ec070ff82b9992e"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.70.mlp.experts.3.up_proj.weight",
+   "range": [
+    4197084240,
+    4200229967
+   ],
+   "bytes": 3145728,
+   "sha256": "a7cb1d6c00f0f9c1b7a2384b0c205c77be5bb3b4ad89d167c9d27ce12199ca47"
+  },
+  {
+   "repo": "amd/Qwen3-235B-A22B-Instruct-2507-MXFP4",
+   "revision": "381342aab13be9f91265d0f6b1760470bfd2704d",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.70.mlp.experts.3.up_proj.weight_scale",
+   "range": [
+    4200229968,
+    4200426575
+   ],
+   "bytes": 196608,
+   "sha256": "f8b4fce54b14ef45a67ff5c14af6fc30c6e67d0850f78288c84c14329e7f007b"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "config.json",
+   "what": "config",
+   "range": null,
+   "bytes": 16461,
+   "sha256": "8577e4bea291883d0915fa94a411941038a6a5e81097dbfef83351d69568669d"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model.safetensors.index.json",
+   "what": "index",
+   "range": null,
+   "bytes": 9615613,
+   "sha256": "bbf0bad2dc5ac6f6d494eebbf008d8a671ca487c8b81f107dc463ed47298b172"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "header length",
+   "range": [
+    0,
+    7
+   ],
+   "bytes": 8,
+   "sha256": "c75d6ef3777cad729c233e74378913bcf96f404dc9245d4179f64632172dfb23"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "header",
+   "range": [
+    8,
+    510319
+   ],
+   "bytes": 510312,
+   "sha256": "3551df03ba4cf7bc3699b30362a4c266cb2c5c647ea2aa9aac51dbd1877568fa"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "header length",
+   "range": [
+    0,
+    7
+   ],
+   "bytes": 8,
+   "sha256": "a16c3cb5eb42242487a6145e30e2d2fc2a9ccd9b3079083f3d63e16f7c7e19bd"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "header",
+   "range": [
+    8,
+    509911
+   ],
+   "bytes": 509904,
+   "sha256": "27c69d79dc4b0845abe63d85c19a6549fbdb1023976e87123f77cb7802d0abf8"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.15.block_sparse_moe.experts.0.w1.weight",
+   "range": [
+    1636294000,
+    1638653295
+   ],
+   "bytes": 2359296,
+   "sha256": "7c8edc1fea6c8b3cab612e697128ef0b74520cd4cad2c69ec08e09291004a4b9"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.15.block_sparse_moe.experts.0.w1.weight_scale",
+   "range": [
+    1638653296,
+    1638800751
+   ],
+   "bytes": 147456,
+   "sha256": "829afd2a5cbf07d6ff172be5a99a9d00cf91f6afe770f6a074c072b6948a3c96"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.15.block_sparse_moe.experts.0.w2.weight",
+   "range": [
+    1638800752,
+    1641160047
+   ],
+   "bytes": 2359296,
+   "sha256": "522266971fd6067a3a5f4bc78784b3abc921d02f4af9f35e227fe973f36d611a"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.15.block_sparse_moe.experts.0.w2.weight_scale",
+   "range": [
+    1641160048,
+    1641307503
+   ],
+   "bytes": 147456,
+   "sha256": "9b73db69ab23ea801e449cf0a1e4b0c4c94acda57adfdf3916c61c0c2dd8626a"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.15.block_sparse_moe.experts.0.w3.weight",
+   "range": [
+    1641307504,
+    1643666799
+   ],
+   "bytes": 2359296,
+   "sha256": "5273b9ff1ba499b948d2d287133d325058085b8ff2cdf73621f7f793acc3db63"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.15.block_sparse_moe.experts.0.w3.weight_scale",
+   "range": [
+    1643666800,
+    1643814255
+   ],
+   "bytes": 147456,
+   "sha256": "52d777cff6028a87ca35a94289a1edecb5bd2e519edf3bb235f5047237d714b7"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.15.block_sparse_moe.experts.1.w1.weight",
+   "range": [
+    1643814256,
+    1646173551
+   ],
+   "bytes": 2359296,
+   "sha256": "f8a8c4e42f85658cb6508597b7738ed2e94e733b52f5a5a07b594e5141d5e83f"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.15.block_sparse_moe.experts.1.w1.weight_scale",
+   "range": [
+    1646173552,
+    1646321007
+   ],
+   "bytes": 147456,
+   "sha256": "50275660c88c059b8410049e0e380743efca8e17b510d51e80de9551bcfc1263"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.15.block_sparse_moe.experts.1.w2.weight",
+   "range": [
+    1646321008,
+    1648680303
+   ],
+   "bytes": 2359296,
+   "sha256": "33ad00bce500a9d154ab2bc6ed884a9f66708ab28f5a9220fd818dd76c662e2a"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.15.block_sparse_moe.experts.1.w2.weight_scale",
+   "range": [
+    1648680304,
+    1648827759
+   ],
+   "bytes": 147456,
+   "sha256": "1e2c7b94c0f8a8cf72f92b913514b710e0905282e9471a43b2c5bb8ea681bc53"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.15.block_sparse_moe.experts.1.w3.weight",
+   "range": [
+    1648827760,
+    1651187055
+   ],
+   "bytes": 2359296,
+   "sha256": "ab1b5073ccf01a00d5c06354b234bcec88c1c743300c3fc7ff873e72aaea32c9"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.15.block_sparse_moe.experts.1.w3.weight_scale",
+   "range": [
+    1651187056,
+    1651334511
+   ],
+   "bytes": 147456,
+   "sha256": "b18e26ad0068c2bd6498ba79704619703ea8967d43c9dee90686370f9d654a1a"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.15.block_sparse_moe.experts.2.w1.weight",
+   "range": [
+    2478562672,
+    2480921967
+   ],
+   "bytes": 2359296,
+   "sha256": "0d469a330f2783240aa0d42a59b77468510b7fa5b43139dfee6488e11bdfb3a2"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.15.block_sparse_moe.experts.2.w1.weight_scale",
+   "range": [
+    2480921968,
+    2481069423
+   ],
+   "bytes": 147456,
+   "sha256": "8abdcf782ff787fd10f3c006cb2a572aecadb771c1b5e3fab597ebf124b2a387"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.15.block_sparse_moe.experts.2.w2.weight",
+   "range": [
+    2481069424,
+    2483428719
+   ],
+   "bytes": 2359296,
+   "sha256": "c106e98d9fdd402ad34314e525d7423a0045c6a81b4d83dccc16a3e8dd5c3bac"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.15.block_sparse_moe.experts.2.w2.weight_scale",
+   "range": [
+    2483428720,
+    2483576175
+   ],
+   "bytes": 147456,
+   "sha256": "c4a1a2fcd55a9e921a4e77f351447f13ede2ab03e7368ef70c3b8571c7f2c45c"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.15.block_sparse_moe.experts.2.w3.weight",
+   "range": [
+    2483576176,
+    2485935471
+   ],
+   "bytes": 2359296,
+   "sha256": "8f30a3279be4a29809d3de216cc1965a93dae814b3d367f79051b5b250af271c"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.15.block_sparse_moe.experts.2.w3.weight_scale",
+   "range": [
+    2485935472,
+    2486082927
+   ],
+   "bytes": 147456,
+   "sha256": "7c363ec7c3d1c0f306138f8cd1ab80ca6e658b4d1bb5f81ac8b4d97f8ba72d3c"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.15.block_sparse_moe.experts.3.w1.weight",
+   "range": [
+    2982419824,
+    2984779119
+   ],
+   "bytes": 2359296,
+   "sha256": "58bed624c728060187aee869d7cd49d49e7d2adefcd4f7cd83d6693dabe6bb1e"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.15.block_sparse_moe.experts.3.w1.weight_scale",
+   "range": [
+    2984779120,
+    2984926575
+   ],
+   "bytes": 147456,
+   "sha256": "e209a93d2249a2a5d68ff4524bb98cf33b93850f49ab39f75b4301ecfc08d612"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.15.block_sparse_moe.experts.3.w2.weight",
+   "range": [
+    2984926576,
+    2987285871
+   ],
+   "bytes": 2359296,
+   "sha256": "378c77414f094e7ce8fa6bcdb5866dff4263daa454ebc6e1d0e942e280b3a8d0"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.15.block_sparse_moe.experts.3.w2.weight_scale",
+   "range": [
+    2987285872,
+    2987433327
+   ],
+   "bytes": 147456,
+   "sha256": "2a6627cde5e52d40330892787814aa988e5ba1ee3061f2851f6a2ca5fae0bfd9"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.15.block_sparse_moe.experts.3.w3.weight",
+   "range": [
+    2987433328,
+    2989792623
+   ],
+   "bytes": 2359296,
+   "sha256": "1d6d830499fd7b39c8c83c05d63f9761ba4591ba9d070d95fa54e2fb16ac9420"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00007-of-00026.safetensors",
+   "what": "model.layers.15.block_sparse_moe.experts.3.w3.weight_scale",
+   "range": [
+    2989792624,
+    2989940079
+   ],
+   "bytes": 147456,
+   "sha256": "58bf516fdb2c4bc68cd1cb12c81e17a118edcf4a47a765f9c02b97c49c186f45"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.46.block_sparse_moe.experts.0.w1.weight",
+   "range": [
+    4012694488,
+    4015053783
+   ],
+   "bytes": 2359296,
+   "sha256": "35dead11a5df909c2e1db515945b1ee266c52a6565481c14611c118d30583993"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.46.block_sparse_moe.experts.0.w1.weight_scale",
+   "range": [
+    4015053784,
+    4015201239
+   ],
+   "bytes": 147456,
+   "sha256": "03d4d99400aa03d07db34ab104f9d0fef89d9e0dd6346bbc7c476a75dfb4524a"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.46.block_sparse_moe.experts.0.w2.weight",
+   "range": [
+    4015201240,
+    4017560535
+   ],
+   "bytes": 2359296,
+   "sha256": "23c3eef797e2d792ec01c84fed67d213cfb1e1e98e8eb5adcfeae72674dbdc2b"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.46.block_sparse_moe.experts.0.w2.weight_scale",
+   "range": [
+    4017560536,
+    4017707991
+   ],
+   "bytes": 147456,
+   "sha256": "1a3fde9d6ce1e05f4fa794d0d3b2ef9e057e213cfdd491755429b449cd9262c9"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.46.block_sparse_moe.experts.0.w3.weight",
+   "range": [
+    4017707992,
+    4020067287
+   ],
+   "bytes": 2359296,
+   "sha256": "23efe4de5eeab9fd71eec99492a0df430ec4902842a54d8d8940aedbcd48a393"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.46.block_sparse_moe.experts.0.w3.weight_scale",
+   "range": [
+    4020067288,
+    4020214743
+   ],
+   "bytes": 147456,
+   "sha256": "466ad67ba6efc4745a806103e975584a8818685ddcd00eba5381bbbb588c91d3"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.46.block_sparse_moe.experts.1.w1.weight",
+   "range": [
+    4020214744,
+    4022574039
+   ],
+   "bytes": 2359296,
+   "sha256": "6aa38304769cf4428089f08c667f6cb3bf1552dbb6a2c16734865f4bc3689d98"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.46.block_sparse_moe.experts.1.w1.weight_scale",
+   "range": [
+    4022574040,
+    4022721495
+   ],
+   "bytes": 147456,
+   "sha256": "ef1b076b571ed3734932999bb958ca5db83f25d75745f010e2103be06912806a"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.46.block_sparse_moe.experts.1.w2.weight",
+   "range": [
+    4022721496,
+    4025080791
+   ],
+   "bytes": 2359296,
+   "sha256": "8bf82cebe011980a46ba78ffe88f36823064f74ffc5edd6c1935c3caff986870"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.46.block_sparse_moe.experts.1.w2.weight_scale",
+   "range": [
+    4025080792,
+    4025228247
+   ],
+   "bytes": 147456,
+   "sha256": "df91af20504b711c7f391a3ae81c78169a7dca2299a175f4b0519fb70b81d261"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.46.block_sparse_moe.experts.1.w3.weight",
+   "range": [
+    4025228248,
+    4027587543
+   ],
+   "bytes": 2359296,
+   "sha256": "9d7a7351e5fdd4a026b1e6739e793f9d668860733d2ff4ad0a9d90d4d947c26c"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.46.block_sparse_moe.experts.1.w3.weight_scale",
+   "range": [
+    4027587544,
+    4027734999
+   ],
+   "bytes": 147456,
+   "sha256": "934949b0c4414f2222bc9e2ea9255512658b1117e617e0b2517e54f36c0fd38b"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.46.block_sparse_moe.experts.2.w1.weight",
+   "range": [
+    4338572248,
+    4340931543
+   ],
+   "bytes": 2359296,
+   "sha256": "c877a7b1d3e215b35bb9f39f481119143c246b00aad0e8d41b62877ca485fcfc"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.46.block_sparse_moe.experts.2.w1.weight_scale",
+   "range": [
+    4340931544,
+    4341078999
+   ],
+   "bytes": 147456,
+   "sha256": "57f544d6dd979f57d7d27b01f24fc716f8d957e12d883726f869075bae82c827"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.46.block_sparse_moe.experts.2.w2.weight",
+   "range": [
+    4341079000,
+    4343438295
+   ],
+   "bytes": 2359296,
+   "sha256": "26db3f2e588ddb08c00b74d3b71d083feb1bad24575edaee8b482a292f89ad7e"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.46.block_sparse_moe.experts.2.w2.weight_scale",
+   "range": [
+    4343438296,
+    4343585751
+   ],
+   "bytes": 147456,
+   "sha256": "bc79537e23535109ee0f00e81def958c78089110ec8c7aece9ac49be157077dd"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.46.block_sparse_moe.experts.2.w3.weight",
+   "range": [
+    4343585752,
+    4345945047
+   ],
+   "bytes": 2359296,
+   "sha256": "b50d21bd1562c2d8e977cec615d6dcb40b764cee1217b430e0aedb5def0281f5"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.46.block_sparse_moe.experts.2.w3.weight_scale",
+   "range": [
+    4345945048,
+    4346092503
+   ],
+   "bytes": 147456,
+   "sha256": "acd67ab5b8507a3e7d514f5ac3f864a1bd528f834ec79198b2055809adac54d5"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.46.block_sparse_moe.experts.3.w1.weight",
+   "range": [
+    4421295064,
+    4423654359
+   ],
+   "bytes": 2359296,
+   "sha256": "652a1d8e904d647ae76034b4326e3f2bd52d43e688c12ac6c6dfa2bd49ea08ff"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.46.block_sparse_moe.experts.3.w1.weight_scale",
+   "range": [
+    4423654360,
+    4423801815
+   ],
+   "bytes": 147456,
+   "sha256": "11c53f4159d4849a6b5319f02fed422187f74d4ccaeaaf72dd33d0c0cb60e495"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.46.block_sparse_moe.experts.3.w2.weight",
+   "range": [
+    4423801816,
+    4426161111
+   ],
+   "bytes": 2359296,
+   "sha256": "87f0329f43135e6a5bed19a19d04390b9a1085a9a8978d3ddf234fa9426cb5d2"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.46.block_sparse_moe.experts.3.w2.weight_scale",
+   "range": [
+    4426161112,
+    4426308567
+   ],
+   "bytes": 147456,
+   "sha256": "53410191f8c6c6d6cc05b5bd3ec69b7e14fe6dc0e2425172a74e69b1fe0268e7"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.46.block_sparse_moe.experts.3.w3.weight",
+   "range": [
+    4426308568,
+    4428667863
+   ],
+   "bytes": 2359296,
+   "sha256": "9a5d5d72e1c1490fd32bc6bdb63f64bfe9662d77a987bfa71474a926102f11ea"
+  },
+  {
+   "repo": "amd/MiniMax-M2.1-MXFP4",
+   "revision": "bbf15c45e91cfa2b4970f42619750415a214e24b",
+   "file": "model-00019-of-00026.safetensors",
+   "what": "model.layers.46.block_sparse_moe.experts.3.w3.weight_scale",
+   "range": [
+    4428667864,
+    4428815319
+   ],
+   "bytes": 147456,
+   "sha256": "018b65035950741a9909b84b5b53ea3e7ad6b2e2fc3d74658f001909f0a7dabc"
+  }
+ ]
+}

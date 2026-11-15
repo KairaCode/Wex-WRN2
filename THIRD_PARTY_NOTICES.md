@@ -51,12 +51,13 @@ That repository is licensed under the MIT License, Copyright (c) 2023 DeepSeek; 
 
 ## Data computed from model weights
 
-No model weights are in this repository. These files are statistics computed from the routed-expert weights of DeepSeek checkpoints, both released under the MIT License (Copyright (c) 2023 DeepSeek):
+No model weights are in this repository. These files are statistics computed from the routed-expert weights of public checkpoints. The DeepSeek checkpoints of the first two rows are released under the MIT License (Copyright (c) 2023 DeepSeek); the last row names the licence of each of its checkpoints:
 
 | Files | Computed from |
 |---|---|
 | `models/v4-flash-0731.wnm2` | `deepseek-ai/DeepSeek-V4-Flash-0731`: symbol frequencies of all routed experts (a WNM2 model, 59,408 B) |
 | `models/v41-reap192.wnm2`; the `.wnm2`, `.wnm3` and `.u16` lab models under `research/` | `patrickbdevaney/DeepSeek-V4.1-Flash-1017-REAP192-MXFP4` (experts copied byte for byte from `deepseek-ai/DeepSeek-V4.1-Flash-1017`): symbol frequencies |
 | result files under `research/` and `wex4/research/` (`.json`, `.jsonl`, `.log`, `.out`, `.md`) | the same checkpoints and other public checkpoints named in the files: counts, entropies, sizes and hashes of records |
+| the logs and result files of `research/real-experts-20261115/` (no tensor data, no model, no record) | `deepseek-ai/DeepSeek-V4.1-Flash` (MIT License), `amd/Qwen3-235B-A22B-Instruct-2507-MXFP4` (tagged Apache-2.0 on Hugging Face) and `amd/MiniMax-M2.1-MXFP4` (tagged "modified-mit" on Hugging Face, licence at https://github.com/MiniMax-AI/MiniMax-M2.1/blob/main/LICENSE): sizes, SHA-256 of fetched tensors and of records, compression ratios and decode times |
 
 `fixtures/v41-tiny/` is synthetic: it was written by colibri's `tools/make_dsv41_tiny.py` (seeded random weights at toy shapes, DeepSeek V4.1 tensor layout), so it holds no weights of a released model.

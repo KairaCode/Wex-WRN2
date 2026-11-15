@@ -148,12 +148,23 @@ measured; it is not known to fail.
   [wex4/README.md](../wex4/README.md#naming-profiles). Each has a synthetic fixture
   (`fixtures/make_synth_mxfp4.py --names`) on which pack → verify → unpack and upgrade → verify →
   downgrade round-trip byte for byte.
-- **Still open, most wanted:** a run on a real checkpoint. The profiles were tested on the synthetic
-  fixtures only, and the names were read in two shards per checkpoint. Pack a real MXFP4 checkpoint of
-  one of these families with `pack --experts raw --names PROFILE`, run `wex4.py verify` and `unpack`, and
+- **Today, on real tensors (2026-11-15):** 8 routed experts (2 layers x 4) of each of three published
+  checkpoints, fetched with range requests: DeepSeek V4.1 Flash (`deepseek`), Qwen3-235B
+  (`qwen3-moe`) and MiniMax-M2.1 (`mixtral`)
+  ([research/real-experts-20261115](../research/real-experts-20261115/README.md)). For each,
+  `pack --experts raw` and `--experts nr3` printed 8 expert records and 0 experts kept as ordinary
+  tensors, both readers verified the files, and `unpack` gave both source files back with their
+  SHA-256. The DeepSeek experts also went WEX1 → WEX3 (WNR3) → `upgrade --names deepseek` → verify →
+  `downgrade`, back to the same bytes. This is a partial checkpoint (24 experts, no whole shard), not a
+  run on a real checkpoint.
+- **Still open, most wanted:** a run on a whole real checkpoint. Pack a real MXFP4 checkpoint of one of
+  these families with `pack --experts raw --names PROFILE`, run `wex4.py verify` and `unpack`, and
   report the line `pack` prints (expert records, experts kept as ordinary tensors), the sizes and
   whether every file came back with its SHA-256. If `pack` stops with `incomplete expert` although all
-  the shards were given, the profile does not fit that export: report the names.
+  the shards were given, the profile does not fit that export: report the names. The profiles
+  `deepseek-quark`, `qwen38`, `kimi-k26`, `minimax-m3` and `mistral-large4` have not met real tensors
+  at all; a row in `PLAN` of `research/real-experts-20261115/fetch_experts.py` fetches a few experts
+  of another checkpoint.
 - **Still open:** which of w1, w2, w3 is the gate, the down and the up matrix for `mixtral`,
   `minimax-m3` and `mistral-large4`, checked against the model code. The slab order is by number; an
   engine needs the answer, the converter does not.
@@ -166,7 +177,8 @@ measured; it is not known to fail.
   gpt-oss, which holds all the experts of a layer in one tensor and has two matrices per expert. Today
   `pack` stores those as ordinary tensors.
 - **Done when:** convert → verify → downgrade round-trips byte for byte on the fixture, and for a real
-  checkpoint on the checkpoint.
+  checkpoint on the checkpoint. Today the first holds for all eight profiles, and the round trip holds
+  on 8 real experts of three of them.
 
 ## 6. Port the WNR3 GPU decode to Vulkan (help wanted, priority)
 
@@ -182,11 +194,21 @@ measured; it is not known to fail.
   host program that build without the CUDA toolkit and agree with the CPU reference, in bytes and in
   verdicts, on synthetic records, on the tiny-model containers and a conformance vector, and on mutated
   copies of them. It ran only on Mesa lavapipe, a Vulkan device on the CPU (the opt-in `linux-vulkan` job
-  of `.github/workflows/ci.yml`).
+  of `.github/workflows/ci.yml`), before the run on a GPU below.
+- **Real records on one GPU, byte identity only (2026-11-15, the prototype of commit `1af6c0d`):** on an
+  NVIDIA GeForce RTX 3070 (Windows, driver 621.01) `run.sh` fails its selftest: the two records in ceil
+  form decode to other bytes than the reference's. Of 32 WNR3 records made from real experts (8 each of
+  DeepSeek V4.1 with and without canonical zero, Qwen3-235B and MiniMax-M2.1, partial containers), the
+  16 of DeepSeek V4.1 differ: 19% of the scale decrements of the ceil-form inverse are missing, every
+  weight byte is right. The 16 others, which have few ceil-form blocks, decode with the reference's
+  bytes. With the decoded buffer of a copy of `wnr3.comp` declared `coherent`, the selftest and all 32
+  records give the reference's bytes; the prototype itself was not changed
+  ([research/real-experts-20261115](../research/real-experts-20261115/README.md), section 4).
 - **Still open, most wanted first:**
   - run `bash wex4/research/vulkan-decode/run.sh <container.wex4>` on a real GPU (Intel, AMD, NVIDIA,
     Apple through MoltenVK) and report the last lines and the device line; a real container with WNR3
-    records is the test that counts, and none was decoded yet. The host program reads the file record
+    records is the test that counts, and no whole one was decoded yet (only the partial ones above, on
+    one GPU). The host program reads the file record
     by record and cuts its batches to the device's buffer limit, so the file size is not a limit (a
     5.4 GB test file was read; no record of a real model was). The slow part is the CPU reference,
     which decodes every record too: start with `MUTATIONS=0 WNR3_VK_EVERY=64` (no mutated copies, one
@@ -232,6 +254,21 @@ measured; it is not known to fail.
 
 - **Baselines:** compress real expert records with zstd, lz4 and others at several levels and compare
   ratio and decode speed with WNR3 on the same records. Honest negative results are welcome too.
+  - **Today (2026-11-15):** on 24 expert records made from real experts (8 each of DeepSeek V4.1
+    Flash, Qwen3-235B and MiniMax-M2.1, two layers of each, partial checkpoints), WNR3 (byte-exact, with
+    a model trained on the same 8 records) was smaller than every general-purpose codec measured: 0.8796,
+    0.8919 and 0.8856 of raw, against 0.9222, 0.8951 and 0.9043 for the best of zstd (levels 1 to 22),
+    lz4, lz4hc, brotli (quality 1 to 11), lzma, zlib and bz2, which was brotli each time. On Qwen3-235B
+    a model trained on one layer made WNR3 larger than zstd (0.9019 and 0.9189 against 0.8966). Decoding
+    was slower: on an Intel Core i7-7700K shared with other jobs, the fast CPU decoder gave about 200 MB/s
+    on one thread and 820 to 890 on 8, zstd about 1,500 and 5,500 to 6,900; only lzma, bz2 and (on one
+    thread) brotli at quality 11 were slower than it
+    ([research/real-experts-20261115](../research/real-experts-20261115/README.md), section 3).
+  - **Still open:** the same on whole checkpoints, with a model trained as in production (80 experts
+    spread over the layers); other CPUs, and the NEON kernel on these records (the scripts of that folder
+    fetch them, about 320 MB, and need no model); the GPU decoders against GPU codecs (nvCOMP, GDeflate);
+    per-tensor compression (scales and weights apart); zstd with a trained dictionary or long-distance
+    matching; byte-shuffle filters (Blosc2) and OpenZL.
 - **Ideas for a next codec:** see [NEXT-FORMAT-SPEC](NEXT-FORMAT-SPEC.md) and the research reports in
   [docs/reports](reports/). Any proposal has to stay lossless (bit-identical weights).
 
@@ -244,8 +281,10 @@ listed above as well.
   [colibri](https://github.com/JustVugg/colibri) `dev` as a series of small pull requests: Qwen3.8 MXFP4
   experts first (#2822-#2825 are open), then the WEX4 container, the WNR3 codec and its GPU decode, and
   the I/O switches. Reviewing or testing those PRs on your hardware helps directly.
-- **WNR3 decode on Vulkan:** the design note and a prototype checked on a CPU Vulkan device are in; a run
-  on a GPU, a speed number, a real container and the engine hook are open *(open to you, section 6)*.
+- **WNR3 decode on Vulkan:** the design note and a prototype checked on a CPU Vulkan device are in. On
+  one GPU (RTX 3070, 2026-11-15) it gave other bytes than the reference for records in ceil form; byte
+  identity on GPUs, a speed number, a whole real container and the engine hook are open *(open to you,
+  section 6)*.
 - **ARM and macOS:** the ARM CI jobs (Linux, and macOS on Apple silicon) and a NEON version of kernel 1
   of the fast CPU decoder are in. Its speed on real records and on ARM CPUs other than the Linux CI
   runner, an SVE version of kernel 2, and Apple clang are still open *(open to you, section 3)*.
@@ -267,7 +306,11 @@ listed above as well.
 - **Fuzzing for hours:** the harnesses run for 60 seconds each in CI; no run longer than that is
   recorded in this repository *(open to you, section 3)*.
 - **Converter profiles for more model families:** eight naming profiles are in, tested on synthetic
-  fixtures; a run on a real checkpoint of the new families is open *(open to you, section 5)*.
+  fixtures, and three of them (`deepseek`, `qwen3-moe`, `mixtral`) on 8 real experts each; a run on a
+  whole real checkpoint of the new families is open *(open to you, section 5)*.
+- **Compression baselines:** WNR3 against zstd, lz4, brotli, lzma, zlib and bz2 on 24 real expert
+  records is in (smaller files, slower CPU decode); whole checkpoints, other CPUs and GPU codecs are
+  open *(open to you, section 8)*.
 - **A first tagged release** of the specifications (WEX4 4.0, WNR3 v1) with the conformance vectors, so
   other implementations can name the version they pass.
 

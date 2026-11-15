@@ -204,6 +204,22 @@ Earlier figures (2026-11-11, old README, raw output not here): C: (PCIe 5) 2.0 m
 
 No read path won on both machines: what was 16% to 19% faster than the store's path in run 1 was 4% to 5% slower in run 2, and more reads in flight gained at most 11% over one read of the same kind in run 1 (page cache, 8 threads against 1) and at most 4% in run 2 (`O_DIRECT`, 16 records in flight against 1 thread), with every depth between 418 and 481 and between 511 and 540 MB/s. The store's Linux read path was therefore not changed. The `WILLNEED` row is not a prefetch of the next record: in run 3, where it was measured with `mincore`, 1.0% of the pages of an announced record (about 130 KB of 13.4 MB, on a device with `read_ahead_kb` 128) were in the page cache just before its read, in each of 10 passes; on the VM kind of run 1 this was not measured. **Not measured:** a prefetch that loads the whole record, any real drive (NVMe, SATA), ARM, another filesystem, two drives, a pass longer than 1.7 s, and any engine; the benchmark reads records as the stores do but decodes nothing.
 
+## WNR3 against general-purpose codecs on real expert records (2026-11-15, 24 experts, a desktop CPU)
+
+8 routed experts (2 layers x 4) each of three public MXFP4 checkpoints, fetched with range requests: a partial checkpoint, not a whole one. Ratio = stored / decoded bytes of the 8 expert records of each checkpoint; WNR3 byte-exact (no canonical zero), with a model trained on the same 8 records; each general-purpose codec compresses each record's slab whole. Speed = MB/s (10^6 bytes) of decoded output, median of 11 passes over the 8 records, one run of the benchmark. **Not the machine of the other tables:** Intel Core i7-7700K (4 cores, 8 logical CPUs), Windows 10, gcc 16.2.0 `-O3 -march=haswell`, the AVX2 kernels of the fast decoder; other jobs ran on the machine (about one logical CPU busy before each checkpoint, more during some rows), so the speeds can be low by an amount that was not measured. Every row of the 25 decoders and levels, the conditions and the raw output are in [research/real-experts-20261115](../research/real-experts-20261115/README.md), section 3.
+
+| | DeepSeek V4.1 Flash | Qwen3-235B (AMD MXFP4) | MiniMax-M2.1 (AMD MXFP4) |
+|---|---:|---:|---:|
+| one record (decoded slab) | 18,800,640 B | 10,027,008 B | 7,520,256 B |
+| ratio, WNR3 | **0.8796** | **0.8919** | **0.8856** |
+| ratio, best general-purpose codec measured | 0.9222 (brotli 11) | 0.8951 (brotli 11) | 0.9043 (brotli 9) |
+| ratio, zstd 19 / lzma 9e / zlib 9 / lz4hc 12 | 0.9268 / 0.9306 / 0.9297 / 0.9557 | 0.8966 / 0.9043 / 0.8999 / 0.9527 | 0.9055 / 0.9117 / 0.9083 / 0.9556 |
+| MB/s, 1 thread: WNR3 fast decoder / WNR3 reference | 197 / 25.2 | 200 / 25.1 | 202 / 24.9 |
+| MB/s, 1 thread: zstd 19 (libzstd) / lz4 / brotli 11 | 1,545 / 9,567 / 145 | 1,514 / 10,244 / 159 | 1,506 / 9,915 / 157 |
+| MB/s, 8 records at once: WNR3 fast decoder / zstd 19 (libzstd) | 847 / 6,920 | 864 / 6,500 | 850 / 6,499 |
+
+WNR3 gave the smallest records of all on the three checkpoints, by 0.0426, 0.0032 and 0.0187 of raw against the best general-purpose codec; on Qwen3-235B a model trained on the 4 experts of one layer made WNR3 larger than zstd (0.9019 and 0.9189). On the CPU it decoded slower than every codec measured except lzma, bz2 and, on one thread, brotli 11. In production the DeepSeek V4.1 records are decoded on the GPU ([STATUS.md](../STATUS.md)); no GPU speed was measured here.
+
 ## Earlier results
 
 CPU-only baseline (M0, `DSV4_CUDA=0`: dense, attention and MoE on CPU), DeepSeek V4.1 Flash REAP-192 MXFP4, 16 GB RAM, warm (`docs/reports/v41-reap-baseline-m0-20261107.md`):

@@ -20,3 +20,6 @@ colibri.stdout.log
 /archive/nr2/test-nr2.json
 /archive/nr2/build-*.json
 /archive/nr2/model-*.wnm2
+# expert tensors of published checkpoints, fetched by research/real-experts-20261115/fetch_experts.py: model
+# weights never enter the repository (CONTRIBUTING rule 3)
+/research/real-experts-20261115/data/

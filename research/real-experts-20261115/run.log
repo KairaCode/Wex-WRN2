@@ -1,0 +1,314 @@
+== deepseek-v41 (profile deepseek, layers 10 and 30): 2 source files, 150410224 B
+  source model-00013-of-00048.experts.safetensors 75205112 B sha256 0931ab59837af1086d160d29d9f20f5e06e7969e8daa6b5ad8428e93ebdc988a
+  source model-00033-of-00048.experts.safetensors 75205112 B sha256 eb51e921f6a4bf25c1704cb5250b5eebb6a1f26df13a24f1bf8417e56beee68c
+-- pack --experts raw --names deepseek
+  8 expert records; 0 experts kept as ordinary tensors (float or FP8, not MXFP4)
+  root 286621b8472d7e2d0b00c5dc0e9905d1aa5e56cb6846ffa465cc569aed195bbe
+  container 150425600 B
+  WEX4 4.0  root 286621b8472d7e2d0b00c5dc0e9905d1aa5e56cb6846ffa465cc569aed195bbe
+    file 150,425,600 B  index 12,845 B  blobs 0  records 8  tensors 48
+    decoded 150,405,120 B  stored 150,405,120 B  ratio 1.0000  codecs {0: 8}
+    content digest dc73a09559d7d5b91e2d7cccb4276301187f77e16942c8da1ec57aa6770fce46  (every hash checked, every record decoded)
+  the fast decoder's DLL gives the same content digest
+  wex4_verify: COLI_WEX_ROOT=286621b8472d7e2d0b00c5dc0e9905d1aa5e56cb6846ffa465cc569aed195bbe
+  unpack: model-00013-of-00048.experts.safetensors sha256 identical
+  unpack: model-00033-of-00048.experts.safetensors sha256 identical
+  cmp: 2 of 2 rebuilt files identical to the source files
+-- models
+  all: {"model": "all.wnm2", "model_id": "0x2a2e138e", "cz": false, "trained_on": ["L10:E0", "L10:E1", "L10:E2", "L10:E3", "L30:E0", "L30:E1", "L30:E2", "L30:E3"]}
+  la: {"model": "la.wnm2", "model_id": "0x7a9753d5", "cz": false, "trained_on": ["L10:E0", "L10:E1", "L10:E2", "L10:E3"]}
+  lb: {"model": "lb.wnm2", "model_id": "0xf1fe4bd0", "cz": false, "trained_on": ["L30:E0", "L30:E1", "L30:E2", "L30:E3"]}
+-- pack --experts nr3 --names deepseek --model all.wnm2
+  8 expert records; 0 experts kept as ordinary tensors (float or FP8, not MXFP4)
+  root 02c46046aae2cece4381013ac85bdb2632c7afb326111d82868c8928cfc2a8c7
+  container 132382720 B
+  WEX4 4.0  root 02c46046aae2cece4381013ac85bdb2632c7afb326111d82868c8928cfc2a8c7
+    file 132,382,720 B  index 12,909 B  blobs 1  records 8  tensors 48
+    decoded 150,405,120 B  stored 132,300,800 B  ratio 0.8796  codecs {5: 8}
+    content digest dc73a09559d7d5b91e2d7cccb4276301187f77e16942c8da1ec57aa6770fce46  (every hash checked, every record decoded)
+  the fast decoder's DLL gives the same content digest
+  wex4_verify: COLI_WEX_ROOT=02c46046aae2cece4381013ac85bdb2632c7afb326111d82868c8928cfc2a8c7
+  unpack: model-00013-of-00048.experts.safetensors sha256 identical
+  unpack: model-00033-of-00048.experts.safetensors sha256 identical
+  cmp: 2 of 2 rebuilt files identical to the source files
+  L10_E0 codec 5 decoded 18800640 stored 16527360 ratio 0.8791 flags 0x07
+  L10_E1 codec 5 decoded 18800640 stored 16543744 ratio 0.8800 flags 0x07
+  L10_E2 codec 5 decoded 18800640 stored 16556032 ratio 0.8806 flags 0x07
+  L10_E3 codec 5 decoded 18800640 stored 16535552 ratio 0.8795 flags 0x07
+  L30_E0 codec 5 decoded 18800640 stored 16523264 ratio 0.8789 flags 0x07
+  L30_E1 codec 5 decoded 18800640 stored 16547840 ratio 0.8802 flags 0x07
+  L30_E2 codec 5 decoded 18800640 stored 16523264 ratio 0.8789 flags 0x07
+  L30_E3 codec 5 decoded 18800640 stored 16543744 ratio 0.8800 flags 0x07
+  {"records": 8, "decoded": 150405120, "stored": 132300800, "ratio": 0.87963}
+-- pack --experts nr3 --names deepseek --model la.wnm2
+  8 expert records; 0 experts kept as ordinary tensors (float or FP8, not MXFP4)
+  root 71a25d4e198c611125ed7d4b29d2d435ba19691b7b5fb3769735490514ef52e3
+  container 132386816 B
+  WEX4 4.0  root 71a25d4e198c611125ed7d4b29d2d435ba19691b7b5fb3769735490514ef52e3
+    file 132,386,816 B  index 12,909 B  blobs 1  records 8  tensors 48
+    decoded 150,405,120 B  stored 132,304,896 B  ratio 0.8797  codecs {5: 8}
+    content digest dc73a09559d7d5b91e2d7cccb4276301187f77e16942c8da1ec57aa6770fce46  (every hash checked, every record decoded)
+  the fast decoder's DLL gives the same content digest
+  wex4_verify: COLI_WEX_ROOT=71a25d4e198c611125ed7d4b29d2d435ba19691b7b5fb3769735490514ef52e3
+  unpack: model-00013-of-00048.experts.safetensors sha256 identical
+  unpack: model-00033-of-00048.experts.safetensors sha256 identical
+  cmp: 2 of 2 rebuilt files identical to the source files
+  L10_E0 codec 5 decoded 18800640 stored 16527360 ratio 0.8791 flags 0x07
+  L10_E1 codec 5 decoded 18800640 stored 16543744 ratio 0.8800 flags 0x07
+  L10_E2 codec 5 decoded 18800640 stored 16556032 ratio 0.8806 flags 0x07
+  L10_E3 codec 5 decoded 18800640 stored 16535552 ratio 0.8795 flags 0x07
+  L30_E0 codec 5 decoded 18800640 stored 16523264 ratio 0.8789 flags 0x07
+  L30_E1 codec 5 decoded 18800640 stored 16547840 ratio 0.8802 flags 0x07
+  L30_E2 codec 5 decoded 18800640 stored 16523264 ratio 0.8789 flags 0x07
+  L30_E3 codec 5 decoded 18800640 stored 16547840 ratio 0.8802 flags 0x07
+  {"records": 8, "decoded": 150405120, "stored": 132304896, "ratio": 0.879657}
+-- pack --experts nr3 --names deepseek --model lb.wnm2
+  8 expert records; 0 experts kept as ordinary tensors (float or FP8, not MXFP4)
+  root 2939cabe10160ce28a10021e5fe704a91686afb7a756b325a2493c4c527e0951
+  container 132382720 B
+  WEX4 4.0  root 2939cabe10160ce28a10021e5fe704a91686afb7a756b325a2493c4c527e0951
+    file 132,382,720 B  index 12,909 B  blobs 1  records 8  tensors 48
+    decoded 150,405,120 B  stored 132,300,800 B  ratio 0.8796  codecs {5: 8}
+    content digest dc73a09559d7d5b91e2d7cccb4276301187f77e16942c8da1ec57aa6770fce46  (every hash checked, every record decoded)
+  the fast decoder's DLL gives the same content digest
+  wex4_verify: COLI_WEX_ROOT=2939cabe10160ce28a10021e5fe704a91686afb7a756b325a2493c4c527e0951
+  unpack: model-00013-of-00048.experts.safetensors sha256 identical
+  unpack: model-00033-of-00048.experts.safetensors sha256 identical
+  cmp: 2 of 2 rebuilt files identical to the source files
+  L10_E0 codec 5 decoded 18800640 stored 16527360 ratio 0.8791 flags 0x07
+  L10_E1 codec 5 decoded 18800640 stored 16547840 ratio 0.8802 flags 0x07
+  L10_E2 codec 5 decoded 18800640 stored 16556032 ratio 0.8806 flags 0x07
+  L10_E3 codec 5 decoded 18800640 stored 16535552 ratio 0.8795 flags 0x07
+  L30_E0 codec 5 decoded 18800640 stored 16519168 ratio 0.8786 flags 0x07
+  L30_E1 codec 5 decoded 18800640 stored 16547840 ratio 0.8802 flags 0x07
+  L30_E2 codec 5 decoded 18800640 stored 16523264 ratio 0.8789 flags 0x07
+  L30_E3 codec 5 decoded 18800640 stored 16543744 ratio 0.8800 flags 0x07
+  {"records": 8, "decoded": 150405120, "stored": 132300800, "ratio": 0.87963}
+  raw records: {"records": 8, "decoded": 150405120, "stored": 150405120, "ratio": 1.0}
+  the slabs decoded from the WNR3 records equal the RAW records' slabs
+== qwen3-235b (profile qwen3-moe, layers 23 and 70): 2 source files, 80221904 B
+  source model-00007-of-00026.experts.safetensors 40110952 B sha256 4772d416936032444c2e758c4a1a104df7641c76dac9b96aa13bd051b29d132d
+  source model-00019-of-00026.experts.safetensors 40110952 B sha256 f37fe9e08b34cd6cfabcba28c6a8a06a73fcf921d0927d15684c43fdc3fe30e8
+-- pack --experts raw --names qwen3-moe
+  8 expert records; 0 experts kept as ordinary tensors (float or FP8, not MXFP4)
+  root 93d98f644c1212f43fdead4aa221e3529b1db718f653afa4dba89252d9f64cdd
+  container 80236544 B
+  WEX4 4.0  root 93d98f644c1212f43fdead4aa221e3529b1db718f653afa4dba89252d9f64cdd
+    file 80,236,544 B  index 14,353 B  blobs 0  records 8  tensors 48
+    decoded 80,216,064 B  stored 80,216,064 B  ratio 1.0000  codecs {0: 8}
+    content digest 84e8b52b7eda675a85e1e96b81ab62e2321f065e7fcc7548646692d887e4516e  (every hash checked, every record decoded)
+  the fast decoder's DLL gives the same content digest
+  wex4_verify: COLI_WEX_ROOT=93d98f644c1212f43fdead4aa221e3529b1db718f653afa4dba89252d9f64cdd
+  unpack: model-00007-of-00026.experts.safetensors sha256 identical
+  unpack: model-00019-of-00026.experts.safetensors sha256 identical
+  cmp: 2 of 2 rebuilt files identical to the source files
+-- models
+  all: {"model": "all.wnm2", "model_id": "0x70f9af48", "cz": false, "trained_on": ["L23:E0", "L23:E1", "L23:E2", "L23:E3", "L70:E0", "L70:E1", "L70:E2", "L70:E3"]}
+  la: {"model": "la.wnm2", "model_id": "0xd47d4ac4", "cz": false, "trained_on": ["L23:E0", "L23:E1", "L23:E2", "L23:E3"]}
+  lb: {"model": "lb.wnm2", "model_id": "0x4d16d934", "cz": false, "trained_on": ["L70:E0", "L70:E1", "L70:E2", "L70:E3"]}
+-- pack --experts nr3 --names qwen3-moe --model all.wnm2
+  8 expert records; 0 experts kept as ordinary tensors (float or FP8, not MXFP4)
+  root e402935307068ebb4491d614c538898046469a0a8f9db48c3616173eda59a0f2
+  container 71626752 B
+  WEX4 4.0  root e402935307068ebb4491d614c538898046469a0a8f9db48c3616173eda59a0f2
+    file 71,626,752 B  index 14,417 B  blobs 1  records 8  tensors 48
+    decoded 80,216,064 B  stored 71,544,832 B  ratio 0.8919  codecs {5: 8}
+    content digest 84e8b52b7eda675a85e1e96b81ab62e2321f065e7fcc7548646692d887e4516e  (every hash checked, every record decoded)
+  the fast decoder's DLL gives the same content digest
+  wex4_verify: COLI_WEX_ROOT=e402935307068ebb4491d614c538898046469a0a8f9db48c3616173eda59a0f2
+  unpack: model-00007-of-00026.experts.safetensors sha256 identical
+  unpack: model-00019-of-00026.experts.safetensors sha256 identical
+  cmp: 2 of 2 rebuilt files identical to the source files
+  L23_E0 codec 5 decoded 10027008 stored 8892416 ratio 0.8868 flags 0x07
+  L23_E1 codec 5 decoded 10027008 stored 8986624 ratio 0.8962 flags 0x07
+  L23_E2 codec 5 decoded 10027008 stored 8880128 ratio 0.8856 flags 0x07
+  L23_E3 codec 5 decoded 10027008 stored 8863744 ratio 0.8840 flags 0x07
+  L70_E0 codec 5 decoded 10027008 stored 8974336 ratio 0.8950 flags 0x07
+  L70_E1 codec 5 decoded 10027008 stored 9003008 ratio 0.8979 flags 0x07
+  L70_E2 codec 5 decoded 10027008 stored 8974336 ratio 0.8950 flags 0x07
+  L70_E3 codec 5 decoded 10027008 stored 8970240 ratio 0.8946 flags 0x07
+  {"records": 8, "decoded": 80216064, "stored": 71544832, "ratio": 0.891902}
+-- pack --experts nr3 --names qwen3-moe --model la.wnm2
+  8 expert records; 0 experts kept as ordinary tensors (float or FP8, not MXFP4)
+  root 0684cef00ee8c0995376b8baa7429dd884e86f9d07241941cb407da866445c9e
+  container 72429568 B
+  WEX4 4.0  root 0684cef00ee8c0995376b8baa7429dd884e86f9d07241941cb407da866445c9e
+    file 72,429,568 B  index 14,417 B  blobs 1  records 8  tensors 48
+    decoded 80,216,064 B  stored 72,347,648 B  ratio 0.9019  codecs {5: 8}
+    content digest 84e8b52b7eda675a85e1e96b81ab62e2321f065e7fcc7548646692d887e4516e  (every hash checked, every record decoded)
+  the fast decoder's DLL gives the same content digest
+  wex4_verify: COLI_WEX_ROOT=0684cef00ee8c0995376b8baa7429dd884e86f9d07241941cb407da866445c9e
+  unpack: model-00007-of-00026.experts.safetensors sha256 identical
+  unpack: model-00019-of-00026.experts.safetensors sha256 identical
+  cmp: 2 of 2 rebuilt files identical to the source files
+  L23_E0 codec 5 decoded 10027008 stored 8859648 ratio 0.8836 flags 0x07
+  L23_E1 codec 5 decoded 10027008 stored 8941568 ratio 0.8917 flags 0x07
+  L23_E2 codec 5 decoded 10027008 stored 8847360 ratio 0.8824 flags 0x07
+  L23_E3 codec 5 decoded 10027008 stored 8818688 ratio 0.8795 flags 0x07
+  L70_E0 codec 5 decoded 10027008 stored 9211904 ratio 0.9187 flags 0x07
+  L70_E1 codec 5 decoded 10027008 stored 9179136 ratio 0.9154 flags 0x07
+  L70_E2 codec 5 decoded 10027008 stored 9224192 ratio 0.9199 flags 0x07
+  L70_E3 codec 5 decoded 10027008 stored 9265152 ratio 0.9240 flags 0x07
+  {"records": 8, "decoded": 80216064, "stored": 72347648, "ratio": 0.90191}
+-- pack --experts nr3 --names qwen3-moe --model lb.wnm2
+  8 expert records; 0 experts kept as ordinary tensors (float or FP8, not MXFP4)
+  root 0579cceeb01160875b6bddd11198ec67e730a847dfcbda5a97dd8e4ceaac4e09
+  container 73789440 B
+  WEX4 4.0  root 0579cceeb01160875b6bddd11198ec67e730a847dfcbda5a97dd8e4ceaac4e09
+    file 73,789,440 B  index 14,417 B  blobs 1  records 8  tensors 48
+    decoded 80,216,064 B  stored 73,707,520 B  ratio 0.9189  codecs {5: 8}
+    content digest 84e8b52b7eda675a85e1e96b81ab62e2321f065e7fcc7548646692d887e4516e  (every hash checked, every record decoded)
+  the fast decoder's DLL gives the same content digest
+  wex4_verify: COLI_WEX_ROOT=0579cceeb01160875b6bddd11198ec67e730a847dfcbda5a97dd8e4ceaac4e09
+  unpack: model-00007-of-00026.experts.safetensors sha256 identical
+  unpack: model-00019-of-00026.experts.safetensors sha256 identical
+  cmp: 2 of 2 rebuilt files identical to the source files
+  L23_E0 codec 5 decoded 10027008 stored 9650176 ratio 0.9624 flags 0x07
+  L23_E1 codec 5 decoded 10027008 stored 9220096 ratio 0.9195 flags 0x07
+  L23_E2 codec 5 decoded 10027008 stored 9641984 ratio 0.9616 flags 0x07
+  L23_E3 codec 5 decoded 10027008 stored 9465856 ratio 0.9440 flags 0x07
+  L70_E0 codec 5 decoded 10027008 stored 8925184 ratio 0.8901 flags 0x07
+  L70_E1 codec 5 decoded 10027008 stored 8953856 ratio 0.8930 flags 0x07
+  L70_E2 codec 5 decoded 10027008 stored 8925184 ratio 0.8901 flags 0x07
+  L70_E3 codec 5 decoded 10027008 stored 8925184 ratio 0.8901 flags 0x07
+  {"records": 8, "decoded": 80216064, "stored": 73707520, "ratio": 0.918862}
+  raw records: {"records": 8, "decoded": 80216064, "stored": 80216064, "ratio": 1.0}
+  the slabs decoded from the WNR3 records equal the RAW records' slabs
+== minimax-m21 (profile mixtral, layers 15 and 46): 2 source files, 60168176 B
+  source model-00007-of-00026.experts.safetensors 30084088 B sha256 32bd86f8aa074f28b65c6edf7b0cb84096b5d1dc2257dd61d865467edc41c3c9
+  source model-00019-of-00026.experts.safetensors 30084088 B sha256 2699365b047fb2656b1f0a0aed826b333bb834883b0b479c7dc22bf305db2fc8
+-- pack --experts raw --names mixtral
+  8 expert records; 0 experts kept as ordinary tensors (float or FP8, not MXFP4)
+  root ef707fb306d61f268ce5971457152863278c59a2835443d89f0d7cf8b0693f0f
+  container 60182528 B
+  WEX4 4.0  root ef707fb306d61f268ce5971457152863278c59a2835443d89f0d7cf8b0693f0f
+    file 60,182,528 B  index 14,961 B  blobs 0  records 8  tensors 48
+    decoded 60,162,048 B  stored 60,162,048 B  ratio 1.0000  codecs {0: 8}
+    content digest 1cb9c920a8ae38fa24bd09ba03f30bc2a42213674c0182ab2d6ac414a174aab7  (every hash checked, every record decoded)
+  the fast decoder's DLL gives the same content digest
+  wex4_verify: COLI_WEX_ROOT=ef707fb306d61f268ce5971457152863278c59a2835443d89f0d7cf8b0693f0f
+  unpack: model-00007-of-00026.experts.safetensors sha256 identical
+  unpack: model-00019-of-00026.experts.safetensors sha256 identical
+  cmp: 2 of 2 rebuilt files identical to the source files
+-- models
+  all: {"model": "all.wnm2", "model_id": "0x0812c658", "cz": false, "trained_on": ["L15:E0", "L15:E1", "L15:E2", "L15:E3", "L46:E0", "L46:E1", "L46:E2", "L46:E3"]}
+  la: {"model": "la.wnm2", "model_id": "0xd7400a94", "cz": false, "trained_on": ["L15:E0", "L15:E1", "L15:E2", "L15:E3"]}
+  lb: {"model": "lb.wnm2", "model_id": "0x17051540", "cz": false, "trained_on": ["L46:E0", "L46:E1", "L46:E2", "L46:E3"]}
+-- pack --experts nr3 --names mixtral --model all.wnm2
+  8 expert records; 0 experts kept as ordinary tensors (float or FP8, not MXFP4)
+  root a9afafd5116d25657af3d88fb22de9d99dfae0ba73f45ee1181de43ed6b9c9fb
+  container 53362688 B
+  WEX4 4.0  root a9afafd5116d25657af3d88fb22de9d99dfae0ba73f45ee1181de43ed6b9c9fb
+    file 53,362,688 B  index 15,025 B  blobs 1  records 8  tensors 48
+    decoded 60,162,048 B  stored 53,280,768 B  ratio 0.8856  codecs {5: 8}
+    content digest 1cb9c920a8ae38fa24bd09ba03f30bc2a42213674c0182ab2d6ac414a174aab7  (every hash checked, every record decoded)
+  the fast decoder's DLL gives the same content digest
+  wex4_verify: COLI_WEX_ROOT=a9afafd5116d25657af3d88fb22de9d99dfae0ba73f45ee1181de43ed6b9c9fb
+  unpack: model-00007-of-00026.experts.safetensors sha256 identical
+  unpack: model-00019-of-00026.experts.safetensors sha256 identical
+  cmp: 2 of 2 rebuilt files identical to the source files
+  L15_E0 codec 5 decoded 7520256 stored 6660096 ratio 0.8856 flags 0x07
+  L15_E1 codec 5 decoded 7520256 stored 6676480 ratio 0.8878 flags 0x07
+  L15_E2 codec 5 decoded 7520256 stored 6647808 ratio 0.8840 flags 0x07
+  L15_E3 codec 5 decoded 7520256 stored 6668288 ratio 0.8867 flags 0x07
+  L46_E0 codec 5 decoded 7520256 stored 6705152 ratio 0.8916 flags 0x07
+  L46_E1 codec 5 decoded 7520256 stored 6647808 ratio 0.8840 flags 0x07
+  L46_E2 codec 5 decoded 7520256 stored 6635520 ratio 0.8824 flags 0x07
+  L46_E3 codec 5 decoded 7520256 stored 6639616 ratio 0.8829 flags 0x07
+  {"records": 8, "decoded": 60162048, "stored": 53280768, "ratio": 0.885621}
+-- pack --experts nr3 --names mixtral --model la.wnm2
+  8 expert records; 0 experts kept as ordinary tensors (float or FP8, not MXFP4)
+  root e3073372310b1eed592f5b870326d240a547f1095d1cb3815b06c06b0c8cd99e
+  container 53391360 B
+  WEX4 4.0  root e3073372310b1eed592f5b870326d240a547f1095d1cb3815b06c06b0c8cd99e
+    file 53,391,360 B  index 15,025 B  blobs 1  records 8  tensors 48
+    decoded 60,162,048 B  stored 53,309,440 B  ratio 0.8861  codecs {5: 8}
+    content digest 1cb9c920a8ae38fa24bd09ba03f30bc2a42213674c0182ab2d6ac414a174aab7  (every hash checked, every record decoded)
+  the fast decoder's DLL gives the same content digest
+  wex4_verify: COLI_WEX_ROOT=e3073372310b1eed592f5b870326d240a547f1095d1cb3815b06c06b0c8cd99e
+  unpack: model-00007-of-00026.experts.safetensors sha256 identical
+  unpack: model-00019-of-00026.experts.safetensors sha256 identical
+  cmp: 2 of 2 rebuilt files identical to the source files
+  L15_E0 codec 5 decoded 7520256 stored 6656000 ratio 0.8851 flags 0x07
+  L15_E1 codec 5 decoded 7520256 stored 6672384 ratio 0.8873 flags 0x07
+  L15_E2 codec 5 decoded 7520256 stored 6647808 ratio 0.8840 flags 0x07
+  L15_E3 codec 5 decoded 7520256 stored 6664192 ratio 0.8862 flags 0x07
+  L46_E0 codec 5 decoded 7520256 stored 6709248 ratio 0.8922 flags 0x07
+  L46_E1 codec 5 decoded 7520256 stored 6651904 ratio 0.8845 flags 0x07
+  L46_E2 codec 5 decoded 7520256 stored 6647808 ratio 0.8840 flags 0x07
+  L46_E3 codec 5 decoded 7520256 stored 6660096 ratio 0.8856 flags 0x07
+  {"records": 8, "decoded": 60162048, "stored": 53309440, "ratio": 0.886097}
+-- pack --experts nr3 --names mixtral --model lb.wnm2
+  8 expert records; 0 experts kept as ordinary tensors (float or FP8, not MXFP4)
+  root 86a6aa5347acff2e982d79c17057b6c8eadfdfef7718781c72763839d3624467
+  container 53370880 B
+  WEX4 4.0  root 86a6aa5347acff2e982d79c17057b6c8eadfdfef7718781c72763839d3624467
+    file 53,370,880 B  index 15,025 B  blobs 1  records 8  tensors 48
+    decoded 60,162,048 B  stored 53,288,960 B  ratio 0.8858  codecs {5: 8}
+    content digest 1cb9c920a8ae38fa24bd09ba03f30bc2a42213674c0182ab2d6ac414a174aab7  (every hash checked, every record decoded)
+  the fast decoder's DLL gives the same content digest
+  wex4_verify: COLI_WEX_ROOT=86a6aa5347acff2e982d79c17057b6c8eadfdfef7718781c72763839d3624467
+  unpack: model-00007-of-00026.experts.safetensors sha256 identical
+  unpack: model-00019-of-00026.experts.safetensors sha256 identical
+  cmp: 2 of 2 rebuilt files identical to the source files
+  L15_E0 codec 5 decoded 7520256 stored 6664192 ratio 0.8862 flags 0x07
+  L15_E1 codec 5 decoded 7520256 stored 6684672 ratio 0.8889 flags 0x07
+  L15_E2 codec 5 decoded 7520256 stored 6651904 ratio 0.8845 flags 0x07
+  L15_E3 codec 5 decoded 7520256 stored 6672384 ratio 0.8873 flags 0x07
+  L46_E0 codec 5 decoded 7520256 stored 6705152 ratio 0.8916 flags 0x07
+  L46_E1 codec 5 decoded 7520256 stored 6647808 ratio 0.8840 flags 0x07
+  L46_E2 codec 5 decoded 7520256 stored 6631424 ratio 0.8818 flags 0x07
+  L46_E3 codec 5 decoded 7520256 stored 6631424 ratio 0.8818 flags 0x07
+  {"records": 8, "decoded": 60162048, "stored": 53288960, "ratio": 0.885757}
+  raw records: {"records": 8, "decoded": 60162048, "stored": 60162048, "ratio": 1.0}
+  the slabs decoded from the WNR3 records equal the RAW records' slabs
+== deepseek-v41 through WEX1 -> WEX3 (build_nr3.py) -> upgrade --names deepseek
+{"num_hidden_layers": 31, "n_routed_experts": 4, "hidden_size": 5120, "moe_intermediate_size": 2304}
+  repack: {"format_version": 1, "dry_run": false, "layers": 31, "experts_per_layer": 4, "record_bytes": 18800640, "experts": 8, "compressed_experts": 0, "weight_codec": "native", "palette3_experts": 0, "lossy": false, "neural_rans_experts": 0, "max_weight_relative_error": 0.0, "max_candidate_weight_relative_error": 0.0, "deduplicated_experts": 0, "deduplicated_bytes": 0, "file_bytes": 150421504, "raw_file_bytes": 150421504, "saved_bytes": 0}
+  v41.wex 150421504 B sha256 e69adb784a96c1410d3643bc99047db15f5566744841e87f6c0826d4df8856d3
+  build_nr3: {"model_id": "0x2a2e138e", "model": "trained on 8", "cz": false, "layers": [10, 30], "records": 8, "raw_fallback": 0, "file_bytes": 132378624}
+  build_nr3: elapsed 4.7s
+  wnr3.wex 132378624 B sha256 c47b31d7edf2c00d76a3ad641eb861b87aa38dc61fe3005af7d74831e3528829
+  upgrade: {'index_bytes': 7128, 'file_bytes': 132390912, 'added': 12288, 'records': 8}
+  WEX4 4.0  root b6e18db9079b4e32061784dbaedc71cc5011d1aeb4b2b1c9a96da390c9748d46
+    file 132,390,912 B  index 7,128 B  blobs 3  records 8  tensors 48
+    decoded 150,405,120 B  stored 132,300,800 B  ratio 0.8796  codecs {5: 8}
+    content digest dc73a09559d7d5b91e2d7cccb4276301187f77e16942c8da1ec57aa6770fce46  (every hash checked, every record decoded)
+  the fast decoder's DLL gives the same content digest
+  wex4_verify: COLI_WEX_ROOT=b6e18db9079b4e32061784dbaedc71cc5011d1aeb4b2b1c9a96da390c9748d46
+  {"records": 8, "decoded": 150405120, "stored": 132300800, "ratio": 0.87963}
+  downgrade: sha256 c47b31d7edf2c00d76a3ad641eb861b87aa38dc61fe3005af7d74831e3528829, the WEX3 file byte for byte
+  pack: 8 expert records; 0 experts kept as ordinary tensors (float or FP8, not MXFP4)
+  pack: root 02c46046aae2cece4381013ac85bdb2632c7afb326111d82868c8928cfc2a8c7
+  unpack: model-00013-of-00048.experts.safetensors sha256 identical
+  unpack: model-00033-of-00048.experts.safetensors sha256 identical
+  {"records": 8, "decoded": 150405120, "stored": 132300800, "ratio": 0.87963}
+  pack --experts nr3 without --cz: the same 8 records as build_nr3.py + upgrade (size and SHA-256)
+  build_nr3: {"model_id": "0xb9421b02", "model": "trained on 8", "cz": true, "layers": [10, 30], "records": 8, "raw_fallback": 0, "file_bytes": 128241664}
+  build_nr3: elapsed 5.1s
+  wnr3-cz.wex 128241664 B sha256 0c83b9942caf05d44e654ac53368412de5a6d00e6f481e258bede5a1cef03e3f
+  upgrade: {'index_bytes': 7128, 'file_bytes': 128253952, 'added': 12288, 'records': 8}
+  WEX4 4.0  root 96e14480493810f8ccbc43deec994a7e6044ea67a9421d07da6c44ecf32b175b
+    file 128,253,952 B  index 7,128 B  blobs 3  records 8  tensors 48
+    decoded 150,405,120 B  stored 128,163,840 B  ratio 0.8521  codecs {5: 8}
+    content digest 6149334d88e620878327f80a9200b0f07d564ea12a26c9df2cbd360eea12de45  (every hash checked, every record decoded)
+  the fast decoder's DLL gives the same content digest
+  wex4_verify: COLI_WEX_ROOT=96e14480493810f8ccbc43deec994a7e6044ea67a9421d07da6c44ecf32b175b
+  {"records": 8, "decoded": 150405120, "stored": 128163840, "ratio": 0.852124}
+  downgrade: sha256 0c83b9942caf05d44e654ac53368412de5a6d00e6f481e258bede5a1cef03e3f, the WEX3 file byte for byte
+  pack: 8 expert records; 0 experts kept as ordinary tensors (float or FP8, not MXFP4)
+  pack: root 2ad6039b000f2e68d17987aab6c748c798dbfd55578fee0d3e2ab521897fc701
+  unpack: model-00013-of-00048.experts.safetensors DIFFERS (value-exact container)
+  unpack: model-00033-of-00048.experts.safetensors DIFFERS (value-exact container)
+  {"records": 8, "decoded": 150405120, "stored": 128163840, "ratio": 0.852124}
+  pack --experts nr3 --cz: the same 8 records as build_nr3.py + upgrade (size and SHA-256)
+  upgrade WEX1: {'index_bytes': 7064, 'file_bytes': 150433792, 'added': 12288, 'records': 8}
+  WEX4 4.0  root 04b24bbdde207c6eccad18ef02dd1112b18b0e428648270c9b981309d400c5df
+    file 150,433,792 B  index 7,064 B  blobs 2  records 8  tensors 48
+    decoded 150,405,120 B  stored 150,405,120 B  ratio 1.0000  codecs {0: 8}
+    content digest dc73a09559d7d5b91e2d7cccb4276301187f77e16942c8da1ec57aa6770fce46  (every hash checked, every record decoded)
+  the fast decoder's DLL gives the same content digest
+  wex4_verify: COLI_WEX_ROOT=04b24bbdde207c6eccad18ef02dd1112b18b0e428648270c9b981309d400c5df
+  downgrade: sha256 e69adb784a96c1410d3643bc99047db15f5566744841e87f6c0826d4df8856d3, the WEX1 file byte for byte
+run.sh: all round trips passed
+exit 0 after 447 s
