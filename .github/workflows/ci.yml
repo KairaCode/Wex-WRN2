@@ -5,6 +5,7 @@
 # (linux-tsan, linux-msan); and the Go reader on the conformance vectors (go-reader).
 # No GPU, no model weights, no secrets. A run started by hand can also have the linux-io-bench job (the full
 # Linux read-path benchmark) and the linux-vulkan job (the WNR3 Vulkan prototype on a CPU Vulkan device).
+# With the input arm_speed it also has the arm-speed jobs (the fast WNR3 decoder's speed on ARM64 Linux and macOS).
 name: CI
 
 on:
@@ -19,15 +20,19 @@ on:
         description: "Also run the full bench/wex_io.py (Linux read paths; a measurement, not a check)"
         type: boolean
         default: false
+      arm_speed:
+        description: "Also run synth.sh speed of the fast decoder on ARM64 Linux and macOS (a measurement, not a check)"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
 
 # a newer push to the same branch or PR makes the running checks moot. Runs started by hand are in groups of
-# their own (one without and one with linux_io_bench), so a push does not cancel a benchmark that is running
-# and a run started by hand does not cancel the push run of its branch
+# their own (one for each choice of linux_io_bench and arm_speed), so a push does not cancel a benchmark that is
+# running and a run started by hand does not cancel the push run of its branch
 concurrency:
-  group: ci-${{ github.ref }}-${{ github.event_name }}-${{ github.event.inputs.linux_io_bench }}
+  group: ci-${{ github.ref }}-${{ github.event_name }}-${{ github.event.inputs.linux_io_bench }}-${{ github.event.inputs.arm_speed }}
   cancel-in-progress: true
 
 jobs:
@@ -44,6 +49,10 @@ jobs:
           persist-credentials: false   # the checks never talk to the remote: keep the token out of .git/config
       - name: All CPU checks
         run: bash scripts/check_all.sh
+      # the fast decoder's harness built once for each value of -DWEX_FAST_LANES (the streams of the default entry
+      # point), each compared with the reference decoder on the synthetic records that the step above wrote
+      - name: Fast decoder, every WEX_FAST_LANES (AVX2 kernels)
+        run: bash wex4/research/fast-cpu-decode/synth.sh lanes
       # the fuzzing harnesses of wex4/fuzz/ built with gcc: every seed once and the custom mutators on the seeds,
       # with a deterministic stand-in for libFuzzer's mutation. No coverage guidance: that is the Fuzz workflow
       - name: Fuzz harnesses, seeds and mutators replayed
@@ -97,6 +106,8 @@ jobs:
           bash wex4/research/fast-cpu-decode/synth.sh speed 21
           cd wex4/research/fast-cpu-decode/out/synth
           ./t_simd.exe bench model.wnm2 15 L0_E0.rec L0_E1.rec L0_E2.rec L0_E3.rec
+      - name: Fast decoder, every WEX_FAST_LANES (NEON kernel)
+        run: bash wex4/research/fast-cpu-decode/synth.sh lanes
       # the two steps below use the records and the model that synth.sh left in out/synth
       - name: Negative controls of the mutation test (NEON build)
         run: |
@@ -285,6 +296,74 @@ jobs:
           jq -r .table_markdown bench/out/wex_io.json >> "$GITHUB_STEP_SUMMARY"
           echo "----- bench/out/wex_io.json"
           cat bench/out/wex_io.json
+
+  # A measurement, not a check: the speed of the fast WNR3 decoder's NEON kernel for every number of interleaved
+  # streams of kernel 1 (the rows of synth.sh speed), only when a manual run asks for it
+  # (gh workflow run ci.yml --ref <branch> -f arm_speed=true). Three jobs per runner image, so three virtual
+  # machines of each. On each: synth.sh lanes compares every -DWEX_FAST_LANES with the reference decoder, then
+  # synth.sh speed runs 3 times per compiler, the compilers taking turns: gcc on Linux; on macOS the newest
+  # Homebrew GNU gcc of the image and Apple clang with the libomp of Homebrew (WEX_OPENMP). Shared VMs and the
+  # synthetic records of wex4/build_and_test.sh: the numbers compare stream counts and compilers on these
+  # runners, not the speed of a real record. speed_runs.py puts median and spread in the job summary
+  arm-speed:
+    if: github.event_name == 'workflow_dispatch' && inputs.arm_speed
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04-arm, macos-15]
+        vm: [1, 2, 3]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45   # an estimate, not measured yet
+    env:
+      PYTHON: python3
+      USER: ""
+      USERNAME: ""
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
+      - name: Runner image, CPU and compilers
+        run: |
+          echo "runner image: ${ImageOS-?} ${ImageVersion-?}"
+          uname -sm; getconf _NPROCESSORS_ONLN
+          if [ "$(uname -s)" = Darwin ]; then
+            sysctl machdep.cpu.brand_string hw.model hw.ncpu hw.memsize
+            GCC=$(ls "$(brew --prefix)"/bin/gcc-[0-9]* | sort -t- -k2 -n | tail -1)
+            brew list libomp > /dev/null 2>&1 || HOMEBREW_NO_AUTO_UPDATE=1 brew install libomp
+            brew list --versions libomp
+            P=$(brew --prefix libomp)
+            echo "CLANG_OPENMP=-Xclang -fopenmp -I$P/include -L$P/lib -lomp" >> "$GITHUB_ENV"
+            echo "COMPILERS=$GCC clang" >> "$GITHUB_ENV"
+          else
+            lscpu
+            GCC=gcc
+            echo "COMPILERS=gcc" >> "$GITHUB_ENV"
+          fi
+          echo "GCC=$GCC" >> "$GITHUB_ENV"
+      - name: Synthetic records (wex4/build_and_test.sh with GNU gcc)
+        run: CC=$GCC bash wex4/build_and_test.sh
+      - name: Every WEX_FAST_LANES against the reference decoder, each compiler
+        run: |
+          for c in $COMPILERS; do
+            if [ "$c" = clang ]; then export WEX_OPENMP="$CLANG_OPENMP"; else unset WEX_OPENMP; fi
+            CC=$c bash wex4/research/fast-cpu-decode/synth.sh lanes
+          done
+      - name: synth.sh speed, 3 runs per compiler (printed, never judged)
+        run: |
+          set -o pipefail
+          mkdir -p "$RUNNER_TEMP/speed"
+          for i in 1 2 3; do
+            for c in $COMPILERS; do
+              if [ "$c" = clang ]; then export WEX_OPENMP="$CLANG_OPENMP"; else unset WEX_OPENMP; fi
+              CC=$c bash wex4/research/fast-cpu-decode/synth.sh speed 21 | tee "$RUNNER_TEMP/speed/$(basename "$c")-$i.log"
+            done
+          done
+          for c in $COMPILERS; do
+            n=$(basename "$c")
+            echo "----- $n: median and spread of the 3 runs"
+            { echo "### ${{ matrix.os }}, VM ${{ matrix.vm }}, $n"; echo; } >> "$GITHUB_STEP_SUMMARY"
+            python3 -I wex4/research/fast-cpu-decode/speed_runs.py "$RUNNER_TEMP"/speed/"$n"-*.log | tee -a "$GITHUB_STEP_SUMMARY"
+          done
 
   # opt-in: only a run started by hand (workflow_dispatch) has this job. The WNR3 decode as a Vulkan compute
   # shader (wex4/research/vulkan-decode, docs/WNR3-VULKAN.md) against the CPU reference, on Mesa lavapipe: a
