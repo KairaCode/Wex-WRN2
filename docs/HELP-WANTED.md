@@ -8,9 +8,9 @@ bigger than a small fix, open an issue first so two people do not do the same wo
 Labels you may see on issues: **good first issue** (a few hours, little context), **help wanted**
 (larger, needs a design note first).
 
-Several items of this page got a first answer on 2026-11-14 and 2026-11-15. Where that is so, the
-item says what exists now ("Today"), with a link, and what is still open. A thing listed as open was
-not run or not measured; it is not known to fail.
+Several items of this page got a first answer on 2026-11-14 or 2026-11-15. Where that is so, the item says what
+exists now ("Today"), with a link, and what is still open. A thing listed as open was not run or not
+measured; it is not known to fail.
 
 ## 1. Run the benchmark on your hardware (no code)
 
