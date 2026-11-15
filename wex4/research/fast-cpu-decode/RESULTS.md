@@ -300,14 +300,22 @@ shared virtual machine, load unknown.
   was not measured.
 
 Not checked on ARM: real records; the speed on any CPU other than the Neoverse-N2 of the runner (no Apple
-silicon, no Ampere, no Cortex-A); Apple clang; big-endian AArch64 (it builds the scalar kernel, never run);
-32-bit ARM (scalar kernel, never run); UBSan and ASan (the sanitizer job is x86-64).
+silicon, no Ampere, no Cortex-A); big-endian AArch64 (it builds the scalar kernel, never run); 32-bit ARM
+(scalar kernel, never run).
+
+Under ASan and UBSan (added on 2026-11-15, no report): the `linux-arm-sanitizers` CI job runs
+`scripts/check_all.sh` and the fuzz replay with the sanitizer flags of `linux-sanitizers` on
+ubuntu-24.04-arm (gcc 13.3), so the NEON build runs under both in `wex4_tools.dll`, in this harness
+(`synth.sh check`) and in `fuzz_wnr3_record`; `macos-clang` does the same on macOS with Apple clang. The
+Fuzz workflow runs `fuzz_wnr3_record` for 60 s on ARM64 Linux and on macOS, where it compares the NEON
+kernel with the reference decoder under libFuzzer. Not run on ARM: ThreadSanitizer and MemorySanitizer.
 
 macOS: the `macos` CI job (macos-15 on Apple silicon, Homebrew GCC 15.3.0 on 2026-11-14) builds the NEON
 kernel and fails if it built another one. It runs `scripts/check_all.sh`, so the WEX4 tests and
-`synth.sh check` compare that build with the reference decoder there, and `wex4/fuzz/run.sh --replay`. It
-does not run `synth.sh speed`, the negative controls, the WEX4 tests with the scalar kernel forced or a
-clang build: those are steps of `linux-arm` only.
+`synth.sh check` compare that build with the reference decoder there, and `wex4/fuzz/run.sh --replay`. The
+`macos-clang` job does the same with Apple clang (17.0.0 on 2026-11-15) and the `libomp` of Homebrew
+(`WEX_OPENMP`), and fails unless the build is NEON with OpenMP. Neither runs `synth.sh speed`, the
+negative controls or the WEX4 tests with the scalar kernel forced: those are steps of `linux-arm` only.
 
 ## Semantics and safety notes
 
@@ -339,10 +347,10 @@ clang build: those are steps of `linux-arm` only.
 - Mini-records in the mutation test come from the same 6 records plus synthetic data; no full-size mutated
   record was decoded by the reference.
 - Real records were decoded only by builds of gcc 16.2 on Windows (x86). Elsewhere the harness runs on
-  synthetic records only, in CI: gcc 13.3 on x86-64 Linux (also under ASan and UBSan) and on ARM64 Linux;
+  synthetic records only, in CI: gcc 13.3 on x86-64 Linux and on ARM64 Linux (on both also under ASan and UBSan);
   clang 18 on x86-64 Linux (the `linux-tsan` job, `CC=clang`: the AVX2 and the scalar build) and on ARM64
-  Linux (the NEON build without OpenMP, see the NEON section); Homebrew GCC 15 on macOS arm64. No MSVC, no
-  big-endian, no Apple clang.
+  Linux (the NEON build without OpenMP, see the NEON section); Homebrew GCC 15 and Apple clang 17 on macOS
+  arm64 (both builds of Apple clang also under ASan and UBSan). No MSVC, no big-endian.
 - WNR2 records (delegated to the reference), the `malloc` failure path and unvalidated models.
 - Thread counts other than 1, 3 (mutation test) and 8; no run pinned to physical cores; the desktop was busy.
 - Laptop: one record and 3,000 mutation cases only.

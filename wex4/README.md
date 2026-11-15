@@ -21,7 +21,7 @@ The engine side is not here: the loaders are in the engine, shown as patches in 
 
 ## Run the tests
 
-CPU only, no real model, standard-library Python. On Windows: MSYS2 UCRT64 or MINGW64 `gcc` on `PATH`. On Linux: `export PYTHON=python3`. On macOS: `export PYTHON=python3 CC=gcc-15` (a Homebrew GNU gcc; the script takes the compiler from `CC`, default `gcc`).
+CPU only, no real model, standard-library Python. On Windows: MSYS2 UCRT64 or MINGW64 `gcc` on `PATH`. On Linux: `export PYTHON=python3`. On macOS: `export PYTHON=python3 CC=gcc-15` (a Homebrew GNU gcc; the script takes the compiler from `CC`, default `gcc`), or Apple clang with Homebrew `libomp` in `WEX_OPENMP` (the header of `build_and_test.sh` shows the line).
 
 ```sh
 bash wex4/build_and_test.sh            # from the repository root; add --fuzz N to change the mutation count (default 1000)

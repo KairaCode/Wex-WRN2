@@ -8,7 +8,7 @@ bigger than a small fix, open an issue first so two people do not do the same wo
 Labels you may see on issues: **good first issue** (a few hours, little context), **help wanted**
 (larger, needs a design note first).
 
-Several items of this page got a first answer on 2026-11-14. Where that is so, the item says what
+Several items of this page got a first answer on 2026-11-14 or 2026-11-15. Where that is so, the item says what
 exists now ("Today"), with a link, and what is still open. A thing listed as open was not run or not
 measured; it is not known to fail.
 
@@ -52,21 +52,30 @@ measured; it is not known to fail.
   - **Today:** five libFuzzer harnesses are in [`wex4/fuzz/`](../wex4/fuzz/README.md): the C WEX4
     reader (`c/wex4.h`), `c/tools/wex4_verify.c`, the WNR3 decoders, and the two engine-side readers
     (`c/expert_store_wex.c`, `c/qwen38_wex.h`), which are built against stand-ins for the engine
-    headers. A custom mutator keeps the WNR3 stream hashes right. CI builds them with clang and runs
-    each for 60 seconds on x86-64 Linux, and replays their seeds and mutators with gcc
-    (`run.sh --replay`, no coverage guidance) on x86-64 Linux, ARM64 Linux, macOS (Apple silicon)
-    and Windows.
+    headers. A custom mutator keeps the WNR3 stream hashes right. The Fuzz workflow builds them with
+    clang and runs each for 60 seconds on x86-64 Linux, on ARM64 Linux and on macOS (Apple silicon,
+    with the clang of a Homebrew LLVM, `llvm@18` on 2026-11-15: Apple clang ships no libFuzzer
+    runtime); on both ARM64 systems `fuzz_wnr3_record` compares the NEON kernel of the fast
+    decoder with the reference. CI replays their seeds and mutators (`run.sh --replay`, no coverage
+    guidance) on x86-64 Linux, ARM64 Linux, macOS (Apple silicon, GNU gcc and Apple clang) and
+    Windows.
   - **What is wanted now** is machine time: run `bash wex4/fuzz/run.sh 14400` (hours, not seconds)
     and report what stops it, with the reproducer it leaves.
   - **Still open:** seeds and a mutator for palette, WNR and WNR2 records (the store decodes them;
     in the one 60 s run that counted them, the store harness served none); the store's mirror,
     striped-read and CUDA-helper paths; `c/qwen38_wex.h` built inside the real engine instead of
     against inferred types; a harness for the GPU decoder (`c/wex_cuda.cuh`); a coverage-guided run
-    on ARM64 or on macOS (only `--replay` runs there).
+    on Windows (the MSYS2 clang has no libFuzzer, so only `--replay` runs there) and on an Intel
+    Mac; any run longer than 60 s on ARM64 or on macOS.
 - **Sanitizers:**
-  - **Today:** CI runs the CPU checks and the fuzz replay under ASan and UBSan on Linux (the
+  - **Today:** CI runs the CPU checks and the fuzz replay under ASan and UBSan on x86-64 Linux (the
     `linux-sanitizers` job of `.github/workflows/ci.yml`, which holds the exact `WEX_CFLAGS`, the
-    sanitizer options and the preload of the ASan runtime). The jobs `linux-tsan` and `linux-msan`
+    sanitizer options and the preload of the ASan runtime), on ARM64 Linux (`linux-arm-sanitizers`,
+    gcc, the same flags) and on macOS with Apple clang (`macos-clang`, where the ASan runtime is put
+    into the Python interpreter with `DYLD_INSERT_LIBRARIES`). On the two ARM64 systems the NEON
+    kernel of the fast decoder runs under both, in the library the tests load into Python, in its
+    own harness and in the fuzz replay; none of the three jobs reported anything in the runs made
+    on 2026-11-15 (listed in [CHANGELOG.md](../CHANGELOG.md)). The jobs `linux-tsan` and `linux-msan`
     run the C test executables under ThreadSanitizer (clang, OpenMP on) and MemorySanitizer (clang,
     OpenMP off) through `bash scripts/sanitize_c.sh tsan|msan`, whose header lists what runs:
     `test_wex_format` (msan only), `test_wex4_verify`, `wex4_verify` (8 threads under tsan, one
@@ -76,8 +85,8 @@ measured; it is not known to fail.
   - **Still open:** the libraries that the tests load into Python (`wex4_tools.dll` with the fast
     decoder, the WNR3 encoder) under these two sanitizers, which needs the same tests driven from C
     or an instrumented Python; the engine-side readers inside an engine tree (here they run only
-    through the stand-ins of the fuzzing harnesses); any sanitizer on ARM64 or on macOS (the three
-    sanitizer jobs are x86-64 Linux); and the GPU code.
+    through the stand-ins of the fuzzing harnesses); ThreadSanitizer and MemorySanitizer on ARM64
+    (both jobs are x86-64 Linux); any sanitizer on Windows; and the GPU code.
 - **More test vectors:** hostile files that [wex4/vectors](../wex4/vectors/README.md) does not cover
   yet, each with its `MANIFEST.tsv` row and the expected verdict from both reference readers; the
   `go-reader` job of CI then runs the Go reader on the new rows too. Valid files are wanted as
@@ -91,24 +100,38 @@ measured; it is not known to fail.
   vectors yet. A new vector goes through an issue first.
 - **macOS, what is left** (good first issue each):
   - **Today:** the `macos` job of CI (macos-15, Apple silicon) runs `scripts/check_all.sh` and
-    `wex4/fuzz/run.sh --replay` with a Homebrew GNU gcc named in `CC`.
-  - **Still open, not tried:** Apple clang with `libomp` (Apple clang ships no OpenMP runtime of
-    its own); an Intel Mac; the libFuzzer harnesses of `wex4/fuzz/` on macOS; and the set-up lines
-    of the README on a Mac of your own (`brew install gcc`, `CC=gcc-15`), which CI does not run as
-    written.
+    `wex4/fuzz/run.sh --replay` with a Homebrew GNU gcc named in `CC`. The `macos-clang` job runs
+    the same with Apple clang (`CC=clang`) and the `libomp` of Homebrew, whose flags go in
+    `WEX_OPENMP` (Apple clang refuses `-fopenmp`; the line is in `scripts/build_cpu_check.sh`), and
+    then both again under ASan and UBSan. The Fuzz workflow runs the libFuzzer harnesses there
+    (section "Fuzzing" above).
+  - **Still open, not tried:** an Intel Mac; ThreadSanitizer on macOS; and the set-up lines of the
+    README on a Mac of your own (`brew install gcc`, `CC=gcc-15`, or `brew install libomp` and
+    `WEX_OPENMP` for Apple clang), which CI does not run on a fresh Mac: it takes the GNU gcc of the
+    runner image and installs `libomp` into the Homebrew of that image.
 - **NEON decoder, what is left** (help wanted):
   - **Today:** kernel 1 of the fast CPU decoder (`wex4/research/fast-cpu-decode/wex_fast_decode.h`)
     has a NEON version. In the `linux-arm` CI job it is byte-identical to the reference decoder and
     3.9 times faster than the scalar kernel on one thread, on synthetic records and on that runner
     only ([results](../wex4/research/fast-cpu-decode/RESULTS.md), section "NEON kernel"). The
-    `macos` job builds the same kernel with GNU gcc and passes the comparisons with the reference
-    decoder that `scripts/check_all.sh` and the fuzz replay make (not the other steps of
-    `linux-arm`); no speed was measured there.
+    `macos` job builds the same kernel with GNU gcc and the `macos-clang` job with Apple clang;
+    both pass the comparisons with the reference decoder that `scripts/check_all.sh` and the fuzz
+    replay make (not the other steps of `linux-arm`); no speed was measured there. The kernel also
+    runs under ASan and UBSan on ARM64 Linux and on macOS, and `fuzz_wnr3_record` compares it with
+    the reference under libFuzzer on both (60 s per run); no report so far.
   - **Still open:** its speed on other ARM CPUs (Apple silicon, Ampere, DGX Spark), which needs no
     model (`bash scripts/check_all.sh`, then `bash wex4/research/fast-cpu-decode/synth.sh speed`);
-    its speed on real records; a build with Apple clang; the number of interleaved streams that is
-    best on each CPU; kernel 2 for SVE, which has gather loads (NEON has none, so kernel 2 is AVX2
-    only).
+    its speed on real records; the number of interleaved streams that is best on each CPU; kernel 2
+    for SVE, which has gather loads (NEON has none, so kernel 2 is AVX2 only).
+- **Older scripts that call `gcc` by name:** `wex4/research/fast-cpu-decode/verify/run.sh`,
+  `wex4/research/mxfp4-contexts/run_all.sh`, the two scripts of `wex4/research/wnr4-record/` and
+  `integration/build/build_test_wex_planned.sh` do not read `CC` or `WEX_OPENMP`, so they need a
+  GNU gcc named `gcc` on `PATH` (three of them also pass x86 flags: `-march=haswell`, `-mavx2`,
+  `-march=x86-64-v3`). None of them was converted: each needs inputs that are not
+  in this repository (records or the container of the real DeepSeek V4.1 model, its checkpoint,
+  numpy, or an engine tree in the maintainer's layout), so a converted script could not be run to
+  its end here or in CI. Open: the conversion, by someone who has those inputs and can show the
+  last lines of a run.
 
 ## 4. A second, independent implementation
 
@@ -246,9 +269,10 @@ listed above as well.
   the I/O switches. Reviewing or testing those PRs on your hardware helps directly.
 - **WNR3 decode on Vulkan:** the design note and a prototype checked on a CPU Vulkan device are in; a run
   on a GPU, a speed number, a real container and the engine hook are open *(open to you, section 6)*.
-- **ARM and macOS:** the ARM CI jobs (Linux, and macOS on Apple silicon) and a NEON version of kernel 1
-  of the fast CPU decoder are in. Its speed on real records and on ARM CPUs other than the Linux CI
-  runner, an SVE version of kernel 2, and Apple clang are still open *(open to you, section 3)*.
+- **ARM and macOS:** the ARM CI jobs (Linux, and macOS on Apple silicon with GNU gcc and with Apple
+  clang), ASan and UBSan and the libFuzzer harnesses on both, and a NEON version of kernel 1 of the
+  fast CPU decoder are in. Its speed on real records and on ARM CPUs other than the Linux CI runner,
+  and an SVE version of kernel 2, are still open *(open to you, section 3)*.
 - **Linux I/O in the engine:** the fast read paths were built and measured on Windows. The Linux
   benchmark is in (`bench/wex_io.py`), run so far only on two kinds of cloud VM, where it gave no reason to
   change the store; runs on real drives and the tuning that follows from them are still open *(open to

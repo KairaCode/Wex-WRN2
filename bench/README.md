@@ -129,8 +129,8 @@ VMs with a virtual disk of two kinds, where no read path won on both kinds:
 [research/linux-io-20261114](../research/linux-io-20261114/README.md). Later runs of the
 `linux-io-bench` job started by hand on the same kind of runner are not recorded.
 
-What CI covers: the `linux`, `linux-arm` and `linux-sanitizers` jobs build `wex_io.c` and run
-`--smoke --strict` (a 10 MB container, every path checked and run once; the `linux` job then reads the
+What CI covers: the `linux`, `linux-arm`, `linux-sanitizers` and `linux-arm-sanitizers` jobs build
+`wex_io.c` and run `--smoke --strict` (a 10 MB container, every path checked and run once; the `linux` job then reads the
 same container again through `--file`). The `linux-tsan` job runs the same smoke run built with clang under
 ThreadSanitizer (the `pread` threads). The full benchmark was not run on ARM. `scripts/check_all.sh`
 does not build `wex_io.c`, so the Windows job does not see it: its stub for systems other than Linux
