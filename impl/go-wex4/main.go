@@ -51,8 +51,8 @@ func fileSHA256(path string) (string, error) {
 	return hex.EncodeToString(h.Sum(nil)), nil
 }
 
-// runManifest checks every row of a MANIFEST.tsv: the file's SHA-256, the verdict, the reject class and
-// the root. It returns the number of rows that differ.
+// runManifest checks every row of a MANIFEST.tsv: the file's SHA-256, the verdict, the reject class, the
+// root and, where the manifest has the column, the content digest. It returns the number of rows that differ.
 func runManifest(path string, verbose bool) (rows, wrong int, err error) {
 	f, err := os.Open(path)
 	if err != nil {
@@ -93,6 +93,10 @@ func runManifest(path string, verbose bool) (rows, wrong int, err error) {
 				problem = "accepted with records that were not decoded"
 			case e == nil && hex.EncodeToString(res.H.Root[:]) != root:
 				problem = "root " + hex.EncodeToString(res.H.Root[:]) + ", the manifest says " + root
+			case e == nil && len(col) >= 7 && hex.EncodeToString(res.Content[:]) != col[6]:
+				// the decoded bytes: a decoder can pass every hash of a record and still return other bytes
+				// (the stream hashes cover the coded symbols, before the inverse of the ceil form or the rotation)
+				problem = "content digest " + hex.EncodeToString(res.Content[:]) + ", the manifest says " + col[6]
 			}
 			if problem == "" && verbose {
 				if e != nil {

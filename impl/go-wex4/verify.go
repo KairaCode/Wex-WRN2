@@ -18,6 +18,23 @@ type Result struct {
 	// Undecoded counts the records whose codec this reader does not know (section 10, rule 6): their
 	// SHA-256 was checked, their content was not decoded, so the file is not verified in full.
 	Undecoded uint32
+	// Content is the content digest of section 5: what the file holds, whatever its layout and codecs.
+	// It is the digest of the whole file only when Undecoded is 0.
+	Content [32]byte
+}
+
+// tensorFields are the fields of a tensor that the content digest covers, in the widths of section 5:
+// name length u16, the name, dtype u8, rank u8, the 8 shape slots u64, nbytes u64.
+func tensorFields(x *Index, t Tensor) []byte {
+	name := x.Name(t)
+	b := make([]byte, 0, 2+len(name)+2+64+8)
+	b = le.AppendUint16(b, t.NameBytes)
+	b = append(b, name...)
+	b = append(b, t.Dtype, t.Rank)
+	for _, d := range t.Shape {
+		b = le.AppendUint64(b, d)
+	}
+	return le.AppendUint64(b, t.NBytes)
 }
 
 func readAt(f io.ReaderAt, off, n uint64) ([]byte, *Error) {
@@ -77,6 +94,7 @@ func Verify(f io.ReaderAt, size uint64, pin []byte, visit func(i uint32, r Recor
 
 	// step 3, records: SHA-256 of the stored bytes, then the decoder
 	res := &Result{H: h, X: x}
+	content := sha256.New()
 	out := make([]byte, h.MaxDecoded)
 	for i := uint32(0); i < h.Records; i++ {
 		r := x.Record(i)
@@ -110,10 +128,29 @@ func Verify(f io.ReaderAt, size uint64, pin []byte, visit func(i uint32, r Recor
 			e.Msg = "record " + utoa(i) + ": " + e.Msg
 			return nil, e
 		}
+		// content digest: the tensors are in data order, so the fields and bytes of each tensor follow each
+		// other record by record. A continuation part (no tensor of its own) adds its bytes to the split
+		// tensor that the record before it opened.
+		if r.TensorCount == 0 {
+			content.Write(dec)
+		}
+		for k := r.FirstTensor; k < r.FirstTensor+r.TensorCount; k++ {
+			t := x.Tensor(k)
+			content.Write(tensorFields(x, t))
+			if t.RecordCount == 1 {
+				content.Write(dec[t.Offset : t.Offset+t.NBytes])
+			} else {
+				content.Write(dec) // the first part of a split tensor, which is alone in its record
+			}
+		}
 		if visit != nil {
 			visit(i, r, x, dec)
 		}
 	}
+	for k := x.DataTensors; k < h.Tensors; k++ { // zero-size tensors: their fields and no bytes
+		content.Write(tensorFields(x, x.Tensor(k)))
+	}
+	content.Sum(res.Content[:0])
 	return res, nil
 }
 
