@@ -599,7 +599,12 @@ static void wex_shim_run_grid(uintptr_t kernel, void (*body)(void *), void *cont
 }
 
 /* ---- streams and events ---------------------------------------------------------------- */
-struct WexShimEvent { unsigned long long recorded, completed; };
+/* an event is freed when it was destroyed and no queued operation refers to it any more (refs) */
+struct WexShimEvent { unsigned long long recorded, completed; unsigned long long refs; int destroyed; };
+static void wex_shim_event_release(WexShimEvent *e) {
+    if (e->refs) e->refs--;
+    if (e->destroyed && !e->refs) free(e);
+}
 struct WexShimOp {
     WexShimOp *next;
     WexShimOp() : next(NULL) {}
@@ -672,33 +677,42 @@ static inline cudaError_t cudaDeviceSynchronize(void) { wex_shim_drain(NULL); re
 static inline cudaError_t cudaEventCreateWithFlags(cudaEvent_t *e, unsigned int flags) {
     (void)flags;
     if (!e) return wex_shim_error(cudaErrorInvalidValue);
-    *e = (WexShimEvent *)calloc(1u, sizeof(WexShimEvent));   /* never freed: queued work may refer to it */
+    *e = (WexShimEvent *)calloc(1u, sizeof(WexShimEvent));
     return *e ? cudaSuccess : wex_shim_error(cudaErrorMemoryAllocation);
 }
-static inline cudaError_t cudaEventDestroy(cudaEvent_t e) { return e ? cudaSuccess : wex_shim_error(cudaErrorInvalidResourceHandle); }
+static inline cudaError_t cudaEventDestroy(cudaEvent_t e) {
+    if (!e || e->destroyed) return wex_shim_error(cudaErrorInvalidResourceHandle);
+    e->destroyed = 1;   /* the queued work that refers to it still runs, as in CUDA */
+    if (!e->refs) free(e);
+    return cudaSuccess;
+}
 struct WexShimRecord : WexShimOp {
     WexShimEvent *event; unsigned long long generation;
+    ~WexShimRecord() { wex_shim_event_release(event); }
     void run() { if (event->completed < generation) event->completed = generation; }
 };
 struct WexShimWait : WexShimOp {
     WexShimEvent *event; unsigned long long generation;
+    ~WexShimWait() { wex_shim_event_release(event); }
     int ready() const { return event->completed >= generation; }
     void run() {}
 };
 static inline cudaError_t cudaEventRecord(cudaEvent_t e, cudaStream_t s = 0) {
     WexShimRecord *op;
-    if (!e) return wex_shim_error(cudaErrorInvalidResourceHandle);
+    if (!e || e->destroyed) return wex_shim_error(cudaErrorInvalidResourceHandle);
     op = new WexShimRecord();
     op->event = e; op->generation = ++e->recorded;
+    e->refs++;
     wex_shim_enqueue(s, op);
     return cudaSuccess;
 }
 static inline cudaError_t cudaStreamWaitEvent(cudaStream_t s, cudaEvent_t e, unsigned int flags) {
     WexShimWait *op;
     (void)flags;
-    if (!e) return wex_shim_error(cudaErrorInvalidResourceHandle);
+    if (!e || e->destroyed) return wex_shim_error(cudaErrorInvalidResourceHandle);
     op = new WexShimWait();
     op->event = e; op->generation = e->recorded;   /* the last record queued before this call */
+    e->refs++;
     wex_shim_enqueue(s, op);
     return cudaSuccess;
 }
