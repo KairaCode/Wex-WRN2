@@ -2,7 +2,8 @@
 # the fast decoder's harness on synthetic records (scripts/check_all.sh), then the fuzzing harnesses replayed on
 # their seeds (wex4/fuzz/run.sh --replay), on Linux (x86-64, ARM64), macOS (Apple silicon) and Windows. The same
 # on Linux under ASan and UBSan (linux-sanitizers); the C test executables under TSan and MSan with clang
-# (linux-tsan, linux-msan); and the Go reader on the conformance vectors (go-reader).
+# (linux-tsan, linux-msan); and the Go reader and writer on the conformance vectors and against the reference
+# readers (go-reader).
 # No GPU, no model weights, no secrets. A run started by hand can also have the linux-io-bench job (the full
 # Linux read-path benchmark) and the linux-vulkan job (the WNR3 Vulkan prototype on a CPU Vulkan device).
 name: CI
@@ -253,18 +254,22 @@ jobs:
       - name: C tests under MemorySanitizer
         run: bash scripts/sanitize_c.sh msan
 
-  # the Go reader of WEX4 (impl/go-wex4: Go, standard library only, written from the specifications and not
-  # from the reference code): gofmt, go vet, its tests, and every row of wex4/vectors/MANIFEST.tsv. It is not
-  # part of scripts/check_all.sh, so that Go is not needed for the repository's checks. The runner's own Go
-  # is used (the code needs the min and max builtins of Go 1.21 and no module)
+  # the Go reader and writer of WEX4 (impl/go-wex4: Go, standard library only, written from the specifications
+  # and not from the reference code): gofmt, go vet, its tests, and every row of wex4/vectors/MANIFEST.tsv. The
+  # tests give the files of the Go writer to the reference readers, which run.sh builds with the runner's gcc
+  # and python3; WEX4_NEED_REFERENCE=1 makes a missing one a failure. It is not part of scripts/check_all.sh,
+  # so that Go is not needed for the repository's checks. The runner's own Go is used (the code needs the min
+  # and max builtins of Go 1.21 and no module)
   go-reader:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
         with:
           persist-credentials: false
-      - name: Go reader on the conformance vectors
+      - name: Go reader and writer, against the conformance vectors and the reference readers
+        env:
+          WEX4_NEED_REFERENCE: "1"
         run: bash impl/go-wex4/run.sh
 
   # A measurement, not a check: the full bench/wex_io.py, only when a manual run asks for it
