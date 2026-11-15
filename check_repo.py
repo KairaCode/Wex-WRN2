@@ -3,7 +3,7 @@
 # Copyright 2026 Ludovico Zanichelli
 """Repository self-check. Python 3 standard library only.
 
-    python -I check_repo.py [--source <TREE> [--ref master]] [--self-test]
+    python -I check_repo.py [--source <TREE> [--ref master]] [--self-test] [--line-id FILE N]
 
 One line per check, details indented below it; exit code 1 when links, mirror, licence or a strict
 privacy pattern fail. Tracked files only: run it after `git add`.
@@ -26,11 +26,13 @@ privacy pattern fail. Tracked files only: run it after `git add`.
            check. Warnings: the words scratchpad / session id, session and temp paths, assistant
            and session words, a private IPv4 address, the login name and the machine name of whoever
            runs the check.
-           ALLOWED lists the few warning matches that stay, as (file, pattern, text, n): the matches
-           of that pattern on the first line of that file that holds the text are not counted when
-           there are exactly n of them. Every other match, in that file or any other, counts; a strict
-           pattern cannot be listed; an entry that leaves out nothing is reported (update or remove
-           it). The entries: the trailer line of the three engine-* patches (byte copies of engine
+           ALLOWED lists the few warning matches that stay, as (file, pattern, line id): the matches
+           of that pattern on the first line of that file whose line_id() is that id are not counted.
+           The id is a hash of the whole line (line end left out), so that this file does not repeat
+           the words it looks for: a line changed in any way counts again. Every other match, in that
+           file or any other, counts; a strict pattern cannot be listed; an entry that leaves out
+           nothing is reported (update or remove it). `--line-id FILE N` prints the id of line N.
+           The entries: the trailer line of the three engine-* patches (byte copies of engine
            commits), one line of a third-party model card, the dump path in the code of a frozen run.
 """
 import argparse, hashlib, os, re, socket, subprocess, sys, urllib.parse
@@ -59,7 +61,8 @@ PRIVACY = (
     ('scratchpad / session id', re.compile(r'(?i)scratchpad|session[ _-]?id')),
     ('session path', re.compile(r'(?i)\.claude[\\/]\w|[\\/]worktrees[\\/]|\bappdata\b|%temp%|[\\/]temp[\\/]')),
     ('assistant / session words', re.compile(
-        r'(?i)(?<![./\\])\b(?:claude|anthropic|opus|sonnet|haiku|codex|chatgpt)\b|\bmain[ -]session\b|\bsub-?agents?\b'
+        r'(?i)(?<![./\\])\b(?:claude|anthropic|opus|sonnet|haiku|codex|chatgpt)\b|\bmain[ -]session\b'
+        r'|\bsessione principale\b|\bsub-?agents?\b'
         r'|\bmemory notes?\b|MEMORY\.md|\btoolu_\w+|\bwf_[0-9a-f]{6,}')),
     # octets are capped at 255, so that a version such as 10.0.26300.1 is not an address
     ('private IPv4 address', re.compile(r'(?<![\d.])(?:10\.%s|192\.168|172\.(?:1[6-9]|2\d|3[01]))\.%s\.%s(?!\.?\d)'
@@ -68,24 +71,30 @@ PRIVACY = (
     ('machine name', re.compile(r'(?i)\b%s\b' % re.escape(HOST))),
 )
 STRICT_NAMES = [name for name, _ in PRIVACY[:STRICT]]
-# Warning matches that stay (header): (file, pattern, text on the line, matches on that line).
+# Warning matches that stay (header): (file, pattern, line_id() of the whole line).
 ALLOWED = (
-    # byte copies of engine commits (`git format-patch`, see integration/README.md): the commit's trailer line
-    ('integration/engine-q38-wex4-loader-de17198.patch', 'assistant / session words', 'Co-Authored-By: ', 2),
-    ('integration/engine-wex4-first-read-4ba5568.patch', 'assistant / session words', 'Co-Authored-By: ', 2),
-    ('integration/engine-wex4-loader-75932c1.patch', 'assistant / session words', 'Co-Authored-By: ', 2),
-    # a third-party model card copied unchanged (THIRD_PARTY_NOTICES.md): the line on its calibration data
+    # byte copies of engine commits (`git format-patch`, see integration/README.md): the commit's
+    # `Co-Authored-By:` trailer line (line 12, 14 and 17)
+    ('integration/engine-q38-wex4-loader-de17198.patch', 'assistant / session words', 'ce8572cfc0a64238'),
+    ('integration/engine-wex4-first-read-4ba5568.patch', 'assistant / session words', 'ce8572cfc0a64238'),
+    ('integration/engine-wex4-loader-75932c1.patch', 'assistant / session words', 'ce8572cfc0a64238'),
+    # a third-party model card copied unchanged (THIRD_PARTY_NOTICES.md): the line on its calibration data,
+    # `1. **Calibration.** 552 rows ...` (line 141)
     ('research/wnr3-20261107/team3/other-tensors/data/code/README.md.txt', 'assistant / session words',
-     'filtered by licence in `ops/corpus_spec.py`', 1),
-    # code of a frozen run: the folder its logit dumps went to
-    ('research/wnr2-fastbench-20261109/short-abba/short_abba.sh', 'session path',
-     'DUMP=$(cygpath -m "${LOCALAPPDATA:?}")/Temp/', 1),
+     '118063280aa738ff'),
+    # code of a frozen run: the folder its logit dumps went to, `OUT=$HERE/runs/$STAMP DUMP=...` (line 80)
+    ('research/wnr2-fastbench-20261109/short-abba/short_abba.sh', 'session path', '6e050a121b164acc'),
 )
 
 
 def fold(s):
     """Lower case, with the three non-ASCII letters that (?i) matches against i and s written as those."""
     return s.replace('İ', 'i').lower().replace('ı', 'i').replace('ſ', 's')
+
+
+def line_id(line):
+    """The id of a line in ALLOWED: the first 16 hex digits of the SHA-256 of its text, line end left out."""
+    return hashlib.sha256(line.rstrip('\r\n').encode('utf-8')).hexdigest()[:16]
 
 
 # Lower-case literals of each pattern: every match holds one of them, so a file that holds none is not
@@ -274,18 +283,17 @@ def privacy_counts(data, path='', allowed=ALLOWED):
     entries of `allowed` for `path` leave out the matches of their line (header)."""
     text = data.decode('utf-8', 'replace')
     low = fold(text)
-    lines = []
-    for f, name, marker, n in allowed:
-        i = text.find(marker) if f == path and name not in STRICT_NAMES else -1
-        if i >= 0:
-            end = text.find('\n', i)
-            lines.append((name, text.rfind('\n', 0, i) + 1, len(text) if end < 0 else end, n))
+    mine = [(name, lid) for f, name, lid in allowed if f == path and name not in STRICT_NAMES]
+    first, a = {}, 0   # line id -> (start, end) of the first line that has it
+    for line in (text.split('\n') if mine else ()):
+        first.setdefault(line_id(line), (a, a + len(line)))
+        a += len(line) + 1
+    spans = [(name,) + first[lid] for name, lid in mine if lid in first]
     counts = {}
     for name, p in (PRIVACY[:1] if b'\0' in data[:8192] else PRIVACY):
         starts = [m.start() for m in p.finditer(text)] if any(s in low for s in LITERALS[name]) else []
-        for _, a, b, n in (l for l in lines if l[0] == name):
-            if sum(a <= s < b for s in starts) == n:
-                starts = [s for s in starts if not a <= s < b]
+        for _, a, b in (sp for sp in spans if sp[0] == name):
+            starts = [s for s in starts if not a <= s < b]
         counts[name] = len(starts)
     return counts
 
@@ -308,7 +316,7 @@ def check_privacy(files):
             if n:
                 hits[name][0] += n
                 hits[name][1].append(f)
-    unused += [f'{f} ({name}): not tracked' for f, name, _, _ in ALLOWED if f not in files]
+    unused += [f'{f} ({name}): not tracked' for f, name, _ in ALLOWED if f not in files]
     for name, (n, where) in hits.items():
         where.sort(key=lambda f: f.startswith('research/'))   # living files first: a new one is among the five shown
         first = ', '.join(where[:5]) + (', ...' if len(where) > 5 else '')
@@ -336,7 +344,8 @@ def self_test():
     for hit in ('<TREE>\\.claude\\worktrees\\x', 'C:\\Temp\\x', '%TEMP%\\x', 'AppData\\Local'):
         assert spath.search(hit), hit
     assert not spath.search('temperature 0.6') and not spath.search('prefix-store/template')
-    for hit in ('asked Claude to', 'the main session', 'two sub-agents', 'a memory note', 'wf_2af1fd28-820'):
+    for hit in ('asked Claude to', 'the main session', 'la Sessione principale', 'two sub-agents', 'a memory note',
+                'wf_2af1fd28-820'):
         assert assistant.search(hit), hit
     assert not assistant.search('x/.claude/y') and not assistant.search('magnum opuses') and not assistant.search('wf_run')
     binary, text = b'\0\0D:\\Users\\someone\\x a.b@example.org', b'D:\\Users\\someone\\x a.b@example.org'
@@ -345,16 +354,21 @@ def self_test():
     mixed = 'C:\\U\u017fers\\x a@b.org ghp_' + 'a1' * 18 + ' Se\u017f\u017fion-\u0130D C:\\Temp\\x asked Claude wf_2af1fd28 192.168.1.20'
     assert privacy_counts(mixed.encode()) == {name: len(p.findall(mixed)) for name, p in PRIVACY}, 'LITERALS hide a match'
     assert all(privacy_counts(mixed.encode())[name] for name, _ in PRIVACY[:7])
-    entry = ('p/x.patch', 'assistant / session words', 'Trailer: ', 2)
-    line = b'Trailer: the main session, two sub-agents\n'
+    line = b'Trailer: the main session, two sub-agents'
+    entry = ('p/x.patch', 'assistant / session words', line_id(line.decode()))
     def counted(data, path):
         return privacy_counts(data, path, (entry,))['assistant / session words']
-    assert counted(b'x\n' + line + b'a memory note\n', 'p/x.patch') == 1, 'ALLOWED: the line is left out'
-    assert counted(b'x\n' + line + b'a memory note\n', 'p/y.patch') == 3, 'ALLOWED: in that file only'
-    assert counted(line.replace(b'\n', b', a memory note\n'), 'p/x.patch') == 3, 'ALLOWED: another number of matches counts'
-    assert counted(line + line, 'p/x.patch') == 2, 'ALLOWED: the first such line only'
-    assert privacy_counts(b'a.b@example.org\n', 'p/x', (('p/x', 'e-mail', 'a.b@', 1),))['e-mail'] == 1, 'strict stays strict'
-    assert all(name in dict(PRIVACY) and name not in STRICT_NAMES and n > 0 for _, name, _, n in ALLOWED)
+    assert counted(b'x\n' + line + b'\r\na memory note\n', 'p/x.patch') == 1, 'ALLOWED: the line is left out'
+    assert counted(b'x\n' + line + b'\na memory note\n', 'p/y.patch') == 3, 'ALLOWED: in that file only'
+    assert counted(line + b', a memory note\n', 'p/x.patch') == 3, 'ALLOWED: a longer line counts'
+    assert counted(line.replace(b'two sub-agents', b'one subagent') + b'\n', 'p/x.patch') == 2, \
+        'ALLOWED: other words, same number of matches, count'
+    assert counted(b'x ' + line + b'\n', 'p/x.patch') == 2, 'ALLOWED: the text inside another line counts'
+    assert counted(line + b'\n' + line, 'p/x.patch') == 2, 'ALLOWED: the first such line only'
+    assert privacy_counts(b'a.b@example.org\n', 'p/x', (('p/x', 'e-mail', line_id('a.b@example.org')),))['e-mail'] == 1, \
+        'strict stays strict'
+    assert all(name in dict(PRIVACY) and name not in STRICT_NAMES and re.fullmatch('[0-9a-f]{16}', lid)
+               for _, name, lid in ALLOWED)
     sha = '0123456789abcdef' * 2 + '01234567'
     good = f'# source_commit {sha} 2026-11-11\nc/a.h\tsrc/colibri/c/a.h\n\n# note\nc/t/b.c\tsrc/colibri/c/t/b.c\n'
     assert parse_sync(good) == ((sha, '2026-11-11'), [['c/a.h', 'src/colibri/c/a.h'], ['c/t/b.c', 'src/colibri/c/t/b.c']], [])
@@ -380,15 +394,26 @@ def self_test():
 
 
 def main(argv):
-    ap = argparse.ArgumentParser(usage='python -I check_repo.py [--source <TREE> [--ref master]] [--self-test]',
-                                 allow_abbrev=False)
+    ap = argparse.ArgumentParser(usage='python -I check_repo.py [--source <TREE> [--ref master]] [--self-test]'
+                                       ' [--line-id FILE N]', allow_abbrev=False)
     ap.add_argument('--source')
     ap.add_argument('--kaira', dest='source', help=argparse.SUPPRESS)   # old name, kept so existing commands work
     ap.add_argument('--ref', default='master')
     ap.add_argument('--self-test', action='store_true')
+    ap.add_argument('--line-id', nargs=2, metavar=('FILE', 'N'))
     args = ap.parse_args(argv)
     if args.self_test:
         return self_test()
+    if args.line_id:   # FILE is relative to the repository root, as in ALLOWED; N counts from 1
+        f, n = args.line_id
+        try:
+            lines = read(f).decode('utf-8', 'replace').split('\n')
+        except OSError as e:
+            sys.exit(f'check_repo.py: {e}')
+        if not n.isdigit() or not 1 <= int(n) <= len(lines):
+            sys.exit(f'check_repo.py: {f} has no line {n}')
+        print(line_id(lines[int(n) - 1]))
+        return 0
     try:
         files = sorted(f for f in git('ls-files', '-z').split('\0') if f and os.path.isfile(os.path.join(ROOT, f)))
         ok = [check_links(files), check_mirror(files, args.source, args.ref), check_licence(files), check_privacy(files)]
