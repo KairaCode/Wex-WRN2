@@ -24,7 +24,9 @@
  *                     thread, created after the clock starts, preads the announced records on the same
  *                     descriptor into a buffer of its own (so into the page cache), never past the record K
  *                     reads ahead; its bytes are not hashed. announce_ms: the time the reading thread spent
- *                     in the announcing calls (-1 without ahead). A hint the kernel refuses is a failure
+ *                     in the announcing calls (-1 without ahead). A record's own time includes the
+ *                     announcing calls for the record K places after it, made just before its read. An announcing
+ *                     call the kernel refuses is a failure (the advise= and evict hints are not checked)
  *   chunk_kb=N        prefetch=chunks: the chunk in KiB, a multiple of 4 (default 128; bench/wex_io.py passes
  *                     the read_ahead_kb of the block device)
  *   gap_ms=G          sync: after each record the reading thread spins G ms on the clock (it stands for the

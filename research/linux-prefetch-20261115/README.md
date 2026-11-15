@@ -148,8 +148,11 @@ page cache, no prefetch, what `c/expert_store_wex.c` does on Linux).
 ### Speed with 20 ms of work after each record
 
 MB/s median (minimum to maximum), against the row with the same work and no prefetch. The second table
-gives the median time of one record's read (the median over the 5 passes of the pass's median) and the
-share of the next record found in the page cache before its read. Kind A has no such rows: run 1 was at
+gives the median time of one record (the median over the 5 passes of the pass's median) and the share of
+the next record found in the page cache before its read. A record's time runs from the start of the
+announcing calls for the record ahead to the end of this record's read, so in the prefetch columns it
+includes those calls (`announce_ms`; in the chunked column they are most of it, see below). It does not
+include the 20 ms of work. Kind A has no such rows: run 1 was at
 commit 5372032, which does not have them, and none of the ten later runs landed on kind A.
 
 | Run (kind) | no prefetch | `WILLNEED` on the whole record | `WILLNEED` in chunks | helper thread |
@@ -167,7 +170,7 @@ commit 5372032, which does not have them, and none of the ten later runs landed 
 
 | Run (kind) | no prefetch: ms per record | `WILLNEED`: ms, share loaded | in chunks: ms, share loaded | helper thread: ms, share loaded |
 |---|---|---|---|---|
-| 2 (B) | 50.0 | 49.9, 2.1% | 30.1, 55.6% (55.1 to 58.4) | 38.0, 34.8% (33.9 to 35.8) |
+| 2 (B) | 50.0 | 49.9, 2.1% | 30.2, 55.6% (55.1 to 58.4) | 38.0, 34.8% (33.9 to 35.8) |
 | 3 (C) | 20.1 | 20.2, 2.1% | 3.8, 96.5% (93.3 to 98.9) | 6.8, 76.9% (70.0 to 80.4) |
 | 4 (D) | 8.3 | 6.7, 15.8% | 5.6, 87.7% (84.7 to 93.2) | 9.5, 67.2% (65.7 to 68.0) |
 | 5 (D) | 19.2 | 5.4, 15.8% | 5.2, 85.8% (80.8 to 87.4) | 9.9, 66.5% (65.5 to 70.0) |
@@ -175,14 +178,18 @@ commit 5372032, which does not have them, and none of the ten later runs landed 
 | 7 (F) | 19.9 | 19.7, 2.1% | 3.4, 88.3% (86.4 to 91.3) | 7.5, 75.2% (71.9 to 76.4) |
 | 8 (C) | 20.2 | 20.4, 2.1% | 3.8, 94.9% (93.2 to 96.7) | 7.2, 76.0% (71.2 to 76.4) |
 | 9 (F) | 20.1 | 20.0, 2.1% | 3.6, 89.5% (88.1 to 93.1) | 7.5, 76.3% (72.5 to 78.6) |
-| 10 (D) | 20.7 | 5.7, 15.8% | 5.1, 83.8% (82.2 to 86.6) | 9.7, 68.2% (65.5 to 71.7) |
-| 11 (C) | 22.1 | 22.0, 2.1% | 4.5, 92.0% (88.2 to 99.2) | 5.7, 76.8% (72.6 to 77.3) |
+| 10 (D) | 20.7 | 5.7, 15.8% | 5.1, 83.8% (82.2 to 86.6) | 9.6, 68.2% (65.5 to 71.7) |
+| 11 (C) | 22.1 | 22.0, 2.1% | 4.6, 92.0% (88.2 to 99.2) | 5.7, 76.8% (72.6 to 77.3) |
 
 - **`WILLNEED` in chunks had the highest median of the four rows in every run with them** (runs 2 to 11,
   five kinds): 1.24x to 2.32x the MB/s of the same work without prefetch, with ranges apart from it in
   every run but run 8 (kind C: its slowest pass, 268 MB/s, is below the fastest pass without prefetch,
   312). 83.8% to 96.5% of the next record was in the page cache before its read, except on kind B
-  (55.6%), and one record's read took 3.4 to 5.6 ms (kind B: 30.1 ms, against 50.0 without prefetch).
+  (55.6%). A record took 3.4 to 5.6 ms (kind B: 30.2 ms, against 50.0 without prefetch). Of that time
+  the chunked calls for the next record were on average 2.5 to 4.1 ms (the median `announce_ms` of the
+  5 passes over the 47 records announced in a pass; kind B: 3.2 ms), so the read itself was the smaller
+  part. This average and the median time of a record are not the same statistic, so their difference is
+  only a rough size of the read.
 - **The helper thread** gained 1.05x to 2.12x, with 34.8% to 76.9% of the next record loaded. Its median
   is below that of the chunks in every run; the ranges are apart in runs 4 to 7 and 10.
 - **One `WILLNEED` on the whole record** gained 1.00x on kinds B, E and F (2.1% loaded) and 1.05x to

@@ -117,7 +117,9 @@ or the host of a virtual machine.
 `readahead(2)`, `WILLNEED` in chunks, the helper thread) one `mincore` call just before each announced
 record is read counts how many of its pages are in the page cache (inside the timed pass, outside the
 record's own time). The share is printed under the table and stored per pass as `ahead_cached`;
-`announce_ms` is the time the reading thread spent in the announcing calls. Pages whose read is still
+`announce_ms` is the time the reading thread spent in the announcing calls. A record's own time includes
+the calls that announce the record K places after it, made just before its read (the chunked path
+makes one call per chunk, so there they can be most of that time). Pages whose read is still
 under way may not be counted. The measurement needs 4096-byte pages. The chunk of the chunked path is the
 `read_ahead_kb` of the block device (128 KiB when it cannot be read), so no call asks for more than the
 kernel reads ahead on its own. In the Linux 7.0 source `readahead(2)` is a `POSIX_FADV_WILLNEED`, and one
