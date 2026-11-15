@@ -24,12 +24,12 @@
  *
  * Limits of this harness, not of the store. The store allocates 24 slabs of the header's aligned_expert_bytes
  * per layer when it opens, also for a layer without records. wex_validate_table bounds that field by the table
- * (WEX1 and WEX2: at most twice the largest decoded record; WEX3: equal to it), so a header that claims more is
- * given to the store, which must refuse it. A container that the validators accept and whose slabs would take
- * more than FUZZ_MAX_SLABS (many layers) is not opened here. The model registry of c/wex_decode.c keeps 16
- * models for the life of the process; the harness empties it before every input, so that an input gives the
- * same verdict whatever ran before it. The log lines of the store and of the decoder go nowhere. No mirror
- * file, no CUDA helper.
+ * (WEX1 and WEX2: at most twice the largest 4096-aligned decoded record; WEX3: equal to the largest aligned
+ * one), so a header that claims more is given to the store, which must refuse it. A container that the
+ * validators accept and whose slabs would take more than FUZZ_MAX_SLABS (many layers) is not opened here. The
+ * model registry of c/wex_decode.c keeps 16 models for the life of the process; the harness empties it before
+ * every input, so that an input gives the same verdict whatever ran before it. The log lines of the store and
+ * of the decoder go nowhere. No mirror file, no CUDA helper.
  *
  * The custom mutator: one call in four, when the input is a container that opens and has WNR3 records, one
  * of them is mutated with wnr3_mutator.h (decoded, edited, encoded again, so its stream hashes are right) and

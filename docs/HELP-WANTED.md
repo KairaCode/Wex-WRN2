@@ -65,10 +65,10 @@ measured; it is not known to fail.
     on ARM64 or on macOS (only `--replay` runs there). In `c/expert_store_wex.c`: the store
     allocates 24 slabs per layer when it opens, also for a layer whose entries are all absent. The
     slab size is bounded by the table since 2026-11-15 (WEX1 and WEX2: at most twice the largest
-    decoded record), the number of layers is not, so a small file with many layers and one record
-    still asks for memory out of proportion to its size, and the store harness does not open a
-    valid container that needs more than 64 MiB of slabs. Allocating a slab at its first use, or
-    weighing layers x slab against a budget, changes the engine's store and is not done.
+    4096-aligned decoded record), the number of layers is not, so a small file with many layers and
+    one record still asks for memory out of proportion to its size, and the store harness does not
+    open a valid container that needs more than 64 MiB of slabs. Allocating a slab at its first
+    use, or weighing layers x slab against a budget, changes the engine's store and is not done.
 - **Sanitizers:**
   - **Today:** CI runs the CPU checks and the fuzz replay under ASan and UBSan on Linux (the
     `linux-sanitizers` job of `.github/workflows/ci.yml`, which holds the exact `WEX_CFLAGS`, the

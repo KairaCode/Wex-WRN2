@@ -106,8 +106,8 @@ def main():
     tiny2 = open(os.path.join(VECTORS, 'legacy', 'tiny2-cz.wex3'), 'rb').read()
     # its two experts are (0, 0) and (0, 1): a 1 x 2 grid has the same table page and the same record owners
     tiny2_1x2 = tiny2[:8] + struct.pack('<II', 1, 2) + tiny2[16:]
-    # the header's slab size (bytes 16..23) against the table: twice the largest record is the most
-    # wex_validate_table accepts for WEX1 and WEX2, and 4 GiB - 4096 is the most the header check accepts
+    # the header's slab size (bytes 16..23) against the table: twice the largest 4096-aligned record is
+    # the most wex_validate_table accepts for WEX1 and WEX2, and 4 GiB - 4096 the most the header check takes
     slab = struct.unpack_from('<Q', wex1, 16)[0]
     wex1_bound = wex1[:16] + struct.pack('<Q', 2 * slab) + wex1[24:]
     wex1_over = wex1[:16] + struct.pack('<Q', 2**32 - PAGE) + wex1[24:]

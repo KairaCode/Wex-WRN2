@@ -34,9 +34,11 @@ From [WEX4-SPEC](docs/WEX4-SPEC.md), sections 8.4 and 9:
 
 - **Integrity, not authenticity.** The 32-byte root covers the whole file, but whoever can rewrite the file can rewrite its hashes too. A root only protects you when you pin it from a source the attacker cannot write, such as your own configuration.
 - **Hash collisions inside a record.** The hash of a WNR3 stream is 23 bits: a corruption passes it with probability 2^-23 per stream. The SHA-256 of the record catches it when the reader checks it.
-- **Denial of service.** A valid but huge file is bounded only by the reader's own budget. The standalone store of the older containers (`c/expert_store_wex.c`, not a supported reader of untrusted files) allocates 24 slabs of the header's `aligned_expert_bytes` per layer when it opens. Since 2026-11-15 the open path refuses a WEX1 or WEX2 header that states more than twice the largest decoded record of its table; before, it accepted any multiple of 4096 below 4 GiB that no record exceeded, and a failed allocation was handled. WEX3 already required the field to equal the largest record. The number of layers is still not weighed against the file: a table of many layers with one record makes the store ask for 24 slabs for each of them.
+- **Denial of service.** A valid but huge file is bounded only by the reader's own budget.
 - **Free-form content.** Metadata, unknown blobs, the reserved header area and tensor data can hold anything, so a file that is also valid as another format (a polyglot) is possible.
 - Side channels are out of scope.
+
+The older containers have one more case, from the code and not from a specification. The standalone store (`c/expert_store_wex.c`, not a supported reader of untrusted files) allocates 24 slabs of the header's `aligned_expert_bytes` per layer when it opens. Since 2026-11-15 the open path refuses a WEX1 or WEX2 header that states more than twice the largest 4096-aligned decoded record of its table; before, it accepted any multiple of 4096 below 4 GiB that no record exceeded, and a failed allocation was handled. WEX3 already required the field to equal the largest 4096-aligned decoded record. The number of layers is still not weighed against the file: a table of many layers with one record makes the store ask for 24 slabs for each of them.
 
 ## Testing, and its gaps
 
