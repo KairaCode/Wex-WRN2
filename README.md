@@ -161,7 +161,7 @@ wex4/          WEX4, repo-only: Python reference, converter, C tools, tests, rev
   vectors/        conformance vectors: valid and invalid files with the verdict a reader must give
 impl/          readers written from the specifications alone, not from the code here
   go-wex4/        WEX4 reader and verifier in Go, with WBP1 and WNR3 decoders; SPEC-NOTES.md: what the specs left open
-scripts/       repo-only checks: check_all.sh (every CPU check), build_cpu_check.sh, sanitize_c.sh, verify_wex1.py and its test
+scripts/       repo-only checks: check_all.sh (every CPU check), build_cpu_check.sh, sanitize_c.sh and sanitize_libs.c, verify_wex1.py and its test
 bench/         hardware benchmark for testers (bench.py) and the Linux read paths for expert records (wex_io.py)
 archive/       the WNR2 lab code (encoder, trainer, checks) and its benches, kept for the record
 models/        trained WNM2 models: DeepSeek V4 Flash 0731 and V4.1 REAP-192
