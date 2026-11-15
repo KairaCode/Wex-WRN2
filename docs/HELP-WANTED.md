@@ -58,6 +58,8 @@ measured; it is not known to fail.
     and the opt-in `colibri-headers` CI job does that on Linux and macOS. A second pass of each engine
     harness reaches the mirrors, the read splits, the striped read and `WEX_READ_RETRY`, and on Windows,
     with the CPU stand-in of the CUDA helper, the helper's host paths and the load wave (replayed only).
+    A third pass fails reads of the engine file on purpose (opens, prefetches, lookups and loads, the
+    second read of `WEX_READ_RETRY` that succeeds) and tries the root pin of `COLI_WEX_ROOT`.
     A custom mutator keeps the WNR3 stream hashes right. CI builds them with clang and runs
     each for 60 seconds on x86-64 Linux, and replays their seeds and mutators with gcc
     (`run.sh --replay`, no coverage guidance) on x86-64 Linux, ARM64 Linux, macOS (Apple silicon)
@@ -67,8 +69,9 @@ measured; it is not known to fail.
   - **Still open:** seeds and a mutator for palette, WNR and WNR2 records (the store decodes them;
     in the one 60 s run that counted them, the store harness served none); the CUDA helper's paths
     fuzzed and not only replayed (they exist on Windows only, where libFuzzer does not run here), and
-    with the real helper on a GPU; the paths the second passes cannot reach (a second read that
-    succeeds after one that failed, a read that fails: [wex4/fuzz/README.md](../wex4/fuzz/README.md),
+    with the real helper on a GPU; reads that come up short or return other bytes than the file holds
+    (the third pass fails a read outright), and the attach of `c/qwen38_wex.h` stopped by a failed
+    read, whose refusing functions the harness calls itself ([wex4/fuzz/README.md](../wex4/fuzz/README.md),
     "Limits"); `c/qwen38_wex.h` built inside colibri itself: no public colibri tree includes it, so the
     members it adds to colibri's expert index are still inferred; a fix in `c/qwen38_wex.h` for
     `COLI_WEX_WEIGHTS` with a weight of `inf`, which turns a NaN into an `int` (found on 2026-11-15,
@@ -278,6 +281,11 @@ listed above as well.
   findings and the vectors that are missing are not done *(open to you, sections 2 to 4)*.
 - **Fuzzing for hours:** the harnesses run for 60 seconds each in CI; no run longer than that is
   recorded in this repository *(open to you, section 3)*.
+- **The engine-side readers inside colibri:** the two engine harnesses follow colibri's headers and
+  build against them (a pinned `dev` commit, the opt-in `colibri-headers` CI job). `c/qwen38_wex.h` and
+  the members it adds to colibri's expert index are in no public colibri tree yet, so its harness keeps
+  those members inferred until the upstreaming above brings them in; the CUDA helper's paths are only
+  replayed, on Windows, with a CPU stand-in *(open to you, section 3)*.
 - **Converter profiles for more model families:** eight naming profiles are in, tested on synthetic
   fixtures; a run on a real checkpoint of the new families is open *(open to you, section 5)*.
 - **A first tagged release** of the specifications (WEX4 4.0, WNR3 v1) with the conformance vectors, so
