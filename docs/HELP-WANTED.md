@@ -52,17 +52,28 @@ measured; it is not known to fail.
   - **Today:** five libFuzzer harnesses are in [`wex4/fuzz/`](../wex4/fuzz/README.md): the C WEX4
     reader (`c/wex4.h`), `c/tools/wex4_verify.c`, the WNR3 decoders, and the two engine-side readers
     (`c/expert_store_wex.c`, `c/qwen38_wex.h`), which are built against stand-ins for the engine
-    headers. A custom mutator keeps the WNR3 stream hashes right. CI builds them with clang and runs
+    headers. Since 2026-11-15 every stand-in declaration follows colibri's headers and cites its line
+    (colibri `dev` at `98327913`); `WEX_FUZZ_COLIBRI=fetch bash wex4/fuzz/run.sh --replay` builds the two
+    harnesses against colibri's own headers instead and checks that both give the same declarations,
+    and the opt-in `colibri-headers` CI job does that on Linux and macOS. A second pass of each engine
+    harness reaches the mirrors, the read splits, the striped read and `WEX_READ_RETRY`, and on Windows,
+    with the CPU stand-in of the CUDA helper, the helper's host paths and the load wave (replayed only).
+    A custom mutator keeps the WNR3 stream hashes right. CI builds them with clang and runs
     each for 60 seconds on x86-64 Linux, and replays their seeds and mutators with gcc
     (`run.sh --replay`, no coverage guidance) on x86-64 Linux, ARM64 Linux, macOS (Apple silicon)
     and Windows.
   - **What is wanted now** is machine time: run `bash wex4/fuzz/run.sh 14400` (hours, not seconds)
     and report what stops it, with the reproducer it leaves.
   - **Still open:** seeds and a mutator for palette, WNR and WNR2 records (the store decodes them;
-    in the one 60 s run that counted them, the store harness served none); the store's mirror,
-    striped-read and CUDA-helper paths; `c/qwen38_wex.h` built inside the real engine instead of
-    against inferred types; a harness for the GPU decoder (`c/wex_cuda.cuh`); a coverage-guided run
-    on ARM64 or on macOS (only `--replay` runs there).
+    in the one 60 s run that counted them, the store harness served none); the CUDA helper's paths
+    fuzzed and not only replayed (they exist on Windows only, where libFuzzer does not run here), and
+    with the real helper on a GPU; the paths the second passes cannot reach (a second read that
+    succeeds after one that failed, a read that fails: [wex4/fuzz/README.md](../wex4/fuzz/README.md),
+    "Limits"); `c/qwen38_wex.h` built inside colibri itself: no public colibri tree includes it, so the
+    members it adds to colibri's expert index are still inferred; a fix in `c/qwen38_wex.h` for
+    `COLI_WEX_WEIGHTS` with a weight of `inf`, which turns a NaN into an `int` (found on 2026-11-15,
+    same "Limits"); a harness for the GPU decoder (`c/wex_cuda.cuh`); a coverage-guided run on ARM64 or
+    on macOS (only `--replay` runs there).
 - **Sanitizers:**
   - **Today:** CI runs the CPU checks and the fuzz replay under ASan and UBSan on Linux (the
     `linux-sanitizers` job of `.github/workflows/ci.yml`, which holds the exact `WEX_CFLAGS`, the
@@ -76,7 +87,8 @@ measured; it is not known to fail.
   - **Still open:** the libraries that the tests load into Python (`wex4_tools.dll` with the fast
     decoder, the WNR3 encoder) under these two sanitizers, which needs the same tests driven from C
     or an instrumented Python; the engine-side readers inside an engine tree (here they run only
-    through the stand-ins of the fuzzing harnesses); any sanitizer on ARM64 or on macOS (the three
+    through the fuzzing harnesses, under the sanitizers against the stand-ins; against colibri's
+    headers without a sanitizer); any sanitizer on ARM64 or on macOS (the three
     sanitizer jobs are x86-64 Linux); and the GPU code.
 - **More test vectors:** hostile files that [wex4/vectors](../wex4/vectors/README.md) does not cover
   yet, each with its `MANIFEST.tsv` row and the expected verdict from both reference readers; the
