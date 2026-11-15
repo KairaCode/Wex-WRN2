@@ -152,7 +152,9 @@ measured; it is not known to fail.
   with the checkpoint and the shard each profile's names were read in, is in
   [wex4/README.md](../wex4/README.md#naming-profiles). Each has a synthetic fixture
   (`fixtures/make_synth_mxfp4.py --names`) on which pack → verify → unpack and upgrade → verify →
-  downgrade round-trip byte for byte.
+  downgrade round-trip byte for byte. Under a `-ct` profile, an expert whose weight is a plain `.weight`
+  that is not U8 or I8 (an MXFP8 or BF16 expert of a mixed compressed-tensors export) stays ordinary
+  tensors; this is tested on a synthetic fixture only.
 - **Today, the matrix roles:** w1 is the gate, w2 the down and w3 the up matrix in `mixtral`,
   `minimax-m3`, `mistral-large4`, the DeepSeek profiles and their `-ct` forms. This was read on
   2026-11-15 in the model code of Hugging Face transformers (commit 3a134bc3) and of the checkpoints'

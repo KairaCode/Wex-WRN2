@@ -215,7 +215,8 @@ def expert_entry(scales, weights):
 def pack(out_path, sources, clib=None, experts=None, nr3=None, part_bytes=64 << 20, family='deepseek', report=None):
     """safetensors files -> one WEX4 file. experts: None (tensors as they come), 'raw' or 'nr3' (expert records).
     family: the naming profile that says which tensors are routed experts. An expert with a tensor that is not
-    MXFP4 (a float or FP8 layer of a mixed checkpoint) stays ordinary tensors. An expert whose tensors are all
+    MXFP4 (a float or FP8 layer of a mixed checkpoint) stays ordinary tensors; so does, under a profile whose
+    weight is not '.weight', an expert with a plain '.weight' that is not U8 or I8. An expert whose tensors are all
     MXFP4 must be a whole slab: a missing tensor (a missing shard, the wrong profile) or a wrong shape is refused.
     report: a dict that receives 'expert_records' and 'experts_as_tensors'."""
     records, empty, meta_sources, indexed = [], [], [], []
@@ -247,7 +248,19 @@ def pack(out_path, sources, clib=None, experts=None, nr3=None, part_bytes=64 << 
                 part = (matrices.index(match[3].decode()), match[4].decode() == weight_suffix)
                 expert_groups.setdefault(key, {})[part] = (wex4.Tensor(name, dtype, shape, end - begin),
                                                            reader(path, start, begin, end))
-    as_tensors = [key for key, parts in expert_groups.items() if not mxfp4_dtypes(parts)]
+    def other_form(layer, expert, parts):
+        """True when a matrix has no weight tensor under the profile's suffix but has a plain '.weight' that is
+        not MXFP4 (an FP8 or float expert of a compressed-tensors export, with its scale as 'weight_scale')."""
+        if weight_suffix == 'weight':
+            return False
+        for m in range(3):
+            if (m, True) not in parts:
+                name = expert_name(family, layer, expert, m, True).rsplit('.', 1)[0] + '.weight'
+                if dtypes.get(name.encode(), 'U8') not in ('U8', 'I8'):
+                    return True
+        return False
+    dtypes = {name: dtype for _, _, tensors in indexed for name, dtype, *_ in tensors}
+    as_tensors = [key for key, parts in expert_groups.items() if not mxfp4_dtypes(parts) or other_form(*key, parts)]
     for key in as_tensors:
         del expert_groups[key]
     for (layer, expert), parts in sorted(expert_groups.items()):

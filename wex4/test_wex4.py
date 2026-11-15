@@ -376,6 +376,22 @@ def test_profiles():
     assert conv.unpack(out, os.path.join(WORK, 'pb2'), C) == [('near.safetensors', True), ('near2.safetensors', True)]
     for file in ('near.safetensors', 'near2.safetensors'):
         assert open(os.path.join(WORK, 'pb2', file), 'rb').read() == open(os.path.join(WORK, file), 'rb').read()
+    # a compressed-tensors export with an MXFP8 expert (an F8_E4M3 '.weight' with a U8 '.weight_scale') and a
+    # BF16 one (no scale): under the -ct profile only the MXFP4 expert becomes a record, the others stay tensors
+    mixed_ct = [(n + '_packed' if n.endswith('.weight') else n, d, s, v) for n, d, s, v in slab('', 0, 0)]
+    mixed_ct += [(n, 'F8_E4M3' if n.endswith('.weight') else d, s, v) for n, d, s, v in slab('', 0, 1)]
+    mixed_ct += [(n, 'BF16', (4, 32), skewed(256)) for n, d, s, v in slab('', 0, 2) if n.endswith('.weight')]
+    ct_source = os.path.join(WORK, 'ct8.safetensors')
+    st_write(ct_source, mixed_ct)
+    report = {}
+    conv.pack(out, [ct_source], C, 'raw', family='qwen3-moe-ct', report=report)
+    data = open(out, 'rb').read()
+    assert C.check(data, 3, True) == (0, wex4.check(data, True, C))
+    rd = wex4.Reader(io.BytesIO(data), C)
+    assert [rec[6] for rec in rd.records if rec[4] & wex4.REC_EXPERT] == [0], 'the MXFP4 expert only'
+    assert report == {'expert_records': 1, 'experts_as_tensors': 1}, report
+    assert conv.unpack(out, os.path.join(WORK, 'pb3'), C) == [('ct8.safetensors', True)]
+    assert open(os.path.join(WORK, 'pb3', 'ct8.safetensors'), 'rb').read() == open(ct_source, 'rb').read()
     # an MXFP4 expert that is not a whole slab is refused, and no output file is left: a missing file (the
     # expert above without its second file), a missing tensor, a weight that is not 16 bytes per scale byte
     os.remove(out)
@@ -391,7 +407,8 @@ def test_profiles():
     print(f'naming profiles ({", ".join(names)}): on a synthetic fixture each (2 layers x 3 experts, the same expert '
           f'bytes), pack with RAW and with WNR3 expert records ({coded} of {6 * len(names)} coded) and unpack byte-identical; '
           f'upgrade of a WEX1 and a WNR3 container gives the fixture\'s tensors by name, downgrade exact; '
-          f'an expert split over two files is one record; a float layer and near-miss names stay ordinary tensors; '
+          f'an expert split over two files is one record; a float layer and near-miss names stay ordinary tensors, and '
+          f'so do an MXFP8 and a BF16 expert of a compressed-tensors export; '
           f'an MXFP4 expert with a missing tensor or a wrong shape is refused, and so are {len(pairs) + halves} fixtures '
           f'under a profile that matches their scale tensors only (weight against weight_packed); a profile that finds '
           f'no expert warns')
