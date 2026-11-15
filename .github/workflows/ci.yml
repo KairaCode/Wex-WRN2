@@ -61,10 +61,11 @@ jobs:
   # built another one), and plain char is unsigned. Then the WEX4 tests once more with the scalar kernel forced,
   # so both kernels are compared with the reference decoder on ARM, and the speed of both (printed, never judged:
   # a shared runner is not a benchmark machine). The smoke run builds bench/wex_io.c for ARM and runs its 20 read
-  # paths once (the full benchmark was not run on ARM)
+  # paths once (the full benchmark was not run on ARM). Then the same checks for a build with SVE, which adds the
+  # SVE kernel 2
   linux-arm:
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 15
+    timeout-minutes: 20   # a green run took 8 to 9 minutes on 2026-11-15, about half of it in the SVE steps
     env:
       PYTHON: python3
       USER: ""
@@ -111,6 +112,66 @@ jobs:
           ./t_clang.exe equal model.wnm2 L0_E0.rec L0_E1.rec L0_E2.rec L0_E3.rec | tee "$RUNNER_TEMP/clang.log"
           grep -q '^build: NEON kernels' "$RUNNER_TEMP/clang.log"
           ./t_clang.exe mutate model.wnm2 600 20261114 L0_E0.rec L0_E1.rec L0_E2.rec L0_E3.rec
+      # the SVE kernel 2 (gathers) of the fast decoder is built only with an SVE flag, here -march=armv8-a+sve; the
+      # runner's CPU has SVE and SVE2 with 128-bit vectors. The checks of the NEON build again with that flag (they
+      # fail if the build has no SVE kernel), the negative controls with three more for kernel 2, then kernel 2 at
+      # three other vector lengths under emulation. The WEX4 tests and the fuzz replay call the default entry
+      # point, kernel 1, so only the harness runs kernel 2
+      - name: SVE build, harness on the synthetic records (kernel 2 with gathers)
+        env:
+          WEX4_MARCH: -march=armv8-a+sve
+        run: |
+          set -o pipefail
+          grep -m1 '^Features' /proc/cpuinfo | grep -o -w -E 'sve|sve2' | tr '\n' ' '; echo
+          bash wex4/research/fast-cpu-decode/synth.sh check | tee "$RUNNER_TEMP/sve.log"
+          grep -q '^build: NEON+SVE kernels' "$RUNNER_TEMP/sve.log"
+          grep '^SVE vector length' "$RUNNER_TEMP/sve.log"
+      - name: SVE build, WEX4 tests and fuzz replay (kernel 1)
+        run: |
+          set -o pipefail
+          WEX4_MARCH=-march=armv8-a+sve bash wex4/build_and_test.sh | tee "$RUNNER_TEMP/sve-wex4.log"
+          grep -q '^fast WNR3 decoder of wex4_tools.dll: NEON+SVE kernels$' "$RUNNER_TEMP/sve-wex4.log"
+          WEX_CFLAGS=-march=armv8-a+sve bash wex4/fuzz/run.sh --replay | tee "$RUNNER_TEMP/sve-replay.log"
+          grep -q '^fast WNR3 decoder of fuzz_wnr3_record: NEON+SVE kernels$' "$RUNNER_TEMP/sve-replay.log"
+      - name: Speed of the SVE build, kernels 0, 1 and 2 (printed only)
+        env:
+          WEX4_MARCH: -march=armv8-a+sve
+        run: |
+          bash wex4/research/fast-cpu-decode/synth.sh speed 21
+          cd wex4/research/fast-cpu-decode/out/synth
+          ./t_simd.exe bench model.wnm2 15 L0_E0.rec L0_E1.rec L0_E2.rec L0_E3.rec
+      # the three steps below use the SVE build, the records and the model that synth.sh left in out/synth
+      - name: Negative controls of the mutation test (SVE build)
+        env:
+          WEX4_MARCH: -march=armv8-a+sve
+        run: |
+          set -o pipefail
+          cd wex4/research/fast-cpu-decode/out/synth
+          bash ../../negative_control.sh model.wnm2 L0_E0.rec L0_E1.rec L0_E2.rec L0_E3.rec | tee "$RUNNER_TEMP/sve-neg.log"
+          [ "$(grep -c '(SVE kernel 2.*: caught$' "$RUNNER_TEMP/sve-neg.log")" = 3 ]
+      - name: clang build of the harness (SVE build, no OpenMP)
+        run: |
+          set -o pipefail
+          cd wex4/research/fast-cpu-decode/out/synth
+          clang -std=c11 -Wall -Wextra -Werror -Wno-unused-function -O3 -march=armv8-a+sve -I../../../../../c -I../.. ../../test_fast_decode.c -o t_clang_sve.exe
+          ./t_clang_sve.exe equal model.wnm2 L0_E0.rec L0_E1.rec L0_E2.rec L0_E3.rec | tee "$RUNNER_TEMP/clang-sve.log"
+          grep -q '^build: NEON+SVE kernels' "$RUNNER_TEMP/clang-sve.log"
+          ./t_clang_sve.exe mutate model.wnm2 600 20261114 L0_E0.rec L0_E1.rec L0_E2.rec L0_E3.rec
+      # the hardware has 128-bit vectors only; QEMU's user-mode emulator runs the same SVE build (gcc) with 256-,
+      # 512- and 2048-bit vectors (sve-default-vector-length is in bytes). A check of the bytes, not of speed
+      - name: SVE build at other vector lengths (QEMU user-mode emulation)
+        run: |
+          set -o pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends qemu-user
+          qemu-aarch64 --version | head -1
+          cd wex4/research/fast-cpu-decode/out/synth
+          for bytes in 32 64 256; do
+            Q="qemu-aarch64 -cpu max,sve-default-vector-length=$bytes"
+            $Q ./t_simd.exe equal model.wnm2 L0_E0.rec L0_E1.rec L0_E2.rec L0_E3.rec | tee "$RUNNER_TEMP/qemu.log"
+            grep -q "^SVE vector length: $((bytes * 8)) bits" "$RUNNER_TEMP/qemu.log"
+            $Q ./t_simd.exe mutate model.wnm2 200 20261115 L0_E0.rec L0_E1.rec L0_E2.rec L0_E3.rec
+          done
 
   # the same checks on macOS, Apple silicon: ARM64 again (the NEON kernel of the fast WNR3 decoder, built by
   # GNU gcc here; both steps fail if they built another one), with 16 KiB memory pages and the Mach-O
