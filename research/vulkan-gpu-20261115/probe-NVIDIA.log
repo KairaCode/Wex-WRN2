@@ -1,0 +1,143 @@
+[17:41:29Z: 0 other wnr3_vk processes; CPU load 81%]
+glslangValidator: Glslang Version: 11:16.6.0
+spirv-val: SPIRV-Tools v2026.4 unknown hash, 2026-10-02T00:06:47+00:00
+current: spirv-val (vulkan1.0) accepts the module
+current, record 10: no crash (status 0; 5 lines, the last: wnr3_vk: ok)
+current, -DSEARCH: spirv-val (vulkan1.0) accepts the module
+current, -DSEARCH, record 10: no crash (status 0; 5 lines, the last: wnr3_vk: ok)
+first: spirv-val (vulkan1.0) accepts the module
+first, record 10: no crash (status 0; 5 lines, the last: wnr3_vk: ok)
+first, record 10, validation layer: no crash (status 0; 6 lines, the last: wnr3_vk: ok)
+first, record 10, robustBufferAccess: no crash (status 0; 6 lines, the last: wnr3_vk: ok)
+first, all twelve records: no crash (status 0; 16 lines, the last: wnr3_vk: ok)
+first, scale table: spirv-val (vulkan1.0) accepts the module
+first with the scale table, record 10: no crash (status 0; 5 lines, the last: wnr3_vk: ok)
+count0: spirv-val (vulkan1.0) accepts the module
+count0, record 10: no crash (status 0; 5 lines, the last: wnr3_vk: ok)
+crash.comp, all switches on: spirv-val (vulkan1.0) accepts the module
+crash.comp, all switches on, record 10: no crash (status 0; 5 lines, the last: wnr3_vk: ok)
+crash.comp without DATA_STOP: spirv-val (vulkan1.0) accepts the module
+crash.comp without DATA_STOP, record 10: no crash (status 0; 5 lines, the last: wnr3_vk: ok)
+crash.comp without ATOMIC: spirv-val (vulkan1.0) accepts the module
+crash.comp without ATOMIC, record 10: no crash (status 0; 5 lines, the last: wnr3_vk: ok)
+crash.comp without STORES: spirv-val (vulkan1.0) accepts the module
+crash.comp without STORES, record 10: no crash (status 0; 5 lines, the last: wnr3_vk: ok)
+crash.comp without RENORM: spirv-val (vulkan1.0) accepts the module
+crash.comp without RENORM, record 10: no crash (status 0; 5 lines, the last: wnr3_vk: ok)
+crash.comp without REC_STATE: spirv-val (vulkan1.0) accepts the module
+crash.comp without REC_STATE, record 10: no crash (status 0; 5 lines, the last: wnr3_vk: ok)
+crash.comp without PLAN_TABLE: spirv-val (vulkan1.0) accepts the module
+crash.comp without PLAN_TABLE, record 10: no crash (status 0; 5 lines, the last: wnr3_vk: ok)
+crash.comp without MATRIX: spirv-val (vulkan1.0) accepts the module
+crash.comp without MATRIX, record 10: no crash (status 0; 5 lines, the last: wnr3_vk: ok)
+crash.comp without LANE_COUNT: spirv-val (vulkan1.0) accepts the module
+crash.comp without LANE_COUNT, record 10: no crash (status 0; 5 lines, the last: wnr3_vk: ok)
+crash.comp without PLAN_COUNT: spirv-val (vulkan1.0) accepts the module
+crash.comp without PLAN_COUNT, record 10: no crash (status 0; 5 lines, the last: wnr3_vk: ok)
+crash.comp without NESTED: spirv-val (vulkan1.0) accepts the module
+crash.comp without NESTED, record 10: no crash (status 0; 5 lines, the last: wnr3_vk: ok)
+crash.comp without SEARCH: spirv-val (vulkan1.0) accepts the module
+crash.comp without SEARCH, record 10: no crash (status 0; 5 lines, the last: wnr3_vk: ok)
+smallest form of crash.comp: -DF_DATA_STOP=1 -DF_ATOMIC=1 -DF_STORES=1 -DF_RENORM=1 -DF_REC_STATE=1 -DF_PLAN_TABLE=1 -DF_BOUND=1 -DF_MATRIX=1 -DF_LANE_COUNT=1 -DF_PLAN_COUNT=1 -DF_NESTED=1 -DF_SEARCH=1 (taken away: nothing); after the preprocessor:
+    | #version 450
+    | layout(local_size_x = 32) in;
+    | layout(std430, set = 0, binding = 0) readonly buffer RecordBytes { uint rec[]; };
+    | layout(std430, set = 0, binding = 1) readonly buffer ModelBlobs { uint tab[]; };
+    | layout(std430, set = 0, binding = 2) readonly buffer Plans { uint plan[]; };
+    | layout(std430, set = 0, binding = 3) readonly buffer Offsets { uint offs[]; };
+    | layout(std430, set = 0, binding = 4) buffer Decoded { uint outw[]; };
+    | layout(std430, set = 0, binding = 5) buffer Errors { uint err[]; };
+    | layout(push_constant) uniform Push { uint record; } pc;
+    | const uint L = 1u << 23;
+    | uint record_byte(uint position) { return(rec[position >> 2] >> ( (position & 3u) * 8u)) & 255u; }
+    | uint cdf(uint table, uint k) { return(tab[table + 8u + (k >> 1)] >> ( (k & 1u) * 16u)) & 0xffffu; }
+    | void main() {
+    |     uint j = gl_GlobalInvocationID.x;
+    |     uint p = pc.record * 32u;
+    |     if (j >= plan[p + 22u]) return;
+    |     uint m = j >= plan[p + 21u] ? 2u : j >= plan[p + 20u] ? 1u : 0u;
+    |     uint chunk = plan[p + 12u];
+    |     uint first = (j - plan[p + 19u + m]) * chunk;
+    |     uint count = min(chunk, plan[p + 6u + m] - first);
+    |     uint table = plan[p + 17u];
+    |     uint position = offs[plan[p + 18u] + j], end = offs[plan[p + 18u] + j + 1u];
+    |     uint state = record_byte(position) << 24 | record_byte(position + 1u) << 16 |
+    |                  record_byte(position + 2u) << 8 | record_byte(position + 3u);
+    |     position += 4u;
+    |     bool stop = state < L || state >= (L << 8);
+    |     if (stop) {
+    |         atomicOr(err[pc.record], 1u);
+    |         return;
+    |     }
+    |     uint row = 3u * 567u * 17u + m * 257u;
+    |     uint store = (plan[p + m] + first) >> 2;
+    |     uint pending = 0u, held = 0u;
+    |     for (uint i = 0u; i < count; i ++) {
+    |         uint slot = state & 16383u, lo = 0u, hi = 256u;
+    |         while (lo + 1u < hi) {
+    |             uint mid = (lo + hi) / 2u;
+    |             if (cdf(table, row + mid) <= slot) lo = mid; else hi = mid;
+    |         }
+    |         uint start = cdf(table, row + lo);
+    |         state = (cdf(table, row + lo + 1u) - start) * (state >> 14) + slot - start;
+    |         while (state < L) {
+    |             if (position == end) { atomicOr(err[pc.record], 1u); return; }
+    |             state = (state << 8) | record_byte(position);
+    |             position ++;
+    |         }
+    |         pending |= lo << (held * 8u);
+    |         if (++ held == 4u) {
+    |             outw[store ++] = pending;
+    |             pending = 0u; held = 0u;
+    |         }
+    |     }
+    |     if (pending == 0xffffffffu || position > end) atomicOr(err[pc.record], 2u);
+    | }
+smallest form: spirv-val (vulkan1.0) accepts the module
+smallest form, record 10: no crash (status 0; 5 lines, the last: wnr3_vk: ok)
+smallest form, record 10, validation layer: no crash (status 0; 6 lines, the last: wnr3_vk: ok)
+smallest form, record 10, robustBufferAccess: no crash (status 0; 6 lines, the last: wnr3_vk: ok)
+crash_min.comp: spirv-val (vulkan1.0) accepts the module
+crash_min.comp, record 10: no crash (status 0; 5 lines, the last: wnr3_vk: ok)
+crash_min.comp -DSTOP=1: spirv-val (vulkan1.0) accepts the module
+crash_min.comp -DSTOP=1, record 10: no crash (status 0; 5 lines, the last: wnr3_vk: ok)
+crash_min.comp -DSTOP=8: spirv-val (vulkan1.0) accepts the module
+crash_min.comp -DSTOP=8, record 10: no crash (status 0; 5 lines, the last: wnr3_vk: ok)
+crash_min.comp -DF_VALUES=0: spirv-val (vulkan1.0) accepts the module
+crash_min.comp -DF_VALUES=0, record 10: no crash (status 0; 5 lines, the last: wnr3_vk: ok)
+crash_min.comp -DF_STATE=1: spirv-val (vulkan1.0) accepts the module
+crash_min.comp -DF_STATE=1, record 10: no crash (status 0; 5 lines, the last: wnr3_vk: ok)
+crash_min.comp -DF_STATE=0: spirv-val (vulkan1.0) accepts the module
+crash_min.comp -DF_STATE=0, record 10: no crash (status 0; 5 lines, the last: wnr3_vk: ok)
+crash_min.comp -DF_COUNT=0: spirv-val (vulkan1.0) accepts the module
+crash_min.comp -DF_COUNT=0, record 10: no crash (status 0; 5 lines, the last: wnr3_vk: ok)
+crash_min.comp -DF_VALUES=0 -DF_STATE=1: spirv-val (vulkan1.0) accepts the module
+crash_min.comp -DF_VALUES=0 -DF_STATE=1, record 10: no crash (status 0; 5 lines, the last: wnr3_vk: ok)
+crash_min.comp -DF_VALUES=0 -DF_STATE=1 -DSTOP=1: spirv-val (vulkan1.0) accepts the module
+crash_min.comp -DF_VALUES=0 -DF_STATE=1 -DSTOP=1, record 10: no crash (status 0; 5 lines, the last: wnr3_vk: ok)
+crash_min.comp: spirv-val (vulkan1.0) accepts the module
+crash_min.comp, record 0: no crash (status 1; 6 lines, the last: wnr3_vk: FAILED (2))
+crash_min.comp, record 10, validation layer: no crash (status 0; 6 lines, the last: wnr3_vk: ok)
+crash_min.comp, record 10, robustBufferAccess: no crash (status 0; 6 lines, the last: wnr3_vk: ok)
+crash_min.c, crash_min.comp: spirv-val (vulkan1.0) accepts the module
+crash_min.c, crash_min.comp: no crash (status 0; 4 lines, the last: crash_min: the dispatch came back, word of binding 5 0x0)
+crash_min.c, crash_min.comp -DSTOP=1: spirv-val (vulkan1.0) accepts the module
+crash_min.c, crash_min.comp -DSTOP=1: no crash (status 0; 4 lines, the last: crash_min: the dispatch came back, word of binding 5 0x0)
+crash_min.c, crash_min.comp -DSTOP=8: spirv-val (vulkan1.0) accepts the module
+crash_min.c, crash_min.comp -DSTOP=8: no crash (status 0; 4 lines, the last: crash_min: the dispatch came back, word of binding 5 0x0)
+crash_min.c, crash_min.comp -DF_COUNT=0: spirv-val (vulkan1.0) accepts the module
+crash_min.c, crash_min.comp -DF_COUNT=0: no crash (status 0; 4 lines, the last: crash_min: the dispatch came back, word of binding 5 0x0)
+crash_min.c, crash_min.comp -DF_VALUES=0 -DF_STATE=1: spirv-val (vulkan1.0) accepts the module
+crash_min.c, crash_min.comp -DF_VALUES=0 -DF_STATE=1: no crash (status 0; 4 lines, the last: crash_min: the dispatch came back, word of binding 5 0x0)
+crash_min.c, crash_min.comp: spirv-val (vulkan1.0) accepts the module
+crash_min.c, crash_min.comp, validation layer: no crash (status 0; 5 lines, the last: crash_min: the dispatch came back, word of binding 5 0x0)
+crash_min.c, crash_min.comp, robustBufferAccess: no crash (status 0; 5 lines, the last: crash_min: the dispatch came back, word of binding 5 0x0)
+crash_min.c, crash_min.comp, 2 workgroups: no crash (status 0; 4 lines, the last: crash_min: the dispatch came back, word of binding 5 0x0)
+crash_min.c, crash_min.comp, no push constant range: no crash (status 0; 4 lines, the last: crash_min: the dispatch came back, word of binding 5 0x0)
+crash_min.c, crash_min.comp, set layout bindings 125: no crash (status 0; 4 lines, the last: crash_min: the dispatch came back, word of binding 5 0x0)
+crash_min.c, crash_min.comp, set layout bindings 0125: no crash (status 0; 4 lines, the last: crash_min: the dispatch came back, word of binding 5 0x0)
+crash_min.c, crash_min.comp, set layout bindings 12345: no crash (status 0; 4 lines, the last: crash_min: the dispatch came back, word of binding 5 0x0)
+crash_min.c, crash_min.comp, set layout bindings 1235: no crash (status 0; 4 lines, the last: crash_min: the dispatch came back, word of binding 5 0x0)
+crash_min.c, crash_min.comp, set layout bindings 1245: no crash (status 0; 4 lines, the last: crash_min: the dispatch came back, word of binding 5 0x0)
+crash_min.c, crash_min.comp, set layout bindings 125, no push constant range: no crash (status 0; 4 lines, the last: crash_min: the dispatch came back, word of binding 5 0x0)
+crash probe: 0 of 50 runs crashed

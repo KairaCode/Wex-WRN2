@@ -181,23 +181,42 @@ measured; it is not known to fail.
   [`wex4/research/vulkan-decode/`](../wex4/research/vulkan-decode/README.md): a compute shader and a C99
   host program that build without the CUDA toolkit and agree with the CPU reference, in bytes and in
   verdicts, on synthetic records, on the tiny-model containers and a conformance vector, and on mutated
-  copies of them. It ran only on Mesa lavapipe, a Vulkan device on the CPU (the opt-in `linux-vulkan` job
-  of `.github/workflows/ci.yml`).
+  copies of them. It runs on Mesa lavapipe, a Vulkan device on the CPU, in the opt-in `linux-vulkan` job
+  of `.github/workflows/ci.yml`.
+- **On a GPU (2026-11-15):** one GPU, an NVIDIA GeForce RTX 3070 with driver 621.01 on Windows 10
+  ([research/vulkan-gpu-20261115](../research/vulkan-gpu-20261115/README.md)). The first run there found
+  scale decrements of the ceil-form inverse lost by the driver; the shader now avoids that, and every check
+  of `run.sh` passes there with the validation layer on, also with 1,000 mutated copies per record. On
+  16 synthetic records of the size of a DeepSeek V4.1 expert (random bytes, not a model) the decode took
+  1.23 ms of device time per record, 3.64 ms with the upload, against 24.9 ms for the fast CPU decoder
+  (AVX2) on the 8 threads of the same desktop's Intel Core i7-7700K and 863 ms for the reference decoder on
+  one; other jobs were loading that CPU. The table lookups of the design note's section 5 are in the shader
+  since that run: 4% to 6% less device time than the binary search on those records, 32% less on the small
+  records of the tiny-model container, with the same bytes. Not run: a container of a real model (none was on
+  that machine), any other GPU or driver.
 - **Still open, most wanted first:**
-  - run `bash wex4/research/vulkan-decode/run.sh <container.wex4>` on a real GPU (Intel, AMD, NVIDIA,
-    Apple through MoltenVK) and report the last lines and the device line; a real container with WNR3
-    records is the test that counts, and none was decoded yet. The host program reads the file record
-    by record and cuts its batches to the device's buffer limit, so the file size is not a limit (a
-    5.4 GB test file was read; no record of a real model was). The slow part is the CPU reference,
-    which decodes every record too: start with `MUTATIONS=0 WNR3_VK_EVERY=64` (no mutated copies, one
-    record in 64), as the folder's README says;
-  - a speed number against the CPU path on the same machine. The prototype looks symbols up with the
-    reference binary search; the design note, section 5, lists the tables the CUDA kernels use instead;
+  - run `bash wex4/research/vulkan-decode/run.sh <container.wex4>` with a real container (WNR3 records of
+    a real model) on any GPU, and report the last lines and the device line: that is the test that counts,
+    and no record of a real model has been decoded yet. The host program reads the file record by record
+    and cuts its batches to the device's buffer limit, so the file size is not a limit (a 5.4 GB test file
+    was read). The slow part is the CPU reference, which decodes every record too: start with
+    `MUTATIONS=0 WNR3_VK_EVERY=64` (no mutated copies, one record in 64), as the folder's README says.
+    `WNR3_VK_DEVICE=<part of the name>` picks the device;
+  - a run on other GPUs and drivers (Intel, AMD, Apple through MoltenVK, NVIDIA on Linux): the RTX 3070
+    showed that a driver can get this shader wrong, and only `run.sh` tells;
+  - the speed on real records: `bash wex4/research/vulkan-decode/bench.sh` measures the synthetic records
+    above; a run of `wnr3_vk bench` on a real container, against the CPU path on the same machine, is open;
   - the commit step (copy the decoded regions to the engine's buffers only when the record's error word
-    is zero) and the hook into colibri's Vulkan backend (design note, sections 8 and 11).
+    is zero) and the hook into colibri's Vulkan backend (design note, sections 8 and 11);
+  - the llvmpipe crash of issue 21: on Mesa 25.2.8 with LLVM 20.1.2 it is reduced to a shader of about 30
+    lines and a host of its own (`crash_min.comp`, `crash_min.c`) that crash only with a binding 0 in the
+    descriptor set layout; the first form of the shader was valid SPIR-V and gave no message of the
+    validation layer, so the crash is in the driver. Open: its cause inside Mesa, a run on a newer Mesa on
+    Linux, and a report to Mesa (none was sent). The folder's README, "The llvmpipe crash", has the forms.
 - **Done when:** its output is byte-identical to the CPU reference on every record of a real container,
   there is a speed number against the CPU path on the same machine, and it builds without the CUDA
-  toolkit. Today only the third holds.
+  toolkit. Today the third holds, and the second holds for synthetic records of the size of a real expert
+  on one GPU; the first, the speed on real records and the engine hook are open.
 - HIP and Metal ports are welcome after it, on the same tests.
 
 ## 7. I/O on Linux and macOS (help wanted)
@@ -244,8 +263,9 @@ listed above as well.
   [colibri](https://github.com/JustVugg/colibri) `dev` as a series of small pull requests: Qwen3.8 MXFP4
   experts first (#2822-#2825 are open), then the WEX4 container, the WNR3 codec and its GPU decode, and
   the I/O switches. Reviewing or testing those PRs on your hardware helps directly.
-- **WNR3 decode on Vulkan:** the design note and a prototype checked on a CPU Vulkan device are in; a run
-  on a GPU, a speed number, a real container and the engine hook are open *(open to you, section 6)*.
+- **WNR3 decode on Vulkan:** the design note and a prototype are in, checked on a CPU Vulkan device and on
+  one GPU (an RTX 3070), with a speed number on synthetic records there; a real container, other GPUs and
+  drivers, and the engine hook are open *(open to you, section 6)*.
 - **ARM and macOS:** the ARM CI jobs (Linux, and macOS on Apple silicon) and a NEON version of kernel 1
   of the fast CPU decoder are in. Its speed on real records and on ARM CPUs other than the Linux CI
   runner, an SVE version of kernel 2, and Apple clang are still open *(open to you, section 3)*.

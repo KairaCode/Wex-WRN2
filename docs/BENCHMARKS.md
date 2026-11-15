@@ -204,6 +204,20 @@ Earlier figures (2026-11-11, old README, raw output not here): C: (PCIe 5) 2.0 m
 
 No read path won on both machines: what was 16% to 19% faster than the store's path in run 1 was 4% to 5% slower in run 2, and more reads in flight gained at most 11% over one read of the same kind in run 1 (page cache, 8 threads against 1) and at most 4% in run 2 (`O_DIRECT`, 16 records in flight against 1 thread), with every depth between 418 and 481 and between 511 and 540 MB/s. The store's Linux read path was therefore not changed. The `WILLNEED` row is not a prefetch of the next record: in run 3, where it was measured with `mincore`, 1.0% of the pages of an announced record (about 130 KB of 13.4 MB, on a device with `read_ahead_kb` 128) were in the page cache just before its read, in each of 10 passes; on the VM kind of run 1 this was not measured. **Not measured:** a prefetch that loads the whole record, any real drive (NVMe, SATA), ARM, another filesystem, two drives, a pass longer than 1.7 s, and any engine; the benchmark reads records as the stores do but decodes nothing.
 
+## WNR3 decode on Vulkan against the CPU decoders (2026-11-15, synthetic records, one RTX 3070)
+
+`wnr3_vk bench` of the Vulkan prototype ([wex4/research/vulkan-decode](../wex4/research/vulkan-decode/README.md), started by its `bench.sh`) decodes one batch of WNR3 records 21 times on the device and on the CPU and compares every output with the reference decoder's bytes (0 differences in every run). The records are **16 synthetic experts with the geometry of a DeepSeek V4.1 expert** (5120 x 2304, 18,800,640 decoded bytes, 2,160 + 17,280 streams, chunks 2048:512), whose bytes are random draws from a skewed distribution (`fixtures/make_synth_mxfp4.py --hidden 5120 --inter 2304`), packed as WNR3 without canonical zero or ceil form (flag byte 0x00), 0.772 of the decoded size; not a model, and **not the machine of the other tables**: an NVIDIA GeForce RTX 3070 (driver 621.01, Vulkan 1.4.357, PCIe gen 3 x16 at most) and an Intel Core i7-7700K (4 cores, 8 threads) under Windows 10, gcc 16.2.0 `-O3 -march=haswell -fopenmp`. Other jobs loaded the CPU during the runs (readings of 40% and 74% just before the two runs that timed it), so the CPU rows are upper bounds. Median of 21 runs (the reference: 5), the batch's time divided by 16; one run of the process (`bench.log` of [research/vulkan-gpu-20261115](../research/vulkan-gpu-20261115/README.md), "round 1, table"):
+
+| Path | ms per record | decoded MB/s |
+|---|---:|---:|
+| GPU, decode: device timestamps around pass A and pass B (no upload, no read-back) | 1.230 | 15,289 |
+| GPU, upload (host copy into mapped memory, then a copy into device memory) + decode, host clock | 3.637 | 5,169 |
+| CPU, fast decoder (AVX2), 8 threads | 24.945 | 754 |
+| CPU, fast decoder (AVX2), 1 thread | 133.956 | 140 |
+| CPU, reference decoder `wex_nr2_decode`, 1 thread | 862.982 | 22 |
+
+The decode took 1/20 of the time of the fast decoder on all threads, and 1/6.9 with the upload. The other run of the same round gave 5% to 38% more on the CPU rows and 1.221 ms on the GPU; over the day the GPU decode was 1.18 to 1.25 ms per record in every run on this batch. The table lookups that the shader uses by default took 0.94 to 0.96 of the device time of the binary search of its first version on this batch, and 0.68 on 48 small records (pairs on the same batch). With the inputs read by the shader from host memory instead of copied first, the decode took 8.6 ms per record. **Not measured:** real records (a real V4.1 record is WNR3-CZ and 0.8545 of its decoded size), another GPU or driver, an upload overlapped with the decode, a commit step and any engine. For scale only: the CUDA kernels took 0.366 to 0.373 ms per real V4.1 record in batches of 16 on the RTX 5090 ([WNR3-VERIFY](reports/WNR3-VERIFY.md), section 3); different GPU and records, not a comparison.
+
 ## Earlier results
 
 CPU-only baseline (M0, `DSV4_CUDA=0`: dense, attention and MoE on CPU), DeepSeek V4.1 Flash REAP-192 MXFP4, 16 GB RAM, warm (`docs/reports/v41-reap-baseline-m0-20261107.md`):
