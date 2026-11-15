@@ -313,7 +313,7 @@ jobs:
         os: [ubuntu-24.04-arm, macos-15]
         vm: [1, 2, 3]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 45   # an estimate, not measured yet
+    timeout-minutes: 30   # the jobs took 2 to 6 minutes on 2026-11-15
     env:
       PYTHON: python3
       USER: ""
@@ -342,11 +342,16 @@ jobs:
           echo "GCC=$GCC" >> "$GITHUB_ENV"
       - name: Synthetic records (wex4/build_and_test.sh with GNU gcc)
         run: CC=$GCC bash wex4/build_and_test.sh
+      # -Werror: a compiler warning fails the step. Each build must be the NEON one with OpenMP, and on macOS the
+      # clang must be Apple clang
       - name: Every WEX_FAST_LANES against the reference decoder, each compiler
         run: |
+          set -o pipefail
           for c in $COMPILERS; do
             if [ "$c" = clang ]; then export WEX_OPENMP="$CLANG_OPENMP"; else unset WEX_OPENMP; fi
-            CC=$c bash wex4/research/fast-cpu-decode/synth.sh lanes
+            CC=$c WEX_CFLAGS=-Werror bash wex4/research/fast-cpu-decode/synth.sh lanes | tee "$RUNNER_TEMP/lanes.log"
+            test "$(grep -c '^build: NEON kernels, OpenMP' "$RUNNER_TEMP/lanes.log")" = 12
+            if [ "$c" = clang ]; then grep -q '^compiler: Apple clang' "$RUNNER_TEMP/lanes.log"; fi
           done
       - name: synth.sh speed, 3 runs per compiler (printed, never judged)
         run: |

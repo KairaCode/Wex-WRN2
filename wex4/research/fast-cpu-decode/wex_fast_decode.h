@@ -66,9 +66,10 @@
 #define WEXF_INLINE static inline __attribute__((always_inline))
 
 /* Streams interleaved by kernel 1 in wex_fast_decode (the default entry point), and in place of a `lanes` value
- * that kernel 1 does not have: -DWEX_FAST_LANES=N, N one of 1, 2, 3, 4, 6, 8; default 4. The decoded bytes and
- * the verdict are the same for every N (all six are compiled in every build, the options pick one at run
- * time); only the speed differs: RESULTS.md, "Stream interleave per ARM64 CPU". */
+ * that kernel 1 does not have: -DWEX_FAST_LANES=N, N one of 1, 2, 3, 4, 6, 8; default 4. An explicit `lanes`
+ * of 1, 2, 3, 4, 6 or 8 is kept. The decoded bytes and the verdict are the same for every N (all six are
+ * compiled in every build, the options pick one at run time); only the speed differs: RESULTS.md, "Streams
+ * per CPU, Apple silicon, Apple clang". */
 #ifndef WEX_FAST_LANES
 #define WEX_FAST_LANES 4
 #endif
@@ -577,7 +578,8 @@ static inline int wex_fast_decode_with(const WexFastModel *tables, const WexNr2R
 #if WEXF_SIMD == 2
     if (J.o.kernel == 2) { J.o.kernel = 1; J.o.lanes = 4; }   /* no gather kernel on NEON */
 #endif
-    if (J.o.kernel == 1 && J.o.lanes != 1 && J.o.lanes != 2 && J.o.lanes != 3 && J.o.lanes != 6 && J.o.lanes != 8) J.o.lanes = WEX_FAST_LANES;
+    if (J.o.kernel == 1 && J.o.lanes != 1 && J.o.lanes != 2 && J.o.lanes != 3 && J.o.lanes != 4 && J.o.lanes != 6 &&
+        J.o.lanes != 8) J.o.lanes = WEX_FAST_LANES;
     if (J.o.kernel == 2 && (J.o.lanes < 1 || J.o.lanes > 3)) J.o.lanes = 1;
     J.o.fuse = J.o.fuse != 0;
 #else

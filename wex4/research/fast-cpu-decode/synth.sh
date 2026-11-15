@@ -13,8 +13,9 @@
 #                                 `mutate` with CASES mini-records (default 200); 5 must not compile. Last line on
 #                                 success: synth lanes passed
 # Usage: after bash wex4/build_and_test.sh, from any directory. gcc and python on PATH (PYTHON=python3 on Linux);
-# CC names another compiler and WEX_OPENMP other OpenMP flags, as in wex4/build_and_test.sh (macOS: a GNU gcc of
-# Homebrew, or Apple clang with the libomp of Homebrew in WEX_OPENMP).
+# CC names another compiler, as in wex4/build_and_test.sh (macOS: a GNU gcc of Homebrew), and WEX_OPENMP replaces
+# -fopenmp (Apple clang, which has no OpenMP runtime: "-Xclang -fopenmp -I<libomp>/include -L<libomp>/lib -lomp"
+# with <libomp> = $(brew --prefix libomp), as the arm-speed job of .github/workflows/ci.yml sets it).
 set -eu
 HERE=$(cd "$(dirname "$0")" && pwd)
 ROOT=$(cd "$HERE/../../.." && pwd)
@@ -74,7 +75,8 @@ case $MODE in
       grep -q "^equal: .* + default (WEX_FAST_LANES $n), 0 mismatches" "lanes$n.log"
       ./t_lanes$n.exe mutate model.wnm2 "$CASES" 20261115 $R
     done
-    if "$CC" $W -O3 $MARCH $OMP -DWEX_FAST_LANES=5 -c "$HERE/test_fast_decode.c" -o t_lanes5.o > lanes5.log 2>&1; then
+    # compile only, so without the OpenMP flags (Apple clang would warn that the -L and -l of WEX_OPENMP are unused)
+    if "$CC" $W -O3 $MARCH -DWEX_FAST_LANES=5 -c "$HERE/test_fast_decode.c" -o t_lanes5.o > lanes5.log 2>&1; then
       echo "-DWEX_FAST_LANES=5 compiled; it must not" >&2; exit 1
     fi
     grep -q 'WEX_FAST_LANES must be' lanes5.log
