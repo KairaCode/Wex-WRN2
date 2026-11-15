@@ -113,7 +113,8 @@ measured; it is not known to fail.
 ## 4. A second, independent implementation
 
 - **Today, a reader in Go:** [impl/go-wex4](../impl/go-wex4/README.md) is a reader and verifier
-  written from the specification pages only, with the WBP1 and the WNR3 decoder. It gives the
+  written from the specification pages only, with the WBP1 and the WNR3 decoder (and, since
+  2026-11-15, a writer: below). It gives the
   manifest's verdict, reject class and root on all 112 rows of
   [wex4/vectors](../wex4/vectors/README.md) (2026-11-14; the `go-reader` job of CI runs it). Passing
   the 112 rows was not enough: on two kinds of file outside the manifest its first version gave
@@ -127,17 +128,36 @@ measured; it is not known to fail.
   issue. Optional: the WNR3 decoder as well; the vectors alone do not prove it (they have no record
   in ceil form), so use the files of [impl/go-wex4/testdata](../impl/go-wex4/testdata/README.md)
   too, and ask the reference for its verdict on every file you are not sure of.
-- **Still wanted, a writer from the spec only:** no writer exists outside the reference code. Done
-  when the two reference readers and the Go reader accept its files and decode them to the source
-  bytes. WEX4-SPEC section 5 says the index encoding is canonical, so a writer that makes the same
-  choices as the reference writer should give the same bytes; nobody has checked that this can be
-  done from the spec alone (the source tensors of `valid/generic.wex4` are not in the vectors
-  folder).
+- **Today, a writer in Go, from the spec only:** the same program writes WEX4 files since
+  2026-11-15 (`wex4check write`, from raw tensor files and a text manifest), with RAW, WBP1 and
+  WNR3 records, trains the WNM2 model that WNR3 records need (`wex4check train`) and computes the
+  content digest of WEX4-SPEC section 5. The two reference readers and the Go reader accept its
+  files and decode them to the source bytes: the tests of
+  [impl/go-wex4](../impl/go-wex4/README.md) ask all three in the `go-reader` job of CI, on fixed
+  files and on 24 random ones in every run (400 in one local run). The canonical encoding of
+  section 5 was tested for the first time: 9 files of the reference writers (6 valid vectors and 3
+  test files), taken apart and written again by the Go writer with the choices read from each
+  file, come out byte for byte, WNR3 records included, and the trainer gives the two WNM2 models of
+  those files byte for byte. The digest matched the reference's on its first reading.
+- **Still open for the writer:**
+  - the sentence of section 5 lists fewer choices than a writer has to fix (version and feature
+    words, the expert grid, the blobs, the reserved header area), section 7 does not give the
+    converters' `chunk_log2`, and WNR2-REFERENCE section 7 calls the CDF of an empty context
+    "near-uniform" where the files show it uniform: notes E1 to E6 and E8 of
+    [SPEC-NOTES.md](../impl/go-wex4/SPEC-NOTES.md), each wanting a sentence of the specification;
+  - a writer in another language, written the same way; a second one would show whether the notes
+    of part E are enough;
+  - the same tensors through the Go writer and through `wex4/wex4_convert.py pack`, compared byte
+    for byte: it needs a safetensors reader in the Go writer and the converter's grouping rule
+    (WEX4-SPEC section 14 gives it in two sentences), and was not tried;
+  - a real model: the writer was run on files of 843,776 B at most and on synthetic experts of
+    13,056 B, the trainer on two training sets of 2 and 48 such experts; no speed was measured.
 - **Still wanted, the rest of the notes turned into text and vectors:** the spec review of
   2026-11-14 wrote part of the Go reader's notes into the specifications; the section "After the
   spec review" of [SPEC-NOTES.md](../impl/go-wex4/SPEC-NOTES.md) lists which. Open: a sentence of
-  the specification for each note that is left, and a conformance vector for each gap of part D
-  (none was added). A change of the specification or of the vectors goes through an issue first.
+  the specification for each note that is left (parts A to C, and part E from the writer), and a
+  conformance vector for each gap of part D (none was added). A change of the specification or of
+  the vectors goes through an issue first.
 
 ## 5. Converters for more models (help wanted)
 
@@ -262,8 +282,10 @@ listed above as well.
 - **The specifications after the review and the Go reader:** the review wrote 16 clarifications into
   WEX4-SPEC and WNR3-SPEC and left 4 findings open; the Go reader of `impl/go-wex4` found no wrong
   verdict in the 112 manifest rows, and a list of sentences that can be read two ways and of cases
-  the vectors do not exercise. The review answers part of that list. The rest of it, the 4 open
-  findings and the vectors that are missing are not done *(open to you, sections 2 to 4)*.
+  the vectors do not exercise. The review answers part of that list. The writer and the trainer of
+  2026-11-15 added eight notes (part E), seven of which want a sentence of the specification. The
+  rest of the list, these seven, the 4 open findings and the vectors that are missing are not done
+  *(open to you, sections 2 to 4)*.
 - **Fuzzing for hours:** the harnesses run for 60 seconds each in CI; no run longer than that is
   recorded in this repository *(open to you, section 3)*.
 - **Converter profiles for more model families:** eight naming profiles are in, tested on synthetic
