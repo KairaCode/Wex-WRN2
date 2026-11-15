@@ -16,7 +16,8 @@
 #   example wex4/out/tiny_nr3_cz.wex4 and wex4/out/synth.wex4, which wex4/build_and_test.sh leaves behind);
 #   they are also the input of the mutation test. A file is read record by record, so its size is not a limit.
 #   MUTATIONS = mutated copies per record (default 20; 0 = no mutation test). WNR3_VK_EVERY = N takes one
-#   WNR3 record in N of each file. WNR3_VK_BATCH_BYTES, WNR3_VK_DEVICE, WNR3_VK_VALIDATE: see wnr3_vk.c.
+#   WNR3 record in N of each file. WNR3_VK_BATCH_BYTES, WNR3_VK_DEVICE (an index or a part of the device
+#   name), WNR3_VK_STAGE, WNR3_VK_ROBUST, WNR3_VK_VALIDATE: see wnr3_vk.c.
 #   On a container of a real model the CPU reference is the slow part (every record and every mutated copy
 #   is decoded by it too): start with MUTATIONS=0, or with WNR3_VK_EVERY.
 #   WNR3_VK_SHADER = another shader source (negative_control.sh uses it). VULKAN_LIB = the loader's library name.
@@ -34,13 +35,25 @@ case $(uname -s) in
   *) LIB=${VULKAN_LIB:-vulkan} ;;
 esac
 SHADER=${WNR3_VK_SHADER:-$HERE/wnr3.comp}
-glslangValidator -V "$SHADER" -o "$OUT/scales.spv" > "$OUT/glslang.log"
-glslangValidator -V -DWEIGHTS "$SHADER" -o "$OUT/weights.spv" >> "$OUT/glslang.log"
+# glslangValidator names the source on stdout or on stderr (it differs between builds): both go to the log
+glsl() { glslangValidator "$@" >> "$OUT/glslang.log" 2>&1 || { cat "$OUT/glslang.log"; exit 1; }; }
+: > "$OUT/glslang.log"
+glsl -V "$SHADER" -o "$OUT/scales.spv"
+glsl -V -DWEIGHTS "$SHADER" -o "$OUT/weights.spv"
 "${CC:-gcc}" -std=c99 -O2 -Wall -Wextra -Wno-unused-function ${WEX_CFLAGS-} -I "$ROOT/c" "$HERE/wnr3_vk.c" -o "$OUT/wnr3_vk" -l"$LIB"
 export WNR3_VK_SHADERS="$OUT"
 X="$OUT/wnr3_vk"
 "$X" selftest
 "$X" decode "$V/valid/tiny2-cz-upgraded.wex4" "$@"
+# the other form of both symbol lookups (-DSEARCH: the reference binary search) on the same records
+mkdir -p "$OUT/search"
+glsl -V -DSEARCH "$SHADER" -o "$OUT/search/scales.spv"
+glsl -V -DWEIGHTS -DSEARCH "$SHADER" -o "$OUT/search/weights.spv"
+search() { WNR3_VK_SHADERS="$OUT/search" "$X" "$@" > "$OUT/search.log" || { cat "$OUT/search.log"; exit 1; }; }
+search selftest
+grep -E '^selftest:' "$OUT/search.log" | sed 's/^/binary search: /'
+search decode "$V/valid/tiny2-cz-upgraded.wex4" "$@"
+grep -E 'WNR3 records' "$OUT/search.log" | sed 's/^/binary search: /'
 # the batch cut: the same records again with a batch limit of 256 KiB, which cuts a file into several
 # batches (files above 16 MiB are left out: a second pass over a real container would only cost time)
 small() {
@@ -56,6 +69,11 @@ done
 "$X" reject "$V/invalid/canonical-zero-wnr3-data-without-the-value-exact-flag.wex4" \
             "$V/invalid/wnr3-record-owner-differs-from-the-owner-in-its-data.wex4" \
             "$V/invalid/wnr3-stream-damaged-record-hash-fixed.wex4"
+# the bench mode once on two small records, both forms in pairs, the CPU decoders not timed: it must end with
+# the reference's bytes for both forms (its times are not read here; bench.sh is the measurement)
+WNR3_VK_BENCH_CPU=0 WNR3_VK_SHADERS_B="$OUT/search" "$X" bench 3 "$V/valid/tiny2-cz-upgraded.wex4" > "$OUT/bench.log" ||
+  { cat "$OUT/bench.log"; exit 1; }
+grep -E 'differences from the reference' "$OUT/bench.log" | sed 's/^bench: /bench mode, both forms: /'
 if [ "${MUTATIONS:-20}" != 0 ]; then
   "$X" mutate "${MUTATIONS:-20}" 20261114 "$V/valid/tiny2-cz-upgraded.wex4" "$@"
 else

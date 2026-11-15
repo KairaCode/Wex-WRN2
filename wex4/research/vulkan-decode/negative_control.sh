@@ -16,6 +16,8 @@ control() {   # name, sed expression
   if [ "$(cat "$HERE/wnr3.comp")" = "$(cat "$COPY")" ]; then echo "control '$1': the expression changes nothing"; return; fi
   if WNR3_VK_SHADER="$COPY" bash "$HERE/run.sh" "$@" > "$HERE/out/control-$total.log" 2>&1; then
     echo "control '$1': NOT noticed (out/control-$total.log)"
+  elif grep -q '^ERROR' "$HERE/out/control-$total.log"; then   # a copy that does not compile proves nothing
+    echo "control '$1': the broken shader does not compile (out/control-$total.log)"
   else
     noticed=$((noticed + 1)); echo "control '$1': noticed"
   fi
@@ -28,7 +30,7 @@ control "a wrong hash is reported as a structure error" 's/else if (state != exp
 control "no canonical-zero check" 's/if (cz && /if (false \&\& /' "${A[@]+"${A[@]}"}"
 control "no error for a coded scale 0 in a max-5 block" 's/if (scale == 0u) { fail(ERR_CEIL); return; }//' "${A[@]+"${A[@]}"}"
 control "ceil-form inverse: the weights are not doubled back" 's/w\[i\] = ceil_double(w\[i\])/w[i] = w[i]/' "${A[@]+"${A[@]}"}"
-control "ceil-form inverse: the scale is not decremented" 's/((scale - 1u) << shift)/(scale << shift)/' "${A[@]+"${A[@]}"}"
+control "ceil-form inverse: the scale is not decremented" 's/scale_word -= 1u << shift;//' "${A[@]+"${A[@]}"}"
 control "a stream may be longer than its symbols need" 's/else if (position != end) fail(ERR_STRUCT);/else if (false) fail(ERR_STRUCT);/' "${A[@]+"${A[@]}"}"
 control "no lower bound on the initial state" 's/bool bad = state < L || state >= (L << 8);/bool bad = state >= (L << 8);/' "${A[@]+"${A[@]}"}"
 control "no upper bound on the initial state" 's/bool bad = state < L || state >= (L << 8);/bool bad = state < L;/' "${A[@]+"${A[@]}"}"
