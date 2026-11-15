@@ -151,7 +151,7 @@ jobs:
   # Then the sanitizers on macOS, with Apple clang: the fuzz replay and every CPU check under ASan and UBSan
   macos-clang:
     runs-on: macos-15
-    timeout-minutes: 20   # a green run took 7.3 minutes (one run, 2026-11-15)
+    timeout-minutes: 20   # a green run took 7.3 to 7.5 minutes (two runs, 2026-11-15)
     env:
       PYTHON: python3
       USER: ""
@@ -279,7 +279,7 @@ jobs:
   # fuzz replay. Two steps fail unless the kernel they built is NEON
   linux-arm-sanitizers:
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 30   # a green run took 8.5 to 8.7 minutes (three runs, 2026-11-15), the longest job
+    timeout-minutes: 30   # a green run took 8.4 to 8.7 minutes (four runs, 2026-11-15), the longest job
     env:
       PYTHON: python3
       USER: ""

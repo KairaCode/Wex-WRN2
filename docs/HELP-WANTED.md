@@ -74,14 +74,14 @@ measured; it is not known to fail.
     gcc, the same flags) and on macOS with Apple clang (`macos-clang`, where the ASan runtime is put
     into the Python interpreter with `DYLD_INSERT_LIBRARIES`). On the two ARM64 systems the NEON
     kernel of the fast decoder runs under both, in the library the tests load into Python, in its
-    own harness and in the fuzz replay; none of the three jobs reported anything in the runs made
-    on 2026-11-15 (listed in [CHANGELOG.md](../CHANGELOG.md)). The jobs `linux-tsan` and `linux-msan`
-    run the C test executables under ThreadSanitizer (clang, OpenMP on) and MemorySanitizer (clang,
-    OpenMP off) through `bash scripts/sanitize_c.sh tsan|msan`, whose header lists what runs:
-    `test_wex_format` (msan only), `test_wex4_verify`, `wex4_verify` (8 threads under tsan, one
-    under msan), and the five fuzzing harnesses on their seeds, two of them also on a file of
-    synthetic WNR3 records. `linux-tsan` also runs the smoke mode of `bench/wex_io.py`, whose
-    `pread` paths have their own threads, under ThreadSanitizer.
+    own harness and in the fuzz replay; no sanitizer reported an error in the code in the green
+    runs of the three jobs listed in [CHANGELOG.md](../CHANGELOG.md) (2026-11-15). The jobs
+    `linux-tsan` and `linux-msan` run the C test executables under ThreadSanitizer (clang, OpenMP
+    on) and MemorySanitizer (clang, OpenMP off) through `bash scripts/sanitize_c.sh tsan|msan`,
+    whose header lists what runs: `test_wex_format` (msan only), `test_wex4_verify`, `wex4_verify`
+    (8 threads under tsan, one under msan), and the five fuzzing harnesses on their seeds, two of
+    them also on a file of synthetic WNR3 records. `linux-tsan` also runs the smoke mode of
+    `bench/wex_io.py`, whose `pread` paths have their own threads, under ThreadSanitizer.
   - **Still open:** the libraries that the tests load into Python (`wex4_tools.dll` with the fast
     decoder, the WNR3 encoder) under these two sanitizers, which needs the same tests driven from C
     or an instrumented Python; the engine-side readers inside an engine tree (here they run only
@@ -105,10 +105,13 @@ measured; it is not known to fail.
     `WEX_OPENMP` (Apple clang refuses `-fopenmp`; the line is in `scripts/build_cpu_check.sh`), and
     then both again under ASan and UBSan. The Fuzz workflow runs the libFuzzer harnesses there
     (section "Fuzzing" above).
-  - **Still open, not tried:** an Intel Mac; ThreadSanitizer on macOS; and the set-up lines of the
-    README on a Mac of your own (`brew install gcc`, `CC=gcc-15`, or `brew install libomp` and
-    `WEX_OPENMP` for Apple clang), which CI does not run on a fresh Mac: it takes the GNU gcc of the
-    runner image and installs `libomp` into the Homebrew of that image.
+  - **Still open, not tried:** an Intel Mac; ThreadSanitizer on macOS; and the set-up lines on a
+    Mac of your own: those of the README (`brew install gcc`, `CC=gcc-15`, or `brew install libomp`
+    and `WEX_OPENMP` for Apple clang) and the libFuzzer line of
+    [wex4/fuzz](../wex4/fuzz/README.md#running-them) (`CC=$(brew --prefix llvm@18)/bin/clang`).
+    CI does not run them on a fresh Mac: it takes the GNU gcc and the `llvm@18` of the runner image
+    and installs `libomp` into the Homebrew of that image. The step of `libfuzzer-macos` that
+    installs `llvm` when the image has no `llvm@N` has never run.
 - **NEON decoder, what is left** (help wanted):
   - **Today:** kernel 1 of the fast CPU decoder (`wex4/research/fast-cpu-decode/wex_fast_decode.h`)
     has a NEON version. In the `linux-arm` CI job it is byte-identical to the reference decoder and

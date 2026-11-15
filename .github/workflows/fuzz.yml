@@ -50,7 +50,7 @@ jobs:
 
   # the same on a 64-bit ARM CPU: fuzz_wnr3_record then compares the NEON kernel of the fast WNR3 decoder with the
   # reference decoder (the step fails if the harness built another kernel). With 60 s per harness a green run of
-  # this job and of libfuzzer-macos took 5.5 minutes, as libfuzzer does (two runs each, 2026-11-15)
+  # this job and of libfuzzer-macos took 5.4 to 5.6 minutes, about as long as libfuzzer (three runs each, 2026-11-15)
   libfuzzer-arm:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 360
