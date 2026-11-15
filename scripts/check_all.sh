@@ -4,6 +4,7 @@
 # Every check that needs no GPU, no model and no engine tree, in one command; the entry point of README,
 # CONTRIBUTING and CI. Windows: MSYS2 UCRT64 or MINGW64 gcc and python on PATH. Linux: gcc and PYTHON=python3.
 # macOS: PYTHON=python3 and a GNU gcc in CC (Homebrew: CC=gcc-15); the scripts it calls read CC, default gcc.
+# Apple clang instead: CC=clang and the libomp of Homebrew in WEX_OPENMP (scripts/build_cpu_check.sh shows the line).
 # Usage: bash scripts/check_all.sh     (last line on success: all checks passed)
 set -eu
 cd "$(dirname "$0")/.."
