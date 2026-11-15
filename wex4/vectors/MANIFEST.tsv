@@ -92,11 +92,13 @@ invalid/wbp1-record-stream-damaged-record-hash-fixed.wex4	reject	WEX4_E_DATA	-	f
 invalid/wbp1-record-with-a-zero-page-too-many.wex4	reject	WEX4_E_DATA	-	dd5c09d381d1abb68bab164eaec68cd2cc422eef23f9c967c46453b782a3e093	-	-
 invalid/wnm2-blob-id-differs-from-its-model.wex4	reject	WEX4_E_BLOB	-	cd8d7880ae87b1b93966e8ac4d1c9e43b16d7ad3ac0b73808c3673bf2397537e	-	-
 invalid/wnm2-blob-of-the-wrong-size.wex4	reject	WEX4_E_BLOB	-	089f0900cee952f90834a4892bd8a947b315215e0d616386faf96167faf8991b	-	-
+invalid/wnm2-blob-with-a-table-that-is-not-increasing.wex4	reject	WEX4_E_BLOB	-	4b97d476ac49e1ec06ee0e649840e6ed6a8f9970facb97a8138ecf15ca631619	-	-
 invalid/wnm2-blob-with-id-0.wex4	reject	WEX4_E_BLOB	-	1199032c6a80bd9dce5878ebaa142f0d4fbeb7d8db6e99572578390740cbe23b	-	-
 invalid/wnr3-canonical-zero-record-with-a-nibble-8.wex4	reject	WEX4_E_DATA	-	50e5e042cd50049eb773521486115df5961a593d15e0cdf4439e3fad9b0b1265	-	-
 invalid/wnr3-ceil-form-block-of-maximum-5-at-coded-scale-0.wex4	reject	WEX4_E_DATA	-	1132997afef372d18d9568ad539323bb073a13f0bf34e6c40a017e266dc2f24f	-	-
 invalid/wnr3-payload-sizes-differ-from-the-stream-lengths-record-hash-fixed.wex4	reject	WEX4_E_DATA	-	7e98790528c11e4bef41e15e18a3bf13569d4a394dd40cb6f6f61a667c52f209	-	-
 invalid/wnr3-record-owner-differs-from-the-owner-in-its-data.wex4	reject	WEX4_E_DATA	-	b1b6e8cfd5064cb792a8e7501686a797c737cbf1630e5d7718502a536524331d	-	-
+invalid/wnr3-record-smaller-than-its-streams-need.wex4	reject	WEX4_E_EXPERT	-	54925227241642a31d1c2512c32e36417adda577d10dffb63daeaf3bf87740de	-	-
 invalid/wnr3-record-whose-blob-is-not-a-wnm2-model.wex4	reject	WEX4_E_RECORD	-	1e44c8a86d29c7485c4fb78a89dc184b92f563e794817a690922095c694bd911	-	-
 invalid/wnr3-record-whose-model-id-is-not-its-blob-id.wex4	reject	WEX4_E_DATA	-	769b3e8b8de3ec8b996207858d2e640004cad737058e376d93707c1499be7cb2	-	-
 invalid/wnr3-record-with-a-reserved-flag-bit.wex4	reject	WEX4_E_DATA	-	fe3e767d28f68a1b89787272d39684a34b98824fc40868a095ef8a95c82e7739	-	-

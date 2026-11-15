@@ -1000,6 +1000,45 @@ def test_spec_cases():
         assert C.check(unknown, 3, True)[0] == CREF.check(unknown, 3, True)[0] == -15, codec
         assert 'unsupported codec' in refusal(wex4.check, unknown, True, C), codec
 
+    # 6. WEX4-SPEC 5.2: a WNR3 record has at least align(32 + 6 * streams) bytes, the streams counted at the
+    #    longest chunk. Three matrices of 4096 x 32 scales have 8 + 256 streams each, 792 in all, so their record
+    #    needs 8,192 bytes. It is written with 8,192 (a WNR3 header and zeros: no record of that size can hold
+    #    its streams), then cut to 4,096: it is the last extent, and its size, the file size and the hashes are
+    #    repaired, so the index is refused for that rule alone
+    big = [(4096, 32)] * 3
+    head = struct.pack('<6I3BBI', 0x33524e57, small_id, 0, 0, 16384, 16384, 120, 120, 120, 0, 0)
+    roomy = written([expert_record('expert', big, bytes(17 * 3 * 4096 * 32), 0, head + bytes(8192 - len(head)))],
+                    **options)
+    rd = wex4.Reader(io.BytesIO(roomy))
+    at, entry = rd.records[0][0], rd.index_offset + len(rd.blobs) * 64
+    assert rd.records[0][1:4] == (8192, 17 * 3 * 4096 * 32, wex4.CODEC_WNR3) and at + 8192 == len(roomy)
+    cut = bytearray(roomy[:at + 4096])
+    struct.pack_into('<Q', cut, 24, len(cut))          # file_bytes
+    struct.pack_into('<I', cut, entry + 8, 4096)       # stored_bytes
+    cut[entry + 36:entry + 68] = hashlib.sha256(cut[at:]).digest()
+    attacks['WNR3 record smaller than its streams need'] = bytes(reseal(cut))
+    assert C.check(attacks['WNR3 record smaller than its streams need'], 3, True)[0] == -13
+
+    # 7. WNR3-SPEC erratum 12: every table of a WNM2 blob is strictly increasing. In the weight table of a context
+    #    in which no symbol is ever coded (pm = 8 comes only with mx = 8, erratum 9), symbol 7 gets the frequency 0.
+    #    The blob's id, the record's model id and its stream hashes are those of the changed blob, and the record
+    #    is the one the unchanged tables give, so only the check of the tables refuses the file
+    broken = bytearray(small_model)
+    at = 32 + ((3 * 9 + 8) * 9 + 0) * 34            # matrix 0, scale context 3, pm 8, mx 0
+    struct.pack_into('<H', broken, at + 16, struct.unpack_from('<H', broken, at + 14)[0])   # cdf[8] = cdf[7]
+    broken = bytes(broken)
+    broken_id = 2166136261
+    for byte in broken:
+        broken_id = (broken_id ^ byte) * 16777619 & 0xffffffff
+    broken_id = broken_id or 1
+    assert rejected(wex4.wnm2_id, broken) and broken_id != small_id
+    under_broken = nr3_encode(broken, good, 7, 0, model_id=broken_id)
+    assert under_broken == nr3_encode(small_model, good, 7, 0, model_id=broken_id), 'the changed table is used'
+    attacks['WNM2 blob with a table that is not increasing'] = written(
+        [expert_record('expert', small_shapes, nr3_slab(source), 0, under_broken)],
+        blobs=[(wex4.BLOB_WNM2, broken_id, broken)], layers=1, experts=1)
+    assert C.check(attacks['WNM2 blob with a table that is not increasing'], 3, True)[0] == -8
+
     digests = set()
     for label, blob in accepted.items():
         status, digest = C.check(blob, 3, True)
@@ -1064,9 +1103,12 @@ def write_vectors(out, generic, hostile):
 
 def test_vectors(where=VECTORS):
     """Every row of MANIFEST.tsv: file hash, C and Python verdicts, C error class, root, content digest (C with the
-    fast and with the reference WNR3 decoder, and Python); upgrade_of reproduced."""
+    fast and with the reference WNR3 decoder, and Python); upgrade_of reproduced. The Python reader decodes WNR3
+    records through the C library and RAW and WBP1 records itself: an accepted file without WNR3 records is read
+    a second time without the library."""
     rows = [l.split('\t') for l in open(os.path.join(where, 'MANIFEST.tsv'), encoding='utf-8').read().splitlines()
             if l and not l.startswith('#')]
+    pure = 0
     for path, verdict, cls, root, sha, source, content in rows:
         data = open(os.path.join(where, path), 'rb').read()
         assert hashlib.sha256(data).hexdigest() == sha, f'{path}: file changed'
@@ -1077,6 +1119,9 @@ def test_vectors(where=VECTORS):
         assert verdict == 'reject' or data[4064:4096].hex() == root == hashlib.sha256(data[:4064]).hexdigest(), path
         assert content == (digest.hex() if verdict == 'accept' else '-'), f'{path}: content digest'
         assert verdict == 'reject' or digest == python[1] == CREF.check(data, 3, True)[1], f'{path}: content digest'
+        if verdict == 'accept' and wex4.CODEC_WNR3 not in [rec[3] for rec in wex4.Reader(io.BytesIO(data)).records]:
+            assert wex4.check(data, True) == digest, f'{path}: content digest of the Python decoders'
+            pure += 1
         if source != '-':   # the in-place upgrade of the source gives this file byte for byte
             work = os.path.join(WORK, 'vector_upgrade.tmp')
             shutil.copyfile(os.path.join(where, source), work)
@@ -1084,7 +1129,7 @@ def test_vectors(where=VECTORS):
             assert open(work, 'rb').read() == data, f'{path}: upgrade of {source} differs'
     print(f'vectors: {len(rows)} files of wex4/vectors/MANIFEST.tsv, {sum(r[1] == "accept" for r in rows)} accepted '
           f'and {sum(r[1] == "reject" for r in rows)} rejected by C and Python as listed, hashes, roots and '
-          f'content digests match')
+          f'content digests match ({pure} accepted files without WNR3 records also decoded without the C library)')
 
 
 def test_fuzz(corpora):
