@@ -52,19 +52,25 @@ static unsigned char *fuzz_exact_copy(const uint8_t *data, size_t size) {
  * by a 64-bit FNV-1a hash: what a run reached behind the stream hashes. The count stops at FUZZ_SEEN_MAX. */
 #define FUZZ_SEEN_SLOTS 65536u
 #define FUZZ_SEEN_MAX (FUZZ_SEEN_SLOTS / 2u)
-static unsigned long long fuzz_distinct;
-static void fuzz_note_distinct(const unsigned char *bytes, size_t n) {
-    static uint64_t seen[FUZZ_SEEN_SLOTS];
+typedef struct {
+    uint64_t seen[FUZZ_SEEN_SLOTS];
+    unsigned long long count;
+} FuzzSeen;
+static void fuzz_seen_note(FuzzSeen *set, const unsigned char *bytes, size_t n) {
     uint64_t h = UINT64_C(14695981039346656037);
     size_t i, slot;
-    if (fuzz_distinct >= FUZZ_SEEN_MAX) return;
+    if (set->count >= FUZZ_SEEN_MAX) return;
     for (i = 0; i < n; i++) { h ^= bytes[i]; h *= UINT64_C(1099511628211); }
     if (!h) h = 1u;
-    for (slot = (size_t)(h % FUZZ_SEEN_SLOTS); seen[slot]; slot = (slot + 1u) % FUZZ_SEEN_SLOTS)
-        if (seen[slot] == h) return;
-    seen[slot] = h;
-    fuzz_distinct++;
+    for (slot = (size_t)(h % FUZZ_SEEN_SLOTS); set->seen[slot]; slot = (slot + 1u) % FUZZ_SEEN_SLOTS)
+        if (set->seen[slot] == h) return;
+    set->seen[slot] = h;
+    set->count++;
 }
+/* the one count most harnesses keep; a harness with several kinds of record has a FuzzSeen for each */
+static FuzzSeen fuzz_seen_records;
+#define fuzz_distinct fuzz_seen_records.count
+static void fuzz_note_distinct(const unsigned char *bytes, size_t n) { fuzz_seen_note(&fuzz_seen_records, bytes, n); }
 
 /* For the harnesses whose code under test opens a path: the input goes to one temporary file per process, in
  * $TMPDIR, $TEMP or /tmp. `name` ends the file name; the harness removes the file at exit. */

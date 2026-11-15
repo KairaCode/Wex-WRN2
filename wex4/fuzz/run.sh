@@ -12,7 +12,8 @@
 #                                       It prints the compiler and the kernels of the fast WNR3 decoder it built
 #
 # WEX_FUZZ_MUTATOR=0 turns the structured mutations of the custom mutators off (the control of a measurement).
-# Everything goes to wex4/fuzz/out/ (git-ignored): the harnesses, seeds/ (wex4/fuzz/make_seeds.py), corpus/NAME
+# Everything goes to wex4/fuzz/out/ (git-ignored): the harnesses, seeds/ (wex4/fuzz/make_seeds.py, with the
+# program built from legacy_seeds.c for the containers of WNR and WNR2 records), corpus/NAME
 # (the inputs libFuzzer keeps: it grows from run to run until out/ is deleted) and crashes/ (the reproducers).
 # A harness that stops leaves crashes/NAME-crash-<sha1> (or -oom-, -timeout-); replay it with
 #   wex4/fuzz/out/NAME wex4/fuzz/out/crashes/NAME-crash-<sha1>
@@ -41,12 +42,16 @@ esac
 mkdir -p "$O/crashes"
 export TMP="$O" TEMP="$O"   # gcc from Git Bash cannot create temporary files under C:\WINDOWS
 rm -rf "$O/seeds"
-"$PY" -I "$ROOT/wex4/fuzz/make_seeds.py" "$O/seeds"
+# legacy_seeds writes the seed containers with WNR and WNR2 records (make_seeds.py runs it). It is built with the
+# compiler of the mode: gcc, or CC, with WEX_CFLAGS for --replay; clang, or CC, for a fuzzing run
+if [ "${1-}" = --replay ]; then SEED_CC="${CC:-gcc} ${WEX_CFLAGS-}"; else SEED_CC="${CC:-clang}"; fi
+$SEED_CC -O2 $W $INC "$ROOT/wex4/fuzz/legacy_seeds.c" -o "$O/legacy_seeds$EXE"
+"$PY" -I "$ROOT/wex4/fuzz/make_seeds.py" "$O/seeds" "$O/legacy_seeds$EXE"
 cd "$ROOT"   # fuzz_wnr3_record finds its default base file from here
 seeds_of() {   # sets SEEDS, the seed folders of one harness
   case $1 in
     fuzz_wnr3_record) SEEDS=("$O/seeds/wnr3") ;;
-    fuzz_store_wex) SEEDS=("$O/seeds/engine") ;;
+    fuzz_store_wex) SEEDS=("$O/seeds/engine" "$O/seeds/legacy") ;;
     fuzz_q38_wex) SEEDS=("$O/seeds/engine" "$O/seeds/file") ;;
     *) SEEDS=("$O/seeds/file") ;;
   esac

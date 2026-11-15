@@ -28,9 +28,10 @@
  * of the process; the harness empties it before every input, so that an input gives the same verdict whatever
  * ran before it. The log lines of the store and of the decoder go nowhere. No mirror file, no CUDA helper.
  *
- * The custom mutator: one call in four, when the input is a container that opens and has WNR3 records, one
- * of them is mutated with wnr3_mutator.h (decoded, edited, encoded again, so its stream hashes are right) and
- * written back if it still takes the same pages. Every other call is libFuzzer's own mutation. */
+ * The custom mutator: one call in four, when the input is a container that opens and has coded records, one
+ * of them is mutated with legacy_mutator.h by the rules of its codec (scale tiles, palette, WNR, WNR2, or
+ * WNR3 through wnr3_mutator.h): decoded, edited, encoded again, so that it passes the checks its codec has,
+ * and written back if it still takes the same pages. Every other call is libFuzzer's own mutation. */
 #define _FILE_OFFSET_BITS 64
 #include <stdio.h>
 static int fuzz_quiet(FILE *stream, const char *format, ...) { (void)stream; (void)format; return 0; }
@@ -41,7 +42,7 @@ static int fuzz_quiet(FILE *stream, const char *format, ...) { (void)stream; (vo
 #define FUZZ_MUTATOR_MAX_LEN 1048576u
 #define FUZZ_MUTATOR_ROUNDS 100
 #include "fuzz_common.h"
-#include "wnr3_mutator.h"
+#include "legacy_mutator.h"
 
 #define FUZZ_MAX_SLABS (UINT64_C(64) << 20)
 #define FUZZ_MAX_LOOKUPS 64u
@@ -62,18 +63,25 @@ int coli_expert_store_backend_register(const char *name, ColiExpertStoreBackendO
 /* what the run reached, printed at exit */
 static unsigned long long count_inputs, count_opened, count_lookups, count_served, count_served_coded, count_served_wnr3;
 /* the records served, by the codec in the low byte of the entry flags: 0 raw, 1 scale tiles, 2 palette, 3 WNR,
- * 4 WNR2, 5 WNR3 (wex_validate_table accepts no other value) */
+ * 4 WNR2, 5 WNR3 (wex_validate_table accepts no other value), and the different decoded slabs among them */
 static unsigned long long count_served_codec[6];
+static FuzzSeen seen_codec[6];
 
 static void fuzz_cleanup(void) {
     remove(temp_path);
     fprintf(stderr, "fuzz_store_wex: %llu inputs, %llu opened by the store, %llu lookups, %llu records served, %llu of "
             "them decoded from a coded record, %llu from a WNR3 record, %llu%s different WNR3 ones; served by codec: "
-            "raw %llu, scale tiles %llu, palette %llu, WNR %llu, WNR2 %llu, WNR3 %llu (structured mutations %s)\n",
+            "raw %llu, scale tiles %llu, palette %llu, WNR %llu, WNR2 %llu, WNR3 %llu; different decoded records "
+            "by codec (each count stops at %u): raw %llu, scale tiles %llu, palette %llu, WNR %llu, WNR2 %llu, "
+            "WNR3 %llu; records replaced by a structured mutation: scale tiles %llu, palette %llu, WNR %llu, "
+            "WNR2 %llu, WNR3 %llu (structured mutations %s)\n",
             count_inputs, count_opened, count_lookups, count_served, count_served_coded, count_served_wnr3,
-            fuzz_distinct, fuzz_distinct >= FUZZ_SEEN_MAX ? " or more" : "", count_served_codec[0],
+            seen_codec[5].count, seen_codec[5].count >= FUZZ_SEEN_MAX ? " or more" : "", count_served_codec[0],
             count_served_codec[1], count_served_codec[2], count_served_codec[3], count_served_codec[4],
-            count_served_codec[5], fuzz_structured() ? "on" : "off");
+            count_served_codec[5], FUZZ_SEEN_MAX, seen_codec[0].count, seen_codec[1].count, seen_codec[2].count,
+            seen_codec[3].count, seen_codec[4].count, seen_codec[5].count, fuzz_legacy_replaced[1],
+            fuzz_legacy_replaced[2], fuzz_legacy_replaced[3], fuzz_legacy_replaced[4], fuzz_legacy_replaced[5],
+            fuzz_structured() ? "on" : "off");
 }
 
 static void fuzz_setup(void) {
@@ -122,7 +130,7 @@ static int fuzz_too_large(const unsigned char *file, size_t size) {
 }
 
 size_t LLVMFuzzerCustomMutator(uint8_t *data, size_t size, size_t max_size, unsigned int seed) {
-    if (fuzz_structured() && !(seed % 4u) && fuzz_wnr3_mutate_legacy(data, size, seed)) return size;
+    if (fuzz_structured() && !(seed % 4u) && fuzz_legacy_mutate(data, size, seed)) return size;
     return LLVMFuzzerMutate(data, size, max_size);
 }
 
@@ -201,10 +209,8 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         count_served_coded += e->flags != 0;
         FUZZ_REQUIRE((e->flags & WEX_ENTRY_CODEC_MASK) < 6u, "the store served a record of a codec that does not exist");
         count_served_codec[e->flags & WEX_ENTRY_CODEC_MASK]++;
-        if (e->flags == WEX_ENTRY_NEURAL_RANS3) {
-            count_served_wnr3++;
-            fuzz_note_distinct(slab, (size_t)e->scale_bytes + e->weight_bytes);
-        }
+        fuzz_seen_note(&seen_codec[e->flags & WEX_ENTRY_CODEC_MASK], slab, (size_t)e->scale_bytes + e->weight_bytes);
+        count_served_wnr3 += e->flags == WEX_ENTRY_NEURAL_RANS3;
         if (first_hit.layer < 0) first_hit = key;
     }
     count_lookups += looked_up;

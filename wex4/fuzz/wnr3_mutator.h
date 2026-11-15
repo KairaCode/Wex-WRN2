@@ -24,7 +24,8 @@
  * or a ceil flag over data that was never halved (the inverse then runs on it, and refuses a scale of 0).
  *
  * fuzz_wnr3_mutate works on one record; fuzz_wnr3_mutate_legacy and fuzz_wnr3_mutate_wex4 pick a WNR3 record
- * inside a whole container and replace it in place. */
+ * inside a whole container and replace it in place. fuzz_nrx_mutate, which fuzz_wnr3_mutate calls, also takes
+ * a WNR2 record (legacy_mutator.h uses it for those). */
 #include "wex4.h"   /* and through it wex_format.h and wex_neural_rans.h */
 
 static uint32_t fuzz_rng(uint32_t *state) {
@@ -69,20 +70,23 @@ static void fuzz_wnr3_edit(const WexNr2Layout *layout, unsigned char *const scal
     }
 }
 
-/* record: a WNR3 record of `stored` bytes in a buffer of `capacity` bytes (both multiples of 4096). On success
- * the buffer holds another record that the reference encoder wrote, zero-padded, and the result is its stored
- * size. 0, with the buffer unchanged: the input is not a record that decodes with this layout and model, or
- * the new record does not fit the capacity. */
-static size_t fuzz_wnr3_mutate(unsigned char *record, size_t stored, size_t capacity, const WexNr2Layout *layout,
-                               const WexNr2Model *model, uint32_t seed) {
+/* record: a WNR3 record (magic WEX_NR3_MAGIC) or a WNR2 record (WEX_NR2_MAGIC: the same streams, each starting
+ * at L, with no hash, no flags and no owner) of `stored` bytes in a buffer of `capacity` bytes (both multiples
+ * of 4096). On success the buffer holds another record that the reference encoder wrote, zero-padded, and the
+ * result is its stored size. 0, with the buffer unchanged: the input is not a record that decodes with this
+ * layout and model, or the new record does not fit the capacity. A WNR2 record gets the same edits of its
+ * scales, weights and chunk sizes; its three medians are recomputed, or one time in 8 drawn at random (a
+ * median is only the centre of the scale contexts: any value decodes). */
+static size_t fuzz_nrx_mutate(unsigned char *record, size_t stored, size_t capacity, const WexNr2Layout *layout,
+                              const WexNr2Model *model, uint32_t magic, uint32_t seed) {
     static const uint32_t chunks[7] = {256u, 512u, 1024u, 2048u, 4096u, 8192u, 16384u};
     unsigned char *data, *out, *scales[3], *weights[3], anchor[3];
     const unsigned char *const_scales[3], *const_weights[3];
     size_t bytes = 0, at = 0, written = 0, aligned = 0, weight_bytes = 0;
-    uint32_t rng = seed, m, edits, weight_chunk, scale_chunk, flags, owner;
+    uint32_t rng = seed, m, edits, weight_chunk, scale_chunk, flags, owner, nr3 = magic == WEX_NR3_MAGIC;
     WexNr2Record view;
     for (m = 0; m < 3u; m++) bytes += (size_t)layout->scale_count[m] + layout->symbol_count[m] / 2u;
-    if (wex_nrx_parse(record, stored, layout, model->id, WEX_NR3_MAGIC, &view)) return 0;
+    if (wex_nrx_parse(record, stored, layout, model->id, magic, &view)) return 0;
     data = (unsigned char *)malloc(bytes ? bytes : 1u);
     out = (unsigned char *)malloc(capacity ? capacity : 1u);
     if (!data || !out) abort();
@@ -98,19 +102,25 @@ static size_t fuzz_wnr3_mutate(unsigned char *record, size_t stored, size_t capa
     for (edits = 1u + fuzz_rng(&rng) % 4u; edits; edits--) fuzz_wnr3_edit(layout, scales, weights, &rng);
     if (!(fuzz_rng(&rng) % 4u)) weight_chunk = chunks[1u + fuzz_rng(&rng) % 6u];
     if (!(fuzz_rng(&rng) % 4u)) scale_chunk = chunks[fuzz_rng(&rng) % 7u];
-    if (!(fuzz_rng(&rng) % 8u)) owner = fuzz_rng(&rng) & 1u ? fuzz_rng(&rng) : owner ^ (1u << fuzz_rng(&rng) % 32u);
-    if (fuzz_rng(&rng) % 3u) {
-        if (flags & WEX_NR3_FLAG_CZ) wex_nr3_canonical_zero(weights[0], weight_bytes);   /* the three matrices are contiguous */
-        flags = (flags & WEX_NR3_FLAG_CZ) | wex_nr3_ceil_forward(layout, scales, weights, NULL);
+    if (!nr3) {
+        flags = 0; owner = 0;
     } else {
-        flags = fuzz_rng(&rng) & (WEX_NR3_FLAG_CEIL_MASK | WEX_NR3_FLAG_CZ);
-        if ((flags & WEX_NR3_FLAG_CZ) && fuzz_rng(&rng) % 4u) wex_nr3_canonical_zero(weights[0], weight_bytes);
+        if (!(fuzz_rng(&rng) % 8u)) owner = fuzz_rng(&rng) & 1u ? fuzz_rng(&rng) : owner ^ (1u << fuzz_rng(&rng) % 32u);
+        if (fuzz_rng(&rng) % 3u) {
+            if (flags & WEX_NR3_FLAG_CZ) wex_nr3_canonical_zero(weights[0], weight_bytes);   /* the three matrices are contiguous */
+            flags = (flags & WEX_NR3_FLAG_CZ) | wex_nr3_ceil_forward(layout, scales, weights, NULL);
+        } else {
+            flags = fuzz_rng(&rng) & (WEX_NR3_FLAG_CEIL_MASK | WEX_NR3_FLAG_CZ);
+            if ((flags & WEX_NR3_FLAG_CZ) && fuzz_rng(&rng) % 4u) wex_nr3_canonical_zero(weights[0], weight_bytes);
+        }
     }
     for (m = 0; m < 3u; m++) {
-        anchor[m] = fuzz_rng(&rng) % 8u ? wex_nr3_anchor(scales[m], layout->scale_count[m]) : (unsigned char)fuzz_rng(&rng);
+        if (!(fuzz_rng(&rng) % 8u)) anchor[m] = (unsigned char)fuzz_rng(&rng);
+        else anchor[m] = nr3 ? wex_nr3_anchor(scales[m], layout->scale_count[m])
+                             : wex_nr2_median(scales[m], layout->scale_count[m]);
         const_scales[m] = scales[m]; const_weights[m] = weights[m];
     }
-    if (!wex_nrx_encode(model, layout, const_scales, const_weights, weight_chunk, scale_chunk, anchor, WEX_NR3_MAGIC,
+    if (!wex_nrx_encode(model, layout, const_scales, const_weights, weight_chunk, scale_chunk, anchor, magic,
                         flags, owner, out, capacity, &written)) {
         aligned = (written + 4095u) & ~(size_t)4095u;
         if (aligned > capacity) aligned = 0;
@@ -123,6 +133,10 @@ done:
     free(out);
     free(data);
     return aligned;
+}
+static size_t fuzz_wnr3_mutate(unsigned char *record, size_t stored, size_t capacity, const WexNr2Layout *layout,
+                               const WexNr2Model *model, uint32_t seed) {
+    return fuzz_nrx_mutate(record, stored, capacity, layout, model, WEX_NR3_MAGIC, seed);
 }
 
 /* The same for one WNR3 record of a legacy container (WEX3 with WEX_HEADER_NEURAL_RANS3) held in memory: when
