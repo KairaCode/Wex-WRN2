@@ -140,7 +140,7 @@ vector check in the summary; team 5's 3070 table of an earlier code version is `
 - Not run at all: every GPU launch path of the three runners, the full 8-expert encode in the kit code, `--shards`,
   `--fetch`, the v1 wrapper end to end.
 
-## 6. Notes for whoever runs it (or for Claude Code on that PC)
+## 6. Notes for whoever runs it on that PC
 
 - Run `run_nvrtc_check.py` first; if sm_120 fails there, the NVRTC wheel is too old.
 - Close other GPU work; timing uses the paired method (all variants of a config alternate inside every round), so

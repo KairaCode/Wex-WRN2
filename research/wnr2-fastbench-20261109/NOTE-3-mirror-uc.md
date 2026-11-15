@@ -1,6 +1,6 @@
-# Note 3 from the main session (2026-11-09): WNR2 U:+C: mirror
+# Note 3 from the coordinator (2026-11-09): WNR2 U:+C: mirror
 
-The user approved going straight to the U:+C: mirror. A main-session script (lab\v41-gpu-20261107\mirror_uc_setup.ps1, under heavy.lock) does three things:
+The user approved going straight to the U:+C: mirror. A coordinator script (lab\v41-gpu-20261107\mirror_uc_setup.ps1, under heavy.lock) does three things:
 1. deletes the duplicate WEX1 on D:;
 2. moves engram shard 47 from C: to D:, leaving a junction at C:\models\DeepSeek-V4.1-Flash-1017-engram, so COLI_MODEL_DIRS is unchanged;
 3. copies WNR2 to C:\kaira_wex\v41-reap\v4_flash_experts.nr2.wex, sha256-verified.

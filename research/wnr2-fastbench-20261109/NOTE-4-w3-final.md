@@ -1,4 +1,4 @@
-# Note 4 from the main session (2026-11-09 05:30): W3 final, so compare the mirror against WEX1 too
+# Note 4 from the coordinator (2026-11-09 05:30): W3 final, so compare the mirror against WEX1 too
 
 W3 final (lab\v41-gpu-20261107\ab\results.md): on the integrated build at 16 GB, WNR2 is -1.80% +/- 0.65% vs WEX1, with identical tokens. Under the user's rule WEX1 stays the container unless WNR2 is not slower.
 

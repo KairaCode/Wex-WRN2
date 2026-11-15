@@ -321,10 +321,10 @@ Ho quindi provato 3 varianti sul **set di letture** e sul **calcolo**, non su la
 - Lo short ABBA a 16 GB è stato eseguito **una volta** (05:40). Il rilancio serale non è confrontabile (13 GB, macchina occupata). La sua ripetibilità è stimata dalle coppie interne (-2,82 / -2,57%) e dai due ABBA dentro W3 (-2,39 / -2,48%), non da una seconda sessione a 16 GB.
 - **La calibrazione di B_pad usa il contatore di uscita del motore, che include il prefill.** L'ipotesi "prefill e riletture uguali nei due bracci" non è misurata. Una riga `wexprof` per token o per prompt nel motore la renderebbe misurabile; non ho toccato i sorgenti.
 - La quota domanda/prefetch del trace è un modello (`pf_share` = recall 0,767), non una misura.
-- Le NOTE-2/3/4 della sessione principale (braccio safetensors, mirror U:+C:, M+R) non fanno parte di questo passo e **non sono state eseguite**.
+- Le NOTE-2/3/4 del coordinatore (braccio safetensors, mirror U:+C:, M+R) non fanno parte di questo passo e **non sono state eseguite**.
   - Gli script le supportano: `short_abba.sh --a/--b`, e per il mirror `--app-engine` con `--b-env 'COLI_WEX_EXTRA_MIRRORS=C:\kaira_wex\v41-reap COLI_WEX_WEIGHTS=38,62'`.
   - Correzione: la ripartizione viene da `COLI_WEX_WEIGHTS`, non da `COLI_DISK_WEIGHTS`. Senza `COLI_WEX_WEIGHTS` tutte le letture vanno su U:.
-- **Dump dei logits** in `%LOCALAPPDATA%\Temp\short-abba\` (1,6 GB, esecuzioni 054051 e 175141): ancora presenti, perché sono serviti a rianalizzare queste due esecuzioni. Non li ho cancellati io. Da ora `short_abba.sh` cancella i dump che crea, dopo l'analisi.
+- **Dump dei logits** in `<TMP>\short-abba\` (1,6 GB, esecuzioni 054051 e 175141): ancora presenti, perché sono serviti a rianalizzare queste due esecuzioni. Non li ho cancellati io. Da ora `short_abba.sh` cancella i dump che crea, dopo l'analisi.
 - **Lo short ABBA nuovo (7 prompt × 64 token) non è ancora stato eseguito.** Durata, ripetibilità e spread tra esecuzioni dello stesso braccio, sotto la soglia del 2%, sono da misurare. short1 finisce in EOS dopo 8 token, quindi il suo tok/s è il più rumoroso.
 - Nessuna modifica a `src/`, `deepseek_v4.c`, `app/` o `kaira.json`. Nessun commit. Nessuna scrittura su U:.
 

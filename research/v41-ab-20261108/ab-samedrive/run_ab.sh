@@ -10,7 +10,7 @@ set -u
 HERE='<KAIRA>'/lab/v41-gpu-20261107/ab-samedrive-20261108
 cd "$HERE" || exit 2
 . '<KAIRA>'/lab/wnr3-5090-20261107/lock.sh
-take_lock "A/B same-drive WEX1 vs WNR2 (main session)" || exit 3
+take_lock "A/B same-drive WEX1 vs WNR2 (coordinator)" || exit 3
 # release only our own lock (lock.sh's trap removes unconditionally)
 trap 'head -c 40 "$LOCK" 2>/dev/null | grep -q "^A/B same-drive WEX1 vs WNR2" && rm -f "$LOCK"; echo "lock: released $(date +%T)"' EXIT
 trap 'exit 130' INT TERM HUP

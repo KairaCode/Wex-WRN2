@@ -62,7 +62,7 @@ if m.get("enabled"):
     env["V4_ROUTE_TEXT"] = "1" if m.get("text") else "0"
     env["V4_ROUTE_PREFILL"] = "1" if m.get("prefill") else "0"
     env["V4_ROUTE_RESID_EVERY"] = str(min(max(m.get("resid_every", 0), 0), 255))
-# ApplyV4Reserve(pendingGemma = 0: subagents disabled)
+# ApplyV4Reserve(pendingGemma = 0: Gemma helpers disabled)
 env["DSV4_CUDA_VRAM_RESERVE_MB"] = str(max(int(env.get("DSV4_CUDA_VRAM_RESERVE_MB", "4096")), 4096))
 # mirror_dir null: the host drops the shard mirror vars; COLI_WEX_EXTRA_MIRRORS/COLI_WEX_WEIGHTS pass through
 env.pop("COLI_MODEL_MIRROR", None); env.pop("COLI_DISK_WEIGHTS", None)

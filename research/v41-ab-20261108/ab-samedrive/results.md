@@ -46,7 +46,7 @@
   - Un'altra lane (G3, `locked_g3.ps1`) era in attesa di 18 GB **senza** il lock e non ha mai girato.
   - Piano energetico "Bilanciato": non l'ho cambiato (impostazione di sistema).
   - Esclusioni di Defender non verificate.
-- **heavy.lock.** Preso alle 20:33:53 con il protocollo di `wnr3-5090-20261107\lock.sh`, etichetta "A/B same-drive WEX1 vs WNR2 (main session)". Rilasciato alle 21:44:39; il trap toglie solo un lock con la nostra etichetta.
+- **heavy.lock.** Preso alle 20:33:53 con il protocollo di `wnr3-5090-20261107\lock.sh`, etichetta "A/B same-drive WEX1 vs WNR2 (coordinator)". Rilasciato alle 21:44:39; il trap toglie solo un lock con la nostra etichetta.
 - **Nessuna scrittura su U:.** I mtime della cartella del modello e dei container non sono cambiati (`.coli_usage` è ancora del 2026-11-07).
 
 ## Smoke (w0, 16 token)

@@ -46,7 +46,7 @@
 
   Il lock era tenuto dal reviewer G2 / lane G del workflow V4.1.
 - **Cache CuPy:** `CUPY_CACHE_DIR` puntava a `results\_cupy_cache`, così nessuna cache finisce in `%USERPROFILE%\.cupy`.
-- **Scritture fuori dal kit:** controllate prima di lanciare. Gli script scrivono solo in `results\`, `data\` e `venv\`. Le eccezioni sono la cache di pip (`%LOCALAPPDATA%\pip`) e `pack_results.ps1`, che crea e poi cancella una cartella temporanea in `%TEMP%`. Nessuno script ha scritto su U:, `app\` o `kaira.json`.
+- **Scritture fuori dal kit:** controllate prima di lanciare. Gli script scrivono solo in `results\`, `data\` e `venv\`. Le eccezioni sono la cache di pip (`%LOCALAPPDATA%\pip`) e `pack_results.ps1`, che crea e poi cancella una cartella temporanea in `<TMP>`. Nessuno script ha scritto su U:, `app\` o `kaira.json`.
 - **Quick conservato:** i risultati del quick (prima del completo, che sovrascrive `results\`) sono in `results_quick_20261108\`.
 
 ## Esito per test (run completo)

@@ -37,7 +37,7 @@ function MoveWithJunction($src, $dst) {
 # take the lock
 $deadline = (Get-Date).AddMinutes(180)
 while ($true) {
-    try { $fs = [IO.File]::Open($lock, 'CreateNew', 'Write'); $w = New-Object IO.StreamWriter($fs); $w.WriteLine("main session: free U: (move lfm2.5/mellum2.1/wnr2-samples to H:) + copy WNR2 E:->U: $(Get-Date -Format s)"); $w.Close(); break }
+    try { $fs = [IO.File]::Open($lock, 'CreateNew', 'Write'); $w = New-Object IO.StreamWriter($fs); $w.WriteLine("coordinator: free U: (move lfm2.5/mellum2.1/wnr2-samples to H:) + copy WNR2 E:->U: $(Get-Date -Format s)"); $w.Close(); break }
     catch [System.IO.IOException] { if ((Get-Date) -gt $deadline) { throw "lock: gave up after 180 min (held by: $(Get-Content $lock -ErrorAction SilentlyContinue))" }; Start-Sleep -Seconds 60 }
 }
 Log "lock taken"

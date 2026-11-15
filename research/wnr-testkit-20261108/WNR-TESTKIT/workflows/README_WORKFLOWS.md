@@ -1,8 +1,8 @@
-# WNR kit: development workflows (Claude Code)
+# WNR kit: development workflows
 
 Some of the remaining WNR2/WNR3 work is development, not a fixed test: an independent decoder has to be written,
 a SIMD decoder tuned for the CPU it runs on, a storage format designed. Those tasks are packaged as three
-**Claude Code workflow scripts**, to be launched on the PC that received the kit (expected: the KAIRA machine,
+**workflow scripts** for a runner with a `Workflow` tool, to be launched on the PC that received the kit (expected: the KAIRA machine,
 Windows, RTX 5090 sm_120). They continue the stopped teams 5, 6 and 7 of the original PC. Their partial work is in
 `partial/` (see `partial/STATUS.md`).
 
@@ -40,7 +40,7 @@ Members whose work is already covered by a plain runner of the kit were dropped 
 
 ## How to launch
 
-Open Claude Code in the kit root and ask it to run the workflow file with an `args` **object** (not a JSON string),
+Open the workflow runner in the kit root and ask it to run the workflow file with an `args` **object** (not a JSON string),
 for example:
 
 ```
@@ -56,7 +56,7 @@ Workflow({ scriptPath: "D:\\wnr-testkit\\workflows\\wnr-kit-team5-conformance.js
 ```
 
 To resume an interrupted run: `Workflow({ scriptPath: "<same path>", args: <same args>, resumeFromRunId: "<runId>" })`
-(finished agents are replayed from cache). If your Claude Code has no Workflow tool, each member's task text is a
+(finished agents are replayed from cache). If your runner has no Workflow tool, each member's task text is a
 plain string constant in the script (`CONF`, `CDEC`, `GPUV1`, `HEAD`, `SIMD`, `VAL`, `SIGN`, `ENGRAM`, `PLAN`,
 `NVFP4`, `OTHER`, preceded by the shared `CTX`): paste CTX + the task into a normal session.
 

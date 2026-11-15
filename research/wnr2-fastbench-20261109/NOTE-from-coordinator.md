@@ -1,4 +1,4 @@
-# Note from the main session (2026-11-09 ~04:40). Read before validating.
+# Note from the coordinator (2026-11-09 ~04:40). Read before validating.
 
 W3 totals (lab\v41-gpu-20261107\ab\runs\w3-*.stderr.log, last `v4_direct` and `v4_wex_gpu_direct` lines of each run):
 

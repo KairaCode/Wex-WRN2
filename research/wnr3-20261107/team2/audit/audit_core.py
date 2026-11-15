@@ -1,6 +1,6 @@
 """team2/audit shared code: 14-bit quantizer (wex_nr2_quantize as described in WNR2-REFERENCE.md:237),
 WNR2-style rANS (L = 2^23, 14-bit, byte renorm, x_max = ((L>>14)<<8)*f, 4-B big-endian state first),
-vectorized over many streams. Independent of the scratchpad wnr2 scripts.
+vectorized over many streams. Independent of the wnr2 scripts in <TMP>.
 """
 import numpy as np
 

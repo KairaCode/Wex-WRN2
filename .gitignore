@@ -20,3 +20,5 @@ colibri.stdout.log
 /archive/nr2/test-nr2.json
 /archive/nr2/build-*.json
 /archive/nr2/model-*.wnm2
+# regenerable cache of the WNR test kit (setup/pack_results.ps1 leaves it out too); tracked until 2026-11-15
+/research/wnr-testkit-20261108/WNR-TESTKIT/results/_cache/

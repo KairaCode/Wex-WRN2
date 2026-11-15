@@ -1,17 +1,17 @@
 # DeepSeek V4.1 REAP-192 on the GPU tiers of deepseek_v4.c: plan (2026-11-07)
 
-> **UPDATE 2026-11-07 ~02:00 from the main session (user-approved file moves; read this first).**
+> **UPDATE 2026-11-07 ~02:00 from the coordinator (user-approved file moves; read this first).**
 > - M0 found D: on a PCIe 3.0 x2 link (1.6 GB/s); U: reads at 6.6 GB/s. The user approved:
 >   - a copy of the WEX1 container to `U:\kaira_wex\v41-reap\v4_flash_experts.wex`. It is ready only when `U:\kaira_wex\v41-reap\v4_flash_experts.wex.verified` exists (it holds the sha256). Until then use the D: copy. The D: copy stays until this workflow ends.
 >   - the old V4 checkpoint `U:\Models\DeepSeek-V4-Flash-0731` moves to `H:\models\DeepSeek-V4-Flash-0731`. A junction keeps the U: path working, but reads come from the H: HDD.
-> - The main session does these copies under `heavy.lock` (label "main-session file moves"), so wait for the lock as usual.
+> - The coordinator does these copies under `heavy.lock` (label "coordinator file moves"), so wait for the lock as usual.
 > - Once the `.verified` marker exists, REAP GPU runs (integration, W2) should prefer the U: WEX1 and record which container they used.
 > - **W3 (A/B):** put both containers on the same drive, U:. If `U:\kaira_wex\v41-reap\` has no verified WNR2 copy, copy the W1 container from E: to U: yourself under heavy.lock (U: should have about 269 GB free after the moves; check first). Verify it by size and sha256, write a `<name>.verified` marker, then run the A/B on U:. If space or time does not allow it, run it as planned and report the drive confound.
 > - The engram shard 47 stays at `C:\models\DeepSeek-V4.1-Flash-1017-engram` for this whole workflow. It moves to D: only after the workflow ends, so keep `COLI_MODEL_DIRS` as given.
 >
 > **UPDATE 2026-11-07 ~03:30: M0 REAP CPU baseline is now MEASURED:** see `m0.md` section 6. The reference is WEX1 on U: at ~1.12 tok/s decode and ~11 s TTFT (30-token prompts); safetensors on U: run at ~0.99 tok/s, and WEX1 on D: at ~0.47 tok/s. Use the U: WEX1 for every REAP run and compare against those numbers. Also: **WEX1/WNR2 code is KAIRA-only and never goes upstream** (user decision).
 >
-> **UPDATE 2026-11-07 ~21:00, RAM rule override (main session):** with the user's normal apps open, the machine sits at about 14 GB of available RAM, so the 18 GB rule in the prompts can never be met. For every REAP run, proceed when available RAM is at least 15 GB with `--memory-gb 16`. If it stays below 15 GB for 10 minutes, run every arm of the comparison (CPU reference and GPU, or WEX1 and WNR2) at `--memory-gb 13`, and report that you did. The heavy.lock rule is unchanged. **Confirmed by the user on 2026-11-08: 18 GB of free RAM will never be available.** Never wait for 18 GB and never skip a run for lack of it. Use this rule, and keep the same `--memory-gb` in both arms of any A/B.
+> **UPDATE 2026-11-07 ~21:00, RAM rule override (coordinator):** with the user's normal apps open, the machine sits at about 14 GB of available RAM, so the 18 GB rule in the prompts can never be met. For every REAP run, proceed when available RAM is at least 15 GB with `--memory-gb 16`. If it stays below 15 GB for 10 minutes, run every arm of the comparison (CPU reference and GPU, or WEX1 and WNR2) at `--memory-gb 13`, and report that you did. The heavy.lock rule is unchanged. **Confirmed by the user on 2026-11-08: 18 GB of free RAM will never be available.** Never wait for 18 GB and never skip a run for lack of it. Use this rule, and keep the same `--memory-gb` in both arms of any A/B.
 
 > **UPDATE 2026-11-08 21:15, the user's decision on the container:** the first same-drive A/B on U: (`ab-samedrive-20261108`, A1 vs B1) shows WNR2 about +2-3% faster than WEX1. Owner decision 2026-11-08 21:15: keep WNR2 if token ids are identical and it is not slower. WNR2 is KAIRA's V4.1 container even below the +3% threshold of section 3.2, provided the full ABBA shows identical token ids and WNR2 is not slower. W3 and the final report must apply this rule, not the old "+3% with a CI excluding 0".
 >
@@ -32,7 +32,7 @@ This is a plan. No source was edited to write it. Base: git `master` at 79aff2b,
 
 Line anchors are `file:line` under `src\colibri\c\` unless a path is given (`cu` = `backend_cuda_dsv4.cu`, `ld` = `backend_loader_dsv4.c`, `v4` = `deepseek_v4.c`). Tags: **[M]** measured, **[R]** read in the code today, **[I]** inferred or estimated, to be checked.
 
-Sources read: `lab\v41-port-20261106\HANDOFF.md` and `phase1-carryforward.md`; `lab\wex-prod-20261105\` (REPORT, the v41 plan and gap, both reports); the memory notes in `docs\handoff\memory\`; the REAP smoke and WEX1 repack logs; and the code below. Three read-only sub-agents mapped the CUDA backend, the WEX/WNR2 path and the MoE/prefetch path. I re-checked the anchors I build on.
+Sources read: `lab\v41-port-20261106\HANDOFF.md` and `phase1-carryforward.md`; `lab\wex-prod-20261105\` (REPORT, the v41 plan and gap, both reports); the working notes in `docs\handoff\memory\`; the REAP smoke and WEX1 repack logs; and the code below. Three read-only workers mapped the CUDA backend, the WEX/WNR2 path and the MoE/prefetch path. I re-checked the anchors I build on.
 
 ---
 
@@ -61,7 +61,7 @@ Sources read: `lab\v41-port-20261106\HANDOFF.md` and `phase1-carryforward.md`; `
 
 ## 1. Work packages, ranked
 
-Effort: **S** < 2 h, **M** about half a day, **L** more than a day (Opus agent plus review). Speed numbers are [I] unless marked; M0 replaces them with measurements.
+Effort: **S** < 2 h, **M** about half a day, **L** more than a day (one top-tier worker plus review). Speed numbers are [I] unless marked; M0 replaces them with measurements.
 
 ### M0. Baseline and a per-token profile for V4.1 (S; enabler; first)
 
@@ -341,7 +341,7 @@ Scale layout for `_ex`: raw E8M0 bytes, row-major, `ceil(rows/block) x ceil(colu
 ### 3.1 Common rules (every run in M0, W3, F1)
 
 - **Quiet machine.**
-  - KAIRA and its engine are closed. No sub-agent, build, W1 encode, copy or indexing is running. Gemma or other models are off.
+  - KAIRA and its engine are closed. No other worker, build, W1 encode, copy or indexing is running. Gemma or other models are off.
   - Check that Defender exclusions are active (the user runs `lab\v41-port-20261106\defender-exclusions.ps1` as admin; we may not do it).
   - High-performance power plan.
   - `nvidia-smi` shows no other compute process. Log free RAM and free VRAM at start.
@@ -460,7 +460,7 @@ Scale layout for `_ex`: raw E8M0 bytes, row-major, `ceil(rows/block) x ceil(colu
 
 - The host keeps the dense copies after upload (no drop in `coli_v4_gpu_layer_upload`, v4:16875-16996), so G1 frees no RAM. R1 is the follow-up.
 - P1's 1024-row chunks add ~0.5-1 GB of scratch during prefill.
-- Sub-agents and KAIRA running alongside swing the budget (Oct: 25-49 GB swings [M]): **no benchmark while other sessions run**.
+- Other workers and KAIRA running alongside swing the budget (Oct: 25-49 GB swings [M]): **no benchmark while other sessions run**.
 
 ### 4.7 Process
 
@@ -494,7 +494,7 @@ Scale layout for `_ex`: raw E8M0 bytes, row-major, `ceil(rows/block) x ceil(colu
 
 ## 6. The "today" cut (2026-11-07)
 
-Ordered by speed-up per hour; lanes A-E run in parallel, Opus agents only.
+Ordered by speed-up per hour; lanes A-E run in parallel, top-tier workers only.
 
 | # | Package | Lane | Effort | Expected | Done when |
 |---|---|---|---|---|---|

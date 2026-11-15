@@ -62,9 +62,9 @@ powershell -ExecutionPolicy Bypass -File .\setup\pack_results.ps1
 Creates `results_<PC>_<date>.zip` in the kit root, without data files and regenerable caches (`-IncludeCaches`
 keeps the caches).
 
-## 6. Research workflows (Claude Code, optional, after the tests)
+## 6. Research workflows (optional, after the tests)
 
-Three Claude Code workflows continue the stopped teams' work (`workflows\README_WORKFLOWS.md`): run one at a time,
+Three workflow scripts continue the stopped teams' work (`workflows\README_WORKFLOWS.md`): run one at a time,
 team5, team6, team7, never together with run_all.ps1. Their outputs go to `results\wf-teamN\` and are packed and
 collected too.
 
@@ -76,6 +76,6 @@ collected too.
 | `tests\cpu\` | CPU record-coder tests, pass criteria, reference values (`tests\cpu\README.md`) |
 | `tests\audit\` | T3 corruption audit (`tests\audit\README.md`) |
 | `tests\gpu\` | GPU decoder bench, canonical-zero bit test, NVRTC check (`tests\gpu\README.md`, `CHECKLIST-kaira-gpu-paths.md`) |
-| `workflows\` | Claude Code workflows (`workflows\README_WORKFLOWS.md`) |
+| `workflows\` | research workflows (`workflows\README_WORKFLOWS.md`) |
 | `partial\` | stopped teams' work (`partial\STATUS.md`) |
 | `docs\` | spec, report, measurements, and the map from the original PC's paths to kit locations (`docs\README.md`) |

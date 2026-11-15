@@ -37,7 +37,7 @@ powershell -ExecutionPolicy Bypass -File .\setup\run_all.ps1 -Quick
 
 Ogni test scrive `results\<test>\summary.json` e stampa `RESULT <test> PASS|FAIL|DONE`. `run_all` continua anche se un test fallisce, e alla fine raccoglie tutto in `results\ALL_RESULTS.json`. Usa `-NoGpu` per saltare la GPU e `-Only`/`-Skip` per scegliere i test.
 
-## Workflow di ricerca (opzionali, con Claude Code sull'altro PC)
+## Workflow di ricerca (opzionali, sull'altro PC)
 
 `workflows\` contiene le versioni portabili dei team 5, 6 e 7 che ho fermato. Riprendono il lavoro parziale salvato in `partial\`:
 - team 5: encoder conforme alla spec più decoder C indipendente, e profilo v1 su GPU;

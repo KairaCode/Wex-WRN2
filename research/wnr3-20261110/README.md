@@ -2,7 +2,7 @@
 
 Scripts and results behind [docs/WNR3-VERIFY.md](../../docs/reports/WNR3-VERIFY.md) (spec: [docs/WNR3-SPEC.md](../../docs/WNR3-SPEC.md)). Copied from the KAIRA lab folder `<KAIRA>\lab\wnr3-impl-20261110`; the large files stay there (`verify/nr3_*.bin` 3.6-3.7 GB, `wnr2_audit.bin`, `model_*_lab80.wnm2`, executables, `g7lab/bin`, `g7lab/runs`, the fresh workspace copies `fresh-fix3` / `fresh-verify`).
 
-Absolute paths into the KAIRA tree were replaced: shell scripts read `$KAIRA` (the KAIRA tree, forward slashes), `.cmd` files `%KAIRA%`; the Python scripts import `build_nr3` from this repo's `nr3/` and read `research/wnr3-5090-20261107` relative to themselves. Drive paths (`U:`, `D:`, `E:`) are the lab machine's, as elsewhere in this repo. Logs are kept as written (scratchpad paths shown as `<SCRATCH>`).
+Absolute paths into the KAIRA tree were replaced: shell scripts read `$KAIRA` (the KAIRA tree, forward slashes), `.cmd` files `%KAIRA%`; the Python scripts import `build_nr3` from this repo's `nr3/` and read `research/wnr3-5090-20261107` relative to themselves. Drive paths (`U:`, `D:`, `E:`) are the lab machine's, as elsewhere in this repo. Logs are kept as written (scratch-folder paths shown as `<SCRATCH>`).
 
 | path | what |
 |---|---|

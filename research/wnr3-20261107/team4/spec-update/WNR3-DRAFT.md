@@ -158,7 +158,7 @@ Reject unless: magic, version 1, precision 14, layout in {0,1} with the matching
 - Counts use exactly the decode contexts: per (expert, matrix) unit, `w[rows][16]` (rows = canonical rows), `bm7[7][2]` per matrix type, `scale[256]` per type.
 - Sets: K-means on units, initialised by layer (`assign = layer*K // num_layers`), cost = sum counts x (-log2 quantized freq), at most 15 iterations, ties to the lower k; then `wex_nr2_quantize` per row (1 + floor(count*(16384-16)/total), largest remainders, ties to the lower symbol; empty rows near-uniform) [R §7]. This is the procedure behind the measured K = 2 / 4 numbers [M, `mxcombo_an.py`]. The trainer may fit sets on a deterministic subsample of experts; the encoder assigns every matrix.
 - lenpred: `lp_w[k][s]` = round(256 x mean coded bits of a block of set k and srel s, including the bm7 symbol); `lp_s[m]` = round(256 x mean bits per scale); `lp_wbias[k]` chosen so the median weight-length residual is 0 on the training set.
-- Memory note [I]: per-unit counts for all 7,680 x 3 units at 910 x 16 int32 are 1.34 GB; fine on 32 GB, or train on a subsample.
+- RAM note [I]: per-unit counts for all 7,680 x 3 units at 910 x 16 int32 are 1.34 GB; fine on 32 GB, or train on a subsample.
 
 ### 3.6 Sizes
 `total = 64 + pad4(2*FC) + pad4(K*rows*34) + (layout1 ? 44 : 0) + 1544 + (LENPRED ? 32K + 12 : 0)` [I, computed]:

@@ -1,4 +1,4 @@
-# Note 2 from the main session (2026-11-09): add a safetensors arm
+# Note 2 from the coordinator (2026-11-09): add a safetensors arm
 
 The user asked how WEX1/WNR2 compare with plain safetensors. The only direct measurement is the CPU M0 baseline (lab\v41-gpu-20261107\m0.md section 6):
 - safetensors on U: 0.976 / 1.008 tok/s;

@@ -1,7 +1,7 @@
 #!/bin/sh
 # one host-style v41gpu launch (WNR2 U: + C: mirror) under heavy.lock (lab/wnr3-5090-20261107/lock.sh protocol)
 . '<KAIRA>'/lab/wnr3-5090-20261107/lock.sh
-take_lock "v41gpu mirror verify: 1 host-style engine launch, ~10 min (subagent)" || exit 3
+take_lock "v41gpu mirror verify: 1 host-style engine launch, ~10 min (worker)" || exit 3
 cd "$(dirname "$0")"
 if tasklist | grep -qi "KAIRA.exe\|deepseek_v4"; then echo "KAIRA or an engine is running: abort"; exit 4; fi
 echo "== temps before $(date +%T)"; C:/Python314/python.exe -I ../v41-gpu-20261107/ab/nvme_temp.py 3=C: 5=U:
