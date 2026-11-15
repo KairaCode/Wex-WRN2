@@ -14,7 +14,9 @@ harnesses (fuzz_store_wex reads it, fuzz_q38_wex reads it and OUT_DIR/file):
     8192 scale bytes, 131072 weight bytes);
   - the legacy vector tiny2-cz.wex3 (WNR3 records, canonical zero; 6 x 8 with two experts present), and the
     same file with its grid cut to 1 x 2, where every expert is present, as the Qwen3.8 reader requires;
-  - the WEX4 form of the WEX1 and of the 1 x 2 WNR3 container (wex4_convert.upgrade).
+  - the WEX4 form of the WEX1 and of the 1 x 2 WNR3 container (wex4_convert.upgrade);
+  - a WEX1 container of 1 layer x 4 experts with raw records of 16384 bytes (hidden 128, intermediate 64): four
+    pages, so that the striped read of fuzz_q38_wex cuts a record by its drives' shares and not only at one page.
 
 No seed holds palette (codec 2), WNR (codec 3) or WNR2 (codec 4) records. A seed is named by the first 16 hex
 digits of the SHA-256 of its bytes, so the same bytes are never stored twice and the paths stay short (Windows
@@ -107,6 +109,7 @@ def main():
     for data in (wex1, legacy(2, 1, ((64, 512), (64, 512), (64, 1024)), True), tiny2, tiny2_1x2,
                  upgraded(engine, wex1), upgraded(engine, tiny2_1x2)):
         put(engine, data)
+    put(engine, legacy(1, 4, ((64, 64), (128, 32), (64, 64)), False))   # records of four pages
     rows = [line.split('\t') for line in open(os.path.join(VECTORS, 'MANIFEST.tsv'), encoding='utf-8').read().splitlines()
             if line and not line.startswith('#')]
     for path, verdict in ((row[0], row[1]) for row in rows):

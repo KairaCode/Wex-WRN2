@@ -28,7 +28,9 @@
  * Limits of this harness, not of the reader: a grid of more than FUZZ_MAX_GRID experts or a record larger than
  * FUZZ_MAX_RECORD is not attached (the reader allocates what the model's own geometry asks for); the model
  * registry of c/wex_decode.c is emptied before every input; the log lines go nowhere; reads go through the
- * page cache (no O_DIRECT); no mirror, no striped read, no load wave, no CUDA helper, no Quark shards.
+ * page cache (no O_DIRECT); no Quark shards. Mirrors, the read split, the striped read and the load wave are a
+ * second pass over every container that attached (q38_paths.h); the CUDA helper is the one WEX_FUZZ_CUDA_LIB
+ * names, if any (engine_paths.h).
  *
  * The custom mutator: one call in four, when the input is a legacy container or a WEX4 file that opens and has
  * WNR3 records, one of them is mutated with wnr3_mutator.h (decoded, edited, encoded again, so its stream
@@ -61,6 +63,8 @@ static int fuzz_quiet(FILE *stream, const char *format, ...) { (void)stream; (vo
 #define FUZZ_MUTATOR_ROUNDS 40
 #include "fuzz_common.h"
 #include "wnr3_mutator.h"
+#include "engine_paths.h"
+#include "q38_paths.h"   /* the second pass: mirrors, read split, striped read, load wave */
 
 #define FUZZ_MAX_GRID 4096u
 #define FUZZ_MAX_RECORD (INT64_C(16) << 20)
@@ -85,7 +89,7 @@ static void fuzz_setup(void) {
     size_t i;
     fuzz_temp_path(temp_path, sizeof temp_path, "q38.wex");
     fuzz_setenv("COLI_WEX_PATH", temp_path);
-    fuzz_setenv("COLI_WEX_CUDA_LIB", "0");   /* the CPU decoder: no helper is looked for */
+    fuzz_setenv("COLI_WEX_CUDA_LIB", fuzz_cuda_lib());   /* "0", the CPU decoder, unless WEX_FUZZ_CUDA_LIB names one */
     for (i = 0; i < sizeof unset / sizeof unset[0]; i++) fuzz_setenv(unset[i], "");
     atexit(fuzz_cleanup);
 }
@@ -235,6 +239,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         q38_mx4_free(x);
         free(x);
     }
+    fuzz_q38_paths(&m, temp_path, file, size, &model);
     free(file);
     return 0;
 }

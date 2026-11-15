@@ -9,8 +9,15 @@
 #                                       with a custom mutator also runs that mutator on its seeds (a regression
 #                                       test that needs no clang; CC names another compiler and WEX_CFLAGS adds
 #                                       flags, as in the other scripts: scripts/sanitize_c.sh runs it that way).
-#                                       It prints the compiler and the kernels of the fast WNR3 decoder it built
+#                                       It prints the compiler and the kernels of the fast WNR3 decoder it built.
+#                                       On Windows it then replays the two engine harnesses once more with a CUDA
+#                                       helper: c/tests/fake_wex_cuda.c, the CPU stand-in, built as a DLL
 #
+# WEX_FUZZ_COLIBRI=<dir> (a colibri checkout) or WEX_FUZZ_COLIBRI=fetch (colibri at COLIBRI_COMMIT below, only its
+# c/*.h and c/expert_store_registry.c, fetched with git into out/colibri): --replay then also builds the two engine
+# harnesses against that tree's c/ folder instead of the stand-ins of engine/ and replays their seeds, and builds
+# engine_layout.c against both: the two must print the same declarations, or the replay fails. Nothing of colibri
+# is copied into the repository.
 # WEX_FUZZ_MUTATOR=0 turns the structured mutations of the custom mutators off (the control of a measurement).
 # Everything goes to wex4/fuzz/out/ (git-ignored): the harnesses, seeds/ (wex4/fuzz/make_seeds.py), corpus/NAME
 # (the inputs libFuzzer keeps: it grows from run to run until out/ is deleted) and crashes/ (the reproducers).
@@ -52,6 +59,78 @@ seeds_of() {   # sets SEEDS, the seed folders of one harness
   esac
 }
 
+# The colibri commit the stand-ins of engine/ were checked against (dev, 2026-11-15); WEX_FUZZ_COLIBRI=fetch takes it
+COLIBRI_URL=https://github.com/JustVugg/colibri
+COLIBRI_COMMIT=98327913f980514970173b6df7bf67210ad0dc16
+replay_one() {   # harness, executable, then extra environment assignments: the harness on its seeds
+  local h=$1 exe=$2
+  shift 2
+  seeds_of "$h"
+  files=()
+  for d in "${SEEDS[@]}"; do files+=("$d"/*); done
+  env "$@" "$exe" "${files[@]}"
+}
+engine_extras() {   # --replay, after the five harnesses
+  local h tree log
+  if [ -n "$EXE" ]; then
+    # c/wex_decode.c loads a CUDA helper on Windows only. With the CPU stand-in the store decodes through the
+    # helper's entry points, and the Qwen3.8 reader also runs its load waves (q38_paths.h); the check below fails
+    # the replay when no record went through the helper (a DLL that did not load)
+    "${CC:-gcc}" -O2 -shared -Wall -Wextra -I "$ROOT/c" "$ROOT/c/tests/fake_wex_cuda.c" -o "$O/fake_wex_cuda.dll"
+    for h in fuzz_store_wex fuzz_q38_wex; do
+      echo "== $h, CUDA helper c/tests/fake_wex_cuda.c"
+      log="$O/$h-helper.log"
+      replay_one "$h" "$O/$h-replay$EXE" "WEX_FUZZ_CUDA_LIB=$(cygpath -w "$O/fake_wex_cuda.dll")" > "$log" 2>&1 ||
+        { cat "$log"; return 1; }
+      cat "$log"
+      grep -q 'CUDA helper on, [1-9][0-9]* records decoded through it' "$log" ||
+        { echo "$h: no record was decoded through the helper" >&2; return 1; }
+    done
+  fi
+  [ -n "${WEX_FUZZ_COLIBRI-}" ] || return 0
+  if [ "$WEX_FUZZ_COLIBRI" = fetch ]; then
+    tree=$O/colibri
+    if [ "$(git -C "$tree" rev-parse HEAD 2>/dev/null)" != "$COLIBRI_COMMIT" ]; then
+      rm -rf "$tree"
+      git init -q "$tree"
+      # the headers and the backend registry, not the engine's sources: scripts/build_cpu_check.sh out/colibri/c
+      # builds c/tests/test_expert_store_wex.c with them (it finds the test's ../ headers through c/tests)
+      git -C "$tree" config core.sparseCheckout true
+      printf '/c/*.h\n/c/expert_store_registry.c\n' > "$tree/.git/info/sparse-checkout"
+      git -C "$tree" fetch -q --depth 1 --filter=blob:none "$COLIBRI_URL" "$COLIBRI_COMMIT"
+      git -C "$tree" checkout -q FETCH_HEAD
+      mkdir -p "$tree/c/tests"
+    fi
+  else
+    tree=$WEX_FUZZ_COLIBRI
+  fi
+  if [ ! -f "$tree/c/compat.h" ] || [ ! -f "$tree/c/expert_store.h" ]; then
+    echo "WEX_FUZZ_COLIBRI: no colibri headers in $tree/c" >&2
+    return 2
+  fi
+  echo "colibri tree: $tree, commit $(git -C "$tree" rev-parse HEAD 2>/dev/null || echo unknown)"
+  # the declarations both harnesses take from the engine headers: the stand-ins and the tree must agree
+  "${CC:-gcc}" -O1 $W ${WEX_CFLAGS-} -I "$ROOT/c" -I "$ROOT/wex4/fuzz/engine" "$ROOT/wex4/fuzz/engine_layout.c" \
+      -o "$O/layout-standin$EXE"
+  "${CC:-gcc}" -O1 $W ${WEX_CFLAGS-} -DWEX_FUZZ_COLIBRI -I "$ROOT/c" -I "$tree/c" "$ROOT/wex4/fuzz/engine_layout.c" \
+      -o "$O/layout-colibri$EXE"
+  "$O/layout-standin$EXE" > "$O/layout-standin.txt"
+  "$O/layout-colibri$EXE" > "$O/layout-colibri.txt"
+  if ! diff "$O/layout-standin.txt" "$O/layout-colibri.txt"; then
+    echo "engine_layout: the stand-ins of engine/ and the headers of $tree/c differ (lines above)" >&2
+    return 1
+  fi
+  echo "engine_layout: $(wc -l < "$O/layout-colibri.txt" | tr -d ' ') declarations, the same in the stand-ins and in the tree"
+  for h in fuzz_store_wex fuzz_q38_wex; do
+    # no engine/ on the include path: every engine header comes from the tree
+    "${CC:-gcc}" -O2 $W ${WEX_CFLAGS-} $MARCH -DWEX_FUZZ_STANDALONE -DWEX_FUZZ_COLIBRI \
+        -I "$ROOT/c" -I "$ROOT/wex4/research/fast-cpu-decode" -I "$tree/c" -pthread "$ROOT/wex4/fuzz/$h.c" \
+        -o "$O/$h-colibri$EXE"
+    echo "== $h, against the headers of $tree/c"
+    replay_one "$h" "$O/$h-colibri$EXE"
+  done
+}
+
 if [ "${1-}" = --replay ]; then
   # the compiler, and which kernels of the fast WNR3 decoder fuzz_wnr3_record compares with the reference under
   # these flags (WEXF_KERNELS of wex_fast_decode.h): AVX2, NEON or scalar
@@ -67,6 +146,7 @@ if [ "${1-}" = --replay ]; then
     for d in "${SEEDS[@]}"; do files+=("$d"/*); done
     "$O/$h-replay$EXE" "${files[@]}"
   done
+  engine_extras
   echo "fuzz replay passed"
   exit 0
 fi
