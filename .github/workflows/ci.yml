@@ -2,7 +2,8 @@
 # the fast decoder's harness on synthetic records (scripts/check_all.sh), then the fuzzing harnesses replayed on
 # their seeds (wex4/fuzz/run.sh --replay), on Linux (x86-64, ARM64), macOS (Apple silicon) and Windows. The same
 # on Linux under ASan and UBSan (linux-sanitizers); the C test executables under TSan and MSan with clang
-# (linux-tsan, linux-msan); and the Go reader on the conformance vectors (go-reader).
+# (linux-tsan, linux-msan); and the Go reader and the Rust reader on the conformance vectors (go-reader,
+# rust-reader).
 # No GPU, no model weights, no secrets. A run started by hand can also have the linux-io-bench job (the full
 # Linux read-path benchmark) and the linux-vulkan job (the WNR3 Vulkan prototype on a CPU Vulkan device).
 name: CI
@@ -266,6 +267,30 @@ jobs:
           persist-credentials: false
       - name: Go reader on the conformance vectors
         run: bash impl/go-wex4/run.sh
+
+  # the Rust reader of WEX4 (impl/rust-wex4: Rust, standard library only, written from the specifications and not
+  # from the reference code or the Go reader): rustfmt, its tests, every row of wex4/vectors/MANIFEST.tsv and the
+  # files of impl/go-wex4/testdata. Then a differential run: wex4/build_and_test.sh builds the library of the C
+  # reader (and runs the WEX4 tests once more, with a short fuzz), and differential.py must find the verdict of
+  # the C and of the Python reader on every hand-made and mutated file. The runner's own cargo is used. Not part
+  # of scripts/check_all.sh, so that Rust is not needed for the repository's checks
+  rust-reader:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHON: python3
+      USER: ""
+      USERNAME: ""
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
+      - name: Rust reader on the conformance vectors
+        run: bash impl/rust-wex4/run.sh
+      - name: The C and the Python reader (wex4/out)
+        run: bash wex4/build_and_test.sh --fuzz 10
+      - name: Rust reader against the C and the Python reader, hand-made and 7,000 mutated files
+        run: python3 -I impl/rust-wex4/differential.py --count 7000 impl/rust-wex4/out/target/release/wex4r "$RUNNER_TEMP/differential"
 
   # A measurement, not a check: the full bench/wex_io.py, only when a manual run asks for it
   # (gh workflow run ci.yml --ref <branch> -f linux_io_bench=true). The runner is a shared cloud VM with a
