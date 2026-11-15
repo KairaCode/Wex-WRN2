@@ -18,6 +18,8 @@ type Result struct {
 	// Undecoded counts the records whose codec this reader does not know (section 10, rule 6): their
 	// SHA-256 was checked, their content was not decoded, so the file is not verified in full.
 	Undecoded uint32
+	// Digest is the content digest of section 5. It is defined only when Undecoded is 0.
+	Digest [32]byte
 }
 
 func readAt(f io.ReaderAt, off, n uint64) ([]byte, *Error) {
@@ -78,6 +80,7 @@ func Verify(f io.ReaderAt, size uint64, pin []byte, visit func(i uint32, r Recor
 	// step 3, records: SHA-256 of the stored bytes, then the decoder
 	res := &Result{H: h, X: x}
 	out := make([]byte, h.MaxDecoded)
+	dig := newDigest()
 	for i := uint32(0); i < h.Records; i++ {
 		r := x.Record(i)
 		rec, e := readAt(f, r.Offset, uint64(r.Stored))
@@ -110,10 +113,13 @@ func Verify(f io.ReaderAt, size uint64, pin []byte, visit func(i uint32, r Recor
 			e.Msg = "record " + utoa(i) + ": " + e.Msg
 			return nil, e
 		}
+		dig.record(x, r, dec)
 		if visit != nil {
 			visit(i, r, x, dec)
 		}
 	}
+	dig.zeroSize(x)
+	res.Digest = dig.sum()
 	return res, nil
 }
 
