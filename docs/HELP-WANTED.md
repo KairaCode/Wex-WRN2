@@ -104,11 +104,20 @@ measured; it is not known to fail.
     `macos` job builds the same kernel with GNU gcc and passes the comparisons with the reference
     decoder that `scripts/check_all.sh` and the fuzz replay make (not the other steps of
     `linux-arm`); no speed was measured there.
+  - **Today, SVE:** kernel 2 (the gathers, which NEON lacks) has an SVE version since 2026-11-15. It
+    is built only with an SVE flag (`-march=armv8-a+sve`, or `-mcpu=native` on a CPU with SVE), and
+    NEON kernel 1 stays the default. The `linux-arm` runner has SVE with 128-bit vectors: there the
+    kernel is byte-identical to the reference decoder (also at 256, 512 and 2048 bits under QEMU,
+    which checks bytes only), and its fastest variant is 1.23 times slower than NEON kernel 1 on one
+    thread, on synthetic records ([results](../wex4/research/fast-cpu-decode/RESULTS.md), section
+    "SVE kernel 2"). So it is an option, not the default.
   - **Still open:** its speed on other ARM CPUs (Apple silicon, Ampere, DGX Spark), which needs no
     model (`bash scripts/check_all.sh`, then `bash wex4/research/fast-cpu-decode/synth.sh speed`);
     its speed on real records; a build with Apple clang; the number of interleaved streams that is
-    best on each CPU; kernel 2 for SVE, which has gather loads (NEON has none, so kernel 2 is AVX2
-    only).
+    best on each CPU; the SVE kernel 2 on a CPU with vectors longer than 128 bits (256 bits on
+    Neoverse V1, 512 on A64FX), where it might win: `WEX4_MARCH=-march=armv8-a+sve` before the same
+    `synth.sh speed` times both kernels; a choice at run time between a NEON and an SVE build (a
+    binary built for SVE needs a CPU with SVE, and nothing checks for it).
 
 ## 4. A second, independent implementation
 
@@ -246,9 +255,11 @@ listed above as well.
   the I/O switches. Reviewing or testing those PRs on your hardware helps directly.
 - **WNR3 decode on Vulkan:** the design note and a prototype checked on a CPU Vulkan device are in; a run
   on a GPU, a speed number, a real container and the engine hook are open *(open to you, section 6)*.
-- **ARM and macOS:** the ARM CI jobs (Linux, and macOS on Apple silicon) and a NEON version of kernel 1
-  of the fast CPU decoder are in. Its speed on real records and on ARM CPUs other than the Linux CI
-  runner, an SVE version of kernel 2, and Apple clang are still open *(open to you, section 3)*.
+- **ARM and macOS:** the ARM CI jobs (Linux, and macOS on Apple silicon), a NEON version of kernel 1
+  of the fast CPU decoder and an SVE version of kernel 2 are in; the SVE kernel is not the default,
+  because on the CI runner's 128-bit SVE it is slower than NEON kernel 1. Their speed on real records
+  and on ARM CPUs other than the Linux CI runner, the SVE kernel on longer vectors, and Apple clang
+  are still open *(open to you, section 3)*.
 - **Linux I/O in the engine:** the fast read paths were built and measured on Windows. The Linux
   benchmark is in (`bench/wex_io.py`), run so far only on two kinds of cloud VM, where it gave no reason to
   change the store; runs on real drives and the tuning that follows from them are still open *(open to
