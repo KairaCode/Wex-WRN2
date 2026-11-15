@@ -167,7 +167,7 @@ archive/       the WNR2 lab code (encoder, trainer, checks) and its benches, kep
 models/        trained WNM2 models: DeepSeek V4 Flash 0731 and V4.1 REAP-192
 fixtures/      the tiny V4.1 model and the makers of synthetic experts
 integration/   engine, backend and host excerpts, build scripts, patches
-docs/          living pages: index, architecture, glossary, benchmarks, integration guide, WNR2 reference, WNR3 and WEX4 specs
+docs/          living pages: index, architecture, glossary, benchmarks, integration guide, WNR2 reference, WNR3 and WEX4 specs, the Vulkan design note
   reports/        dated, frozen reports (some in Italian)
 research/      dated lab runs, frozen; README.md is the index
 docs/NEXT-FORMAT-SPEC.md         stub: a comment in c/wex4.h still names this path

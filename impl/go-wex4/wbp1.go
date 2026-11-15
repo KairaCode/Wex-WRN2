@@ -129,8 +129,9 @@ func decodeWBP1(rec []byte, owner uint32, out []byte) *Error {
 			out[uint64(k)*planes+p] = c
 		}
 	}
-	// stored_bytes is the used bytes rounded up to a page and no more. WEX4-SPEC 7.2 does not write this
-	// sentence; both reference readers refuse a record with one more page of zeros (SPEC-NOTES.md, A9).
+	// stored_bytes is the used bytes rounded up to a page and no more. The revision of WEX4-SPEC 7.2 this
+	// was written from did not have the sentence (the one of 2026-11-14 has); both reference readers refuse
+	// a record with one more page of zeros (SPEC-NOTES.md, A9).
 	if align(pos) != total {
 		return bad("WBP1: %d bytes used, stored_bytes is %d and not these rounded up to a page", pos, total)
 	}

@@ -299,9 +299,15 @@ shared virtual machine, load unknown.
   ms, 5.9x, where real records gave 7.1x. Whether the synthetic records understate the gain on ARM too
   was not measured.
 
-Not checked on ARM: real records; any CPU other than the Neoverse-N2 of the runner (no Apple silicon, no
-Ampere, no Cortex-A); macOS and Apple clang; big-endian AArch64 (it builds the scalar kernel, never run);
+Not checked on ARM: real records; the speed on any CPU other than the Neoverse-N2 of the runner (no Apple
+silicon, no Ampere, no Cortex-A); Apple clang; big-endian AArch64 (it builds the scalar kernel, never run);
 32-bit ARM (scalar kernel, never run); UBSan and ASan (the sanitizer job is x86-64).
+
+macOS: the `macos` CI job (macos-15 on Apple silicon, Homebrew GCC 15.3.0 on 2026-11-14) builds the NEON
+kernel and fails if it built another one. It runs `scripts/check_all.sh`, so the WEX4 tests and
+`synth.sh check` compare that build with the reference decoder there, and `wex4/fuzz/run.sh --replay`. It
+does not run `synth.sh speed`, the negative controls, the WEX4 tests with the scalar kernel forced or a
+clang build: those are steps of `linux-arm` only.
 
 ## Semantics and safety notes
 

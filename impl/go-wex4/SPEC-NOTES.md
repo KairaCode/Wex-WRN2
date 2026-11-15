@@ -2,7 +2,27 @@
 
 Written on 2026-11-14 while the Go reader of this folder was made from [WEX4-SPEC](../../docs/WEX4-SPEC.md) (document revision 2026-11-13, history row of 2026-11-14 included), [WNR3-SPEC](../../docs/WNR3-SPEC.md) (FINAL v1) and [WNR2-REFERENCE](../../docs/WNR2-REFERENCE.md). Each note gives the place, what a reader written from scratch could not decide from the text, how this reader resolved it, and whether a file settles the question. "The vectors" are the 112 rows of `wex4/vectors/MANIFEST.tsv`; "testdata" is the four files of [testdata/](testdata/README.md), written by the repository's own tools. "The reference" is the two readers of the repository, `c/wex4.h` and `wex4/wex4.py`, used as black boxes: a file goes in, a verdict comes out.
 
-No verdict of the 112 rows depends on a note: the reader gave all 112 verdicts, reject classes and roots on its first run. Outside the manifest two notes did decide a verdict. On the files of A6 and A9 the first version of this reader and the reference disagreed (found by a review on 2026-11-14, which asked the reference); the reader now takes the reference's reading in both, and the sentence is still missing from the specification.
+No verdict of the 112 rows depends on a note: the reader gave all 112 verdicts, reject classes and roots on its first run. Outside the manifest two notes did decide a verdict. On the files of A6 and A9 the first version of this reader and the reference disagreed (found by a review on 2026-11-14, which asked the reference); the reader now takes the reference's reading in both, and the sentence was missing from the revision read.
+
+## After the spec review of 2026-11-14
+
+The notes below are about the revision named above and are left as they were written. A review of the two specifications was made the same day, independently of this reader ([research/spec-review-20261114](../../research/spec-review-20261114/README.md)), and its clarifications are in the specifications of this tree: WEX4-SPEC document revision 2026-11-14 and WNR3-SPEC errata 9 to 12. The table says which notes that text now answers. It was made by reading the two lists and the new sentences side by side. The reader was not changed for it: on these points it already did what the text now says.
+
+| Note | Now in the text |
+|---|---|
+| A1 | WNR3-SPEC, erratum 9 |
+| A2 | WEX4-SPEC 7.2: "grouped, not interleaved" |
+| A3 | WNR3-SPEC, erratum 10 |
+| A4, A8 | WNR3-SPEC, erratum 12; WEX4-SPEC section 6, step 3 points to it |
+| A6 | WEX4-SPEC 5.3: a zero-size tensor is one with `nbytes = 0`; "A tensor inside a record has `nbytes > 0`" |
+| A7 | WEX4-SPEC 5.2: `<= blob_count` |
+| A9, B1 | WEX4-SPEC 7.2: "`stored_bytes` must equal `align(end of the last payload)`" |
+| B2 | WEX4-SPEC 7.2: "and 0 when `decoded_bytes <= p`"; a plane whose mask bit is set must not be empty |
+| B4 | WEX4-SPEC 5.2: the stream count is written out |
+| B6 | WEX4-SPEC 5: the field widths of the content digest. This reader still does not compute the digest |
+| C, first and second point | WNR3-SPEC, errata 10 to 12: the decode step, the counts of a record, the WNM2 blob |
+
+Not answered by the text, as far as that reading goes: A5 (the order of the multiplications), B3, B5, B7 (finding 19 of the review, left open there), B8, the third point of part C, and every gap of part D. No vector was added; gap 2 of part D is finding 17 of the review, also left open.
 
 ## A. Readings the text leaves open, settled by a file
 
@@ -17,7 +37,7 @@ No verdict of the 112 rows depends on a note: the reader gave all 112 verdicts, 
 | A7 | WEX4-SPEC 5.2, `blob` | "0 = none, else 1 + index of the record's blob" | the bound `blob <= blob_count` is not written as a rule | refused when above | `record-blob-index-past-the-blob-table.wex4` |
 | A8 | WEX4-SPEC 6, step 3, and 5.1 | "a WNM2 model also passes `wex_nr2_model_open`", "the model's FNV-1a id" | both are named by a function of the reference code. What the function checks and how the id is computed are in WNR2-REFERENCE 7 only (header words `WNM2, 1, 14, 567, 3, 0, 0, 0`; every CDF; FNV-1a 32 over the whole blob, 0 mapped to 1) and in the last row of the table of WEX4-SPEC 9 | as WNR2-REFERENCE 7 | the vectors (`wnm2-blob-id-differs-from-its-model.wex4`, and the ids of the valid files) |
 
-| A9 | WEX4-SPEC 7.2, "Record layout (`stored_bytes` in total, zero padding at the end)" | "zero padding at the end" | whether `stored_bytes` must be exactly `align(bytes used)`, as WNR3-SPEC 3 asks of a WNR3 record, or may hold more zero pages (the index only asks `stored_bytes < align(decoded_bytes)`) | `stored_bytes == align(bytes used)`, and every byte after the last payload is 0 | no vector. The first version of this reader only asked for zero bytes and accepted a record with one more page of zeros. Both reference readers refuse that file (C: `WEX4_E_DATA`), so the first version accepted a file the reference refuses. `testdata/extra-page.wex4` is such a file and is now refused (`TestExtraPage`). The sentence is missing from WEX4-SPEC 7.2 |
+| A9 | WEX4-SPEC 7.2, "Record layout (`stored_bytes` in total, zero padding at the end)" | "zero padding at the end" | whether `stored_bytes` must be exactly `align(bytes used)`, as WNR3-SPEC 3 asks of a WNR3 record, or may hold more zero pages (the index only asks `stored_bytes < align(decoded_bytes)`) | `stored_bytes == align(bytes used)`, and every byte after the last payload is 0 | no vector. The first version of this reader only asked for zero bytes and accepted a record with one more page of zeros. Both reference readers refuse that file (C: `WEX4_E_DATA`), so the first version accepted a file the reference refuses. `testdata/extra-page.wex4` is such a file and is now refused (`TestExtraPage`). The sentence was missing from WEX4-SPEC 7.2 in the revision read |
 
 ## B. Readings the text leaves open, not settled by any file
 

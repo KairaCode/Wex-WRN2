@@ -8,6 +8,10 @@ bigger than a small fix, open an issue first so two people do not do the same wo
 Labels you may see on issues: **good first issue** (a few hours, little context), **help wanted**
 (larger, needs a design note first).
 
+Several items of this page got a first answer on 2026-11-14. Where that is so, the item says what
+exists now ("Today"), with a link, and what is still open. A thing listed as open was not run or not
+measured; it is not known to fail.
+
 ## 1. Run the benchmark on your hardware (no code)
 
 - **What:** run [`bench/`](../bench/README.md) and share `results.json` through the
@@ -23,84 +27,116 @@ Labels you may see on issues: **good first issue** (a few hours, little context)
 - **Spec review:** read [WEX4-SPEC](WEX4-SPEC.md) and [WNR3-SPEC](WNR3-SPEC.md) as if you were
   writing a reader from scratch. Open an issue for every sentence that is ambiguous, every field
   whose range is not stated, and every place where the spec and the code disagree. This is the most
-  valuable review there is. A first pass was made on 2026-11-14
-  ([research/spec-review-20261114](../research/spec-review-20261114/README.md)): 16 clarifications went
-  into the two specifications, and 4 findings are open there (no vector has a WNR3 record with a CEIL
-  matrix or without canonical zero; WNR3-SPEC has no conformance section; the error classes are defined
-  in the code only; whether a decoder may accept any anchor byte). Not reviewed yet: WEX4-SPEC sections
-  13.1 and 14 against `wex4/wex4_convert.py` and the numbers of its informative sections, WNR3-SPEC
-  sections 5 to 11, WNR2-REFERENCE, and the GPU decoder against the text.
+  valuable review there is.
+  - **Today:** a first pass was made on 2026-11-14
+    ([research/spec-review-20261114](../research/spec-review-20261114/README.md)): 16 clarifications
+    went into the two specifications. The same day a reader was written from the pages alone
+    (section 4); its [SPEC-NOTES.md](../impl/go-wex4/SPEC-NOTES.md) says which of its questions the
+    text now answers.
+  - **Still open:** the 4 findings the review left open (no vector has a WNR3 record with a CEIL
+    matrix or without canonical zero; WNR3-SPEC has no conformance section; the error classes are
+    defined in the code only; whether a decoder may accept any anchor byte), and the notes of
+    SPEC-NOTES that the text does not answer yet. Not reviewed: WEX4-SPEC sections 13.1 and 14
+    against `wex4/wex4_convert.py` and the numbers of its informative sections, WNR3-SPEC sections 5
+    to 11, WNR2-REFERENCE, and the GPU decoder against the text.
 - **Glossary:** add missing terms to [GLOSSARY.md](GLOSSARY.md). 32 terms of the specifications and of
-  the tests were added on 2026-11-14; the engine and host words of
-  [COLIBRI-INTEGRATION](COLIBRI-INTEGRATION.md) and of the dated reports were not gone through.
+  the tests were added on 2026-11-14. Still open: the engine and host words of
+  [COLIBRI-INTEGRATION](COLIBRI-INTEGRATION.md) and of the dated reports, which were not gone
+  through.
 - **Translations:** a short README in your language (the Italian summary at the end of the README
   shows the expected size).
 
 ## 3. Tests and fuzzing
 
-- **Fuzzing:** the libFuzzer harnesses for the C WEX4 reader (`c/wex4.h`), `c/tools/wex4_verify.c`, the
-  WNR3 decoders and the engine store (`c/expert_store_wex.c`, `c/qwen38_wex.h`, built against stand-ins
-  for the engine headers) are in [`wex4/fuzz/`](../wex4/fuzz/README.md), with a custom mutator that keeps
-  the WNR3 stream hashes right; CI builds them and runs each for 60 seconds on x86-64 Linux, and replays
-  their seeds with gcc on ARM64 Linux and Windows. What is wanted now is machine time: run
-  `bash wex4/fuzz/run.sh 14400` (hours, not seconds) and report what stops it, with the reproducer it
-  leaves. Also open: seeds and a mutator for palette, WNR and WNR2 records (the store decodes them; in
-  the one 60 s run that counted them, the store harness served none); the store's mirror, striped-read
-  and CUDA-helper paths; `c/qwen38_wex.h` built inside the real engine instead of against inferred
-  types; a harness for the GPU decoder (`c/wex_cuda.cuh`).
-- **Sanitizers:** CI runs the CPU checks under ASan and UBSan on Linux (the `linux-sanitizers` job of
-  `.github/workflows/ci.yml`, which holds the exact `WEX_CFLAGS`, the sanitizer options and the preload
-  of the ASan runtime). The jobs `linux-tsan` and `linux-msan` run the C test executables under
-  ThreadSanitizer (clang, OpenMP on) and MemorySanitizer (clang, OpenMP off) through
-  `bash scripts/sanitize_c.sh tsan|msan`, whose header lists what runs: `test_wex_format` (msan only),
-  `test_wex4_verify`, `wex4_verify` (8 threads under tsan, one under msan) and the three fuzzing
-  harnesses on their seeds and on a file of synthetic WNR3 records. Still open: the libraries that
-  the tests load into Python (`wex4_tools.dll` with the fast decoder, the WNR3 encoder) under these
-  two sanitizers, which needs the same tests driven from C or an instrumented Python; the engine
-  store (`c/expert_store_wex.c`, `c/qwen38_wex.h`), which builds only inside an engine tree; ARM64
-  and macOS; and the GPU code.
-- **More test vectors:** hostile files that [wex4/vectors](../wex4/vectors/README.md) does not cover yet
-  (each with its `MANIFEST.tsv` row and the expected verdict from both readers). Valid files are wanted
-  too: the one valid vector with WNR3 records has canonical zero and no CEIL matrix, so no vector tests
-  the ceil inverse or a WNR3 record without canonical zero
-  ([spec review](../research/spec-review-20261114/README.md), finding 17).
-- **macOS job in CI:** CI runs on Linux (x86-64 and ARM64) and Windows. Still open: a macOS job (the
-  scripts call `gcc` and link with `-fopenmp`), good first issue.
-- **NEON decoder, what is left:** kernel 1 of the fast CPU decoder
-  (`wex4/research/fast-cpu-decode/wex_fast_decode.h`) has a NEON version since 2026-11-14. In the
-  `linux-arm` CI job it is byte-identical to the reference decoder and 3.9 times faster than the scalar
-  kernel on one thread, on synthetic records and on that runner only
-  ([results](../wex4/research/fast-cpu-decode/RESULTS.md), section "NEON kernel"). Still open, help
-  wanted: its speed on other ARM CPUs (Apple silicon, Ampere, DGX Spark), which needs no model
-  (`bash scripts/check_all.sh`, then `bash wex4/research/fast-cpu-decode/synth.sh speed`); its speed on
-  real records; a build with Apple clang; the number of interleaved streams that is best on each CPU;
-  kernel 2 for SVE, which has gather loads (NEON has none, so kernel 2 is AVX2 only).
+- **Fuzzing:**
+  - **Today:** five libFuzzer harnesses are in [`wex4/fuzz/`](../wex4/fuzz/README.md): the C WEX4
+    reader (`c/wex4.h`), `c/tools/wex4_verify.c`, the WNR3 decoders, and the two engine-side readers
+    (`c/expert_store_wex.c`, `c/qwen38_wex.h`), which are built against stand-ins for the engine
+    headers. A custom mutator keeps the WNR3 stream hashes right. CI builds them with clang and runs
+    each for 60 seconds on x86-64 Linux, and replays their seeds and mutators with gcc
+    (`run.sh --replay`, no coverage guidance) on x86-64 Linux, ARM64 Linux, macOS (Apple silicon)
+    and Windows.
+  - **What is wanted now** is machine time: run `bash wex4/fuzz/run.sh 14400` (hours, not seconds)
+    and report what stops it, with the reproducer it leaves.
+  - **Still open:** seeds and a mutator for palette, WNR and WNR2 records (the store decodes them;
+    in the one 60 s run that counted them, the store harness served none); the store's mirror,
+    striped-read and CUDA-helper paths; `c/qwen38_wex.h` built inside the real engine instead of
+    against inferred types; a harness for the GPU decoder (`c/wex_cuda.cuh`); a coverage-guided run
+    on ARM64 or on macOS (only `--replay` runs there).
+- **Sanitizers:**
+  - **Today:** CI runs the CPU checks and the fuzz replay under ASan and UBSan on Linux (the
+    `linux-sanitizers` job of `.github/workflows/ci.yml`, which holds the exact `WEX_CFLAGS`, the
+    sanitizer options and the preload of the ASan runtime). The jobs `linux-tsan` and `linux-msan`
+    run the C test executables under ThreadSanitizer (clang, OpenMP on) and MemorySanitizer (clang,
+    OpenMP off) through `bash scripts/sanitize_c.sh tsan|msan`, whose header lists what runs:
+    `test_wex_format` (msan only), `test_wex4_verify`, `wex4_verify` (8 threads under tsan, one
+    under msan), and the five fuzzing harnesses on their seeds, two of them also on a file of
+    synthetic WNR3 records.
+  - **Still open:** the libraries that the tests load into Python (`wex4_tools.dll` with the fast
+    decoder, the WNR3 encoder) under these two sanitizers, which needs the same tests driven from C
+    or an instrumented Python; the engine-side readers inside an engine tree (here they run only
+    through the stand-ins of the fuzzing harnesses); any sanitizer on ARM64 or on macOS (the three
+    sanitizer jobs are x86-64 Linux); and the GPU code.
+- **More test vectors:** hostile files that [wex4/vectors](../wex4/vectors/README.md) does not cover
+  yet, each with its `MANIFEST.tsv` row and the expected verdict from both reference readers; the
+  `go-reader` job of CI then runs the Go reader on the new rows too. Valid files are wanted as
+  well. Two lists of what the 112 rows do not exercise exist: finding 17 of the
+  [spec review](../research/spec-review-20261114/README.md) (no WNR3 record with a CEIL matrix or
+  without canonical zero) and part D of the Go reader's
+  [SPEC-NOTES.md](../impl/go-wex4/SPEC-NOTES.md) (the byte 255 in rANS-coded data, WBP1 records of
+  4 or 8 planes or of a size that is not a multiple of the plane count, a WBP1 record with a page
+  of zeros too many, tensors of 0 bytes). The files of
+  [impl/go-wex4/testdata](../impl/go-wex4/testdata/README.md) cover some of these and are not
+  vectors yet. A new vector goes through an issue first.
+- **macOS, what is left** (good first issue each):
+  - **Today:** the `macos` job of CI (macos-15, Apple silicon) runs `scripts/check_all.sh` and
+    `wex4/fuzz/run.sh --replay` with a Homebrew GNU gcc named in `CC`.
+  - **Still open, not tried:** Apple clang with `libomp` (Apple clang ships no OpenMP runtime of
+    its own); an Intel Mac; the libFuzzer harnesses of `wex4/fuzz/` on macOS; and the set-up lines
+    of the README on a Mac of your own (`brew install gcc`, `CC=gcc-15`), which CI does not run as
+    written.
+- **NEON decoder, what is left** (help wanted):
+  - **Today:** kernel 1 of the fast CPU decoder (`wex4/research/fast-cpu-decode/wex_fast_decode.h`)
+    has a NEON version. In the `linux-arm` CI job it is byte-identical to the reference decoder and
+    3.9 times faster than the scalar kernel on one thread, on synthetic records and on that runner
+    only ([results](../wex4/research/fast-cpu-decode/RESULTS.md), section "NEON kernel"). The
+    `macos` job builds the same kernel with GNU gcc and passes the comparisons with the reference
+    decoder that `scripts/check_all.sh` and the fuzz replay make (not the other steps of
+    `linux-arm`); no speed was measured there.
+  - **Still open:** its speed on other ARM CPUs (Apple silicon, Ampere, DGX Spark), which needs no
+    model (`bash scripts/check_all.sh`, then `bash wex4/research/fast-cpu-decode/synth.sh speed`);
+    its speed on real records; a build with Apple clang; the number of interleaved streams that is
+    best on each CPU; kernel 2 for SVE, which has gather loads (NEON has none, so kernel 2 is AVX2
+    only).
 
 ## 4. A second, independent implementation
 
-- **Done once, in Go:** [impl/go-wex4](../impl/go-wex4/README.md) is a reader and verifier written from
-  the specification pages only, with the WBP1 and the WNR3 decoder. It gives the manifest's verdict,
-  reject class and root on all 112 rows of [wex4/vectors](../wex4/vectors/README.md) (2026-11-14; the
-  `go-reader` job of CI runs it). Its [SPEC-NOTES.md](../impl/go-wex4/SPEC-NOTES.md) lists what the
-  pages left open and what the vectors do not exercise. Passing the 112 rows was not enough: on two
-  kinds of file outside the manifest its first version gave another verdict than the reference
-  (SPEC-NOTES A6 and A9); it now gives the reference's.
-- **Still wanted, a reader in another language** (Rust, C++, Zig…) written **from the spec only**, not
-  by porting `wex4.py` or the Go reader. Done when it gives the same verdict as the reference on every
-  file in [wex4/vectors](../wex4/vectors/README.md), and the same root for the valid ones. Every
+- **Today, a reader in Go:** [impl/go-wex4](../impl/go-wex4/README.md) is a reader and verifier
+  written from the specification pages only, with the WBP1 and the WNR3 decoder. It gives the
+  manifest's verdict, reject class and root on all 112 rows of
+  [wex4/vectors](../wex4/vectors/README.md) (2026-11-14; the `go-reader` job of CI runs it). Passing
+  the 112 rows was not enough: on two kinds of file outside the manifest its first version gave
+  another verdict than the reference ([SPEC-NOTES.md](../impl/go-wex4/SPEC-NOTES.md), A6 and A9); it
+  now gives the reference's.
+- **Still wanted, a reader in another language** (Rust, C++, Zig…) written **from the spec only**
+  (WEX4-SPEC, WNR3-SPEC and, for the WNR3 decoder, WNR2-REFERENCE), not by porting `wex4.py` or the
+  Go reader. Done when it gives the same verdict as the reference on every file in
+  [wex4/vectors](../wex4/vectors/README.md), and the same root for the valid ones. Every
   disagreement is either a bug in the new reader or an ambiguity in the spec, and both are worth an
-  issue. Optional: the WNR3 decoder as well; the vectors alone do not prove it (they have no record in
-  ceil form), so use the files of [impl/go-wex4/testdata](../impl/go-wex4/testdata/README.md) too, and
-  ask the reference for its verdict on every file you are not sure of.
-- **Still wanted, a writer from the spec only:** no writer exists outside the reference code. Done when
-  the two reference readers and the Go reader accept its files and decode them to the source bytes.
-  WEX4-SPEC section 5 says the index encoding is canonical, so a writer that makes the same choices as
-  the reference writer should give the same bytes; nobody has checked that this can be done from the
-  spec alone (the source tensors of `valid/generic.wex4` are not in the vectors folder).
-- **Still wanted, the notes turned into text and vectors:** each open reading of
-  [SPEC-NOTES.md](../impl/go-wex4/SPEC-NOTES.md) parts A to C as a sentence of the specification, and
-  a conformance vector for each gap of part D. A change of the specification or of the vectors goes
-  through an issue first.
+  issue. Optional: the WNR3 decoder as well; the vectors alone do not prove it (they have no record
+  in ceil form), so use the files of [impl/go-wex4/testdata](../impl/go-wex4/testdata/README.md)
+  too, and ask the reference for its verdict on every file you are not sure of.
+- **Still wanted, a writer from the spec only:** no writer exists outside the reference code. Done
+  when the two reference readers and the Go reader accept its files and decode them to the source
+  bytes. WEX4-SPEC section 5 says the index encoding is canonical, so a writer that makes the same
+  choices as the reference writer should give the same bytes; nobody has checked that this can be
+  done from the spec alone (the source tensors of `valid/generic.wex4` are not in the vectors
+  folder).
+- **Still wanted, the rest of the notes turned into text and vectors:** the spec review of
+  2026-11-14 wrote part of the Go reader's notes into the specifications; the section "After the
+  spec review" of [SPEC-NOTES.md](../impl/go-wex4/SPEC-NOTES.md) lists which. Open: a sentence of
+  the specification for each note that is left, and a conformance vector for each gap of part D
+  (none was added). A change of the specification or of the vectors goes through an issue first.
 
 ## 5. Converters for more models (help wanted)
 
@@ -185,7 +221,8 @@ Labels you may see on issues: **good first issue** (a few hours, little context)
   `posix_fadvise(POSIX_FADV_RANDOM)` or `O_DIRECT` in `c/expert_store_wex.c`, and several records in
   flight for a prefetch batch), with an engine A/B. Still unmeasured: a prefetch through the page cache
   that loads the whole record (a read path to add to `bench/wex_io.c`: `readahead(2)` or `WILLNEED` in
-  chunks), striping across drives with different speeds, and everything on macOS.
+  chunks), striping across drives with different speeds, and everything on macOS (the benchmark is
+  Linux only; the `macos` CI job does not build it).
 - **Done when:** the table of `bench/wex_io.py` from at least one NVMe machine is in the repository, and
   a change of the store comes with its before/after from the same benchmark, stated as CONTRIBUTING
   section 5 asks.
@@ -208,9 +245,9 @@ listed above as well.
   the I/O switches. Reviewing or testing those PRs on your hardware helps directly.
 - **WNR3 decode on Vulkan:** the design note and a prototype checked on a CPU Vulkan device are in; a run
   on a GPU, a speed number, a real container and the engine hook are open *(open to you, section 6)*.
-- **ARM:** the ARM CI job and a NEON version of kernel 1 of the fast CPU decoder are in. Its speed on
-  real records and on ARM CPUs other than the CI runner, and an SVE version of kernel 2, are still open
-  *(open to you, section 3)*.
+- **ARM and macOS:** the ARM CI jobs (Linux, and macOS on Apple silicon) and a NEON version of kernel 1
+  of the fast CPU decoder are in. Its speed on real records and on ARM CPUs other than the Linux CI
+  runner, an SVE version of kernel 2, and Apple clang are still open *(open to you, section 3)*.
 - **Linux I/O in the engine:** the fast read paths were built and measured on Windows. The Linux
   benchmark is in (`bench/wex_io.py`), run so far only on two kinds of cloud VM, where it gave no reason to
   change the store; runs on real drives and the tuning that follows from them are still open *(open to
@@ -221,11 +258,13 @@ listed above as well.
   - a full ABBA set for it on DeepSeek V4.1;
   - tuning the two-drive split for Qwen3.8;
   - MTP together with MXFP4 experts.
-- **The specifications after the Go reader:** the Go reader of `impl/go-wex4` found no wrong verdict
-  in the 112 manifest rows, two sentences missing from WEX4-SPEC on which its first version and the
-  reference gave different verdicts outside the manifest, and a list of sentences that can be read two
-  ways and of cases the vectors do not exercise ([SPEC-NOTES.md](../impl/go-wex4/SPEC-NOTES.md)). Writing them into WEX4-SPEC and WNR3-SPEC and adding
-  the vectors is not done *(open to you, section 4)*.
+- **The specifications after the review and the Go reader:** the review wrote 16 clarifications into
+  WEX4-SPEC and WNR3-SPEC and left 4 findings open; the Go reader of `impl/go-wex4` found no wrong
+  verdict in the 112 manifest rows, and a list of sentences that can be read two ways and of cases
+  the vectors do not exercise. The review answers part of that list. The rest of it, the 4 open
+  findings and the vectors that are missing are not done *(open to you, sections 2 to 4)*.
+- **Fuzzing for hours:** the harnesses run for 60 seconds each in CI; no run longer than that is
+  recorded in this repository *(open to you, section 3)*.
 - **Converter profiles for more model families:** eight naming profiles are in, tested on synthetic
   fixtures; a run on a real checkpoint of the new families is open *(open to you, section 5)*.
 - **A first tagged release** of the specifications (WEX4 4.0, WNR3 v1) with the conformance vectors, so
