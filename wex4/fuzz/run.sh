@@ -8,7 +8,8 @@
 #   bash wex4/fuzz/run.sh --replay      no fuzzing engine: gcc, each harness runs every seed once, and a harness
 #                                       with a custom mutator also runs that mutator on its seeds (a regression
 #                                       test that needs no clang; CC names another compiler and WEX_CFLAGS adds
-#                                       flags, as in the other scripts: scripts/sanitize_c.sh runs it that way)
+#                                       flags, as in the other scripts: scripts/sanitize_c.sh runs it that way).
+#                                       It prints the compiler and the kernels of the fast WNR3 decoder it built
 #
 # WEX_FUZZ_MUTATOR=0 turns the structured mutations of the custom mutators off (the control of a measurement).
 # Everything goes to wex4/fuzz/out/ (git-ignored): the harnesses, seeds/ (wex4/fuzz/make_seeds.py), corpus/NAME
@@ -52,6 +53,12 @@ seeds_of() {   # sets SEEDS, the seed folders of one harness
 }
 
 if [ "${1-}" = --replay ]; then
+  # the compiler, and which kernels of the fast WNR3 decoder fuzz_wnr3_record compares with the reference under
+  # these flags (WEXF_KERNELS of wex_fast_decode.h): AVX2, NEON or scalar
+  echo "compiler: $("${CC:-gcc}" --version | sed -n 1p)"
+  KERNELS=$(printf '#include "wex_fast_decode.h"\nkernels WEXF_KERNELS\n' |
+            "${CC:-gcc}" ${WEX_CFLAGS-} $MARCH -E -P $INC -x c - | sed -n 's/^kernels "\(.*\)"$/\1/p')
+  echo "fast WNR3 decoder of fuzz_wnr3_record: $KERNELS kernels"
   for h in $HARNESSES; do
     "${CC:-gcc}" -O2 $W ${WEX_CFLAGS-} $MARCH -DWEX_FUZZ_STANDALONE $INC "$ROOT/wex4/fuzz/$h.c" -o "$O/$h-replay$EXE"
     echo "== $h"

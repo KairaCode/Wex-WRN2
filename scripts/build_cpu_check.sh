@@ -26,6 +26,7 @@ rm -rf "$O" && mkdir -p "$O"
 export TMP="$ROOT/out" TEMP="$ROOT/out"
 PY=${PYTHON:-python}
 CC=${CC:-gcc}   # the C compiler of every build below
+echo "compiler: $("$CC" --version | sed -n 1p)"
 # shared libraries: Windows (MSYS2, Git Bash) as before; elsewhere position-independent, and the CPU stand-in
 # helper, which marks its exports with __declspec(dllexport), gets that word defined away
 case $(uname -s) in

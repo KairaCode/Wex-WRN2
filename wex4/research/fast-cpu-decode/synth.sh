@@ -35,6 +35,7 @@ R="L0_E0.rec L0_E1.rec L0_E2.rec L0_E3.rec"
 case $MODE in
   check)
     CASES=${2:-600}
+    echo "compiler: $("$CC" --version | sed -n 1p)"
     for t in t_simd t_scalar; do
       echo "== $t equal"
       ./$t.exe equal model.wnm2 $R

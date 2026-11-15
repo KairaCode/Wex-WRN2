@@ -16,6 +16,7 @@ ROOT=$(cd "$(dirname "$0")/.." && pwd)
 S=$ROOT/wex4/out
 PY=${PYTHON:-python}
 CC=${CC:-gcc}   # the C compiler of every build below
+echo "compiler: $("$CC" --version | sed -n 1p)"
 rm -rf "$S" && mkdir -p "$S"
 export TMP="$S" TEMP="$S"   # gcc from Git Bash cannot create temporary files under C:\WINDOWS
 # shared libraries: Windows (MSYS2, Git Bash) as before; elsewhere position-independent and not -static
