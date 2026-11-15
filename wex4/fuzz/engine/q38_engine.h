@@ -14,7 +14,7 @@
  * What is a stand-in: the types below; q38_weight_free and q38_slab_unpin (nothing to free or unpin here);
  * the safetensors reader behind Q38_MXFP4_DIR (the Quark shards are not a container: that path is not
  * fuzzed and its stand-ins stop the process); on Windows the positional read and the aligned allocation of
- * the engine's compat.h. */
+ * the engine's compat.h; on macOS its compat_open_direct. */
 #include <errno.h>
 #include <fcntl.h>
 #include <stdint.h>
@@ -122,6 +122,18 @@ static int fuzz_q38_memalign(void **out, size_t alignment, size_t bytes) {
 #define compat_aligned_free _aligned_free
 #else
 #define compat_aligned_free free
+#ifdef __APPLE__
+/* macOS has no O_DIRECT, so q38_wex_open calls the engine's compat_open_direct there. The engine's function is
+ * not in this repository; this one opens the file and asks for reads that bypass the cache (F_NOCACHE), which
+ * is a guess at what the engine does. The harness's oracles do not depend on it. */
+static int compat_open_direct(const char *path) {
+    int fd = open(path, O_RDONLY);
+#ifdef F_NOCACHE
+    if (fd >= 0) (void)fcntl(fd, F_NOCACHE, 1);
+#endif
+    return fd;
+}
+#endif
 #endif
 
 #endif /* WEX_FUZZ_ENGINE_Q38_H */
