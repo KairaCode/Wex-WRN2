@@ -13,11 +13,20 @@
  *                     in flight, each cut into `split` page-aligned sub-reads that are in flight together
  *   direct=0|1        open the file with O_DIRECT (1) or read through the page cache (0)
  *   advise=none|random|sequential     posix_fadvise on the whole file before the pass (page cache only)
- *   ahead=K           sync, 1 thread, page cache: POSIX_FADV_WILLNEED on the record K reads ahead. How much
- *                     of an announced record the kernel then holds is measured, not assumed: one mincore
+ *   ahead=K           sync, 1 thread, page cache: the record K reads ahead is announced, as prefetch= says. How
+ *                     much of an announced record the kernel then holds is measured, not assumed: one mincore
  *                     call on the record just before its read (inside the timed pass, outside the record's
  *                     own time) gives ahead_cached, the share of the announced records' pages found in
  *                     the page cache at that moment (-1 when not measured)
+ *   prefetch=willneed|readahead|chunks|thread     how a record is announced (needs ahead=K). willneed (default):
+ *                     one POSIX_FADV_WILLNEED on the whole record. readahead: one readahead(2) on the whole
+ *                     record. chunks: one POSIX_FADV_WILLNEED per chunk_kb KiB of the record. thread: a helper
+ *                     thread, created after the clock starts, preads the announced records on the same
+ *                     descriptor into a buffer of its own (so into the page cache), never past the record K
+ *                     reads ahead; its bytes are not hashed. announce_ms: the time the reading thread spent
+ *                     in the announcing calls (-1 without ahead). A hint the kernel refuses is a failure
+ *   chunk_kb=N        prefetch=chunks: the chunk in KiB, a multiple of 4 (default 128; bench/wex_io.py passes
+ *                     the read_ahead_kb of the block device)
  *   records=N seed=S  N records of the permutation S (0 = every expert record)
  *   evict=0|1         1 (default): POSIX_FADV_DONTNEED on the whole file before the pass
  *   warm=0|1          1: the same records are read once through the page cache before the timed pass
@@ -53,16 +62,29 @@
 
 typedef struct { uint64_t offset; uint32_t stored; const unsigned char *sha; } WioRec;
 
+enum { WIO_PF_WILLNEED, WIO_PF_READAHEAD, WIO_PF_CHUNKS, WIO_PF_THREAD };
+static const char *const wio_pf_names[] = { "willneed", "readahead", "chunks", "thread" };
+
 typedef struct {
     int fd;                    /* the data descriptor of the pass */
     const WioRec *recs;
     const uint32_t *plan;      /* record numbers in read order */
     uint32_t n, next;
-    int verify, ahead;
+    int verify, ahead, prefetch;
+    uint32_t chunk;            /* prefetch=chunks: bytes per POSIX_FADV_WILLNEED call, a multiple of 4096 */
     double *lat;               /* seconds per record, by plan position */
     const unsigned char *map;  /* ahead only: the file mapped (never touched), for mincore; or NULL */
     unsigned char *vec;        /* ahead only: one byte per page of the largest record */
     uint64_t ahead_in, ahead_all;   /* pages of announced records in the page cache before their read / all */
+    double announce;           /* seconds the reading thread spent announcing records */
+    uint32_t hint_failed;      /* announcing calls the kernel refused */
+    /* prefetch=thread: the helper reads plan positions 1 .. allowed; mu guards allowed and stop */
+    pthread_mutex_t mu;
+    pthread_cond_t cv;
+    uint32_t allowed;
+    int stop;
+    unsigned char *hbuf;       /* the helper's buffer */
+    uint32_t hbad;             /* the helper's failed reads */
 } WioPass;
 
 typedef struct { WioPass *pass; unsigned char *buf; uint64_t bytes; uint32_t bad; } WioWorker;
@@ -112,6 +134,52 @@ static void wio_ahead_seen(WioPass *p, const WioRec *r) {
 #endif
 }
 
+/* announce the record at plan position k (only the one reading thread of an `ahead` pass calls this): a hint
+ * to the kernel, or for prefetch=thread the helper may now read up to k */
+static void wio_announce(WioPass *p, uint32_t k) {
+    const WioRec *a = &p->recs[p->plan[k]];
+    double t0 = wio_now();
+    switch (p->prefetch) {
+    case WIO_PF_READAHEAD:
+#ifdef __linux__
+        if (readahead(p->fd, (off_t)a->offset, a->stored) < 0) p->hint_failed++;
+#endif
+        break;
+    case WIO_PF_CHUNKS:
+        for (uint32_t at = 0; at < a->stored; at += p->chunk) {
+            uint32_t len = a->stored - at < p->chunk ? a->stored - at : p->chunk;
+            if (posix_fadvise(p->fd, (off_t)(a->offset + at), (off_t)len, POSIX_FADV_WILLNEED)) p->hint_failed++;
+        }
+        break;
+    case WIO_PF_THREAD:
+        pthread_mutex_lock(&p->mu);
+        if (k > p->allowed) p->allowed = k;
+        pthread_cond_signal(&p->cv);
+        pthread_mutex_unlock(&p->mu);
+        break;
+    default:
+        if (posix_fadvise(p->fd, (off_t)a->offset, (off_t)a->stored, POSIX_FADV_WILLNEED)) p->hint_failed++;
+    }
+    p->announce += wio_now() - t0;
+}
+
+/* prefetch=thread: read each announced record into the helper's buffer, in plan order, never past `allowed`;
+ * it stops early when the reading thread is done */
+static void *wio_helper(void *arg) {
+    WioPass *p = (WioPass *)arg;
+    for (uint32_t k = 1; k < p->n; k++) {
+        int stop;
+        pthread_mutex_lock(&p->mu);
+        while (p->allowed < k && !p->stop) pthread_cond_wait(&p->cv, &p->mu);
+        stop = p->stop;
+        pthread_mutex_unlock(&p->mu);
+        if (stop) break;
+        const WioRec *r = &p->recs[p->plan[k]];
+        if (wio_read(p->fd, p->hbuf, r->stored, r->offset)) p->hbad++;
+    }
+    return NULL;
+}
+
 static void *wio_worker(void *arg) {
     WioWorker *w = (WioWorker *)arg;
     WioPass *p = w->pass;
@@ -121,10 +189,7 @@ static void *wio_worker(void *arg) {
         const WioRec *r = &p->recs[p->plan[i]];
         if (p->ahead && i) wio_ahead_seen(p, r);   /* every record but the first was announced earlier */
         double t0 = wio_now();
-        if (p->ahead && i + (uint32_t)p->ahead < p->n) {
-            const WioRec *a = &p->recs[p->plan[i + (uint32_t)p->ahead]];
-            posix_fadvise(p->fd, (off_t)a->offset, (off_t)a->stored, POSIX_FADV_WILLNEED);
-        }
+        if (p->ahead && i + (uint32_t)p->ahead < p->n) wio_announce(p, i + (uint32_t)p->ahead);
         if (wio_read(p->fd, w->buf, r->stored, r->offset)) { w->bad++; continue; }
         p->lat[i] = wio_now() - t0;
         w->bytes += r->stored;
@@ -133,15 +198,15 @@ static void *wio_worker(void *arg) {
     return NULL;
 }
 
-/* pread on `threads` threads, each with its own buffer; the threads take the next record of the plan */
+/* pread on `threads` threads, each with its own buffer; the threads take the next record of the plan.
+ * prefetch=thread: the helper thread runs beside them and is joined before the pass ends */
 static int wio_sync(WioPass *p, unsigned char **bufs, unsigned threads, uint64_t *bytes, uint32_t *bad) {
-    pthread_t tid[WIO_MAX_SLOTS];
+    pthread_t tid[WIO_MAX_SLOTS], helper;
     WioWorker w[WIO_MAX_SLOTS];
     unsigned t, started = 0;
-    for (uint32_t k = 1; p->ahead && k < (uint32_t)p->ahead && k < p->n; k++) {
-        const WioRec *a = &p->recs[p->plan[k]];
-        posix_fadvise(p->fd, (off_t)a->offset, (off_t)a->stored, POSIX_FADV_WILLNEED);
-    }
+    int helped = p->ahead && p->prefetch == WIO_PF_THREAD;
+    if (helped && pthread_create(&helper, NULL, wio_helper, p)) return -1;
+    for (uint32_t k = 1; p->ahead && k < (uint32_t)p->ahead && k < p->n; k++) wio_announce(p, k);
     for (t = 0; t < threads; t++) {
         w[t].pass = p; w[t].buf = bufs[t]; w[t].bytes = 0; w[t].bad = 0;
         if (t + 1u < threads) {
@@ -151,6 +216,14 @@ static int wio_sync(WioPass *p, unsigned char **bufs, unsigned threads, uint64_t
     }
     if (t == threads) wio_worker(&w[threads - 1u]);   /* the calling thread is the last worker */
     for (unsigned k = 0; k < started; k++) pthread_join(tid[k], NULL);
+    if (helped) {
+        pthread_mutex_lock(&p->mu);
+        p->stop = 1;
+        pthread_cond_signal(&p->cv);
+        pthread_mutex_unlock(&p->mu);
+        pthread_join(helper, NULL);
+        *bad += p->hbad;
+    }
     if (t != threads) return -1;
     for (t = 0; t < threads; t++) { *bytes += w[t].bytes; *bad += w[t].bad; }
     return 0;
@@ -347,24 +420,33 @@ static const char *wio_opt(int argc, char **argv, const char *key, const char *f
 int main(int argc, char **argv) {
     if (argc < 2) {
         fprintf(stderr, "usage: %s FILE [path=sync|uring] [direct=0|1] [threads=N] [depth=N] [split=N]\n"
-                        "       [advise=none|random|sequential] [ahead=K] [records=N] [seed=S] [evict=0|1] [warm=0|1] [verify=0|1]\n",
+                        "       [advise=none|random|sequential] [ahead=K] [prefetch=willneed|readahead|chunks|thread] [chunk_kb=N]\n"
+                        "       [records=N] [seed=S] [evict=0|1] [warm=0|1] [verify=0|1]\n",
                 argv[0]);
         return 2;
     }
     const char *path = wio_opt(argc, argv, "path", "sync"), *advise = wio_opt(argc, argv, "advise", "none");
+    const char *pf = wio_opt(argc, argv, "prefetch", "willneed");
     int uring = !strcmp(path, "uring"), direct = atoi(wio_opt(argc, argv, "direct", "0"));
     unsigned threads = (unsigned)atoi(wio_opt(argc, argv, "threads", "1"));
     unsigned depth = (unsigned)atoi(wio_opt(argc, argv, "depth", "1")), split = (unsigned)atoi(wio_opt(argc, argv, "split", "1"));
     int ahead = atoi(wio_opt(argc, argv, "ahead", "0")), evict = atoi(wio_opt(argc, argv, "evict", "1"));
     int warm = atoi(wio_opt(argc, argv, "warm", "0")), verify = atoi(wio_opt(argc, argv, "verify", "0"));
+    int chunk_kb = atoi(wio_opt(argc, argv, "chunk_kb", "128")), prefetch = -1;
     uint32_t want = (uint32_t)strtoul(wio_opt(argc, argv, "records", "0"), NULL, 10);
     uint64_t seed = strtoull(wio_opt(argc, argv, "seed", "1"), NULL, 10);
+    for (int k = 0; k < (int)(sizeof wio_pf_names / sizeof wio_pf_names[0]); k++)
+        if (!strcmp(pf, wio_pf_names[k])) prefetch = k;
     if ((strcmp(path, "sync") && !uring) || threads < 1 || threads > WIO_MAX_SLOTS || depth < 1 || depth > WIO_MAX_SLOTS ||
         split < 1 || split > WIO_MAX_SPLIT || ahead < 0 || (ahead && (uring || threads != 1 || direct)) ||
+        prefetch < 0 || (prefetch != WIO_PF_WILLNEED && !ahead) || chunk_kb < 4 || chunk_kb % 4 || chunk_kb > 1048576 ||
         (strcmp(advise, "none") && strcmp(advise, "random") && strcmp(advise, "sequential"))) {
         fprintf(stderr, "wex_io: bad option\n");
         return 2;
     }
+#ifndef __linux__
+    if (prefetch == WIO_PF_READAHEAD) return wio_skip("readahead(2) is a Linux system call");
+#endif
 
     /* header page and index, as the stores open them */
     int cfd = open(argv[1], O_RDONLY);
@@ -412,16 +494,22 @@ int main(int argc, char **argv) {
     WioPass pass;
     memset(&pass, 0, sizeof pass);
     pass.fd = fd; pass.recs = recs; pass.plan = plan; pass.n = n; pass.verify = verify; pass.ahead = ahead;
+    pass.prefetch = prefetch; pass.chunk = (uint32_t)chunk_kb * 1024u;
     pass.lat = (double *)calloc(n, sizeof(double));
 
-    /* one buffer per thread or per record in flight, touched before the clock starts */
+    /* one buffer per thread or per record in flight, and the helper's, touched before the clock starts */
     unsigned nbuf = uring ? depth : threads;
-    unsigned char *bufs[WIO_MAX_SLOTS];
-    for (unsigned k = 0; k < nbuf; k++) {
+    int helped = ahead && prefetch == WIO_PF_THREAD;
+    unsigned char *bufs[WIO_MAX_SLOTS + 1u];
+    for (unsigned k = 0; k < nbuf + (helped ? 1u : 0u); k++) {
         void *b = NULL;
         if (!pass.lat || posix_memalign(&b, WEX4_PAGE, max_stored)) return wio_fail("out of memory");
         memset(b, 1, max_stored);
         bufs[k] = (unsigned char *)b;
+    }
+    if (helped) {
+        pass.hbuf = bufs[nbuf];
+        if (pthread_mutex_init(&pass.mu, NULL) || pthread_cond_init(&pass.cv, NULL)) return wio_fail("helper thread set-up");
     }
 
     /* the ring, its slots and the mapping for ahead_cached: all before the clock starts */
@@ -472,15 +560,21 @@ int main(int argc, char **argv) {
                 errno ? strerror(errno) : "no errno");
         return 1;
     }
+    if (pass.hint_failed) {
+        fprintf(stderr, "wex_io: the kernel refused %u announcing calls (prefetch=%s)\n", pass.hint_failed, pf);
+        return 1;
+    }
     double cached_after = wio_cached(cfd, file_bytes, &pass);
     qsort(pass.lat, n, sizeof(double), wio_cmp);
     printf("{\"path\": \"%s\", \"direct\": %d, \"threads\": %u, \"depth\": %u, \"split\": %u, \"advise\": \"%s\", \"ahead\": %d, "
-           "\"warm\": %d, \"verified\": %d, \"records\": %u, \"bytes\": %llu, \"seconds\": %.6f, \"mb_s\": %.1f, "
-           "\"record_ms_p50\": %.3f, \"record_ms_max\": %.3f, \"cached_before\": %.4f, \"cached_after\": %.4f, "
-           "\"ahead_cached\": %.4f}\n",
-           path, direct, uring ? 1u : threads, uring ? depth : 1u, uring ? split : 1u, advise, ahead, warm, verify, n,
+           "\"prefetch\": \"%s\", \"chunk_kb\": %d, \"warm\": %d, \"verified\": %d, \"records\": %u, \"bytes\": %llu, "
+           "\"seconds\": %.6f, \"mb_s\": %.1f, \"record_ms_p50\": %.3f, \"record_ms_max\": %.3f, \"cached_before\": %.4f, "
+           "\"cached_after\": %.4f, \"ahead_cached\": %.4f, \"announce_ms\": %.3f}\n",
+           path, direct, uring ? 1u : threads, uring ? depth : 1u, uring ? split : 1u, advise, ahead,
+           ahead ? pf : "none", ahead && prefetch == WIO_PF_CHUNKS ? chunk_kb : 0, warm, verify, n,
            (unsigned long long)bytes, seconds, (double)bytes / seconds / 1e6, pass.lat[n / 2u] * 1e3, pass.lat[n - 1u] * 1e3,
-           cached_before, cached_after, pass.ahead_all ? (double)pass.ahead_in / (double)pass.ahead_all : -1.0);
+           cached_before, cached_after, pass.ahead_all ? (double)pass.ahead_in / (double)pass.ahead_all : -1.0,
+           ahead ? pass.announce * 1e3 : -1.0);
     return 0;
 }
 #else
