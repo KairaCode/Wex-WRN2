@@ -1,6 +1,6 @@
 """team2/audit pass 1: independent symbol counts under the WNR2 context rule.
 
-Written from the brief's rule only; does NOT import the wnr2 scripts in <SCRATCH>.
+Written from the brief's rule only; does NOT import the wnr2 scripts in <TMP>.
 Rule: symbols row-major, symbol 2k = low nibble of byte k. Per 32-block with UE8M0 scale s:
   srel = clamp(s - lower_median(matrix scales), -3, 3) + 3, pm = 8, mx = 8 at block start,
   context = (srel*9 + pm)*9 + mx; after symbol x: pm = x&7; mx = x&7 if mx == 8 else max(mx, x&7).

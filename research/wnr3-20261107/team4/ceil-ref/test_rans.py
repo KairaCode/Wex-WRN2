@@ -14,7 +14,7 @@ import wnr_common as W
 L, PB, P = W.L, W.PB, W.P
 
 
-# ---- scalar reference: copied logic of <SCRATCH>/wnr2/rans_check.py (encode / decode), not imported
+# ---- scalar reference: copied logic of <TMP>/wnr2/rans_check.py (encode / decode), not imported
 def ref_encode(syms, ctxs, freq, cum, x0):
     x = x0
     out = bytearray()

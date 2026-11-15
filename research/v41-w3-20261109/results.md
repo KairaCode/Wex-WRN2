@@ -130,7 +130,7 @@ Le soglie scelte sono τ1 = 0,10 e τ2 = 0,15:
 
 **La griglia F1 non è stata misurata.**
 - Script pronti: `f1\run_f1.sh` con i bracci base, t10, t15, m287 (16 record WEX1 per forward), m144 (8 record) e base2, su w0 + 3 prompt a 128 token. `ab\locked_pilots.ps1` lancia prima il pilota C e poi la griglia.
-- Li ho annullati prima che partissero. Alle 05:00:36 la sessione principale ha preso heavy.lock per spostare file su U: e C: (cancellazione di WEX1 da D:, shard engram 47 da C: a D:, WNR2 da E: a C:). Quegli spostamenti cambiano l'ambiente di esecuzione (`COLI_MODEL_DIRS`), quindi una misura fatta dopo non sarebbe confrontabile con questa.
+- Li ho annullati prima che partissero. Alle 05:00:36 il coordinatore ha preso heavy.lock per spostare file su U: e C: (cancellazione di WEX1 da D:, shard engram 47 da C: a D:, WNR2 da E: a C:). Quegli spostamenti cambiano l'ambiente di esecuzione (`COLI_MODEL_DIRS`), quindi una misura fatta dopo non sarebbe confrontabile con questa.
 - Non è partita nessuna esecuzione e il lock non è mai stato mio.
 
 ## Limiti e prossimi passi

@@ -32,7 +32,7 @@ Related: private KAIRA working notes (not in this repo).
 - **2026-11-06**: containers go WEX1 raw on D:\kaira_wex and WNR2 on E:\kaira_wex.
   - All V4.1 + WEX/WNR2 workers run on the top model tier (user rule).
   - Never commit, push, deploy to app\ or edit app\kaira.json without explicit OK.
-  - The user manages the Defender exclusions; the workers do not change security settings.
+  - The user manages the Defender exclusions; nothing run for this work changes security settings.
   - No benchmark while a W1 encode or any build runs; take heavy.lock for big I/O.
 - **heavy.lock**: `<KAIRA>\lab\v41-gpu-20261107\heavy.lock`.
   - Take it by creating the file exclusively (New-Item fails while it exists) and writing `<label> <ISO time>` into it. `lab\v41-gpu-20261107\w1\take_lock.ps1 -Label '...'` does this, retrying every 60 s for up to 90 min (prints TAKEN or TIMEOUT).
