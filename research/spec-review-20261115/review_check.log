@@ -1,0 +1,63 @@
+U1 wex4/vectors/legacy/tiny2-cz.wex3 (94208 B): upgrade written from 13.1 gives 102400 B, equal to wex4_convert.py upgrade: True, equal to wex4/vectors/valid/tiny2-cz-upgraded.wex4: True
+U1 wex4/out/tiny.wex (794624 B): upgrade written from 13.1 gives 843776 B, equal to wex4_convert.py upgrade: True, equal to wex4/vectors/valid/tiny-raw-upgraded.wex4: True
+U2 V4.1 grid 40 x 192, WNR3-CZ, model at 4096, table at 65536, file 123,306,192,896 B: index 6,712,992 B, added 6,717,440 B (0.0054 % of the file); WEX4-SPEC 11.2, 13.1, 15.3 say 6,712,992 and 6,717,440 B
+U2 Qwen3.8 grid 48 x 512, WEX1 RAW records of 638 pages, table at 4096, file 64,224,956,416 B, --names qwen38: index 26,086,592 B, added 26,091,520 B, file after 64,251,047,936 B; research/qwen38-speed-20261111 says 26,086,592, +26,091,520 and 64,251,047,936 B
+U3 wex4/out/tiny.wex with WEX1 header flags 2: upgraded, the WEX4 file opens (48 records); downgrade gives the file back byte for byte: True
+P1 wex4_convert.py pack of two synthetic files (part size 128 KiB): r0 codec 6 decoded 131072 P 2 chunk_log2 12 transform 1 [a.big]; r1 codec 6 decoded 131072 P 2 chunk_log2 12 transform 1 [a.split]; r2 codec 6 decoded 131072 P 2 chunk_log2 12 transform 1 [continuation]; r3 codec 6 decoded 45056 P 2 chunk_log2 12 transform 1 [continuation]; r4 codec 6 decoded 44000 P 2 chunk_log2 12 transform 0 [a.small1,a.small2]; r5 codec 6 decoded 30000 P 1 chunk_log2 12 transform 0 [a.codes]; r6 codec 6 decoded 18000 P 2 chunk_log2 12 transform 0 [b.small]; r7 codec 6 decoded 25000 P 1 chunk_log2 12 transform 0 [b.codes]
+P1 metadata: compact with keys in the stated order: True; non-ASCII kept as UTF-8: True; quotes of the header text escaped: True
+P1 pack written from section 14 gives 372736 B, byte-identical to wex4_convert.py pack: True
+P2 unpack with a source name of '../evil.safetensors' refused (metadata: source file name (unsafe, repeated or the container itself)); 'sub/x.safetensors' refused (metadata: source file name (unsafe, repeated or the container itself)); '..' refused (metadata: source file name (unsafe, repeated or the container itself)); 'p2.wex4' refused (metadata: source file name (unsafe, repeated or the container itself)); 'twice' refused (metadata: source file name (unsafe, repeated or the container itself))
+P3 unpack of a canonical-zero pack of fixtures/v41-tiny: 1 file(s), SHA-256 differs for 1, kept in place all the same: 1 (reported "DIFFERS")
+M1 wex4/out/tiny.wnm2 (id 0x7d79f608): of 1701 weight tables 1395 uniform (1024 each, no counts), 306 with frequency 1 for nibble 8, 0 with more; non-uniform tables of a context that cannot occur: 0
+M1 wex4/out/synth.wnm2 (id 0x306ee979): of 1701 weight tables 924 uniform (1024 each, no counts), 0 with frequency 1 for nibble 8, 777 with more; non-uniform tables of a context that cannot occur: 0
+M1 blob 0 of wex4/vectors/valid/tiny2-cz-upgraded.wex4 (id 0x7d79f608): of 1701 weight tables 1395 uniform (1024 each, no counts), 306 with frequency 1 for nibble 8, 0 with more; non-uniform tables of a context that cannot occur: 0
+G1 7 functions and the macro WEX_CUDA_NR2_ROWS taken from c/wex_cuda.cuh as they are, built with g++ for the CPU
+G1 wex_cuda_has_nibble8 on all 2^32 words: 0 disagree with "some nibble is 8"
+G1 wex_cuda_ceil_dbl8 on all 429981696 words whose 8 magnitudes are <= 5: 0 differ from D(a) = a + min(a, 2), sign kept
+G1 model 7d79f608: row lookup (16-way compare) vs the reference search, 3 x 567 tables x 16384 slots: 0 differ; scale direct table, 3 x 16384 slots: 0 differ
+G1 model 306ee979: row lookup (16-way compare) vs the reference search, 3 x 567 tables x 16384 slots: 0 differ; scale direct table, 3 x 16384 slots: 0 differ
+N WEX4 8.1 / WNR3 0: +1,352 B per record = +0.007 % of raw | computed: 0.0072 %
+N WEX4 11.2: about 20 ms of SHA-256 at 328 MB/s on the 6,712,992 B index | computed: 20.5 ms
+N WEX4 11.2: about 3 ms at 2.4 GB/s | computed: 2.8 ms
+N WEX4 11.3: about 35 MB/s for 505-590 ms per record | computed: 31.9-37.2 MB/s
+N WEX4 11.3: about 65 minutes for 7,680 records on one thread | computed: 64.6-75.5 min (505-590 ms)
+N WEX4 11.3: 1-2 minutes at 8.8-13.8 ms per record | computed: 1.1-1.8 min
+N WEX4 11.3: about 0.26 GB/s per thread at 72-90 ms | computed: 0.21-0.26 GB/s
+N WEX4 11.3: about 1,400 times slower than 0.37 ms on the GPU | computed: 1365-1595 x
+N WEX4 12.1: the three dtypes sum to 11,130,045,256 B | computed: 11,130,045,256 B
+N WEX4 12.1: plain byte planes 0.767 of the three, about 2.6 GB saved | computed: 0.7669, 2.59 GB
+N WEX4 12.1: one BF16 shard 0.6625; one layer shard 0.817 | computed: 0.6625; 0.8171
+N WEX4 12.1: F8 context 0.8144 against 0.8187, about 30 MB | computed: 30.5 MB
+N WEX4 12.2: mean record 16,055,413 B = 0.85398 of raw | computed: 16,055,413.33 B (file minus header, model and table, over 7,680), 0.85398
+N WEX4 12.2: 108,266 B = 0.576 % of raw = 5.57 B x 19,440 streams | computed: 0.5759 %, 5.5692 B, streams 3 x (368,640 / 512 + 32 x 368,640 / 2048) = 19,440
+N WEX4 12.2: length table: 0.13 % of raw = 188 MB "on the 123.3 GB container" | computed: 187.7 MB (0.13% of the 7,680 raw slabs, 144.39 GB)
+N WEX4 12.2: 3-byte state: 0.013 % of raw = 19 MB "on the 123.3 GB container" | computed: 18.8 MB (0.013% of the 7,680 raw slabs, 144.39 GB)
+N WEX4 12.2: 64 B alignment: 0.011 % of raw = 15.6 MB "on the 123.3 GB container" | computed: 15.9 MB (0.011% of the 7,680 raw slabs, 144.39 GB)
+N WEX4 12.2: WNR4 record: 0.154 % of raw = about 0.22 GB "on the 123.3 GB container" | computed: 222.4 MB (0.154% of the 7,680 raw slabs, 144.39 GB)
+N WEX4 12.2: chunks 4096:1024: 0.288 % of raw = 416 MB "on the 123.3 GB container" | computed: 415.8 MB (0.288% of the 7,680 raw slabs, 144.39 GB)
+N WEX4 12.2: chunks 8192:2048: 0.432 % of raw = 624 MB "on the 123.3 GB container" | computed: 623.8 MB (0.432% of the 7,680 raw slabs, 144.39 GB)
+N WEX4 12.2: last 5 nibbles: 0.205 % of raw = 297 MB "on the 123.3 GB container" | computed: 296.0 MB (0.205% of the 7,680 raw slabs, 144.39 GB)
+N WEX4 12.2: small state: 0.188 % of raw = 271 MB "on the 123.3 GB container" | computed: 271.5 MB (0.188% of the 7,680 raw slabs, 144.39 GB)
+N WEX4 12.2: the three together about 0.22 GB = 0.18 % of the container | computed: 0.180 %
+N WEX4 12.2: everything at once 0.76 GB = 0.62 % of the container | computed: 0.616 %
+N WEX4 12.3: canonical zero -2.74 % of raw (514,848 B) | computed: 2.738 %
+N WEX4 12.3: 7,680 records decode to 144.4 GB; the safetensors hold 151.6 GB with the 384 MTP experts | computed: 144.39 GB; 151.61 GB
+N WEX4 12.4: weight tables 57,834 B -> 378 B | computed: 57,834 B = 3 x 567 x 17 u16; 378 = 3 x 7 x 9 u16 (7 scale classes, 8 magnitudes): 378
+N WEX4 15.3: 64 records 1.03 GB; about 2 minutes at 1,030 MB/s | computed: 1.028 GB; 120 s
+N WEX4 16.3: about 6 minutes at 0.33 GB/s | computed: 6.3 min
+N WEX4 11.1: 2.070 -> 2.077 tok/s is +0.32 % | computed: 0.29-0.39 % from the rounded means
+N WNR3 0: 16,578,252.8 B = 0.88179; WNR2 16,909,926.4 B = 0.89943; -1.764 % | computed: 0.881792; 0.899434; -1.764 %
+N WNR3 6: WNR2 16,914,680 B 0.8997, 129.9 GB | computed: 0.89969, 129.90 GB; with header, model and table 129,905,360,896 B (CHANGELOG 2026-11-07: 129,905,360,896 B)
+N WNR3 6: without CZ ~16,579,600 B ~0.8819 ~127.3 GB | computed: 16,579,604.8 B, 0.88186, 127.33 GB
+N WNR3 6: with CZ ~16,064,800 B ~0.8545 ~123.4 GB | computed: 16,064,756.8 B, 0.85448, 123.38 GB
+N WNR3 6: the full container 123,306,192,896 B is 0.854 of WEX1 (144,389,472,256 B) | computed: 0.85398
+N WNR3 5: symbol 8 at frequency 1/16384 costs ~0.0001 bit per weight | computed: 0.000088 bit
+N WNR2-REF 7: WNM2 32 + 57,834 + 1,542 = 59,408 B | computed: 59,408 B
+N WNR2-REF 8: longest stream 28,676 B, bound 2n + 8 = 32,776 | computed: 28,676 B (16,384 symbols of frequency 1, 14 bits each, plus the 4-byte state); 32,776
+N WNR2-REF 9: about 44 MB/s at 0.29-0.32 s per 12.75 MiB V4 slab | computed: 41.8-46.1 MB/s
+N WNR2-REF 9: 567 x 32 B = 18 KB; a 16384-entry LUT per context 9.3 MB | computed: 18,144 B; 9.29 MB
+N WNR2-REF 10: scale kernel shared memory 90,112 B | computed: 90,112 B (pre-Ampere build: 24,576 B)
+N WNR2-REF 10: model tables 359,936 B with lookup 1; buckets ~6.97 MB | computed: 359,936 B; 6.97 MB
+N WNR2-REF 10: 8 lanes x 2 x 17.93 MiB = ~287 MiB per thread | computed: 17.93 MiB, 286.9 MiB
+N WNR2-REF 10: an 11 MiB V4 record: 12 scale blocks + 192 weight blocks of 32 threads | computed: 12 + 192 (12.75 MiB slab = 17 x 3 x 262,144, chunks 4096:2048)
+done
