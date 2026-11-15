@@ -1,8 +1,8 @@
 # CPU checks of the repository: check_repo.py, the stdlib tests, the WEX1-3/WNR3 CPU check, the WEX4 tests and
 # the fast decoder's harness on synthetic records (scripts/check_all.sh), then the fuzzing harnesses replayed on
 # their seeds (wex4/fuzz/run.sh --replay), on Linux (x86-64, ARM64), macOS (Apple silicon) and Windows. The same
-# on Linux under ASan and UBSan (linux-sanitizers); the C test executables under TSan and MSan with clang
-# (linux-tsan, linux-msan); and the Go reader on the conformance vectors (go-reader).
+# on Linux under ASan and UBSan (linux-sanitizers); the C test executables and the libraries of the Python tests
+# under TSan and MSan with clang (linux-tsan, linux-msan); and the Go reader on the conformance vectors (go-reader).
 # No GPU, no model weights, no secrets. A run started by hand can also have the linux-io-bench job (the full
 # Linux read-path benchmark) and the linux-vulkan job (the WNR3 Vulkan prototype on a CPU Vulkan device).
 name: CI
@@ -206,8 +206,9 @@ jobs:
 
   # the C test executables under ThreadSanitizer: clang with its own OpenMP runtime and Archer, the tool of that
   # runtime that tells ThreadSanitizer what OpenMP synchronizes. A data race in the OpenMP loops of
-  # c/tools/wex4_verify.c or of the fast WNR3 decoder stops the run. Executables only: a library loaded into
-  # Python, which is not instrumented, cannot be checked this way (scripts/sanitize_c.sh lists what runs).
+  # c/tools/wex4_verify.c or of the fast WNR3 decoder stops the run. Then the three libraries that the Python
+  # tests load, built under ThreadSanitizer: called from a C program (scripts/sanitize_libs.c), then by the WEX4
+  # tests in Python with the runtime preloaded (scripts/sanitize_c.sh lists what runs).
   # Then the smoke run of bench/wex_io.c, which has its own pread threads, under ThreadSanitizer.
 # The last step is not a sanitizer run: every CPU check built with clang, so that CC=clang keeps working.
 # The three scripts that build C print their compiler, and the step fails unless all three name a clang
@@ -238,9 +239,9 @@ jobs:
           test "$(grep -c '^compiler: ' "$RUNNER_TEMP/clang.log")" = 3
           test "$(grep -c '^compiler: .*clang' "$RUNNER_TEMP/clang.log")" = 3
 
-  # the same executables under MemorySanitizer (clang), built without OpenMP, so that no library that is not
-  # instrumented is in the process: a branch, a pointer or a system call that depends on a byte nobody wrote
-  # stops the run
+  # the same executables, and the libraries of the Python tests called from scripts/sanitize_libs.c, under
+  # MemorySanitizer (clang), built without OpenMP, so that no library that is not instrumented is in the process
+  # (nor Python): a branch, a pointer or a system call that depends on a byte nobody wrote stops the run
   linux-msan:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
