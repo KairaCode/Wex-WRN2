@@ -428,7 +428,7 @@ static void test_v12_slab_bound(void) {
     int version;
     for (version = 1; version <= 2; version++) {
         WexHeader header = make_header(version);
-        WexEntry entries[2];
+        WexEntry entries[2], swap;
         uint64_t record, file_bytes;
         unsigned int m;
         entries[0] = make_entry(version == 2);
@@ -457,7 +457,15 @@ static void test_v12_slab_bound(void) {
         CHECK(wex_validate_table(&header, entries, file_bytes));
         header.aligned_expert_bytes = record - WEX_ALIGN;   /* below the larger record: the per-entry rule */
         CHECK(wex_validate_table(&header, entries, file_bytes));
-        /* the bound follows the largest record, not the first or the last */
+        /* the bound follows the largest record, wherever it is: above, it is the
+         * first one; here the last (V1/V2 tables may list records in any order) */
+        swap = entries[0]; entries[0] = entries[1]; entries[1] = swap;
+        header.aligned_expert_bytes = 2u * record;
+        CHECK(!wex_validate_table(&header, entries, file_bytes));
+        header.aligned_expert_bytes = 2u * record + WEX_ALIGN;
+        CHECK(wex_validate_table(&header, entries, file_bytes));
+        swap = entries[0]; entries[0] = entries[1]; entries[1] = swap;
+        /* without the larger record, the bound is twice the smaller one */
         memset(&entries[0], 0, sizeof(entries[0]));
         header.aligned_expert_bytes = 2u * record;
         CHECK(wex_validate_table(&header, entries, file_bytes));

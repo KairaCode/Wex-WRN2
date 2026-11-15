@@ -278,16 +278,18 @@ static void test_rejections(void) {
 /* The store allocates 24 slabs per layer of the header's aligned_expert_bytes
  * when it opens. wex_validate_table bounds that field by the table: at most
  * twice the largest aligned decoded record. A header above it is refused
- * before any slab is allocated; one at the bound opens and serves its records. */
+ * before any slab is allocated; one at the bound opens and serves its records.
+ * The small hostile value comes first: under the old rule the store opens it
+ * whatever memory the machine has, so the test fails there. */
 static void test_slab_bound(int version) {
     const char *path = "test_wex_slab_bound.wex";
     Fixture fixture = fixture_make(version, 1, 2, 0);
     uint64_t record = fixture.header->aligned_expert_bytes;
     ColiExpertStoreStats stats;
-    fixture.header->aligned_expert_bytes = UINT32_MAX - (WEX_ALIGN - 1u);   /* 4 GiB - 4096 */
+    fixture.header->aligned_expert_bytes = 2u * record + WEX_ALIGN;
     file_write(path, fixture.data, fixture.bytes);
     fixture_open(path, &fixture, 0);
-    fixture.header->aligned_expert_bytes = 2u * record + WEX_ALIGN;
+    fixture.header->aligned_expert_bytes = UINT32_MAX - (WEX_ALIGN - 1u);   /* 4 GiB - 4096 */
     file_write(path, fixture.data, fixture.bytes);
     fixture_open(path, &fixture, 0);
     fixture.header->aligned_expert_bytes = 2u * record;
