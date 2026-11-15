@@ -104,7 +104,8 @@ jobs:
           grep -q '^build: NEON kernels' "$RUNNER_TEMP/clang.log"
           ./t_clang.exe mutate model.wnm2 600 20261114 L0_E0.rec L0_E1.rec L0_E2.rec L0_E3.rec
 
-  # the same checks on macOS, Apple silicon: ARM64 again (scalar kernel), with 16 KiB memory pages and the Mach-O
+  # the same checks on macOS, Apple silicon: ARM64 again (the NEON kernel of the fast WNR3 decoder, built by
+  # GNU gcc here; the step fails if it built another one), with 16 KiB memory pages and the Mach-O
   # linker. The gcc of Xcode is Apple clang, which has no OpenMP runtime, so CC names a GNU gcc of Homebrew: the
   # runner image ships several (gcc-13, gcc-14, ...) and the step takes the newest, so no package is downloaded
   macos:
@@ -118,14 +119,16 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
         with:
           persist-credentials: false
-      - name: All CPU checks
+      - name: All CPU checks (NEON kernel of the fast decoder)
         run: |
           CC=$(ls "$(brew --prefix)"/bin/gcc-[0-9]* | sort -t- -k2 -n | tail -1)
           export CC
           echo "CC=$CC" >> "$GITHUB_ENV"   # the replay step below builds with the same compiler
           uname -sm; getconf PAGESIZE; "$CC" --version | head -1; "$PYTHON" --version
-          bash scripts/check_all.sh
-      - name: Fuzz harnesses, seeds and mutators replayed
+          set -o pipefail
+          bash scripts/check_all.sh | tee "$RUNNER_TEMP/check.log"
+          grep -q '^fast WNR3 decoder of wex4_tools.dll: NEON kernels$' "$RUNNER_TEMP/check.log"
+      - name: Fuzz harnesses, seeds and mutators replayed   # the NEON kernel here too
         run: bash wex4/fuzz/run.sh --replay
 
   windows:
