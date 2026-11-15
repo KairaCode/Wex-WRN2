@@ -128,8 +128,9 @@ measured; it is not known to fail.
   class and root on all 112 rows, accepts three files of
   [impl/go-wex4/testdata](../impl/go-wex4/testdata/README.md) (one with WNR3 records in ceil form)
   with the reference's content digest and refuses the fourth (2026-11-15; the `rust-reader` job of CI
-  runs it and a differential run). On 35 hand-made files and 20,596 mutated ones it gave the C
-  reader's verdict on every file, and so does its first version, the one that passed the 112 rows.
+  runs it and a differential run). On 35 hand-made files and 20,596 mutated ones (one run on
+  Windows, seed 20261115; the CI job runs 6,866 mutated files) it gave the C reader's verdict on
+  every file, and so does its first version, the one that passed the 112 rows.
   The reject classes differ from the C reader's on 3 hand-made and 15 mutated files, and the C reader
   gives two classes to one sentence of 5.3 ([SPEC-NOTES.md](../impl/rust-wex4/SPEC-NOTES.md),
   part E).

@@ -47,10 +47,12 @@ ceil-form.wex4 8807c0ab7ba3bc555107c9e4749d70fc97cd93dd83c316c6717c44b633678d82
 planes.wex4 26ccf6f46b0ae36cef9889f6945e53e8b622f4913ca32da5f8692a071e879bd6
 ragged.wex4 c30449ba23b441c38aed2b6805e39251b2b9531595ba06a6eb8cdb029c389346
 EOF
-# a WBP1 record with one page of zeros more than it needs: the reference refuses it, so must this reader
-if "$bin" check ../go-wex4/testdata/extra-page.wex4; then
-  echo "extra-page.wex4 was accepted"
-  exit 1
-fi
+# a WBP1 record with one page of zeros more than it needs: the reference refuses it, so must this reader, with
+# exit status 1 and a reject line of class WEX4_E_DATA (a panic, a usage error or an unknown codec is not that)
+status=0
+out=$("$bin" check ../go-wex4/testdata/extra-page.wex4) || status=$?
+echo "$out"
+[ "$status" -eq 1 ] && echo "$out" | grep -q '^reject [^ ]*extra-page.wex4 WEX4_E_DATA:' ||
+  { echo "extra-page.wex4: not refused as WEX4_E_DATA (exit status $status)"; exit 1; }
 if [ ${#files[@]} -gt 0 ]; then "$bin" check "${files[@]}"; fi
 echo "rust reader: all checks passed"

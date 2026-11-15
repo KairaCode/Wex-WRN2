@@ -76,7 +76,9 @@ python -I impl/rust-wex4/differential.py [--count 7000] [--go impl/go-wex4/out/w
     impl/rust-wex4/out/target/release/wex4r OUTDIR
 ```
 
-It fails when a verdict differs, when the C and the Python reader disagree or when this reader panics.
+It fails when a verdict differs, when the C and the Python reader disagree, when this reader panics,
+or when this reader (or the Go reader) prints no line for a file or ends with an exit status other
+than 0, 1 or 3.
 It counts the classes that differ and does not fail on them.
 
 ## Results
@@ -94,8 +96,8 @@ It counts the classes that differ and does not fail on them.
   reader's; the class differs from the C reader's on 3 of the 27 and 15 of the 18,378 files that both
   refuse. No panic.
 - **Where it ran:** Windows 10 (Intel Core i7-7700K) with MSYS2 UCRT64 and Rust 1.99.1; ubuntu-24.04
-  x86-64 in CI with the runner's Rust, also 1.99.1. In GitHub Actions run 43715915144 (2026-11-15)
-  the `rust-reader` job passed `run.sh` and gave the C reader's verdict on 35 hand-made and 6,866
+  x86-64 in CI with the runner's Rust, also 1.99.1. In GitHub Actions run 43740748837 (2026-11-15, commit
+  fda816d) the `rust-reader` job passed `run.sh` and gave the C reader's verdict on 35 hand-made and 6,866
   mutated files (C library built with gcc 13.3). Not run on macOS, on ARM or on a big-endian host.
 
 ## Limits

@@ -21,8 +21,9 @@ changed. Except for the bit flips, the index and header hashes are recomputed so
 validators.
 
 Prints the counts, and the hand-made files whose class differs. Exit status 1 when the Rust reader's verdict
-differs from the C reader's on any file, when the C and the Python reader disagree, or when the Rust reader
-panicked. A different reject class is counted, not failed: the specifications do not define the classes
+differs from the C reader's on any file, when the C and the Python reader disagree, when the Rust reader
+panicked, or when the Rust (or the Go) reader printed no line for a file or ended with an exit status other
+than 0, 1 or 3. A different reject class is counted, not failed: the specifications do not define the classes
 (SPEC-NOTES.md, part B).
 """
 import argparse, collections, hashlib, os, random, struct, subprocess, sys
@@ -217,15 +218,20 @@ class Mutator:
 
 
 def run_reader(argv, files, parse):
-    """Verdicts of a reader binary that prints one line per file, 200 files per call."""
-    out = {}
+    """Verdicts of a reader binary that prints one line per file, 200 files per call, and the number of calls
+    that ended with an exit status other than 0, 1 or 3 (an abort, a crash, a kill, a usage error)."""
+    out, bad_status = {}, 0
     for i in range(0, len(files), 200):
         done = subprocess.run(argv + files[i:i + 200], capture_output=True, text=True)
+        if done.returncode not in (0, 1, 3):
+            bad_status += 1
+            print(f'{os.path.basename(argv[0])}: exit status {done.returncode} on files {i} to '
+                  f'{min(i + 200, len(files)) - 1}: {done.stderr.strip()[-300:]}')
         for line in done.stdout.splitlines():
             got = parse(line)
             if got:
                 out[got[0]] = got[1:]
-    return out
+    return out, bad_status
 
 
 def rust_line(line):
@@ -258,7 +264,7 @@ def reference(c, data):
 
 
 def verdict(v):
-    return v if v in ('accept', 'unsupported') else 'reject'
+    return v if v in ('accept', 'unsupported', 'missing') else 'reject'
 
 
 def main():
@@ -295,9 +301,11 @@ def main():
             f.write(data)
         files.append(path)
         meta[path] = (mode,) + reference(c, bytes(data))
-    rust = run_reader([os.path.abspath(a.wex4r), 'check'], files, rust_line)
-    go = run_reader([os.path.abspath(a.go)], files, go_line) if a.go else {}
     s, classes, edges = collections.Counter(), collections.Counter(), []
+    rust, s['Rust exit status not 0, 1 or 3'] = run_reader([os.path.abspath(a.wex4r), 'check'], files, rust_line)
+    go = {}
+    if a.go:
+        go, s['Go exit status not 0, 1 or 3'] = run_reader([os.path.abspath(a.go)], files, go_line)
     for path in files:
         mode, cv, pv = meta[path]
         rv, rwhy = rust.get(path, ('missing', ''))
@@ -310,8 +318,12 @@ def main():
         s[kind + ', Rust verdict ' + ('as C' if verdict(rv) == verdict(cv) else 'NOT as C')] += 1
         if rv == 'FAULT':
             s['Rust panicked'] += 1
+        if rv == 'missing':
+            s['Rust printed no line'] += 1
         if a.go:
             s[kind + ', Go verdict ' + ('as C' if verdict(gv) == verdict(cv) else 'NOT as C')] += 1
+            if gv == 'missing':
+                s['Go printed no line'] += 1
         if verdict(cv) == 'reject' and verdict(rv) == 'reject':
             s[kind + ', Rust class ' + ('as C' if rv == cv else 'not as C')] += 1
             if rv != cv:
@@ -326,7 +338,8 @@ def main():
     for e in edges:
         print('hand-made: ' + e)
     bad = s['hand-made, Rust verdict NOT as C'] + s['mutated, Rust verdict NOT as C'] + s['C and Python disagree'] \
-        + s['Rust panicked']
+        + s['Rust panicked'] + s['Rust printed no line'] + s['Rust exit status not 0, 1 or 3'] \
+        + s['Go printed no line'] + s['Go exit status not 0, 1 or 3']
     print('differential: ' + ('verdicts as the C reader on every file' if not bad else 'DISAGREEMENT'))
     return 1 if bad else 0
 

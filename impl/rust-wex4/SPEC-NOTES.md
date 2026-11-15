@@ -169,7 +169,7 @@ Python 3.14), one run each; the same checks on Linux are the `rust-reader` job o
     18,378 and cannot decode 107. This reader and the Go reader give its verdict on all 20,596; the C
     and the Python reader agree on every one that the C reader can decode; this reader never panicked.
   - On Linux, the `rust-reader` job of CI (ubuntu-24.04, Rust 1.99.1, the C library built with gcc
-    13.3, GitHub Actions run 43715915144) ran the same script without the Go reader: the 35 hand-made
+    13.3, GitHub Actions run 43740748837 on commit fda816d) ran the same script without the Go reader: the 35 hand-made
     files and 6,866 mutated ones (`--count 7000`), the C reader's verdict on all of them; the class
     differs on 3 hand-made and 3 mutated files.
 
