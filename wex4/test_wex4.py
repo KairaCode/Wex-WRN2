@@ -633,6 +633,391 @@ def test_hostile_experts(base):
     return attacks
 
 
+# ---- WNR3 written in Python (docs/WNR3-SPEC.md sections 3 and 4, errata 9 to 12) ----
+# The C encoder always writes the anchor of rule g and never a record a decoder must refuse. This one takes the
+# chunk pair, the anchors, the flags and the model id as they are given, and computes contexts and stream hashes
+# from them, so a record can break one rule and no other. A matrix is (scales, nibbles): one scale byte and 32
+# FP4 nibbles per block.
+NR3_HALVE = {0: 0, 2: 1, 4: 2, 5: 3, 6: 4, 7: 5}
+
+
+def nr3_matrix(rng, blocks, kinds):
+    """A matrix of `blocks` blocks drawn from `kinds`: 'even' (maximum 7, no magnitude 1 or 3: the ceil form
+    halves it), 'odd' (maximum 6 or 7 with a 1 or a 3), 'low' (maximum 0 to 4), 'five' (maximum 5: its matrix
+    cannot be in ceil form), 'zero'. Scales 254, 255 and 0 occur; some zeros are -0."""
+    scales, nibbles = bytearray(), []
+    for _ in range(blocks):
+        kind = rng.choice(kinds)
+        if kind == 'even':
+            mags = rng.choices([0, 2, 4, 5, 6, 7], [60, 22, 9, 5, 2, 2], k=32)
+            mags[rng.randrange(32)] = 7
+        elif kind == 'odd':
+            mags = rng.choices(range(8), [60, 20, 9, 5, 3, 1, 1, 1], k=32)
+            mags[rng.randrange(16)] = 6 + rng.randrange(2)
+            mags[16 + rng.randrange(16)] = rng.choice([1, 3])
+        elif kind == 'low':
+            mags = rng.choices(range(5), [60, 24, 9, 5, 2], k=32)
+        elif kind == 'five':
+            mags = rng.choices(range(6), [60, 22, 9, 5, 2, 2], k=32)
+            mags[rng.randrange(32)] = 5
+        else:
+            mags = [0] * 32
+        scales.append(rng.choices([120, 121, 122, 119, 254, 255, 0], [40, 30, 12, 9, 3, 3, 3])[0])
+        nibbles += [m | (8 if rng.random() < 0.08 else 0) for m in mags]
+    return bytes(scales), nibbles
+
+
+def nr3_slab(matrices):
+    """The decoded slab: scales of w1, w2, w3, then packed weights of w1, w2, w3 (symbol 2i in the low nibble)."""
+    return b''.join(bytes(scales) for scales, _ in matrices) + \
+        b''.join(bytes(q[k] | q[k + 1] << 4 for k in range(0, len(q), 2)) for _, q in matrices)
+
+
+def nr3_anchor(scales):
+    """Rule g (4.3): the lower value of the densest adjacent pair of scale values, first maximum."""
+    h = [0] * 256
+    for s in scales:
+        h[s] += 1
+    return max(range(255), key=lambda v: (h[v] + h[v + 1], -v))
+
+
+def nr3_coded(matrices, cz):
+    """Coded domain (4.2, 4.4): canonical zero, then the ceil form of every matrix that passes the gate.
+    Returns (coded matrices, record flags)."""
+    coded, flags = [], 8 if cz else 0
+    for m, (scales, nibbles) in enumerate(matrices):
+        scales = bytearray(scales)
+        blocks = [[0 if cz and q == 8 else q for q in nibbles[b:b + 32]] for b in range(0, len(nibbles), 32)]
+        tops = [max(q & 7 for q in block) for block in blocks]
+        if 5 not in tops:
+            flags |= 1 << m
+            for b, block in enumerate(blocks):
+                if tops[b] == 7 and scales[b] < 255 and not any(q & 7 in (1, 3) for q in block):
+                    blocks[b] = [q & 8 | NR3_HALVE[q & 7] for q in block]
+                    scales[b] += 1
+        coded.append((bytes(scales), [q for block in blocks for q in block]))
+    return coded, flags
+
+
+def nr3_contexts(scales, nibbles, anchor):
+    """The context of every weight symbol (4.1 with erratum 9)."""
+    out, srel, pm, mx = [], 0, 8, 8
+    for i, q in enumerate(nibbles):
+        if i % 32 == 0:
+            srel, pm, mx = max(-3, min(3, scales[i // 32] - anchor)) + 3, 8, 8
+        out.append((srel * 9 + pm) * 9 + mx)
+        pm = q & 7
+        mx = pm if mx == 8 else max(mx, pm)
+    return out
+
+
+def nr3_model(experts):
+    """A WNM2 blob (erratum 12) from the counts of coded experts: [(coded matrices, anchors)]."""
+    weight_tables, scale_tables = b'', b''
+    for m in range(3):
+        counts, scale_counts = [[0] * 16 for _ in range(567)], [0] * 256
+        for coded, anchors in experts:
+            scales, nibbles = coded[m]
+            for s in scales:
+                scale_counts[s] += 1
+            for q, context in zip(nibbles, nr3_contexts(scales, nibbles, anchors[m])):
+                counts[context][q] += 1
+        weight_tables += b''.join(struct.pack('<17H', *wex4.quantize(c)) for c in counts)
+        scale_tables += struct.pack('<257H', *wex4.quantize(scale_counts))
+    return struct.pack('<8I', 0x324d4e57, 1, 14, 567, 3, 0, 0, 0) + weight_tables + scale_tables
+
+
+def nr3_encode(model, coded, flags, owner, weight_chunk=2048, scale_chunk=512, anchors=None, model_id=None):
+    """The padded WNR3 record of coded matrices (3, 4.5, 4.6). anchors None: rule g. model_id None: the model's."""
+    anchors = anchors or [nr3_anchor(scales) for scales, _ in coded]
+    model_id = model_id or wex4.wnm2_id(model)
+    word = anchors[0] | anchors[1] << 8 | anchors[2] << 16 | flags << 24
+    streams, payload = [], [0, 0]
+    for weights in (0, 1):
+        for m, (scales, nibbles) in enumerate(coded):
+            if weights:
+                cdfs = {}
+                symbols, chunk = nibbles, weight_chunk
+                tables = [cdfs.setdefault(c, struct.unpack_from('<17H', model, 32 + (m * 567 + c) * 34))
+                          for c in nr3_contexts(scales, nibbles, anchors[m])]
+            else:
+                symbols, chunk = scales, scale_chunk
+                tables = [struct.unpack_from('<257H', model, 32 + 3 * 567 * 34 + m * 514)] * len(scales)
+            for first in range(0, len(symbols), chunk):
+                piece = symbols[first:first + chunk]
+                data = bytes(piece[k] | piece[k + 1] << 4 for k in range(0, len(piece), 2)) if weights else bytes(piece)
+                state = wex4.RANS_L + (wex4.stream_hash((model_id, owner, len(streams), word), data) & 0x7fffff)
+                out = bytearray()
+                for j in range(len(piece) - 1, -1, -1):   # last symbol first, as wex4.rans_encode
+                    cdf, symbol = tables[first + j], piece[j]
+                    start = cdf[symbol]
+                    f = cdf[symbol + 1] - start
+                    limit = ((wex4.RANS_L >> wex4.PRECISION) << 8) * f
+                    while state >= limit:
+                        out.append(state & 0xff)
+                        state >>= 8
+                    state = ((state // f) << wex4.PRECISION) + state % f + start
+                out += state.to_bytes(4, 'little')
+                out.reverse()
+                streams.append(bytes(out))
+                payload[weights] += len(out)
+    body = struct.pack('<6I3BBI', 0x33524e57, model_id, payload[0], payload[1], weight_chunk, scale_chunk, *anchors,
+                       flags, owner) + struct.pack(f'<{len(streams)}H', *map(len, streams)) + b''.join(streams)
+    return body + bytes(-len(body) % wex4.PAGE)
+
+
+def expert_record(name, shapes, slab, expert, coded=None, value_exact=False):
+    """An EXPERT record for wex4.write: the six tensors of WEX4-SPEC 5.5 for scale tensors of `shapes`
+    (rows, cols). coded: the WNR3 record to store (blob 1 is its model); None: a RAW record."""
+    T = wex4.Tensor
+    tensors = [T(f'{name}.w{m + 1}.scale', 'F8_E8M0', s, s[0] * s[1]) for m, s in enumerate(shapes)] + \
+        [T(f'{name}.w{m + 1}.weight', 'I8', (s[0], 16 * s[1]), 16 * s[0] * s[1]) for m, s in enumerate(shapes)]
+    codec = ('pre', wex4.CODEC_WNR3, lambda: coded) if coded else 'raw'
+    return wex4.Record(tensors, len(slab), lambda: slab, codec,
+                       wex4.REC_EXPERT | (wex4.REC_VALUE_EXACT if value_exact else 0), expert, 1 if coded else 0)
+
+
+def test_spec_cases():
+    """Files for sentences of the two specifications that the files above do not pin (issues 14 to 20 of the
+    repository, impl/go-wex4/SPEC-NOTES.md part D). Returns ({label: accepted file}, {label: refused file});
+    both become conformance vectors. Its random numbers are its own: the files above keep their bytes."""
+    rs = random.Random(20261115)
+    T = wex4.Tensor
+    path = os.path.join(WORK, 'spec.wex4')
+    accepted, attacks = {}, {}
+
+    def written(records, **options):
+        wex4.write(path, records, **options)
+        return open(path, 'rb').read()
+
+    def patched(base, edits, record=None):
+        """base with (offset, format, values...) written into it; record: that record's SHA-256 is recomputed."""
+        blob = bytearray(base)
+        for at, fmt, *values in edits:
+            struct.pack_into(fmt, blob, at, *values)
+        rd = wex4.Reader(io.BytesIO(base))
+        if record is not None:
+            entry = rd.index_offset + len(rd.blobs) * 64 + record * 72
+            offset, stored = rd.records[record][:2]
+            blob[entry + 36:entry + 68] = hashlib.sha256(blob[offset:offset + stored]).digest()
+        return bytes(reseal(blob))
+
+    def tensor_at(base, i):
+        rd = wex4.Reader(io.BytesIO(base))
+        return rd.index_offset + len(rd.blobs) * 64 + len(rd.records) * 72 + i * 96
+
+    # 1. zero-size tensors (WEX4-SPEC 5.3): nbytes = 0 decides, not the shape; the shape product is taken from
+    #    the first dimension to the last and the first multiplication that overflows refuses the tensor
+    some = bytes(rs.randrange(256) for _ in range(100))
+    for label, dtype, shape in (('opaque tensor of 0 bytes with shape 3 x 3', 99, (3, 3)),
+                                ('opaque tensor of 0 bytes of rank 0', 99, ()),
+                                ('tensor shape 0 x 2^32 x 2^32', 'F32', (0, 1 << 32, 1 << 32)),
+                                ('tensor shape 2^32 x 0 x 2^32', 'F32', (1 << 32, 0, 1 << 32))):
+        accepted[label] = written([wex4.Record([T('data', 'U8', (100,), 100)], 100, lambda: some)],
+                                  empty=[T('empty', dtype, shape, 0)])
+    base = accepted['tensor shape 0 x 2^32 x 2^32']
+    attacks['tensor shape 2^32 x 2^32 x 0'] = patched(base, [(tensor_at(base, 1) + 8, '<3Q', 1 << 32, 1 << 32, 0)])
+
+    # 2. WBP1 (WEX4-SPEC 7.2): 4 and 8 planes with and without the rotation, the byte 255 in rANS-coded planes,
+    #    sizes that are not a multiple of the plane count, and a record with one page of zeros too many
+    small = [int(rs.gauss(0, 40)) for _ in range(5000)]   # negative values: their high bytes are 255
+    planes = [('f32.steps', 'F32', 4, 1, struct.pack('<5000f', *(v / 8 for v in small))),
+              ('f64.steps', 'F64', 8, 1, struct.pack('<5000d', *(v / 64 for v in small))),
+              ('i64.small', 'I64', 8, 0, struct.pack('<5000q', *small)),
+              ('i32.small', 'I32', 4, 0, struct.pack('<5000i', *small)),
+              ('u8.high', 'U8', 1, 0, bytes(rs.choices([255, 254, 0, 1, 128], [50, 20, 15, 10, 5], k=9000)))]
+    records = [wex4.Record([T(name, dtype, (len(data) // p,), len(data))], len(data), lambda data=data: data, ('bp', p, t))
+               for name, dtype, p, t, data in planes]
+    data = accepted['WBP1 records of 4 and 8 planes'] = written(records, chunk_log2=12)
+    assert data == written(records, chunk_log2=12, encoder=C), 'C and Python WBP1 encoders differ'
+    rd = wex4.Reader(io.BytesIO(data))
+    seen = []
+    for r, (name, _, p, t, source) in enumerate(planes):
+        stored = rd.stored(r)
+        assert rd.records[r][3] == wex4.CODEC_WBP1 and stored[12:14] == bytes([p, 12]) and stored[15] == t, name
+        assert rd.tensor(name)[2] == source and C.bp_decode(stored, len(source), r) == source, name
+        coded = wex4.rotate(source, p, True) if t else source
+        seen.append([q for q in range(p) if stored[14] >> q & 1 and 255 in coded[q::p]])
+    assert seen[2] and seen[3] and seen[4], f'no rANS-coded plane with the byte 255: {seen}'
+
+    def ragged(size, p, noisy):
+        """Compressible bytes with 255 frequent; plane `noisy` is random bytes (stored raw), None: no such plane."""
+        out = bytearray(rs.choices([0, 1, 2, 255, 254, 7], [40, 20, 10, 20, 5, 5], k=size))
+        for k in range(size if noisy is None else noisy, size, p):
+            out[k] = rs.randrange(256)
+        return bytes(out)
+    sizes = [('r2', 2, ragged(5001, 2, None)), ('r4', 4, ragged(10001, 4, 1)), ('r8', 8, ragged(20003, 8, 0))]
+    records = [wex4.Record([T(name, 'U8', (len(data),), len(data))], len(data), lambda data=data: data, ('bp', p, 0))
+               for name, p, data in sizes]
+    data = accepted['WBP1 record sizes not a multiple of the planes'] = written(records, chunk_log2=11)
+    assert data == written(records, chunk_log2=11, encoder=C)
+    rd = wex4.Reader(io.BytesIO(data))
+    for r, (name, p, source) in enumerate(sizes):
+        assert rd.records[r][3] == wex4.CODEC_WBP1 and rd.stored(r)[12] == p and len(source) % p, name
+        assert rd.tensor(name)[2] == source and C.bp_decode(rd.stored(r), len(source), r) == source, name
+
+    class ExtraPage:
+        """The reference encoder with one page of zero bytes after the record."""
+        @staticmethod
+        def bp_encode(raw, planes, chunk_log2, owner, transform=0):
+            return wex4.bp_encode(raw, planes, chunk_log2, owner, transform) + bytes(wex4.PAGE)
+    source = ragged(10000, 1, None)
+    attacks['WBP1 record with a zero page too many'] = written(
+        [wex4.Record([T('x', 'U8', (10000,), 10000)], 10000, lambda: source, ('bp', 1, 0))], encoder=ExtraPage)
+
+    # 3. WNR3 records the upgraded vector does not have (its two records are canonical zero, no ceil form,
+    #    chunks 2048:512): plain, ceil form, canonical zero with the ceil form, other chunk pairs, anchors
+    #    that are not those of rule g. One model, trained on these experts.
+    shapes = [(12, 25), (25, 12), (10, 16)]
+    blocks = [rows * cols for rows, cols in shapes]
+    plain = [nr3_matrix(rs, n, ['even', 'odd', 'low', 'five', 'zero']) for n in blocks]
+    ceil = [nr3_matrix(rs, n, ['even', 'even', 'odd', 'low', 'zero']) for n in blocks]
+    mixed = [nr3_matrix(rs, n, ['even', 'even', 'odd', 'low', 'zero'] + ['five'] * (m == 1)) for m, n in enumerate(blocks)]
+    coded = [nr3_coded(plain, False), nr3_coded(ceil, False), nr3_coded(mixed, True)]
+    assert [flags for _, flags in coded] == [0, 7, 13], 'the synthetic experts changed'
+    assert any(s == 254 and c == 255 for (before, _), (after, _) in zip(ceil, coded[1][0]) for s, c in zip(before, after)), \
+        'no block that the ceil form takes from scale 254 to the coded scale 255'
+    rule_g = [nr3_anchor(scales) for scales, _ in coded[1][0]]
+    other = [255, 0, rule_g[2] + 2]   # no byte of it is the anchor of rule g
+    assert all(a != g for a, g in zip(other, rule_g))
+    model = nr3_model([(c, [nr3_anchor(scales) for scales, _ in c]) for c, _ in coded] + [(coded[1][0], other)])
+    model_id = wex4.wnm2_id(model)
+    stored = [nr3_encode(model, coded[0][0], 0, 0),                              # plain, 2048:512
+              nr3_encode(model, coded[1][0], 7, 1, 512, 256),                    # ceil form, the smallest chunks
+              nr3_encode(model, coded[2][0], 13, 2, 4096, 1024),                 # canonical zero and ceil form
+              nr3_encode(model, coded[1][0], 7, 3, 16384, 16384, other)]         # the expert of record 1 again
+    slabs = [nr3_slab(plain), nr3_slab(ceil),
+             nr3_slab([(scales, [0 if q == 8 else q for q in nibbles]) for scales, nibbles in mixed]),   # Z(source)
+             nr3_slab(ceil)]
+    assert slabs[2] != nr3_slab(mixed)
+    # the C encoder gives the same bytes wherever it can write the record (it always takes the anchor of rule g)
+    open(os.path.join(WORK, 'spec.wnm2'), 'wb').write(model)
+    entry = conv.expert_entry(shapes, [(rows, 16 * cols) for rows, cols in shapes])
+    for r, (source, cz, chunks) in enumerate(((plain, 0, (2048, 512)), (ceil, 0, (512, 256)), (mixed, 1, (4096, 1024)))):
+        lib = conv.Nr3(os.path.join(WORK, 'wex_nr3_tools.dll'), os.path.join(WORK, 'spec.wnm2'), cz).lib
+        slab = nr3_slab(source)
+        work, out = ctypes.create_string_buffer(len(slab)), ctypes.create_string_buffer(4 * len(slab))
+        used, total = ctypes.c_size_t(), ctypes.c_size_t()
+        flags = lib.wex_nr3_prepare(entry, slab, cz, work, None)
+        assert flags == coded[r][1] and work.raw == nr3_slab(coded[r][0]), f'record {r}: coded domain'
+        assert lib.wex_nr3_encode_record(model, entry, work, flags, r, *chunks, out, len(out), ctypes.byref(used),
+                                         ctypes.byref(total)) == 0 and out.raw[:total.value] == stored[r], f'record {r}'
+    records = [expert_record(f'expert.{r}', shapes, slabs[r], r, stored[r], r == 2) for r in range(4)]
+    options = dict(blobs=[(wex4.BLOB_WNM2, model_id, model)], layers=1, experts=4, required=wex4.REQ_VALUE_EXACT)
+    data = accepted['WNR3 ceil form, chunk pairs and anchors'] = written(records, **options)
+    for lib in (C, CREF):
+        rd = wex4.Reader(io.BytesIO(data), lib)
+        assert [rec[3] for rec in rd.records] == [5] * 4 and [rd.record(r) for r in range(4)] == slabs
+        assert [rd.stored(r)[27] for r in range(4)] == [0, 7, 13, 7]
+    # issue 20: records 1 and 3 are different bytes (chunk pair, anchors, every stream) and decode to the same
+    # slab, so a decoder takes the anchor and the chunk pair as the record gives them. Changing the anchor byte
+    # of a finished record is another thing: its stream hashes include the byte, and the record is refused.
+    assert stored[1] != stored[3] and stored[1][16:27] != stored[3][16:27] and slabs[1] == slabs[3]
+    at = rd.records[3][0]
+    moved = patched(data, [(at + 24, '<B', rule_g[0])], record=3)
+    assert C.check(moved, 3, True)[0] == CREF.check(moved, 3, True)[0] == -14 and py_verdict(moved)[0] != 0
+    # the chunk fields are outside the stream hashes (WEX4-SPEC 8.2): another legal scale chunk that gives the
+    # same streams (every matrix has at most 300 scales) is the same slab
+    moved = patched(data, [(at + 20, '<I', 512)], record=3)
+    assert C.check(moved, 3, True) == CREF.check(moved, 3, True) == C.check(data, 3, True) and py_verdict(moved)[0] == 0
+
+    # 4. one small expert, and one rule of WNR3-SPEC broken per file; contexts and stream hashes are computed
+    #    for the record as it is written, so nothing else is wrong with it
+    small_shapes = [(4, 21), (7, 12), (3, 28)]
+    source = [nr3_matrix(rs, 84, ['even', 'even', 'odd', 'low', 'zero']) for _ in range(3)]
+    good, flags = nr3_coded(source, False)
+    zero, zero_flags = nr3_coded(source, True)
+    assert flags == 7 and zero_flags == 15
+    small_model = nr3_model([(good, [nr3_anchor(scales) for scales, _ in good])])
+    small_id = wex4.wnm2_id(small_model)
+    options = dict(blobs=[(wex4.BLOB_WNM2, small_id, small_model)], layers=1, experts=1)
+
+    def one(coded_record, value_exact=False):
+        data = written([expert_record('expert', small_shapes, nr3_slab(source), 0, coded_record, value_exact)],
+                       required=wex4.REQ_VALUE_EXACT if value_exact else 0, **options)
+        assert wex4.Reader(io.BytesIO(data)).records[0][3] == wex4.CODEC_WNR3, 'the WNR3 record is not smaller than raw'
+        return data
+    data = accepted['WNR3 one expert'] = one(nr3_encode(small_model, good, 7, 0))
+    assert wex4.Reader(io.BytesIO(data), C).record(0) == nr3_slab(source) and len(data) == 73728
+    at = wex4.Reader(io.BytesIO(data)).records[0][0]
+    payloads = struct.unpack_from('<2I', data, at + 8)   # bytes of the scale streams, of the weight streams
+    used = 32 + 2 * (3 + 6) + sum(payloads)              # 3 scale streams, 6 weight streams (2,688 nibbles per matrix)
+    b = next(b for b in range(84) if max(q & 7 for q in good[0][1][32 * b:32 * b + 32]) == 5)   # a halved block
+    underflow = [(good[0][0][:b] + b'\0' + good[0][0][b + 1:], good[0][1])] + good[1:]
+    negative = [(zero[0][0], [8] + zero[0][1][1:])] + zero[1:]
+    # the same coded data without the flag that makes it wrong is a valid record: the streams are right, and
+    # what the two files below break is the ceil inverse and the canonical-zero rule
+    for matrices, flags in ((underflow, 0), (negative, 7)):
+        control = one(nr3_encode(small_model, matrices, flags, 0))
+        assert C.check(control, 3, True)[0] == CREF.check(control, 3, True)[0] == 0 and py_verdict(control)[0] == 0
+    control = one(nr3_encode(small_model, good, 7, 0, 512, 256))   # the smallest legal chunks
+    assert C.check(control, 3, True) == CREF.check(control, 3, True) == C.check(data, 3, True)
+    attacks.update({
+        'WNR3 ceil-form block of maximum 5 at coded scale 0': one(nr3_encode(small_model, underflow, 7, 0)),
+        'WNR3 canonical-zero record with a nibble 8': one(nr3_encode(small_model, negative, 15, 0), True),
+        'WNR3 record with a reserved flag bit': one(nr3_encode(small_model, good, 7 | 16, 0)),
+        'WNR3 record with a weight chunk of 256': one(nr3_encode(small_model, good, 7, 0, 256, 512)),
+        'WNR3 record whose model id is not its blob id': one(nr3_encode(small_model, good, 7, 0, model_id=small_id ^ 1)),
+        'WNR3 payload sizes differ from the stream lengths, record hash fixed':
+            patched(data, [(at + 8, '<2I', payloads[0] + 1, payloads[1] - 1)], record=0),
+        'non-zero byte in the padding of a WNR3 record, record hash fixed': patched(data, [(at + used, '<B', 1)], record=0),
+        'WNR3 record with the magic WNR2, record hash fixed': patched(data, [(at, '<I', 0x32524e57)], record=0),
+    })
+    assert used < 4096 and not any(data[at + used:at + 4096])
+    # a WNR3 record with one page of zeros too many: only where the raw record is at least two pages longer
+    one_plain = nr3_encode(model, coded[0][0], 0, 0)
+    assert len(one_plain) == 8192
+    attacks['WNR3 record with a zero page too many'] = written(
+        [expert_record('expert', shapes, slabs[0], 0, one_plain + bytes(wex4.PAGE))],
+        blobs=[(wex4.BLOB_WNM2, model_id, model)], layers=1, experts=1)
+
+    # 5. WEX4-SPEC 5.5 and 3: the weight tensor of matrix m is [rows, 16 * cols] of scale tensor m, the bound
+    #    65535 holds for 16 * cols too, and a blob starts on a 4096-byte boundary
+    raw = written([expert_record('expert', small_shapes, nr3_slab(source), 0)], layers=1, experts=1)
+    attacks['expert weight tensor with other rows than its scale tensor'] = patched(
+        raw, [(tensor_at(raw, 3) + 8, '<2Q', 8, 8 * 21)])   # [4, 336] as [8, 168]: the same bytes
+    wide = [(16, 256), (1, 1), (1, 1)]
+    raw = written([expert_record('expert', wide, bytes(rs.choices(range(8), k=17 * 4098)), 0)], layers=1, experts=1)
+    assert C.check(raw, 3, True)[0] == 0 and py_verdict(raw)[0] == 0
+    attacks['expert weight tensor of 65536 columns'] = patched(
+        raw, [(tensor_at(raw, 0) + 8, '<2Q', 1, 4096), (tensor_at(raw, 3) + 8, '<2Q', 1, 65536)])
+    raw = written([wex4.Record([T('data', 'U8', (100,), 100)], 100, lambda: some)], blobs=[(18, 0, b'opaque bytes')])
+    rd = wex4.Reader(io.BytesIO(raw))
+    attacks['blob offset not a multiple of 4096'] = patched(raw, [(rd.index_offset + 8, '<Q', rd.blobs[0][2] + 1)])
+    # WEX4-SPEC 5.2 and 10, rule 6: a record of a codec the reader does not know may name any blob up to
+    # blob_count. Both readers open the file and refuse only to decode that record. No vector: the manifest has no
+    # verdict for a file that opens and cannot be verified in full (wex4/vectors/README.md)
+    coded = written([wex4.Record([T('x', 'U8', (10000,), 10000)], 10000, lambda: bytes(10000), ('bp', 1, 0))],
+                    blobs=[(18, 0, b'opaque bytes')])
+    rd = wex4.Reader(io.BytesIO(coded))
+    assert rd.records[0][3] == wex4.CODEC_WBP1 and rd.records[0][1] < wex4.align(10000)
+    for codec in (7, 3):   # a reserved id, and the WNR1 id of WEX3, which WEX4 does not use
+        unknown = patched(coded, [(rd.index_offset + 64 + 16, '<H', codec), (rd.index_offset + 64 + 20, '<I', 1)])
+        index_offset, index_bytes = struct.unpack_from('<QQ', unknown, 32)
+        index = unknown[index_offset:index_offset + wex4.align(index_bytes)]
+        assert C.lib.wex4_validate(unknown[:wex4.PAGE], len(unknown), index, len(index)) == 0, codec
+        assert wex4.Reader(io.BytesIO(unknown)).records[0][3:6] == (codec, 0, 1), codec
+        assert C.check(unknown, 3, True)[0] == CREF.check(unknown, 3, True)[0] == -15, codec
+        assert 'unsupported codec' in refusal(wex4.check, unknown, True, C), codec
+
+    digests = set()
+    for label, blob in accepted.items():
+        status, digest = C.check(blob, 3, True)
+        assert status == 0 and CREF.check(blob, 3, True) == (0, digest) and py_verdict(blob) == (0, digest), label
+        digests.add(digest)
+    assert len(digests) == len(accepted)
+    for label, blob in attacks.items():
+        status = C.check(blob, 3, True)[0]
+        assert status != 0 and CREF.check(blob, 3, True)[0] == status and py_verdict(blob)[0] != 0, \
+            f'{label}: C {status}, Python {py_verdict(blob)[0]}'
+    data_class = [label for label, blob in attacks.items() if C.check(blob, 3, True)[0] == -14]
+    print(f'specification cases: {len(accepted)} files accepted and {len(attacks)} refused by C (fast and reference '
+          f'decoder) and Python, {len(data_class)} of them by a record decoder under a valid index; a WNR3 encoder '
+          f'in Python gives the bytes of the C encoder on 3 records; two WNR3 records with other chunk pairs and '
+          f'anchors decode to one slab; a record of an unknown codec that names a blob opens in both readers')
+    return accepted, attacks
+
+
 C_STATUS ={0: '-', -1: 'WEX4_E_ARG', -2: 'WEX4_E_MAGIC', -3: 'WEX4_E_HASH', -4: 'WEX4_E_VERSION', -5: 'WEX4_E_FEATURE',
             -6: 'WEX4_E_HEADER', -7: 'WEX4_E_INDEX', -8: 'WEX4_E_BLOB', -9: 'WEX4_E_RECORD', -10: 'WEX4_E_TENSOR',
             -11: 'WEX4_E_NAME', -12: 'WEX4_E_LAYOUT', -13: 'WEX4_E_EXPERT', -14: 'WEX4_E_DATA', -15: 'WEX4_E_UNSUPPORTED'}
@@ -656,7 +1041,7 @@ def write_vectors(out, generic, hostile):
     files.update({f'valid/{vector_name(k)}.wex4': v for k, v in accepted.items()})
     files.update({f'invalid/{vector_name(k)}.wex4': v for k, v in attacks.items()})
     review = os.path.join(HERE, 'review', 'security-c', 'findings')
-    rows = ['# path\tverdict\tclass\troot\tsha256\tupgrade_of']
+    rows = ['# path\tverdict\tclass\troot\tsha256\tupgrade_of\tcontent']
     for path in sorted(files) + sorted(f'../review/security-c/findings/{n}' for n in os.listdir(review) if n.endswith('.wex4')):
         data = files.get(path)
         if data is None:
@@ -665,34 +1050,41 @@ def write_vectors(out, generic, hostile):
             os.makedirs(os.path.dirname(os.path.join(out, path)), exist_ok=True)
             with open(os.path.join(out, path), 'wb') as f:
                 f.write(data)
-        status = C.check(data, 3, True)[0]
-        assert (status == 0) == (py_verdict(data)[0] == 0), path
+        status, digest = C.check(data, 3, True)
+        python = py_verdict(data)
+        assert (status == 0) == (python[0] == 0) and (status != 0 or python[1] == digest), path
         root = data[4064:4096].hex() if status == 0 else '-'
         source = 'legacy/tiny2-cz.wex3' if path == 'valid/tiny2-cz-upgraded.wex4' else '-'
         rows.append(f'{path}\t{"accept" if status == 0 else "reject"}\t{C_STATUS[status]}\t{root}\t'
-                    f'{hashlib.sha256(data).hexdigest()}\t{source}')
+                    f'{hashlib.sha256(data).hexdigest()}\t{source}\t{digest.hex() if status == 0 else "-"}')
     with open(os.path.join(out, 'MANIFEST.tsv'), 'w', newline='\n') as f:
         f.write('\n'.join(rows) + '\n')
     print(f'vectors written: {len(rows) - 1} rows in {out}')
 
 
 def test_vectors(where=VECTORS):
-    """Every row of MANIFEST.tsv: file hash, C and Python verdicts, C error class, root; upgrade_of reproduced."""
+    """Every row of MANIFEST.tsv: file hash, C and Python verdicts, C error class, root, content digest (C with the
+    fast and with the reference WNR3 decoder, and Python); upgrade_of reproduced."""
     rows = [l.split('\t') for l in open(os.path.join(where, 'MANIFEST.tsv'), encoding='utf-8').read().splitlines()
             if l and not l.startswith('#')]
-    for path, verdict, cls, root, sha, source in rows:
+    for path, verdict, cls, root, sha, source, content in rows:
         data = open(os.path.join(where, path), 'rb').read()
         assert hashlib.sha256(data).hexdigest() == sha, f'{path}: file changed'
-        status = C.check(data, 3, True)[0]
-        assert C_STATUS.get(status, status) == cls and (py_verdict(data)[0] == 0) == (verdict == 'accept'), path
+        status, digest = C.check(data, 3, True)
+        python = py_verdict(data)
+        assert C_STATUS.get(status, status) == cls and (python[0] == 0) == (verdict == 'accept'), path
+        assert CREF.check(data, 3, True)[0] == status, path
         assert verdict == 'reject' or data[4064:4096].hex() == root == hashlib.sha256(data[:4064]).hexdigest(), path
+        assert content == (digest.hex() if verdict == 'accept' else '-'), f'{path}: content digest'
+        assert verdict == 'reject' or digest == python[1] == CREF.check(data, 3, True)[1], f'{path}: content digest'
         if source != '-':   # the in-place upgrade of the source gives this file byte for byte
             work = os.path.join(WORK, 'vector_upgrade.tmp')
             shutil.copyfile(os.path.join(where, source), work)
             conv.upgrade(work)
             assert open(work, 'rb').read() == data, f'{path}: upgrade of {source} differs'
     print(f'vectors: {len(rows)} files of wex4/vectors/MANIFEST.tsv, {sum(r[1] == "accept" for r in rows)} accepted '
-          f'and {sum(r[1] == "reject" for r in rows)} rejected by C and Python as listed, hashes and roots match')
+          f'and {sum(r[1] == "reject" for r in rows)} rejected by C and Python as listed, hashes, roots and '
+          f'content digests match')
 
 
 def test_fuzz(corpora):
@@ -782,6 +1174,10 @@ def main():
     expert_attacks = test_hostile_experts(upgraded)
     assert not set(expert_attacks) & set(hostile[0])
     hostile[0].update(expert_attacks)   # one vector per attack, whatever its base file
+    spec_accepted, spec_attacks = test_spec_cases()
+    assert not set(spec_attacks) & set(hostile[0]) and not set(spec_accepted) & set(hostile[1])
+    hostile[0].update(spec_attacks)
+    hostile[1].update(spec_accepted)
     test_fuzz([('generic', generic), ('upgraded WNR3-CZ, 2 experts', upgraded), ('tiny model, WNR3-CZ', tiny)])
     if '--write-vectors' in sys.argv:
         write_vectors(sys.argv[sys.argv.index('--write-vectors') + 1], generic, hostile)
