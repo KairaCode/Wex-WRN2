@@ -3,8 +3,9 @@
 # Copyright 2026 Ludovico Zanichelli
 """Source of testdata/planes.wex4: tensors of 1, 2, 4 and 8 bytes per element for the WBP1 codec.
 
-The WBP1 records of the conformance vectors have 1 or 2 planes, and no rANS-coded plane of theirs holds the
-byte 255. This script writes a safetensors file whose tensors give WBP1 records of 4 and 8 planes, with and
+On 2026-11-14 the WBP1 records of the conformance vectors had 1 or 2 planes, and no rANS-coded plane of theirs
+held the byte 255; since 2026-11-15 they have records of 4 and 8 planes and that byte (SPEC-NOTES.md, "After the
+sentences and vectors of 2026-11-15"). This script writes a safetensors file whose tensors give WBP1 records of 4 and 8 planes, with and
 without the float rotation (transform 1), and planes in which 255 is a frequent byte (small negative integers).
 
     python -I make_planes.py OUT.safetensors

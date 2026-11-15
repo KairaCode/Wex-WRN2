@@ -577,13 +577,15 @@ func (x *Index) checkRecords() *Error {
 				return e
 			}
 			if r.Codec == codecWNR3 {
-				// the smallest record: a 32-byte header and 6 bytes per stream at the longest chunk, 16384
+				// the smallest record: a 32-byte header and 6 bytes per stream at the longest chunk, 16384.
+				// Class EXPERT, the manifest's class for this check (the vector of 2026-11-15); until then
+				// this reader said RECORD, and no vector had the case
 				var streams uint64
 				for m := 0; m < 3; m++ {
 					streams += ceilDiv(g.scales(m), 16384) + ceilDiv(g.nibbles(m), 16384)
 				}
 				if uint64(r.Stored) < align(32+6*streams) {
-					return fail(ERecord, "record %d: %d stored bytes cannot hold a WNR3 record of %d streams", i, r.Stored, streams)
+					return fail(EExpert, "record %d: %d stored bytes cannot hold a WNR3 record of %d streams", i, r.Stored, streams)
 				}
 			}
 			x.ExpertRecords++
