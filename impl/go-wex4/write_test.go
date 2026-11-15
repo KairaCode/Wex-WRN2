@@ -455,6 +455,20 @@ func TestWriterOtherChoices(t *testing.T) {
 		t.Errorf("the repacked file has the root of the vector, or the vector is not index first: %v", e)
 	}
 	reference(t, out, w, true)
+
+	// testdata/planes.wex4 was written by wex4/wex4_convert.py pack (testdata/README.md). With the grouping,
+	// the order and the metadata taken from the file but every record left to the writer's defaults
+	// (codec=auto, no planes, chunk or transform), the writer gives that file byte for byte: the converter's
+	// chunk_log2, plane counts, rotation and RAW fallback are the writer's on this file
+	out, _ = rewrite(t, "testdata/planes.wex4", func(m *Manifest) {
+		for k := range m.records {
+			r := &m.records[k]
+			r.codec, r.planes, r.chunk, r.transform = "auto", -1, -1, -1
+		}
+	})
+	if !bytes.Equal(mustRead(t, out), mustRead(t, pathOf("testdata/planes.wex4"))) {
+		t.Errorf("testdata/planes.wex4 with the writer's defaults is not the file of pack")
+	}
 }
 
 // Manifests the writer must refuse, each with one thing wrong.
@@ -491,6 +505,19 @@ func TestWriterRefuses(t *testing.T) {
 		"unknown dtype name":          "record\ntensor name=a dtype=F128 shape=8 file=a.bin\n",
 		"zero-size tensor in record":  "record\ntensor name=a dtype=U8 shape=8 file=a.bin\ntensor name=b dtype=U8 shape=0 file=empty.bin\n",
 		"required bit a reader lacks": "required 2\nrecord\ntensor name=a dtype=U8 shape=8 file=a.bin\n",
+		// words that do not apply to the record's codec, and lines given twice
+		"planes on a RAW record":             "record codec=raw planes=4\ntensor name=a dtype=U8 shape=8 file=a.bin\n",
+		"transform on WNR3":                  "grid 1 1\nrecord codec=wnr3 expert=0:0 model=1 transform=1\ntensor name=a dtype=U8 shape=8 file=a.bin\n",
+		"chunk on an auto expert":            "grid 1 1\nrecord expert=0:0 chunk=12\ntensor name=a dtype=U8 shape=8 file=a.bin\n",
+		"model on WBP1":                      "record codec=wbp1 model=1\ntensor name=a dtype=U8 shape=8 file=a.bin\n",
+		"cz on a RAW record":                 "record codec=raw cz\ntensor name=a dtype=U8 shape=8 file=a.bin\n",
+		"cw on an auto non-expert":           "record cw=512\ntensor name=a dtype=U8 shape=8 file=a.bin\n",
+		"cz on an auto expert without model": "grid 1 1\nrecord codec=auto expert=0:0 cz\ntensor name=a dtype=U8 shape=8 file=a.bin\n",
+		"meta twice":                         "meta a.bin\nmeta a.bin\nrecord\ntensor name=a dtype=U8 shape=8 file=a.bin\n",
+		"grid twice":                         "grid 1 1\ngrid 0 0\nrecord\ntensor name=a dtype=U8 shape=8 file=a.bin\n",
+		"minor twice":                        "minor 1\nminor 2\nrecord\ntensor name=a dtype=U8 shape=8 file=a.bin\n",
+		"required twice":                     "required 0\nrequired 0\nrecord\ntensor name=a dtype=U8 shape=8 file=a.bin\n",
+		"optional twice":                     "optional 0\noptional 1\nrecord\ntensor name=a dtype=U8 shape=8 file=a.bin\n",
 	}
 	if err := os.WriteFile(filepath.Join(dir, "empty.bin"), nil, 0o666); err != nil {
 		t.Fatal(err)
@@ -502,6 +529,9 @@ func TestWriterRefuses(t *testing.T) {
 		}
 		out := filepath.Join(dir, "out.wex4")
 		m, err := ParseManifest(path)
+		if err == nil && (strings.HasSuffix(what, " twice") || strings.Contains(what, " on ")) {
+			t.Errorf("%s: the manifest is not refused when it is read", what)
+		}
 		if err == nil {
 			_, err = WriteFile(m, out)
 		}
@@ -645,6 +675,57 @@ func TestTrain(t *testing.T) {
 	m.records = m.records[:0]
 	if _, err := TrainFile(m, 1, filepath.Join(dir, "none.wnm2")); err == nil {
 		t.Error("a model trained on no expert record")
+	}
+
+	// tensor files shorter than their shapes are refused, as the writer refuses them, and not trained on;
+	// the expert has 2 x 2 scales (4 B a matrix) and 2 x 32 weight bytes (64 B a matrix)
+	for name, n := range map[string]int{"s4.bin": 4, "s3.bin": 3, "w64.bin": 64, "w60.bin": 60, "w1.bin": 1} {
+		if err := os.WriteFile(filepath.Join(dir, name), make([]byte, n), 0o666); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for _, c := range []struct{ scale, weight string }{{"s4", "w64"}, {"s3", "w64"}, {"s4", "w60"}, {"s4", "w1"}} {
+		body := "wex4-manifest 1\ngrid 1 1\nblob kind=1 file=none.bin\nrecord codec=wnr3 expert=0:0 model=1\n"
+		for k := 0; k < 3; k++ {
+			body += fmt.Sprintf("tensor name=s%d dtype=U8 shape=2,2 file=%s.bin\n", k, c.scale)
+		}
+		for k := 0; k < 3; k++ {
+			body += fmt.Sprintf("tensor name=w%d dtype=U8 shape=2,32 file=%s.bin\n", k, c.weight)
+		}
+		path := filepath.Join(dir, "short.txt")
+		if err := os.WriteFile(path, []byte(body), 0o666); err != nil {
+			t.Fatal(err)
+		}
+		sm, err := ParseManifest(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		_, err = TrainFile(sm, 1, filepath.Join(dir, "short.wnm2"))
+		if good := c.scale == "s4" && c.weight == "w64"; good != (err == nil) {
+			t.Errorf("scales of %s, weights of %s: trained %v, error %v", c.scale, c.weight, err == nil, err)
+		}
+	}
+}
+
+// A file that fails verification is refused before export writes anything: the last record of
+// generic.wex4 with one byte changed.
+func TestExportRefused(t *testing.T) {
+	b := mustRead(t, pathOf("generic.wex4"))
+	res, e := verifyBytes(b, nil)
+	if e != nil {
+		t.Fatal(e)
+	}
+	b[res.X.Record(res.H.Records-1).Offset] ^= 1
+	dir := t.TempDir()
+	bad := filepath.Join(dir, "bad.wex4")
+	if err := os.WriteFile(bad, b, 0o666); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := Export(bad, filepath.Join(dir, "out")); err == nil {
+		t.Fatal("a file with a wrong record hash was exported")
+	}
+	if _, err := os.Stat(filepath.Join(dir, "out")); err == nil {
+		t.Error("export of a refused file left its folder behind")
 	}
 }
 

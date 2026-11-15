@@ -149,9 +149,13 @@ measured; it is not known to fail.
     of part E are enough;
   - the same tensors through the Go writer and through `wex4/wex4_convert.py pack`, compared byte
     for byte: it needs a safetensors reader in the Go writer and the converter's grouping rule
-    (WEX4-SPEC section 14 gives it in two sentences), and was not tried;
+    (WEX4-SPEC section 14 gives it in two sentences), and was not tried. One part of it was: on
+    `testdata/planes.wex4`, which `pack` wrote, the Go writer's default codec and parameters give
+    the file byte for byte (the grouping and the metadata were taken from the file);
   - a real model: the writer was run on files of 843,776 B at most and on synthetic experts of
     13,056 B, the trainer on two training sets of 2 and 48 such experts; no speed was measured.
+    The trainer holds one slab at a time; the writer holds one record, two or three times while
+    it is encoded and checked.
 - **Still wanted, the rest of the notes turned into text and vectors:** the spec review of
   2026-11-14 wrote part of the Go reader's notes into the specifications; the section "After the
   spec review" of [SPEC-NOTES.md](../impl/go-wex4/SPEC-NOTES.md) lists which. Open: a sentence of

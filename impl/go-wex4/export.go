@@ -17,7 +17,8 @@ import (
 	"strings"
 )
 
-// Export writes dir/manifest.txt and the source files of the WEX4 file at path.
+// Export writes dir/manifest.txt and the source files of the WEX4 file at path. A file that fails
+// verification is refused before dir is created or written to.
 func Export(path, dir string) (*Result, error) {
 	f, err := os.Open(path)
 	if err != nil {
@@ -27,6 +28,11 @@ func Export(path, dir string) (*Result, error) {
 	st, err := f.Stat()
 	if err != nil {
 		return nil, err
+	}
+	// the whole file is verified before a byte is written, so that a refused file leaves nothing in dir;
+	// the second pass below decodes every record again and writes it
+	if _, e := Verify(f, uint64(st.Size()), nil, nil); e != nil {
+		return nil, e
 	}
 	if err := os.MkdirAll(dir, 0o777); err != nil {
 		return nil, err

@@ -129,6 +129,7 @@ func ParseManifest(path string) (*Manifest, error) {
 	sc := bufio.NewScanner(f)
 	sc.Buffer(make([]byte, 1<<16), 1<<22)
 	line, started := 0, false
+	once := map[string]bool{} // the lines that are given at most once
 	for sc.Scan() {
 		line++
 		words := strings.FieldsFunc(sc.Text(), func(r rune) bool { return r == ' ' || r == '\t' || r == '\r' })
@@ -258,6 +259,13 @@ func ParseManifest(path string) (*Manifest, error) {
 		}
 
 		switch words[0] {
+		case "minor", "required", "optional", "grid", "meta":
+			if once[words[0]] {
+				return nil, bad("%s is given once", words[0])
+			}
+			once[words[0]] = true
+		}
+		switch words[0] {
 		case "minor", "required", "optional":
 			v, err := plain(1)
 			if err != nil {
@@ -325,6 +333,16 @@ func ParseManifest(path string) (*Manifest, error) {
 			if r.codec != "raw" && r.codec != "wbp1" && r.codec != "wnr3" && r.codec != "auto" {
 				return nil, bad("codec=%s: raw, wbp1, wnr3 or auto", r.codec)
 			}
+			given := func(keys ...string) string { // the first of keys this line gives, or ""
+				for _, k := range keys {
+					if _, ok := kv[k]; ok {
+						return k + "="
+					}
+				}
+				return ""
+			}
+			wbp1Word, wnr3Word := given("planes", "chunk", "transform"), given("model", "cw", "cs")
+			hasModel := given("model") != ""
 			for _, p := range []struct {
 				key string
 				dst *int
@@ -363,6 +381,28 @@ func ParseManifest(path string) (*Manifest, error) {
 				return nil, err
 			}
 			r.cz, r.part = flag("cz"), flag("part")
+			if r.cz && wnr3Word == "" {
+				wnr3Word = "cz"
+			}
+			// a word that does not apply to the codec the record gets is refused, not dropped
+			codec := r.codec
+			if codec == "auto" {
+				switch {
+				case !r.expert:
+					codec = "wbp1"
+				case hasModel:
+					codec = "wnr3"
+				default:
+					codec = "raw"
+				}
+			}
+			if wbp1Word != "" && codec != "wbp1" {
+				return nil, bad("%s is a word of a WBP1 record; this record is %s", wbp1Word, strings.ToUpper(codec))
+			}
+			if wnr3Word != "" && codec != "wnr3" {
+				return nil, bad("%s is a word of a WNR3 record; this record is %s (codec=auto is WNR3 only for an expert record with model=)",
+					wnr3Word, strings.ToUpper(codec))
+			}
 			m.order = append(m.order, extent{'r', len(m.records)})
 			m.records = append(m.records, r)
 		case "tensor":

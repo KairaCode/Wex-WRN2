@@ -26,9 +26,7 @@ func TrainFile(m *Manifest, n uint32, out string) (*Trained, error) {
 	if n == 0 || int(n) > len(m.blobs) || m.blobs[n-1].kind != blobKindWNM2 {
 		return nil, fmt.Errorf("blob line %d of the manifest is not a blob of kind 1", n)
 	}
-	var slabs [][]byte
-	var geos []Geo
-	var cz []bool
+	var c counts // one slab in memory at a time: its counts are added, then it is dropped
 	tr := &Trained{}
 	for i := range m.records {
 		r := &m.records[i]
@@ -41,13 +39,20 @@ func TrainFile(m *Manifest, n uint32, out string) (*Trained, error) {
 		}
 		var slab []byte
 		for k := range r.tensors {
-			b, err := os.ReadFile(r.tensors[k].file)
+			t := &r.tensors[k]
+			if err := checkTensor(t); err != nil { // the size against the shape, as the writer checks it
+				return nil, err
+			}
+			b, err := os.ReadFile(t.file)
 			if err != nil {
 				return nil, err
 			}
+			if uint64(len(b)) != t.nbytes {
+				return nil, fmt.Errorf("line %d: the file changed while it was read", t.line)
+			}
 			slab = append(slab, b...)
 		}
-		slabs, geos, cz = append(slabs, slab), append(geos, g), append(cz, r.cz)
+		c.add(slab, g, r.cz)
 		tr.Records++
 		if r.cz {
 			tr.CZ++
@@ -56,7 +61,7 @@ func TrainFile(m *Manifest, n uint32, out string) (*Trained, error) {
 	if tr.Records == 0 {
 		return nil, fmt.Errorf("no expert record of the manifest names model=%d", n)
 	}
-	blob, empty, emptyScale := trainModel(slabs, geos, cz)
+	blob, empty, emptyScale := c.model()
 	model, e := OpenModel(blob)
 	if e != nil {
 		return nil, fmt.Errorf("the trained model does not open: %v", e)
@@ -74,22 +79,29 @@ func TrainFile(m *Manifest, n uint32, out string) (*Trained, error) {
 	return tr, nil
 }
 
-// trainModel builds a WNM2 blob from expert slabs: the counts of the 16 symbols of every weight context and
-// of the 256 scales of each matrix, taken as the decoder sees them (after canonical zero when cz[k] is
-// set, the ceil form and the anchors of each slab), then quantised with quantize. It also returns the
-// number of weight contexts and of scale tables that had no count.
-func trainModel(slabs [][]byte, geos []Geo, cz []bool) (blob []byte, empty, emptyScale int) {
-	var weights [3][wnmContexts][16]uint64
-	var scales [3][256]uint64
-	for k, slab := range slabs {
-		c := codedForm(slab, geos[k], cz[k])
-		for m := 0; m < 3; m++ {
-			for _, s := range c.scales(geos[k], m) {
-				scales[m][s]++
-			}
-			c.weightSymbols(geos[k], m, func(ctx, s int) { weights[m][ctx][s]++ })
+// counts: the counts of the 16 symbols of every weight context and of the 256 scales of each matrix, taken
+// as the decoder sees them (after canonical zero when cz is set, the ceil form and the anchors of each
+// slab).
+type counts struct {
+	weights [3][wnmContexts][16]uint64
+	scales  [3][256]uint64
+}
+
+// add counts one slab of geometry g; the caller checked that its size is the one g gives.
+func (n *counts) add(slab []byte, g Geo, cz bool) {
+	c := codedForm(slab, g, cz)
+	for m := 0; m < 3; m++ {
+		for _, s := range c.scales(g, m) {
+			n.scales[m][s]++
 		}
+		c.weightSymbols(g, m, func(ctx, s int) { n.weights[m][ctx][s]++ })
 	}
+}
+
+// model builds the WNM2 blob of the counts, quantised with quantize. It also returns the number of weight
+// contexts and of scale tables that had no count.
+func (n *counts) model() (blob []byte, empty, emptyScale int) {
+	weights, scales := &n.weights, &n.scales
 	sum := func(counts []uint64) (t uint64) {
 		for _, c := range counts {
 			t += c
