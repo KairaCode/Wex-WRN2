@@ -36,7 +36,10 @@
  *   - the error word has no bit outside 1 | 2 | 4 | 8, bit 8 only for a record with the CZ flag and bit 4 only
  *     for a record with a CEIL flag.
  * At exit the harness prints what it ran: inputs, records, verdicts, the error bits seen and the size of the
- * emulated work. */
+ * emulated work.
+ *
+ * Built with -DWEX_FUZZ_GPU (run.sh --gpu), it also decodes every record with the same kernels on an NVIDIA GPU,
+ * from PTX that clang writes without the CUDA toolkit, and asks the same of them (cuda_gpu.h). */
 #include <atomic>
 #include <cstdio>
 #include <cstring>
@@ -237,6 +240,10 @@ static size_t record_cap;
 
 static unsigned long long count_inputs, count_files, count_records, count_accepted, count_host_refused,
     count_device_refused, count_unregistered, count_skipped, count_error_bits[4], count_calls, count_selftest;
+#ifdef WEX_FUZZ_GPU
+static void gpu_init(void);
+static void gpu_report(void);
+#endif
 
 static void fuzz_report(void) {
     fprintf(stderr, "fuzz_wnr3_cuda: %llu inputs (%llu WEX4 files), %llu WNR3 records (%llu of them synthetic or crafted, "
@@ -251,6 +258,9 @@ static void fuzz_report(void) {
             count_unregistered, count_skipped, fuzz_distinct, fuzz_distinct >= FUZZ_SEEN_MAX ? " or more" : "",
             wex_shim_stats.launches, wex_shim_stats.blocks, wex_shim_stats.pooled_blocks, wex_shim_stats.threads,
             wex_shim_stats.barriers, wex_shim_stats.async_copies, wex_shim_stats.copies, fuzz_structured() ? "on" : "off");
+#ifdef WEX_FUZZ_GPU
+    gpu_report();
+#endif
 }
 
 static void selftest(void);
@@ -270,6 +280,9 @@ static void fuzz_setup(void) {
     size_t size = 0;
     uint64_t raw, aligned;
     uint32_t r;
+#ifdef WEX_FUZZ_GPU
+    gpu_init();
+#endif
     if (!path || !path[0]) path = "wex4/vectors/valid/tiny2-cz-upgraded.wex4";
     base_file = fuzz_read_file(path, &size);
     if (!base_file || size < WEX4_PAGE || wex4_parse_header(base_file, size, &h) ||
@@ -310,6 +323,10 @@ static int all_bytes(const unsigned char *p, size_t n, unsigned char value) {
     for (i = 0; i < n; i++) if (p[i] != value) return 0;
     return 1;
 }
+
+#ifdef WEX_FUZZ_GPU
+#include "cuda_gpu.h"   /* the same kernels on an NVIDIA GPU, as PTX that clang wrote (run.sh --gpu) */
+#endif
 
 /* the CPU reference's verdict (0 or -1), or 1 when the record was skipped */
 static int compare(const WexEntry *entry, const unsigned char *stored) {
@@ -463,6 +480,9 @@ static int compare(const WexEntry *entry, const unsigned char *stored) {
             }
         }
     }
+#ifdef WEX_FUZZ_GPU
+    gpu_compare(entry, record, model, cpu, expected);
+#endif
     free(slab);
     free(expected);
     free(record);

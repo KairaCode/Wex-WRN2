@@ -10,6 +10,11 @@
 #                                       test that needs no clang; CC names another compiler and WEX_CFLAGS adds
 #                                       flags, as in the other scripts: scripts/sanitize_c.sh runs it that way).
 #                                       It prints the compiler and the kernels of the fast WNR3 decoder it built
+#   bash wex4/fuzz/run.sh --gpu [ROUNDS] fuzz_wnr3_cuda as in --replay with ROUNDS (default 4) mutator inputs per
+#                                       seed, and every record also through the CUDA kernels on an NVIDIA GPU:
+#                                       needs the driver and clang with its NVPTX target (CUDA_CLANG names it), not
+#                                       the CUDA toolkit (wex4/fuzz/cuda_gpu.h). WEX_FUZZ_GPU_BUILD_ONLY=1 stops it
+#                                       after the builds (the PTX and the harness), on a machine without a GPU
 #
 # fuzz_wnr3_cuda is C++ (the CUDA decoder built for the CPU): it is compiled with CXX, by default the C++ compiler
 # that goes with CC (gcc -> g++, gcc-15 -> g++-15, clang -> clang++), from the host copy of c/wex_cuda.cuh and
@@ -101,9 +106,45 @@ if [ "${1-}" = --replay ]; then
   exit 0
 fi
 
+if [ "${1-}" = --gpu ]; then
+  # fuzz_wnr3_cuda as in --replay, and every record also through the kernels of c/wex_cuda.cuh on an NVIDIA GPU
+  # (cuda_gpu.h): clang (CUDA_CLANG, default clang++, with its NVPTX target) writes their PTX without the CUDA
+  # toolkit, the driver compiles it at load time. ROUNDS (default 4) mutator inputs from each seed.
+  ROUNDS=${2:-4}
+  case $ROUNDS in
+    ''|*[!0-9]*) echo "usage: bash wex4/fuzz/run.sh --gpu [ROUNDS]" >&2; exit 2 ;;
+  esac
+  CC_USED=${CC:-gcc}
+  CXX_USED=${CXX:-$(cxx_of "$CC_USED")}
+  CLANG_USED=${CUDA_CLANG:-clang++}
+  P=wex4/fuzz/out/wex_cuda_ptx   # from the repository root (the working folder here): the harness's default
+  mkdir -p "$P"
+  printf '#include "cuda_device.h"\n' > "$P/cuda_runtime.h"   # what c/wex_cuda.cuh includes, here
+  echo "C++ compiler of fuzz_wnr3_cuda: $("$CXX_USED" --version | sed -n 1p)"
+  echo "PTX compiler: $("$CLANG_USED" --version | sed -n 1p)"
+  for a in 86 75; do
+    "$CLANG_USED" -x cuda --cuda-device-only --cuda-gpu-arch=sm_$a -nocudainc -nocudalib -O2 -S $W -I "$P" -I c \
+        -I wex4/fuzz wex4/fuzz/cuda_device.cu -o "$P/sm$a.ptx"
+  done
+  build fuzz_wnr3_cuda "$O/fuzz_wnr3_cuda-gpu$EXE" -O2 $W ${WEX_CFLAGS-} $MARCH -DWEX_FUZZ_STANDALONE -DWEX_FUZZ_GPU \
+      -DFUZZ_MUTATOR_ROUNDS="$ROUNDS" $INC
+  grep -c '\.entry ' "$P/sm86.ptx" "$P/sm75.ptx" | sed 's/^/kernels in /'
+  if [ -n "${WEX_FUZZ_GPU_BUILD_ONLY-}" ]; then   # CI: no GPU there
+    echo "fuzz GPU build passed (not run: WEX_FUZZ_GPU_BUILD_ONLY is set)"
+    exit 0
+  fi
+  seeds_of fuzz_wnr3_cuda
+  files=()
+  for d in "${SEEDS[@]}"; do files+=("$d"/*); done
+  echo "== fuzz_wnr3_cuda on the GPU, $ROUNDS mutator inputs per seed"
+  WEX_FUZZ_GPU_PTX="$P" "$O/fuzz_wnr3_cuda-gpu$EXE" "${files[@]}"
+  echo "fuzz GPU run passed"
+  exit 0
+fi
+
 SECONDS_EACH=${1:-60}   # a positive number without leading zeros: libFuzzer reads -max_total_time=0 as no limit
 case $SECONDS_EACH in
-  ''|*[!0-9]*|0*) echo "usage: bash wex4/fuzz/run.sh [SECONDS | --replay]" >&2; exit 2 ;;
+  ''|*[!0-9]*|0*) echo "usage: bash wex4/fuzz/run.sh [SECONDS | --replay | --gpu [ROUNDS]]" >&2; exit 2 ;;
 esac
 CC_USED=${CC:-clang}
 CXX_USED=${CXX:-$(cxx_of "$CC_USED")}

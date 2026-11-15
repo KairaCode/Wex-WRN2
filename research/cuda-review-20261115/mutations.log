@@ -2,4 +2,4 @@ compiler: g++.exe (Rev6, Built by MSYS2 project) 16.2.0
 == every seed (wnr3, file, testdata), 100 inputs of the custom mutator from each
 fuzz_wnr3_cuda: 11817 inputs (816 WEX4 files), 11744 WNR3 records (15 of them synthetic or crafted, at start), each through 2 builds x (4 bridge calls + 2 kernel lookups) (140928 GPU calls): 5873 accepted by the CPU and every GPU path, 3741 refused by the host checks, 2033 refused on the device (error bits 1: 1523, 2: 747, 4: 37, 8: 505), 97 naming a model that is not registered, 0 skipped (layout or size); 5217 different decoded records; emulated: 338841 launches, 22078284 blocks (638326 with a host thread per CUDA thread), 5461396992 threads, 20426112 barriers, 199905398 cp.async copies, 732800 queued copies (structured mutations on)
 117 inputs replayed and 11700 inputs of the custom mutator run, no crash and no failed oracle
-wall time: 390 s
+wall time: 412 s

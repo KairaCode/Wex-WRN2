@@ -52,6 +52,10 @@ jobs:
       # each with one check, wait or barrier broken: the replay must fail on every copy
       - name: Negative control of the CUDA decoder's harness
         run: python3 -I wex4/fuzz/cuda_negative.py
+      # its GPU mode built, not run (the runner has no GPU): clang writes the PTX of c/wex_cuda.cuh without the
+      # CUDA toolkit, and the harness that would load it through the driver library builds with gcc
+      - name: GPU mode of the CUDA decoder's harness, built only
+        run: WEX_FUZZ_GPU_BUILD_ONLY=1 bash wex4/fuzz/run.sh --gpu
       # seconds: a 10 MB container, every read path of bench/wex_io.c checked against the index's SHA-256 and
       # run once. It shows that the benchmark still builds and reads right, not how fast anything is.
       # --strict: all 20 paths run on this runner, so a path that reports "skipped" (O_DIRECT or io_uring
