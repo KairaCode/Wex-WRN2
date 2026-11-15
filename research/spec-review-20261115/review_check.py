@@ -8,8 +8,10 @@
 Standard library only; the G lines also need a C++ compiler (CXX, default g++) and are skipped without one.
 It writes only under wex4/out/spec-review-20261115/ (git-ignored). What it checks:
   U  WEX4-SPEC 13.1: an upgrade written from the text against the converter and the vectors; the index sizes
-     of the two production grids computed by the converter itself; a legacy header the converter accepts.
-  P  WEX4-SPEC 14: a pack written from the text against `wex4_convert.py pack`; unpack's file-name rule and
+     of the two production grids computed by the converter itself; legacy headers the converter accepts;
+     the other refusals of step 1.
+  P  WEX4-SPEC 14: a pack written from the text (metadata included, without the json module) against
+     `wex4_convert.py pack`; unpack's file-name rule and
      what it does with a value-exact container.
   M  WNR3-SPEC 5: the frequency of nibble 8 in a canonical-zero model and in a plain one.
   G  The pure helper functions of c/wex_cuda.cuh, compiled for the CPU with the CUDA intrinsics they use
@@ -232,20 +234,99 @@ def u3():
     except wex4.FormatError as e:
         verdict = f'refused: {e}'
     print(f'U3 {rel(os.path.join(OUT, "tiny.wex"))} with WEX1 header flags 2: {verdict}')
+    shutil.copyfile(os.path.join(OUT, 'tiny.wex'), work)
+    with open(work, 'r+b') as f:
+        f.seek(32)
+        f.write(struct.pack('<I', 64))          # WEX1 header flags 64 (canonical zero); wex_validate_header wants 0
+    try:
+        conv.upgrade(work)
+        with open(work, 'rb') as f:
+            rd = wex4.Reader(f)
+            exact = sum(1 for r in rd.records if r[4] & wex4.REC_VALUE_EXACT)
+            verdict = f'upgraded, required = {rd.required}, VALUE_EXACT records = {exact} of {len(rd.records)}'
+    except wex4.FormatError as e:
+        verdict = f'refused: {e}'
+    print(f'U3 {rel(os.path.join(OUT, "tiny.wex"))} with WEX1 header flags 64: {verdict}')
+
+
+# ---------- U4: the other refusals of step 1 of 13.1 (sentence of 2026-11-15) ----------
+def u4():
+    raw1 = open(os.path.join(OUT, 'tiny.wex'), 'rb').read()
+    raw3 = open(os.path.join(VEC, 'legacy', 'tiny2-cz.wex3'), 'rb').read()
+
+    def entries(old):
+        _, _, layers, experts, _, table_offset, _, _ = struct.unpack_from('<IIIIQQII', old)
+        return table_offset, [list(conv.ENTRY.unpack_from(old, table_offset + i * conv.ENTRY.size))
+                              for i in range(layers * experts)]
+
+    def with_entries(old, change):
+        table_offset, rows = entries(old)
+        change(rows)
+        new = bytearray(old)
+        for i, row in enumerate(rows):
+            conv.ENTRY.pack_into(new, table_offset + i * conv.ENTRY.size, *row)
+        return bytes(new)
+
+    def at(old, offset, fmt, value):
+        new = bytearray(old)
+        struct.pack_into(fmt, new, offset, value)
+        return bytes(new)
+
+    def no_records(rows):
+        for row in rows:
+            row[:] = [0] * len(row)
+
+    def shift(rows):
+        for row in rows:
+            if row[1]:
+                row[0] += 8
+
+    def codec(value):
+        def change(rows):
+            next(row for row in rows if row[1])[22] = value
+        return change
+
+    table3 = struct.unpack_from('<Q', raw3, 24)[0]
+    model3 = struct.unpack_from('<Q', raw3, 72)[0]
+    id3 = struct.unpack_from('<I', raw3, 80)[0]
+    cases = [
+        ('WEX1 without records', with_entries(raw1, no_records)),
+        ('WEX1 grid of 65,537 layers', at(raw1, 8, '<I', 65537)),
+        ('WEX1 first record 8 bytes past a 4096-byte boundary', with_entries(raw1, shift)),
+        ('WEX1 entry with codec 5', with_entries(raw1, codec(5))),
+        ('WNR3 entry with codec 3', with_entries(raw3, codec(3))),
+        (f'WNR3 model at {model3 + 64} (not on a boundary)', at(raw3, 72, '<Q', model3 + 64)),
+        ('WNR3 model at 0 (over the header page)', at(raw3, 72, '<Q', 0)),
+        (f'WNR3 model at {table3} (over the entry table)', at(raw3, 72, '<Q', table3)),
+        ('WNR3 WNMD magic changed', at(raw3, 64, '<I', 0x444d4e58)),
+        ('WNR3 WNMD size 59,409', at(raw3, 68, '<I', 59409)),
+        ('WNR3 WNMD id not that of the model', at(raw3, 80, '<I', id3 ^ 1)),
+    ]
+    work = os.path.join(TMP, 'u4.wex')
+    results = []
+    for what, data in cases:
+        with open(work, 'wb') as f:
+            f.write(data)
+        try:
+            conv.upgrade(work)
+            results.append(f'{what}: UPGRADED')
+        except wex4.FormatError as e:
+            results.append(f'{what}: refused ({e})')
+    print('U4 converter upgrade of', '; '.join(results))
 
 
 # ---------- P1: pack written from WEX4-SPEC 14 (with the sentences of 2026-11-15) ----------
 FLOATS = ('F16', 'BF16', 'F32', 'F64')
 
 
-def st_write(path, tensors, meta=None):
+def st_write(path, tensors, meta=None, indent=None):
     header, at = {}, 0
     for name, dtype, shape, data in tensors:
         header[name] = {'dtype': dtype, 'shape': list(shape), 'data_offsets': [at, at + len(data)]}
         at += len(data)
     if meta:
         header['__metadata__'] = meta
-    raw = json.dumps(header, ensure_ascii=False).encode()
+    raw = json.dumps(header, ensure_ascii=False, indent=indent).encode()
     raw += b' ' * (-len(raw) % 8)
     with open(path, 'wb') as f:
         f.write(struct.pack('<Q', len(raw)) + raw + b''.join(t[3] for t in tensors))
@@ -267,6 +348,31 @@ def st_tensors(path):
     items = sorted(doc.items(), key=lambda kv: tuple(kv[1]['data_offsets']))
     return raw, [(k.encode(), v['dtype'], tuple(v['shape']), data[8 + n + v['data_offsets'][0]:8 + n + v['data_offsets'][1]])
                  for k, v in items], len(data), hashlib.sha256(data).hexdigest()
+
+
+SHORT = {0x08: '\\b', 0x09: '\\t', 0x0a: '\\n', 0x0c: '\\f', 0x0d: '\\r'}
+
+
+def text_string(s):
+    """A JSON string as WEX4-SPEC 14 says the metadata writes it: `"` and `\\` as `\\"` and `\\\\`; below U+0020
+    the five short forms, the others as \\u00xx with lower-case hex; everything else as it is (UTF-8)."""
+    out = []
+    for ch in s:
+        c = ord(ch)
+        if ch in '"\\':
+            out.append('\\' + ch)
+        elif c < 0x20:
+            out.append(SHORT.get(c, f'\\u{c:04x}'))
+        else:
+            out.append(ch)
+    return '"' + ''.join(out) + '"'
+
+
+def text_meta(sources):
+    """The metadata of WEX4-SPEC 14, written from the text (no json module)."""
+    rows = [f'{{"name":{text_string(s["name"])},"bytes":{s["bytes"]},"sha256":{text_string(s["sha256"])},'
+            f'"header":{text_string(s["header"])}}}' for s in sources]
+    return ('{"wex4_meta":1,"sources":[' + ','.join(rows) + ']}').encode('utf-8')
 
 
 def text_pack(sources, part):
@@ -303,7 +409,7 @@ def text_pack(sources, part):
     stored_list, records, tensors, names, split_first, t = [], [], [], [], None, 0
     for r, (specs, data, width, transform, parts) in enumerate(plan):
         raw_rec = data + bytes(align(len(data)) - len(data))
-        coded = wex4.bp_encode(data, width, 12, r, transform if len(data) % width == 0 else 0)
+        coded = wex4.bp_encode(data, width, 12, r, transform)
         codec, stored = (6, coded) if len(coded) < len(raw_rec) else (0, raw_rec)
         if specs and parts > 1:
             split_first = t
@@ -318,7 +424,7 @@ def text_pack(sources, part):
     for name, code, shape, nbytes in empty:
         tensors.append((code, len(shape), shape, 0, 0, 0, 0))
         names.append(name)
-    meta = json.dumps({'wex4_meta': 1, 'sources': meta_sources}, ensure_ascii=False, separators=(',', ':')).encode()
+    meta = text_meta(meta_sources)
     index_len = len(index_and_page([], [tuple(r) for r in records], tensors, names, meta, 0, 1, 0, 0, 0, 0)[0])
     at = PAGE + align(index_len)
     for rec, stored in zip(records, stored_list):
@@ -339,7 +445,8 @@ def p1():
                  ('a.empty', 'F32', (0, 4), b'')],
              {'note': 'café "quoted"'})
     st_write(b, [('b.small', 'BF16', (9000,), bf16_bytes(rng, 9000)),
-                 ('b.codes', 'U8', (25000,), bytes(rng.choice([7, 7, 8, 9]) for _ in range(25000)))])
+                 ('b.codes', 'U8', (25000,), bytes(rng.choice([7, 7, 8, 9]) for _ in range(25000)))],
+             {'ctl': 'x\x01y\x7f\\z'}, indent='\t')       # header text with tabs, newlines, \u0001, a raw DEL
     work = os.path.join(TMP, 'p1.wex4')
     conv.pack(work, [a, b], part_bytes=128 << 10)
     theirs = open(work, 'rb').read()
@@ -358,9 +465,15 @@ def p1():
     compact = meta.startswith(b'{"wex4_meta":1,"sources":[{"name":"pa.safetensors","bytes":')
     utf8 = 'café'.encode() in meta
     escaped = b'\\"note\\"' in meta
+    controls = b'\\n\\t' in meta and b'\\\\u0001' in meta and b'\x7f' in meta
+    chars = [chr(c) for c in range(0x100)] + ['€', '\U0001f600']
+    same = sum(text_string(ch) == json.dumps(ch, ensure_ascii=False) for ch in chars)
     print('P1 wex4_convert.py pack of two synthetic files (part size 128 KiB):', '; '.join(rows))
     print(f'P1 metadata: compact with keys in the stated order: {compact}; non-ASCII kept as UTF-8: {utf8}; '
-          f'quotes of the header text escaped: {escaped}')
+          f'quotes of the header text escaped: {escaped}; newline and tab of an indented header, a \\u0001 '
+          f'and a raw U+007F in it present as the text says: {controls}')
+    print(f'P1 escaping written from section 14 against json.dumps(ensure_ascii=False), one character at a time: '
+          f'{same} of {len(chars)} (U+0000 to U+00FF, U+20AC, U+1F600) equal')
     print(f'P1 pack written from section 14 gives {len(mine)} B, byte-identical to wex4_convert.py pack: {mine == theirs}')
 
 
@@ -630,6 +743,7 @@ def n_checks():
 u1()
 u2()
 u3()
+u4()
 p1()
 p2()
 p3()
