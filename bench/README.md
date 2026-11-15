@@ -58,12 +58,14 @@ Notes:
 - On ARM (for example a DGX Spark) the `wex_check` section runs the NEON kernel of the fast CPU decoder. It reports pass or fail and seconds, not a decode speed. For the decode speed of the NEON kernel against the scalar kernel on your CPU, run `bash wex4/research/fast-cpu-decode/synth.sh speed` after it (synthetic records, no model needed) and add its output to the issue.
 - The GPU copy test is CUDA-only. On Intel Arc or AMD it reports `skipped`, which is expected.
 
-## Read paths for expert records (Linux): `wex_io.py`
+## Read paths for expert records (Linux and macOS): `wex_io.py`
 
 `bench.py` reads a plain file with one call per read. `wex_io.py` asks a narrower question: through which
 Linux read path should an engine read the expert records of a WEX4 container? It needs `gcc` and `python3`
 only (`CC` names another compiler, `WEX_CFLAGS` adds flags; besides gcc only the clang of the `linux-tsan`
-CI job was run), and Linux (`io_uring` is called through its system calls, so there is no liburing to install).
+CI job and, on macOS, Apple clang were run), and Linux (`io_uring` is called through its system calls, so
+there is no liburing to install) or macOS, where the same rows run through the calls macOS has
+([On macOS](#on-macos), below).
 
 ```bash
 python3 -I bench/wex_io.py --dir /path/on/your/model/volume --drop-caches
@@ -124,7 +126,7 @@ the filesystem and the block-device queue settings (`read_ahead_kb`, scheduler),
 name or path. Results from real NVMe drives are wanted: attach the JSON to a **Benchmark results** issue.
 
 What it does not measure: the decode of a record, the engine's own caches, two drives (mirror, stripe),
-and anything on Windows or macOS. The only recorded runs are three on GitHub Actions runners, shared cloud
+and anything on Windows. The only recorded Linux runs are three on GitHub Actions runners, shared cloud
 VMs with a virtual disk of two kinds, where no read path won on both kinds:
 [research/linux-io-20261114](../research/linux-io-20261114/README.md). Later runs of the
 `linux-io-bench` job started by hand on the same kind of runner are not recorded.
@@ -134,6 +136,43 @@ What CI covers: the `linux`, `linux-arm` and `linux-sanitizers` jobs build `wex_
 same container again through `--file`). The `linux-tsan` job runs the same smoke run built with clang under
 ThreadSanitizer (the `pread` threads). The full benchmark was not run on ARM. `scripts/check_all.sh`
 does not build `wex_io.c`, so the Windows job does not see it: its stub for systems other than Linux
-(it prints one `skipped` line) was built by hand with MinGW `gcc` and `clang`
+and macOS (it prints one `skipped` line) was built by hand with MinGW `gcc` and `clang`
 (`-std=c99 -pedantic -Wall -Wextra`, no warning) and is not built by CI. The full run is the job
 `linux-io-bench`, started by hand with `gh workflow run ci.yml --ref <branch> -f linux_io_bench=true`.
+
+### On macOS
+
+The same script and program run on macOS; on Linux nothing changed. The macOS code is in the blocks
+`__APPLE__` of `wex_io.c` and, in `wex_io.py`, in `macos_row`, the three functions after it and three lines
+of `main`. Each row keeps the options of its Linux row, so the JSON has the same keys on both systems; its
+label names the macOS call.
+
+| On Linux | On macOS |
+|---|---|
+| `O_DIRECT` | `open`, then `fcntl(F_NOCACHE, 1)` on the descriptor: no data caching for its reads |
+| `POSIX_FADV_RANDOM` | `fcntl(F_RDAHEAD, 0)`: readahead off on the descriptor |
+| `POSIX_FADV_SEQUENTIAL` | none (`F_RDAHEAD` only turns readahead off or on, and on is the default): the row prints `skipped` |
+| `POSIX_FADV_WILLNEED` on the record 1 or 4 reads ahead | `fcntl(F_RDADVISE)` on that record: an advisory read that the caller does not wait for |
+| `POSIX_FADV_DONTNEED` on the file before a pass | `msync(MS_INVALIDATE)` on a mapping of the file |
+| `/proc/sys/vm/drop_caches` (`--drop-caches`) | `sync`, then `purge`, as root or through `sudo` without a password |
+| `io_uring` (8 rows) | none: the rows print `skipped` |
+| `mincore` in 4096-byte pages | `mincore` in system pages, 16 KiB on Apple silicon; a page that a record shares with its neighbour counts for both |
+
+A stand-in call that fails is a failure (exit 1). With `--strict` the 9 rows that macOS cannot have are
+not counted as skipped; the other 11 must run. The JSON also holds what `sysctl` says (CPU, model, whether
+it is a virtual machine, RAM, page size, macOS version) and what `diskutil` says of the disk (filesystem,
+media name, bus, solid state), without host name, volume name or path. **Cold on macOS** means that
+`purge` emptied the cache of the macOS kernel and that `mincore` found none of the pass's pages in it. It
+does not reach a cache below the kernel, such as the host of a virtual machine.
+
+The only recorded runs are three on GitHub Actions `macos-15` runners, virtual machines on Apple silicon
+hosts with a virtual disk, not the SSD of a Mac:
+[research/macos-io-20261115](../research/macos-io-20261115/README.md). All 11 paths read the right bytes
+and `F_NOCACHE` was faster than the page cache on 1, 4 and 8 threads in every run, but the first pass of
+a run, the only one whose records no earlier pass of the run had read, was the slowest or second slowest
+of its row in 14 of 15 runs: a cache below the virtual machine served part of the reads. No page-cache
+variant was steady against the plain `pread`. Not run: a Mac outside a virtual machine, an Intel Mac.
+
+What CI covers on macOS: the `macos` job runs `--smoke --strict` built with the Homebrew GNU gcc of `CC`,
+then reads the same container through `--file` with a build by Apple clang (`CC=clang`). The full run is
+the job `macos-io-bench`, started by hand with `gh workflow run ci.yml --ref <branch> -f macos_io_bench=true`.

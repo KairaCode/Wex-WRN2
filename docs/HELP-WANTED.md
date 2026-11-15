@@ -15,7 +15,7 @@ measured; it is not known to fail.
 ## 1. Run the benchmark on your hardware (no code)
 
 - **What:** run [`bench/`](../bench/README.md) and share `results.json` through the
-  "Benchmark results" issue template. On Linux also run `bench/wex_io.py` (the read paths for expert
+  "Benchmark results" issue template. On Linux or macOS also run `bench/wex_io.py` (the read paths for expert
   records, section 7) and attach its `wex_io.json`.
 - **Most wanted:** ARM machines (DGX Spark, Apple silicon under Linux, Ampere); AMD and Intel GPUs;
   filesystems other than NTFS (ZFS, btrfs, ext4, XFS); NVMe RAID or mirrors; machines with
@@ -216,14 +216,24 @@ measured; it is not known to fail.
   481 and 511 to 540 MB/s at every depth). So the store was not changed. The `POSIX_FADV_WILLNEED` rows
   do not show what a prefetch of the next record gives: where it was measured, the kernel had loaded 1.0%
   of the announced record before its read.
+- **macOS:** the same benchmark runs on macOS through the calls macOS has (`F_NOCACHE` for `O_DIRECT`,
+  `F_RDAHEAD` and `F_RDADVISE` for the hints, `purge` for `drop_caches`; `io_uring` and
+  `POSIX_FADV_SEQUENTIAL` print `skipped`). The `macos` CI job runs its smoke run; the job
+  `macos-io-bench` is the full run, started by hand. Measured so far: three runs on GitHub Actions
+  `macos-15` runners, virtual machines on Apple silicon hosts with a virtual disk
+  ([research/macos-io-20261115](../research/macos-io-20261115/README.md)). All 11 paths read the right
+  bytes. `F_NOCACHE` was faster than the page cache on 1, 4 and 8 threads in every run, and no
+  page-cache variant was steady against the plain `pread`, but a cache below the virtual machine served
+  part of the reads (the first pass of a run was the slowest or second slowest of its row in 14 of 15
+  runs), so these numbers say nothing about the SSD of a Mac. The store was not changed.
 - **What:** run `bench/wex_io.py` on real drives (NVMe first; also SATA, ZFS, btrfs, XFS, ARM) and share
   `bench/out/wex_io.json` through the "Benchmark results" issue template. Then, if a path wins on real
   drives: the change in the store (candidates the two runs point at but do not support yet:
   `posix_fadvise(POSIX_FADV_RANDOM)` or `O_DIRECT` in `c/expert_store_wex.c`, and several records in
   flight for a prefetch batch), with an engine A/B. Still unmeasured: a prefetch through the page cache
   that loads the whole record (a read path to add to `bench/wex_io.c`: `readahead(2)` or `WILLNEED` in
-  chunks), striping across drives with different speeds, and everything on macOS (the benchmark is
-  Linux only; the `macos` CI job does not build it).
+  chunks), striping across drives with different speeds, and macOS on a real Mac (the SSD of an Apple
+  silicon Mac, an Intel Mac, an external drive: only virtual machines with a virtual disk ran it).
 - **Done when:** the table of `bench/wex_io.py` from at least one NVMe machine is in the repository, and
   a change of the store comes with its before/after from the same benchmark, stated as CONTRIBUTING
   section 5 asks.
@@ -252,7 +262,9 @@ listed above as well.
 - **Linux I/O in the engine:** the fast read paths were built and measured on Windows. The Linux
   benchmark is in (`bench/wex_io.py`), run so far only on two kinds of cloud VM, where it gave no reason to
   change the store; runs on real drives and the tuning that follows from them are still open *(open to
-  you, section 7)*.
+  you, section 7)*. The same benchmark now runs on macOS, so far only on three GitHub `macos-15`
+  virtual machines, where a cache below the virtual machine served part of the reads and the store
+  was not changed; a run on a real Mac is open *(open to you, section 7)*.
 - **Measurements not done yet** (they need the full models, so they stay with the maintainer, see
   [STATUS.md](../STATUS.md)):
   - the SHA-256 of each record at its first read on Qwen3.8;

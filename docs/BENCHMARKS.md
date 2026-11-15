@@ -204,6 +204,22 @@ Earlier figures (2026-11-11, old README, raw output not here): C: (PCIe 5) 2.0 m
 
 No read path won on both machines: what was 16% to 19% faster than the store's path in run 1 was 4% to 5% slower in run 2, and more reads in flight gained at most 11% over one read of the same kind in run 1 (page cache, 8 threads against 1) and at most 4% in run 2 (`O_DIRECT`, 16 records in flight against 1 thread), with every depth between 418 and 481 and between 511 and 540 MB/s. The store's Linux read path was therefore not changed. The `WILLNEED` row is not a prefetch of the next record: in run 3, where it was measured with `mincore`, 1.0% of the pages of an announced record (about 130 KB of 13.4 MB, on a device with `read_ahead_kb` 128) were in the page cache just before its read, in each of 10 passes; on the VM kind of run 1 this was not measured. **Not measured:** a prefetch that loads the whole record, any real drive (NVMe, SATA), ARM, another filesystem, two drives, a pass longer than 1.7 s, and any engine; the benchmark reads records as the stores do but decodes nothing.
 
+## macOS read paths for expert records (2026-11-15, virtual machines only)
+
+The same `bench/wex_io.py` and container on macOS, through the calls macOS has: `F_NOCACHE` where Linux has `O_DIRECT`, `fcntl` `F_RDAHEAD` 0 and `F_RDADVISE` for the `posix_fadvise` hints, `sync` and `purge` through `sudo` for `drop_caches`; the 8 `io_uring` rows and `POSIX_FADV_SEQUENTIAL` print `skipped`, so 11 paths run. The only recorded runs are three on GitHub Actions `macos-15` runners: **virtual machines on Apple silicon hosts with a virtual disk** (`Apple M1 (Virtual)`, 3 logical CPUs, 7.5 GB of RAM, macOS 15.8.2, APFS on `Apple Inc. VirtIO Block Media`), **not the SSD of a Mac and not the machine of the other tables**. Build: Apple clang 17.0.0, `-O2`. One run of the script is 5 passes per path, 48 records (642 MB) per pass; `purge` ran before every pass and `mincore` found 0.0% of the pass's pages in the cache of the virtual machine before each cold pass. MB/s (10^6 bytes), median with minimum to maximum, and the median against row 1 of the same run; all 11 rows, the conditions and the raw JSON are in [research/macos-io-20261115](../research/macos-io-20261115/README.md).
+
+| Read path | Run 1 | Run 2 | Run 3 |
+|---|---|---|---|
+| page cache, `pread`, 1 thread (`c/expert_store_wex.c` on macOS today) | 964 (788 to 3,407) | 3,377 (1,029 to 3,507) | 2,239 (162 to 3,865) |
+| the same with `F_RDAHEAD` off | 1,214 (895 to 1,575), 1.26x | 2,796 (1,083 to 3,461), 0.83x | 2,751 (418 to 4,416), 1.23x |
+| the same with `F_RDADVISE` on the next record | 1,320 (1,009 to 1,384), 1.37x | 1,712 (1,076 to 3,862), 0.51x | 1,214 (768 to 4,602), 0.54x |
+| page cache, `pread`, 8 threads | 1,897 (1,806 to 5,666), 1.97x | 2,382 (1,485 to 4,374), 0.71x | 1,761 (1,249 to 2,578), 0.79x |
+| `F_NOCACHE`, `pread`, 1 thread | 3,393 (1,558 to 5,407), 3.52x | 5,385 (1,514 to 6,554), 1.59x | 4,171 (1,007 to 6,798), 1.86x |
+| `F_NOCACHE`, `pread`, 8 threads | 7,396 (1,017 to 12,051), 7.67x | 10,012 (8,615 to 11,815), 2.96x | 11,030 (3,530 to 11,783), 4.93x |
+| page cache already warm | 7,055 (6,622 to 7,551) | 7,358 (7,199 to 7,554) | 7,751 (6,985 to 8,403) |
+
+All 11 paths read records whose SHA-256 matched the index. `F_NOCACHE` was faster than the page cache on 1, 4 and 8 threads in every run, but the ranges are wide and overlap, and "cold" is the cache of the virtual machine only: the first pass of a run, the only one whose records no earlier pass of the run had read, was the slowest or second slowest of its row in 14 of 15 runs, and `F_NOCACHE` on 1 thread took 2.0 ms per 13.4 MB record (median), close to the 1.8 ms of the warm page cache. A cache below the virtual machine, most likely the host's, served part of the reads; that is an interpretation, the host cannot be seen from inside. No page-cache variant was steady against row 1 (0.51x to 2.22x, in another order in each run). The store was not changed. **Not measured:** a Mac outside a virtual machine (its SSD), an Intel Mac, an external drive, a run in which every pass reads records no earlier pass read, and any engine.
+
 ## Earlier results
 
 CPU-only baseline (M0, `DSV4_CUDA=0`: dense, attention and MoE on CPU), DeepSeek V4.1 Flash REAP-192 MXFP4, 16 GB RAM, warm (`docs/reports/v41-reap-baseline-m0-20261107.md`):

@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         Thank you for testing. Run `python3 bench/bench.py --dir /path/on/your/model/volume` (see `bench/README.md`),
-        read `bench/out/results.json`, then attach it below. On Linux, `python3 -I bench/wex_io.py --dir ...` (the read
+        read `bench/out/results.json`, then attach it below. On Linux or macOS, `python3 -I bench/wex_io.py --dir ...` (the read
         paths for expert records) writes `bench/out/wex_io.json`: attach it here too, or alone.
   - type: textarea
     id: results
