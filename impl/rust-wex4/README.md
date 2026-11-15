@@ -94,7 +94,9 @@ It counts the classes that differ and does not fail on them.
   reader's; the class differs from the C reader's on 3 of the 27 and 15 of the 18,378 files that both
   refuse. No panic.
 - **Where it ran:** Windows 10 (Intel Core i7-7700K) with MSYS2 UCRT64 and Rust 1.99.1; ubuntu-24.04
-  in CI. Not run on macOS, on ARM or on a big-endian host.
+  x86-64 in CI with the runner's Rust, also 1.99.1. In GitHub Actions run 43715915144 (2026-11-15)
+  the `rust-reader` job passed `run.sh` and gave the C reader's verdict on 35 hand-made and 6,866
+  mutated files (C library built with gcc 13.3). Not run on macOS, on ARM or on a big-endian host.
 
 ## Limits
 
@@ -113,4 +115,4 @@ It counts the classes that differ and does not fail on them.
   fuzzer. It is not in the support table of [SECURITY.md](../../SECURITY.md), so no fix is promised
   for it there.
 - By reading, the code uses nothing newer than Rust 1.61 (`std::process::ExitCode`); it was compiled
-  only with 1.99.1 and with the CI runner's version.
+  only with 1.99.1 (MSYS2, and the CI runner's).
