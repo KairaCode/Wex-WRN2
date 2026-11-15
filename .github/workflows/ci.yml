@@ -1,6 +1,8 @@
-# CPU checks of the repository: check_repo.py, the stdlib tests, the WEX1-3/WNR3 CPU check and the
-# WEX4 tests (scripts/check_all.sh), then the fuzzing harnesses replayed on their seeds (wex4/fuzz/run.sh --replay),
-# on Linux (x86-64, ARM64), macOS (Apple silicon) and Windows; and the Go reader on the conformance vectors.
+# CPU checks of the repository: check_repo.py, the stdlib tests, the WEX1-3/WNR3 CPU check, the WEX4 tests and
+# the fast decoder's harness on synthetic records (scripts/check_all.sh), then the fuzzing harnesses replayed on
+# their seeds (wex4/fuzz/run.sh --replay), on Linux (x86-64, ARM64), macOS (Apple silicon) and Windows. The same
+# on Linux under ASan and UBSan (linux-sanitizers); the C test executables under TSan and MSan with clang
+# (linux-tsan, linux-msan); and the Go reader on the conformance vectors (go-reader).
 # No GPU, no model weights, no secrets. A run started by hand can also have the linux-io-bench job (the full
 # Linux read-path benchmark) and the linux-vulkan job (the WNR3 Vulkan prototype on a CPU Vulkan device).
 name: CI
@@ -21,9 +23,11 @@ on:
 permissions:
   contents: read
 
-# a newer push to the same branch or PR makes the running checks moot
+# a newer push to the same branch or PR makes the running checks moot. Runs started by hand are in groups of
+# their own (one without and one with linux_io_bench), so a push does not cancel a benchmark that is running
+# and a run started by hand does not cancel the push run of its branch
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci-${{ github.ref }}-${{ github.event_name }}-${{ github.event.inputs.linux_io_bench }}
   cancel-in-progress: true
 
 jobs:
@@ -75,8 +79,12 @@ jobs:
           bash scripts/check_all.sh | tee "$RUNNER_TEMP/check.log"
           grep -q '^fast WNR3 decoder of wex4_tools.dll: NEON kernels$' "$RUNNER_TEMP/check.log"
           grep -q '^build: NEON kernels' "$RUNNER_TEMP/check.log"
-      - name: Fuzz harnesses, seeds and mutators replayed   # the NEON kernel of the fast WNR3 decoder here
-        run: bash wex4/fuzz/run.sh --replay
+      # the replay prints which kernel of the fast WNR3 decoder it built: the step fails unless it is NEON
+      - name: Fuzz harnesses, seeds and mutators replayed (NEON kernel of the fast decoder)
+        run: |
+          set -o pipefail
+          bash wex4/fuzz/run.sh --replay | tee "$RUNNER_TEMP/replay.log"
+          grep -q '^fast WNR3 decoder of fuzz_wnr3_record: NEON kernels$' "$RUNNER_TEMP/replay.log"
       - name: Linux read-path benchmark, smoke run
         run: python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --smoke --strict
       - name: WEX4 tests with the scalar kernel forced
@@ -105,7 +113,7 @@ jobs:
           ./t_clang.exe mutate model.wnm2 600 20261114 L0_E0.rec L0_E1.rec L0_E2.rec L0_E3.rec
 
   # the same checks on macOS, Apple silicon: ARM64 again (the NEON kernel of the fast WNR3 decoder, built by
-  # GNU gcc here; the step fails if it built another one), with 16 KiB memory pages and the Mach-O
+  # GNU gcc here; both steps fail if they built another one), with 16 KiB memory pages and the Mach-O
   # linker. The gcc of Xcode is Apple clang, which has no OpenMP runtime, so CC names a GNU gcc of Homebrew: the
   # runner image ships several (gcc-13, gcc-14, ...) and the step takes the newest, so no package is downloaded
   macos:
@@ -128,8 +136,12 @@ jobs:
           set -o pipefail
           bash scripts/check_all.sh | tee "$RUNNER_TEMP/check.log"
           grep -q '^fast WNR3 decoder of wex4_tools.dll: NEON kernels$' "$RUNNER_TEMP/check.log"
-      - name: Fuzz harnesses, seeds and mutators replayed   # the NEON kernel here too
-        run: bash wex4/fuzz/run.sh --replay
+          grep -q '^build: NEON kernels' "$RUNNER_TEMP/check.log"
+      - name: Fuzz harnesses, seeds and mutators replayed (NEON kernel of the fast decoder)
+        run: |
+          set -o pipefail
+          bash wex4/fuzz/run.sh --replay | tee "$RUNNER_TEMP/replay.log"
+          grep -q '^fast WNR3 decoder of fuzz_wnr3_record: NEON kernels$' "$RUNNER_TEMP/replay.log"
 
   windows:
     runs-on: windows-2022
@@ -196,7 +208,9 @@ jobs:
   # runtime that tells ThreadSanitizer what OpenMP synchronizes. A data race in the OpenMP loops of
   # c/tools/wex4_verify.c or of the fast WNR3 decoder stops the run. Executables only: a library loaded into
   # Python, which is not instrumented, cannot be checked this way (scripts/sanitize_c.sh lists what runs).
-  # The last step is not a sanitizer run: every CPU check built with clang, so that CC=clang keeps working
+  # Then the smoke run of bench/wex_io.c, which has its own pread threads, under ThreadSanitizer.
+# The last step is not a sanitizer run: every CPU check built with clang, so that CC=clang keeps working.
+# The three scripts that build C print their compiler, and the step fails unless all three name a clang
   linux-tsan:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -214,8 +228,15 @@ jobs:
           sudo apt-get install -y --no-install-recommends "libomp-$(clang -dumpversion | cut -d. -f1)-dev"
       - name: C tests under ThreadSanitizer
         run: bash scripts/sanitize_c.sh tsan
+      - name: Linux read-path benchmark, smoke run under ThreadSanitizer
+        run: CC=clang WEX_CFLAGS="-g -fsanitize=thread" python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --smoke --strict
       - name: All CPU checks built with clang
-        run: CC=clang bash scripts/check_all.sh
+        run: |
+          set -o pipefail
+          CC=clang bash scripts/check_all.sh | tee "$RUNNER_TEMP/clang.log"
+          grep '^compiler: ' "$RUNNER_TEMP/clang.log"
+          test "$(grep -c '^compiler: ' "$RUNNER_TEMP/clang.log")" = 3
+          test "$(grep -c '^compiler: .*clang' "$RUNNER_TEMP/clang.log")" = 3
 
   # the same executables under MemorySanitizer (clang), built without OpenMP, so that no library that is not
   # instrumented is in the process: a branch, a pointer or a system call that depends on a byte nobody wrote
