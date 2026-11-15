@@ -48,6 +48,10 @@ jobs:
       # with a deterministic stand-in for libFuzzer's mutation. No coverage guidance: that is the Fuzz workflow
       - name: Fuzz harnesses, seeds and mutators replayed
         run: bash wex4/fuzz/run.sh --replay
+      # the harness of the CUDA decoder built for the CPU (fuzz_wnr3_cuda) against 23 copies of the CUDA source,
+      # each with one check, wait or barrier broken: the replay must fail on every copy
+      - name: Negative control of the CUDA decoder's harness
+        run: python3 -I wex4/fuzz/cuda_negative.py
       # seconds: a 10 MB container, every read path of bench/wex_io.c checked against the index's SHA-256 and
       # run once. It shows that the benchmark still builds and reads right, not how fast anything is.
       # --strict: all 20 paths run on this runner, so a path that reports "skipped" (O_DIRECT or io_uring

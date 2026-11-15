@@ -11,6 +11,10 @@
 #                                       flags, as in the other scripts: scripts/sanitize_c.sh runs it that way).
 #                                       It prints the compiler and the kernels of the fast WNR3 decoder it built
 #
+# fuzz_wnr3_cuda is C++ (the CUDA decoder built for the CPU): it is compiled with CXX, by default the C++ compiler
+# that goes with CC (gcc -> g++, gcc-15 -> g++-15, clang -> clang++), from the host copy of c/wex_cuda.cuh and
+# c/tools/wex_cuda_bridge.cu that cuda_host.py writes to out/wex_cuda_host/.
+#
 # WEX_FUZZ_MUTATOR=0 turns the structured mutations of the custom mutators off (the control of a measurement).
 # Everything goes to wex4/fuzz/out/ (git-ignored): the harnesses, seeds/ (wex4/fuzz/make_seeds.py), corpus/NAME
 # (the inputs libFuzzer keeps: it grows from run to run until out/ is deleted) and crashes/ (the reproducers).
@@ -21,7 +25,7 @@ set -eu
 ROOT=$(cd "$(dirname "$0")/../.." && pwd)
 O=$ROOT/wex4/fuzz/out
 PY=${PYTHON:-python}
-HARNESSES="fuzz_wex4_file fuzz_wnr3_record fuzz_wex4_verify fuzz_store_wex fuzz_q38_wex"
+HARNESSES="fuzz_wex4_file fuzz_wnr3_record fuzz_wex4_verify fuzz_store_wex fuzz_q38_wex fuzz_wnr3_cuda"
 # no -fopenmp: one thread per harness, so the OpenMP pragmas of wex4_verify.c and of the fast decoder are skipped,
 # unless WEX_CFLAGS brings it in the --replay mode (scripts/sanitize_c.sh tsan does)
 W="-Wall -Wextra -Wno-unused-parameter -Wno-unused-function -Wno-unknown-pragmas"
@@ -42,25 +46,51 @@ mkdir -p "$O/crashes"
 export TMP="$O" TEMP="$O"   # gcc from Git Bash cannot create temporary files under C:\WINDOWS
 rm -rf "$O/seeds"
 "$PY" -I "$ROOT/wex4/fuzz/make_seeds.py" "$O/seeds"
-cd "$ROOT"   # fuzz_wnr3_record finds its default base file from here
+# fuzz_wnr3_cuda also gets the WEX4 files of impl/go-wex4/testdata: ceil-form.wex4 holds the only WNR3 records in
+# ceil form that are not synthetic seeds of the mutator
+mkdir -p "$O/seeds/testdata"
+cp "$ROOT"/impl/go-wex4/testdata/*.wex4 "$O/seeds/testdata/"
+"$PY" -I "$ROOT/wex4/fuzz/cuda_host.py" "$ROOT/c" "$O/wex_cuda_host"
+cd "$ROOT"   # fuzz_wnr3_record and fuzz_wnr3_cuda find their default base file from here
 seeds_of() {   # sets SEEDS, the seed folders of one harness
   case $1 in
     fuzz_wnr3_record) SEEDS=("$O/seeds/wnr3") ;;
     fuzz_store_wex) SEEDS=("$O/seeds/engine") ;;
     fuzz_q38_wex) SEEDS=("$O/seeds/engine" "$O/seeds/file") ;;
+    fuzz_wnr3_cuda) SEEDS=("$O/seeds/wnr3" "$O/seeds/file" "$O/seeds/testdata") ;;
     *) SEEDS=("$O/seeds/file") ;;
   esac
+}
+cxx_of() {   # the C++ compiler of the C compiler $1
+  case $1 in
+    *clang*) echo "${1%clang*}clang++${1##*clang}" ;;
+    *gcc*) echo "${1%gcc*}g++${1##*gcc}" ;;
+    *) echo c++ ;;
+  esac
+}
+# compile harness $1 to $2 with the flags that follow: C with CC_USED, C++ (fuzz_wnr3_cuda) with CXX_USED
+build() {
+  local h=$1 out=$2
+  shift 2
+  if [ -f "$ROOT/wex4/fuzz/$h.cpp" ]; then
+    "$CXX_USED" -std=c++17 "$@" -I "$ROOT/wex4/fuzz" -I "$O" "$ROOT/wex4/fuzz/$h.cpp" -o "$out"
+  else
+    "$CC_USED" "$@" "$ROOT/wex4/fuzz/$h.c" -o "$out"
+  fi
 }
 
 if [ "${1-}" = --replay ]; then
   # the compiler, and which kernels of the fast WNR3 decoder fuzz_wnr3_record compares with the reference under
   # these flags (WEXF_KERNELS of wex_fast_decode.h): AVX2, NEON or scalar
-  echo "compiler: $("${CC:-gcc}" --version | sed -n 1p)"
+  CC_USED=${CC:-gcc}
+  CXX_USED=${CXX:-$(cxx_of "$CC_USED")}
+  echo "compiler: $("$CC_USED" --version | sed -n 1p)"
+  echo "C++ compiler of fuzz_wnr3_cuda: $("$CXX_USED" --version | sed -n 1p)"
   KERNELS=$(printf '#include "wex_fast_decode.h"\nkernels WEXF_KERNELS\n' |
-            "${CC:-gcc}" ${WEX_CFLAGS-} $MARCH -E -P $INC -x c - | sed -n 's/^kernels "\(.*\)"$/\1/p')
+            "$CC_USED" ${WEX_CFLAGS-} $MARCH -E -P $INC -x c - | sed -n 's/^kernels "\(.*\)"$/\1/p')
   echo "fast WNR3 decoder of fuzz_wnr3_record: $KERNELS kernels"
   for h in $HARNESSES; do
-    "${CC:-gcc}" -O2 $W ${WEX_CFLAGS-} $MARCH -DWEX_FUZZ_STANDALONE $INC "$ROOT/wex4/fuzz/$h.c" -o "$O/$h-replay$EXE"
+    build "$h" "$O/$h-replay$EXE" -O2 $W ${WEX_CFLAGS-} $MARCH -DWEX_FUZZ_STANDALONE $INC
     echo "== $h"
     seeds_of "$h"
     files=()
@@ -75,10 +105,11 @@ SECONDS_EACH=${1:-60}   # a positive number without leading zeros: libFuzzer rea
 case $SECONDS_EACH in
   ''|*[!0-9]*|0*) echo "usage: bash wex4/fuzz/run.sh [SECONDS | --replay]" >&2; exit 2 ;;
 esac
-CC=${CC:-clang}
+CC_USED=${CC:-clang}
+CXX_USED=${CXX:-$(cxx_of "$CC_USED")}
 SAN="-g -O1 -fno-omit-frame-pointer -fsanitize=fuzzer,address,undefined -fno-sanitize-recover=undefined"
 for h in $HARNESSES; do
-  "$CC" $W $SAN $MARCH $INC "$ROOT/wex4/fuzz/$h.c" -o "$O/$h$EXE"
+  build "$h" "$O/$h$EXE" $W $SAN $MARCH $INC
 done
 failed=""
 for h in $HARNESSES; do

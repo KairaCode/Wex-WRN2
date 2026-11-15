@@ -1,5 +1,6 @@
-# Coverage-guided fuzzing of the C readers and decoders (wex4/fuzz/): the five libFuzzer harnesses are built with
-# AddressSanitizer and UndefinedBehaviorSanitizer and each runs for a short time from the conformance vectors.
+# Coverage-guided fuzzing of the C readers and decoders (wex4/fuzz/): the six libFuzzer harnesses (one of them the
+# CUDA WNR3 decoder built for the CPU) are built with AddressSanitizer and UndefinedBehaviorSanitizer and each runs
+# for a short time from the conformance vectors.
 # No GPU, no model weights, no secrets.
 name: Fuzz
 
@@ -10,7 +11,7 @@ on:
   workflow_dispatch:   # a longer run, by hand
     inputs:
       seconds:
-        description: seconds per harness, at least 1 (five harnesses; the job stops after 6 hours, so at most about 4200)
+        description: seconds per harness, at least 1 (six harnesses; the job stops after 6 hours, so at most about 3500)
         default: "60"
       mutators:
         description: "1: the WNR3-aware custom mutators (the default). 0: libFuzzer's own mutations only, the control of a measurement"
