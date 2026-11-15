@@ -282,7 +282,8 @@ listed above as well.
   experts first (#2822-#2825 are open), then the WEX4 container, the WNR3 codec and its GPU decode, and
   the I/O switches. Reviewing or testing those PRs on your hardware helps directly.
 - **WNR3 decode on Vulkan:** the design note and a prototype checked on a CPU Vulkan device are in. On
-  one GPU (RTX 3070, 2026-11-15) it gave other bytes than the reference for records in ceil form; byte
+  one GPU (RTX 3070, 2026-11-15) it gave other bytes than the reference for the records with many
+  ceil-form blocks; byte
   identity on GPUs, a speed number, a whole real container and the engine hook are open *(open to you,
   section 6)*.
 - **ARM and macOS:** the ARM CI jobs (Linux, and macOS on Apple silicon) and a NEON version of kernel 1
