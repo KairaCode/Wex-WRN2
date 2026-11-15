@@ -24,6 +24,31 @@ The notes below are about the revision named above and are left as they were wri
 
 Not answered by the text, as far as that reading goes: A5 (the order of the multiplications), B3, B5, B7 (finding 19 of the review, left open there), B8, the third point of part C, and every gap of part D. No vector was added; gap 2 of part D is finding 17 of the review, also left open.
 
+## After the sentences and vectors of 2026-11-15
+
+The points left open above are now answered: by sentences of WEX4-SPEC (document revision 2026-11-15) and WNR3-SPEC (errata 13 and 14, section 12), and by 22 conformance vectors that `wex4/test_wex4.py` writes from data of its own (the files of [testdata/](testdata/README.md) did not become vectors and stay as they are). Before a sentence was written, both reference readers were given files made for the point; they agreed on every one, so no rule changed. The Go reader gives the manifest's verdict, class, root and content digest on all 134 rows. Paths of vectors are relative to `wex4/vectors/`.
+
+| Note or gap | Now in the text | Vector |
+|---|---|---|
+| A5 | WEX4-SPEC 5.3: the dimensions are multiplied from the first to the last | `valid/tensor-shape-0-x-2-32-x-2-32.wex4`, `valid/tensor-shape-2-32-x-0-x-2-32.wex4` (accepted), `invalid/tensor-shape-2-32-x-2-32-x-0.wex4` (refused, as `a2_005.wex4`) |
+| A6 | WEX4-SPEC 5.3 (2026-11-14), and an example since 2026-11-15 | `valid/opaque-tensor-of-0-bytes-with-shape-3-x-3.wex4`, `valid/opaque-tensor-of-0-bytes-of-rank-0.wex4` |
+| A9, B1 | WEX4-SPEC 7.2 (2026-11-14) | `invalid/wbp1-record-with-a-zero-page-too-many.wex4`; for WNR3 `invalid/wnr3-record-with-a-zero-page-too-many.wex4` |
+| B3 | WEX4-SPEC 5.5: `rows` and `cols` of the weight tensor are those of its scale tensor; the bound holds for `16 * cols` | `invalid/expert-weight-tensor-with-other-rows-than-its-scale-tensor.wex4`, `invalid/expert-weight-tensor-of-65536-columns.wex4` |
+| B5 | WEX4-SPEC 5.2: a record of an unknown codec may name any blob up to `blob_count` | none: a file that opens and holds a record no reader can decode has no verdict in the manifest. `test_spec_cases` checks both reference readers on it; this reader opens it too (exit code 3) |
+| B6 | WEX4-SPEC 5 (2026-11-14) | the new `content` column of the manifest. This reader computes the digest since 2026-11-15 (`verify.go`) and compares it with that column |
+| B7 | WEX4-SPEC 17: the class column is informative | |
+| B8 | WEX4-SPEC 5.1: a blob's `offset` is a multiple of 4096, checked through the tiling | `invalid/blob-offset-not-a-multiple-of-4096.wex4` (`WEX4_E_LAYOUT`) |
+| C, first point | WNR3-SPEC section 12 names WNR2-REFERENCE sections 6 and 7 as required reading | |
+| C, second and third points | WEX4-SPEC 7.1 and WNR3-SPEC erratum 13: the counts and the model id of a WNR3 record in WEX4 | `invalid/wnr3-record-whose-model-id-is-not-its-blob-id.wex4` |
+| D1 | | `valid/wbp1-records-of-4-and-8-planes.wex4` (the byte 255 in rANS-coded planes); the scale 255 in the scale streams of `valid/wnr3-ceil-form-chunk-pairs-and-anchors.wex4` and `valid/wnr3-one-expert.wex4` |
+| D2 | | `valid/wnr3-ceil-form-chunk-pairs-and-anchors.wex4` (record flags 0x00, 0x07, 0x0D, 0x07), `valid/wnr3-one-expert.wex4` (0x07) |
+| D3 | | `valid/wbp1-records-of-4-and-8-planes.wex4`: 4 and 8 planes with and without the rotation, `chunk_log2 = 12` |
+| D4 | | `valid/wbp1-record-sizes-not-a-multiple-of-the-planes.wex4`: 2, 4 and 8 planes, `chunk_log2 = 11` |
+| D5 | | the vectors of A5, A6 and A9 above |
+| D6 | WNR3-SPEC erratum 14: a decoder accepts any anchor byte and any legal chunk pair | the coded scale 0: `invalid/wnr3-ceil-form-block-of-maximum-5-at-coded-scale-0.wex4`; canonical zero with the ceil form, and the chunk pairs 512:256, 4096:1024 and 16384:16384: `valid/wnr3-ceil-form-chunk-pairs-and-anchors.wex4`. A record of an unknown codec stays out of the vectors (B5) |
+
+Each new valid vector has a content digest in the manifest because a reader can decode one of them wrongly and pass every hash: the stream hashes cover the coded symbols, before the inverse of the ceil form and of the rotation. On 2026-11-15, 24 changed copies of this reader were run on the manifest of 2026-11-14 (112 rows) and on the new one (134 rows). Each copy changes one line: the mistakes of part D (symbol 255 read from CDF entry 0 in a WBP1 plane and in a WNR3 scale stream, no inverse of the ceil form or an inverse without the CEIL bit, the rotation undone for 2 planes only, the planes of a ragged record of equal length, a page of zeros too many accepted in a WBP1 or a WNR3 record, a 0 dimension asked of an opaque tensor of 0 bytes), two other orders of the shape product, the two readings of B3, one WNR3 check removed for each of the other eight refused WNR3 vectors, fixed 2048 or 512 chunks, and the anchor computed by rule g instead of read. 22 of the copies passed all 112 old rows; the 2 that change the order of the shape product failed 1 and 2 of them (`a2_004.wex4`, `a2_005.wex4`). Every copy gave a wrong verdict or content digest on 1 to 3 of the 134 rows. One run, Windows, Go 1.27.4; the script that makes the copies is not in the repository.
+
 ## A. Readings the text leaves open, settled by a file
 
 | # | Where | What the text says | What cannot be decided | Resolution | Settled by |

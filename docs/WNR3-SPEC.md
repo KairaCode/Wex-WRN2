@@ -32,6 +32,11 @@ Errata 9 to 12 were added on 2026-11-14 by a review that read this file as someo
 11. **Counts of section 3, and the anchor byte.** `scount_m` is the number of scales of matrix m (rows x columns of its scale tensor) and `count_m = 32 * scount_m` the number of its weight nibbles; a record whose layout does not satisfy this is invalid. `S = sum over m of ceil(scount_m / Cs)` and `W = sum over m of ceil(count_m / Cw)` are the numbers of scale and weight streams. The last stream of a matrix holds what is left, so a weight stream always holds a multiple of 32 nibbles. An encoder writes `anchor[m]` in 0..254 (rule g, section 4.3); the parser does not check the byte, and a changed anchor is caught by the stream hashes, which include it.
 12. **The WNM2 blob, for a reader that has only this file** (sections 2.1 and 5 say "format unchanged"; the full description is [WNR2-REFERENCE.md](WNR2-REFERENCE.md) section 7). 59,408 bytes, all integers little-endian: a 32-byte header of eight u32, `0x324D4E57` ("WNM2"), 1 (version), 14 (precision), 567 (contexts), 3 (matrices), 0, 0, 0; then the weight tables, 17 u16 each, the table of matrix m and context c at byte `32 + (m * 567 + c) * 34`; then the three scale tables, 257 u16 each, the table of matrix m at byte `57,866 + m * 514`. Every table starts at 0, ends at 16384 and is strictly increasing; a blob that breaks any of this is refused (`wex_nr2_model_open`). The model id is the 32-bit FNV-1a of the 59,408 bytes (start value 2166136261, multiply by 16777619 after each XOR), with a result of 0 replaced by 1.
 
+Errata 13 and 14 and section 12 were added on 2026-11-15 (issues 18 and 20 of the repository). They change no rule either: erratum 13 writes down what `wex4_decode_record` in `c/wex4.h` and the WEX4 index checks already do, erratum 14 what the parser and both C decoders do, and section 12 collects the checks of sections 3 and 4 and of the errata in one place. The 11 vectors added with it for WNR3 records (2 accepted, 9 refused) are accepted or refused alike by the fast and the reference C decoder, by `wex4/wex4.py` and by the Go reader of `impl/go-wex4`; each refused one breaks one rule.
+
+13. **A WNR3 record inside a WEX4 container** (sections 3 and 4.7, which name the WEX3 container). In a WEX4 file the record is checked against the WEX4 index ([WEX4-SPEC.md](WEX4-SPEC.md) sections 5.5 and 7.1), and these rules replace the WEX3 ones: `model_id` must equal the id of the record's blob, a WNM2 model whose FNV-1a is that id (in place of "== WNMD id, registered"); `scount_m` is rows x cols of the scale tensor of matrix m and `count_m = 32 * scount_m` (in place of the shapes of the WEX3 entry); the owner, bytes 28..31, must equal the index entry's owner; the CZ bit must equal the entry's VALUE_EXACT flag (in place of the WEX3 header flag 64 of erratum 2).
+14. **A decoder accepts any anchor byte and any legal chunk pair; only an encoder is bound by rule g** (sections 3 and 4.3). The parser takes `anchor[m]` as it is, 0 to 255, and any `Cw` and `Cs` within the ranges of section 3. The anchor still enters every stream hash (`ident[3]`, section 4.5), so a record decodes only with the anchors its streams were encoded with; the chunk fields are outside the hashes (WEX4-SPEC section 8.2). So a WNR3 record is not a canonical coding of its slab: different records decode to the same slab. Checked on 2026-11-15 (`test_spec_cases` in `wex4/test_wex4.py`, one run on Windows; CI repeats it on every job that runs the WEX4 tests): one synthetic expert coded at 512:256 with the anchors of rule g, and at 16384:16384 with the anchors 255, 0 and the rule-g anchor of matrix 2 plus 2 (none of the three is the rule-g value), gives two records that differ in their chunk fields, their anchors and every stream, and that decode to the same slab through the fast and the reference C decoder, called from `wex4/wex4.py` (which has no WNR3 decoder of its own); the Go reader, which has its own, accepts the file with the same content digest. With only the anchor byte of matrix 0 set to its rule-g value (the record's SHA-256 repaired) the record is refused; with `Cs` changed from 16384 to 512, which gives the same streams because no matrix has more than 300 scales, it decodes to the same slab. Not checked: the CUDA decoder and the Vulkan prototype.
+
 ---
 
 ## 0. Decisions and what this spec does with them
@@ -433,6 +438,44 @@ The WNR2 encoder lives only in the lab (`lab\wex-gpu-direct-20261019\nr2\encode_
 
 ---
 
+## 12. Conformance
+
+*Normative; added on 2026-11-15. It collects the rules of sections 3 and 4 and of the errata, and adds none.*
+
+**What to read.** This page with its errata, which win where they and the sections disagree. For a record inside a WEX4 container, [WEX4-SPEC.md](WEX4-SPEC.md) sections 5.2, 5.5, 6 (step 3) and 7.1, which replace the WEX3 rules (erratum 13). [WNR2-REFERENCE.md](WNR2-REFERENCE.md) sections 6 and 7 are required reading as well: sections 1, 3, 4.1 and 5 of this page give the stream framing, the record skeleton, the weight context and the WNM2 model as "exactly as WNR2" or "unchanged from WNR2". Errata 9, 10 and 12 restate the parts a decoder needs; where they and WNR2-REFERENCE seem to differ, this page and its errata are the rule. For a record inside a WEX3 container, also WNR2-REFERENCE section 5 (the container) and the WNMD descriptor of its section 6.
+
+**What a conforming decoder refuses.** A record that fails any check below is refused, and no byte of it is returned (section 4.7). The table gives the checks in the order of the reference: `wex4_decode_record` in `c/wex4.h`, then `wex_nrx_parse` and `wex_nr2_decode` in `c/wex_neural_rans.h`. A decoder that checks in another order is conforming, because every failure is the same refusal. The last column names the vector of `wex4/vectors/invalid/` that this check alone refuses: its contexts and stream hashes were computed for the record as it is written, so nothing else is wrong with it.
+
+| # | Check | Section | Vector |
+|---|---|---|---|
+| | *In the WEX4 index (step 2) and when the model blob is loaded (step 3)* | | |
+| a | the record is EXPERT and names a WNM2 blob; VALUE_EXACT only with the header's required bit 0; at least `align(32 + 6 * streams)` bytes | WEX4-SPEC 5.2 | `wnr3-record-without-the-expert-flag`, `wnr3-record-without-a-model-blob`, `wnr3-record-whose-blob-is-not-a-wnm2-model`, `value-exact-record-without-the-required-feature` |
+| b | the six tensors: rank 2, their dtypes, every dimension 1..65535, the weight tensor `[rows, 16 * cols]` of its scale tensor | WEX4-SPEC 5.5 | `expert-tensor-of-rank-1`, `expert-scale-tensor-with-another-dtype`, `expert-weight-tensor-with-another-dtype`, `expert-weight-tensor-with-other-rows-than-its-scale-tensor`, `expert-weight-tensor-of-65536-columns` |
+| c | the model blob: 59,408 bytes, id not 0, SHA-256, every table (erratum 12), id equal to its FNV-1a | WEX4-SPEC 5.1 and 6 | `wnm2-blob-of-the-wrong-size`, `wnm2-blob-with-id-0`, `blob-bit-flip-hash-not-fixed`, `wnm2-blob-id-differs-from-its-model` |
+| | *The record* | | |
+| 1 | SHA-256 of the stored bytes (before decoding when it is asked for; the tools always ask) | WEX4-SPEC 8 | none for a WNR3 record; `record-bit-flip-hash-not-fixed` is a RAW record |
+| 2 | owner, bytes 28..31, equal to the index entry's owner | 4.7 step 1, erratum 13 | `wnr3-record-owner-differs-from-the-owner-in-its-data` |
+| 3 | CZ bit, byte 27 bit 3, equal to the entry's VALUE_EXACT flag | erratum 13 | `canonical-zero-wnr3-data-without-the-value-exact-flag` |
+| 4 | magic `0x33524E57` | 3 | `wnr3-record-with-the-magic-wnr2-record-hash-fixed` |
+| 5 | flags bits 4 to 7 are 0 | 3 | `wnr3-record-with-a-reserved-flag-bit` |
+| 6 | `model_id` not 0 and equal to the id of the record's model | 3, erratum 13 | `wnr3-record-whose-model-id-is-not-its-blob-id` |
+| 7 | `Cw` a power of 2 in 512..16384, `Cs` a power of 2 in 256..16384 | 3 | `wnr3-record-with-a-weight-chunk-of-256` |
+| 8 | every matrix has scales, and `count_m = 32 * scount_m` | erratum 11 | none: inside WEX4 the index already gives it (check b) |
+| 9 | `total_bytes = align4096(32 + 2(S+W) + SP + WP)` | 3 | `wnr3-record-with-a-zero-page-too-many` |
+| 10 | every stream length at least 4; the scale lengths sum to SP, the weight lengths to WP | 3 | `wnr3-payload-sizes-differ-from-the-stream-lengths-record-hash-fixed` (the sums); none for a length under 4 |
+| 11 | zero bytes after the payloads | 3 | `non-zero-byte-in-the-padding-of-a-wnr3-record-record-hash-fixed` |
+| 12 | every stream, scale streams first, in g order: initial state in `[L, 256L)`, a byte left whenever the state is renormalised, exactly `length` bytes read, final state `L + h23` | 1, 4.5, errata 9 and 10 | `wnr3-stream-damaged-record-hash-fixed` (which of these it fails is not recorded) |
+| 13 | while the weight streams are decoded: no symbol 8 in a canonical-zero record | 4.4 | `wnr3-canonical-zero-record-with-a-nibble-8` |
+| 14 | after all streams, the inverse of the ceil form: in a CEIL matrix, no block of coded maximum 5 at coded scale 0 | 4.2, 4.7 step 5 | `wnr3-ceil-form-block-of-maximum-5-at-coded-scale-0` |
+
+**What a conforming decoder accepts.** Any anchor byte and any legal chunk pair (erratum 14); in a CEIL matrix, blocks whose coded maximum is not 5, which pass unchanged (4.2); the coded scale 255 (4.2). The valid vectors with WNR3 records: `valid/wnr3-ceil-form-chunk-pairs-and-anchors.wex4` (4 records, record flags `0x00`, `0x07`, `0x0D` and `0x07`: plain, ceil form, canonical zero with the ceil form; chunk pairs 2048:512, 512:256, 4096:1024 and 16384:16384; the anchors of the last record are 255, 0 and 122, where rule g gives 120 for each, and it decodes to the slab of the second; blocks of coded maximum 0, 2, 3, 4, 6 and 7 in CEIL matrices; coded scales 255, among them blocks that the ceil form took from 254 to 255), `valid/wnr3-one-expert.wex4` (flags `0x07`, no canonical zero) and `valid/tiny2-cz-upgraded.wex4` (2 records, flags `0x08`). Their manifest rows give the content digest of WEX4-SPEC section 5. A decoder that skips the inverse of the ceil form, or applies it where the CEIL bit is 0, still accepts those files, with other bytes; the stream hashes cover the coded symbols (4.5), so only the digest shows it.
+
+**What no vector exercises.** An initial state outside `[L, 256L)`, a stream shorter than 4 bytes, or a stream that ends early or runs out of bytes, each alone; a WNR3 record inside a WEX3 container (the legacy vector is refused by a WEX4 reader for its magic); the GPU decoders.
+
+**An encoder** follows section 4.6: canonical zero, the gate and the transform, rule g, then the streams. Only then is its record the one the reference encoder writes for the same chunk pair (erratum 14). `wex4/test_wex4.py` has a second WNR3 encoder, in Python, that takes the anchors, flags, chunks and model id as it is given them, so that a vector can break one rule and no other; on the 3 records the C encoder can write with the same parameters (its anchors are always those of rule g) its bytes are the C encoder's.
+
+---
+
 ## Document history
 
 | Date | Change |
@@ -441,3 +484,4 @@ The WNR2 encoder lives only in the lab (`lab\wex-gpu-direct-20261019\nr2\encode_
 | 2026-11-11 | The WNR3 records moved, unchanged, into WEX4 containers ([WEX4-SPEC.md](WEX4-SPEC.md)) |
 | 2026-11-13 | Version header; the implementation notes are named errata. No format change |
 | 2026-11-14 | Errata 9 to 12, from the spec review ([spec-review-20261114](../research/spec-review-20261114/README.md)): the meaning of `mx = 8`, the rANS decode step, the counts of section 3 and the anchor byte, the WNM2 blob. They describe what the decoders already do. No format change |
+| 2026-11-15 | Erratum 13 (a WNR3 record inside WEX4: model id, counts, owner and CZ bit by the WEX4 rules), erratum 14 (a decoder accepts any anchor byte and any legal chunk pair, shown by a test through both C decoders), section 12 (conformance: what to read, the checks of a decoder in order with the vector of each, what it accepts). They describe what the decoders already do. No format change, no verdict of an existing vector changed |

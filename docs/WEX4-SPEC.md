@@ -1,6 +1,6 @@
 # WEX4 specification (format version 4.0)
 
-**Format version:** 4.0, frozen on 2026-11-11. **Document revision:** 2026-11-14. **Status:** stable, in production. **Change log:** "Document history" at the end.
+**Format version:** 4.0, frozen on 2026-11-11. **Document revision:** 2026-11-15. **Status:** stable, in production. **Change log:** "Document history" at the end.
 
 **In production** since 2026-11-11 for both models that use these containers: DeepSeek V4.1 REAP-192 (WNR3-CZ records) and Qwen3.8-Flash-Next MXFP4 (RAW records). What runs today, with files, roots and builds: [STATUS.md](../STATUS.md).
 
@@ -146,7 +146,7 @@ The index encoding is **canonical**: once the writer has fixed the layout, the g
 |---|---|---|---|
 | 0 | 4 | kind | 1 = WNM2 model (must be 59,408 bytes, id != 0). Other kinds are opaque to readers. Used by the upgrade: 16 = old WEX header page, 17 = old WEX entry table, 18 = other old bytes |
 | 4 | 4 | id | kind 1: the model's FNV-1a id (checked when the blob is loaded). Other kinds: any value, not read by readers (the upgrade writes 0) |
-| 8 | 8 | offset | start of the extent |
+| 8 | 8 | offset | start of the extent: a multiple of 4096, as every extent (section 3). Readers check it through the tiling rule, which no other offset can pass |
 | 16 | 8 | bytes | 1 .. 2^30; the extent is `align(bytes)`, zero-padded |
 | 24 | 32 | sha256 | of the `bytes` bytes |
 | 56 | 8 | reserved | 0 |
@@ -167,7 +167,7 @@ The index encoding is **canonical**: once the writer has fixed the layout, the g
 | 36 | 32 | sha256 | of the `stored_bytes` bytes on disk |
 | 68 | 4 | reserved | 0 |
 
-Codec rules at open time: RAW has `stored_bytes == align(decoded_bytes)` and no blob. Every other codec has `stored_bytes < align(decoded_bytes)`: **a compressed record is strictly smaller than raw**, or the writer stores it raw. WNR3 needs EXPERT and a WNM2 blob, and at least `align(32 + 6 * streams)` bytes (streams counted at the longest chunk, as WEX3 does: `streams` is the sum over the three matrices of `ceil(scales / 16384) + ceil(32 * scales / 16384)`, where `scales` = rows x cols of that matrix's scale tensor). WBP1 has no blob and no flags, and at least `align(16 + 6 * ceil(decoded_bytes / 32768))` bytes. VALUE_EXACT is legal only on a WNR3 record and only when the header's required bit 0 is set. EXPERT allows codec 0 or 5 only.
+Codec rules at open time: RAW has `stored_bytes == align(decoded_bytes)` and no blob. Every other codec has `stored_bytes < align(decoded_bytes)`: **a compressed record is strictly smaller than raw**, or the writer stores it raw. WNR3 needs EXPERT and a WNM2 blob, and at least `align(32 + 6 * streams)` bytes (streams counted at the longest chunk, as WEX3 does: `streams` is the sum over the three matrices of `ceil(scales / 16384) + ceil(32 * scales / 16384)`, where `scales` = rows x cols of that matrix's scale tensor). WBP1 has no blob and no flags, and at least `align(16 + 6 * ceil(decoded_bytes / 32768))` bytes. VALUE_EXACT is legal only on a WNR3 record and only when the header's required bit 0 is set. EXPERT allows codec 0 or 5 only. A record of a codec the reader does not know (section 10, rule 6) may name any blob, of any kind, within `blob <= blob_count`; the reader does not look at it.
 
 ### 5.3 Tensor entry (96 bytes)
 
@@ -187,8 +187,8 @@ Tensors are stored in data order: record by record, and inside a record by incre
 
 - **Tiling:** the tensors of a record cover `[0, decoded_bytes)` exactly once, in order: the first starts at 0, each next one starts where the previous ends, the last ends at `decoded_bytes`.
 - **Split tensor:** a tensor with `record_count = k >= 2` is the only tensor of its first record; the next `k - 1` records are its continuation parts (`tensor_count = 0`, `first_tensor` = that tensor); `nbytes` is the sum of the `k` decoded sizes.
-- **Zero-size tensors** (`nbytes = 0`; for a known dtype that is exactly when a dimension is 0) have `record_count = 0`, `record = 0`, `offset = 0`, and come after all data tensors. A tensor inside a record has `nbytes > 0`. For an opaque dtype the shape does not decide: both readers go by `nbytes` alone.
-- **Size:** for a known dtype, `nbytes * 8 == product(shape) * bits(dtype)` with every multiplication checked for overflow (as safetensors: the total must be a whole number of bytes). For every dtype, opaque ones included, the product of the shape must fit in 64 bits.
+- **Zero-size tensors** (`nbytes = 0`; for a known dtype that is exactly when a dimension is 0) have `record_count = 0`, `record = 0`, `offset = 0`, and come after all data tensors. A tensor inside a record has `nbytes > 0`. For an opaque dtype the shape does not decide: both readers go by `nbytes` alone, so an opaque tensor of 0 bytes with shape `[3, 3]`, or of rank 0, is a zero-size tensor.
+- **Size:** for a known dtype, `nbytes * 8 == product(shape) * bits(dtype)` with every multiplication checked for overflow (as safetensors: the total must be a whole number of bytes). For every dtype, opaque ones included, the product of the shape must fit in 64 bits. The dimensions are multiplied from the first to the last, and the tensor is refused at the first multiplication that overflows, also when a later dimension is 0: `[0, 2^32, 2^32]` and `[2^32, 0, 2^32]` have 0 elements, `[2^32, 2^32, 0]` is refused.
 - **Names:** valid UTF-8 (shortest form, no surrogates), no NUL byte, unique. Uniqueness is not searched for: the name-order table lists every tensor once in strictly increasing name order, which a reader checks with one comparison per tensor, and then uses for binary search.
 
 ### 5.4 dtype codes
@@ -197,7 +197,7 @@ Tensors are stored in data order: record by record, and inside a record by incre
 
 ### 5.5 Expert records
 
-An EXPERT record has exactly 6 tensors: scales of w1, w2, w3 (dtype U8 or F8_E8M0, shape `[rows, cols]`), then weights of w1, w2, w3 (dtype U8 or I8, shape `[rows, 16 * cols]`, in bytes), every dimension 1..65535, in the canonical slab order. This is exactly what a WEX3 entry describes, and `wex4_expert_entry()` rebuilds the legacy 72-byte `WexEntry` from it (file offset, stored size, shapes, offsets, codec). The engine store and the CUDA helper keep consuming `WexEntry` (section 13.2).
+An EXPERT record has exactly 6 tensors: scales of w1, w2, w3 (dtype U8 or F8_E8M0, shape `[rows, cols]`), then weights of w1, w2, w3 (dtype U8 or I8, shape `[rows, 16 * cols]`, in bytes), every dimension 1..65535, in the canonical slab order. The `rows` and `cols` of the weight tensor of a matrix are those of the scale tensor of the same matrix, and the bound holds for every dimension of the six tensors, `16 * cols` included (so `cols <= 4095`). This is exactly what a WEX3 entry describes, and `wex4_expert_entry()` rebuilds the legacy 72-byte `WexEntry` from it (file offset, stored size, shapes, offsets, codec). The engine store and the CUDA helper keep consuming `WexEntry` (section 13.2).
 
 ---
 
@@ -236,6 +236,8 @@ The record bytes are exactly `docs/WNR3-SPEC.md` section 3. The index adds nothi
 - record bytes 28..31 (owner) must equal the index entry's `owner`;
 - record byte 27 bit 3 (CZ) must equal the index entry's VALUE_EXACT flag;
 - record bytes 4..7 (model id) must equal the id of the entry's blob, which must equal the FNV-1a of the blob's bytes.
+
+Where `docs/WNR3-SPEC.md` refers to the WEX3 container, a WEX4 reader takes the WEX4 rule instead (WNR3-SPEC erratum 13). The model id rule above replaces "`== WNMD id`, registered" of WNR3-SPEC section 3. The counts of WNR3-SPEC section 3 come from the six tensors of section 5.5, not from a WEX3 entry: `scount_m = rows * cols` of the scale tensor of matrix m, and `count_m = 32 * scount_m` weight nibbles. What a WNR3 decoder must check, in order, and the vector for each check: WNR3-SPEC section 12.
 
 Canonical zero keeps its meaning and its limits (`docs/WNR3-SPEC.md` section 4.4): the record decodes to Z(source), value-exact and not byte-exact, and it is refused with the masked DeepGEMM path. A fallback RAW expert record stores the source bytes and carries no VALUE_EXACT flag.
 
@@ -622,7 +624,9 @@ A **conforming reader**:
 
 A **conforming writer** produces files that a conforming reader accepts: they pass every rule of section 6, every extent is 4096-aligned and the file is tiled exactly, every hash is correct, and the index is in the canonical encoding of section 5.
 
-The reference outcomes are the files of `wex4/vectors/` and their `MANIFEST.tsv` ([wex4/vectors/README.md](../wex4/vectors/README.md)): 7 valid files with their roots, 94 invalid ones, a WEX3 file whose in-place upgrade must give one of the valid files byte for byte, and the trigger files of the 2026-11-11 security review. `c/wex4.h` and `wex4/wex4.py`, written independently of each other, give the verdicts of the manifest; `bash wex4/build_and_test.sh` checks this on every run.
+The reference outcomes are the files of `wex4/vectors/` and their `MANIFEST.tsv` ([wex4/vectors/README.md](../wex4/vectors/README.md)): 15 valid files with their roots and content digests, 108 invalid ones, a WEX3 file whose in-place upgrade must give one of the valid files byte for byte, and the trigger files of the 2026-11-11 security review. `c/wex4.h` and `wex4/wex4.py`, written independently of each other, give the verdicts of the manifest; `bash wex4/build_and_test.sh` checks this on every run.
+
+What the manifest asks of a reader is the verdict: accept or refuse. For an accepted file it also gives the root and the content digest of section 5, against which a reader that decodes every record can check the bytes it decoded and not only its verdict. The `class` column of a refused file is informative: it is the status `c/wex4.h` returns, which says which rule the file breaks first in that reader's order. A conforming reader refuses the file; the class it reports is its own. The checks of a WNR3 decoder are in `docs/WNR3-SPEC.md` section 12.
 
 ---
 
@@ -636,3 +640,4 @@ The reference outcomes are the files of `wex4/vectors/` and their `MANIFEST.tsv`
 | 2026-11-14 | Sections 13.1 and 14: the converter's naming profiles (`--names`, now also for `pack`), and what `pack` does with an expert that is not MXFP4 (ordinary tensors) or not a whole slab (refused). No format change |
 | 2026-11-14 | Section 17: 94 invalid vectors (48 added). Section 5.2, `owner` of an EXPERT record: the bound by the expert grid, which both readers already enforced, is now written. No format change |
 | 2026-11-14 | Spec review ([spec-review-20261114](../research/spec-review-20261114/README.md)): rules that `c/wex4.h` and `wex4/wex4.py` already enforced are now written. Conventions: the rANS stream state is big-endian. Section 4 and step 1 of section 6: `max_decoded` and `total_decoded` are 0 without records. Section 5: field widths of the content digest. 5.1: `id` of a blob that is not a model. 5.2: range of `blob`, the stream count of the WNR3 minimum size. 5.3: the names fill the pool; a zero-size tensor is one with `nbytes = 0`. 7.2: order of the three parts of a WBP1 record, no empty rANS plane, exact `stored_bytes`, the stream state. 15.1: what `wex4_verify` checks of the padding, and where its reads are unbuffered. No format change, no verdict of a vector changed |
+| 2026-11-15 | Rules that `c/wex4.h` and `wex4/wex4.py` already enforced are now written, each checked by giving both readers files made for it (issues 14 to 16 and 18 to 19 of the repository). 5.1: a blob's `offset` is a multiple of 4096. 5.2: a record of an unknown codec may name a blob. 5.3: the shape is multiplied from the first dimension to the last; an opaque tensor of 0 bytes with no 0 dimension is a zero-size tensor. 5.5: the weight tensor has the `rows` and `cols` of its scale tensor, and the bound 65535 holds for `16 * cols`. 7.1: the model id rule and the counts of a WNR3 record in WEX4 replace the WEX3 ones of WNR3-SPEC. Section 17: 15 valid and 108 invalid vectors (22 added), the content digest of an accepted file, and the reject class is informative. No format change, no verdict of an existing vector changed |

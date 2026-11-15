@@ -32,13 +32,15 @@ measured; it is not known to fail.
     ([research/spec-review-20261114](../research/spec-review-20261114/README.md)): 16 clarifications
     went into the two specifications. The same day a reader was written from the pages alone
     (section 4); its [SPEC-NOTES.md](../impl/go-wex4/SPEC-NOTES.md) says which of its questions the
-    text now answers.
-  - **Still open:** the 4 findings the review left open (no vector has a WNR3 record with a CEIL
-    matrix or without canonical zero; WNR3-SPEC has no conformance section; the error classes are
-    defined in the code only; whether a decoder may accept any anchor byte), and the notes of
-    SPEC-NOTES that the text does not answer yet. Not reviewed: WEX4-SPEC sections 13.1 and 14
-    against `wex4/wex4_convert.py` and the numbers of its informative sections, WNR3-SPEC sections 5
-    to 11, WNR2-REFERENCE, and the GPU decoder against the text.
+    text now answers. On 2026-11-15 the 4 findings the review had left open and the notes the text
+    did not answer yet got sentences and 22 conformance vectors, after both reference readers were
+    given files made for each point (they agreed on all, so no rule changed): WNR3-SPEC has a
+    conformance section (section 12) and errata 13 and 14, the reject classes are informative
+    (WEX4-SPEC section 17), and the table "After the sentences and vectors of 2026-11-15" of
+    SPEC-NOTES says where each note went.
+  - **Still open:** not reviewed: WEX4-SPEC sections 13.1 and 14 against `wex4/wex4_convert.py` and
+    the numbers of its informative sections, WNR3-SPEC sections 5 to 11, WNR2-REFERENCE apart from
+    what WNR3-SPEC section 12 names, and the GPU decoders against the text.
 - **Glossary:** add missing terms to [GLOSSARY.md](GLOSSARY.md). 32 terms of the specifications and of
   the tests were added on 2026-11-14. Still open: the engine and host words of
   [COLIBRI-INTEGRATION](COLIBRI-INTEGRATION.md) and of the dated reports, which were not gone
@@ -81,14 +83,20 @@ measured; it is not known to fail.
 - **More test vectors:** hostile files that [wex4/vectors](../wex4/vectors/README.md) does not cover
   yet, each with its `MANIFEST.tsv` row and the expected verdict from both reference readers; the
   `go-reader` job of CI then runs the Go reader on the new rows too. Valid files are wanted as
-  well. Two lists of what the 112 rows do not exercise exist: finding 17 of the
-  [spec review](../research/spec-review-20261114/README.md) (no WNR3 record with a CEIL matrix or
-  without canonical zero) and part D of the Go reader's
-  [SPEC-NOTES.md](../impl/go-wex4/SPEC-NOTES.md) (the byte 255 in rANS-coded data, WBP1 records of
-  4 or 8 planes or of a size that is not a multiple of the plane count, a WBP1 record with a page
-  of zeros too many, tensors of 0 bytes). The files of
-  [impl/go-wex4/testdata](../impl/go-wex4/testdata/README.md) cover some of these and are not
-  vectors yet. A new vector goes through an issue first.
+  well. A new vector goes through an issue first.
+  - **Today:** 134 rows since 2026-11-15. The 22 files added that day cover the two lists of what
+    the 112 rows did not exercise (finding 17 of the
+    [spec review](../research/spec-review-20261114/README.md) and part D of the Go reader's
+    [SPEC-NOTES.md](../impl/go-wex4/SPEC-NOTES.md)): the byte 255 in rANS-coded data, WNR3
+    records in ceil form, without canonical zero and with other chunk pairs, WBP1 records of 4 and
+    8 planes and of sizes that are not a multiple of the plane count, a page of zeros too many,
+    tensors of 0 bytes, and one refused file for each check of a WNR3 decoder that no vector had.
+    The manifest gives the content digest of every accepted file.
+  - **Still open:** the checks of a WNR3 decoder that WNR3-SPEC section 12 lists under "What no
+    vector exercises" (an initial state outside `[L, 256L)`, a stream shorter than 4 bytes, a
+    stream that ends early or runs out of bytes, each alone); `chunk_log2` other than 10, 11 and
+    12; a WBP1 record with `transform = 1` on a size that is not a multiple of the plane count
+    (WEX4-SPEC 7.2 makes it invalid; no vector has one).
 - **macOS, what is left** (good first issue each):
   - **Today:** the `macos` job of CI (macos-15, Apple silicon) runs `scripts/check_all.sh` and
     `wex4/fuzz/run.sh --replay` with a Homebrew GNU gcc named in `CC`.
@@ -114,30 +122,33 @@ measured; it is not known to fail.
 
 - **Today, a reader in Go:** [impl/go-wex4](../impl/go-wex4/README.md) is a reader and verifier
   written from the specification pages only, with the WBP1 and the WNR3 decoder. It gives the
-  manifest's verdict, reject class and root on all 112 rows of
-  [wex4/vectors](../wex4/vectors/README.md) (2026-11-14; the `go-reader` job of CI runs it). Passing
-  the 112 rows was not enough: on two kinds of file outside the manifest its first version gave
-  another verdict than the reference ([SPEC-NOTES.md](../impl/go-wex4/SPEC-NOTES.md), A6 and A9); it
-  now gives the reference's.
+  manifest's verdict, reject class and root on all 134 rows of
+  [wex4/vectors](../wex4/vectors/README.md), and since 2026-11-15 the content digest of the
+  accepted ones (the `go-reader` job of CI runs it). Passing the 112 rows of 2026-11-14 was not
+  enough: on two kinds of file outside the manifest its first version gave another verdict than the
+  reference ([SPEC-NOTES.md](../impl/go-wex4/SPEC-NOTES.md), A6 and A9); it now gives the
+  reference's, and since 2026-11-15 both kinds are vectors.
 - **Still wanted, a reader in another language** (Rust, C++, Zig…) written **from the spec only**
-  (WEX4-SPEC, WNR3-SPEC and, for the WNR3 decoder, WNR2-REFERENCE), not by porting `wex4.py` or the
-  Go reader. Done when it gives the same verdict as the reference on every file in
-  [wex4/vectors](../wex4/vectors/README.md), and the same root for the valid ones. Every
-  disagreement is either a bug in the new reader or an ambiguity in the spec, and both are worth an
-  issue. Optional: the WNR3 decoder as well; the vectors alone do not prove it (they have no record
-  in ceil form), so use the files of [impl/go-wex4/testdata](../impl/go-wex4/testdata/README.md)
-  too, and ask the reference for its verdict on every file you are not sure of.
+  (WEX4-SPEC, WNR3-SPEC and, for the WNR3 decoder, WNR2-REFERENCE sections 6 and 7, which
+  WNR3-SPEC section 12 names), not by porting `wex4.py` or the Go reader. Done when it gives the
+  same verdict as the reference on every file in [wex4/vectors](../wex4/vectors/README.md), and the
+  same root for the valid ones. Every disagreement is either a bug in the new reader or an
+  ambiguity in the spec, and both are worth an issue. Optional: the WNR3 decoder as well; since
+  2026-11-15 the vectors have WNR3 records in ceil form, without canonical zero and with other
+  chunk pairs, and the manifest's content digest checks the decoded bytes. Ask the reference for
+  its verdict on every file you are not sure of.
 - **Still wanted, a writer from the spec only:** no writer exists outside the reference code. Done
   when the two reference readers and the Go reader accept its files and decode them to the source
   bytes. WEX4-SPEC section 5 says the index encoding is canonical, so a writer that makes the same
   choices as the reference writer should give the same bytes; nobody has checked that this can be
   done from the spec alone (the source tensors of `valid/generic.wex4` are not in the vectors
   folder).
-- **Still wanted, the rest of the notes turned into text and vectors:** the spec review of
-  2026-11-14 wrote part of the Go reader's notes into the specifications; the section "After the
-  spec review" of [SPEC-NOTES.md](../impl/go-wex4/SPEC-NOTES.md) lists which. Open: a sentence of
-  the specification for each note that is left, and a conformance vector for each gap of part D
-  (none was added). A change of the specification or of the vectors goes through an issue first.
+- **Today, the notes turned into text and vectors:** the spec review of 2026-11-14 wrote part of
+  the Go reader's notes into the specifications, and the sentences and vectors of 2026-11-15 the
+  rest; [SPEC-NOTES.md](../impl/go-wex4/SPEC-NOTES.md) lists where each went. Left out on purpose:
+  a vector for a record of an unknown codec, which a reader opens and cannot decode, so it has no
+  verdict in the manifest (`wex4/test_wex4.py` checks both reference readers on such a file). A
+  change of the specification or of the vectors goes through an issue first.
 
 ## 5. Converters for more models (help wanted)
 
@@ -261,9 +272,10 @@ listed above as well.
   - MTP together with MXFP4 experts.
 - **The specifications after the review and the Go reader:** the review wrote 16 clarifications into
   WEX4-SPEC and WNR3-SPEC and left 4 findings open; the Go reader of `impl/go-wex4` found no wrong
-  verdict in the 112 manifest rows, and a list of sentences that can be read two ways and of cases
-  the vectors do not exercise. The review answers part of that list. The rest of it, the 4 open
-  findings and the vectors that are missing are not done *(open to you, sections 2 to 4)*.
+  verdict in the 112 manifest rows of that day, and a list of sentences that can be read two ways
+  and of cases the vectors did not exercise. On 2026-11-15 the 4 findings and the rest of that list
+  got sentences and 22 vectors, with no rule changed. Open: the WNR3 checks no vector exercises
+  alone, and the sections nobody reviewed *(open to you, sections 2 and 3)*.
 - **Fuzzing for hours:** the harnesses run for 60 seconds each in CI; no run longer than that is
   recorded in this repository *(open to you, section 3)*.
 - **Converter profiles for more model families:** eight naming profiles are in, tested on synthetic
