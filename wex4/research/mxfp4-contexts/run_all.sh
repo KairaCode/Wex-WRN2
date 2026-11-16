@@ -3,7 +3,8 @@
 # Copyright 2026 Ludovico Zanichelli
 # Rebuild and rerun the whole study (CPU only, 8 threads, about 10 minutes, reads ~0.4 GiB of the container).
 #   bash run_all.sh CONTAINER.wex      (the WEX3 production container of DeepSeek V4.1, 40 layers x 192 experts;
-#                                       it is only read)
+#                                       it is only read; the published file, that container upgraded to
+#                                       WEX4 in place, is read through its saved WEX3 header page)
 # Needs: a C compiler (gcc of MSYS2 UCRT64 on Windows), python 3 with numpy as $PY (default: python). Writes out/
 # and results.json. CC names another compiler (default gcc), as in scripts/build_cpu_check.sh; nothing here uses
 # OpenMP. decbench.c uses AVX2 intrinsics, so it is built with -mavx2 on x86-64 only (WEX4_MARCH overrides the flag,

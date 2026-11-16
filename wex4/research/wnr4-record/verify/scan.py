@@ -6,11 +6,13 @@
 """
 import json, os, struct, sys
 import numpy as np
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))   # -I drops the script directory
+from fetch import wex3_page   # the WEX3 page, also of a container upgraded to WEX4 in place
 
 path, theirs_path, out_path = sys.argv[1:4]
 size = os.path.getsize(path)
 f = open(path, 'rb')
-page = f.read(4096)
+page = wex3_page(f)
 magic, version, L, E, aligned, table_off, hflags, _ = struct.unpack_from('<IIIIQQII', page, 0)
 dm, model_bytes, model_off, model_id, _ = struct.unpack_from('<IIQII', page, 64)
 f.seek(table_off)

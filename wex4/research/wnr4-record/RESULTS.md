@@ -117,16 +117,62 @@ the latency and integrity costs of points 3 and 4.
 - Chunk-size speed figures are the earlier V4 / WNR2 measurements, not V4.1 / WNR3.
 - No corruption audit of the shortened-hash profiles (one bit flip per record only).
 - The model was not retrained; contexts and CDF precision were not varied (other pieces of this research).
-- `run.sh` was assembled from the commands that produced these numbers; it was not run end to end as one script.
+- `run.sh` was assembled from the commands that produced these numbers; it was first run end to end as one
+  script on 2026-11-16 (next section).
   Since 2026-11-16 it and `verify/run_verify.sh` read `CC` and `WEX_OPENMP` and build their library
   position-independent outside Windows (`run_verify.sh` takes `python` as its default `PY`). That day both built
   with gcc 16.2 (MSYS2 UCRT64, Windows 10) and gcc 15.2 (Ubuntu under WSL2); clang 23.1.5 of MSYS2 stops at
-  `omp.h` (it has no OpenMP runtime). Neither ran to its end: on Windows, with the only container on the machine
-  (8 experts of layers 10 and 30), `fetch.py` stops at `not a WNR3 record`, because the 41 sampled experts are
-  those of the 40 x 192 production container, and `run_verify.sh` needs `../out/container_scan.json` of `run.sh`
-  on that container; under WSL2 both stopped earlier, at `import numpy` (no numpy there). The programs they build ran by hand on those 8 experts as WNR3-CZ records (model trained on the 8),
-  with both builds: `wnr4_proto` `8 experts, 0 failures`, and `verify/extra.c` on one record rejected every
-  single-bit flip of 1,220 per profile, with no wrong output accepted.
+  `omp.h` (it has no OpenMP runtime). Before the production container was on that machine, the programs they
+  build ran by hand on 8 experts of layers 10 and 30 as WNR3-CZ records (model trained on the 8), with both
+  builds: `wnr4_proto` `8 experts, 0 failures`, and `verify/extra.c` on one record rejected every single-bit
+  flip of 1,220 per profile, with no wrong output accepted. Under WSL2 both scripts stopped at `import numpy`
+  (no numpy there).
+
+## Rerun on the published container (2026-11-16)
+
+Both scripts ran to their end, once each, on the container published at
+<https://huggingface.co/Kaira666/Kaira-WEX4-Experts> (`v41-reap/v4_flash_experts.nr3.wex`): the WEX3 WNR3-CZ
+file above upgraded to WEX4 in place, 123,312,910,336 B, root `f0f78a84...3beeb1`, which `wex4_verify` had
+checked whole on the same machine (every blob and record matches its SHA-256). Machine: Intel Core i7-7700K
+(4 cores, 8 threads, AVX2), 32 GB of RAM, Windows 10, the container on a SATA SSD (Crucial BX500); MSYS2 UCRT64
+gcc 16.2.0, Python 3.14.10, numpy 2.5.4; CPU load 19% to 33% in the readings before and after each script
+(other work on the desktop). Commands: `PY=python3 bash run.sh CONTAINER` and
+`PY=python3 ST_EXPERTS=10:0,10:1,10:2,10:3,30:0,30:1,30:2,30:3 bash verify/run_verify.sh CONTAINER DIR`.
+
+What had to change for that (no change of what is measured): `fetch.py`, `verify/scan.py` and
+`verify/fetch_v.py` read the WEX3 header page that the upgrade kept (blob of kind 16, its SHA-256 checked
+against the index) when page 0 is a WEX4 header; the WEX3 entry table, the model and the records are where
+they were. `st_check.py` takes the experts of its first part as an argument (`ST_EXPERTS` of `run_verify.sh`,
+default the two of before), and `run_verify.sh` fetches their records with `fetch.py`.
+
+- **`run.sh`**: exit 0 in 355 s, last line of `report.py` with `"records": 76`. 41 of 41 records `harness ok`
+  (the stored record reproduced byte for byte). `results.json` came out identical to the committed one except
+  three timings, which are of another machine and load: `reference_decode_s_mean` 0.727 -> 1.083 s (8 threads
+  busy) and the host offsets table 8.5 -> 14.0 us (u16 prefix sum) and 36.5 -> 71.5 us (`lenc` unpack). Every
+  byte count, saving and share is the same. The rerun's file is `results-rerun-20261116.json`;
+  `results.json` is left as it was. `fetch.py` read 659,916,816 B (records) and 299,460,624 B (the
+  scan) of the container.
+- **`verify/run_verify.sh`**: exit 0 in 330 s. `scan.py` read every record header and length table of the
+  7,680 records: 0 rows differ from `run.sh`'s scan. `wnr4_proto` on the 23 records of `fetch_v.py` (16 fresh,
+  4 overlapping, 3 extreme): `23 experts, 0 failures`; `compare.py`: the 4 overlapping records have identical
+  sizes, and every profile's mean saving on the 16 fresh records is within 0.4% of the 41-record figure (for
+  example `lenc_sd` 26,800 against 26,825 B). `extra.exe` on L16 E177: reference decode 0.761 s per record on one
+  thread (best of 3), offsets table 7.00 / 32.20 us, and in each profile every single-bit flip of the header
+  (320), the length section (300), the payload (300) and the stream starts (300) rejected, 0 accepted with a
+  wrong output. The chunk variants of `st_check.py` part 2 through the unchanged WNR3 DLL: all 8 decode back to
+  the slab, and the prototype's sizes are those of the WNR3 codec plus its 8-byte longer header.
+- **`st_check.py` part 1 did not check what it is for.** The only safetensors on the machine were the expert
+  shards 13 and 33 of 48 of `deepseek-ai/DeepSeek-V4.1-Flash` (layers 10 and 30, experts 0 to 3), which has
+  384 routed experts per layer (its `config.json`). The container was made from a REAP-192 checkpoint, which
+  keeps 192 of them under new numbers. For all 8, the container's record of the same layer and number decoded
+  to other bytes than Z(source) (`False` on every line). One more check by hand (a short script, not in the
+  repository): all 192 records of layers 10 and 30 decoded with the CPU reference and their SHA-256 compared
+  with those of Z(source) of the 8 experts, whole slab and scale part apart: no match, not even of the scales.
+  So these shards (commit `314113f8` of that repository) are not the source of the container's records; the
+  REAP-192 checkpoint it was made from (`DeepSeek-V4.1-Flash-1017-REAP192-MXFP4` in `run_verify.sh`) was not on
+  the machine, and the comparison with it is still open. Nothing here points at the codec: every record
+  decoded, and every record the two harness runs re-encoded from its decode (41 and 23) came out byte for
+  byte as stored.
 
 ## Files
 
@@ -135,3 +181,5 @@ the latency and integrity costs of points 3 and 4.
 - `layer_model.py`: per-layer model test through the encoder DLL.
 - `report.py`: reduces `out/*.json` to `results.json` and prints the candidate table.
 - `results.json`: all figures above. `run.sh CONTAINER`: build and rerun everything (reads ~1.5 GB).
+- `results-rerun-20261116.json`: `results.json` as the rerun of 2026-11-16 wrote it.
+- `verify/`: the verification rerun (`run_verify.sh`), its scripts and `extra.c`.

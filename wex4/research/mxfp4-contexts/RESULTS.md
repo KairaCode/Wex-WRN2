@@ -180,14 +180,37 @@ hash check of WNR3 is not included in any of them.
   without the stream hash, ceil-form inverse or record parsing.
 - The K-set search is one Lloyd run from one starting split; a better search could move it by a few 0.001%.
 - Model F as a format (where the sign bits sit, how the stream hash covers them) is not designed or verified.
-- `run_all.sh` lists the commands that were run one by one; it has still not run to its end. Since 2026-11-16 it
-  reads `CC`, builds `decbench.c` (AVX2 intrinsics, `-mavx2`) on x86-64 only and skips that stage elsewhere, and
-  builds its libraries position-independent outside Windows. That day its builds passed with gcc 16.2 and clang
-  23.1.5 (MSYS2 UCRT64, Windows 10) and gcc 15.2 (Ubuntu under WSL2), and each run stopped at `extract.py`,
-  which accepts only the 40 x 192 production container (`not the V4.1 WEX3 container`); that container was
-  not on the machine, only one with 8 experts of layers 10 and 30. `decbench.exe` of each of the three builds
-  ran by hand on the coded slabs of 2 of those experts (WNR3-CZ, model trained on the 8): every decoder
-  `exact`, and the same sizes from all three.
+- `run_all.sh` lists the commands that were run one by one; it first ran to its end as one script on
+  2026-11-16 (next section). Since that day it reads `CC`, builds `decbench.c` (AVX2 intrinsics, `-mavx2`) on
+  x86-64 only and skips that stage elsewhere, and builds its libraries position-independent outside Windows.
+  Its builds passed with gcc 16.2 and clang 23.1.5 (MSYS2 UCRT64, Windows 10) and gcc 15.2 (Ubuntu under WSL2);
+  before the production container was on the machine, `decbench.exe` of each of the three builds ran by hand
+  on the coded slabs of 2 experts of layers 10 and 30 (WNR3-CZ, model trained on 8): every decoder `exact`, and
+  the same sizes from all three.
+
+## Rerun on the published container (2026-11-16)
+
+`PY=python3 bash run_all.sh CONTAINER` ran to its end once (`run_all.sh passed`, 986 s) on the container
+published at <https://huggingface.co/Kaira666/Kaira-WEX4-Experts> (`v41-reap/v4_flash_experts.nr3.wex`): the
+WEX3 production container upgraded to WEX4 in place, 123,312,910,336 B, root `f0f78a84...3beeb1`, checked
+whole with `wex4_verify` on the same machine before. Machine: Intel Core i7-7700K (4 cores, 8 threads, AVX2),
+32 GB of RAM, Windows 10, the container on a SATA SSD; MSYS2 UCRT64 gcc 16.2.0, Python 3.14.10, numpy 2.5.4;
+CPU load 19% and 31% in the readings before and after (other work on the desktop).
+
+Two changes made it run (no change of what is measured): `extract.py` reads the WEX3 header page that the
+upgrade kept (blob of kind 16, its SHA-256 checked against the index) when page 0 is a WEX4 header, and
+`ctxeval.py` starts `decbench.exe` by its absolute path (the Python of MSYS2 writes paths with `/`, and Windows
+did not start `out/decbench.exe`; the first run stopped there, at the last stage).
+
+Every figure of `results.json` came out the same, with two exceptions: the times of the `decbench` stage, which
+are of this machine and its load, and the label of one combination (`=SREL+BMAX3+RMAXC`, "extra in-stream
+state" where the committed file says "per-symbol state"), which the script prints differently since that file
+was written. The rerun's file is `results-rerun-20261116.json`; `results.json` is left as it was. The `decbench`
+times of the rerun (one thread, ns per weight, on the experts L16 E066 and L39 E018): reference search 20.00 and
+19.07 (the committed file: 13.57 and 13.30), AVX2 search 7.56 and 7.61 (6.33 and 6.09), F slot table 3.73 and
+3.49 (3.78 and 2.95), Fw slot table 3.98 and 3.77 (3.82 and 3.07), every decoder `exact`. On this machine the
+F table took 0.18 to 0.19 of the reference search's time (one stream each) and the AVX2 search 0.38 to 0.40; the ratios above come from
+the committed run.
 
 ## Files
 
@@ -196,3 +219,4 @@ hash check of WNR3 is not included in any of them.
 - `ctxeval.py`: stages `validate`, `contexts`, `combo`, `kmix`, `layers`, `precision`, `decbench` -> `results.json`.
 - `decbench.c`: real rANS encode + decode timing of models A, F, Fw.
 - `run_all.sh`: the full sequence. `out/` holds build products and data copies and is not in git.
+- `results-rerun-20261116.json`: `results.json` as the rerun of 2026-11-16 wrote it (section above).

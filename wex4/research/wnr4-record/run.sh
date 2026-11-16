@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 Ludovico Zanichelli
 # Build and run the WNR4 record experiment (CPU only, at most 8 threads).
-#   bash run.sh CONTAINER    the WEX3 WNR3-CZ production container of DeepSeek V4.1 (40 layers x 192 experts)
+#   bash run.sh CONTAINER    the WEX3 WNR3-CZ production container of DeepSeek V4.1 (40 layers x 192 experts), or
+#                            the published file, which is that container upgraded to WEX4 in place
 # Needs a C compiler with OpenMP (wnr4_proto.c includes omp.h; gcc of MSYS2 UCRT64 on Windows) and python 3 with
 # numpy on PATH; set PY to choose the interpreter. CC names another compiler (default gcc) and WEX_OPENMP replaces
 # -fopenmp, as in scripts/build_cpu_check.sh. No -march flag: nothing here has SIMD kernels.
