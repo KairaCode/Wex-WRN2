@@ -72,7 +72,7 @@ measured; it is not known to fail.
     the kernels on an NVIDIA GPU, from PTX that clang writes without the CUDA toolkit; that ran by
     hand on one GPU (an RTX 3070) on 2026-11-15, with no failed oracle. A custom mutator keeps the
     WNR3 stream hashes right. CI builds them with clang and runs each for 60 seconds on x86-64 Linux
-    (for the CUDA harness about 400 inputs), and replays their seeds and mutators with gcc
+    (for the CUDA harness 421 and 256 inputs in the two runs of 2026-11-15), and replays their seeds and mutators with gcc
     (`run.sh --replay`, no coverage guidance) on x86-64 Linux, ARM64 Linux, macOS (Apple silicon)
     and Windows.
   - **What is wanted now** is machine time: run `bash wex4/fuzz/run.sh 14400` (hours, not seconds)
