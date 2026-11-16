@@ -66,7 +66,7 @@ jobs:
   # built another one), and plain char is unsigned. Then the WEX4 tests once more with the scalar kernel forced,
   # so both kernels are compared with the reference decoder on ARM, and the speed of both (printed, never judged:
   # a shared runner is not a benchmark machine). The smoke run builds bench/wex_io.c for ARM and runs its 20 read
-  # paths once (the full benchmark was not run on ARM)
+  # paths once (the full benchmark was not run on ARM Linux)
   linux-arm:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 15
@@ -144,12 +144,14 @@ jobs:
           grep -q '^build: NEON kernels' "$RUNNER_TEMP/check.log"
       # seconds: the smoke run of bench/wex_io.c on macOS (its blocks __APPLE__: F_NOCACHE, fcntl hints, msync
       # to drop the file's pages), built with the GNU gcc of CC, then with Apple clang on the container the
-      # first call left. --strict: the 11 paths that macOS has must run and match the index; the 9 io_uring and
-      # POSIX_FADV_SEQUENTIAL paths print "skipped", which --strict does not count on macOS
+      # first call left. Both builds are C99 (-std=c99 -pedantic); wex_io.py stops on any warning. --strict: the
+      # 11 paths that macOS has must run and match the index; the 9 io_uring and POSIX_FADV_SEQUENTIAL paths
+      # print "skipped", which --strict does not count on macOS
       - name: macOS read-path benchmark, smoke run (GNU gcc, then Apple clang)
         run: |
-          python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --smoke --strict --keep
-          CC=clang python3 -I bench/wex_io.py --file "$RUNNER_TEMP/wex-io-bench.wex4" --smoke --strict
+          "$CC" --version | head -1; clang --version | head -1
+          WEX_CFLAGS="-std=c99 -pedantic" python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --smoke --strict --keep
+          CC=clang WEX_CFLAGS="-std=c99 -pedantic" python3 -I bench/wex_io.py --file "$RUNNER_TEMP/wex-io-bench.wex4" --smoke --strict
       - name: Fuzz harnesses, seeds and mutators replayed (NEON kernel of the fast decoder)
         run: |
           set -o pipefail
@@ -302,9 +304,11 @@ jobs:
   # The same measurement on macOS, only when a manual run asks for it
   # (gh workflow run ci.yml --ref <branch> -f macos_io_bench=true). The runner is a virtual machine on an Apple
   # silicon host with a virtual disk: its numbers say how the macOS read paths compare there, not what the SSD
-  # of a Mac gives. The compiler is the runner's default gcc, which is Apple clang. --drop-caches runs purge
-  # through sudo before every pass; it empties the cache of the VM's kernel, not a cache of the host under
-  # the virtual disk. The first lines say whether sudo needs no password, and what the VM is
+  # of a Mac gives. The compiler is the runner's default gcc, which is Apple clang, in C99. --drop-caches runs
+  # purge through sudo before every pass; it empties the cache of the VM's kernel, not a cache of the host under
+  # the virtual disk. --runs 11: the order of the 11 timed paths rotates by one each round, so with 11 rounds
+  # every path takes every place in a round once (on these runners the early places of a round are slower).
+  # The first lines say whether sudo needs no password, and what the VM is
   macos-io-bench:
     if: github.event_name == 'workflow_dispatch' && inputs.macos_io_bench
     runs-on: macos-15
@@ -318,7 +322,7 @@ jobs:
           if sudo -n true; then echo "sudo without a password: yes"; else echo "sudo without a password: no"; fi
           sysctl -n machdep.cpu.brand_string hw.model kern.hv_vmm_present hw.memsize hw.pagesize
           sw_vers; gcc --version | head -1; df -h "$RUNNER_TEMP"
-          python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --drop-caches
+          WEX_CFLAGS="-std=c99 -pedantic" python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --drop-caches --runs 11
           jq -r .table_markdown bench/out/wex_io.json >> "$GITHUB_STEP_SUMMARY"
           echo "----- bench/out/wex_io.json"
           cat bench/out/wex_io.json
