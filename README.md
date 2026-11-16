@@ -11,6 +11,8 @@ WEX is a family of expert-container formats for streamed Mixture-of-Experts infe
 
 The repository slug says `Wex-WRN2` for historical reasons; the codec is spelled **WNR2** in every constant, file and page.
 
+Short summaries of this page in other languages, each dated, with this page as the reference: [Italiano](#in-breve-italiano) (at the end of this page), [Español](docs/i18n/README.es.md), [Français](docs/i18n/README.fr.md), [Deutsch](docs/i18n/README.de.md), [简体中文](docs/i18n/README.zh-CN.md).
+
 **Status.** WEX4 (format version 4.0) and the WNR3 record codec (v1) are frozen and in production since 2026-11-10/11, on one machine, for two models. The code here is the reference implementation and the research behind it: research-grade and Windows-first (CI also runs the CPU checks on Linux and macOS), one maintainer, no packages, no release yet, and no stability promise for the tools' command lines; the specifications are the stable part. [![CI](https://github.com/KairaCode/Wex-WRN2/actions/workflows/ci.yml/badge.svg)](https://github.com/KairaCode/Wex-WRN2/actions/workflows/ci.yml)
 
 ## What WEX is
@@ -169,6 +171,7 @@ fixtures/      the tiny V4.1 model and the makers of synthetic experts
 integration/   engine, backend and host excerpts, build scripts, patches
 docs/          living pages: index, architecture, glossary, benchmarks, integration guide, WNR2 reference, WNR3 and WEX4 specs, the Vulkan design note
   reports/        dated, frozen reports (some in Italian)
+  i18n/           short summaries of this README in Spanish, French, German and Simplified Chinese
 research/      dated lab runs, frozen; README.md is the index
 docs/NEXT-FORMAT-SPEC.md         stub: a comment in c/wex4.h still names this path
 ```
@@ -217,8 +220,10 @@ Contributions are welcome under the Apache License 2.0, inbound = outbound; a co
 
 ## In breve (italiano)
 
-- **Cos'è.** WEX è una famiglia di formati contenitore per gli expert dei modelli Mixture-of-Experts: un file di record allineati a 4096 byte, uno per expert, che il motore legge da NVMe con una sola lettura mentre genera. WEX4 aggiunge un header e un indice con lo SHA-256 di ogni record; WNR3 è la codifica rANS senza perdita dei record.
-- **Cosa gira oggi.** DeepSeek V4.1 REAP-192 legge un WEX4 con record WNR3 (0,854 del formato grezzo), Qwen3.8-Flash-Next un WEX4 con record MXFP4 grezzi; entrambi da due drive NVMe (U: e C:, letture divise 38/62). Stato aggiornato: [STATUS.md](STATUS.md).
-- **Come provarlo.** `bash scripts/check_all.sh` compila e lancia tutti i test su CPU, senza GPU e senza modelli; finisce con `all checks passed`.
-- **Da dove cominciare.** [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) per l'insieme, [docs/WEX4-SPEC.md](docs/WEX4-SPEC.md) per i byte, [docs/COLIBRI-INTEGRATION.md](docs/COLIBRI-INTEGRATION.md) per collegare un motore, [CONTRIBUTING.md](CONTRIBUTING.md) per contribuire, [SECURITY.md](SECURITY.md) per segnalare una vulnerabilità.
-- **Licenza.** Apache 2.0 ([LICENSE](LICENSE), [NOTICE](NOTICE)). Le pagine sono in inglese; alcuni report datati in `docs/reports/` sono in italiano.
+Sintesi del 2026-11-15 di questa pagina; dove i due testi differiscono, vale quello inglese.
+
+- **Cos'è.** WEX è una famiglia di formati contenitore per gli expert dei modelli Mixture-of-Experts: un file di record allineati a 4096 byte, uno per expert, che il motore legge da NVMe con una sola lettura mentre genera. WEX4 aggiunge un header e un indice con lo SHA-256 di ogni record; WNR3 è la codifica rANS senza perdita dei record. WEX4 (versione di formato 4.0) e WNR3 (v1) sono congelati; il codice è l'implementazione di riferimento, di livello ricerca e pensata anzitutto per Windows.
+- **Cosa gira oggi** (sintesi del 2026-11-13). DeepSeek V4.1 REAP-192 legge un WEX4 con record WNR3 (0,854 del formato grezzo), Qwen3.8-Flash-Next un WEX4 con record MXFP4 grezzi; entrambi da due drive NVMe (U: e C:, letture divise 38/62). Stato aggiornato: [STATUS.md](STATUS.md).
+- **Come provarlo.** `bash scripts/check_all.sh` compila e lancia i controlli su CPU (test dei formati, lettori e convertitori WEX4, vettori di conformità, decoder WNR3 veloce) e il controllo del repository, senza GPU e senza modelli; se tutto va bene l'ultima riga è `all checks passed`, con codice di uscita 0. I prerequisiti sono nella sezione [Try it in ten minutes](#try-it-in-ten-minutes). La CI lo esegue su Linux (x86-64 e ARM64), macOS (Apple silicon) e Windows.
+- **Da dove cominciare.** [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) per l'insieme, [docs/WEX4-SPEC.md](docs/WEX4-SPEC.md) e [docs/WNR3-SPEC.md](docs/WNR3-SPEC.md) per i byte, [impl/go-wex4/](impl/go-wex4/README.md) per l'implementazione in Go scritta dalle sole specifiche, [docs/COLIBRI-INTEGRATION.md](docs/COLIBRI-INTEGRATION.md) per collegare un motore, [docs/HELP-WANTED.md](docs/HELP-WANTED.md) per i compiti aperti, [CONTRIBUTING.md](CONTRIBUTING.md) per contribuire, [SECURITY.md](SECURITY.md) per segnalare una vulnerabilità.
+- **Licenza.** Apache 2.0 ([LICENSE](LICENSE), [NOTICE](NOTICE)). Il repository non contiene pesi di modelli. Alcuni report datati in `docs/reports/` sono in italiano.

@@ -69,6 +69,15 @@ measured; it is not known to fail.
   read through one by one.
 - **Translations:** a short README in your language (the Italian summary at the end of the README
   shows the expected size).
+  - **Today:** short READMEs in [Spanish](i18n/README.es.md), [French](i18n/README.fr.md),
+    [German](i18n/README.de.md) and [Simplified Chinese](i18n/README.zh-CN.md) are in `docs/i18n/`
+    (2026-11-15), next to the Italian summary. They were not written by native speakers, and each
+    says so at its top: native speakers are welcome to correct them, through an issue or a pull
+    request.
+  - **Still open:** a reading of each of the four by a native speaker; other languages, one file
+    `docs/i18n/README.<lang>.md` each, linked from the top of the README and listed in
+    [docs/README.md](README.md). A translation follows the English README of the date at its top;
+    the English text is the reference ([CONTRIBUTING.md](../CONTRIBUTING.md), section 6).
 
 ## 3. Tests and fuzzing
 

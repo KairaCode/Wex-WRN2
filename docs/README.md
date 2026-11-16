@@ -47,7 +47,7 @@ Summary of 2026-11-13; the page of record for what runs is [STATUS.md](../STATUS
 
 ## Every page
 
-"Current" means the page is edited when the facts change. "Historical" means it records its date: read its banner, and take present-tense sentences as the state of that day. Language: EN English, IT Italian.
+"Current" means the page is edited when the facts change. "Historical" means it records its date: read its banner, and take present-tense sentences as the state of that day. Language: EN English, IT Italian, ES Spanish, FR French, DE German, ZH Simplified Chinese.
 
 ### Living pages (`docs/`)
 
@@ -85,6 +85,17 @@ Summary of 2026-11-13; the page of record for what runs is [STATUS.md](../STATUS
 | [wnr2-cache-decode-cpu-wddm-20261105.it.md](reports/wnr2-cache-decode-cpu-wddm-20261105.it.md) | IT | dated report | historical (DeepSeek V4) | Which counters decide whether WNR2 pays, and do CPU decode, the cache policy or WDDM (the Windows GPU driver model) change that? |
 | [wex-architecture-20261018.it.md](reports/wex-architecture-20261018.it.md) | IT | dated report | historical, with known errors listed in [wnr2-history-20261110.md](reports/wnr2-history-20261110.md) section 14; no longer the format reference | How were WEX1, WEX2 and WEX3 designed in October, on DeepSeek V4? |
 | [wex2-scale-tiles-20261018.it.md](reports/wex2-scale-tiles-20261018.it.md) | IT | dated report | historical; the WEX2 format it describes is still what the code reads | How are the scales packed in WEX2, and what did that measure on two experts? |
+
+### Short READMEs in other languages (`docs/i18n/`)
+
+Each is a summary of the root [README](../README.md), about the size of its Italian summary ("In breve"), with the date of the English text it follows at its top. The English README is the reference and wins where they differ. They were not written by native speakers; corrections are welcome.
+
+| File | Lang. | Kind | State | Question it answers |
+|---|---|---|---|---|
+| [README.es.md](i18n/README.es.md) | ES | translation | follows the README of 2026-11-15 | What is WEX, what runs today, how do I try it, and where do I start? |
+| [README.fr.md](i18n/README.fr.md) | FR | translation | follows the README of 2026-11-15 | the same |
+| [README.de.md](i18n/README.de.md) | DE | translation | follows the README of 2026-11-15 | the same |
+| [README.zh-CN.md](i18n/README.zh-CN.md) | ZH | translation | follows the README of 2026-11-15 | the same |
 
 ## Outside `docs/`
 
