@@ -67,7 +67,7 @@ jobs:
   # SVE kernel 2
   linux-arm:
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 20   # a green run took 8 to 9 minutes on 2026-11-15, about half of it in the SVE steps
+    timeout-minutes: 20   # a green run took 9.4 and 9.6 minutes (runs 43797149386 and 43801674090, 2026-11-15/16), about half of it in the SVE steps
     env:
       PYTHON: python3
       USER: ""
@@ -375,7 +375,7 @@ jobs:
   # fuzz replay. Two steps fail unless the kernel they built is NEON
   linux-arm-sanitizers:
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 30   # a green run took 8.4 to 8.7 minutes (four runs, 2026-11-15), the longest job
+    timeout-minutes: 30   # a green run took 8.4 to 8.7 minutes (four runs, 2026-11-15), the longest job until the SVE steps of linux-arm were merged
     env:
       PYTHON: python3
       USER: ""

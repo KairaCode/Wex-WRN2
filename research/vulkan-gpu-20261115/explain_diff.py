@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Ludovico Zanichelli
 # Writes a copy of wex4/research/vulkan-decode/wnr3_vk.c (as of 2026-11-15) that says, for a ceil-form
 # record whose decoded scale bytes differ from the reference, which of the differing bytes are decrements of
 # the ceil-form inverse that were lost although a later block of the same 4-byte word was decremented too.

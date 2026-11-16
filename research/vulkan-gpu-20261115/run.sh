@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Ludovico Zanichelli
 # The local runs of this folder (README.md), from the repository root, on Windows 10 with MSYS2 UCRT64, an
 # NVIDIA GPU with its Vulkan driver and Mesa llvmpipe (mingw-w64-ucrt-x86_64-mesa). Needs what
 # wex4/research/vulkan-decode/run.sh and bench.sh need, wex4/out from `bash wex4/build_and_test.sh`, and

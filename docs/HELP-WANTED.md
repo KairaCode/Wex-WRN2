@@ -71,6 +71,8 @@ not run or not measured; it is not known to fail.
     none of which it served before; the two runs with the mutator gave 127 to 215 different WNR
     and WNR2 records, the one without 3 of each
     ([counts and conditions](../wex4/fuzz/README.md#the-custom-mutators-and-the-dictionary)).
+    Those runs were of commit dbc1391, before the merges of 2026-11-15, with six engine seed
+    containers instead of the eight of today; the merged code ran only in 60 s Fuzz jobs.
     The Fuzz workflow builds the harnesses with clang and runs each for 60 seconds (the store
     harness twice) on x86-64 Linux, on ARM64 Linux and on macOS (Apple silicon, with the clang of a
     Homebrew LLVM, `llvm@18` on 2026-11-15: Apple clang ships no libFuzzer runtime); on both ARM64
