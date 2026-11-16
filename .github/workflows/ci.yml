@@ -741,19 +741,26 @@ jobs:
       USER: ""
       USERNAME: ""
       DEBUGINFOD_URLS: ""   # gdb: no symbol download from the network
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Compiler, Python, Vulkan headers, loader, shader compiler, lavapipe, the validation layer, vulkaninfo
         run: |
           if command -v pacman > /dev/null; then
             pacman -Syu --noconfirm --needed git gcc python diffutils which vulkan-headers vulkan-icd-loader glslang \
                 vulkan-swrast vulkan-validation-layers vulkan-tools spirv-tools gdb
-            pacman -Q mesa vulkan-swrast llvm-libs glslang spirv-tools vulkan-icd-loader
+            pacman -Q vulkan-swrast llvm-libs glslang spirv-tools vulkan-icd-loader
           else
             dnf install -y git gcc python3 diffutils which findutils vulkan-headers vulkan-loader-devel glslang \
                 mesa-vulkan-drivers vulkan-validation-layers vulkan-tools spirv-tools gdb
             rpm -q mesa-vulkan-drivers llvm-libs glslang spirv-tools vulkan-loader
           fi
-          cat /etc/os-release | grep -E '^(PRETTY_NAME|VERSION_ID)='
+          grep -E '^(PRETTY_NAME|VERSION_ID)=' /etc/os-release
+          # lavapipe alone: the other Mesa drivers of the image find no device in the container, and the loader's
+          # messages about them would count as messages of the validation layer
+          icd=$(ls /usr/share/vulkan/icd.d/lvp_icd*.json | head -1)
+          echo "VK_DRIVER_FILES=$icd" | tee -a "$GITHUB_ENV"
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
         with:
           persist-credentials: false
