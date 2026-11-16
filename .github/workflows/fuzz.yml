@@ -1,7 +1,7 @@
-# Coverage-guided fuzzing of the C readers and decoders (wex4/fuzz/): the five libFuzzer harnesses are built with
-# AddressSanitizer and UndefinedBehaviorSanitizer and each runs for a short time from the conformance vectors
-# (fuzz_store_wex twice: on the containers of the WNR3 vectors and on those of the older codecs), on x86-64
-# Linux, on 64-bit ARM Linux and on macOS (Apple silicon), one job each.
+# Coverage-guided fuzzing of the C readers and decoders (wex4/fuzz/): the six libFuzzer harnesses (one of them the
+# CUDA WNR3 decoder built for the CPU) are built with AddressSanitizer and UndefinedBehaviorSanitizer and each runs
+# for a short time from the conformance vectors (fuzz_store_wex twice: on the containers of the WNR3 vectors and on
+# those of the older codecs), on x86-64 Linux, on 64-bit ARM Linux and on macOS (Apple silicon), one job each.
 # No GPU, no model weights, no secrets.
 name: Fuzz
 
@@ -12,7 +12,7 @@ on:
   workflow_dispatch:   # a longer run, by hand
     inputs:
       seconds:
-        description: seconds per run, at least 1 (six runs, the store harness twice; the job stops after 6 hours, so at most about 3500)
+        description: seconds per run, at least 1 (seven runs, the store harness twice; the job stops after 6 hours, so at most about 3000)
         default: "60"
       mutators:
         description: "1: the codec-aware custom mutators (the default; WNR3, and in fuzz_store_wex also the older codecs). 0: libFuzzer's own mutations only, the control of a measurement"
@@ -52,7 +52,7 @@ jobs:
   # the same on a 64-bit ARM CPU: fuzz_wnr3_record then compares the NEON kernel of the fast WNR3 decoder with the
   # reference decoder (the step fails if the harness built another kernel). With 60 s per harness a green run of
   # this job and of libfuzzer-macos took 5.4 to 5.6 minutes, about as long as libfuzzer (three runs each, 2026-11-15,
-  # with five runs of 60 s; the second run of the store harness, merged later, adds one more)
+  # with five runs of 60 s; the second run of the store harness and fuzz_wnr3_cuda, merged later, add one each)
   libfuzzer-arm:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 360

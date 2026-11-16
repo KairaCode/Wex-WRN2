@@ -1,0 +1,7 @@
+compiler: g++.exe (Rev6, Built by MSYS2 project) 16.2.0
+== the files of wex4/vectors/MANIFEST.tsv
+fuzz_wnr3_cuda: 111 inputs (18 WEX4 files), 122 WNR3 records (15 of them synthetic or crafted, at start), each through 2 builds x (4 bridge calls + 2 kernel lookups) (1464 GPU calls): 20 accepted by the CPU and every GPU path, 93 refused by the host checks, 9 refused on the device (error bits 1: 6, 2: 0, 4: 1, 8: 4), 0 naming a model that is not registered, 0 skipped (layout or size); 5 different decoded records; emulated: 2065 launches, 207444 blocks (3772 with a host thread per CUDA thread), 51982080 threads, 120384 barriers, 1218608 cp.async copies, 4496 queued copies (structured mutations on)
+111 inputs replayed, no crash and no failed oracle
+== the files of impl/go-wex4/testdata
+fuzz_wnr3_cuda: 4 inputs (4 WEX4 files), 17 WNR3 records (15 of them synthetic or crafted, at start), each through 2 builds x (4 bridge calls + 2 kernel lookups) (204 GPU calls): 9 accepted by the CPU and every GPU path, 0 refused by the host checks, 8 refused on the device (error bits 1: 6, 2: 0, 4: 1, 8: 3), 0 naming a model that is not registered, 0 skipped (layout or size); 5 different decoded records; emulated: 684 launches, 112284 blocks (1234 with a host thread per CUDA thread), 28379136 threads, 39168 barriers, 428516 cp.async copies, 1468 queued copies (structured mutations on)
+4 inputs replayed, no crash and no failed oracle

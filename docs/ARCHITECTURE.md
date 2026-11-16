@@ -116,12 +116,12 @@ The 37 files under `c/` are this repository's engine-side code. The maintainer's
 | `tests/test_qwen38_mxfp4.py` | no | yes: the qwen38 engine build and its test fixtures | no |
 | `tests/make_qwen38_tiny_mxfp4_experts.py`, `tools/make_qwen38_tiny_mxfp4.py` | no | yes: the engine's Qwen3.8 test fixtures; they also need numpy, torch and safetensors | no |
 | `tools/repack_q38_mxfp4_wex.py` | with numpy and a Qwen3.8 MXFP4 checkpoint | no | no |
-| `wex_cuda.cuh`, `tools/wex_cuda_bridge.cu` | `integration/build/build_wex_windows.cmd` (MSVC and the CUDA toolkit) | no | to run |
+| `wex_cuda.cuh`, `tools/wex_cuda_bridge.cu` | `integration/build/build_wex_windows.cmd` (MSVC and the CUDA toolkit); also as host C++ without the toolkit, through an emulation of the CUDA constructs, in `wex4/fuzz/fuzz_wnr3_cuda.cpp` (the WNR3 path only), and the kernels as PTX from clang without the toolkit (`wex4/fuzz/run.sh --gpu`, an NVIDIA driver) | no | to run on a GPU; the emulation needs none |
 | `tests/test_wex_nr3_gpu.cu`, `tools/bench_wex_cuda.cu` | with nvcc, by hand | no | yes |
 | `tools/bench_wex_decode.c` | Windows only, by hand (`windows.h`); takes two container files | no | no |
 | `tools/wexio_probe.py` | Windows only: `--self-test` reads a synthetic temp file; its default inputs are the lab's container paths on U: and C: | no | no |
 
-`scripts/check_all.sh` runs everything in the "yes" rows. `wex4/fuzz/run.sh --replay` (CI runs it after the checks) and the Fuzz workflow run `expert_store_wex.c`, `qwen38_wex.h` and `wex_decode.c` through the stand-in headers of `wex4/fuzz/engine/` ([wex4/fuzz/README.md](../wex4/fuzz/README.md)); their own tests and the rest are exercised in the maintainer's engine tree.
+`scripts/check_all.sh` runs everything in the "yes" rows. `wex4/fuzz/run.sh --replay` (CI runs it after the checks) and the Fuzz workflow run `expert_store_wex.c`, `qwen38_wex.h` and `wex_decode.c` through the stand-in headers of `wex4/fuzz/engine/`, and `wex_cuda.cuh` with `tools/wex_cuda_bridge.cu` through the CUDA emulation of `wex4/fuzz/cuda_host.h` ([wex4/fuzz/README.md](../wex4/fuzz/README.md)); their own tests and the rest are exercised in the maintainer's engine tree.
 
 ## How a change to `c/` gets in
 

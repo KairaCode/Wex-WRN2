@@ -1,0 +1,12 @@
+host C++ copy of c/wex_cuda.cuh: rewrote 1 include, 13 launch, 1 dynamic shared memory, 3 shared memory, 1 inline PTX prmt, 1 inline PTX cp.async, 1 inline PTX commit and wait; c/tools/wex_cuda_bridge.cu copied unchanged
+C++ compiler of fuzz_wnr3_cuda: g++.exe (Rev6, Built by MSYS2 project) 16.2.0
+PTX compiler: clang version 23.1.5 (https://github.com/msys2/MINGW-packages efc96badda99c076509ef01986c673d1cd30f725)
+kernels in wex4/fuzz/out/wex_cuda_ptx/sm86.ptx:14
+kernels in wex4/fuzz/out/wex_cuda_ptx/sm75.ptx:14
+== fuzz_wnr3_cuda on the GPU, 100 mutator inputs per seed
+GPU: NVIDIA GeForce RTX 3070, compute capability 8.6, driver API 13050; the kernels of c/wex_cuda.cuh from wex4/fuzz/out/wex_cuda_ptx/sm86.ptx and sm75.ptx
+fuzz_wnr3_cuda: 11817 inputs (816 WEX4 files), 11744 WNR3 records (15 of them synthetic or crafted, at start), each through 2 builds x (4 bridge calls + 2 kernel lookups) (140928 GPU calls): 5873 accepted by the CPU and every GPU path, 3741 refused by the host checks, 2033 refused on the device (error bits 1: 1523, 2: 747, 4: 37, 8: 505), 97 naming a model that is not registered, 0 skipped (layout or size); 5217 different decoded records; emulated: 338841 launches, 22078284 blocks (638326 with a host thread per CUDA thread), 5461396992 threads, 20426112 barriers, 199905398 cp.async copies, 732800 queued copies (structured mutations on)
+fuzz_wnr3_cuda GPU: NVIDIA GeForce RTX 3070 (compute capability 8.6, driver API 13050): 7906 WNR3 records, each through 2 PTX modules x (the kernels alone with 2 lookups + the bridge's order with the commit) (47436 GPU decodes): 35238 decodes accepted with the CPU's bytes, 12198 refused with the CPU (error bits of sm86 with lookup 1: 1: 1523, 2: 747, 4: 37, 8: 505)
+117 inputs replayed and 11700 inputs of the custom mutator run, no crash and no failed oracle
+fuzz GPU run passed
+wall time: 512 s

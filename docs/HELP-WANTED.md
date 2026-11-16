@@ -60,10 +60,21 @@ measured; it is not known to fail.
   - **Still open:** 3 findings of the second pass, listed in that folder (the host batch of helper
     feature 32 writes its destination without a commit step, which WNR3-SPEC section 4.7 does not
     allow for; the converter upgrades a WEX1 file whose header flags are not 0; one extrapolated
-    time); the GPU decoder run on a GPU against the text (it was read, and seven of its helper
-    functions were run on the CPU only); the six questions of part E5 of the Rust reader's
+    time); the six questions of part E5 of the Rust reader's
     [SPEC-NOTES.md](../impl/rust-wex4/SPEC-NOTES.md) (2026-11-15); and the numbers that need the
     full models.
+  - **The GPU decoder against the text:** reviewed on 2026-11-15
+    ([research/cuda-review-20261115](../research/cuda-review-20261115/README.md)): `c/wex_cuda.cuh` and
+    `c/tools/wex_cuda_bridge.cu` make every check of WNR3-SPEC that the CPU reference makes, with
+    the same verdict; no difference of verdict or of decoded bytes was found, by reading, by the
+    harness of section 3 on the CPU, or by its kernels on one GPU. Six differences of another kind
+    are listed there with their lines: the status 1 for a model that is not registered, a stream
+    decoded past its end before it is refused, the canonical-zero check per block, error bits that
+    do not always name the cause, `wex_cuda_decode_batch_to_host`, which can write its destination
+    for a record it refuses where section 4.7 says "destination untouched", and 3 bytes that the
+    scale kernel may read while they are still being copied (never used by a stream that decodes
+    right). **Still open:** a sentence in WNR3-SPEC 4.7 for `wex_cuda_decode_batch_to_host`; the
+    WNR2 path of the same kernels and the WNR1 and palette kernels, which were not reviewed.
 - **Glossary:** add missing terms to [GLOSSARY.md](GLOSSARY.md). 32 terms of the specifications and of
   the tests were added on 2026-11-14, and 14 engine and host words of
   [COLIBRI-INTEGRATION](COLIBRI-INTEGRATION.md) and of the dated reports on 2026-11-15. Still open:
@@ -84,10 +95,17 @@ measured; it is not known to fail.
 ## 3. Tests and fuzzing
 
 - **Fuzzing:**
-  - **Today:** five libFuzzer harnesses are in [`wex4/fuzz/`](../wex4/fuzz/README.md): the C WEX4
-    reader (`c/wex4.h`), `c/tools/wex4_verify.c`, the WNR3 decoders, and the two engine-side readers
+  - **Today:** six libFuzzer harnesses are in [`wex4/fuzz/`](../wex4/fuzz/README.md): the C WEX4
+    reader (`c/wex4.h`), `c/tools/wex4_verify.c`, the WNR3 decoders, the two engine-side readers
     (`c/expert_store_wex.c`, `c/qwen38_wex.h`), which are built against stand-ins for the engine
-    headers. A custom mutator keeps the WNR3 stream hashes right. Since 2026-11-15 the store
+    headers, and since 2026-11-15 the CUDA WNR3 decoder (`c/wex_cuda.cuh` and its bridge) built as
+    C++ for the CPU through an emulation of the CUDA constructs it uses, against the CPU reference.
+    That one checks the decoding logic and the order of the bridge's calls, not a GPU; a negative
+    control (`wex4/fuzz/cuda_negative.py`, 23 broken copies of the CUDA source) shows that it fails
+    when a check, a wait or a barrier is missing. With `run.sh --gpu` the same harness also runs
+    the kernels on an NVIDIA GPU, from PTX that clang writes without the CUDA toolkit; that ran by
+    hand on one GPU (an RTX 3070) on 2026-11-15, with no failed oracle. A custom mutator keeps the
+    WNR3 stream hashes right. Since 2026-11-15 the store
     harness has a second run, `fuzz_store_wex-legacy`, on four seed containers with palette, WNR
     and WNR2 records, and a mutator that re-encodes those and scale-tile records so that they
     pass the checks of their codec. In three 60 s runs it served palette, WNR and WNR2 records,
@@ -97,7 +115,7 @@ measured; it is not known to fail.
     Those runs were of commit dbc1391, before the merges of 2026-11-15, with six engine seed
     containers instead of the eight of today; the merged code ran only in 60 s Fuzz jobs.
     The Fuzz workflow builds the harnesses with clang and runs each for 60 seconds (the store
-    harness twice) on x86-64 Linux, on ARM64 Linux and on macOS (Apple silicon, with the clang of a
+    harness twice; for the CUDA harness 421 and 256 inputs in the two x86-64 runs of 2026-11-15) on x86-64 Linux, on ARM64 Linux and on macOS (Apple silicon, with the clang of a
     Homebrew LLVM, `llvm@18` on 2026-11-15: Apple clang ships no libFuzzer runtime); on both ARM64
     systems `fuzz_wnr3_record` compares the NEON kernel of the fast decoder with the reference. CI
     replays their seeds and mutators (`run.sh --replay`, no coverage guidance) on x86-64 Linux,
@@ -112,7 +130,9 @@ measured; it is not known to fail.
     [wex4/fuzz](../wex4/fuzz/README.md#a-run-of-an-hour-per-harness).
   - **What is wanted now** is more machine time: runs of several hours
     (`bash wex4/fuzz/run.sh 14400`) on the code of today, with the run `fuzz_store_wex-legacy`, and
-    on ARM64 and macOS; report what stops them, with the reproducer they leave.
+    on ARM64 and macOS; report what stops them, with the reproducer they leave; and
+    `bash wex4/fuzz/run.sh --gpu 100` on other NVIDIA GPUs (Turing or Pascal for the code built
+    below `sm_80`, Ada, Blackwell).
   - **Still open:**
     - the older codecs: WNR records from the repository's own WNR encoder, which needs CUDA (the
       seeds' WNR records come from an encoder written in the harness, 4 classes each, framed by
@@ -121,7 +141,10 @@ measured; it is not known to fail.
       the older codecs longer than 60 s;
     - the store's mirror, striped-read and CUDA-helper paths; `c/qwen38_wex.h` built inside the
       real engine instead of against inferred types (on macOS it opens files through a stand-in for
-      the engine's `compat_open_direct`, issue 22); a harness for the GPU decoder (`c/wex_cuda.cuh`);
+      the engine's `compat_open_direct`, issue 22); the GPU decoder as nvcc builds it (the production
+      helper), with the bridge's own code and the CUDA runtime, under `compute-sanitizer` and under
+      coverage guidance (the GPU mode replays with the mutator, runs clang's PTX and its own copy
+      of the bridge's sequence); its WNR2, WNR1 and palette paths, which no seed reaches;
     - a coverage-guided run on Windows (the MSYS2 clang has no libFuzzer, so only `--replay` runs
       there) and on an Intel Mac; any run longer than 60 s on ARM64 or on macOS, and longer than
       one hour per harness anywhere;
@@ -144,7 +167,7 @@ measured; it is not known to fail.
     `linux-tsan` and `linux-msan` run the C test executables under ThreadSanitizer (clang, OpenMP
     on) and MemorySanitizer (clang, OpenMP off) through `bash scripts/sanitize_c.sh tsan|msan`,
     whose header lists what runs: `test_wex_format` (msan only), `test_wex4_verify`, `wex4_verify`
-    (8 threads under tsan, one under msan), and the five fuzzing harnesses on their seeds, two of
+    (8 threads under tsan, one under msan), and the six fuzzing harnesses on their seeds, two of
     them also on a file of synthetic WNR3 records. `linux-tsan` also runs the smoke mode of
     `bench/wex_io.py`, whose `pread` paths have their own threads, under ThreadSanitizer.
   - **Still open:** the libraries that the tests load into Python (`wex4_tools.dll` with the fast
@@ -152,7 +175,10 @@ measured; it is not known to fail.
     or an instrumented Python; the engine-side readers inside an engine tree (here they run only
     through the stand-ins of the fuzzing harnesses); ThreadSanitizer and MemorySanitizer on ARM64
     and on macOS (both jobs are x86-64 Linux); the SVE build of the fast decoder under any
-    sanitizer (the sanitizer jobs build NEON on ARM64); any sanitizer on Windows; and the GPU code.
+    sanitizer (the sanitizer jobs build NEON on ARM64); any sanitizer on Windows; and the GPU code on a GPU under `compute-sanitizer`, which needs the
+    CUDA toolkit (its CUDA source, built for the CPU, runs under the four sanitizers in the fuzz
+    replay, and its kernels ran on one GPU without a sanitizer; that says nothing about device code
+    built by nvcc).
 - **More test vectors:** hostile files that [wex4/vectors](../wex4/vectors/README.md) does not cover
   yet, each with its `MANIFEST.tsv` row and the expected verdict from both reference readers; the
   `go-reader` and `rust-reader` jobs of CI then run the Go and the Rust reader on the new rows too.
@@ -518,6 +544,11 @@ listed above as well.
   on x86-64 Linux and on the code of 2026-11-15 before the merges of that day, is recorded, and it
   stopped on nothing. Longer runs, runs on the code of today and on ARM64 and macOS are open *(open
   to you, section 3)*.
+- **The CUDA decoder:** reviewed against WNR3-SPEC and fuzzed as C++ on the CPU, through an
+  emulation of the CUDA constructs, on 2026-11-15, and its kernels replayed with the mutator on one
+  GPU (an RTX 3070, PTX from clang, no CUDA toolkit); no difference of verdict or bytes from the CPU
+  reference was found. The helper as nvcc builds it under `compute-sanitizer`, other GPUs and a
+  sentence of WNR3-SPEC for the host batch are open *(open to you, sections 2 and 3)*.
 - **Converter profiles for more model families:** sixteen naming profiles are in, tested on synthetic
   fixtures, among them seven for compressed-tensors exports; the gate, down and up roles of w1, w2, w3
   were read in the model code; three profiles (`deepseek`, `qwen3-moe`, `mixtral`) also round-tripped
