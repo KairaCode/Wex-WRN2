@@ -39,6 +39,7 @@ the default: see "SVE kernel 2 (AArch64)".
 | `arm-speed-20261115.txt` | the `synth.sh speed` output of the hand-started `arm-speed` CI jobs of 2026-11-15 (section "Streams per CPU, Apple silicon, Apple clang") |
 | `negative_control.sh` | removes one check at a time from a copy of the header and expects the mutation test to notice; exit 2 if it cannot read the model or a record; `WEX4_MARCH` as in `synth.sh` |
 | `extract.py` | copies the model blob and chosen records out of a container opened read-only |
+| `verify/run.sh` | the verifier's reruns on real records: `equal`, `bench` and `mutate` of the harness, the three steps of `verify/vh.c` (its own timer, full-size re-encodes and boundary mutations, stream tails cut against a guard page; Windows only, skipped elsewhere) and `mutate` with the stream hash check removed from both decoders. Records: the `out/H_*.rec` of `verify/scan.py`, or `VERIFY_MODEL` and `VERIFY_RECORDS` (WNR3-CZ records as `extract.py` writes them: `vh.c reenc` encodes with the canonical-zero flag). `CC` and `WEX_OPENMP` as in `synth.sh`; `-march=haswell` on x86-64 only, `WEX4_MARCH` overrides it. Last line: `verify run.sh passed` |
 | `out/` | build products, data copies, logs (not in git) |
 
 API (same view / layout / model / output arguments as `wex_nr2_decode`):
@@ -605,7 +606,12 @@ builds NEON only); the libFuzzer harnesses (they call the default entry point); 
   reference decoder, not with the safetensors source.
 - Mini-records in the mutation test come from the same 6 records plus synthetic data; no full-size mutated
   record was decoded by the reference.
-- Real records were decoded only by builds of gcc 16.2 on Windows (x86). Elsewhere the harness runs on
+- Real records were decoded only by builds of gcc 16.2 on Windows (x86) until 2026-11-16. That day
+  `verify/run.sh` ran to its end on 8 other real WNR3-CZ records (DeepSeek V4.1 Flash, layers 10 and 30,
+  experts 0 to 3, a model trained on those 8) with three AVX2 builds on one x86-64 desktop: gcc 16.2, and
+  clang 23.1.5 without OpenMP (MSYS2 UCRT64, Windows 10), and gcc 15.2 (Ubuntu under WSL2, without the three
+  `vh.c` steps). `equal`, `mutate`, `mutate` with the stream hash check removed and, on Windows, `reenc` and
+  `tailcut` gave 0 mismatches in each. Still no real record on ARM. Elsewhere the harness runs on
   synthetic records only, in CI: gcc 13.3 on x86-64 Linux and on ARM64 Linux (on both also under ASan and UBSan);
   clang 18 on x86-64 Linux (the `linux-tsan` job, `CC=clang`: the AVX2 and the scalar build) and on ARM64
   Linux (the NEON and the SVE build without OpenMP, see the NEON and the SVE sections); Homebrew GCC 15 and

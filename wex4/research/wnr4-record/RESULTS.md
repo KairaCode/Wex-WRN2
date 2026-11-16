@@ -118,6 +118,15 @@ the latency and integrity costs of points 3 and 4.
 - No corruption audit of the shortened-hash profiles (one bit flip per record only).
 - The model was not retrained; contexts and CDF precision were not varied (other pieces of this research).
 - `run.sh` was assembled from the commands that produced these numbers; it was not run end to end as one script.
+  Since 2026-11-16 it and `verify/run_verify.sh` read `CC` and `WEX_OPENMP` and build their library
+  position-independent outside Windows (`run_verify.sh` takes `python` as its default `PY`). That day both built
+  with gcc 16.2 (MSYS2 UCRT64, Windows 10) and gcc 15.2 (Ubuntu under WSL2); clang 23.1.5 of MSYS2 stops at
+  `omp.h` (it has no OpenMP runtime). Neither ran to its end: on Windows, with the only container on the machine
+  (8 experts of layers 10 and 30), `fetch.py` stops at `not a WNR3 record`, because the 41 sampled experts are
+  those of the 40 x 192 production container, and `run_verify.sh` needs `../out/container_scan.json` of `run.sh`
+  on that container; under WSL2 both stopped earlier, at `import numpy` (no numpy there). The programs they build ran by hand on those 8 experts as WNR3-CZ records (model trained on the 8),
+  with both builds: `wnr4_proto` `8 experts, 0 failures`, and `verify/extra.c` on one record rejected every
+  single-bit flip of 1,220 per profile, with no wrong output accepted.
 
 ## Files
 

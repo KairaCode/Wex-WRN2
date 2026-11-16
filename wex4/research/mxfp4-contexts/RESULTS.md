@@ -180,7 +180,14 @@ hash check of WNR3 is not included in any of them.
   without the stream hash, ceil-form inverse or record parsing.
 - The K-set search is one Lloyd run from one starting split; a better search could move it by a few 0.001%.
 - Model F as a format (where the sign bits sit, how the stream hash covers them) is not designed or verified.
-- `run_all.sh` lists the commands that were run one by one; the script itself was only syntax-checked.
+- `run_all.sh` lists the commands that were run one by one; it has still not run to its end. Since 2026-11-16 it
+  reads `CC`, builds `decbench.c` (AVX2 intrinsics, `-mavx2`) on x86-64 only and skips that stage elsewhere, and
+  builds its libraries position-independent outside Windows. That day its builds passed with gcc 16.2 and clang
+  23.1.5 (MSYS2 UCRT64, Windows 10) and gcc 15.2 (Ubuntu under WSL2), and each run stopped at `extract.py`,
+  which accepts only the 40 x 192 production container (`not the V4.1 WEX3 container`); that container was
+  not on the machine, only one with 8 experts of layers 10 and 30. `decbench.exe` of each of the three builds
+  ran by hand on the coded slabs of 2 of those experts (WNR3-CZ, model trained on the 8): every decoder
+  `exact`, and the same sizes from all three.
 
 ## Files
 
