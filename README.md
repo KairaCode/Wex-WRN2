@@ -152,7 +152,7 @@ SECURITY.md  CITATION.cff     how to report a vulnerability, how to cite
 LICENSE  NOTICE  THIRD_PARTY_NOTICES.md              Apache-2.0 text, attribution notices, third-party material
 check_repo.py  sync-map.tsv    self-check (links, c/ file map, licence headers, privacy) and the map of c/ files to the maintainer's tree
 assets/        the logo (light and dark), the mark, and the source image of the social preview (set in the repository settings)
-.github/       CI workflows (Linux, macOS and Windows CPU checks, three sanitizer jobs, the Go reader on the vectors, an opt-in Vulkan job on a CPU device, an opt-in Linux read-path benchmark; the libFuzzer harnesses of wex4/fuzz/), issue forms, pull-request checklist
+.github/       CI workflows (Linux, macOS and Windows CPU checks, three sanitizer jobs, the Go reader on the vectors, an opt-in Vulkan job on a CPU device, an opt-in Linux and macOS read-path benchmark; the libFuzzer harnesses of wex4/fuzz/), issue forms, pull-request checklist
 c/             engine-side WEX code in the colibri c/ layout; pull requests may change it
   *.h *.c *.cuh   format, codecs, CPU and CUDA decoders, the standalone store, wex4.h, qwen38_wex.h
   tools/          container writers, the WNR3 builder and its encoder DLL, the CUDA helper, benches

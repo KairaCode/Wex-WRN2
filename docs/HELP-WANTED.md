@@ -219,13 +219,15 @@ measured; it is not known to fail.
 - **macOS:** the same benchmark runs on macOS through the calls macOS has (`F_NOCACHE` for `O_DIRECT`,
   `F_RDAHEAD` and `F_RDADVISE` for the hints, `purge` for `drop_caches`; `io_uring` and
   `POSIX_FADV_SEQUENTIAL` print `skipped`). The `macos` CI job runs its smoke run; the job
-  `macos-io-bench` is the full run, started by hand. Measured so far: three runs on GitHub Actions
-  `macos-15` runners, virtual machines on Apple silicon hosts with a virtual disk
-  ([research/macos-io-20261115](../research/macos-io-20261115/README.md)). All 11 paths read the right
-  bytes. `F_NOCACHE` was faster than the page cache on 1, 4 and 8 threads in every run, and no
-  page-cache variant was steady against the plain `pread`, but a cache below the virtual machine served
-  part of the reads (the first pass of a run was the slowest or second slowest of its row in 14 of 15
-  runs), so these numbers say nothing about the SSD of a Mac. The store was not changed.
+  `macos-io-bench` is the full run, started by hand. Measured so far: three runs of 11 rounds on GitHub
+  Actions `macos-15` runners, virtual machines on Apple silicon hosts with a virtual disk
+  ([research/macos-io-20261115](../research/macos-io-20261115/README.md); a round is one timed pass of
+  every path, and with 11 rounds every path takes every place in a round once). All 11 paths read the
+  right bytes. `F_NOCACHE` on 1 thread was 2.56x to 3.53x the page-cache `pread` and faster than it in
+  31 of the 33 rounds; page-cache threads gained 1.16x to 1.60x; `F_RDAHEAD` off and `F_RDADVISE` gave
+  no steady gain. But a cache below the virtual machine served part of the reads (the first pass of a
+  round was one of the two slowest of its row in 30 of the 33 rounds), so these numbers say nothing
+  about the SSD of a Mac. The store was not changed.
 - **What:** run `bench/wex_io.py` on real drives (NVMe first; also SATA, ZFS, btrfs, XFS, ARM) and share
   `bench/out/wex_io.json` through the "Benchmark results" issue template. Then, if a path wins on real
   drives: the change in the store (candidates the two runs point at but do not support yet:
@@ -262,8 +264,8 @@ listed above as well.
 - **Linux I/O in the engine:** the fast read paths were built and measured on Windows. The Linux
   benchmark is in (`bench/wex_io.py`), run so far only on two kinds of cloud VM, where it gave no reason to
   change the store; runs on real drives and the tuning that follows from them are still open *(open to
-  you, section 7)*. The same benchmark now runs on macOS, so far only on three GitHub `macos-15`
-  virtual machines, where a cache below the virtual machine served part of the reads and the store
+  you, section 7)*. The same benchmark now runs on macOS, so far only on GitHub `macos-15`
+  virtual machines (three runs of 11 rounds), where a cache below the virtual machine served part of the reads and the store
   was not changed; a run on a real Mac is open *(open to you, section 7)*.
 - **Measurements not done yet** (they need the full models, so they stay with the maintainer, see
   [STATUS.md](../STATUS.md)):

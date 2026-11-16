@@ -61,8 +61,8 @@ Notes:
 ## Read paths for expert records (Linux and macOS): `wex_io.py`
 
 `bench.py` reads a plain file with one call per read. `wex_io.py` asks a narrower question: through which
-Linux read path should an engine read the expert records of a WEX4 container? It needs `gcc` and `python3`
-only (`CC` names another compiler, `WEX_CFLAGS` adds flags; besides gcc only the clang of the `linux-tsan`
+Linux or macOS read path should an engine read the expert records of a WEX4 container? It needs `gcc`
+and `python3` only (`CC` names another compiler, `WEX_CFLAGS` adds flags; besides gcc only the clang of the `linux-tsan`
 CI job and, on macOS, Apple clang were run), and Linux (`io_uring` is called through its system calls, so
 there is no liburing to install) or macOS, where the same rows run through the calls macOS has
 ([On macOS](#on-macos), below).
@@ -87,9 +87,10 @@ What it does:
    Linux 5.6) is reported as not run, with the reason; a path that fails the check is not timed and the
    script ends with `FAILED`. With `--strict` a path that was not run is a failure too (CI uses it,
    because all 20 paths run on its runners). The skip for an old kernel was not tried on one.
-4. **Then speed:** `--runs` timed passes per path (default 5) of `--records` records each (default 48). The
-   runs of all paths are interleaved and the order rotates, a run reads the same records on every path, and
-   the buffers are allocated and touched and the `io_uring` ring is set up before the clock starts. The
+4. **Then speed:** `--runs` rounds (default 5); a round is one timed pass of every path, of `--records`
+   records each (default 48). The order of the paths rotates by one from round to round (with as many
+   rounds as timed paths, every path takes every place in a round once), a round reads the same records
+   on every path, and the buffers are allocated and touched and the `io_uring` ring is set up before the clock starts. The
    worker threads of the multi-thread paths are created after it starts.
 
 The read paths:
@@ -118,9 +119,10 @@ record is read counts how many of its pages are in the page cache (inside the ti
 record's own time). The share is printed under the table and stored per pass as `ahead_cached`. In the
 only full run that has it (a cloud VM, block device with `read_ahead_kb` 128) it was 1.0%: the kernel had
 loaded about 130 KB of each 13.4 MB record, so those two rows did not measure a prefetch of the record.
-Pages whose read is still under way may not be counted. The measurement needs 4096-byte pages.
+Pages whose read is still under way may not be counted. On Linux the measurement needs 4096-byte pages;
+on macOS it counts system pages ([On macOS](#on-macos), below).
 
-The script prints a Markdown table (median, minimum and maximum MB/s over the runs, MB = 10^6 bytes, and
+The script prints a Markdown table (median, minimum and maximum MB/s over the rounds, MB = 10^6 bytes, and
 the median time of one record) and writes `bench/out/wex_io.json` with every pass, the CPU, the kernel,
 the filesystem and the block-device queue settings (`read_ahead_kb`, scheduler), but no host name, user
 name or path. Results from real NVMe drives are wanted: attach the JSON to a **Benchmark results** issue.
@@ -134,7 +136,7 @@ VMs with a virtual disk of two kinds, where no read path won on both kinds:
 What CI covers: the `linux`, `linux-arm` and `linux-sanitizers` jobs build `wex_io.c` and run
 `--smoke --strict` (a 10 MB container, every path checked and run once; the `linux` job then reads the
 same container again through `--file`). The `linux-tsan` job runs the same smoke run built with clang under
-ThreadSanitizer (the `pread` threads). The full benchmark was not run on ARM. `scripts/check_all.sh`
+ThreadSanitizer (the `pread` threads). The full benchmark was not run on ARM Linux. `scripts/check_all.sh`
 does not build `wex_io.c`, so the Windows job does not see it: its stub for systems other than Linux
 and macOS (it prints one `skipped` line) was built by hand with MinGW `gcc` and `clang`
 (`-std=c99 -pedantic -Wall -Wextra`, no warning) and is not built by CI. The full run is the job
@@ -165,14 +167,20 @@ media name, bus, solid state), without host name, volume name or path. **Cold on
 `purge` emptied the cache of the macOS kernel and that `mincore` found none of the pass's pages in it. It
 does not reach a cache below the kernel, such as the host of a virtual machine.
 
-The only recorded runs are three on GitHub Actions `macos-15` runners, virtual machines on Apple silicon
-hosts with a virtual disk, not the SSD of a Mac:
-[research/macos-io-20261115](../research/macos-io-20261115/README.md). All 11 paths read the right bytes
-and `F_NOCACHE` was faster than the page cache on 1, 4 and 8 threads in every run, but the first pass of
-a run, the only one whose records no earlier pass of the run had read, was the slowest or second slowest
-of its row in 14 of 15 runs: a cache below the virtual machine served part of the reads. No page-cache
-variant was steady against the plain `pread`. Not run: a Mac outside a virtual machine, an Intel Mac.
+The only recorded runs are on GitHub Actions `macos-15` runners, virtual machines on Apple silicon hosts
+with a virtual disk, not the SSD of a Mac:
+[research/macos-io-20261115](../research/macos-io-20261115/README.md). The record is three runs of 11
+rounds each (`--runs 11`, so that each of the 11 timed paths takes every place in a round once). All 11
+paths read the right bytes. `F_NOCACHE` on 1 thread was 2.56x to 3.53x the page-cache `pread` (medians)
+and faster than it in 31 of the 33 rounds; page-cache threads gained 1.16x to 1.60x; `F_RDAHEAD` off and
+`F_RDADVISE` gave no steady gain. But the first pass of a round, the only one whose records no earlier
+pass of the round had read, was one of the two slowest of its row in 30 of the 33 rounds: a cache below
+the virtual machine served part of the reads. An earlier set of three runs of 5 rounds, where the slow
+first places of a round fell on page-cache rows only, is kept there too. Not run: a Mac outside a virtual
+machine, an Intel Mac.
 
-What CI covers on macOS: the `macos` job runs `--smoke --strict` built with the Homebrew GNU gcc of `CC`,
-then reads the same container through `--file` with a build by Apple clang (`CC=clang`). The full run is
-the job `macos-io-bench`, started by hand with `gh workflow run ci.yml --ref <branch> -f macos_io_bench=true`.
+What CI covers on macOS: the `macos` job prints the versions of both compilers and runs `--smoke --strict`
+built with the Homebrew GNU gcc of `CC`, then reads the same container through `--file` with a build by
+Apple clang (`CC=clang`); both builds pass `WEX_CFLAGS="-std=c99 -pedantic"`, and the script stops on any
+warning. The full run is the job `macos-io-bench` (Apple clang, C99, `--runs 11`), started by hand with
+`gh workflow run ci.yml --ref <branch> -f macos_io_bench=true`.
