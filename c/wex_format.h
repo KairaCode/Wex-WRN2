@@ -296,12 +296,23 @@ static inline int wex_validate_entry(const WexHeader *hdr,
 
 /* Validate V3 aliases once at open, not in the cache/lookup path. New physical
  * records are canonical and contiguous; aliases must match all 72 entry bytes.
- * V1/V2 retain their existing per-entry compatibility rules.
+ * V1/V2 retain their existing per-entry compatibility rules, and one bound on
+ * the header's aligned_expert_bytes. A reader allocates slabs of that size (the
+ * standalone store: 24 per layer when it opens), and the per-entry rule only
+ * says that no record decodes to more than it, so a V1/V2 header could state
+ * any multiple of 4096 below 4 GiB whatever its records were. V3 requires the
+ * field to equal the largest aligned decoded record. V1/V2 never did, and a
+ * writer may round its slab up further (to a larger page, to a power of two):
+ * the field is accepted up to twice the largest aligned decoded record of the
+ * table, which covers a power of two and any granule no larger than that
+ * record. Above it the table does not explain the field and the container is
+ * refused. A table without records needs no slab: one page, the smallest value
+ * wex_validate_header accepts.
  */
 static inline int wex_validate_table(const WexHeader *hdr, const WexEntry *entries,
                                       uint64_t file_bytes) {
     size_t bytes, aligned_table, count, used = 0, i;
-    uint64_t next, maximum = 0;
+    uint64_t next, maximum = 0, largest = 0;
     const WexEntry **physical = NULL;
     int result = -1;
     if (!entries || wex_validate_header(hdr, file_bytes, 0, 0, &bytes, &aligned_table)) return -1;
@@ -314,7 +325,13 @@ static inline int wex_validate_table(const WexHeader *hdr, const WexEntry *entri
     for (i = 0; i < count; i++) {
         const WexEntry *entry = &entries[i];
         if (wex_validate_entry(hdr, entry, file_bytes)) goto finish;
-        if (!physical || !entry->total_bytes) continue;
+        if (!entry->total_bytes) continue;
+        if (!physical) {
+            uint64_t raw, aligned;   /* at most UINT32_MAX each: twice it cannot wrap */
+            if (wex_entry_raw_sizes(entry, &raw, &aligned)) goto finish;
+            if (aligned > largest) largest = aligned;
+            continue;
+        }
         if (entry->file_offset == next) {
             uint64_t raw, aligned;
             physical[used++] = entry;
@@ -333,6 +350,7 @@ static inline int wex_validate_table(const WexHeader *hdr, const WexEntry *entri
         }
     }
     if (physical && (next != file_bytes || maximum != hdr->aligned_expert_bytes)) goto finish;
+    if (!physical && hdr->aligned_expert_bytes > (largest ? 2u * largest : WEX_ALIGN)) goto finish;
     result = 0;
 finish:
     free(physical);

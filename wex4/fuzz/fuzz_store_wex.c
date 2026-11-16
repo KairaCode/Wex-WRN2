@@ -22,11 +22,14 @@
  *  - the first expert that loaded loads again, and when that second lookup is a cache hit no byte is read;
  *    the store's request, hit and miss counters add up to the lookups made.
  *
- * Limits of this harness, not of the store. A header may claim any aligned_expert_bytes up to 4 GiB, and the
- * store allocates 24 slabs of that size per layer when it opens: an input that would make it allocate more
- * than FUZZ_MAX_SLABS is not opened here. The model registry of c/wex_decode.c keeps 16 models for the life
- * of the process; the harness empties it before every input, so that an input gives the same verdict whatever
- * ran before it. The log lines of the store and of the decoder go nowhere. No mirror file, no CUDA helper.
+ * Limits of this harness, not of the store. The store allocates 24 slabs of the header's aligned_expert_bytes
+ * per layer when it opens, also for a layer without records. wex_validate_table bounds that field by the table
+ * (WEX1 and WEX2: at most twice the largest 4096-aligned decoded record; WEX3: equal to the largest aligned
+ * one), so a header that claims more is given to the store, which must refuse it. A container that the
+ * validators accept and whose slabs would take more than FUZZ_MAX_SLABS (many layers) is not opened here. The
+ * model registry of c/wex_decode.c keeps 16 models for the life of the process; the harness empties it before
+ * every input, so that an input gives the same verdict whatever ran before it. The log lines of the store and
+ * of the decoder go nowhere. No mirror file, no CUDA helper.
  *
  * The custom mutator: one call in four, when the input is a container that opens and has WNR3 records, one
  * of them is mutated with wnr3_mutator.h (decoded, edited, encoded again, so its stream hashes are right) and
@@ -113,12 +116,12 @@ static int fuzz_opens(const unsigned char *file, size_t size, WexNr2Model *model
     return 1;
 }
 
-/* 1 when the header asks the store for more slab memory than the harness gives it */
-static int fuzz_too_large(const unsigned char *file, size_t size) {
+/* 1 when the slabs of a container that opens (fuzz_opens: its header is valid, so the field is not 0) take more
+ * memory than the harness gives the store */
+static int fuzz_too_large(const unsigned char *file) {
     const WexHeader *h = (const WexHeader *)file;
-    return size >= sizeof(*h) &&
-           (h->num_layers > 65536u || h->aligned_expert_bytes > FUZZ_MAX_SLABS ||
-            (uint64_t)h->num_layers * 24u * h->aligned_expert_bytes > FUZZ_MAX_SLABS);
+    return h->aligned_expert_bytes > FUZZ_MAX_SLABS ||
+           h->num_layers > FUZZ_MAX_SLABS / 24u / h->aligned_expert_bytes;
 }
 
 size_t LLVMFuzzerCustomMutator(uint8_t *data, size_t size, size_t max_size, unsigned int seed) {
@@ -142,13 +145,13 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     if (!temp_path[0]) fuzz_setup();
     count_inputs++;
     file = fuzz_exact_copy(data, size);
-    if (fuzz_too_large(file, size)) { free(file); return 0; }
+    opens = fuzz_opens(file, size, &model, &has_model);
+    if (opens && fuzz_too_large(file)) { free(file); return 0; }
     fuzz_forget_models();
     fuzz_write_file(temp_path, data, size);
     memset(&options, 0, sizeof options);
     options.model_dir = ".";
     rc = coli_v4_expert_store_open_wex(NULL, NULL, &options, &store, error, sizeof error);
-    opens = fuzz_opens(file, size, &model, &has_model);
     FUZZ_REQUIRE(rc ? !store : store != NULL, "the store's open result and its output pointer disagree");
     FUZZ_REQUIRE((rc == 0) == opens, "the store and the validators of wex_format.h disagree on whether the container opens");
     if (rc) { free(file); return 0; }

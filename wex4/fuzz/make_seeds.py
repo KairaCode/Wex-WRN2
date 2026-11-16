@@ -14,7 +14,9 @@ harnesses (fuzz_store_wex reads it, fuzz_q38_wex reads it and OUT_DIR/file):
     8192 scale bytes, 131072 weight bytes);
   - the legacy vector tiny2-cz.wex3 (WNR3 records, canonical zero; 6 x 8 with two experts present), and the
     same file with its grid cut to 1 x 2, where every expert is present, as the Qwen3.8 reader requires;
-  - the WEX4 form of the WEX1 and of the 1 x 2 WNR3 container (wex4_convert.upgrade).
+  - the WEX4 form of the WEX1 and of the 1 x 2 WNR3 container (wex4_convert.upgrade);
+  - the WEX1 container twice more, with the slab size of its header changed: twice its record (the most
+    wex_validate_table accepts, so it opens) and 4 GiB - 4096 (refused).
 
 No seed holds palette (codec 2), WNR (codec 3) or WNR2 (codec 4) records. A seed is named by the first 16 hex
 digits of the SHA-256 of its bytes, so the same bytes are never stored twice and the paths stay short (Windows
@@ -104,8 +106,13 @@ def main():
     tiny2 = open(os.path.join(VECTORS, 'legacy', 'tiny2-cz.wex3'), 'rb').read()
     # its two experts are (0, 0) and (0, 1): a 1 x 2 grid has the same table page and the same record owners
     tiny2_1x2 = tiny2[:8] + struct.pack('<II', 1, 2) + tiny2[16:]
+    # the header's slab size (bytes 16..23) against the table: twice the largest 4096-aligned record is
+    # the most wex_validate_table accepts for WEX1 and WEX2, and 4 GiB - 4096 the most the header check takes
+    slab = struct.unpack_from('<Q', wex1, 16)[0]
+    wex1_bound = wex1[:16] + struct.pack('<Q', 2 * slab) + wex1[24:]
+    wex1_over = wex1[:16] + struct.pack('<Q', 2**32 - PAGE) + wex1[24:]
     for data in (wex1, legacy(2, 1, ((64, 512), (64, 512), (64, 1024)), True), tiny2, tiny2_1x2,
-                 upgraded(engine, wex1), upgraded(engine, tiny2_1x2)):
+                 upgraded(engine, wex1), upgraded(engine, tiny2_1x2), wex1_bound, wex1_over):
         put(engine, data)
     rows = [line.split('\t') for line in open(os.path.join(VECTORS, 'MANIFEST.tsv'), encoding='utf-8').read().splitlines()
             if line and not line.startswith('#')]

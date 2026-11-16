@@ -422,6 +422,65 @@ static void test_v3_alias_manifest(void) {
     CHECK(wex_validate_table(&header, entries, file_bytes + WEX_ALIGN));
 }
 
+/* V1/V2: the header's slab size is bounded by the table, at most twice the
+ * largest aligned decoded record (one page when the table has no record). */
+static void test_v12_slab_bound(void) {
+    int version;
+    for (version = 1; version <= 2; version++) {
+        WexHeader header = make_header(version);
+        WexEntry entries[2], swap;
+        uint64_t record, file_bytes;
+        unsigned int m;
+        entries[0] = make_entry(version == 2);
+        entries[1] = make_entry(0);   /* a smaller raw record after it: 32 rows */
+        for (m = 0; m < 3; m++) {
+            entries[1].scale_shapes[m][0] = entries[1].weight_shapes[m][0] = 32;
+            entries[1].scale_offsets[m] = m * 2048u;
+            entries[1].weight_offsets[m] = 3u * 2048u + m * 32768u;
+        }
+        entries[1].scale_bytes = 3u * 2048u;
+        entries[1].weight_bytes = 3u * 32768u;
+        entries[1].total_bytes = (uint32_t)WEX_ALIGN_UP(entries[1].scale_bytes + entries[1].weight_bytes, WEX_ALIGN);
+        entries[1].file_offset = entries[0].file_offset + entries[0].total_bytes;
+        header.num_experts = 2;
+        record = header.aligned_expert_bytes;   /* the larger of the two, as the writers store it */
+        file_bytes = entries[1].file_offset + entries[1].total_bytes;
+        CHECK(!wex_validate_table(&header, entries, file_bytes));
+        header.aligned_expert_bytes = 2u * record;   /* a rounded-up slab is accepted */
+        CHECK(!wex_validate_table(&header, entries, file_bytes));
+        header.aligned_expert_bytes = 2u * record + WEX_ALIGN;
+        CHECK(!wex_validate_header(&header, file_bytes, 1, 2, NULL, NULL));
+        CHECK(!wex_validate_entry(&header, &entries[0], file_bytes) && !wex_validate_entry(&header, &entries[1], file_bytes));
+        CHECK(wex_validate_table(&header, entries, file_bytes));
+        header.aligned_expert_bytes = UINT32_MAX - (WEX_ALIGN - 1u);   /* 4 GiB - 4096: the largest the header check takes */
+        CHECK(!wex_validate_header(&header, file_bytes, 1, 2, NULL, NULL));
+        CHECK(wex_validate_table(&header, entries, file_bytes));
+        header.aligned_expert_bytes = record - WEX_ALIGN;   /* below the larger record: the per-entry rule */
+        CHECK(wex_validate_table(&header, entries, file_bytes));
+        /* the bound follows the largest record, wherever it is: above, it is the
+         * first one; here the last (V1/V2 tables may list records in any order) */
+        swap = entries[0]; entries[0] = entries[1]; entries[1] = swap;
+        header.aligned_expert_bytes = 2u * record;
+        CHECK(!wex_validate_table(&header, entries, file_bytes));
+        header.aligned_expert_bytes = 2u * record + WEX_ALIGN;
+        CHECK(wex_validate_table(&header, entries, file_bytes));
+        swap = entries[0]; entries[0] = entries[1]; entries[1] = swap;
+        /* without the larger record, the bound is twice the smaller one */
+        memset(&entries[0], 0, sizeof(entries[0]));
+        header.aligned_expert_bytes = 2u * record;
+        CHECK(wex_validate_table(&header, entries, file_bytes));
+        header.aligned_expert_bytes = 2u * entries[1].total_bytes + WEX_ALIGN;
+        CHECK(wex_validate_table(&header, entries, file_bytes));
+        header.aligned_expert_bytes = 2u * entries[1].total_bytes;
+        CHECK(!wex_validate_table(&header, entries, file_bytes));
+        /* no record at all: one page */
+        memset(&entries[1], 0, sizeof(entries[1]));
+        CHECK(wex_validate_table(&header, entries, file_bytes));
+        header.aligned_expert_bytes = WEX_ALIGN;
+        CHECK(!wex_validate_table(&header, entries, file_bytes));
+    }
+}
+
 /* WNR2: train a model on synthetic experts, encode with the reference encoder,
  * decode into a slab, and reject every malformed field. */
 static uint32_t nr2_rand(uint32_t *s) { *s ^= *s << 13; *s ^= *s >> 17; *s ^= *s << 5; return *s; }
@@ -1110,6 +1169,7 @@ int main(void) {
     test_palette_record(0);
     test_palette_record(1);
     test_v3_alias_manifest();
+    test_v12_slab_bound();
     puts("WEX format: V1/V2/V3, all bit widths, palette/scale boundaries, overlapping expansion, WNR2 round trips and malformed streams passed.");
     return 0;
 }

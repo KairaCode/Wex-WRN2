@@ -275,6 +275,40 @@ static void test_rejections(void) {
     puts("Malformed headers, entries, truncation, scale streams and model mismatches rejected.");
 }
 
+/* The store allocates 24 slabs per layer of the header's aligned_expert_bytes
+ * when it opens. wex_validate_table bounds that field by the table: at most
+ * twice the largest aligned decoded record. A header above it is refused
+ * before any slab is allocated; one at the bound opens and serves its records.
+ * The small hostile value comes first: under the old rule the store opens it
+ * whatever memory the machine has, so the test fails there. */
+static void test_slab_bound(int version) {
+    const char *path = "test_wex_slab_bound.wex";
+    Fixture fixture = fixture_make(version, 1, 2, 0);
+    uint64_t record = fixture.header->aligned_expert_bytes;
+    ColiExpertStoreStats stats;
+    fixture.header->aligned_expert_bytes = 2u * record + WEX_ALIGN;
+    file_write(path, fixture.data, fixture.bytes);
+    fixture_open(path, &fixture, 0);
+    fixture.header->aligned_expert_bytes = UINT32_MAX - (WEX_ALIGN - 1u);   /* 4 GiB - 4096 */
+    file_write(path, fixture.data, fixture.bytes);
+    fixture_open(path, &fixture, 0);
+    fixture.header->aligned_expert_bytes = 2u * record;
+    file_write(path, fixture.data, fixture.bytes);
+    ColiExpertStore *store = fixture_open(path, &fixture, 1);
+    for (int e = 0; e < 2; e++) {
+        ColiExpertView view = {0};
+        assert(coli_expert_lookup(store, (ColiExpertKey){0,e}, &view) == 0);
+        view_check(&fixture, e, &view);
+        coli_expert_release(store, &view);
+    }
+    store->ops->stats(store, &stats);
+    assert(stats.capacity_bytes == 2u * record * 24);
+    store->ops->destroy(store);
+    free(fixture.data);
+    assert(remove(path) == 0);
+    printf("WEX%d: a header slab size above twice the largest aligned record refused, one at the bound served.\n", version);
+}
+
 static void test_mirror(const char *filename, int backslash) {
     const char *primary_directory = "test_wex_primary";
     const char *directory = "test_wex_mirror";
@@ -581,6 +615,8 @@ int main(int argc, char **argv) {
     test_roundtrip(1);
     test_roundtrip(2);
     test_rejections();
+    test_slab_bound(1);
+    test_slab_bound(2);
     test_mirror("v4_flash_experts.v2.wex", 0);
     test_mirror("custom_expert_container.wex", 1);
     if (argc == 3 || (argc == 4 && !strcmp(argv[3], "--expect-cuda")))

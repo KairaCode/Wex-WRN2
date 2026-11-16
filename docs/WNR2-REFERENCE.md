@@ -47,6 +47,7 @@ WNR2 is a lossless entropy coding of MXFP4 MoE expert records (FP4 E2M1 weights 
 - **Record placement**: for codecs 2/3/4, `wex_record_read_offset = aligned_raw - total_bytes`, so the compressed record is read into the END of the decoded slab.
 - **wex_validate_entry**, codec 4: requires header version 3 with flag 16, and total_bytes 4096-aligned, >= align(32 + 6*streams at max chunk 16384) and < aligned_raw. A record that is not smaller than raw must be stored raw (flags 0).
 - **wex_validate_table** (v3): physical records contiguous; aliases only with DEDUP and byte-identical 72-B entries; the last record ends at EOF; max aligned raw == aligned_expert_bytes.
+- **wex_validate_table** (v1, v2; since 2026-11-15): aligned_expert_bytes <= 2 * max aligned raw of the table's records, or <= 4096 when the table has no record. Every record still satisfies aligned raw <= aligned_expert_bytes (wex_validate_entry). Before that date a v1 or v2 header could state any multiple of 4096 below 4 GiB that no record exceeded. The writers of this repository store max aligned raw exactly; `validate_container` of `c/tools/repack_v4_wex.py` requires equality for every version.
 - **Layout written by the WNR2 builder**:
   - header page (WEX3 v3, uuid, WNMD at 64);
   - WNM2 model at offset 4096, zero-padded to 65536 (= table_offset = 4096 + align(59408) = 4096 + 61440);
