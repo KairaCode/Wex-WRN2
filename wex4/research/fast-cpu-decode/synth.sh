@@ -10,12 +10,14 @@
 #                                 (default 600). Last line on success: synth check passed
 #   bash synth.sh speed [RUNS]    both builds: the `speed` table (one thread, median of RUNS passes, default 21)
 # Usage: after bash wex4/build_and_test.sh, from any directory. gcc and python on PATH (PYTHON=python3 on Linux);
-# CC names another compiler, as in wex4/build_and_test.sh (macOS: a GNU gcc of Homebrew).
+# CC names another compiler and WEX_OPENMP other OpenMP flags, as in wex4/build_and_test.sh (macOS: a GNU gcc of
+# Homebrew, or Apple clang with the libomp of Homebrew in WEX_OPENMP).
 set -eu
 HERE=$(cd "$(dirname "$0")" && pwd)
 ROOT=$(cd "$HERE/../../.." && pwd)
 PY=${PYTHON:-python}
 CC=${CC:-gcc}   # the C compiler, as in wex4/build_and_test.sh
+OMP=${WEX_OPENMP:--fopenmp}   # the OpenMP flags, as there
 MODE=${1:-check}
 O=$HERE/out/synth
 C=$ROOT/wex4/out/synth_nr3.wex
@@ -27,8 +29,8 @@ case $(uname -m) in
   *) MARCH=${WEX4_MARCH-} ;;
 esac
 W="-std=c11 -Wall -Wextra -Wno-unused-function ${WEX_CFLAGS-} -I$ROOT/c -I$HERE"
-"$CC" $W -O3 $MARCH -fopenmp "$HERE/test_fast_decode.c" -o "$O/t_simd.exe"
-"$CC" $W -O3 -fopenmp -DWEX_FAST_SCALAR "$HERE/test_fast_decode.c" -o "$O/t_scalar.exe"
+"$CC" $W -O3 $MARCH $OMP "$HERE/test_fast_decode.c" -o "$O/t_simd.exe"
+"$CC" $W -O3 $OMP -DWEX_FAST_SCALAR "$HERE/test_fast_decode.c" -o "$O/t_scalar.exe"
 "$PY" -I "$HERE/extract.py" "$C" "$O" 0:0 0:1 0:2 0:3 > "$O/extract.log"
 cd "$O"
 R="L0_E0.rec L0_E1.rec L0_E2.rec L0_E3.rec"
@@ -48,7 +50,7 @@ case $MODE in
     RUNS=${2:-21}
     echo "machine: $(uname -s) $(uname -m), $(getconf _NPROCESSORS_ONLN 2>/dev/null || echo '?') logical CPUs"
     if command -v lscpu > /dev/null 2>&1; then lscpu | grep -E '^(Model name|Vendor ID|CPU part|BogoMIPS)' || true; fi
-    echo "compiler: $("$CC" --version | head -1), -O3 $MARCH -fopenmp"
+    echo "compiler: $("$CC" --version | head -1), -O3 $MARCH $OMP"
     for t in t_simd t_scalar; do
       echo "== $t speed $RUNS"
       ./$t.exe speed model.wnm2 "$RUNS" $R

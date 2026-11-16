@@ -39,8 +39,9 @@ static unsigned char *wex4_fixture_from_wex1(const unsigned char *old, size_t ol
         for (m = 0; m < 6u; m++) {
             t = n * 6u + m;
             name_at[t] = (uint32_t)name_bytes;
-            name_len[t] = (uint32_t)sprintf(names + name_bytes, "layers.%u.ffn.experts.%u.w%u.%s", i / h1->num_experts,
-                                            i % h1->num_experts, m % 3u + 1u, m < 3u ? "scale" : "weight");
+            name_len[t] = (uint32_t)snprintf(names + name_bytes, (size_t)slots * 6u * 48u - name_bytes,
+                                             "layers.%u.ffn.experts.%u.w%u.%s", i / h1->num_experts,
+                                             i % h1->num_experts, m % 3u + 1u, m < 3u ? "scale" : "weight");
             name_bytes += name_len[t];
             order[t] = t;
         }

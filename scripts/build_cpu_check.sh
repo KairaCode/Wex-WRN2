@@ -14,6 +14,10 @@
 # Windows: MSYS2 MINGW64 or UCRT64 gcc on PATH, python 3 (stdlib only). Linux: gcc and PYTHON=python3.
 # macOS: a GNU gcc in CC (Homebrew: CC=gcc-15) and PYTHON=python3; the gcc of Xcode is clang and has no OpenMP.
 # CC names another compiler (CC=clang, which needs its OpenMP runtime: CI runs that on Linux).
+# WEX_OPENMP replaces the OpenMP flag (default -fopenmp). Apple clang refuses -fopenmp and has no OpenMP runtime;
+# with P=$(brew --prefix libomp), the OpenMP runtime of Homebrew, the macos-clang CI job runs CC=clang and
+# WEX_OPENMP="-Xclang -fopenmp -I$P/include -L$P/lib -lomp -Wno-unused-command-line-argument" (the last flag:
+# the compile-only and preprocessor calls would warn that -L and -lomp are not used)
 # Usage: bash scripts/build_cpu_check.sh [ENGINE_C]
 set -eu
 set -o pipefail   # the builder and the store test are piped into tail: their exit status must count
@@ -26,12 +30,15 @@ rm -rf "$O" && mkdir -p "$O"
 export TMP="$ROOT/out" TEMP="$ROOT/out"
 PY=${PYTHON:-python}
 CC=${CC:-gcc}   # the C compiler of every build below
+OMP=${WEX_OPENMP:--fopenmp}   # the OpenMP flags of the builds that use it
 echo "compiler: $("$CC" --version | sed -n 1p)"
 # shared libraries: Windows (MSYS2, Git Bash) as before; elsewhere position-independent, and the CPU stand-in
-# helper, which marks its exports with __declspec(dllexport), gets that word defined away
+# helper, which marks its exports with __declspec(dllexport), gets that word defined away. The helper is linked
+# with -static-libgcc except on macOS, where Apple clang stops at that option ("unsupported option")
 case $(uname -s) in
-  MINGW*|MSYS*|CYGWIN*) SO="-shared"; FAKE_EXPORT="" ;;
-  *) SO="-shared -fPIC"; FAKE_EXPORT="-D__declspec(x)=" ;;
+  MINGW*|MSYS*|CYGWIN*) SO="-shared"; FAKE_EXPORT=""; STATIC_GCC="-static-libgcc" ;;
+  Darwin) SO="-shared -fPIC"; FAKE_EXPORT="-D__declspec(x)="; STATIC_GCC="" ;;
+  *) SO="-shared -fPIC"; FAKE_EXPORT="-D__declspec(x)="; STATIC_GCC="-static-libgcc" ;;
 esac
 cd "$O"
 # WEX_CFLAGS: extra flags for every compile and link, empty by default (the sanitizer CI job sets
@@ -39,21 +46,21 @@ cd "$O"
 W="-O2 -Wall -Wextra -Wno-unused-parameter -Wno-unused-function ${WEX_CFLAGS-}"
 "$CC" $W "$C/tests/test_wex_format.c" -o test_wex_format.exe
 ./test_wex_format.exe
-"$CC" $W -fopenmp "$C/tests/test_wex4_verify.c" -o test_wex4_verify.exe
+"$CC" $W $OMP "$C/tests/test_wex4_verify.c" -o test_wex4_verify.exe
 # it prints the expected failures, so only its summary line is shown; when it fails the whole output is, since
 # a sanitizer report would be in it. its temporary .wex file stays here
 ./test_wex4_verify.exe > test_wex4_verify.log 2>&1 || { cat test_wex4_verify.log; exit 1; }
 tail -1 test_wex4_verify.log
-"$CC" $W -fopenmp -c "$C/tools/wex4_verify.c" -o wex4_verify.o
+"$CC" $W $OMP -c "$C/tools/wex4_verify.c" -o wex4_verify.o
 "$CC" $W $SO "$C/tools/wex_nr3_tools.c" -o wex_nr3_tools.dll
-"$CC" $W $SO -static-libgcc $FAKE_EXPORT "$C/tests/fake_wex_cuda.c" -o fake_wex_cuda.dll
+"$CC" $W $SO $STATIC_GCC $FAKE_EXPORT "$C/tests/fake_wex_cuda.c" -o fake_wex_cuda.dll
 "$PY" -I "$C/tools/repack_v4_wex.py" --model-dir "$ROOT/fixtures/v41-tiny" --output tiny.wex > tiny.wex.log
 P=$("$PY" -I -c "print(','.join(f'{l}:{e}' for l in range(6) for e in range(8)))")
 "$PY" -I "$C/tools/build_nr3.py" ./wex_nr3_tools.dll tiny.wex bins tiny_cz.bin --experts "$P" --train "$P" --cz | tail -2
 "$PY" -I "$C/tools/build_nr3.py" ./wex_nr3_tools.dll tiny.wex container tiny_cz.wex --layers 0,1,2,3,4,5 --train "$P" --cz | tail -2
 if [ $# -ge 1 ]; then
   # the engine headers come from that engine tree: "x.h" through -I $K, a test's "../x.h" through -I $K/tests
-  F="-D_FILE_OFFSET_BITS=64 $W -fopenmp"
+  F="-D_FILE_OFFSET_BITS=64 $W $OMP"
   "$CC" $F -I "$K" -c "$K/expert_store_registry.c" -o r.o
   "$CC" $F -I "$K" -c "$C/expert_store_wex.c" -o w.o
   "$CC" $F -c "$C/wex_decode.c" -o d.o

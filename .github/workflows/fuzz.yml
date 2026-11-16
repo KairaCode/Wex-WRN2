@@ -1,6 +1,7 @@
 # Coverage-guided fuzzing of the C readers and decoders (wex4/fuzz/): the five libFuzzer harnesses are built with
 # AddressSanitizer and UndefinedBehaviorSanitizer and each runs for a short time from the conformance vectors
-# (fuzz_store_wex twice: on the containers of the WNR3 vectors and on those of the older codecs).
+# (fuzz_store_wex twice: on the containers of the WNR3 vectors and on those of the older codecs), on x86-64
+# Linux, on 64-bit ARM Linux and on macOS (Apple silicon), one job each.
 # No GPU, no model weights, no secrets.
 name: Fuzz
 
@@ -43,6 +44,68 @@ jobs:
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7.0.2
         with:
           name: fuzz-crashes
+          path: |
+            wex4/fuzz/out/crashes
+            wex4/fuzz/out/*.log
+          if-no-files-found: ignore
+
+  # the same on a 64-bit ARM CPU: fuzz_wnr3_record then compares the NEON kernel of the fast WNR3 decoder with the
+  # reference decoder (the step fails if the harness built another kernel). With 60 s per harness a green run of
+  # this job and of libfuzzer-macos took 5.4 to 5.6 minutes, about as long as libfuzzer (three runs each, 2026-11-15)
+  libfuzzer-arm:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 360
+    env:
+      PYTHON: python3
+      SECONDS_EACH: ${{ inputs.seconds || '60' }}
+      WEX_FUZZ_MUTATOR: ${{ inputs.mutators || '1' }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
+      - name: Build the harnesses and fuzz (NEON kernel of the fast decoder)
+        run: |
+          set -o pipefail
+          bash wex4/fuzz/run.sh "$SECONDS_EACH" | tee "$RUNNER_TEMP/fuzz.log"
+          grep -q '^fast WNR3 decoder of fuzz_wnr3_record: NEON kernels$' "$RUNNER_TEMP/fuzz.log"
+      - name: Keep the reproducers and the logs
+        if: failure() || cancelled()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7.0.2
+        with:
+          name: fuzz-crashes-arm
+          path: |
+            wex4/fuzz/out/crashes
+            wex4/fuzz/out/*.log
+          if-no-files-found: ignore
+
+  # the same on macOS (Apple silicon). Apple clang ships no libFuzzer runtime, so CC names the clang of an LLVM of
+  # Homebrew: the llvm@N with the highest N on the runner image, or the llvm formula, installed, when the image
+  # has none. fuzz_wnr3_record compares the NEON kernel here too
+  libfuzzer-macos:
+    runs-on: macos-15
+    timeout-minutes: 360
+    env:
+      PYTHON: python3
+      SECONDS_EACH: ${{ inputs.seconds || '60' }}
+      WEX_FUZZ_MUTATOR: ${{ inputs.mutators || '1' }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
+      - name: Build the harnesses and fuzz (clang of Homebrew, NEON kernel of the fast decoder)
+        run: |
+          LLVM=$(ls -d "$(brew --prefix)"/opt/llvm@[0-9]* 2> /dev/null | sort -t@ -k2 -n | tail -1)
+          if [ -z "$LLVM" ]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install llvm; LLVM=$(brew --prefix llvm); fi
+          export CC=$LLVM/bin/clang
+          uname -sm; sw_vers -productVersion; echo "CC=$CC"
+          set -o pipefail
+          bash wex4/fuzz/run.sh "$SECONDS_EACH" | tee "$RUNNER_TEMP/fuzz.log"
+          grep -q '^fast WNR3 decoder of fuzz_wnr3_record: NEON kernels$' "$RUNNER_TEMP/fuzz.log"
+      - name: Keep the reproducers and the logs
+        if: failure() || cancelled()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7.0.2
+        with:
+          name: fuzz-crashes-macos
           path: |
             wex4/fuzz/out/crashes
             wex4/fuzz/out/*.log

@@ -9,6 +9,10 @@
 # Windows: MSYS2 UCRT64 or MINGW64 gcc on PATH, python 3 (stdlib only). Linux: gcc and PYTHON=python3.
 # macOS: a GNU gcc in CC (Homebrew: CC=gcc-15) and PYTHON=python3; the gcc of Xcode is clang and has no OpenMP.
 # CC names another compiler (CC=clang, which needs its OpenMP runtime: CI runs that on Linux).
+# WEX_OPENMP replaces the OpenMP flag (default -fopenmp). Apple clang refuses -fopenmp and has no OpenMP runtime;
+# with P=$(brew --prefix libomp), the OpenMP runtime of Homebrew, the macos-clang CI job runs CC=clang and
+# WEX_OPENMP="-Xclang -fopenmp -I$P/include -L$P/lib -lomp -Wno-unused-command-line-argument" (the last flag:
+# the compile-only and preprocessor calls would warn that -L and -lomp are not used)
 # Usage: bash wex4/build_and_test.sh [--fuzz N] [--write-vectors DIR]
 set -eu
 set -o pipefail
@@ -16,6 +20,7 @@ ROOT=$(cd "$(dirname "$0")/.." && pwd)
 S=$ROOT/wex4/out
 PY=${PYTHON:-python}
 CC=${CC:-gcc}   # the C compiler of every build below
+OMP=${WEX_OPENMP:--fopenmp}   # the OpenMP flags of the fast decoder's build
 echo "compiler: $("$CC" --version | sed -n 1p)"
 rm -rf "$S" && mkdir -p "$S"
 export TMP="$S" TEMP="$S"   # gcc from Git Bash cannot create temporary files under C:\WINDOWS
@@ -37,7 +42,7 @@ case $(uname -m) in
   x86_64|amd64|i?86) MARCH=${WEX4_MARCH--march=haswell} ;;
   *) MARCH=${WEX4_MARCH-} ;;
 esac
-F="-O3 $MARCH -fopenmp -DWEX4_FAST_NR3"
+F="-O3 $MARCH $OMP -DWEX4_FAST_NR3"
 "$CC" $W $F $STATIC_SO -I "$ROOT/c" -I "$ROOT/wex4/research/fast-cpu-decode" "$ROOT/wex4/wex4_tools.c" -o "$S/wex4_tools.dll"
 # which kernels that was (WEXF_KERNELS of wex_fast_decode.h under the same flags): AVX2, NEON or scalar
 KERNELS=$(printf '#include "wex_fast_decode.h"\nkernels WEXF_KERNELS\n' |
