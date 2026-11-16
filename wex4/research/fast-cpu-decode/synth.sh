@@ -15,13 +15,14 @@
 # Usage: after bash wex4/build_and_test.sh, from any directory. gcc and python on PATH (PYTHON=python3 on Linux);
 # CC names another compiler, as in wex4/build_and_test.sh (macOS: a GNU gcc of Homebrew), and WEX_OPENMP replaces
 # -fopenmp (Apple clang, which has no OpenMP runtime: "-Xclang -fopenmp -I<libomp>/include -L<libomp>/lib -lomp"
-# with <libomp> = $(brew --prefix libomp), as the arm-speed job of .github/workflows/ci.yml sets it).
+# with <libomp> = $(brew --prefix libomp), as the arm-speed job of .github/workflows/ci.yml sets it; set and empty,
+# it builds without OpenMP).
 set -eu
 HERE=$(cd "$(dirname "$0")" && pwd)
 ROOT=$(cd "$HERE/../../.." && pwd)
 PY=${PYTHON:-python}
 CC=${CC:-gcc}   # the C compiler, as in wex4/build_and_test.sh
-OMP=${WEX_OPENMP:--fopenmp}   # the OpenMP flags, as there
+OMP=${WEX_OPENMP--fopenmp}   # the OpenMP flags, as there; set and empty = no OpenMP
 MODE=${1:-check}
 O=$HERE/out/synth
 C=$ROOT/wex4/out/synth_nr3.wex

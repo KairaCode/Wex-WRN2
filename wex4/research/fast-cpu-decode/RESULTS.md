@@ -223,7 +223,7 @@ same hash and ceil inverse, same bound checks and slack rule. Three steps use ot
 | 16 symbols into 8 bytes | two `pext` | `vsraq_n_u16` and `vmovn_u16` |
 
 Kernel 2 is not ported: NEON has no gather load. A NEON build that is asked for kernel 2 runs kernel 1
-with 4 streams. `-DWEX_FAST_SCALAR` builds kernel 0 alone, as on x86.
+with `WEX_FAST_LANES` streams (4 by default). `-DWEX_FAST_SCALAR` builds kernel 0 alone, as on x86.
 
 ### What was run on ARM
 
@@ -328,14 +328,16 @@ What changed in the code:
 
 - `-DWEX_FAST_LANES=N`, N one of 1, 2, 3, 4, 6, 8 (default 4), sets the streams of kernel 1 in
   `wex_fast_decode`, on NEON and on AVX2; any other N stops the build with `#error`. An explicit `lanes` of
-  1, 2, 3, 4, 6 or 8 in `WexFastOptions` is kept; only another value becomes N. The six loops are compiled
+  1, 2, 3, 4, 6 or 8 in `WexFastOptions` is kept; only another value becomes N, and so does
+  a request for kernel 2 on NEON (before, it got 4). The six loops are compiled
   in every build, so N changes the speed of the default entry point and nothing else.
 - `synth.sh lanes` builds the harness once per N and compares the default entry point with the reference
   decoder: `equal` on the 4 records (1 and 8 threads), `mutate` with 200 mini-records. It checks from the
   `equal` line that the build took N, and that N = 5 does not compile. The `linux` (AVX2) and `linux-arm`
   (NEON) CI jobs run it on every push; it also passed on Windows x86-64 with MSYS2 gcc 16.2 (AVX2 build).
 - `synth.sh` takes `WEX_OPENMP` in place of `-fopenmp`: that is how Apple clang, which has no OpenMP
-  runtime of its own, gets the `libomp` of Homebrew. `speed_runs.py` gives median and spread over several
+  runtime of its own, gets the `libomp` of Homebrew. Set and empty, it builds without OpenMP (the
+  harness then runs one thread only). `speed_runs.py` gives median and spread over several
   `synth.sh speed` calls, also from whole job logs (`--compiler` keeps the calls of one compiler).
 
 Where it ran: the `arm-speed` jobs of `.github/workflows/ci.yml` (input `arm_speed` of a run started by
