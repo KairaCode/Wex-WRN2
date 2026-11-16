@@ -295,30 +295,46 @@ measured; it is not known to fail.
 
 ## 5. Converters for more models (help wanted)
 
-- **Today:** [wex4_convert.py](../wex4/wex4_convert.py) has eight naming profiles (`--names`, for `pack`
-  and for `upgrade`): `deepseek`, `deepseek-quark`, `qwen38`, `qwen3-moe` (also Kimi K2, GLM-4.7 and 5.1,
-  DeepSeek R1 and V3.2), `kimi-k26`, `mixtral` (also MiniMax-M2.1), `minimax-m3` (also Kimi K3) and
-  `mistral-large4`. The table, with the checkpoint each profile's names were read in, is in
+- **Today:** [wex4_convert.py](../wex4/wex4_convert.py) has sixteen naming profiles (`--names`, for
+  `pack` and for `upgrade`): `deepseek`, `deepseek-quark`, `qwen38`, `qwen3-moe` (also Kimi K2, GLM-4.7
+  and 5.1, DeepSeek R1 and V3.2, K2 Horizon, K-EXAONE, Hydrogen 1.0 and Beam 1.0), `kimi-k26`, `mixtral`
+  (also MiniMax-M2.1 and M2.7, and an MXFP4 Mixtral 8x7B), `minimax-m3` (also Kimi K3), `mistral-large4`,
+  `step3p5` (Step 3.5 Flash), and seven profiles for exports in the compressed-tensors format, where the
+  weight is `weight_packed`: `deepseek-ct`, `qwen38-ct`, `qwen3-moe-ct` (also GLM-5.3, Hy3, Ling 3.0
+  flash, Laguna S 2.1, LongCat-Flash-Lite and Kolibri-1), `kimi-k26-ct`, `mixtral-ct`, `minimax-m3-ct`
+  and `step3p7-ct` (Step 3.7 Flash). The eight that end the list were added on 2026-11-15. The table,
+  with the checkpoint and the shard each profile's names were read in, is in
   [wex4/README.md](../wex4/README.md#naming-profiles). Each has a synthetic fixture
   (`fixtures/make_synth_mxfp4.py --names`) on which pack → verify → unpack and upgrade → verify →
-  downgrade round-trip byte for byte.
+  downgrade round-trip byte for byte. Under a `-ct` profile, an expert whose weight is a plain `.weight`
+  that is not U8 or I8 (an MXFP8 or BF16 expert of a mixed compressed-tensors export) stays ordinary
+  tensors; this is tested on a synthetic fixture only.
+- **Today, the matrix roles:** w1 is the gate, w2 the down and w3 the up matrix in `mixtral`,
+  `minimax-m3`, `mistral-large4`, the DeepSeek profiles and their `-ct` forms. This was read on
+  2026-11-15 in the model code of Hugging Face transformers (commit 3a134bc3) and of the checkpoints'
+  own repositories (MiniMax-M2.1, Kimi K3); file and lines are in
+  [wex4/README.md](../wex4/README.md#matrix-roles). So in every profile the slab order is gate, down,
+  up, as WNR3-SPEC section 1 names the matrices. Not checked: the weights (none was read), and the
+  model code of MiniMax-M3.1 Flash and of DeepSeek V4.1 (the roles given for them are those of
+  MiniMax-M3 and DeepSeek V4, which use the same names).
 - **Still open, most wanted:** a run on a real checkpoint. The profiles were tested on the synthetic
-  fixtures only, and the names were read in two shards per checkpoint. Pack a real MXFP4 checkpoint of
-  one of these families with `pack --experts raw --names PROFILE`, run `wex4.py verify` and `unpack`, and
-  report the line `pack` prints (expert records, experts kept as ordinary tensors), the sizes and
-  whether every file came back with its SHA-256. If `pack` stops with `incomplete expert` although all
-  the shards were given, the profile does not fit that export: report the names.
-- **Still open:** which of w1, w2, w3 is the gate, the down and the up matrix for `mixtral`,
-  `minimax-m3` and `mistral-large4`, checked against the model code. The slab order is by number; an
-  engine needs the answer, the converter does not.
-- **Still open:** a profile for a family that is not in the table. It has to be an MXFP4 checkpoint with
-  three matrices per expert and one group of tensors per expert, which is what an expert record holds.
-  Add its row to `PROFILES` in the converter and to `NAMES` in the fixture script (the test fails when
-  one of the two is missing), and name the checkpoint and the shard the names were read in.
+  fixtures only, and the names were read in one or two shards per checkpoint. Pack a real MXFP4
+  checkpoint of one of these families with `pack --experts raw --names PROFILE`, run `wex4.py verify`
+  and `unpack`, and report the line `pack` prints (expert records, experts kept as ordinary tensors), the
+  sizes and whether every file came back with its SHA-256. If `pack` stops with `incomplete expert`
+  although all the shards were given, the profile does not fit that export: report the names.
+- **Still open:** a profile for a family or an export that is not in the table. It has to be an MXFP4
+  checkpoint with three matrices per expert and one group of tensors per expert, which is what an expert
+  record holds. Add its row to `PROFILES` in the converter and to `NAMES` in the fixture script (the
+  test fails when one of the two is missing), and name the checkpoint and the shard the names were read
+  in. The search of 2026-11-15 ("Limits" in [wex4/README.md](../wex4/README.md#naming-profiles)) found
+  only checkpoints whose name contains MXFP4, did not open the GGUF and MLX exports, and could not read
+  `amd/Qwen3-VL-235B-A22B-Instruct-MXFP4`, which is gated (its files need an accepted agreement).
 - **Does not fit without a format change** (open an issue first): expert records for float or FP8
-  experts (Mixtral, Qwen3 MoE and GLM-4.5 as published in BF16, Kimi K2 as published in FP8), and for
-  gpt-oss, which holds all the experts of a layer in one tensor and has two matrices per expert. Today
-  `pack` stores those as ordinary tensors.
+  experts (Mixtral, Qwen3 MoE and GLM-4.5 as published in BF16, Kimi K2 as published in FP8), for
+  gpt-oss, ZAYA1 and Inkling, which hold all the experts of a layer in one tensor, and for experts with
+  two matrices (`amd/gpt-oss-20b-w-mxfp4-a-bf16`, and `Inferact/Qwen3.8-2.4T-A95B-MXFP4`, whose scales
+  are also F32). Today `pack` stores those as ordinary tensors.
 - **Done when:** convert → verify → downgrade round-trips byte for byte on the fixture, and for a real
   checkpoint on the checkpoint.
 
@@ -462,8 +478,10 @@ listed above as well.
   on x86-64 Linux and on the code of 2026-11-15 before the merges of that day, is recorded, and it
   stopped on nothing. Longer runs, runs on the code of today and on ARM64 and macOS are open *(open
   to you, section 3)*.
-- **Converter profiles for more model families:** eight naming profiles are in, tested on synthetic
-  fixtures; a run on a real checkpoint of the new families is open *(open to you, section 5)*.
+- **Converter profiles for more model families:** sixteen naming profiles are in, tested on synthetic
+  fixtures, among them seven for compressed-tensors exports; the gate, down and up roles of w1, w2, w3
+  were read in the model code. A run on a real checkpoint of the new families is open *(open to you,
+  section 5)*.
 - **A first tagged release** of the specifications (WEX4 4.0, WNR3 v1) with the conformance vectors, so
   other implementations can name the version they pass.
 
