@@ -61,7 +61,9 @@ measured; it is not known to fail.
     feature 32 writes its destination without a commit step, which WNR3-SPEC section 4.7 does not
     allow for; the converter upgrades a WEX1 file whose header flags are not 0; one extrapolated
     time); the GPU decoder run on a GPU against the text (it was read, and seven of its helper
-    functions were run on the CPU only); and the numbers that need the full models.
+    functions were run on the CPU only); the six questions of part E5 of the Rust reader's
+    [SPEC-NOTES.md](../impl/rust-wex4/SPEC-NOTES.md) (2026-11-15); and the numbers that need the
+    full models.
 - **Glossary:** add missing terms to [GLOSSARY.md](GLOSSARY.md). 32 terms of the specifications and of
   the tests were added on 2026-11-14, and 14 engine and host words of
   [COLIBRI-INTEGRATION](COLIBRI-INTEGRATION.md) and of the dated reports on 2026-11-15. Still open:
@@ -153,8 +155,8 @@ measured; it is not known to fail.
     sanitizer (the sanitizer jobs build NEON on ARM64); any sanitizer on Windows; and the GPU code.
 - **More test vectors:** hostile files that [wex4/vectors](../wex4/vectors/README.md) does not cover
   yet, each with its `MANIFEST.tsv` row and the expected verdict from both reference readers; the
-  `go-reader` job of CI then runs the Go reader on the new rows too. Valid files are wanted as
-  well. A new vector goes through an issue first.
+  `go-reader` and `rust-reader` jobs of CI then run the Go and the Rust reader on the new rows too.
+  Valid files are wanted as well. A new vector goes through an issue first.
   - **Today:** 136 rows since 2026-11-15. The 24 files added that day cover the two lists of what
     the 112 rows did not exercise (finding 17 of the
     [spec review](../research/spec-review-20261114/README.md) and part D of the Go reader's
@@ -169,7 +171,9 @@ measured; it is not known to fail.
     stream that ends early or runs out of bytes, each alone); `chunk_log2` other than 10, 11 and
     12 (13 to 15 are in files of the Go writer, which the reference readers accept, not in a
     vector); a WBP1 record with `transform = 1` on a size that is not a multiple of the plane count
-    (WEX4-SPEC 7.2 makes it invalid; no vector has one).
+    (WEX4-SPEC 7.2 makes it invalid; no vector has one); and the gaps of the index that part C of
+    the Rust reader's [SPEC-NOTES.md](../impl/rust-wex4/SPEC-NOTES.md) lists (no empty index, no
+    blob of kind 18, no file above 4 GiB).
 - **macOS, what is left** (good first issue each):
   - **Today:** the `macos` job of CI (macos-15, Apple silicon) runs `scripts/check_all.sh` and
     `wex4/fuzz/run.sh --replay` with a Homebrew GNU gcc named in `CC`. The `macos-clang` job runs
@@ -230,15 +234,27 @@ measured; it is not known to fail.
   enough: on two kinds of file outside the manifest its first version gave another verdict than the
   reference ([SPEC-NOTES.md](../impl/go-wex4/SPEC-NOTES.md), A6 and A9); it now gives the
   reference's, and since 2026-11-15 both kinds are vectors.
-- **Still wanted, a reader in another language** (Rust, C++, Zig…) written **from the spec only**
-  (WEX4-SPEC, WNR3-SPEC and, for the WNR3 decoder, WNR2-REFERENCE sections 6 and 7, which
-  WNR3-SPEC section 12 names), not by porting `wex4.py` or the Go reader. Done when it gives the
-  same verdict as the reference on every file in [wex4/vectors](../wex4/vectors/README.md), and the
-  same root for the valid ones. Every disagreement is either a bug in the new reader or an
-  ambiguity in the spec, and both are worth an issue. Optional: the WNR3 decoder as well; since
-  2026-11-15 the vectors have WNR3 records in ceil form, without canonical zero and with other
-  chunk pairs, and the manifest's content digest checks the decoded bytes. Ask the reference for
-  its verdict on every file you are not sure of.
+- **Today, a reader in Rust:** [impl/rust-wex4](../impl/rust-wex4/README.md) is a second reader and
+  verifier written from the pages only (WEX4-SPEC, WNR3-SPEC, WNR2-REFERENCE, the glossary and the
+  vectors README), with its own SHA-256 and the WBP1 and WNR3 decoders; the reference code and the Go
+  reader's code and notes were opened only after it passed. It gives the manifest's verdict, reject
+  class and root on all 112 rows, accepts three files of
+  [impl/go-wex4/testdata](../impl/go-wex4/testdata/README.md) (one with WNR3 records in ceil form)
+  with the reference's content digest and refuses the fourth (2026-11-15; the `rust-reader` job of CI
+  runs it and a differential run). On 35 hand-made files and 20,596 mutated ones (one run on
+  Windows, seed 20261115; the CI job runs 6,866 mutated files) it gave the C reader's verdict on
+  every file, and so does its first version, the one that passed the 112 rows.
+  The reject classes differ from the C reader's on 3 hand-made and 15 mutated files, and the C reader
+  gives two classes to one sentence of 5.3 ([SPEC-NOTES.md](../impl/rust-wex4/SPEC-NOTES.md),
+  part E).
+- **Still open after the two readers:** a reader in a third language (C++, Zig…) is welcome on the
+  same terms: written **from the spec only** (WEX4-SPEC, WNR3-SPEC and, for the WNR3 decoder,
+  WNR2-REFERENCE sections 6 and 7, which WNR3-SPEC section 12 names), not by porting `wex4.py` or
+  another reader; every disagreement is a bug or an ambiguity, both worth an issue. More useful
+  first: the six questions of part E5 of the Rust reader's notes (the reject classes, the order of
+  the overflow check of a shape, the bound on `16 * cols`, the empty index at 4096, what a verifier
+  reports for an unknown codec, the anchor byte 255), a run of the Rust reader on ARM, macOS or a
+  big-endian host (it ran on x86-64 only), and a coverage-guided fuzzer for it (it has none).
 - **Today, a writer in Go, from the spec only:** the same program writes WEX4 files since
   2026-11-15 (`wex4check write`, from raw tensor files and a text manifest), with RAW, WBP1 and
   WNR3 records, trains the WNM2 model that WNR3 records need (`wex4check train`) and computes the
@@ -273,8 +289,9 @@ measured; it is not known to fail.
   out on purpose: a vector for a record of an unknown codec, which a reader opens and cannot
   decode, so it has no verdict in the manifest (`wex4/test_wex4.py` checks both reference readers
   on such a file). The notes of part E, from the writer and the trainer, came after and want their
-  sentences (the item above). A change of the specification or of the vectors goes through an
-  issue first.
+  sentences (the item above), and so do the questions of part E5 of the Rust reader's notes; the
+  gaps of part C of its notes want a vector each. A change of the specification or of the vectors
+  goes through an issue first.
 
 ## 5. Converters for more models (help wanted)
 
@@ -430,15 +447,17 @@ listed above as well.
   - a full ABBA set for it on DeepSeek V4.1;
   - tuning the two-drive split for Qwen3.8;
   - MTP together with MXFP4 experts.
-- **The specifications after the review and the Go reader:** the review wrote 16 clarifications into
-  WEX4-SPEC and WNR3-SPEC and left 4 findings open; the Go reader of `impl/go-wex4` found no wrong
-  verdict in the 112 manifest rows of that day, and a list of sentences that can be read two ways
-  and of cases the vectors did not exercise. On 2026-11-15 the 4 findings and the rest of that list
-  got sentences and 24 vectors, with no rule changed. The writer and the trainer of 2026-11-15
+- **The specifications after the review and the two readers:** the review wrote 16 clarifications
+  into WEX4-SPEC and WNR3-SPEC and left 4 findings open; the Go reader of `impl/go-wex4` found no
+  wrong verdict in the 112 manifest rows of that day, and a list of sentences that can be read two
+  ways and of cases the vectors did not exercise. On 2026-11-15 the 4 findings and the rest of that
+  list got sentences and 24 vectors, with no rule changed. The writer and the trainer of 2026-11-15
   added eight notes (part E), seven of which want a sentence of the specification. A second review
-  pass of 2026-11-15 read the sections the first had left out and wrote 18 clarifications. Open:
-  the seven notes, the 3 findings of the second pass, and the WNR3 checks no vector exercises alone
-  *(open to you, sections 2 to 4)*.
+  pass of 2026-11-15 read the sections the first had left out and wrote 18 clarifications. The Rust
+  reader of `impl/rust-wex4`, written the same day, found no wrong verdict in the 112 rows and left
+  six questions (part E5 of its notes) and four gaps of the index (part C). Open: the seven notes,
+  the six questions, the 3 findings of the second pass, the gaps of the index and the WNR3 checks no
+  vector exercises alone *(open to you, sections 2 to 4)*.
 - **Fuzzing for hours:** the harnesses run for 60 seconds each in CI; one run of an hour per harness,
   on x86-64 Linux and on the code of 2026-11-15 before the merges of that day, is recorded, and it
   stopped on nothing. Longer runs, runs on the code of today and on ARM64 and macOS are open *(open

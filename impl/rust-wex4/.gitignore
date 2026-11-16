@@ -1,0 +1,4 @@
+# written by cargo at every build; the crate has no dependency to lock
+/Cargo.lock
+# a plain `cargo build` (run.sh builds into out/target, which git ignores everywhere)
+/target/
