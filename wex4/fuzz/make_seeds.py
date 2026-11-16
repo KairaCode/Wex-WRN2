@@ -2,7 +2,7 @@
 # Copyright 2026 Ludovico Zanichelli
 """Seed corpora for the fuzzing harnesses, from the conformance vectors.
 
-    python -I wex4/fuzz/make_seeds.py OUT_DIR
+    python -I wex4/fuzz/make_seeds.py OUT_DIR [LEGACY_SEEDS]
 
 OUT_DIR/file gets every file of wex4/vectors/MANIFEST.tsv (valid, invalid, legacy and the review findings): the
 seeds of fuzz_wex4_file and fuzz_wex4_verify. OUT_DIR/wnr3 gets the stored bytes of every WNR3 record of the
@@ -18,15 +18,42 @@ harnesses (fuzz_store_wex reads it, fuzz_q38_wex reads it and OUT_DIR/file):
   - the WEX1 container twice more, with the slab size of its header changed: twice its record (the most
     wex_validate_table accepts, so it opens) and 4 GiB - 4096 (refused).
 
-No seed holds palette (codec 2), WNR (codec 3) or WNR2 (codec 4) records. A seed is named by the first 16 hex
-digits of the SHA-256 of its bytes, so the same bytes are never stored twice and the paths stay short (Windows
-opens no path longer than 260 characters by default). Standard library only."""
+OUT_DIR/legacy gets WEX3 containers with the older record codecs, for fuzz_store_wex alone (the Qwen3.8 reader
+takes none of them). All four hold the same four experts of one layer, made here (hidden 128, intermediate
+128: 1536 scale bytes and 24576 weight bytes, a slab of 28672): two different ones, a third with a scale of
+255 in each of its three matrices, and a copy of the first.
+
+  - palette (codec 2): c/tools/repack_v4_wex.py writes it from a safetensors checkpoint of those experts
+    (format 3, palette3 weights, any error allowed). Two palette records, the expert with the scales of 255
+    stored raw (the writer does not quantize it), the copy an alias of the first record.
+  - WNR (codec 3), two containers: repack_v4_wex.py writes them from the same checkpoint (format 3,
+    neural-rans), with one model for the container, as it always does: a context model and chunks of 512
+    symbols, or a scale-only model and chunks of 1024. Its encoder needs CUDA, so SeedEncoder stands for it:
+    LEGACY_SEEDS, the program built from legacy_seeds.c, trains the model ("model") and encodes each record
+    on the CPU ("record"). Two WNR records, the expert with the scales of 255 stored raw (the model has no
+    class for 255, so the writer does not code it), the copy an alias. Every record is decoded here once more
+    with the Python decoder of c/tools/wex_neural_rans.py, which shares no code with that encoder, and must
+    give the bytes of its expert.
+  - WNR2 (codec 4): LEGACY_SEEDS writes it ("wnr2") from the WEX1 container repack_v4_wex.py writes of the
+    same checkpoint: no tool of this repository writes WNR2 containers on the CPU. Three WNR2 records and an
+    alias.
+
+Without the second argument only the palette container is made. The random build id that repack_v4_wex.py
+puts at bytes 40..55 of a WEX3 file is set to zero, so each seed is the same file on every run.
+
+A seed is named by the first 16 hex digits of the SHA-256 of its bytes, so the same bytes are never stored
+twice and the paths stay short (Windows opens no path longer than 260 characters by default). Standard library
+only."""
 import hashlib
+import importlib.util
 import io
+import json
 import os
 import random
 import struct
+import subprocess
 import sys
+import tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, '..'))
@@ -96,12 +123,147 @@ def upgraded(folder, data):
     return data
 
 
+def checkpoint(folder):
+    """A safetensors checkpoint of one layer of four MXFP4 experts in `folder`, under the DeepSeek names. FP4
+    codes and scales are skewed, as in fixtures/make_synth_mxfp4.py, so that the entropy coders gain something.
+    The result is the slab of each expert: the scales of w1, w2, w3, then their weights."""
+    rng = random.Random(20261115)
+    hidden = inter = 128
+    codes = (40, 22, 12, 6, 3, 2, 1, 1, 30, 18, 10, 5, 3, 2, 1, 1)
+    slabs = []
+    for expert in range(3):
+        scales, weights = [], []
+        for rows, cols in ((inter, hidden // 2), (hidden, inter // 2), (inter, hidden // 2)):   # weight bytes
+            s = bytearray(rng.choices(range(114, 128), (1, 1, 2, 3, 5, 8, 12, 16, 20, 16, 10, 5, 2, 1), k=rows * cols // 16))
+            if expert == 2:
+                s[rng.randrange(len(s))] = 255   # a non-finite scale: the palette writer keeps this expert raw
+            low = rng.choices(range(16), codes, k=rows * cols)
+            high = rng.choices(range(16), codes, k=rows * cols)
+            scales.append(bytes(s))
+            weights.append(bytes(a | b << 4 for a, b in zip(low, high)))
+        slabs.append((scales, weights))
+    slabs.append(slabs[0])
+    header, payload = {}, bytearray()
+    for expert, (scales, weights) in enumerate(slabs):
+        for m, (rows, cols) in enumerate(((inter, hidden // 2), (hidden, inter // 2), (inter, hidden // 2))):
+            for suffix, dtype, shape, data in (('scale', 'F8_E8M0', (rows, cols // 16), scales[m]),
+                                               ('weight', 'I8', (rows, cols), weights[m])):
+                header[f'layers.0.ffn.experts.{expert}.w{m + 1}.{suffix}'] = {
+                    'dtype': dtype, 'shape': list(shape), 'data_offsets': [len(payload), len(payload) + len(data)]}
+                payload += data
+    raw = json.dumps(header, separators=(',', ':')).encode()
+    with open(os.path.join(folder, 'config.json'), 'w', encoding='utf-8') as f:
+        json.dump({'num_hidden_layers': 1, 'n_routed_experts': 4, 'hidden_size': hidden,
+                   'moe_intermediate_size': inter}, f)
+    with open(os.path.join(folder, 'model.safetensors'), 'wb') as f:
+        f.write(struct.pack('<Q', len(raw)) + raw + payload)
+    return [b''.join(scales) + b''.join(weights) for scales, weights in slabs]
+
+
+class SeedEncoder:
+    """Stands for wex_neural_rans.Encoder in repack_v4_wex.py, whose encode() runs a CUDA library: the same
+    interface, with each record encoded on the CPU by `legacy_seeds record`, which decodes it back before it
+    writes it. dll_path is the path of that program."""
+
+    def __init__(self, model_path, dll_path, chunk_symbols=512):
+        with open(model_path, 'rb') as f:
+            self.model = f.read()
+        self.classes, self.mapping = REPACK.neural_rans.validate_model(self.model)
+        self.model_path, self.tool, self.chunk_symbols = model_path, dll_path, chunk_symbols
+        self.work = os.path.dirname(model_path)
+
+    def encode(self, scales, weights, scale_stream):
+        slab, stream, out = (os.path.join(self.work, name) for name in ('e.slab', 'e.tiles', 'e.wnr'))
+        with open(slab, 'wb') as f:
+            f.write(scales + weights)
+        with open(stream, 'wb') as f:
+            f.write(scale_stream)
+        subprocess.run([self.tool, 'record', self.model_path, str(self.chunk_symbols), slab, stream, out], check=True)
+        with open(out, 'rb') as f:
+            return f.read()
+
+
+REPACK = None
+
+
+def load_repack():
+    global REPACK
+    spec = importlib.util.spec_from_file_location('repack_v4_wex', os.path.join(HERE, '..', '..', 'c', 'tools', 'repack_v4_wex.py'))
+    REPACK = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = REPACK   # its dataclass looks its module up
+    spec.loader.exec_module(REPACK)
+    return REPACK
+
+
+def read_seed(path):
+    """A WEX3 file the writer made, with its random build id (bytes 40..55) set to zero."""
+    with open(path, 'rb') as f:
+        data = bytearray(f.read())
+    data[40:56] = bytes(16)
+    return bytes(data)
+
+
+def legacy_codecs(folder, tool):
+    """The containers of OUT_DIR/legacy (see the module text); the result is how many were written."""
+    repack = load_repack()
+    made = 0
+    with tempfile.TemporaryDirectory(dir=folder) as work:
+        slabs = checkpoint(work)
+        path = os.path.join(work, 'p.wex')
+        result = repack.repack(work, path, format_version=3, weight_codec='palette3', max_weight_relative_error=1.0)
+        assert result['palette3_experts'] == 3 and result['deduplicated_experts'] == 1, result
+        repack.validate_container(path, verify_payload=True)
+        put(folder, read_seed(path))
+        made += 1
+        if not tool:
+            return made
+        source = os.path.join(work, 's.wex')
+        repack.repack(work, source, format_version=1)
+        for kind, chunk in (('context', 512), ('scale-only', 1024)):
+            model, path = os.path.join(work, f'n{chunk}.cdf'), os.path.join(work, f'n{chunk}.wex')   # short: MAX_PATH
+            subprocess.run([tool, 'model', source, kind, model], check=True, stdout=subprocess.DEVNULL)
+            saved, repack.neural_rans.Encoder = repack.neural_rans.Encoder, SeedEncoder
+            try:
+                result = repack.repack(work, path, format_version=3, weight_codec='neural-rans', neural_cdf=model,
+                                       neural_encoder_dll=tool, neural_chunk_symbols=chunk)
+            finally:
+                repack.neural_rans.Encoder = saved
+            assert result['neural_rans_experts'] == 3 and result['deduplicated_experts'] == 1, result
+            entries = repack.validate_container(path, verify_payload=True)['entries']
+            data = read_seed(path)
+            assert struct.unpack_from('<I', data, 32)[0] == repack.WEX_SCALE_TILES | repack.WEX_DEDUP | repack.WEX_HEADER_NEURAL_RANS
+            for slab, entry in zip(slabs, entries):   # the independent decoder
+                offset, total, scale_bytes, weight_bytes = entry[:4]
+                if entry[22] == repack.WEX_NEURAL_RANS:
+                    record, offsets, scale_stream, payload, chunk_symbols = repack.neural_rans.parse_record(
+                        data[offset:offset + total], weight_bytes)
+                    assert chunk_symbols == chunk
+                    scales = repack.unpack_scale_tiles(scale_stream, scale_bytes)
+                    decoded = scales + repack.neural_rans.decode_weights(record, offsets, payload, scales, weight_bytes, chunk)
+                else:
+                    assert entry[22] == 0 and 255 in slab[:scale_bytes], entry
+                    decoded = data[offset:offset + scale_bytes + weight_bytes]
+                assert decoded == slab, 'a record of the WNR container does not decode to its expert'
+            put(folder, data)
+            made += 1
+        path = os.path.join(work, 'wnr2.wex')
+        subprocess.run([tool, 'wnr2', source, path], check=True, stdout=subprocess.DEVNULL)
+        with open(path, 'rb') as f:
+            put(folder, f.read())
+        made += 1
+    return made
+
+
 def main():
     out = sys.argv[1]
+    tool = os.path.abspath(sys.argv[2]) if len(sys.argv) > 2 else None
     files, records, engine = os.path.join(out, 'file'), os.path.join(out, 'wnr3'), os.path.join(out, 'engine')
+    legacy_folder = os.path.join(out, 'legacy')
     os.makedirs(files, exist_ok=True)
     os.makedirs(records, exist_ok=True)
     os.makedirs(engine, exist_ok=True)
+    os.makedirs(legacy_folder, exist_ok=True)
+    made = legacy_codecs(legacy_folder, tool)
     wex1 = legacy(1, 2, ((32, 32), (64, 16), (32, 32)), False)
     tiny2 = open(os.path.join(VECTORS, 'legacy', 'tiny2-cz.wex3'), 'rb').read()
     # its two experts are (0, 0) and (0, 1): a 1 x 2 grid has the same table page and the same record owners
@@ -126,7 +288,8 @@ def main():
             if record[3] == 5:   # codec 5: WNR3
                 put(records, data[record[0]:record[0] + record[1]])
     print(f'seeds: {len(os.listdir(files))} files in {files}, {len(os.listdir(records))} WNR3 records in {records}, '
-          f'{len(os.listdir(engine))} expert containers in {engine}')
+          f'{len(os.listdir(engine))} expert containers in {engine}, {made} containers of the older codecs in '
+          f'{legacy_folder}' + ('' if tool else ' (palette only: no legacy_seeds program was given)'))
 
 
 if __name__ == '__main__':

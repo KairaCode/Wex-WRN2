@@ -32,7 +32,14 @@ flags_wnr3="\x20\x00\x00\x00"
 flags_wnr3_tiles="\x21\x00\x00\x00"
 flags_wnr3_cz="\x60\x00\x00\x00"
 flags_wnr3_cz_tiles="\x61\x00\x00\x00"
-# legacy entry flags: scale tiles with one or two pages of scale stream
+# WEX3 header flags as the writers combine them: tiles + palette + dedup, tiles + dedup + WNR, tiles + WNR2 with
+# and without dedup
+flags_palette="\x07\x00\x00\x00"
+flags_wnr_dedup="\x0d\x00\x00\x00"
+flags_wnr2_tiles="\x11\x00\x00\x00"
+flags_wnr2_dedup="\x15\x00\x00\x00"
+# legacy entry flags: scale tiles with one or two pages of scale stream (palette, WNR, WNR2 and WNR3 entries
+# have the plain codec number: u32_2 to u32_5 above)
 entry_tiles_1="\x01\x01\x00\x00"
 entry_tiles_2="\x01\x02\x00\x00"
 # sizes
@@ -40,4 +47,9 @@ page="\x00\x10\x00\x00"
 model_bytes="\x10\xe8\x00\x00"
 chunk_256="\x00\x01\x00\x00"
 chunk_512="\x00\x02\x00\x00"
+chunk_1024="\x00\x04\x00\x00"
+chunk_2048="\x00\x08\x00\x00"
 chunk_16384="\x00\x40\x00\x00"
+# the end of every CDF of a WNR record (4096) and of a WNM2 model (16384), as u16
+cdf_end_wnr="\x00\x10"
+cdf_end_wnm2="\x00\x40"

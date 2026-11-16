@@ -1,5 +1,6 @@
 # Coverage-guided fuzzing of the C readers and decoders (wex4/fuzz/): the five libFuzzer harnesses are built with
-# AddressSanitizer and UndefinedBehaviorSanitizer and each runs for a short time from the conformance vectors.
+# AddressSanitizer and UndefinedBehaviorSanitizer and each runs for a short time from the conformance vectors
+# (fuzz_store_wex twice: on the containers of the WNR3 vectors and on those of the older codecs).
 # No GPU, no model weights, no secrets.
 name: Fuzz
 
@@ -10,10 +11,10 @@ on:
   workflow_dispatch:   # a longer run, by hand
     inputs:
       seconds:
-        description: seconds per harness, at least 1 (five harnesses; the job stops after 6 hours, so at most about 4200)
+        description: seconds per run, at least 1 (six runs, the store harness twice; the job stops after 6 hours, so at most about 3500)
         default: "60"
       mutators:
-        description: "1: the WNR3-aware custom mutators (the default). 0: libFuzzer's own mutations only, the control of a measurement"
+        description: "1: the codec-aware custom mutators (the default; WNR3, and in fuzz_store_wex also the older codecs). 0: libFuzzer's own mutations only, the control of a measurement"
         default: "1"
 
 permissions:
