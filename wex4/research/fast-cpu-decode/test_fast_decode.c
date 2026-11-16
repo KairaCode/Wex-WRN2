@@ -123,7 +123,11 @@ static const Variant variants[] = {
     {"k2: SVE gather 3 vectors, fused", {1, 2, 3, 1}},
 #endif
 };
+#ifdef TEST_DEFAULT_ONLY   /* synth.sh lanes: equal and mutate test k0 and the default entry point only */
+#define VARIANTS ((size_t)1)
+#else
 #define VARIANTS (sizeof(variants) / sizeof(variants[0]))
+#endif
 
 /* Output buffers of one decoder: six guarded regions, used flush high or flush low. */
 typedef struct { Guard gs[3], gw[3]; unsigned char *scales[3], *weights[3]; } Out;
@@ -217,7 +221,8 @@ static int cmd_equal(const WexNr2Model *model, int count, char **paths) {
             printf("  MISMATCH wex_fast_decode default\n"); failures++;
         }
     }
-    printf("equal: %d records x %d variants x {1, 8} threads + default, %d mismatches\n", count, (int)VARIANTS, failures);
+    printf("equal: %d records x %d variants x {1, 8} threads + default (WEX_FAST_LANES %d), %d mismatches\n", count,
+           (int)VARIANTS, WEX_FAST_LANES, failures);
     return failures != 0;
 }
 
@@ -551,9 +556,9 @@ static int cmd_bench(const WexNr2Model *model, int reps, int count, char **paths
         printf("\n");
         fflush(stdout);
     }
-    printf("| wex_fast_decode_opt (k1, 4 streams, fused; tables built per call) |");
+    printf("| wex_fast_decode_opt (k1, %d streams, fused; tables built per call) |", WEX_FAST_LANES);
     for (threads = 1; threads <= 8; threads += 7) {
-        const WexFastOptions def = {threads, 1, 4, 1};
+        const WexFastOptions def = {threads, 1, WEX_FAST_LANES, 1};
         for (best = 1e30, rep = 0; rep < reps; rep++) {
             t = now_ms();
             for (i = 0; i < n; i++) if (wex_fast_decode_opt(&view[i], &real[i].layout, model, out.scales, out.weights, &def)) return 1;

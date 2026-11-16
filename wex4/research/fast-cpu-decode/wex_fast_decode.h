@@ -87,6 +87,19 @@
 #define WEXF_CTX_BYTES (3u * 7u * WEXF_SREL_BYTES)
 #define WEXF_INLINE static inline __attribute__((always_inline))
 
+/* Streams interleaved by kernel 1 in wex_fast_decode (the default entry point), and in place of a `lanes` value
+ * that kernel 1 does not have: -DWEX_FAST_LANES=N, N one of 1, 2, 3, 4, 6, 8; default 4. An explicit `lanes`
+ * of 1, 2, 3, 4, 6 or 8 is kept; on NEON a request for kernel 2 also gets N. The decoded bytes and the
+ * verdict are the same for every N (all six are compiled in every build, the options pick one at run time);
+ * only the speed differs: RESULTS.md, "Streams per CPU, Apple silicon, Apple clang". */
+#ifndef WEX_FAST_LANES
+#define WEX_FAST_LANES 4
+#endif
+#if WEX_FAST_LANES != 1 && WEX_FAST_LANES != 2 && WEX_FAST_LANES != 3 && WEX_FAST_LANES != 4 && \
+    WEX_FAST_LANES != 6 && WEX_FAST_LANES != 8
+#error "WEX_FAST_LANES must be 1, 2, 3, 4, 6 or 8"
+#endif
+
 typedef struct {
     int threads;   /* OpenMP threads, 0 = the runtime's default; ignored without OpenMP */
     int kernel;    /* 0 checked scalar loop, 1 AVX2 or NEON search + interleaved streams, 2 AVX2 or SVE gathers */
@@ -778,9 +791,10 @@ static inline int wex_fast_decode_with(const WexFastModel *tables, const WexNr2R
     if (!tables || tables->id != model->id) J.o.kernel = 0;
     if (J.o.kernel < 0 || J.o.kernel > 2) J.o.kernel = 1;
 #if WEXF_SIMD == 2 && !WEXF_SVE
-    if (J.o.kernel == 2) { J.o.kernel = 1; J.o.lanes = 4; }   /* no gather kernel on NEON */
+    if (J.o.kernel == 2) { J.o.kernel = 1; J.o.lanes = WEX_FAST_LANES; }   /* no gather kernel on NEON */
 #endif
-    if (J.o.kernel == 1 && J.o.lanes != 1 && J.o.lanes != 2 && J.o.lanes != 3 && J.o.lanes != 6 && J.o.lanes != 8) J.o.lanes = 4;
+    if (J.o.kernel == 1 && J.o.lanes != 1 && J.o.lanes != 2 && J.o.lanes != 3 && J.o.lanes != 4 && J.o.lanes != 6 &&
+        J.o.lanes != 8) J.o.lanes = WEX_FAST_LANES;
     if (J.o.kernel == 2 && (J.o.lanes < 1 || J.o.lanes > 3)) J.o.lanes = 1;
     J.o.fuse = J.o.fuse != 0;
 #else
@@ -807,10 +821,10 @@ static inline int wex_fast_decode_opt(const WexNr2Record *v, const WexNr2Layout 
     return status;
 }
 
-/* Default: the fastest configuration measured (see RESULTS.md). */
+/* Default: the fastest configuration measured (see RESULTS.md): kernel 1, WEX_FAST_LANES streams, fused. */
 static inline int wex_fast_decode(const WexNr2Record *v, const WexNr2Layout *layout, const WexNr2Model *model,
                                   unsigned char *const scales_out[3], unsigned char *const weights_out[3]) {
-    static const WexFastOptions best = {0, 1, 4, 1};
+    static const WexFastOptions best = {0, 1, WEX_FAST_LANES, 1};
     return wex_fast_decode_opt(v, layout, model, scales_out, weights_out, &best);
 }
 #endif

@@ -9,15 +9,20 @@
 #   bash synth.sh check [CASES]   both builds: `equal` on the 4 records, then `mutate` with CASES mini-records
 #                                 (default 600). Last line on success: synth check passed
 #   bash synth.sh speed [RUNS]    both builds: the `speed` table (one thread, median of RUNS passes, default 21)
+#   bash synth.sh lanes [CASES]   the SIMD build once for each -DWEX_FAST_LANES (1, 2, 3, 4, 6, 8): `equal`, then
+#                                 `mutate` with CASES mini-records (default 200); 5 must not compile. Last line on
+#                                 success: synth lanes passed
 # Usage: after bash wex4/build_and_test.sh, from any directory. gcc and python on PATH (PYTHON=python3 on Linux);
-# CC names another compiler and WEX_OPENMP other OpenMP flags, as in wex4/build_and_test.sh (macOS: a GNU gcc of
-# Homebrew, or Apple clang with the libomp of Homebrew in WEX_OPENMP).
+# CC names another compiler, as in wex4/build_and_test.sh (macOS: a GNU gcc of Homebrew), and WEX_OPENMP replaces
+# -fopenmp (Apple clang, which has no OpenMP runtime: "-Xclang -fopenmp -I<libomp>/include -L<libomp>/lib -lomp"
+# with <libomp> = $(brew --prefix libomp), as the arm-speed job of .github/workflows/ci.yml sets it; set and empty,
+# it builds without OpenMP).
 set -eu
 HERE=$(cd "$(dirname "$0")" && pwd)
 ROOT=$(cd "$HERE/../../.." && pwd)
 PY=${PYTHON:-python}
 CC=${CC:-gcc}   # the C compiler, as in wex4/build_and_test.sh
-OMP=${WEX_OPENMP:--fopenmp}   # the OpenMP flags, as there
+OMP=${WEX_OPENMP--fopenmp}   # the OpenMP flags, as there; set and empty = no OpenMP
 MODE=${1:-check}
 O=$HERE/out/synth
 C=$ROOT/wex4/out/synth_nr3.wex
@@ -49,6 +54,7 @@ case $MODE in
   speed)
     RUNS=${2:-21}
     echo "machine: $(uname -s) $(uname -m), $(getconf _NPROCESSORS_ONLN 2>/dev/null || echo '?') logical CPUs"
+    if [ "$(uname -s)" = Darwin ]; then sysctl machdep.cpu.brand_string hw.model 2>/dev/null || true; fi
     if command -v lscpu > /dev/null 2>&1; then lscpu | grep -E '^(Model name|Vendor ID|CPU part|BogoMIPS)' || true; fi
     echo "compiler: $("$CC" --version | head -1), -O3 $MARCH $OMP"
     for t in t_simd t_scalar; do
@@ -56,5 +62,26 @@ case $MODE in
       ./$t.exe speed model.wnm2 "$RUNS" $R
     done
     ;;
-  *) echo "usage: bash synth.sh check [CASES] | speed [RUNS]" >&2; exit 2 ;;
+  lanes)
+    CASES=${2:-200}
+    echo "compiler: $("$CC" --version | sed -n 1p)"
+    # every build has the same variants, which check already compares; TEST_DEFAULT_ONLY leaves k0 and the
+    # default entry point, whose number of streams is the one thing WEX_FAST_LANES changes
+    for n in 1 2 3 4 6 8; do
+      "$CC" $W -O3 $MARCH $OMP -DWEX_FAST_LANES=$n -DTEST_DEFAULT_ONLY "$HERE/test_fast_decode.c" -o "t_lanes$n.exe"
+      echo "== WEX_FAST_LANES=$n equal, mutate $CASES"
+      ./t_lanes$n.exe equal model.wnm2 $R > "lanes$n.log" || { cat "lanes$n.log"; exit 1; }
+      cat "lanes$n.log"
+      # the line proves that the build took the value: the default entry point was compared with it
+      grep -q "^equal: .* + default (WEX_FAST_LANES $n), 0 mismatches" "lanes$n.log"
+      ./t_lanes$n.exe mutate model.wnm2 "$CASES" 20261115 $R
+    done
+    # compile only, so without the OpenMP flags (Apple clang would warn that the -L and -l of WEX_OPENMP are unused)
+    if "$CC" $W -O3 $MARCH -DWEX_FAST_LANES=5 -c "$HERE/test_fast_decode.c" -o t_lanes5.o > lanes5.log 2>&1; then
+      echo "-DWEX_FAST_LANES=5 compiled; it must not" >&2; exit 1
+    fi
+    grep -q 'WEX_FAST_LANES must be' lanes5.log
+    echo "synth lanes passed"
+    ;;
+  *) echo "usage: bash synth.sh check [CASES] | speed [RUNS] | lanes [CASES]" >&2; exit 2 ;;
 esac

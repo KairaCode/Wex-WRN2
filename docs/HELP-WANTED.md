@@ -248,7 +248,16 @@ measured; it is not known to fail.
     both pass the comparisons with the reference decoder that `scripts/check_all.sh` and the fuzz
     replay make (not the other steps of `linux-arm`); no speed was measured there. The kernel also
     runs under ASan and UBSan on ARM64 Linux and on macOS, and `fuzz_wnr3_record` compares it with
-    the reference under libFuzzer on both (60 s per run); no report so far.
+    the reference under libFuzzer on both (60 s per run); no report so far. On 2026-11-15 the `arm-speed` jobs (only in a CI run started by hand) built it
+    with each number of interleaved streams (`-DWEX_FAST_LANES` = 1, 2, 3, 4, 6 or 8), compared
+    each build with the reference decoder (byte-identical every time) and timed it: 18 calls of
+    `synth.sh speed` per compiler on 6 VMs each of ubuntu-24.04-arm and of macos-15 (an Apple M1
+    under virtualization), there with Homebrew GCC 15.3 and with Apple clang 17 and Homebrew's
+    `libomp`. On the M1 VMs the default configuration was 4.8 (GCC) and 5.0 (Apple clang) times
+    faster than the scalar kernel. The fastest number of streams was 6 on the Neoverse-N2 (0.8%
+    under 4) and 8 on the M1 VMs (11% and 16% under 4 by the medians, the ranges of the calls
+    overlapping); 4 is fastest on the two x86 machines, so the default stays 4 (RESULTS, "Streams
+    per CPU, Apple silicon, Apple clang").
   - **Today, SVE:** kernel 2 (the gathers, which NEON lacks) has an SVE version since 2026-11-15. It
     is built only with an SVE flag (`-march=armv8-a+sve`, or `-mcpu=native` on a CPU with SVE), and
     NEON kernel 1 stays the default. The `linux-arm` runner has SVE with 128-bit vectors: there the
@@ -258,10 +267,11 @@ measured; it is not known to fail.
     slower than NEON kernel 1 on one thread, on synthetic records
     ([results](../wex4/research/fast-cpu-decode/RESULTS.md), section "SVE kernel 2"). So it is an
     option, not the default.
-  - **Still open:** its speed on other ARM CPUs (Apple silicon, Ampere, DGX Spark), which needs no
-    model (`bash scripts/check_all.sh`, then `bash wex4/research/fast-cpu-decode/synth.sh speed`);
-    its speed on real records; the number of interleaved streams that is
-    best on each CPU; the SVE kernel 2 on a CPU with vectors longer than 128 bits (256 bits on
+  - **Still open:** its speed on other ARM CPUs (Apple silicon outside a VM, M2 and later, Ampere,
+    DGX Spark), which needs no model (`bash scripts/check_all.sh`, then
+    `bash wex4/research/fast-cpu-decode/synth.sh speed` three times or more and `speed_runs.py` on
+    the outputs); its speed on real records, and with them whether 6 or 8 streams beat 4 on an ARM
+    CPU (no real record is in CI); the SVE kernel 2 on a CPU with vectors longer than 128 bits (256 bits on
     Neoverse V1, 512 on A64FX), where it might win: `WEX4_MARCH=-march=armv8-a+sve` before the same
     `synth.sh speed` times both kernels; a choice at run time between a NEON and an SVE build (a
     binary built for SVE needs a CPU with SVE, and nothing checks for it).
@@ -538,7 +548,9 @@ listed above as well.
   *(open to you, section 6)*.
 - **ARM and macOS:** the ARM CI jobs (Linux, and macOS on Apple silicon with GNU gcc and with Apple
   clang), ASan and UBSan and the libFuzzer harnesses on both, a NEON version of kernel 1 of the fast
-  CPU decoder and an SVE version of kernel 2 are in; the SVE kernel is not the default, because on
+  CPU decoder and an SVE version of kernel 2 are in; the NEON kernel's speed on synthetic records was
+  measured on the Linux runner and on the macOS runner's Apple M1 VM, also built with Apple clang, for
+  every number of interleaved streams (the default stays 4); the SVE kernel is not the default, because on
   the CI runner's 128-bit SVE it is slower than NEON kernel 1. Their speed on real records and on ARM
   CPUs other than the Linux CI runner, and the SVE kernel on longer vectors, are still open *(open
   to you, section 3)*.

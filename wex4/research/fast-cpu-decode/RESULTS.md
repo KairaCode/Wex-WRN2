@@ -22,7 +22,8 @@ For scale: the GPU batch decode figure quoted in the repo docs is about 0.37 ms 
 here), i.e. the fast CPU path with 8 desktop threads is about 37x slower than that.
 
 These numbers are x86 (AVX2). Kernel 1 also has a NEON version for 64-bit ARM, added on 2026-11-14 and
-measured on synthetic records only: see "NEON kernel (AArch64)" below. Kernel 2 has an SVE version for ARM
+measured on synthetic records only, on a Neoverse-N2 and on Apple M1 virtual machines: see "NEON kernel
+(AArch64)" below. Kernel 2 has an SVE version for ARM
 CPUs with SVE, added on 2026-11-15; on the one SVE CPU it ran on it is slower than NEON kernel 1 and is not
 the default: see "SVE kernel 2 (AArch64)".
 
@@ -33,7 +34,9 @@ the default: see "SVE kernel 2 (AArch64)".
 | `wex_fast_decode.h` | the decoder (C11 + GNU builtins, includes `wex_format.h`) |
 | `test_fast_decode.c` | harness: `equal`, `mutate`, `bench`, `speed` |
 | `build.sh` | x86: builds the harness three ways into `out/` (AVX2 + OpenMP, scalar fallback, UBSan trap build) |
-| `synth.sh` | any CPU, no real model: builds the harness with the SIMD kernels of the CPU and with the scalar kernel into `out/synth/` and runs it on the 4 synthetic records of `wex4/out/synth_nr3.wex` (`check`, run by `scripts/check_all.sh`, or `speed`); `WEX4_MARCH=-march=armv8-a+sve` adds the SVE kernel 2 |
+| `synth.sh` | any CPU, no real model: builds the harness with the SIMD kernels of the CPU and with the scalar kernel into `out/synth/` and runs it on the 4 synthetic records of `wex4/out/synth_nr3.wex` (`check`, run by `scripts/check_all.sh`, or `speed`); `lanes` builds it once for each `-DWEX_FAST_LANES`; `WEX4_MARCH=-march=armv8-a+sve` adds the SVE kernel 2 |
+| `speed_runs.py` | median and spread over several `synth.sh speed` calls, from their output or from CI job logs |
+| `arm-speed-20261115.txt` | the `synth.sh speed` output of the hand-started `arm-speed` CI jobs of 2026-11-15 (section "Streams per CPU, Apple silicon, Apple clang") |
 | `negative_control.sh` | removes one check at a time from a copy of the header and expects the mutation test to notice; exit 2 if it cannot read the model or a record; `WEX4_MARCH` as in `synth.sh` |
 | `extract.py` | copies the model blob and chosen records out of a container opened read-only |
 | `out/` | build products, data copies, logs (not in git) |
@@ -203,7 +206,9 @@ interleaved at about 2.0 ns (whole-record time, fused, divided by the 35.4 M wei
 Why 4 streams and not 8: only the measurement is certain. A plausible reading (not verified with performance
 counters) is that the per-symbol dependency chain is long, so interleaving helps until the kernel's live
 state no longer fits the 15 general registers and the out-of-order window; the compiler's code for 6 and 8
-streams spills state to the stack.
+streams spills state to the stack. On ARM the fastest number differs by CPU (6 on a Neoverse-N2, 8 on Apple
+M1 virtual machines, synthetic records): "Streams per CPU, Apple silicon, Apple clang" below.
+`-DWEX_FAST_LANES` sets the number that `wex_fast_decode` uses; the default stays 4.
 
 Thread scaling on the desktop is 5.2x from 1 to 8 threads for the default configuration; 16 and 32 threads
 were not measured.
@@ -220,7 +225,7 @@ same hash and ceil inverse, same bound checks and slack rule. Three steps use ot
 | 16 symbols into 8 bytes | two `pext` | `vsraq_n_u16` and `vmovn_u16` |
 
 Kernel 2 has no NEON version: NEON has no gather load. A NEON build that is asked for kernel 2 runs kernel 1
-with 4 streams. A build for SVE has an SVE kernel 2 ("SVE kernel 2 (AArch64)" below). `-DWEX_FAST_SCALAR`
+with `WEX_FAST_LANES` streams (4 by default). A build for SVE has an SVE kernel 2 ("SVE kernel 2 (AArch64)" below). `-DWEX_FAST_SCALAR`
 builds kernel 0 alone, as on x86.
 
 ### What was run on ARM
@@ -290,7 +295,8 @@ shared virtual machine, load unknown.
   table is run 43618569181. The two other runs of the job the same day gave 5.542 -> 1.408 ms (run
   43618200630, earlier) and 5.544 -> 1.406 ms (run 43619432196, later). The scalar build of the same
   source measured 5.475, 5.457 and 5.476 ms for kernel 0 in these three runs, in the same order.
-- 4 and 6 streams are equal within 1%; the default stays at 4 streams, as on x86.
+- 4 and 6 streams are equal within 1%; the default stays at 4 streams, as on x86. Eighteen more calls on
+  six VMs and the Apple M1 VMs of macOS: "Streams per CPU, Apple silicon, Apple clang" below.
 - Fusing the hash into the loop changes nothing measurable here (1.403 against 1.406 ms), unlike on the
   x86 desktop with real records (-21%).
 - `bench` in the same job (best of 15): the default configuration with 8 threads on the 4 CPUs took 0.47
@@ -302,8 +308,9 @@ shared virtual machine, load unknown.
   ms, 5.9x, where real records gave 7.1x. Whether the synthetic records understate the gain on ARM too
   was not measured.
 
-Not checked on ARM: real records; the speed on any CPU other than the Neoverse-N2 of the runner (no Apple
-silicon, no Ampere, no Cortex-A); big-endian AArch64 (it builds the scalar kernel, never run); 32-bit ARM
+Not checked on ARM: real records; the speed on any CPU other than the Neoverse-N2 of the Linux runner and
+the Apple M1 virtual machine of the macOS runner (subsection "Streams per CPU, Apple silicon, Apple clang"
+below; no Apple silicon outside a VM, no M2 or later, no Ampere, no Cortex-A); big-endian AArch64 (it builds the scalar kernel, never run); 32-bit ARM
 (scalar kernel, never run).
 
 Under ASan and UBSan (added on 2026-11-15, no report): the `linux-arm-sanitizers` CI job runs
@@ -319,6 +326,113 @@ kernel and fails if it built another one. It runs `scripts/check_all.sh`, so the
 `macos-clang` job does the same with Apple clang (17.0.0 on 2026-11-15) and the `libomp` of Homebrew
 (`WEX_OPENMP`), and fails unless the build is NEON with OpenMP. Neither runs `synth.sh speed`, the
 negative controls or the WEX4 tests with the scalar kernel forced: those are steps of `linux-arm` only.
+The `arm-speed` jobs, which only a run started by hand has, run `synth.sh lanes` and `synth.sh speed` on
+macos-15 with Homebrew GCC and with Apple clang (below).
+
+### Streams per CPU, Apple silicon, Apple clang
+
+Added on 2026-11-15, for three questions that the list above left open: the speed of the NEON kernel on
+Apple silicon, a build with Apple clang, and the number of streams interleaved by kernel 1 that is fastest
+on each CPU.
+
+What changed in the code:
+
+- `-DWEX_FAST_LANES=N`, N one of 1, 2, 3, 4, 6, 8 (default 4), sets the streams of kernel 1 in
+  `wex_fast_decode`, on NEON and on AVX2; any other N stops the build with `#error`. An explicit `lanes` of
+  1, 2, 3, 4, 6 or 8 in `WexFastOptions` is kept; only another value becomes N, and so does
+  a request for kernel 2 on NEON (before, it got 4). The six loops are compiled
+  in every build, so N changes the speed of the default entry point and nothing else.
+- `synth.sh lanes` builds the harness once per N and compares the default entry point with the reference
+  decoder: `equal` on the 4 records (1 and 8 threads), `mutate` with 200 mini-records. It checks from the
+  `equal` line that the build took N, and that N = 5 does not compile. The `linux` (AVX2) and `linux-arm`
+  (NEON) CI jobs run it on every push; it also passed on Windows x86-64 with MSYS2 gcc 16.2 (AVX2 build).
+- `synth.sh` takes `WEX_OPENMP` in place of `-fopenmp`: that is how Apple clang, which has no OpenMP
+  runtime of its own, gets the `libomp` of Homebrew. Set and empty, it builds without OpenMP (the
+  harness then runs one thread only). `speed_runs.py` gives median and spread over several
+  `synth.sh speed` calls, also from whole job logs (`--compiler` keeps the calls of one compiler).
+
+Where it ran: the `arm-speed` jobs of `.github/workflows/ci.yml` (input `arm_speed` of a run started by
+hand), in two runs on 2026-11-15 with 3 jobs per runner image each, so 6 virtual machines of each kind.
+
+| | ubuntu-24.04-arm | macos-15 |
+|---|---|---|
+| runner image | ubuntu24-arm64 20261111.182.1 | macos15 20261104.0514.1 |
+| CPU (`lscpu`; `sysctl machdep.cpu.brand_string hw.model`) | Neoverse-N2, 4 logical CPUs | Apple M1 (Virtual), VirtualMac2,1, 3 logical CPUs, 7 GiB |
+| compilers and flags | gcc 13.3.0 (Ubuntu), `-O3 -fopenmp` | Homebrew GCC 15.3.0, `-O3 -fopenmp`; Apple clang 17.0.0 (clang-1700.0.13.5), `-O3 -Xclang -fopenmp`, the include and lib folders of Homebrew libomp 23.1.5, `-lomp` |
+| `synth.sh speed 21` calls | 3 per VM, 18 in all | 3 per compiler per VM, the two compilers taking turns: 18 per compiler |
+
+The runs are GitHub Actions run ids 43717734347 (the first commit of this change, before it was rebased
+onto `main`) and 43740953159 (the next commit). Both built the same harness with the same `synth.sh
+speed`; the decoder differs by the line that keeps an explicit `lanes = 4`, which does nothing in these
+builds (default N). The output of all 54 calls is in `arm-speed-20261115.txt`;
+`python -I speed_runs.py --compiler TEXT arm-speed-20261115.txt` (TEXT `gcc (Ubuntu`, `Homebrew GCC` or
+`Apple clang`) prints the full tables that the ones below are taken from. Data: the 4 records of
+`wex4/out/synth_nr3.wex` (synthetic, 208,896 decoded bytes each, 24 scale and 192 weight streams, flags
+0x00), one thread. One call gives, per row, the median of 21 passes over the 4 records.
+
+Byte identity: in all 12 jobs `synth.sh lanes` passed with each compiler of the job (6 builds per compiler):
+for every N, `equal` and `mutate` (200 mini-records, 100 accepted and 100 rejected by the reference) gave 0
+mismatches, and N = 5 did not compile. The jobs of the second run built with `-Werror` (no compiler gave a
+warning; the logs of the first run show none either) and checked that every build was the NEON kernel with
+OpenMP and that `clang` was Apple clang.
+
+Kernel 1 with the fused hash (the `wex_fast_decode` configuration), ms per record: the median of the 18 call
+medians, in brackets the lowest and the highest call median.
+
+| streams | Neoverse-N2, gcc 13.3 | Apple M1 VM, Homebrew GCC 15.3 | Apple M1 VM, Apple clang 17 |
+|---:|---:|---:|---:|
+| 1 | 3.712 (3.671 to 3.752) | 5.766 (5.167 to 6.495) | 5.925 (4.960 to 8.759) |
+| 2 | 2.054 (2.047 to 2.065) | 3.032 (2.690 to 3.859) | 3.143 (2.566 to 4.027) |
+| 3 | 1.678 (1.673 to 1.687) | 2.250 (1.982 to 2.765) | 2.487 (1.931 to 3.154) |
+| 4, the default | 1.408 (1.406 to 1.416) | 1.732 (1.509 to 2.406) | 1.808 (1.463 to 2.994) |
+| 6 | 1.397 (1.393 to 1.403) | 1.607 (1.412 to 1.982) | 1.827 (1.423 to 2.409) |
+| 8 | 1.830 (1.827 to 1.835) | 1.546 (1.383 to 2.570) | 1.514 (1.305 to 2.799) |
+| scalar kernel (`-DWEX_FAST_SCALAR` build) | 5.474 (5.431 to 5.499) | 8.368 (7.211 to 10.043) | 9.067 (8.097 to 15.662) |
+
+Each call against itself: the time of 6 or 8 streams divided by the time of 4 streams in the same call,
+median over the 18 calls, and in how many calls the row was faster than 4 streams.
+
+| kernel 1 | streams | Neoverse-N2, gcc | Apple M1 VM, Homebrew GCC | Apple M1 VM, Apple clang |
+|---|---:|---:|---:|---:|
+| fused | 6 | 0.991, 18 of 18 | 0.936, 16 of 18 | 0.983, 11 of 18 |
+| fused | 8 | 1.300, 0 of 18 | 0.905, 14 of 18 | 0.865, 13 of 18 |
+| not fused | 6 | 0.994, 18 of 18 | 0.956, 15 of 18 | 0.951, 14 of 18 |
+| not fused | 8 | 1.330, 0 of 18 | 0.908, 15 of 18 | 0.877, 15 of 18 |
+
+1, 2 and 3 streams were slower than 4 in every call on the Neoverse-N2 and in all but at most 2 of the 18
+calls on the M1 VMs.
+
+- Apple silicon: on the M1 VMs the default configuration took 1.73 ms per record with Homebrew GCC and
+  1.81 ms with Apple clang, against 8.37 and 9.07 ms for the scalar kernel of the same compiler: 4.8 and
+  5.0 times faster. On the Neoverse-N2: 5.47 -> 1.41 ms, 3.9x, as on 2026-11-14. The calls of one row on
+  macOS lay 23% to 99% of the median apart (on the Neoverse-N2 at most 2.8%), so one macOS number alone
+  says little.
+- Apple clang against Homebrew GCC on the same VMs: every row of the two compilers lies inside the range
+  of the other (4 streams fused 1.808 against 1.732 ms, 8 streams fused 1.514 against 1.546 ms).
+- The fastest number of streams is not the same on the two ARM CPUs. Neoverse-N2: 6 streams, 1.397
+  against 1.408 ms for 4 (0.8% less, faster in 18 of 18 calls, the two ranges apart); 8 streams take 30%
+  more. Apple M1 VMs: 8 streams, 1.546 against 1.732 ms with Homebrew GCC (10.7% less) and 1.514 against
+  1.808 ms with Apple clang (16.2% less), faster in 14 and 13 of 18 calls, the ranges of 4 and 8 streams
+  overlapping. On both x86 machines with real records (section "Speed, every variant", best of 5, one
+  thread, fused) the fastest is 4 streams; 6 and 8 streams took 27% and 28% more on the desktop, 55% and
+  52% more on the laptop.
+- **The default stays at 4 streams.** No value is the fastest on every CPU measured: 6 on the
+  Neoverse-N2, 8 on the M1 VMs, 4 on the two x86 machines. 6 streams (fused) beat 4 in 18 of 18 calls on
+  the Neoverse-N2, by 0.8%, and in 16 and 11 of 18 calls on the M1 VMs, by less than the spread between
+  calls (with Apple clang its median is even 1% above that of 4 streams); on both x86 machines it was
+  slower. So a separate NEON default of 6 was not adopted either. A build for one CPU can set
+  `-DWEX_FAST_LANES` itself; for 8 on Apple silicon the evidence is these VMs and synthetic records only.
+
+Limits: shared virtual machines, load unknown; the macOS runner is an M1 under virtualization with 3
+logical CPUs, not a whole Mac, and no M2, M3 or M4 was measured. Synthetic records only, as no real record
+is in CI (on x86 the synthetic records gave 5.9x where real records gave 7.1x; on ARM this was not
+measured). One thread only. Within a call the rows run one after the other in a fixed order (1, 2, 3, 4,
+6, 8 streams, then the same fused), so a change of the VM's speed during a call is not separated from the
+row; the ratio within each call and the 6 VMs per image are the only guard against it. In these runs Apple clang
+built only this harness; the `macos-clang` job, merged later, builds `scripts/check_all.sh`, `wex4_tools` and
+the fuzz replay with it, at the default of 4 streams. A value
+of `WEX_FAST_LANES` other than 4 was compared with the reference decoder by `synth.sh lanes` only, not by
+the WEX4 tests and not on real records.
 
 ## SVE kernel 2 (AArch64)
 
@@ -481,6 +595,8 @@ builds NEON only); the libFuzzer harnesses (they call the default entry point); 
   streams). `WEXF_SIMD` is 1, 2 or 0, `WEXF_SVE` is 1 or 0, and `WEXF_KERNELS` is "AVX2", "NEON",
   "NEON+SVE" or "scalar". GNU extensions used: `always_inline`, `__builtin_bswap32`, on ARM
   `__builtin_clz` and `__builtin_ctzll`. The SIMD paths assume little-endian.
+  `-DWEX_FAST_LANES=N` (1, 2, 3, 4, 6 or 8, default 4) sets the streams of kernel 1 in `wex_fast_decode`;
+  any other N stops the build.
 - Parallel region inside an existing OpenMP parallel region runs serially unless nesting is enabled.
 
 ## Not checked
@@ -493,7 +609,8 @@ builds NEON only); the libFuzzer harnesses (they call the default entry point); 
   synthetic records only, in CI: gcc 13.3 on x86-64 Linux and on ARM64 Linux (on both also under ASan and UBSan);
   clang 18 on x86-64 Linux (the `linux-tsan` job, `CC=clang`: the AVX2 and the scalar build) and on ARM64
   Linux (the NEON and the SVE build without OpenMP, see the NEON and the SVE sections); Homebrew GCC 15 and
-  Apple clang 17 on macOS arm64 (both builds of Apple clang also under ASan and UBSan); the gcc SVE build under
+  Apple clang 17 on macOS arm64 (both builds of Apple clang also under ASan and UBSan; the speed with both
+  only in the `arm-speed` jobs that a run started by hand has); the gcc SVE build under
   QEMU at three vector lengths. No MSVC, no big-endian, no SVE build with Apple clang or under a sanitizer.
 - WNR2 records (delegated to the reference), the `malloc` failure path and unvalidated models.
 - Thread counts other than 1, 3 (mutation test) and 8; no run pinned to physical cores; the desktop was busy.
