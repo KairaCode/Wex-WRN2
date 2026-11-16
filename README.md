@@ -164,7 +164,7 @@ wex4/          WEX4, repo-only: Python reference, converter, C tools, tests, rev
 impl/          readers written from the specifications alone, not from the code here
   go-wex4/        WEX4 reader, verifier and writer in Go, with WBP1 and WNR3 codecs and a WNM2 trainer; SPEC-NOTES.md: what the specs left open
   rust-wex4/      WEX4 reader and verifier in Rust, with WBP1 and WNR3 decoders and its own SHA-256; SPEC-NOTES.md, and differential.py against the C and Python readers
-scripts/       repo-only checks: check_all.sh (every CPU check), build_cpu_check.sh, sanitize_c.sh, verify_wex1.py and its test
+scripts/       repo-only checks: check_all.sh (every CPU check), build_cpu_check.sh, sanitize_c.sh and sanitize_libs.c, verify_wex1.py and its test
 bench/         hardware benchmark for testers (bench.py, Linux and Windows) and the Linux read paths for expert records (wex_io.py)
 archive/       the WNR2 lab code (encoder, trainer, checks) and its benches, kept for the record
 models/        trained WNM2 models: DeepSeek V4 Flash 0731 and V4.1 REAP-192

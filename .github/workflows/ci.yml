@@ -3,7 +3,7 @@
 # their seeds (wex4/fuzz/run.sh --replay), on Linux (x86-64, ARM64), macOS (Apple silicon) and Windows, and on
 # macOS once more with Apple clang (macos-clang). The same under ASan and UBSan on x86-64 Linux, on ARM64 Linux and
 # with Apple clang on macOS (linux-sanitizers, linux-arm-sanitizers, macos-clang); the C test executables under
-# TSan and MSan with clang (linux-tsan, linux-msan); the Go reader and writer on the conformance vectors and against the
+# TSan and MSan with clang, and the libraries of the Python tests under both (linux-tsan, linux-msan); the Go reader and writer on the conformance vectors and against the
 # reference readers (go-reader); and the Rust reader on the conformance vectors and against the C and the Python
 # reader (rust-reader).
 # No GPU, no model weights, no secrets. A run started by hand can also have the linux-io-bench job (the full
@@ -432,8 +432,9 @@ jobs:
 
   # the C test executables under ThreadSanitizer: clang with its own OpenMP runtime and Archer, the tool of that
   # runtime that tells ThreadSanitizer what OpenMP synchronizes. A data race in the OpenMP loops of
-  # c/tools/wex4_verify.c or of the fast WNR3 decoder stops the run. Executables only: a library loaded into
-  # Python, which is not instrumented, cannot be checked this way (scripts/sanitize_c.sh lists what runs).
+  # c/tools/wex4_verify.c or of the fast WNR3 decoder stops the run. Then the three libraries that the Python
+  # tests load, built under ThreadSanitizer: called from a C program (scripts/sanitize_libs.c), then by the WEX4
+  # tests in Python with the runtime preloaded (scripts/sanitize_c.sh lists what runs).
   # Then the smoke run of bench/wex_io.c, which has its own pread threads, under ThreadSanitizer.
 # The last step is not a sanitizer run: every CPU check built with clang, so that CC=clang keeps working.
 # The three scripts that build C print their compiler, and the step fails unless all three name a clang
@@ -452,7 +453,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends "libomp-$(clang -dumpversion | cut -d. -f1)-dev"
-      - name: C tests under ThreadSanitizer
+      - name: C tests and the libraries of the Python tests under ThreadSanitizer
         run: bash scripts/sanitize_c.sh tsan
       - name: Linux read-path benchmark, smoke run under ThreadSanitizer
         run: CC=clang WEX_CFLAGS="-g -fsanitize=thread" python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --smoke --strict
@@ -464,9 +465,9 @@ jobs:
           test "$(grep -c '^compiler: ' "$RUNNER_TEMP/clang.log")" = 3
           test "$(grep -c '^compiler: .*clang' "$RUNNER_TEMP/clang.log")" = 3
 
-  # the same executables under MemorySanitizer (clang), built without OpenMP, so that no library that is not
-  # instrumented is in the process: a branch, a pointer or a system call that depends on a byte nobody wrote
-  # stops the run
+  # the same executables, and the libraries of the Python tests called from scripts/sanitize_libs.c, under
+  # MemorySanitizer (clang), built without OpenMP, so that no library that is not instrumented is in the process
+  # (nor Python): a branch, a pointer or a system call that depends on a byte nobody wrote stops the run
   linux-msan:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -476,7 +477,7 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
         with:
           persist-credentials: false
-      - name: C tests under MemorySanitizer
+      - name: C tests and the libraries of the Python tests under MemorySanitizer
         run: bash scripts/sanitize_c.sh msan
 
   # the Go reader and writer of WEX4 (impl/go-wex4: Go, standard library only, written from the specifications

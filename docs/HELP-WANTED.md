@@ -185,11 +185,18 @@ measured; it is not known to fail.
     on) and MemorySanitizer (clang, OpenMP off) through `bash scripts/sanitize_c.sh tsan|msan`,
     whose header lists what runs: `test_wex_format` (msan only), `test_wex4_verify`, `wex4_verify`
     (8 threads under tsan, one under msan), and the six fuzzing harnesses on their seeds, two of
-    them also on a file of synthetic WNR3 records. `linux-tsan` also runs the smoke mode of
+    them also on a file of synthetic WNR3 records. Since 2026-11-15 the same script also runs the libraries that the tests
+    load into Python (`wex4_tools.dll` with the fast and with the reference WNR3 decoder, and
+    `wex_nr3_tools.dll`, the WNR3 encoder) under both sanitizers: driven from C by
+    `scripts/sanitize_libs.c`, which calls every function they export with the inputs of the Python
+    tests, and under ThreadSanitizer also by the WEX4 tests themselves, with the runtime preloaded
+    into Python. Neither sanitizer reported anything there. `linux-tsan` also runs the smoke mode of
     `bench/wex_io.py`, whose `pread` paths have their own threads, under ThreadSanitizer.
-  - **Still open:** the libraries that the tests load into Python (`wex4_tools.dll` with the fast
-    decoder, the WNR3 encoder) under these two sanitizers, which needs the same tests driven from C
-    or an instrumented Python; the engine-side readers inside an engine tree (here they run only
+  - **Still open:** the Python tests under MemorySanitizer, which needs a Python (and its `libffi`)
+    built with it: the C driver covers the functions of the libraries, not every path by which the
+    tests reach them; the WEX4 tests under ThreadSanitizer at their default fuzz count (CI runs
+    `--fuzz 100`; the default took 256 to 298 s in each of three runs on a GitHub Actions runner,
+    without a report); the engine-side readers inside an engine tree (here they run only
     through the fuzzing harnesses, under the sanitizers against the stand-ins; against colibri's
     headers without a sanitizer); ThreadSanitizer and MemorySanitizer on ARM64
     and on macOS (both jobs are x86-64 Linux); the SVE build of the fast decoder under any
