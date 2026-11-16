@@ -261,8 +261,8 @@ jobs:
       # seconds: the smoke run of bench/wex_io.c on macOS (its blocks __APPLE__: F_NOCACHE, fcntl hints, msync
       # to drop the file's pages), built with the GNU gcc of CC, then with Apple clang on the container the
       # first call left. Both builds are C99 (-std=c99 -pedantic); wex_io.py stops on any warning. --strict: the
-      # 11 paths that macOS has must run and match the index; the 9 io_uring and POSIX_FADV_SEQUENTIAL paths
-      # print "skipped", which --strict does not count on macOS
+      # 17 paths that macOS has must run and match the index; the 10 io_uring, POSIX_FADV_SEQUENTIAL and
+      # readahead(2) paths print "skipped", which --strict does not count on macOS
       - name: macOS read-path benchmark, smoke run (GNU gcc, then Apple clang)
         run: |
           "$CC" --version | head -1; clang --version | head -1
@@ -639,18 +639,19 @@ jobs:
             python3 -I wex4/research/fast-cpu-decode/speed_runs.py "$RUNNER_TEMP"/speed/"$n"-*.log | tee -a "$GITHUB_STEP_SUMMARY"
           done
 
-  # The same measurement on macOS, only when a manual run asks for it
+  # The measurement of linux-io-bench on macOS, only when a manual run asks for it
   # (gh workflow run ci.yml --ref <branch> -f macos_io_bench=true). The runner is a virtual machine on an Apple
   # silicon host with a virtual disk: its numbers say how the macOS read paths compare there, not what the SSD
   # of a Mac gives. The compiler is the runner's default gcc, which is Apple clang, in C99. --drop-caches runs
   # purge through sudo before every pass; it empties the cache of the VM's kernel, not a cache of the host under
-  # the virtual disk. --runs 11: the order of the 11 timed paths rotates by one each round, so with 11 rounds
-  # every path takes every place in a round once (on these runners the early places of a round are slower).
+  # the virtual disk. --runs 17: the order of the 17 timed paths (the 27 rows of wex_io.py but the 10 that macOS
+  # has not) rotates by one each round, so with 17 rounds every path takes every place in a round once (on these
+  # runners the early places of a round are slower). The recorded runs of 2026-11-15 had 11 paths and --runs 11.
   # The first lines say whether sudo needs no password, and what the VM is
   macos-io-bench:
     if: github.event_name == 'workflow_dispatch' && inputs.macos_io_bench
     runs-on: macos-15
-    timeout-minutes: 90
+    timeout-minutes: 120   # 90 were set for 11 paths x 11 rounds; 17 x 17 passes had not been timed when this was set
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
         with:
@@ -660,7 +661,7 @@ jobs:
           if sudo -n true; then echo "sudo without a password: yes"; else echo "sudo without a password: no"; fi
           sysctl -n machdep.cpu.brand_string hw.model kern.hv_vmm_present hw.memsize hw.pagesize
           sw_vers; gcc --version | head -1; df -h "$RUNNER_TEMP"
-          WEX_CFLAGS="-std=c99 -pedantic" python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --drop-caches --runs 11
+          WEX_CFLAGS="-std=c99 -pedantic" python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --drop-caches --runs 17
           jq -r .table_markdown bench/out/wex_io.json >> "$GITHUB_STEP_SUMMARY"
           echo "----- bench/out/wex_io.json"
           cat bench/out/wex_io.json

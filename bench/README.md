@@ -211,11 +211,16 @@ label names the macOS call.
 | `POSIX_FADV_WILLNEED` on the record 1 or 4 reads ahead | `fcntl(F_RDADVISE)` on that record: an advisory read that the caller does not wait for |
 | `POSIX_FADV_DONTNEED` on the file before a pass | `msync(MS_INVALIDATE)` on a mapping of the file |
 | `/proc/sys/vm/drop_caches` (`--drop-caches`) | `sync`, then `purge`, as root or through `sudo` without a password |
+| `POSIX_FADV_WILLNEED` in chunks of `read_ahead_kb` | `fcntl(F_RDADVISE)` per chunk of 128 KiB (macOS gives no readahead size) |
+| `readahead(2)` | none: the row prints `skipped` |
+| the helper thread of `prefetch=thread`, the rows with `gap_ms=20` | the same |
 | `io_uring` (8 rows) | none: the rows print `skipped` |
 | `mincore` in 4096-byte pages | `mincore` in system pages, 16 KiB on Apple silicon; a page that a record shares with its neighbour counts for both |
 
-A stand-in call that fails is a failure (exit 1). With `--strict` the 9 rows that macOS cannot have are
-not counted as skipped; the other 11 must run. The JSON also holds what `sysctl` says (CPU, model, whether
+A stand-in call that fails is a failure (exit 1). With `--strict` the 10 rows that macOS cannot have (8
+`io_uring` rows, `POSIX_FADV_SEQUENTIAL`, `readahead(2)`) are not counted as skipped; the other 17 of the 27
+must run. Until the prefetch rows were merged (2026-11-15) there were 20 rows, 9 of them absent on macOS and
+11 run; the recorded runs below are of those 11. The JSON also holds what `sysctl` says (CPU, model, whether
 it is a virtual machine, RAM, page size, macOS version) and what `diskutil` says of the disk (filesystem,
 media name, bus, solid state), without host name, volume name or path. **Cold on macOS** means that
 `purge` emptied the cache of the macOS kernel and that `mincore` found none of the pass's pages in it. It
@@ -236,5 +241,5 @@ machine, an Intel Mac.
 What CI covers on macOS: the `macos` job prints the versions of both compilers and runs `--smoke --strict`
 built with the Homebrew GNU gcc of `CC`, then reads the same container through `--file` with a build by
 Apple clang (`CC=clang`); both builds pass `WEX_CFLAGS="-std=c99 -pedantic"`, and the script stops on any
-warning. The full run is the job `macos-io-bench` (Apple clang, C99, `--runs 11`), started by hand with
+warning. The full run is the job `macos-io-bench` (Apple clang, C99, `--runs 17`, one round per timed path), started by hand with
 `gh workflow run ci.yml --ref <branch> -f macos_io_bench=true`.

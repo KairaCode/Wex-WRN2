@@ -496,12 +496,14 @@ measured; it is not known to fail.
   of the device's readahead was the fastest prefetch in every run that had those rows: 1.24x to 2.32x
   the same work without prefetch, on five kinds; not run on the sixth. So the store was not changed.
 - **macOS:** the same benchmark runs on macOS through the calls macOS has (`F_NOCACHE` for `O_DIRECT`,
-  `F_RDAHEAD` and `F_RDADVISE` for the hints, `purge` for `drop_caches`; `io_uring` and
-  `POSIX_FADV_SEQUENTIAL` print `skipped`). The `macos` CI job runs its smoke run; the job
+  `F_RDAHEAD` and `F_RDADVISE` for the hints, `purge` for `drop_caches`; `io_uring`,
+  `POSIX_FADV_SEQUENTIAL` and `readahead(2)` print `skipped`, so 17 of the 27 paths run there). The
+  `macos` CI job runs its smoke run; the job
   `macos-io-bench` is the full run, started by hand. Measured so far: three runs of 11 rounds on GitHub
   Actions `macos-15` runners, virtual machines on Apple silicon hosts with a virtual disk
   ([research/macos-io-20261115](../research/macos-io-20261115/README.md); a round is one timed pass of
-  every path, and with 11 rounds every path takes every place in a round once). All 11 paths read the
+  every path, and with 11 rounds every path takes every place in a round once; those runs had the 11
+  paths of before the prefetch rows, which have run on macOS only in the smoke run). All 11 paths read the
   right bytes. `F_NOCACHE` on 1 thread was 2.56x to 3.53x the page-cache `pread` and faster than it in
   31 of the 33 rounds; page-cache threads gained 1.16x to 1.60x; `F_RDAHEAD` off and `F_RDADVISE` gave
   no steady gain. But a cache below the virtual machine served part of the reads (the first pass of a

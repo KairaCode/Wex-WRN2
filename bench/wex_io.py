@@ -26,8 +26,10 @@ uses both).
 On macOS the same rows run through the macOS calls (macos_row below, and the blocks __APPLE__ of
 wex_io.c): F_NOCACHE where Linux has O_DIRECT, fcntl F_RDAHEAD 0 and F_RDADVISE for the posix_fadvise hints,
 msync MS_INVALIDATE to drop the file's pages before a pass, and --drop-caches runs purge (as root, through
-sudo without a password, when the user may). The io_uring rows and the POSIX_FADV_SEQUENTIAL row do not
-exist there: wex_io prints them as skipped, and --strict does not count those skips. The JSON then holds
+sudo without a password, when the user may). The io_uring rows, the POSIX_FADV_SEQUENTIAL row and the
+readahead(2) row do not exist there: wex_io prints them as skipped, and --strict does not count those skips.
+The other prefetch rows (WILLNEED in chunks through F_RDADVISE, the helper thread) and the rows with work
+between records run as on Linux; the chunk is 128 KiB there, as macOS gives no readahead size. The JSON then holds
 the CPU, the RAM, the page size and the disk from sysctl and diskutil, again without host name or path.
 Neither the msync nor purge reaches a cache below the kernel, such as the host of a virtual machine.
 """
@@ -161,8 +163,13 @@ MACOS_NOTES = {
     'path=sync direct=0 advise=random': 'fcntl F_RDAHEAD 0: readahead off on the descriptor',
     'path=sync direct=1': 'fcntl F_NOCACHE; on macOS c/qwen38_wex.h opens through compat_open_direct of the engine, '
                           'which is not in this repository',
+    'path=sync direct=0 ahead=1 prefetch=chunks': 'the next record announced as chunks of 128 KiB (macOS gives no '
+                                                  'readahead size), one fcntl F_RDADVISE each (ahead_cached measured)',
 }
-MACOS_ABSENT = ('path=uring', 'advise=sequential')   # options of the rows macOS cannot have (wex_io prints skipped)
+# options of the rows macOS cannot have (wex_io prints them skipped): io_uring, POSIX_FADV_SEQUENTIAL and readahead(2).
+# Every other row of CONFIGS runs there through the stand-ins of wex_io.c: the prefetch rows with F_RDADVISE or the
+# helper thread, the rows with work between records as on Linux
+MACOS_ABSENT = ('path=uring', 'advise=sequential', 'prefetch=readahead')
 NOT_ON_THIS_SYSTEM = set()   # options of the rows this system cannot have: --strict does not count their skip
 
 

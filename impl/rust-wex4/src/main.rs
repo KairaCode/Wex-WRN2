@@ -23,7 +23,7 @@ const USAGE: &str = "usage:
   wex4r check [-v] [--no-decode] FILE...
                                       check each file in full; one line per file, and with -v the
                                       SHA-256 of every decoded record and tensor
-  wex4r manifest [-v] MANIFEST.tsv    every row: file SHA-256, verdict, class and root
+  wex4r manifest [-v] MANIFEST.tsv    every row: file SHA-256, verdict, class, root and content digest
   wex4r dump FILE                     the header page and the index tables, as read
 exit status: 0 every file accepted (check) or every row as the manifest says (manifest);
              1 a file refused or a row that disagrees; 2 usage; 3 a file whose records are not all decodable";
@@ -135,6 +135,7 @@ fn cmd_manifest(args: &[String]) -> ExitCode {
     let dir = std::path::Path::new(&path).parent().map(|p| p.to_path_buf()).unwrap_or_default();
     let opt = wex4::Options { decode: true, list: false };
     let (mut rows, mut bad, mut roots, mut classes, mut rejects, mut accepts) = (0, 0, 0, 0, 0, 0);
+    let (mut digests, mut with_digest) = (0, 0);
     for raw in text.lines() {
         if raw.starts_with('#') || raw.trim().is_empty() {
             continue;
@@ -177,6 +178,15 @@ fn cmd_manifest(args: &[String]) -> ExitCode {
                 } else {
                     problems.push(format!("root {} is not the manifest's {}", hex(&r.header.root), root));
                 }
+                // the 7th column, when the manifest has it: the content digest of WEX4-SPEC section 5
+                if let Some(&content) = col.get(6).filter(|c| **c != "-") {
+                    with_digest += 1;
+                    match r.digest {
+                        Some(d) if hex(&d) == content => digests += 1,
+                        Some(d) => problems.push(format!("digest {} is not the manifest's {}", hex(&d), content)),
+                        None => problems.push("no content digest".to_string()),
+                    }
+                }
             }
             (Verdict::Reject(e), "reject") => {
                 rejects += 1;
@@ -201,8 +211,8 @@ fn cmd_manifest(args: &[String]) -> ExitCode {
         }
     }
     println!(
-        "rust reader: {} rows, {} disagree in verdict or root; root as the manifest's on {} of {} accepted rows; class as the manifest's on {} of {} rejected rows",
-        rows, bad, roots, accepts, classes, rejects
+        "rust reader: {} rows, {} disagree in verdict, root or content digest; root as the manifest's on {} of {} accepted rows; content digest as the manifest's on {} of {} rows that give one; class as the manifest's on {} of {} rejected rows",
+        rows, bad, roots, accepts, digests, with_digest, classes, rejects
     );
     if bad == 0 && classes == rejects {
         ExitCode::SUCCESS

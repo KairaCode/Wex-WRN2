@@ -1,5 +1,15 @@
 # Real expert tensors of three MXFP4 checkpoints: round trips, WNR3 and general-purpose codecs (2026-11-15)
 
+> **Note of 2026-11-16, after the merges.** Section 4 measured the Vulkan prototype of commit `1af6c0d`. The
+> prototype was changed the same day by [research/vulkan-gpu-20261115](../vulkan-gpu-20261115/README.md): its
+> shader keeps the scale word in a register and no longer loses the ceil-form decrements on the RTX 3070
+> (the fault of section 4, found there on the selftest). That shader was not run on the records of this
+> folder. `vulkan_diag.sh` now takes `wnr3_vk.c` and `wnr3.comp` from commit `1af6c0d` (the patch does not
+> apply to the later `wnr3_vk.c`), so it rebuilds the diagnostic of this run from any later checkout.
+> `vulkan.sh` runs the prototype of the checkout: on a later checkout it runs the shader with the fix, and its
+> step 3 makes the `coherent` copy of that shader. Neither was run after the fix. Nothing else of this folder
+> was changed.
+
 Eight routed experts (two layers, four experts each) of each of three published checkpoints, fetched with
 HTTP range requests. **This is a partial checkpoint, not a run on a real checkpoint:** 24 experts in all,
 no whole shard, no tensor other than the six of each chosen expert. `config.json` gives 40 layers x 384

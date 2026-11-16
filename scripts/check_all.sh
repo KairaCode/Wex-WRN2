@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 Ludovico Zanichelli
-# Every check that needs no GPU, no model and no engine tree, in one command; the entry point of README,
-# CONTRIBUTING and CI. Windows: MSYS2 UCRT64 or MINGW64 gcc and python on PATH. Linux: gcc and PYTHON=python3.
+# The CPU checks that need only a C compiler and Python (no GPU, no model, no engine tree), in one command: the
+# repository check, three standard-library tests, the WEX1-3/WNR3 CPU check, the WEX4 tests with the conformance
+# vectors, and the fast WNR3 decoder's own harness; the entry point of README, CONTRIBUTING and CI. Not here: the
+# fuzz replay (wex4/fuzz/run.sh --replay, which also needs g++), the smoke run of bench/wex_io.py, the Go and the
+# Rust reader, the sanitizer runs and the benchmarks; CI runs them as steps and jobs of their own (scripts/README.md).
+# Windows: MSYS2 UCRT64 or MINGW64 gcc and python on PATH. Linux: gcc and PYTHON=python3.
 # macOS: PYTHON=python3 and a GNU gcc in CC (Homebrew: CC=gcc-15); the scripts it calls read CC, default gcc.
 # Apple clang instead: CC=clang and the libomp of Homebrew in WEX_OPENMP (scripts/build_cpu_check.sh shows the line).
 # Usage: bash scripts/check_all.sh     (last line on success: all checks passed)
