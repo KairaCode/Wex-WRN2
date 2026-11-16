@@ -10,8 +10,10 @@
 # bytes are random draws from a skewed distribution, not weights of a model. Then it builds the host program
 # with the fast CPU decoder of wex4/research/fast-cpu-decode (-O3, AVX2 on x86 through -march=haswell, OpenMP)
 # and runs `wnr3_vk bench` once per shader form: `search` (-DSEARCH, the reference binary search) and `table`
-# (the default). Each run decodes the batch RUNS times on the device and on the CPU, compares every output
-# with the reference decoder's and prints median, minimum and maximum of each timed part (wnr3_vk.c, bench).
+# (the default). Each run decodes the batch RUNS times on the device and on the CPU and prints median,
+# minimum and maximum of each timed part (wnr3_vk.c, bench). It checks the error words of every device run,
+# compares the device's bytes with the reference decoder's in one more untimed run per form, and the fast
+# decoder's output with the reference's in every run.
 # Then one more run times the two forms against each other in RUNS pairs in one process (device times only,
 # the CPU decoders not timed).
 #

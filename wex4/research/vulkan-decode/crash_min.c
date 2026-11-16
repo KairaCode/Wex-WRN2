@@ -48,11 +48,14 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL on_message(VkDebugUtilsMessageSeverityFlag
     return VK_FALSE;
 }
 
-/* 1 when name holds part, letters compared without case */
+/* c with an ASCII capital letter turned into its small letter; any other byte as it is */
+static int ascii_lower(char c) { return c >= 'A' && c <= 'Z' ? c + 32 : c; }
+
+/* 1 when name holds part, ASCII letters compared without case, every other byte as it is */
 static int name_has(const char *name, const char *part) {
     size_t i, k;
     for (i = 0; name[i]; i++) {
-        for (k = 0; part[k] && name[i + k] && (name[i + k] | 32) == (part[k] | 32); k++) {}
+        for (k = 0; part[k] && name[i + k] && ascii_lower(name[i + k]) == ascii_lower(part[k]); k++) {}
         if (!part[k]) return 1;
     }
     return 0;

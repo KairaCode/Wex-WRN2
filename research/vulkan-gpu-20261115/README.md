@@ -18,7 +18,7 @@ decoded here is synthetic, from a tiny test model, or from a conformance vector.
 ## Setup
 
 - **Machine** (`machine.txt`): NVIDIA GeForce RTX 3070, 8 GB, driver 621.01 (Vulkan 1.4.357; the
-  program prints the driver version as 621.1.0.0, the raw field), PCIe gen 3 x16 at most; Intel Core
+  program prints it as 621.1.0.0, NVIDIA's packing of the driverVersion field), PCIe gen 3 x16 at most; Intel Core
   i7-7700K, 4 cores, 8 threads, AVX2; Windows 10 (10.0.19045). RAM and the drive were not recorded; no
   timed part reads a file (the bench reads its records into memory first).
 - **Software:** MSYS2 UCRT64, gcc 16.2.0, glslang 16.6.0, SPIRV-Tools v2026.4, Vulkan loader and
@@ -106,7 +106,10 @@ whole pass that are not timed. The records are in host memory before any clock s
   thread and on 8 threads (OpenMP), 21 runs each, from memory into memory. gcc 16.2.0,
   `-O3 -march=haswell -fopenmp`.
 
-Every output of every timed run was compared with the reference's bytes: 0 differences (`bench.log`).
+The error words of every device run were zero. The device's bytes were compared with the reference's in
+one more run per shader form after the timed runs, from a zeroed buffer and not timed; the bytes of the
+timed runs themselves were not compared. The fast decoder's output was compared with the reference's in
+every run. 0 differences (`bench.log`).
 
 Round 1 of the default shader form (`bench.log`, "round 1, table"), the run that also timed the CPU; ms per
 record is the median of the batch divided by 16:
@@ -147,7 +150,7 @@ Before: the binary search of the first version (`-DSEARCH`: 8 probes per scale s
 then the two CDF values). After: the default form (design note, section 5): the scale symbol from a table of
 one byte per slot, built on the host and checked against the search on all 2^14 slots, and the weight symbol
 from one compare of the whole context row. Both forms gave the reference's bytes on every record of section 1
-and in every bench run.
+and in the comparison run of every bench process (section 2).
 
 **In pairs** (`bench-pairs.log`, 17:23 to 17:27 UTC). In one process and on the batch as it was uploaded, the
 two forms ran one after the other, the order alternating, 21 pairs per run; device timestamps only. Each file
@@ -162,9 +165,10 @@ ran in both orders, three rounds. The figure is the median over the 21 pairs of 
 In absolute times, on the large batch the table form took 18.90 to 20.01 ms per batch in these runs
 (1.18 to 1.25 ms per record) and the search form 20.07 to 21.05 ms (1.25 to 1.32). So the table lookups take
 4% to 6% less device time than the binary search on records of the V4.1 geometry, and 32% less on the small
-records; with the same bytes. They are the default since this run. On the large records the gain is in pass B
-only: pass A took 0.058 ms per record with either form in batches of 4 and of 16 records, while on the small
-records the scale table cut pass A to 0.43 of the search. Why, was not looked for (no profiler was run).
+records; with the same bytes. They are the default since this run. In these batches of 16 large records the
+gain is in pass B only: pass A took 0.058 ms per record with either form, while on the small records the
+scale table cut pass A to 0.43 of the search. The search form was not run in a smaller batch of large
+records (the table form took 0.061 ms per record in pass A in a batch of 4, section 2). Why, was not looked for (no profiler was run).
 
 **Alone**, the same batch, each form in its own process (`bench.log`, three rounds, device timestamps of
 pass A + pass B, median of 21 runs): search 19.533, 20.632, 20.716 ms; table 19.675, 19.677, 19.539 ms. Round 1

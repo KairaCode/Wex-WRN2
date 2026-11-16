@@ -27,8 +27,8 @@
  * would take the stored or the decoded bytes of the batch above the batch limit.
  *
  * Environment: WNR3_VK_SHADERS = folder of scales.spv and weights.spv (default: the working directory);
- * WNR3_VK_DEVICE = index of the physical device (default 0), or a part of its name, letters compared without
- * case (NVIDIA, llvmpipe); WNR3_VK_STAGE=1 uploads the records, the model blobs, the plans and the offsets
+ * WNR3_VK_DEVICE = index of the physical device (default 0), or a part of its name, ASCII letters compared
+ * without case (NVIDIA, llvmpipe); WNR3_VK_STAGE=1 uploads the records, the model blobs, the plans and the offsets
  * through host-visible staging buffers into device-local ones, WNR3_VK_STAGE=0 lets the shader read the
  * host-visible buffers the host wrote (default: 1 when the device has memory the host cannot map, else 0);
  * WNR3_VK_ROBUST=1 enables the device feature robustBufferAccess (default: no feature); WNR3_VK_VALIDATE=1
@@ -226,11 +226,14 @@ static VkShaderModule load_shader(const Gpu *g, const char *folder, const char *
     return module;
 }
 
-/* 1 when name holds part, letters compared without case */
+/* c with an ASCII capital letter turned into its small letter; any other byte as it is */
+static int ascii_lower(char c) { return c >= 'A' && c <= 'Z' ? c + 32 : c; }
+
+/* 1 when name holds part, ASCII letters compared without case, every other byte as it is */
 static int name_has(const char *name, const char *part) {
     size_t i, k;
     for (i = 0; name[i]; i++) {
-        for (k = 0; part[k] && name[i + k] && (name[i + k] | 32) == (part[k] | 32); k++) {}
+        for (k = 0; part[k] && name[i + k] && ascii_lower(name[i + k]) == ascii_lower(part[k]); k++) {}
         if (!part[k]) return 1;
     }
     return 0;
@@ -1055,7 +1058,9 @@ static unsigned long bench_errors(const Slab *s, uint32_t n, uint32_t run) {
  * The buffers, the pipelines and the descriptor set are created before the first pass and are in no part.
  * Then the same records on the CPU: the reference decoder on one thread (at most 5 passes) and, in a build
  * with -DWNR3_VK_FAST, the fast decoder of wex4/research/fast-cpu-decode on one thread and on all threads,
- * its tables built before the clock starts. Every output is compared with the reference's. With
+ * its tables built before the clock starts. The error words of every device run are checked; the device's
+ * bytes are compared with the reference's once per form, in one more run after the timed ones (from a zeroed
+ * buffer, not timed); the fast decoder's output is compared with the reference's in every run. With
  * WNR3_VK_BENCH_CPU=0 the CPU decoders are not timed: the reference decodes the batch once, for the
  * comparison. With a second form of the shaders (WNR3_VK_SHADERS_B), RUNS pairs of the two forms follow the
  * timed runs: device timestamps of pass A and pass B of each form, the order inside a pair alternating
