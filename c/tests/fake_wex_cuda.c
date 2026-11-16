@@ -6,14 +6,15 @@
  * FAKE_WEX_BATCH_FAIL=<i> reports record i unavailable after scribbling over its dst, as a real half-written slab would). Its "device"
  * pointers are host memory. FAKE_WEX_UNAVAILABLE=1 makes the direct decode
  * report 1 (CUDA unavailable), as the real helper does without a device.
- * Built only by the test's Makefile rule; never shipped. */
+ * Built only for tests and the fuzz replay; never shipped. */
 #include "../wex_format.h"
 #include <stdlib.h>
 #include <string.h>
 
 #define FAKE_EXPORT __declspec(dllexport)
 
-static WexNr2Model models[4];
+#define FAKE_MAX_MODELS 16   /* as the helper's WEX_CUDA_NR2_MAX_MODELS */
+static WexNr2Model models[FAKE_MAX_MODELS];
 static int model_count;
 
 static const WexNr2Model *fake_model(const unsigned char *record) {
@@ -29,9 +30,17 @@ FAKE_EXPORT unsigned int wex_cuda_helper_features(void) {
     return 1u | 4u | 16u | 32u | (batch && *batch == '1' ? 8u : 0u);
 }
 
+/* The contract of the helper's wex_cuda_register_model (tools/wex_cuda_bridge.cu): 0 when registered, or
+ * already registered with the same bytes; -1 for an invalid blob or another blob with the same id; 1 when the
+ * table is full or memory is short. A process that opens the same container again registers its model again. */
 FAKE_EXPORT int wex_cuda_register_model(const unsigned char *blob, size_t bytes) {
-    unsigned char *copy = model_count < 4 ? malloc(bytes) : NULL;
-    if (!copy) return -1;
+    WexNr2Model probe;
+    unsigned char *copy;
+    if (wex_nr2_model_open(blob, bytes, &probe)) return -1;
+    for (int i = 0; i < model_count; i++)
+        if (models[i].id == probe.id) return memcmp(models[i].blob, blob, WEX_NR2_MODEL_BYTES) ? -1 : 0;
+    copy = model_count < FAKE_MAX_MODELS ? malloc(bytes) : NULL;
+    if (!copy) return 1;
     memcpy(copy, blob, bytes);
     if (wex_nr2_model_open(copy, bytes, &models[model_count])) { free(copy); return -1; }
     model_count++;

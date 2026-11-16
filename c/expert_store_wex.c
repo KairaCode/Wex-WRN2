@@ -22,6 +22,20 @@
 
 #include "compat.h"
 
+/* The 16 ms pause before the second read of WEX_READ_RETRY=1. Outside Windows colibri's compat.h
+ * has no Sleep(), so the store does not take it from there. */
+#ifndef _WIN32
+#include <time.h>
+#endif
+static void wex_retry_pause(void) {
+#ifdef _WIN32
+    Sleep(16);
+#else
+    struct timespec pause = {0, 16L * 1000000L};
+    while (nanosleep(&pause, &pause) != 0 && errno == EINTR) {}
+#endif
+}
+
 #ifdef _WIN32
 typedef HANDLE WexFile;
 #define WEX_BAD_FILE INVALID_HANDLE_VALUE
@@ -307,7 +321,7 @@ static int wex_load_slot(WexStoreState *state, int slot_idx, int layer, int expe
         coli_wex_decode_record(entry, slot->slab, (size_t)state->record_bytes) != 0) {
         const char *wtry = getenv("WEX_READ_RETRY");
         if (wtry && *wtry == '1') {   /* opt-in: default stays exactly upstream */
-            Sleep(16);
+            wex_retry_pause();
             if (wex_read_exact(file, slot->slab + read_offset, entry->total_bytes,
                                entry->file_offset) == 0 &&
                 wex_nr3_owner_ok(entry, slot->slab + read_offset, (uint32_t)layer, (uint32_t)expert,

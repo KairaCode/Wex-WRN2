@@ -7,7 +7,8 @@
 # reference readers (go-reader); and the Rust reader on the conformance vectors and against the C and the Python
 # reader (rust-reader).
 # No GPU, no model weights, no secrets. A run started by hand can also have the linux-io-bench job (the full
-# Linux read-path benchmark) and the linux-vulkan job (the WNR3 Vulkan prototype on a CPU Vulkan device).
+# Linux read-path benchmark), the linux-vulkan job (the WNR3 Vulkan prototype on a CPU Vulkan device) and the
+# colibri-headers job (the engine fuzzing harnesses built against colibri's own headers).
 name: CI
 
 on:
@@ -586,3 +587,41 @@ jobs:
           ASAN_OPTIONS: detect_leaks=0:abort_on_error=1
           UBSAN_OPTIONS: print_stacktrace=1
         run: bash wex4/research/vulkan-decode/run.sh wex4/out/tiny_nr3_cz.wex4 wex4/out/synth.wex4
+
+  # opt-in: only a run started by hand has this job, because it fetches a third-party repository. The fuzz replay,
+  # then the two engine harnesses of wex4/fuzz/ built against the headers of colibri itself instead of the
+  # stand-ins of wex4/fuzz/engine/ (WEX_FUZZ_COLIBRI=fetch: the c/*.h and c/expert_store_registry.c of the commit
+  # that run.sh pins, with git, nothing copied into the repository), their seeds replayed, and the declarations of
+  # both compared (engine_layout.c). Then the store's own test, c/tests/test_expert_store_wex.c, built against the
+  # same files. On Linux and on macOS, where c/qwen38_wex.h opens files with colibri's compat_open_direct
+  colibri-headers:
+    if: github.event_name == 'workflow_dispatch'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    env:
+      PYTHON: python3
+      WEX_FUZZ_COLIBRI: fetch
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
+      - name: Fuzz replay, and the engine harnesses against colibri's headers
+        run: |
+          if [ "$(uname -s)" = Darwin ]; then
+            CC=$(ls "$(brew --prefix)"/bin/gcc-[0-9]* | sort -t- -k2 -n | tail -1)   # GNU gcc, as in the macos job
+            export CC
+            echo "CC=$CC" >> "$GITHUB_ENV"
+          fi
+          set -o pipefail
+          bash wex4/fuzz/run.sh --replay | tee "$RUNNER_TEMP/replay.log"
+          grep -q '^engine_layout: .* the same in the stand-ins and in the tree$' "$RUNNER_TEMP/replay.log"
+          test "$(grep -c '^== fuzz_.*_wex, against the headers of ' "$RUNNER_TEMP/replay.log")" = 2
+      - name: The store's own test against colibri's headers and backend registry
+        run: |
+          set -o pipefail
+          bash scripts/build_cpu_check.sh wex4/fuzz/out/colibri/c | tee "$RUNNER_TEMP/store.log"
+          grep -q '^ALL WEX STANDALONE TESTS PASSED$' "$RUNNER_TEMP/store.log"

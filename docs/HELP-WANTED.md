@@ -104,8 +104,18 @@ measured; it is not known to fail.
     control (`wex4/fuzz/cuda_negative.py`, 23 broken copies of the CUDA source) shows that it fails
     when a check, a wait or a barrier is missing. With `run.sh --gpu` the same harness also runs
     the kernels on an NVIDIA GPU, from PTX that clang writes without the CUDA toolkit; that ran by
-    hand on one GPU (an RTX 3070) on 2026-11-15, with no failed oracle. A custom mutator keeps the
-    WNR3 stream hashes right. Since 2026-11-15 the store
+    hand on one GPU (an RTX 3070) on 2026-11-15, with no failed oracle. Since 2026-11-15 every stand-in declaration that colibri has follows its headers and
+    cites its line (colibri `dev` at `98327913`); the members that no public colibri tree has stay
+    inferred. `WEX_FUZZ_COLIBRI=fetch bash wex4/fuzz/run.sh --replay` builds the two harnesses against
+    colibri's own headers instead (for `fuzz_q38_wex`, colibri's `compat.h` and `st.h`; its model types
+    stay those of `engine/q38_engine.h`, checked against `qwen38_core.h` by reading, not by
+    `engine_layout.c`) and checks that both give the same declarations, and the opt-in
+    `colibri-headers` CI job does that on Linux and macOS. A second pass of each engine
+    harness reaches the mirrors, the read splits, the striped read and `WEX_READ_RETRY`, and on Windows,
+    with the CPU stand-in of the CUDA helper, the helper's host paths and the load wave (replayed only).
+    A third pass fails reads of the engine file on purpose (opens, prefetches, lookups and loads, the
+    second read of `WEX_READ_RETRY` that succeeds) and tries the root pin of `COLI_WEX_ROOT`.
+    A custom mutator keeps the WNR3 stream hashes right. Since 2026-11-15 the store
     harness has a second run, `fuzz_store_wex-legacy`, on four seed containers with palette, WNR
     and WNR2 records, and a mutator that re-encodes those and scale-tile records so that they
     pass the checks of their codec. In three 60 s runs it served palette, WNR and WNR2 records,
@@ -113,7 +123,7 @@ measured; it is not known to fail.
     and WNR2 records, the one without 3 of each
     ([counts and conditions](../wex4/fuzz/README.md#the-custom-mutators-and-the-dictionary)).
     Those runs were of commit dbc1391, before the merges of 2026-11-15, with six engine seed
-    containers instead of the eight of today; the merged code ran only in 60 s Fuzz jobs.
+    containers instead of the nine of today; the merged code ran only in 60 s Fuzz jobs.
     The Fuzz workflow builds the harnesses with clang and runs each for 60 seconds (the store
     harness twice; for the CUDA harness 421 and 256 inputs in the two x86-64 runs of 2026-11-15) on x86-64 Linux, on ARM64 Linux and on macOS (Apple silicon, with the clang of a
     Homebrew LLVM, `llvm@18` on 2026-11-15: Apple clang ships no libFuzzer runtime); on both ARM64
@@ -139,9 +149,16 @@ measured; it is not known to fail.
       `c/tools/repack_v4_wex.py`, and the mutation keeps the count of classes); WNR2 records from
       the CUDA encoder of `archive/nr2/`; a seed container that mixes the older codecs; runs of
       the older codecs longer than 60 s;
-    - the store's mirror, striped-read and CUDA-helper paths; `c/qwen38_wex.h` built inside the
-      real engine instead of against inferred types (on macOS it opens files through a stand-in for
-      the engine's `compat_open_direct`, issue 22); the GPU decoder as nvcc builds it (the production
+    - the CUDA helper's paths fuzzed and not only replayed (they exist on Windows only, where
+      libFuzzer does not run here), and with the real helper on a GPU; reads that come up short or
+      return other bytes than the file holds (the third pass fails a read outright), and the attach
+      of `c/qwen38_wex.h` stopped by a failed read, whose refusing functions the harness calls
+      itself ([wex4/fuzz/README.md](../wex4/fuzz/README.md), "Limits"); `c/qwen38_wex.h` built
+      inside colibri itself: no public colibri tree includes it, so the members it adds to
+      colibri's expert index are still inferred (on macOS it opens files through a stand-in for
+      the engine's `compat_open_direct`, issue 22); a fix in `c/qwen38_wex.h` for
+      `COLI_WEX_WEIGHTS` with a weight of `inf`, which turns a NaN into an `int` (found on
+      2026-11-15, same "Limits"); the GPU decoder as nvcc builds it (the production
       helper), with the bridge's own code and the CUDA runtime, under `compute-sanitizer` and under
       coverage guidance (the GPU mode replays with the mutator, runs clang's PTX and its own copy
       of the bridge's sequence); its WNR2, WNR1 and palette paths, which no seed reaches;
@@ -173,7 +190,8 @@ measured; it is not known to fail.
   - **Still open:** the libraries that the tests load into Python (`wex4_tools.dll` with the fast
     decoder, the WNR3 encoder) under these two sanitizers, which needs the same tests driven from C
     or an instrumented Python; the engine-side readers inside an engine tree (here they run only
-    through the stand-ins of the fuzzing harnesses); ThreadSanitizer and MemorySanitizer on ARM64
+    through the fuzzing harnesses, under the sanitizers against the stand-ins; against colibri's
+    headers without a sanitizer); ThreadSanitizer and MemorySanitizer on ARM64
     and on macOS (both jobs are x86-64 Linux); the SVE build of the fast decoder under any
     sanitizer (the sanitizer jobs build NEON on ARM64); any sanitizer on Windows; and the GPU code on a GPU under `compute-sanitizer`, which needs the
     CUDA toolkit (its CUDA source, built for the CPU, runs under the four sanitizers in the fuzz
@@ -549,6 +567,11 @@ listed above as well.
   GPU (an RTX 3070, PTX from clang, no CUDA toolkit); no difference of verdict or bytes from the CPU
   reference was found. The helper as nvcc builds it under `compute-sanitizer`, other GPUs and a
   sentence of WNR3-SPEC for the host batch are open *(open to you, sections 2 and 3)*.
+- **The engine-side readers inside colibri:** the two engine harnesses follow colibri's headers and
+  build against them (a pinned `dev` commit, the opt-in `colibri-headers` CI job). `c/qwen38_wex.h` and
+  the members it adds to colibri's expert index are in no public colibri tree yet, so its harness keeps
+  those members inferred until the upstreaming above brings them in; the CUDA helper's paths are only
+  replayed, on Windows, with a CPU stand-in *(open to you, section 3)*.
 - **Converter profiles for more model families:** sixteen naming profiles are in, tested on synthetic
   fixtures, among them seven for compressed-tensors exports; the gate, down and up roles of w1, w2, w3
   were read in the model code; three profiles (`deepseek`, `qwen3-moe`, `mixtral`) also round-tripped

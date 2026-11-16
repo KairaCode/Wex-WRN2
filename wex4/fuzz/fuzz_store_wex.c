@@ -29,7 +29,9 @@
  * validators accept and whose slabs would take more than FUZZ_MAX_SLABS (many layers) is not opened here. The
  * model registry of c/wex_decode.c keeps 16 models for the life of the process; the harness empties it before
  * every input, so that an input gives the same verdict whatever ran before it. The log lines of the store and
- * of the decoder go nowhere. No mirror file, no CUDA helper.
+ * of the decoder go nowhere. The mirror file, the read split, WEX_READ_RETRY and DSV4_CUDA_MOE_MASKED are a
+ * second pass over every input that opened (store_paths.h); the CUDA helper is the one WEX_FUZZ_CUDA_LIB
+ * names, if any (engine_paths.h).
  *
  * The custom mutator: one call in four, when the input is a container that opens and has coded records, one
  * of them is mutated with legacy_mutator.h by the rules of its codec (scale tiles, palette, WNR, WNR2, or
@@ -41,6 +43,7 @@
 #include <stdio.h>
 static int fuzz_quiet(FILE *stream, const char *format, ...) { (void)stream; (void)format; return 0; }
 #define fprintf fuzz_quiet
+#include "read_faults.h"   /* the store's reads, failed on demand by the third pass of store_paths.h */
 #include "../../c/expert_store_wex.c"
 #include "../../c/wex_decode.c"
 #undef fprintf
@@ -48,6 +51,8 @@ static int fuzz_quiet(FILE *stream, const char *format, ...) { (void)stream; (vo
 #define FUZZ_MUTATOR_ROUNDS 100
 #include "fuzz_common.h"
 #include "legacy_mutator.h"
+#include "engine_paths.h"
+#include "store_paths.h"   /* the second pass: mirror, read split, WEX_READ_RETRY, DSV4_CUDA_MOE_MASKED */
 
 #define FUZZ_MAX_SLABS (UINT64_C(64) << 20)
 #define FUZZ_MAX_LOOKUPS 64u
@@ -94,7 +99,7 @@ static void fuzz_cleanup(void) {
 static void fuzz_setup(void) {
     fuzz_temp_path(temp_path, sizeof temp_path, "store.wex");
     fuzz_setenv("COLI_WEX_PATH", temp_path);
-    fuzz_setenv("COLI_WEX_CUDA_LIB", "0");      /* the CPU decoders: no helper is looked for */
+    fuzz_setenv("COLI_WEX_CUDA_LIB", fuzz_cuda_lib());   /* "0", the CPU decoders, unless WEX_FUZZ_CUDA_LIB names one */
     fuzz_setenv("COLI_MODEL_MIRROR", "");
     fuzz_setenv("DSV4_CUDA_MOE_MASKED", "");
     fuzz_setenv("WEX_READ_RETRY", "");
@@ -241,6 +246,8 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     FUZZ_REQUIRE(after.requests == looked_up && after.hits + after.misses == looked_up,
                  "the store's counters do not add up to the lookups");
     store->ops->destroy(store);
+    fuzz_store_paths(temp_path, file, size, &model, has_model);
+    fuzz_store_faults(temp_path, file, size, &model, has_model);
     free(slab);
     free(file);
     return 0;
