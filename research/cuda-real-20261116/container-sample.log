@@ -1,0 +1,30 @@
+bin A: 0:97,5:170,10:51,15:124,20:5,25:78,30:151,35:32
+bin B: 4:117,9:190,14:71,19:144,24:25,29:98,34:171,39:52,39:120
+L00 E097 stored 16072704 raw 18800640 flags 0x0f
+L05 E170 stored 16048128 raw 18800640 flags 0x0f
+L10 E051 stored 16039936 raw 18800640 flags 0x0f
+L15 E124 stored 16039936 raw 18800640 flags 0x0f
+L20 E005 stored 16015360 raw 18800640 flags 0x0f
+L25 E078 stored 16015360 raw 18800640 flags 0x0f
+L30 E151 stored 16044032 raw 18800640 flags 0x0f
+L35 E032 stored 16023552 raw 18800640 flags 0x0f
+L04 E117 stored 16031744 raw 18800640 flags 0x0f
+L09 E190 stored 16048128 raw 18800640 flags 0x0f
+L14 E071 stored 16056320 raw 18800640 flags 0x0f
+L19 E144 stored 16097280 raw 18800640 flags 0x0f
+L24 E025 stored 16048128 raw 18800640 flags 0x0f
+L29 E098 stored 16035840 raw 18800640 flags 0x0f
+L34 E171 stored 16015360 raw 18800640 flags 0x0f
+L39 E052 stored 16502784 raw 18800640 flags 0x0f
+L39 E120 stored 17358848 raw 18800640 flags 0x0f
+container-a.bin: 278764152 bytes
+container-b.bin: 315460292 bytes
+10:59:05
+[wex] WNR3 record failed its integrity check (error 0x2); rejected
+synthetic cz=0: 4 chunk pairs x 3 entry points equal to the CPU decode, crafted records rejected
+synthetic cz=1: 4 chunk pairs x 3 entry points equal to the CPU decode, crafted records rejected
+{"bin":"<WORK>/container-a.bin","records":8,"clean_ok":8,"mutations":120,"cpu_gpu_same_status":120,"accepted":0}
+{"bin":"<WORK>/container-b.bin","records":9,"clean_ok":9,"mutations":120,"cpu_gpu_same_status":120,"accepted":0}
+compared 14 (rejected by both 6)
+ALL OK
+exit 0 after 25 s

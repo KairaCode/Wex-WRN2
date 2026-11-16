@@ -202,8 +202,9 @@ measured; it is not known to fail.
     and on macOS (both jobs are x86-64 Linux); the SVE build of the fast decoder under any
     sanitizer (the sanitizer jobs build NEON on ARM64); any sanitizer on Windows; and the GPU code on a GPU under `compute-sanitizer`, which needs the
     CUDA toolkit (its CUDA source, built for the CPU, runs under the four sanitizers in the fuzz
-    replay, and its kernels ran on one GPU without a sanitizer; that says nothing about device code
-    built by nvcc).
+    replay, and its kernels ran on one GPU without a sanitizer; since 2026-11-16 the helper as nvcc
+    builds it has run its CPU/GPU differential on one GPU too, without a sanitizer:
+    [research/cuda-real-20261116](../research/cuda-real-20261116/README.md)).
 - **More test vectors:** hostile files that [wex4/vectors](../wex4/vectors/README.md) does not cover
   yet, each with its `MANIFEST.tsv` row and the expected verdict from both reference readers; the
   `go-reader` and `rust-reader` jobs of CI then run the Go and the Rust reader on the new rows too.
@@ -394,14 +395,22 @@ measured; it is not known to fail.
   SHA-256. The DeepSeek experts also went WEX1 → WEX3 (WNR3) → `upgrade --names deepseek` → verify →
   `downgrade`, back to the same bytes. This is a partial checkpoint (24 experts, no whole shard), not a
   run on a real checkpoint, and it was run with the eight profiles of before the merges of that day.
-- **Still open, most wanted:** a run on a whole real checkpoint. Thirteen of the sixteen profiles
-  were tested on the synthetic fixtures only, and the names were read in one or two shards per
-  checkpoint; a row in `PLAN` of `research/real-experts-20261115/fetch_experts.py` fetches a few
-  experts of another checkpoint. Pack a real MXFP4
-  checkpoint of one of these families with `pack --experts raw --names PROFILE`, run `wex4.py verify`
-  and `unpack`, and report the line `pack` prints (expert records, experts kept as ordinary tensors), the
-  sizes and whether every file came back with its SHA-256. If `pack` stops with `incomplete expert`
-  although all the shards were given, the profile does not fit that export: report the names.
+- **Today, on a whole real checkpoint (2026-11-16):** `amd/Qwen3.5-35B-A3B-MXFP4` (commit `2e19c657`,
+  14 shards, 24,600,620,848 B) with `pack --experts raw --names qwen38`: 10,240 expert records (40 x 256),
+  0 experts kept as ordinary tensors; `wex4.py verify` OK (file 22,070,321,152 B, ratio 0.8966: RAW for
+  the experts, WBP1 for the 1,303 other records); `unpack` gave all 14 files back with their SHA-256. One
+  run on an Intel Core i7-7700K with the files on a SATA SSD and two downloads running, so the times (pack
+  607 s, verify 257 s, unpack 450 s) are upper bounds
+  ([research/converter-qwen35-20261116](../research/converter-qwen35-20261116/README.md)).
+- **Still open, most wanted:** runs on whole real checkpoints of the other profiles. Fifteen of the
+  sixteen have met no whole checkpoint, twelve of them only the synthetic fixtures, and their names
+  were read in one or two shards per checkpoint; a row in `PLAN` of
+  `research/real-experts-20261115/fetch_experts.py` fetches a few experts of another checkpoint. Pack a
+  real MXFP4 checkpoint of one of these families with `pack --experts raw --names PROFILE`, run
+  `wex4.py verify` and `unpack`, and report the line `pack` prints (expert records, experts kept as
+  ordinary tensors), the sizes and whether every file came back with its SHA-256. If `pack` stops with
+  `incomplete expert` although all the shards were given, the profile does not fit that export: report
+  the names. A WNR3 pack (`--experts nr3`) of a whole checkpoint is open too.
 - **Still open:** a profile for a family or an export that is not in the table. It has to be an MXFP4
   checkpoint with three matrices per expert and one group of tensors per expert, which is what an expert
   record holds. Add its row to `PROFILES` in the converter and to `NAMES` in the fixture script (the
@@ -415,8 +424,9 @@ measured; it is not known to fail.
   two matrices (`amd/gpt-oss-20b-w-mxfp4-a-bf16`, and `Inferact/Qwen3.8-2.4T-A95B-MXFP4`, whose scales
   are also F32). Today `pack` stores those as ordinary tensors.
 - **Done when:** convert → verify → downgrade round-trips byte for byte on the fixture, and for a real
-  checkpoint on the checkpoint. Today the first holds for all sixteen profiles, and the round trip holds
-  on 8 real experts of three of them.
+  checkpoint on the checkpoint. Today the first holds for all sixteen profiles, the round trip holds on 8
+  real experts of three of them, and pack → verify → unpack holds on one whole checkpoint for `qwen38`
+  (RAW expert records; `upgrade` and `downgrade` were not run on it).
 
 ## 6. Port the WNR3 GPU decode to Vulkan (help wanted, priority)
 
@@ -443,8 +453,17 @@ measured; it is not known to fail.
   (AVX2) on the 8 threads of the same desktop's Intel Core i7-7700K and 863 ms for the reference decoder on
   one; other jobs were loading that CPU. The table lookups of the design note's section 5 are in the shader
   since that run: 4% to 6% less device time than the binary search on those records, 32% less on the small
-  records of the tiny-model container, with the same bytes. Not run with the shader of today: a container
-  of a real model (none was on that machine), any other GPU or driver.
+  records of the tiny-model container, with the same bytes. Not run with the shader of that day: a
+  container of a real model (none was on that machine).
+- **On a real container (2026-11-16):** the same GPU and driver, the shader of `main` at b95de79, the
+  published DeepSeek V4.1 Flash REAP-192 container (7,680 WNR3-CZ records, flag byte 0x0f)
+  ([research/vulkan-real-20261116](../research/vulkan-real-20261116/README.md)). `run.sh` with
+  `MUTATIONS=0 WNR3_VK_EVERY=64` and the validation layer on: 120 records, device and reference agree on
+  120 accepted (40,623,950 blocks undone by the ceil-form inverse), 0 differences, in both shader forms,
+  0 messages of the validation layer, `vulkan-decode: all checks passed`. `wnr3_vk bench` on its first 16
+  records: 1.056 ms of device time per record, 3.386 ms with the upload, against 24.1 ms for the fast CPU
+  decoder (AVX2) on the 8 threads of the i7-7700K, 99.5 ms on one and 775 ms for the reference decoder;
+  other work loaded that CPU (19% to 48% in the readings), so the CPU times are upper bounds.
 - **Records made from real experts, on the same GPU, with the prototype of before the fix (2026-11-15,
   commit `1af6c0d`, byte identity only):** of 32 WNR3 records made from real experts (8 each of DeepSeek
   V4.1 with and without canonical zero, Qwen3-235B and MiniMax-M2.1, partial containers), the 16 of
@@ -456,18 +475,20 @@ measured; it is not known to fail.
   section 4). The shader of today, which fixes the fault another way, was not run on these records.
 - **Still open, most wanted first:**
   - run `bash wex4/research/vulkan-decode/run.sh <container.wex4>` with a real container (WNR3 records of
-    a real model) on any GPU, and report the last lines and the device line: that is the test that counts.
-    The shader of today has decoded no record of a real model, and no whole real container was decoded
-    by any version; the records of `research/real-experts-20261115` (made by its `run.sh` from tensors
-    its `fetch_experts.py` fetches) are a first, small test. The host program reads the file record by record
-    and cuts its batches to the device's buffer limit, so the file size is not a limit (a 5.4 GB test file
-    was read). The slow part is the CPU reference, which decodes every record too: start with
-    `MUTATIONS=0 WNR3_VK_EVERY=64` (no mutated copies, one record in 64), as the folder's README says.
-    `WNR3_VK_DEVICE=<part of the name>` picks the device;
-  - a run on other GPUs and drivers (Intel, AMD, Apple through MoltenVK, NVIDIA on Linux): the RTX 3070
-    showed that a driver can get this shader wrong, and only `run.sh` tells;
-  - the speed on real records: `bash wex4/research/vulkan-decode/bench.sh` measures the synthetic records
-    above; a run of `wnr3_vk bench` on a real container, against the CPU path on the same machine, is open;
+    a real model) on any other GPU or driver (Intel, AMD, Apple through MoltenVK, NVIDIA on Linux), and
+    report the last lines and the device line: that is the test that counts, and so far it has passed on
+    one GPU only. The RTX 3070 showed that a driver can get this shader wrong, and only `run.sh` tells.
+    The container of the run above is public
+    ([Kaira666/Kaira-WEX4-Experts](https://huggingface.co/Kaira666/Kaira-WEX4-Experts), 123 GB); the
+    records of `research/real-experts-20261115` (made by its `run.sh` from tensors its
+    `fetch_experts.py` fetches) are a small test that needs no download of that size. The host program
+    reads the file record by record and cuts its batches to the device's buffer limit, so the file size
+    is not a limit. The slow part is the CPU reference, which decodes every record too (about 1.6 s per
+    V4.1 record on that machine, reading included): start with `MUTATIONS=0 WNR3_VK_EVERY=64` (no
+    mutated copies, one record in 64), as the folder's README says. `WNR3_VK_DEVICE=<part of the name>`
+    picks the device;
+  - the speed on real records on other GPUs, and on the RTX 3070 on other layers than layer 0 (`wnr3_vk
+    bench RUNS FILE RECORDS` takes the first records of a file);
   - the commit step (copy the decoded regions to the engine's buffers only when the record's error word
     is zero) and the hook into colibri's Vulkan backend (design note, sections 8 and 11);
   - the llvmpipe crash of issue 21: on Mesa 25.2.8 with LLVM 20.1.2 it is reduced to a shader of about 30
@@ -483,8 +504,9 @@ measured; it is not known to fail.
     Mesa (none was sent). The folder's README, "The llvmpipe crash", has the forms.
 - **Done when:** its output is byte-identical to the CPU reference on every record of a real container,
   there is a speed number against the CPU path on the same machine, and it builds without the CUDA
-  toolkit. Today the third holds, and the second holds for synthetic records of the size of a real expert
-  on one GPU; the first, the speed on real records and the engine hook are open.
+  toolkit. Today the second and the third hold, on one GPU (the speed on 16 real records of the V4.1
+  container); the first holds on one record in 64 of that container, on that GPU; the other records and
+  the engine hook are open.
 - HIP and Metal ports are welcome after it, on the same tests.
 
 ## 7. I/O on Linux and macOS (help wanted)
@@ -496,7 +518,8 @@ measured; it is not known to fail.
   `posix_fadvise` hints, three ways to prefetch the next record, 1 to 8 threads, `io_uring` with records
   or sub-reads in flight, and four rows with 20 ms of work after each record), each checked against the
   index's SHA-256 and timed over several cold passes.
-- **Measured so far:** only GitHub Actions runners, shared cloud VMs with a virtual disk.
+- **Measured so far:** GitHub Actions runners, shared cloud VMs with a virtual disk, and one desktop
+  under WSL2 (last sentence of this item); no bare Linux on a real drive.
   [research/linux-io-20261114](../research/linux-io-20261114/README.md) (two kinds of VM, three recorded
   runs of 5 passes per path): no read path won on both kinds. `POSIX_FADV_RANDOM` and `O_DIRECT` were 19%
   and 16% faster than the store's path on the first and 5% and 4% slower on the second; more reads in
@@ -508,6 +531,11 @@ measured; it is not known to fail.
   path on every kind. With 20 ms of work after each record (a spin, not a decode), `WILLNEED` in chunks
   of the device's readahead was the fastest prefetch in every run that had those rows: 1.24x to 2.32x
   the same work without prefetch, on five kinds; not run on the sixth. So the store was not changed.
+  One full run under WSL2 on a desktop (2026-11-16, ext4 on the WSL2 virtual disk, a VHDX file on the
+  machine's NVMe SSD: not a bare NVMe) gave the first large gains from reads in flight: `O_DIRECT` on 4
+  threads 3,351 MB/s, 1.77x the store's path, `io_uring` with 4 records in flight 1.75x, `WILLNEED` in
+  chunks 1.39x without work and the helper thread 1.26x with 20 ms of work
+  ([research/linux-io-wsl2-20261116](../research/linux-io-wsl2-20261116/README.md)).
 - **macOS:** the same benchmark runs on macOS through the calls macOS has (`F_NOCACHE` for `O_DIRECT`,
   `F_RDAHEAD` and `F_RDADVISE` for the hints, `purge` for `drop_caches`; `io_uring`,
   `POSIX_FADV_SEQUENTIAL` and `readahead(2)` print `skipped`, so 17 of the 27 paths run there). The
@@ -537,7 +565,8 @@ measured; it is not known to fail.
   smoke run of CI).
 - **Done when:** the table of `bench/wex_io.py` from at least one NVMe machine is in the repository, and
   a change of the store comes with its before/after from the same benchmark, stated as CONTRIBUTING
-  section 5 asks.
+  section 5 asks. Today one table from a machine with an NVMe SSD is in, but read through the virtual
+  disk of WSL2; a table of Linux on the drive itself, and a change of the store, are open.
 
 ## 8. Compression research
 
@@ -571,10 +600,10 @@ listed above as well.
   experts first (#2822-#2825 are open), then the WEX4 container, the WNR3 codec and its GPU decode, and
   the I/O switches. Reviewing or testing those PRs on your hardware helps directly.
 - **WNR3 decode on Vulkan:** the design note and a prototype are in, checked on a CPU Vulkan device and on
-  one GPU (an RTX 3070), with a speed number on synthetic records there; on that GPU the prototype of
-  before its driver fix gave other bytes for the real records with many ceil-form blocks. Real records
-  with the shader of today, a whole real container, other GPUs and drivers, and the engine hook are open
-  *(open to you, section 6)*.
+  one GPU (an RTX 3070). On that GPU, on 2026-11-16, the shader of today gave the reference's bytes on one
+  record in 64 of the published DeepSeek V4.1 container (120 records), and decoded its records in 1.06 ms
+  of device time each against 24.1 ms for the fast CPU decoder on 8 threads. The other records of that
+  container, other GPUs and drivers, and the engine hook are open *(open to you, section 6)*.
 - **ARM and macOS:** the ARM CI jobs (Linux, and macOS on Apple silicon with GNU gcc and with Apple
   clang), ASan and UBSan and the libFuzzer harnesses on both, a NEON version of kernel 1 of the fast
   CPU decoder and an SVE version of kernel 2 are in; the NEON kernel's speed on synthetic records was
@@ -584,11 +613,12 @@ listed above as well.
   CPUs other than the Linux CI runner, and the SVE kernel on longer vectors, are still open *(open
   to you, section 3)*.
 - **Linux I/O in the engine:** the fast read paths were built and measured on Windows. The Linux
-  benchmark is in (`bench/wex_io.py`), run so far only on six kinds of cloud VM, where it gave no reason to
-  change the store. A prefetch of the next record through the page cache gained there only with work
-  between the reads (`WILLNEED` in chunks, 1.24x to 2.32x with a 20 ms spin standing for a decode), which
-  only an engine A/B can confirm; runs on real drives and the tuning that follows from them are still open
-  *(open to you, section 7)*. The same benchmark now runs on macOS, so far only on GitHub `macos-15`
+  benchmark is in (`bench/wex_io.py`), run on six kinds of cloud VM, where it gave no reason to change the
+  store, and once under WSL2 on a desktop with an NVMe SSD (through the virtual disk of WSL2), where 2 to
+  16 reads in flight gave 1.64x to 1.77x the store's path. A prefetch of the next record through the page
+  cache gained on the VMs only with work between the reads (`WILLNEED` in chunks, 1.24x to 2.32x with a
+  20 ms spin standing for a decode), which only an engine A/B can confirm; runs of Linux on real drives
+  and the tuning that follows from them are still open *(open to you, section 7)*. The same benchmark now runs on macOS, so far only on GitHub `macos-15`
   virtual machines (three runs of 11 rounds), where a cache below the virtual machine served part of the
   reads and the store was not changed; a run on a real Mac is open *(open to you, section 7)*.
 - **Measurements not done yet** (they need the full models, so they stay with the maintainer, see
@@ -615,8 +645,12 @@ listed above as well.
 - **The CUDA decoder:** reviewed against WNR3-SPEC and fuzzed as C++ on the CPU, through an
   emulation of the CUDA constructs, on 2026-11-15, and its kernels replayed with the mutator on one
   GPU (an RTX 3070, PTX from clang, no CUDA toolkit); no difference of verdict or bytes from the CPU
-  reference was found. The helper as nvcc builds it under `compute-sanitizer`, other GPUs and a
-  sentence of WNR3-SPEC for the host batch are open *(open to you, sections 2 and 3)*.
+  reference was found. On 2026-11-16 the helper as nvcc builds it (CUDA 13.5, `sm_86`) passed its
+  CPU/GPU differential on the same GPU, also on 16 records made from real V4.1 experts and on 17 records
+  of the published V4.1 container, with 120 mutated copies per bin
+  ([research/cuda-real-20261116](../research/cuda-real-20261116/README.md)). That helper under
+  `compute-sanitizer`, other GPUs and a sentence of WNR3-SPEC for the host batch are open *(open to
+  you, sections 2 and 3)*.
 - **The engine-side readers inside colibri:** the two engine harnesses follow colibri's headers and
   build against them (a pinned `dev` commit, the opt-in `colibri-headers` CI job). `c/qwen38_wex.h` and
   the members it adds to colibri's expert index are in no public colibri tree yet, so its harness keeps
@@ -625,7 +659,8 @@ listed above as well.
 - **Converter profiles for more model families:** sixteen naming profiles are in, tested on synthetic
   fixtures, among them seven for compressed-tensors exports; the gate, down and up roles of w1, w2, w3
   were read in the model code; three profiles (`deepseek`, `qwen3-moe`, `mixtral`) also round-tripped
-  8 real experts each. A run on a whole real checkpoint of the new families is open *(open to you,
+  8 real experts each, and `qwen38` round-tripped a whole real checkpoint (Qwen3.5-35B-A3B MXFP4,
+  RAW expert records). Runs on whole real checkpoints of the other profiles are open *(open to you,
   section 5)*.
 - **Compression baselines:** WNR3 against zstd, lz4, brotli, lzma, zlib and bz2 on 24 real expert
   records is in (smaller files, slower CPU decode); whole checkpoints, other CPUs and GPU codecs are

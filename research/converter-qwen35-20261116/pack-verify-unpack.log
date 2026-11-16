@@ -1,0 +1,21 @@
+all checks passed
+wex4/out/wex4_tools.dll
+10240 expert records; 0 experts kept as ordinary tensors (float or FP8, not MXFP4)
+root 44aae6a17c4cae7ddc5f02dfc7c94f10d1e257bc6385b7c90feb28d4291ca5c5
+pack 607 s
+WEX4 4.0  root 44aae6a17c4cae7ddc5f02dfc7c94f10d1e257bc6385b7c90feb28d4291ca5c5
+  file 22,070,321,152 B  index 20,551,095 B  blobs 0  records 11543  tensors 63171
+  decoded 24,591,905,888 B  stored 22,049,763,328 B  ratio 0.8966  codecs {6: 1303, 0: 10240}
+  file 22,070,321,152 B  index 20,551,095 B  blobs 0  records 11543  tensors 63171
+  decoded 24,591,905,888 B  stored 22,049,763,328 B  ratio 0.8966  codecs {6: 1303, 0: 10240}
+  content digest 2aac93c8baee991b7bbfd24d94d6f286fbc77f1007912f066eb095dcdbd1069c  (every hash checked, every record decoded)
+verify 257 s
+model.safetensors-00012-of-00014.safetensors sha256 identical
+model.safetensors-00013-of-00014.safetensors sha256 identical
+model.safetensors-00014-of-00014.safetensors sha256 identical
+unpack 450 s
+files compared 14, different 0
+source bytes 24600620848
+-rw-r--r-- 1 <user> <group> 22070321152 16 nov 07.20 <WORK>/qwen35/q35-raw.wex4
+
+[exited with code 0]

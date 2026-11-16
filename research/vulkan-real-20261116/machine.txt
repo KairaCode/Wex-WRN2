@@ -1,0 +1,13 @@
+read on 2026-11-16, before and after the runs of this folder
+gpu: NVIDIA GeForce RTX 3070, 8192 MiB, driver 621.01 (Vulkan 1.4.357; wnr3_vk prints it as 621.1.0.0), PCIe gen 3 x16 at most
+cpu: Intel(R) Core(TM) i7-7700K CPU @ 4.20GHz (4 cores, 8 threads, AVX2, no SHA-NI)
+ram: 34,289,152,000 bytes (32 GB)
+os: Windows 10 (10.0.19045.7846)
+container drive: H:, NTFS on a Crucial CT1000BX500SSD1 (1 TB SATA SSD)
+msys2 ucrt64 packages:
+  mingw-w64-ucrt-x86_64-gcc 16.2.0-6
+  mingw-w64-ucrt-x86_64-vulkan-loader 1~1.4.363.0-1
+  mingw-w64-ucrt-x86_64-vulkan-headers 1~1.4.363.0-1
+  mingw-w64-ucrt-x86_64-vulkan-validation-layers 1.4.363.0-1
+  mingw-w64-ucrt-x86_64-glslang 16.6.0-1
+  mingw-w64-ucrt-x86_64-spirv-tools 3~1.4.363.0-1
