@@ -22,7 +22,9 @@ For scale: the GPU batch decode figure quoted in the repo docs is about 0.37 ms 
 here), i.e. the fast CPU path with 8 desktop threads is about 37x slower than that.
 
 These numbers are x86 (AVX2). Kernel 1 also has a NEON version for 64-bit ARM, added on 2026-11-14 and
-measured on synthetic records only: see "NEON kernel (AArch64)" below.
+measured on synthetic records only: see "NEON kernel (AArch64)" below. Kernel 2 has an SVE version for ARM
+CPUs with SVE, added on 2026-11-15; on the one SVE CPU it ran on it is slower than NEON kernel 1 and is not
+the default: see "SVE kernel 2 (AArch64)".
 
 ## Files
 
@@ -31,8 +33,8 @@ measured on synthetic records only: see "NEON kernel (AArch64)" below.
 | `wex_fast_decode.h` | the decoder (C11 + GNU builtins, includes `wex_format.h`) |
 | `test_fast_decode.c` | harness: `equal`, `mutate`, `bench`, `speed` |
 | `build.sh` | x86: builds the harness three ways into `out/` (AVX2 + OpenMP, scalar fallback, UBSan trap build) |
-| `synth.sh` | any CPU, no real model: builds the harness with the SIMD kernels of the CPU and with the scalar kernel into `out/synth/` and runs it on the 4 synthetic records of `wex4/out/synth_nr3.wex` (`check`, run by `scripts/check_all.sh`, or `speed`) |
-| `negative_control.sh` | removes one check at a time from a copy of the header and expects the mutation test to notice; exit 2 if it cannot read the model or a record |
+| `synth.sh` | any CPU, no real model: builds the harness with the SIMD kernels of the CPU and with the scalar kernel into `out/synth/` and runs it on the 4 synthetic records of `wex4/out/synth_nr3.wex` (`check`, run by `scripts/check_all.sh`, or `speed`); `WEX4_MARCH=-march=armv8-a+sve` adds the SVE kernel 2 |
+| `negative_control.sh` | removes one check at a time from a copy of the header and expects the mutation test to notice; exit 2 if it cannot read the model or a record; `WEX4_MARCH` as in `synth.sh` |
 | `extract.py` | copies the model blob and chosen records out of a container opened read-only |
 | `out/` | build products, data copies, logs (not in git) |
 
@@ -217,8 +219,9 @@ same hash and ceil inverse, same bound checks and slack rule. Three steps use ot
 | renormalisation shift | `lzcnt` | `clz` |
 | 16 symbols into 8 bytes | two `pext` | `vsraq_n_u16` and `vmovn_u16` |
 
-Kernel 2 is not ported: NEON has no gather load. A NEON build that is asked for kernel 2 runs kernel 1
-with 4 streams. `-DWEX_FAST_SCALAR` builds kernel 0 alone, as on x86.
+Kernel 2 has no NEON version: NEON has no gather load. A NEON build that is asked for kernel 2 runs kernel 1
+with 4 streams. A build for SVE has an SVE kernel 2 ("SVE kernel 2 (AArch64)" below). `-DWEX_FAST_SCALAR`
+builds kernel 0 alone, as on x86.
 
 ### What was run on ARM
 
@@ -317,6 +320,145 @@ kernel and fails if it built another one. It runs `scripts/check_all.sh`, so the
 (`WEX_OPENMP`), and fails unless the build is NEON with OpenMP. Neither runs `synth.sh speed`, the
 negative controls or the WEX4 tests with the scalar kernel forced: those are steps of `linux-arm` only.
 
+## SVE kernel 2 (AArch64)
+
+Added on 2026-11-15. Kernel 2 has an SVE version. It is the AVX2 kernel 2 step for step, on SVE vectors:
+per symbol 4 gathers of 16-bit CDF values (`svld1uh_gather_u32index_u32`) binary-search the 16 entries of
+the context in the model blob, one more gather fetches the next 2 bytes of each stream
+(`svld1uh_gather_u32offset_u32`), then the same renormalisation, canonical-zero flags, fused hash and
+ceil inverse, and the same end-of-stream checks at each block start and at the end. The gathers read 16
+bits where the AVX2 ones read 32 bits and mask. The vector length is read from the CPU when the code runs
+(`svcntw()`), never fixed when it is compiled: a vector holds 4 streams at 128 bits and 64 at 2048 bits, and
+`lanes` = 1, 2 or 3 vectors per loop, as on x86.
+
+How it is selected:
+
+- Only when compiling for SVE. The kernel exists when the compiler defines `__ARM_FEATURE_SVE`:
+  `-march=armv8-a+sve`, or `-mcpu=native` on a CPU with SVE (gcc 13.3.0 and clang 18.1.3 on the runner
+  below define it there). clang 23.1.5 for an AArch64 target also selects it with `-march=armv8-a+sve2`,
+  `-mcpu=neoverse-n2` and `-mcpu=a64fx` (compiled, not run). Then `WEXF_SVE` is 1 and `WEXF_KERNELS` is
+  "NEON+SVE". Without such a flag the build is the NEON one, on any CPU, with or without SVE.
+- Nothing is chosen at run time. A binary built for SVE needs a CPU with SVE, because the compiler may put
+  SVE instructions anywhere in it, not only in kernel 2. There is no `getauxval` test and no fallback.
+- NEON kernel 1 (4 streams, fused) stays the default of `wex_fast_decode` in both builds. Kernel 2 runs only
+  when `WexFastOptions.kernel` is 2. Only `test_fast_decode.c` asks for it: `wex4_tools.dll` and the fuzzing
+  harness call the default.
+- Tasks: in an SVE build `wexf_section` cuts tasks of a multiple of the least common multiple of 48 and
+  6 x `svcntw()` streams, so that full groups of 1, 2 or 3 vectors fit. That is 48 streams at 128 and 256
+  bits, as in every other build, 96 at 512 bits and 384 at 2048 bits.
+- A build without SVE compiles to the same machine code as before this change. Compared with `objdump -d`
+  between objects built from the old and from the new header: `wex4/wex4_tools.c` with `-DWEX4_FAST_NR3`,
+  and `test_fast_decode.c` with its SIMD kernels and with `-DWEX_FAST_SCALAR`. On the runner below with gcc
+  13.3.0 (`-O3 -fopenmp`) and clang 18.1.3 (`-O3`), in a temporary step of run 43715133271; on x86-64
+  Windows with gcc 16.2.0 (`-march=haswell`, `-DWEX_FAST_SCALAR`, no flag) and clang 23.1.5
+  (`-march=haswell`, and the NEON and scalar builds for an AArch64 target as assembly text). A first
+  version that declared the task unit as a variable in every build gave other gcc 13 code for
+  `wex4_tools.c` on AArch64 (the decoder's results did not change; clang and the x86 builds were the same
+  code); the unit is now a variable in the SVE build only.
+
+### The CI runner has SVE
+
+A temporary step of run 43700995179 (`linux-arm` job, 2026-11-15) printed: `lscpu` model name
+Neoverse-N2, 4 CPUs; the `Features` of `/proc/cpuinfo` include `sve`, `sve2`, `sveaes`, `svebitperm`,
+`svesha3`, `svesm4`, `svei8mm` and `svebf16`; `getauxval(AT_HWCAP)` has `HWCAP_SVE` and
+`getauxval(AT_HWCAP2)` has `HWCAP2_SVE2`; `prctl(PR_SVE_GET_VL)` gave 16 bytes and
+`/proc/sys/abi/sve_default_vector_length` 16; a program built with `-march=armv8-a+sve` by gcc and by
+clang printed `svcntb()` = 16. So the vectors are 128 bits long. gcc 13.3.0 turns `-mcpu=native` into
+`-mcpu=neoverse-n2+crc+sve2-sm4+sve2-aes+sve2-sha3+norng+nossbs` and defines `__ARM_FEATURE_SVE` and
+`__ARM_FEATURE_SVE2` with it; clang 18.1.3 defines both with `-mcpu=native` too. The `linux-arm` job now
+prints the `sve` and `sve2` flags and the harness prints the vector length.
+
+### What was run
+
+Three runs of the CI workflow on the branch of this change, 2026-11-15: 43713913185, 43715133271 and
+43716011418. The SVE kernel, the harness and the scripts were the same in the three; they differ in
+temporary steps and in the code of builds without SVE (the task unit above). The correctness results were
+the same in all three. A fourth run, 43717886891, had the decoder and the harness as committed and no
+temporary step: the same correctness results, and in its speed step 1.741 ms per record for kernel 2 with 2
+vectors fused against 1.413 ms for the default. Runner, compiler and data as in the NEON section:
+`ubuntu-24.04-arm`, Neoverse-N2, gcc 13.3.0, the 4 synthetic records (64 weight streams of 2,048 symbols per
+matrix).
+
+- `WEX4_MARCH=-march=armv8-a+sve bash synth.sh check`: `equal` on 4 records x 19 variants x {1, 8}
+  threads + default, 0 mismatches; `mutate` with 600 mini-records (205 accepted and 395 rejected by the
+  reference), 11,400 fast decodes, 0 mismatches. The scalar build of the same step: 0 mismatches. The step
+  fails if the build is not the "NEON+SVE" one.
+- `WEX4_MARCH=-march=armv8-a+sve bash wex4/build_and_test.sh`: all WEX4 tests passed (112,399 C
+  mutations, same verdicts from both decoders), and `wex4/fuzz/run.sh --replay` with
+  `WEX_CFLAGS=-march=armv8-a+sve` passed. Both run kernel 1 only, built with the SVE flag.
+- `negative_control.sh` with `WEX4_MARCH=-march=armv8-a+sve`: 8 of 8 broken decoders caught, the 5 of the
+  NEON build and 3 in the SVE kernel 2 (canonical-zero check removed, end-of-stream check removed, stream
+  hash not checked in the fused variants).
+- clang 18.1.3, `-march=armv8-a+sve`, no OpenMP, `-Werror`: `equal` 0 mismatches, `mutate` with 600
+  mini-records (11,400 fast decodes) 0 mismatches.
+- Other vector lengths, under emulation: QEMU 8.2.2 in user mode (`qemu-aarch64 -cpu
+  max,sve-default-vector-length=N`, N in bytes) ran the gcc build of the harness with 256-, 512- and
+  2048-bit vectors: `equal` 0 mismatches and `mutate` with 200 mini-records (3,800 fast decodes) 0
+  mismatches at each length. This checks bytes only; QEMU says nothing about speed.
+- Does kernel 2 run at all? In run 43713913185 a temporary step built a copy of the header whose SVE
+  kernel 2 returns -1 at once and ran `equal`. Every kernel 2 variant then reported mismatches at 128 bits
+  (hardware) and at 256 and 512 bits (QEMU); at 1024 bits the variants with 1 and 2 vectors, at 2048 bits
+  the one with 1 vector. A group holds streams of one matrix with the same count, so with 64 streams per
+  matrix the wider groups do not form, and those variants ran kernel 1 alone on these records.
+- Which groups the checks reach, per group size (a step of the `linux-arm` job since run 43769703428).
+  Three copies of the header return -1 where the SVE kernel 2 takes a group of 1, 2 or 3 vectors; a copy
+  is reached when `equal` (4 records) or `mutate` (200 mini-records, seed 20261115) reports a mismatch.
+  At 128 bits (hardware) and at 256 and 512 bits (QEMU) both reach all three group sizes; `equal` gives
+  16 mismatching decodes each time (2 variants x {1, 8} threads x 4 records). At 2048 bits `equal` reaches
+  the 1-vector groups only (16 mismatching decodes, 0 for 2 and 3 vectors), and `mutate` the 1- and
+  2-vector groups but not the 3-vector ones: a group of 3 vectors is 192 streams of one matrix, and a
+  mini-record has at most 157 weight streams per matrix (2,499 blocks of 32 symbols, chunks of 512 or
+  more). So the 3-vector code at 2048 bits never ran, and the 2-vector code at 2048 bits ran in `mutate`
+  only. The step fails if a group size that was reached here is no longer reached.
+
+All of these are steps of the `linux-arm` job now, except the test of 1024 bits in the "Does kernel 2 run at
+all?" bullet. The probe of the runner, the comparison of machine code and that test were temporary steps.
+
+### Speed on the CI runner
+
+`WEX4_MARCH=-march=armv8-a+sve bash synth.sh speed 21`: one thread, median and best of 21 runs, as in the
+NEON section; the table is run 43716011418. The last column divides by the median of the default
+configuration of the same build (kernel 1, 4 streams, fused).
+
+| decoder | median ms/record | MB/s | best ms/record | scalar kernel median / this median | this median / default median |
+|---|---:|---:|---:|---:|---:|
+| reference wex_nr2_decode | 5.504 | 38.0 | 5.457 | 1.00 | 3.90 |
+| k0: reference loop per stream (the scalar kernel) | 5.524 | 37.8 | 5.479 | 1.00 | 3.91 |
+| k1: 4 streams, fused (the default) | 1.412 | 147.9 | 1.410 | 3.91 | 1.00 |
+| k1: 6 streams interleaved | 1.397 | 149.5 | 1.396 | 3.95 | 0.99 |
+| k2: SVE gather 1 vector (4 streams) | 2.971 | 70.3 | 2.970 | 1.86 | 2.10 |
+| k2: SVE gather 2 vectors | 1.798 | 116.2 | 1.797 | 3.07 | 1.27 |
+| k2: SVE gather 3 vectors | 1.976 | 105.7 | 1.974 | 2.80 | 1.40 |
+| k2: SVE gather 1 vector, fused | 2.923 | 71.5 | 2.916 | 1.89 | 2.07 |
+| k2: SVE gather 2 vectors, fused | 1.741 | 120.0 | 1.739 | 3.17 | 1.23 |
+| k2: SVE gather 3 vectors, fused | 1.956 | 106.8 | 1.954 | 2.82 | 1.39 |
+
+- The fastest kernel 2 variant, 2 vectors fused, takes 1.74 ms per record against 1.41 ms for the default
+  kernel 1: 1.23 times slower. The three runs gave 1.742, 1.740 and 1.741 ms against 1.413, 1.411 and
+  1.412 ms. Against the scalar kernel it is 3.2 times faster.
+- With 8 threads on the 4 CPUs (`bench`, best of 15, the same step): 0.58 ms per record for kernel 2 with 2
+  vectors fused against 0.47 to 0.48 ms for the default, in all three runs.
+- The NEON build of the same runs (the step "Speed of the NEON kernel"): 1.407, 1.406 and 1.405 ms for the
+  default. In run 43713913185 the SVE flag moved the kernel 1 rows by at most 3.2% either way against the
+  NEON build (the same C, compiled with SVE allowed); the default by 0.4%.
+- Why kernel 2 is slower here was not measured (no performance counters). A plausible reading: at 128 bits
+  a vector holds 4 streams, no more than kernel 1 interleaves, and every symbol costs 5 gathers, 4 of them
+  in a chain (the binary search), where kernel 1 needs a few loads and compares per stream. 3 vectors are
+  slower than 2; whether the code for 3 runs out of vector registers was not checked.
+
+Kept as an option, not as the default. This is how the folder treats its other slower variants: the AVX2
+kernel 2 is slower than kernel 1 on the desktop and stays (it is the fastest variant on the laptop with 8
+threads), and so do the kernel 1 variants with 1, 2, 3, 6 and 8 streams; each is a tested choice of
+`WexFastOptions` with its speed stated. The SVE kernel 2 gives the reference's bytes and verdicts in every
+check above; on 128-bit SVE it is not the faster choice. Whether longer vectors make it faster (256 bits on
+Neoverse V1, 512 bits on A64FX) is not known: no such CPU was available.
+
+Not checked for the SVE kernel: real records; any CPU other than the Neoverse-N2 of the runner; the speed
+at any vector length but 128 bits; sanitizers (the sanitizer jobs are x86-64); macOS (the `macos` job
+builds NEON only); the libFuzzer harnesses (they call the default entry point); the groups of 3 vectors at
+2048 bits (no record of the checks forms one). `mutate` ran 600 mini-records per build on the hardware and
+200 per vector length under QEMU.
+
 ## Semantics and safety notes
 
 - Same accept / reject as the reference for WNR3 views produced by `wex_nr3_parse`; views with another magic
@@ -333,11 +475,12 @@ negative controls or the WEX4 tests with the scalar kernel forced: those are ste
 - `wex_fast_decode` allocates its tables with `malloc`; if that fails it falls back to kernel 0 (same
   result, slower). Not exercised by a test.
 - Compile-time selection: AVX2 kernels need `__AVX2__`, `__BMI__`, `__BMI2__`, `__LZCNT__` (`-march=haswell`);
-  the NEON kernel 1 needs `__aarch64__`, `__ARM_NEON` and a little-endian target (no flag);
+  the NEON kernel 1 needs `__aarch64__`, `__ARM_NEON` and a little-endian target (no flag); the SVE
+  kernel 2 needs that and `__ARM_FEATURE_SVE` (`-march=armv8-a+sve`, or `-mcpu=native` on a CPU with SVE);
   otherwise, or with `-DWEX_FAST_SCALAR`, only kernel 0 is compiled (portable C, still parallel across
-  streams). `WEXF_SIMD` is 1, 2 or 0 and `WEXF_KERNELS` is "AVX2", "NEON" or "scalar". GNU extensions
-  used: `always_inline`, `__builtin_bswap32`, on ARM `__builtin_clz` and `__builtin_ctzll`. The SIMD
-  paths assume little-endian.
+  streams). `WEXF_SIMD` is 1, 2 or 0, `WEXF_SVE` is 1 or 0, and `WEXF_KERNELS` is "AVX2", "NEON",
+  "NEON+SVE" or "scalar". GNU extensions used: `always_inline`, `__builtin_bswap32`, on ARM
+  `__builtin_clz` and `__builtin_ctzll`. The SIMD paths assume little-endian.
 - Parallel region inside an existing OpenMP parallel region runs serially unless nesting is enabled.
 
 ## Not checked
@@ -349,8 +492,9 @@ negative controls or the WEX4 tests with the scalar kernel forced: those are ste
 - Real records were decoded only by builds of gcc 16.2 on Windows (x86). Elsewhere the harness runs on
   synthetic records only, in CI: gcc 13.3 on x86-64 Linux and on ARM64 Linux (on both also under ASan and UBSan);
   clang 18 on x86-64 Linux (the `linux-tsan` job, `CC=clang`: the AVX2 and the scalar build) and on ARM64
-  Linux (the NEON build without OpenMP, see the NEON section); Homebrew GCC 15 and Apple clang 17 on macOS
-  arm64 (both builds of Apple clang also under ASan and UBSan). No MSVC, no big-endian.
+  Linux (the NEON and the SVE build without OpenMP, see the NEON and the SVE sections); Homebrew GCC 15 and
+  Apple clang 17 on macOS arm64 (both builds of Apple clang also under ASan and UBSan); the gcc SVE build under
+  QEMU at three vector lengths. No MSVC, no big-endian, no SVE build with Apple clang or under a sanitizer.
 - WNR2 records (delegated to the reference), the `malloc` failure path and unvalidated models.
 - Thread counts other than 1, 3 (mutation test) and 8; no run pinned to physical cores; the desktop was busy.
 - Laptop: one record and 3,000 mutation cases only.

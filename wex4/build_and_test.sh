@@ -44,7 +44,8 @@ case $(uname -m) in
 esac
 F="-O3 $MARCH $OMP -DWEX4_FAST_NR3"
 "$CC" $W $F $STATIC_SO -I "$ROOT/c" -I "$ROOT/wex4/research/fast-cpu-decode" "$ROOT/wex4/wex4_tools.c" -o "$S/wex4_tools.dll"
-# which kernels that was (WEXF_KERNELS of wex_fast_decode.h under the same flags): AVX2, NEON or scalar
+# which kernels that was (WEXF_KERNELS of wex_fast_decode.h under the same flags): AVX2, NEON, NEON+SVE (with an
+# SVE flag such as WEX4_MARCH=-march=armv8-a+sve) or scalar
 KERNELS=$(printf '#include "wex_fast_decode.h"\nkernels WEXF_KERNELS\n' |
           "$CC" $F -E -P -I "$ROOT/c" -I "$ROOT/wex4/research/fast-cpu-decode" -x c - | sed -n 's/^kernels "\(.*\)"$/\1/p')
 echo "fast WNR3 decoder of wex4_tools.dll: $KERNELS kernels"

@@ -156,10 +156,21 @@ measured; it is not known to fail.
     replay make (not the other steps of `linux-arm`); no speed was measured there. The kernel also
     runs under ASan and UBSan on ARM64 Linux and on macOS, and `fuzz_wnr3_record` compares it with
     the reference under libFuzzer on both (60 s per run); no report so far.
+  - **Today, SVE:** kernel 2 (the gathers, which NEON lacks) has an SVE version since 2026-11-15. It
+    is built only with an SVE flag (`-march=armv8-a+sve`, or `-mcpu=native` on a CPU with SVE), and
+    NEON kernel 1 stays the default. The `linux-arm` runner has SVE with 128-bit vectors: there the
+    kernel is byte-identical to the reference decoder (also at 256, 512 and 2048 bits under QEMU,
+    which checks bytes only; at 2048 bits the test records form no group of 3 vectors, so that code
+    never ran, and groups of 2 vectors only in `mutate`), and its fastest variant is 1.23 times
+    slower than NEON kernel 1 on one thread, on synthetic records ([results](../wex4/research/fast-cpu-decode/RESULTS.md), section
+    "SVE kernel 2"). So it is an option, not the default.
   - **Still open:** its speed on other ARM CPUs (Apple silicon, Ampere, DGX Spark), which needs no
     model (`bash scripts/check_all.sh`, then `bash wex4/research/fast-cpu-decode/synth.sh speed`);
-    its speed on real records; the number of interleaved streams that is best on each CPU; kernel 2
-    for SVE, which has gather loads (NEON has none, so kernel 2 is AVX2 only).
+    its speed on real records; the number of interleaved streams that is
+    best on each CPU; the SVE kernel 2 on a CPU with vectors longer than 128 bits (256 bits on
+    Neoverse V1, 512 on A64FX), where it might win: `WEX4_MARCH=-march=armv8-a+sve` before the same
+    `synth.sh speed` times both kernels; a choice at run time between a NEON and an SVE build (a
+    binary built for SVE needs a CPU with SVE, and nothing checks for it).
 - **Older scripts that call `gcc` by name:** `wex4/research/fast-cpu-decode/verify/run.sh`,
   `wex4/research/mxfp4-contexts/run_all.sh`, the two scripts of `wex4/research/wnr4-record/` and
   `integration/build/build_test_wex_planned.sh` do not read `CC` or `WEX_OPENMP`, so they need a
@@ -334,9 +345,11 @@ listed above as well.
 - **WNR3 decode on Vulkan:** the design note and a prototype checked on a CPU Vulkan device are in; a run
   on a GPU, a speed number, a real container and the engine hook are open *(open to you, section 6)*.
 - **ARM and macOS:** the ARM CI jobs (Linux, and macOS on Apple silicon with GNU gcc and with Apple
-  clang), ASan and UBSan and the libFuzzer harnesses on both, and a NEON version of kernel 1 of the
-  fast CPU decoder are in. Its speed on real records and on ARM CPUs other than the Linux CI runner,
-  and an SVE version of kernel 2, are still open *(open to you, section 3)*.
+  clang), ASan and UBSan and the libFuzzer harnesses on both, a NEON version of kernel 1 of the fast
+  CPU decoder and an SVE version of kernel 2 are in; the SVE kernel is not the default, because on
+  the CI runner's 128-bit SVE it is slower than NEON kernel 1. Their speed on real records and on ARM
+  CPUs other than the Linux CI runner, and the SVE kernel on longer vectors, are still open *(open
+  to you, section 3)*.
 - **Linux I/O in the engine:** the fast read paths were built and measured on Windows. The Linux
   benchmark is in (`bench/wex_io.py`), run so far only on two kinds of cloud VM, where it gave no reason to
   change the store; runs on real drives and the tuning that follows from them are still open *(open to
