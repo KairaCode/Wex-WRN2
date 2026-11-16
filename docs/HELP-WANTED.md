@@ -8,9 +8,9 @@ bigger than a small fix, open an issue first so two people do not do the same wo
 Labels you may see on issues: **good first issue** (a few hours, little context), **help wanted**
 (larger, needs a design note first).
 
-Several items of this page got a first answer on 2026-11-14 or 2026-11-15. Where that is so, the item says what
-exists now ("Today"), with a link, and what is still open. A thing listed as open was not run or not
-measured; it is not known to fail.
+Several items of this page got a first answer on 2026-11-14 or 2026-11-15. Where that is so, the
+item says what exists now ("Today"), with a link, and what is still open. A thing listed as open was
+not run or not measured; it is not known to fail.
 
 ## 1. Run the benchmark on your hardware (no code)
 
@@ -77,23 +77,36 @@ measured; it is not known to fail.
     systems `fuzz_wnr3_record` compares the NEON kernel of the fast decoder with the reference. CI
     replays their seeds and mutators (`run.sh --replay`, no coverage guidance) on x86-64 Linux,
     ARM64 Linux, macOS (Apple silicon, GNU gcc and Apple clang) and Windows.
-  - **What is wanted now** is machine time: run `bash wex4/fuzz/run.sh 14400` (hours, not seconds)
-    and report what stops it, with the reproducer it leaves.
-  - **Still open:** WNR records from the repository's own WNR encoder, which needs CUDA (the seeds'
-    WNR records come from an encoder written in the harness, 4 classes each, framed by
-    `c/tools/repack_v4_wex.py`, and the mutation keeps the count of classes); WNR2 records from
-    the CUDA encoder of `archive/nr2/`; a seed container that mixes the older codecs; runs of the
-    older codecs longer than 60 s; the store's mirror, striped-read and CUDA-helper paths; `c/qwen38_wex.h`
-    built inside the real engine instead of against inferred types; a harness for the GPU decoder
-    (`c/wex_cuda.cuh`); a coverage-guided run on Windows (the MSYS2 clang has no libFuzzer, so only
-    `--replay` runs there) and on an Intel Mac; any run longer than 60 s on ARM64 or on macOS.
-    In `c/expert_store_wex.c`: the store
-    allocates 24 slabs per layer when it opens, also for a layer whose entries are all absent. The
-    slab size is bounded by the table since 2026-11-15 (WEX1 and WEX2: at most twice the largest
-    4096-aligned decoded record), the number of layers is not, so a small file with many layers and
-    one record still asks for memory out of proportion to its size, and the store harness does not
-    open a valid container that needs more than 64 MiB of slabs. Allocating a slab at its first
-    use, or weighing layers x slab against a budget, changes the engine's store and is not done.
+  - **Today, one run of an hour per harness:** started by hand on 2026-11-15 on commit `1af6c0d` of
+    `main`, which had the five harnesses but not yet the second store run, the seeds of the older
+    codecs or the ARM64 and macOS jobs: the Fuzz workflow on its `ubuntu-24.04` runner (x86-64), the
+    distribution's clang, the custom mutators on, 3,600 s per harness, one run
+    ([43672379360](https://github.com/KairaCode/Wex-WRN2/actions/runs/43672379360)). Every harness
+    ran its hour without a crash and without a failed oracle, from 640,764 inputs
+    (`fuzz_wnr3_record`) to 4,095,358 (`fuzz_wex4_file`); the counts are in
+    [wex4/fuzz](../wex4/fuzz/README.md#a-run-of-an-hour-per-harness).
+  - **What is wanted now** is more machine time: runs of several hours
+    (`bash wex4/fuzz/run.sh 14400`) on the code of today, with the run `fuzz_store_wex-legacy`, and
+    on ARM64 and macOS; report what stops them, with the reproducer they leave.
+  - **Still open:**
+    - the older codecs: WNR records from the repository's own WNR encoder, which needs CUDA (the
+      seeds' WNR records come from an encoder written in the harness, 4 classes each, framed by
+      `c/tools/repack_v4_wex.py`, and the mutation keeps the count of classes); WNR2 records from
+      the CUDA encoder of `archive/nr2/`; a seed container that mixes the older codecs; runs of
+      the older codecs longer than 60 s;
+    - the store's mirror, striped-read and CUDA-helper paths; `c/qwen38_wex.h` built inside the
+      real engine instead of against inferred types (on macOS it opens files through a stand-in for
+      the engine's `compat_open_direct`, issue 22); a harness for the GPU decoder (`c/wex_cuda.cuh`);
+    - a coverage-guided run on Windows (the MSYS2 clang has no libFuzzer, so only `--replay` runs
+      there) and on an Intel Mac; any run longer than 60 s on ARM64 or on macOS, and longer than
+      one hour per harness anywhere;
+    - in `c/expert_store_wex.c`: the store allocates 24 slabs per layer when it opens, also for a
+      layer whose entries are all absent. The slab size is bounded by the table since 2026-11-15
+      (WEX1 and WEX2: at most twice the largest 4096-aligned decoded record), the number of layers
+      is not, so a small file with many layers and one record still asks for memory out of
+      proportion to its size, and the store harness does not open a valid container that needs
+      more than 64 MiB of slabs. Allocating a slab at its first use, or weighing layers x slab
+      against a budget, changes the engine's store and is not done.
 - **Sanitizers:**
   - **Today:** CI runs the CPU checks and the fuzz replay under ASan and UBSan on x86-64 Linux (the
     `linux-sanitizers` job of `.github/workflows/ci.yml`, which holds the exact `WEX_CFLAGS`, the
@@ -113,7 +126,8 @@ measured; it is not known to fail.
     decoder, the WNR3 encoder) under these two sanitizers, which needs the same tests driven from C
     or an instrumented Python; the engine-side readers inside an engine tree (here they run only
     through the stand-ins of the fuzzing harnesses); ThreadSanitizer and MemorySanitizer on ARM64
-    (both jobs are x86-64 Linux); any sanitizer on Windows; and the GPU code.
+    and on macOS (both jobs are x86-64 Linux); the SVE build of the fast decoder under any
+    sanitizer (the sanitizer jobs build NEON on ARM64); any sanitizer on Windows; and the GPU code.
 - **More test vectors:** hostile files that [wex4/vectors](../wex4/vectors/README.md) does not cover
   yet, each with its `MANIFEST.tsv` row and the expected verdict from both reference readers; the
   `go-reader` job of CI then runs the Go reader on the new rows too. Valid files are wanted as
@@ -130,7 +144,8 @@ measured; it is not known to fail.
   - **Still open:** the checks of a WNR3 decoder that WNR3-SPEC section 12 lists under "What no
     vector exercises" (an initial state outside `[L, 256L)`, a stream shorter than 4 bytes, a
     stream that ends early or runs out of bytes, each alone); `chunk_log2` other than 10, 11 and
-    12; a WBP1 record with `transform = 1` on a size that is not a multiple of the plane count
+    12 (13 to 15 are in files of the Go writer, which the reference readers accept, not in a
+    vector); a WBP1 record with `transform = 1` on a size that is not a multiple of the plane count
     (WEX4-SPEC 7.2 makes it invalid; no vector has one).
 - **macOS, what is left** (good first issue each):
   - **Today:** the `macos` job of CI (macos-15, Apple silicon) runs `scripts/check_all.sh` and
@@ -162,8 +177,9 @@ measured; it is not known to fail.
     kernel is byte-identical to the reference decoder (also at 256, 512 and 2048 bits under QEMU,
     which checks bytes only; at 2048 bits the test records form no group of 3 vectors, so that code
     never ran, and groups of 2 vectors only in `mutate`), and its fastest variant is 1.23 times
-    slower than NEON kernel 1 on one thread, on synthetic records ([results](../wex4/research/fast-cpu-decode/RESULTS.md), section
-    "SVE kernel 2"). So it is an option, not the default.
+    slower than NEON kernel 1 on one thread, on synthetic records
+    ([results](../wex4/research/fast-cpu-decode/RESULTS.md), section "SVE kernel 2"). So it is an
+    option, not the default.
   - **Still open:** its speed on other ARM CPUs (Apple silicon, Ampere, DGX Spark), which needs no
     model (`bash scripts/check_all.sh`, then `bash wex4/research/fast-cpu-decode/synth.sh speed`);
     its speed on real records; the number of interleaved streams that is
@@ -395,10 +411,14 @@ listed above as well.
   verdict in the 112 manifest rows of that day, and a list of sentences that can be read two ways
   and of cases the vectors did not exercise. On 2026-11-15 the 4 findings and the rest of that list
   got sentences and 24 vectors, with no rule changed. The writer and the trainer of 2026-11-15
-  added eight notes (part E), seven of which want a sentence of the specification. Open: these
-  seven, and the WNR3 checks no vector exercises alone *(open to you, sections 2 to 4)*.
-- **Fuzzing for hours:** the harnesses run for 60 seconds each in CI; no run longer than that is
-  recorded in this repository *(open to you, section 3)*.
+  added eight notes (part E), seven of which want a sentence of the specification. A second review
+  pass of 2026-11-15 read the sections the first had left out and wrote 18 clarifications. Open:
+  the seven notes, the 3 findings of the second pass, and the WNR3 checks no vector exercises alone
+  *(open to you, sections 2 to 4)*.
+- **Fuzzing for hours:** the harnesses run for 60 seconds each in CI; one run of an hour per harness,
+  on x86-64 Linux and on the code of 2026-11-15 before the merges of that day, is recorded, and it
+  stopped on nothing. Longer runs, runs on the code of today and on ARM64 and macOS are open *(open
+  to you, section 3)*.
 - **Converter profiles for more model families:** eight naming profiles are in, tested on synthetic
   fixtures; a run on a real checkpoint of the new families is open *(open to you, section 5)*.
 - **A first tagged release** of the specifications (WEX4 4.0, WNR3 v1) with the conformance vectors, so

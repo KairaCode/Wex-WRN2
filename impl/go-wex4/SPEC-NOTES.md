@@ -37,7 +37,7 @@ The points left open above are now answered: by sentences of WEX4-SPEC (document
 | B4 | WEX4-SPEC 5.2 (2026-11-14) | `invalid/wnr3-record-smaller-than-its-streams-need.wex4` (`WEX4_E_EXPERT`): 4,096 B for 792 streams. A reader without the check refuses it as well, when it decodes the record; only a reader that checks the index without decoding, and the class, tell the two apart |
 | B3 | WEX4-SPEC 5.5: `rows` and `cols` of the weight tensor are those of its scale tensor; the bound holds for `16 * cols` | `invalid/expert-weight-tensor-with-other-rows-than-its-scale-tensor.wex4`, `invalid/expert-weight-tensor-of-65536-columns.wex4` |
 | B5 | WEX4-SPEC 5.2: a record of an unknown codec may name any blob up to `blob_count` | none: a file that opens and holds a record no reader can decode has no verdict in the manifest. `test_spec_cases` checks both reference readers on it; this reader opens it too (exit code 3) |
-| B6 | WEX4-SPEC 5 (2026-11-14) | the new `content` column of the manifest. This reader computes the digest since 2026-11-15 (`verify.go`) and compares it with that column |
+| B6 | WEX4-SPEC 5 (2026-11-14) | the new `content` column of the manifest. This reader computes the digest since 2026-11-15 (`digest.go`, called from `verify.go`; see part E) and compares it with that column |
 | B7 | WEX4-SPEC 17: the class column is informative | |
 | B8 | WEX4-SPEC 5.1: a blob's `offset` is a multiple of 4096, checked through the tiling | `invalid/blob-offset-not-a-multiple-of-4096.wex4` (`WEX4_E_LAYOUT`) |
 | C, first point | WNR3-SPEC section 12 names WNR2-REFERENCE sections 6 and 7 as required reading | |
