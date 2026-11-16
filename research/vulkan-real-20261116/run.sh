@@ -11,7 +11,8 @@
 #            first 16 WNR3 records of CONTAINER in one batch of at most 1 GiB: the table form and the search form
 #            alone (each with the CPU decoders timed), then both forms in pairs
 #   all      `wnr3_vk decode` of every WNR3 record of CONTAINER, the default (table) form only, validation layer off
-#   mutate   `wnr3_vk mutate 10 20261114` on one WNR3 record in 384 of CONTAINER (20 records, 200 mutated copies)
+#   mutate   `wnr3_vk mutate COPIES 20261114` on one WNR3 record in EVERY of CONTAINER, table form (defaults 20 and
+#            96: 80 records, 1,600 mutated copies)
 # Needs what run.sh of the prototype needs, and an NVIDIA device (WNR3_VK_DEVICE=NVIDIA; another part of a device
 # name picks another one). On MSYS2 UCRT64 VK_LAYER_PATH=/ucrt64/bin finds the validation layer. Writes the log of
 # the step next to this script, with the paths shortened to <Wex-WRN2>/ and <MODELS>/.
@@ -30,7 +31,8 @@ case $(uname -s) in
   *) LIB=${VULKAN_LIB:-vulkan} ;;
 esac
 CDIR=$(dirname "$C")
-short() { sed -e "s#$ROOT/##g" -e "s#$CDIR/#<MODELS>/#g" -e "s#$(cygpath -m "$CDIR" 2>/dev/null || echo "$CDIR")/#<MODELS>/#g"; }
+mixed() { cygpath -m "$1" 2>/dev/null || echo "$1"; }   # the same folder as a native Windows program writes it
+short() { sed -e "s#$ROOT/##g" -e "s#$(mixed "$ROOT")/##g" -e "s#$CDIR/#<MODELS>/#g" -e "s#$(mixed "$CDIR")/#<MODELS>/#g"; }
 load() { echo "[cpu load $(wmic cpu get loadpercentage 2>/dev/null | tr -d '\r' | sed -n 2p | tr -d ' ')% at $(date -u +%H:%M:%S) UTC]"; }
 build() {   # the host program and the two shader forms, as run.sh and bench.sh build them
   mkdir -p "$OUT/real/table" "$OUT/real/search"
@@ -59,7 +61,7 @@ build() {   # the host program and the two shader forms, as run.sh and bench.sh 
       WNR3_VK_BENCH_CPU=0 WNR3_VK_SHADERS="$OUT/real/search" WNR3_VK_SHADERS_B="$OUT/real/table" \
           "$OUT/real/wnr3_vk" bench 21 "$C" 16 ;;
     all) build; WNR3_VK_SHADERS="$OUT/real/table" "$OUT/real/wnr3_vk" decode "$C" ;;
-    mutate) build; WNR3_VK_EVERY=384 WNR3_VK_SHADERS="$OUT/real/table" "$OUT/real/wnr3_vk" mutate 10 20261114 "$C" ;;
+    mutate) build; WNR3_VK_EVERY=${EVERY:-96} WNR3_VK_SHADERS="$OUT/real/table" "$OUT/real/wnr3_vk" mutate "${COPIES:-20}" 20261114 "$C" ;;
     *) echo "STEP: every64, bench, all or mutate" >&2; exit 2 ;;
   esac
   load

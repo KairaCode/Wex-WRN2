@@ -176,15 +176,19 @@ chunk and where it came from, and each summary row of a path that announces reco
 wanted: attach the JSON to a **Benchmark results** issue.
 
 What it does not measure: the decode of a record (the rows with work spin instead), the engine's own
-caches, two drives (mirror, stripe), and anything on Windows (for macOS see [On macOS](#on-macos), below). The only recorded Linux runs are on
-GitHub Actions runners, shared cloud VMs with a virtual disk. Three of 2026-11-14 on two kinds of VM,
+caches, two drives (mirror, stripe), and anything on Windows (for macOS see [On macOS](#on-macos), below). The recorded Linux runs are on
+GitHub Actions runners, shared cloud VMs with a virtual disk, and one under WSL2 on a desktop (below). Three of 2026-11-14 on two kinds of VM,
 where no read path won on both kinds:
 [research/linux-io-20261114](../research/linux-io-20261114/README.md). Eleven of 2026-11-15 on six
 kinds, with the prefetch paths: one hint on a whole record loaded one request of the device, with no work
 between records no prefetch helped on every kind, and with the 20 ms of work `WILLNEED` in chunks was
 the fastest prefetch in every run that had those rows (1.24x to 2.32x; not run on one kind):
-[research/linux-prefetch-20261115](../research/linux-prefetch-20261115/README.md). Other runs of the
-`linux-io-bench` job started by hand are not recorded.
+[research/linux-prefetch-20261115](../research/linux-prefetch-20261115/README.md). One of 2026-11-16
+under WSL2 on a desktop (ext4 on the WSL2 virtual disk, a VHDX file on an NVMe SSD: not a bare drive),
+where reads in flight paid for the first time: `O_DIRECT` on 4 threads 1.77x the store's path, `io_uring`
+with 4 records in flight 1.75x, `WILLNEED` in chunks 1.39x without work, the helper thread 1.26x with
+the 20 ms of work: [research/linux-io-wsl2-20261116](../research/linux-io-wsl2-20261116/README.md).
+Other runs of the `linux-io-bench` job started by hand are not recorded.
 
 What CI covers: the `linux`, `linux-arm`, `linux-sanitizers` and `linux-arm-sanitizers` jobs build
 `wex_io.c` and run `--smoke --strict` (a 10 MB container, every path checked and run once; the `linux` job then reads the

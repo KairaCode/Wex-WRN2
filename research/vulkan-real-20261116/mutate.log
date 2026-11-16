@@ -1,0 +1,16 @@
+commit b1c6c99; the build of the bench step (out/benchreal), table form; the step 'all' was running on the same GPU
+[cpu load 9% at 11:42:43 UTC]
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357, vendor 0x10de, driver 621.1.0.0)
+<MODELS>/v4_flash_experts.nr3.wex: 7680 WNR3 records, 20 taken and mutated, 15 batches of at most 268435456 bytes; device and reference agree on 0 accepted (flag bytes:; 0 blocks undone by the ceil-form inverse) and 199 refused (error bits 0xb); 1 refused by the host checks; 0 differences
+wnr3_vk: ok
+exit 0
+[cpu load 9% at 11:44:05 UTC]
+wall time: 82 s
+commit b1c6c99; the build of the bench step (out/benchreal), table form; the step 'all' was running on the same GPU
+[cpu load 10% at 11:44:17 UTC]
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357, vendor 0x10de, driver 621.1.0.0)
+<MODELS>/v4_flash_experts.nr3.wex: 7680 WNR3 records, 80 taken and mutated, 114 batches of at most 268435456 bytes; device and reference agree on 0 accepted (flag bytes:; 0 blocks undone by the ceil-form inverse) and 1593 refused (error bits 0xb); 7 refused by the host checks; 0 differences
+wnr3_vk: ok
+exit 0
+[cpu load 8% at 11:55:16 UTC]
+wall time: 659 s

@@ -457,10 +457,13 @@ measured; it is not known to fail.
   container of a real model (none was on that machine).
 - **On a real container (2026-11-16):** the same GPU and driver, the shader of `main` at b95de79, the
   published DeepSeek V4.1 Flash REAP-192 container (7,680 WNR3-CZ records, flag byte 0x0f)
-  ([research/vulkan-real-20261116](../research/vulkan-real-20261116/README.md)). `run.sh` with
-  `MUTATIONS=0 WNR3_VK_EVERY=64` and the validation layer on: 120 records, device and reference agree on
-  120 accepted (40,623,950 blocks undone by the ceil-form inverse), 0 differences, in both shader forms,
-  0 messages of the validation layer, `vulkan-decode: all checks passed`. `wnr3_vk bench` on its first 16
+  ([research/vulkan-real-20261116](../research/vulkan-real-20261116/README.md)). **Every record:**
+  `wnr3_vk decode` of the whole file, device and reference agree on 7,680 accepted (2,600,253,492 blocks
+  undone by the ceil-form inverse), 0 differences (3 h 19 min, the CPU reference on one thread being the
+  slow part). Before it, `run.sh` with `MUTATIONS=0 WNR3_VK_EVERY=64` and the validation layer on: 120
+  records, 0 differences in both shader forms, 0 messages of the validation layer, `vulkan-decode: all
+  checks passed`. 1,800 mutated copies of 80 records: the reference's verdict on each (all refused), 0
+  differences. `wnr3_vk bench` on its first 16
   records: 1.056 ms of device time per record, 3.386 ms with the upload, against 24.1 ms for the fast CPU
   decoder (AVX2) on the 8 threads of the i7-7700K, 99.5 ms on one and 775 ms for the reference decoder;
   other work loaded that CPU (19% to 48% in the readings), so the CPU times are upper bounds.
@@ -483,8 +486,8 @@ measured; it is not known to fail.
     records of `research/real-experts-20261115` (made by its `run.sh` from tensors its
     `fetch_experts.py` fetches) are a small test that needs no download of that size. The host program
     reads the file record by record and cuts its batches to the device's buffer limit, so the file size
-    is not a limit. The slow part is the CPU reference, which decodes every record too (about 1.6 s per
-    V4.1 record on that machine, reading included): start with `MUTATIONS=0 WNR3_VK_EVERY=64` (no
+    is not a limit. The slow part is the CPU reference, which decodes every record too (about 1.55 s per
+    V4.1 record on that machine, reading included: 3 h 19 min for the whole container): start with `MUTATIONS=0 WNR3_VK_EVERY=64` (no
     mutated copies, one record in 64), as the folder's README says. `WNR3_VK_DEVICE=<part of the name>`
     picks the device;
   - the speed on real records on other GPUs, and on the RTX 3070 on other layers than layer 0 (`wnr3_vk
@@ -504,9 +507,9 @@ measured; it is not known to fail.
     Mesa (none was sent). The folder's README, "The llvmpipe crash", has the forms.
 - **Done when:** its output is byte-identical to the CPU reference on every record of a real container,
   there is a speed number against the CPU path on the same machine, and it builds without the CUDA
-  toolkit. Today the second and the third hold, on one GPU (the speed on 16 real records of the V4.1
-  container); the first holds on one record in 64 of that container, on that GPU; the other records and
-  the engine hook are open.
+  toolkit. Today all three hold on one GPU, an RTX 3070 with driver 621.01: every record of the
+  published V4.1 container, and the speed on 16 of its records. Other GPUs and drivers, and the engine
+  hook, are open.
 - HIP and Metal ports are welcome after it, on the same tests.
 
 ## 7. I/O on Linux and macOS (help wanted)
@@ -600,10 +603,10 @@ listed above as well.
   experts first (#2822-#2825 are open), then the WEX4 container, the WNR3 codec and its GPU decode, and
   the I/O switches. Reviewing or testing those PRs on your hardware helps directly.
 - **WNR3 decode on Vulkan:** the design note and a prototype are in, checked on a CPU Vulkan device and on
-  one GPU (an RTX 3070). On that GPU, on 2026-11-16, the shader of today gave the reference's bytes on one
-  record in 64 of the published DeepSeek V4.1 container (120 records), and decoded its records in 1.06 ms
-  of device time each against 24.1 ms for the fast CPU decoder on 8 threads. The other records of that
-  container, other GPUs and drivers, and the engine hook are open *(open to you, section 6)*.
+  one GPU (an RTX 3070). On that GPU, on 2026-11-16, the shader of today gave the reference's bytes on all
+  7,680 records of the published DeepSeek V4.1 container, and decoded its records in 1.06 ms of device
+  time each against 24.1 ms for the fast CPU decoder on 8 threads. Other GPUs and drivers, and the engine
+  hook, are open *(open to you, section 6)*.
 - **ARM and macOS:** the ARM CI jobs (Linux, and macOS on Apple silicon with GNU gcc and with Apple
   clang), ASan and UBSan and the libFuzzer harnesses on both, a NEON version of kernel 1 of the fast
   CPU decoder and an SVE version of kernel 2 are in; the NEON kernel's speed on synthetic records was

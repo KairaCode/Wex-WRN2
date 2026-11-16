@@ -224,6 +224,21 @@ No read path won on both machines: what was 16% to 19% faster than the store's p
 
 Kinds B to F run kernel 7.0.0-1017-azure; all six have `read_ahead_kb` 128. One `WILLNEED` or one `readahead(2)` on a whole record loaded about one request of the device, the larger of `read_ahead_kb` and `max_sectors_kb` (128 KiB, 256 KiB or 2 MiB of 13.4 MB), which is what the Linux 7.0 source says (`readahead(2)` is a `WILLNEED`). With no work between records no prefetch path was faster than the store's path on every kind: the chunks were faster with ranges apart only on kind D, where `POSIX_FADV_RANDOM` and `O_DIRECT` were as fast; the helper thread had 2.2% to 2.8% of the next record loaded when its read began. With 20 ms of work after each record, `WILLNEED` in chunks was the fastest prefetch in every run that had the rows (1.24x to 2.32x, ranges apart from the row without prefetch in every run but run 8), with 55.6% to 96.5% of the next record loaded before its read; the helper thread came second (1.05x to 2.12x). On kind A the reading thread spent about 90% of each pass inside the chunked calls, against 6% to 14% on the other kinds. The rows with work were not run on kind A: run 1 predates them, and the ten later runs, two of them started to get kind A, landed on the other kinds. The store's Linux read path was not changed: no path won on every kind without work, the work is not a decode, and `c/expert_store_wex.c` has no page-cache prefetch to switch. **Not measured:** the chunked hints from a thread of their own, other chunk sizes, a real decode or any engine between the reads, any real drive, ARM, another filesystem.
 
+## Linux read paths under WSL2 on a desktop (2026-11-16, one run)
+
+The same benchmark at commit ef71574, `--drop-caches`, 5 passes per path, 48 records per pass, the synthetic container above, under WSL2 on a Windows 10 desktop (Intel Core i7-7700K; Ubuntu 26.04.1, kernel 5.10.102.1-microsoft-standard-WSL2; ext4 on the WSL2 virtual disk, a VHDX file on a Samsung 970 EVO Plus NVMe SSD). **Not a bare NVMe:** the virtual disk layer, and maybe a cache of the Windows side, sit between Linux and the drive. MB/s, median (min to max) of 5 passes ([research/linux-io-wsl2-20261116](../research/linux-io-wsl2-20261116/README.md)):
+
+| Read path | MB/s | against the store's path |
+|---|---|---:|
+| page cache, `pread`, 1 thread (the store's path) | 1,895 (1,579 to 1,983) | 1.00x |
+| `O_DIRECT`, `pread`, 1 thread | 2,060 (1,924 to 2,277) | 1.09x |
+| `O_DIRECT`, `pread`, 4 threads | 3,351 (3,284 to 3,401) | 1.77x |
+| `O_DIRECT`, `io_uring`, 4 records in flight | 3,310 (3,245 to 3,333) | 1.75x |
+| page cache, `WILLNEED` in chunks 1 record ahead | 2,628 (2,527 to 2,793) | 1.39x |
+| 20 ms of work per record: no prefetch / `WILLNEED` in chunks / helper thread | 476 / 572 / 601 | 1.00x / 1.20x / 1.26x of the same work |
+
+Every row with 2 or more reads in flight was between 1.64x and 1.77x; on the cloud VMs above the same rows gained at most 11%. One run on one machine; the store was not changed.
+
 ## WNR3 decode on Vulkan against the CPU decoders (2026-11-15, synthetic records, one RTX 3070)
 
 `wnr3_vk bench` of the Vulkan prototype ([wex4/research/vulkan-decode](../wex4/research/vulkan-decode/README.md), started by its `bench.sh`) decodes one batch of WNR3 records 21 times on the device and on the CPU. The error words of every device run were zero; the device's bytes were compared with the reference decoder's in one more run per shader form, outside the timed runs, and the fast decoder's output in every run: 0 differences. The records are **16 synthetic experts with the geometry of a DeepSeek V4.1 expert** (5120 x 2304, 18,800,640 decoded bytes, 2,160 + 17,280 streams, chunks 2048:512), whose bytes are random draws from a skewed distribution (`fixtures/make_synth_mxfp4.py --hidden 5120 --inter 2304`), packed as WNR3 without canonical zero or ceil form (flag byte 0x00), 0.772 of the decoded size; not a model, and **not the machine of the other tables**: an NVIDIA GeForce RTX 3070 (driver 621.01, Vulkan 1.4.357, PCIe gen 3 x16 at most) and an Intel Core i7-7700K (4 cores, 8 threads) under Windows 10, gcc 16.2.0 `-O3 -march=haswell -fopenmp`. Other jobs loaded the CPU during the runs (readings of 40% and 74% just before the two runs that timed it), so the CPU rows are upper bounds. Median of 21 runs (the reference: 5), the batch's time divided by 16; one run of the process (`bench.log` of [research/vulkan-gpu-20261115](../research/vulkan-gpu-20261115/README.md), "round 1, table"):
@@ -237,6 +252,20 @@ Kinds B to F run kernel 7.0.0-1017-azure; all six have `read_ahead_kb` 128. One 
 | CPU, reference decoder `wex_nr2_decode`, 1 thread | 862.982 | 13,484.670 to 17,555.351 | 22 |
 
 The decode took 1/20 of the time of the fast decoder on all threads, and 1/6.9 with the upload. The other run of the same round gave 5% to 38% more on the CPU rows and 1.221 ms on the GPU; over the day the default form's decode was 1.18 to 1.25 ms per record in every run on this batch (the binary search form 1.22 to 1.32, except the first pairs of `bench.log`, 1.87 to 1.91, whose cause was not looked for). The table lookups that the shader uses by default took 0.94 to 0.96 of the device time of the binary search of its first version on this batch, and 0.68 on 48 small records (pairs on the same batch). With the inputs read by the shader from host memory instead of copied first, the decode took 8.6 ms per record. **Not measured:** real records (a real V4.1 record is WNR3-CZ and 0.8545 of its decoded size), another GPU or driver, an upload overlapped with the decode, a commit step and any engine. For scale only: the CUDA kernels took 0.366 to 0.373 ms per real V4.1 record in batches of 16 on the RTX 5090 ([WNR3-VERIFY](reports/WNR3-VERIFY.md), section 3); different GPU and records, not a comparison.
+
+## WNR3 decode on Vulkan against the CPU decoders (2026-11-16, real records, one RTX 3070)
+
+The same bench on the first 16 records of the published DeepSeek V4.1 Flash REAP-192 container (WNR3-CZ, flag byte 0x0f, 0.854 of their decoded size), the same desktop (RTX 3070, driver 621.01; Intel Core i7-7700K, CPU load 25% just before the run), default shader form, 21 runs, 0 differences from the reference ([research/vulkan-real-20261116](../research/vulkan-real-20261116/README.md)):
+
+| Path | ms per record | per batch of 16: min to max, ms | decoded MB/s |
+|---|---:|---|---:|
+| GPU, decode: device timestamps around pass A and pass B | 1.056 | 16.131 to 46.975 | 17,803 |
+| GPU, upload + decode, host clock | 3.386 | 52.765 to 83.681 | 5,553 |
+| CPU, fast decoder (AVX2), 8 threads | 24.108 | 378.046 to 420.029 | 780 |
+| CPU, fast decoder (AVX2), 1 thread | 99.549 | 1,561.015 to 1,633.459 | 189 |
+| CPU, reference decoder `wex_nr2_decode`, 1 thread (5 runs) | 775.425 | 12,390.649 to 12,469.773 | 24 |
+
+The decode took 1/23 of the time of the fast decoder on all threads, and 1/7.1 with the upload. One batch of layer 0, one GPU; other work loaded the CPU.
 
 ## WNR3 against general-purpose codecs on real expert records (2026-11-15, 24 experts, a desktop CPU)
 
