@@ -1,11 +1,14 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 Ludovico Zanichelli
 
-// wex4check: a WEX4 reader and verifier written from docs/WEX4-SPEC.md, docs/WNR3-SPEC.md and
+// wex4check: a WEX4 reader, verifier and writer written from docs/WEX4-SPEC.md, docs/WNR3-SPEC.md and
 // docs/WNR2-REFERENCE.md only. Standard library only.
 //
 //	wex4check [-v] [-root HEX] FILE... verify files: header page, index, every blob and record, decode
 //	wex4check -manifest MANIFEST.tsv   check the conformance vectors against their manifest
+//	wex4check write MANIFEST.txt OUT   write a WEX4 file from source files and a manifest (exit 0 or 1)
+//	wex4check train MANIFEST.txt N OUT train the WNM2 model of blob line N on the manifest's experts
+//	wex4check export FILE DIR          take a WEX4 file apart into source files and a manifest (exit 0 or 1)
 //
 // Exit code, files: 0 every file verified, 1 a file was refused, 3 a file opened and holds records of a
 // codec this reader does not know (hashes checked, not decoded), 2 usage or a read error.
@@ -22,6 +25,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -93,10 +97,10 @@ func runManifest(path string, verbose bool) (rows, wrong int, err error) {
 				problem = "accepted with records that were not decoded"
 			case e == nil && hex.EncodeToString(res.H.Root[:]) != root:
 				problem = "root " + hex.EncodeToString(res.H.Root[:]) + ", the manifest says " + root
-			case e == nil && len(col) >= 7 && hex.EncodeToString(res.Content[:]) != col[6]:
+			case e == nil && len(col) >= 7 && hex.EncodeToString(res.Digest[:]) != col[6]:
 				// the decoded bytes: a decoder can pass every hash of a record and still return other bytes
 				// (the stream hashes cover the coded symbols, before the inverse of the ceil form or the rotation)
-				problem = "content digest " + hex.EncodeToString(res.Content[:]) + ", the manifest says " + col[6]
+				problem = "content digest " + hex.EncodeToString(res.Digest[:]) + ", the manifest says " + col[6]
 			}
 			if problem == "" && verbose {
 				if e != nil {
@@ -114,12 +118,85 @@ func runManifest(path string, verbose bool) (rows, wrong int, err error) {
 	return rows, wrong, sc.Err()
 }
 
+const usage = `usage: wex4check [-v] [-root HEX] FILE...
+       wex4check [-v] -manifest MANIFEST.tsv
+       wex4check write MANIFEST.txt OUT.wex4
+       wex4check train MANIFEST.txt N OUT.wnm2
+       wex4check export FILE.wex4 DIR`
+
+// cmdWrite: a WEX4 file from a writer's manifest (README.md, "The writer's manifest").
+func cmdWrite(args []string) int {
+	if len(args) != 2 {
+		fmt.Fprintln(os.Stderr, usage)
+		return 2
+	}
+	m, err := ParseManifest(args[0])
+	if err == nil {
+		var w *Written
+		if w, err = WriteFile(m, args[1]); err == nil {
+			fmt.Printf("%s: root %x, %d bytes, %d blobs, %d records (%d RAW, %d WBP1, %d WNR3; %d stored RAW because not smaller), %d tensors, content digest %x: written\n",
+				args[1], w.Root, w.FileBytes, w.Blobs, w.Records, w.RAW, w.WBP1, w.WNR3, w.Fallbacks, w.Tensors, w.Digest)
+			return 0
+		}
+	}
+	fmt.Fprintln(os.Stderr, "wex4check write:", err)
+	return 1
+}
+
+// cmdTrain: the WNM2 model of blob line N of a manifest, trained on the expert records that name it.
+func cmdTrain(args []string) int {
+	if len(args) != 3 {
+		fmt.Fprintln(os.Stderr, usage)
+		return 2
+	}
+	n, err := strconv.ParseUint(args[1], 10, 32)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, usage)
+		return 2
+	}
+	m, err := ParseManifest(args[0])
+	if err == nil {
+		var tr *Trained
+		if tr, err = TrainFile(m, uint32(n), args[2]); err == nil {
+			fmt.Printf("%s: WNM2 model, id 0x%08x, trained on %d expert records (%d with canonical zero); %d of the %d weight contexts and %d of the 3 scale tables had no count: written\n",
+				args[2], tr.ID, tr.Records, tr.CZ, tr.EmptyContexts, 3*wnmContexts, tr.EmptyScales)
+			return 0
+		}
+	}
+	fmt.Fprintln(os.Stderr, "wex4check train:", err)
+	return 1
+}
+
+// cmdExport: the sources and the manifest of a WEX4 file, for the writer.
+func cmdExport(args []string) int {
+	if len(args) != 2 {
+		fmt.Fprintln(os.Stderr, usage)
+		return 2
+	}
+	res, err := Export(args[0], args[1])
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "wex4check export:", err)
+		return 1
+	}
+	fmt.Printf("%s: root %x, %d tensors, content digest %x: exported to %s\n", args[0], res.H.Root, res.H.Tensors, res.Digest, args[1])
+	return 0
+}
+
 func main() {
+	if len(os.Args) > 1 && os.Args[1] == "write" {
+		os.Exit(cmdWrite(os.Args[2:]))
+	}
+	if len(os.Args) > 1 && os.Args[1] == "export" {
+		os.Exit(cmdExport(os.Args[2:]))
+	}
+	if len(os.Args) > 1 && os.Args[1] == "train" {
+		os.Exit(cmdTrain(os.Args[2:]))
+	}
 	manifest := flag.String("manifest", "", "check the vectors listed in this MANIFEST.tsv")
 	rootHex := flag.String("root", "", "the root (64 hex digits) every FILE must have")
 	verbose := flag.Bool("v", false, "print every manifest row, and what the decoders met")
 	flag.Usage = func() {
-		fmt.Fprintln(os.Stderr, "usage: wex4check [-v] [-root HEX] FILE...\n       wex4check [-v] -manifest MANIFEST.tsv")
+		fmt.Fprintln(os.Stderr, usage)
 	}
 	flag.Parse()
 
@@ -176,7 +253,7 @@ func main() {
 				fmt.Printf(": hashes pass, %d records of an unknown codec were not decoded\n", res.Undecoded)
 				worse(3)
 			} else {
-				fmt.Printf(": accept\n")
+				fmt.Printf(", content digest %x: accept\n", res.Digest)
 			}
 		}
 	}
