@@ -473,8 +473,14 @@ measured; it is not known to fail.
   - the llvmpipe crash of issue 21: on Mesa 25.2.8 with LLVM 20.1.2 it is reduced to a shader of about 30
     lines and a host of its own (`crash_min.comp`, `crash_min.c`) that crash only with a binding 0 in the
     descriptor set layout; the first form of the shader was valid SPIR-V and gave no message of the
-    validation layer, so the crash is in the driver. Open: its cause inside Mesa, a run on a newer Mesa on
-    Linux, and a report to Mesa (none was sent). The folder's README, "The llvmpipe crash", has the forms.
+    validation layer, so the crash is in the driver. On a newer Mesa on Linux it did not crash: on
+    2026-11-16 (run 43827154227, opt-in job `linux-vulkan-newmesa`, one run in each container) Mesa
+    26.2.7 with LLVM 23.1.4 (`archlinux:latest`) and Mesa 26.2.6 with LLVM 23.1.2 (`fedora:latest`,
+    Fedora 45) ran 0 crashes in the 50 runs of the probe, `crash_min` and the first form of the shader
+    included, and passed every `run.sh` check (decode, reject, mutate, the conformance vectors; 0
+    differences, 0 messages of the validation layer), while `linux-vulkan` in the same run (Mesa 25.2.8,
+    LLVM 20.1.2) crashed in 38 of 61. Open: its cause inside Mesa, which change ended it, and a report to
+    Mesa (none was sent). The folder's README, "The llvmpipe crash", has the forms.
 - **Done when:** its output is byte-identical to the CPU reference on every record of a real container,
   there is a speed number against the CPU path on the same machine, and it builds without the CUDA
   toolkit. Today the third holds, and the second holds for synthetic records of the size of a real expert
