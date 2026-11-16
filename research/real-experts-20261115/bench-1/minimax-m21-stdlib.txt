@@ -1,0 +1,63 @@
+baselines: 8 records, Python 3.14.10, zstd 1.5.7, zlib 1.4; 8 logical CPUs, 11 runs per row, one pass not counted first
+| decoder | threads | stored / raw | median ms/record | min to max ms | MB/s |
+|---|---|---:|---:|---|---:|
+compressed with zstd level 1 (compression.zstd): 0.0 s for the 8 records, 8 threads (not a speed measurement)
+| zstd level 1 (compression.zstd) | 1 | 0.9068 | 8.39 | 8.34 to 8.81 | 896.3 |
+json {"row":"zstd level 1 (compression.zstd)","mode":"1","threads":1,"records":8,"runs":11,"ratio":0.906802,"median_ms":8.3902,"min_ms":8.3393,"max_ms":8.8071,"mb_s":896.31,"decoded_bytes_per_record":7520256,"ended":"11:26:49","seconds":0.8}
+| zstd level 1 (compression.zstd) | 8 records at once | 0.9068 | 3.39 | 3.26 to 3.69 | 2215.6 |
+json {"row":"zstd level 1 (compression.zstd)","mode":"8 records at once","threads":8,"records":8,"runs":11,"ratio":0.906802,"median_ms":3.3942,"min_ms":3.2551,"max_ms":3.6916,"mb_s":2215.63,"decoded_bytes_per_record":7520256,"ended":"11:26:49","seconds":0.3}
+compressed with zstd level 3 (compression.zstd): 0.0 s for the 8 records, 8 threads (not a speed measurement)
+| zstd level 3 (compression.zstd) | 1 | 0.9077 | 8.37 | 8.26 to 8.60 | 898.4 |
+json {"row":"zstd level 3 (compression.zstd)","mode":"1","threads":1,"records":8,"runs":11,"ratio":0.907682,"median_ms":8.3703,"min_ms":8.261,"max_ms":8.6003,"mb_s":898.45,"decoded_bytes_per_record":7520256,"ended":"11:26:50","seconds":0.8}
+| zstd level 3 (compression.zstd) | 8 records at once | 0.9077 | 3.50 | 3.35 to 3.54 | 2150.0 |
+json {"row":"zstd level 3 (compression.zstd)","mode":"8 records at once","threads":8,"records":8,"runs":11,"ratio":0.907682,"median_ms":3.4977,"min_ms":3.3521,"max_ms":3.5355,"mb_s":2150.04,"decoded_bytes_per_record":7520256,"ended":"11:26:51","seconds":0.3}
+compressed with zstd level 9 (compression.zstd): 0.1 s for the 8 records, 8 threads (not a speed measurement)
+| zstd level 9 (compression.zstd) | 1 | 0.9054 | 9.25 | 9.14 to 12.59 | 813.4 |
+json {"row":"zstd level 9 (compression.zstd)","mode":"1","threads":1,"records":8,"runs":11,"ratio":0.905352,"median_ms":9.2455,"min_ms":9.1419,"max_ms":12.5895,"mb_s":813.39,"decoded_bytes_per_record":7520256,"ended":"11:26:52","seconds":0.9}
+| zstd level 9 (compression.zstd) | 8 records at once | 0.9054 | 3.73 | 3.65 to 4.15 | 2013.6 |
+json {"row":"zstd level 9 (compression.zstd)","mode":"8 records at once","threads":8,"records":8,"runs":11,"ratio":0.905352,"median_ms":3.7348,"min_ms":3.6544,"max_ms":4.1478,"mb_s":2013.57,"decoded_bytes_per_record":7520256,"ended":"11:26:52","seconds":0.4}
+compressed with zstd level 19 (compression.zstd): 1.9 s for the 8 records, 8 threads (not a speed measurement)
+| zstd level 19 (compression.zstd) | 1 | 0.9055 | 10.36 | 10.06 to 10.51 | 726.0 |
+json {"row":"zstd level 19 (compression.zstd)","mode":"1","threads":1,"records":8,"runs":11,"ratio":0.905505,"median_ms":10.3586,"min_ms":10.0586,"max_ms":10.5083,"mb_s":726.0,"decoded_bytes_per_record":7520256,"ended":"11:26:55","seconds":1.0}
+| zstd level 19 (compression.zstd) | 8 records at once | 0.9055 | 4.14 | 4.01 to 4.23 | 1817.0 |
+json {"row":"zstd level 19 (compression.zstd)","mode":"8 records at once","threads":8,"records":8,"runs":11,"ratio":0.905505,"median_ms":4.1388,"min_ms":4.0106,"max_ms":4.2333,"mb_s":1817.02,"decoded_bytes_per_record":7520256,"ended":"11:26:55","seconds":0.4}
+compressed with zstd level 22 (compression.zstd): 1.7 s for the 8 records, 8 threads (not a speed measurement)
+| zstd level 22 (compression.zstd) | 1 | 0.9055 | 10.43 | 10.17 to 10.65 | 721.2 |
+json {"row":"zstd level 22 (compression.zstd)","mode":"1","threads":1,"records":8,"runs":11,"ratio":0.905505,"median_ms":10.4275,"min_ms":10.1665,"max_ms":10.6459,"mb_s":721.19,"decoded_bytes_per_record":7520256,"ended":"11:26:58","seconds":1.0}
+| zstd level 22 (compression.zstd) | 8 records at once | 0.9055 | 4.14 | 3.98 to 4.31 | 1817.1 |
+json {"row":"zstd level 22 (compression.zstd)","mode":"8 records at once","threads":8,"records":8,"runs":11,"ratio":0.905505,"median_ms":4.1387,"min_ms":3.9795,"max_ms":4.3141,"mb_s":1817.06,"decoded_bytes_per_record":7520256,"ended":"11:26:59","seconds":0.4}
+compressed with lzma preset 0: 1.7 s for the 8 records, 8 threads (not a speed measurement)
+| lzma preset 0 | 1 | 0.9244 | 157.25 | 156.73 to 158.79 | 47.8 |
+json {"row":"lzma preset 0","mode":"1","threads":1,"records":8,"runs":11,"ratio":0.924436,"median_ms":157.2522,"min_ms":156.7309,"max_ms":158.788,"mb_s":47.82,"decoded_bytes_per_record":7520256,"ended":"11:27:17","seconds":15.1}
+| lzma preset 0 | 8 records at once | 0.9244 | 27.26 | 27.10 to 30.89 | 275.9 |
+json {"row":"lzma preset 0","mode":"8 records at once","threads":8,"records":8,"runs":11,"ratio":0.924436,"median_ms":27.2581,"min_ms":27.1048,"max_ms":30.8909,"mb_s":275.89,"decoded_bytes_per_record":7520256,"ended":"11:27:19","seconds":2.7}
+compressed with lzma preset 6: 2.3 s for the 8 records, 8 threads (not a speed measurement)
+| lzma preset 6 | 1 | 0.9117 | 154.95 | 154.53 to 155.19 | 48.5 |
+json {"row":"lzma preset 6","mode":"1","threads":1,"records":8,"runs":11,"ratio":0.911695,"median_ms":154.9455,"min_ms":154.5336,"max_ms":155.1898,"mb_s":48.53,"decoded_bytes_per_record":7520256,"ended":"11:27:38","seconds":14.9}
+| lzma preset 6 | 8 records at once | 0.9117 | 26.63 | 26.39 to 29.55 | 282.4 |
+json {"row":"lzma preset 6","mode":"8 records at once","threads":8,"records":8,"runs":11,"ratio":0.911695,"median_ms":26.6275,"min_ms":26.3903,"max_ms":29.5542,"mb_s":282.42,"decoded_bytes_per_record":7520256,"ended":"11:27:40","seconds":2.6}
+compressed with lzma preset 9e: 2.0 s for the 8 records, 8 threads (not a speed measurement)
+| lzma preset 9e | 1 | 0.9117 | 154.93 | 154.62 to 155.65 | 48.5 |
+json {"row":"lzma preset 9e","mode":"1","threads":1,"records":8,"runs":11,"ratio":0.911695,"median_ms":154.9335,"min_ms":154.6206,"max_ms":155.6498,"mb_s":48.54,"decoded_bytes_per_record":7520256,"ended":"11:27:58","seconds":14.9}
+| lzma preset 9e | 8 records at once | 0.9117 | 26.77 | 26.52 to 30.52 | 280.9 |
+json {"row":"lzma preset 9e","mode":"8 records at once","threads":8,"records":8,"runs":11,"ratio":0.911695,"median_ms":26.7721,"min_ms":26.5242,"max_ms":30.521,"mb_s":280.9,"decoded_bytes_per_record":7520256,"ended":"11:28:01","seconds":2.6}
+compressed with zlib level 1: 0.3 s for the 8 records, 8 threads (not a speed measurement)
+| zlib level 1 | 1 | 0.9139 | 26.81 | 26.74 to 27.03 | 280.5 |
+json {"row":"zlib level 1","mode":"1","threads":1,"records":8,"runs":11,"ratio":0.91388,"median_ms":26.8141,"min_ms":26.7434,"max_ms":27.0269,"mb_s":280.46,"decoded_bytes_per_record":7520256,"ended":"11:28:04","seconds":2.6}
+| zlib level 1 | 8 records at once | 0.9139 | 6.20 | 6.07 to 6.28 | 1213.6 |
+json {"row":"zlib level 1","mode":"8 records at once","threads":8,"records":8,"runs":11,"ratio":0.91388,"median_ms":6.1966,"min_ms":6.0673,"max_ms":6.2783,"mb_s":1213.6,"decoded_bytes_per_record":7520256,"ended":"11:28:05","seconds":0.6}
+compressed with zlib level 6: 0.3 s for the 8 records, 8 threads (not a speed measurement)
+| zlib level 6 | 1 | 0.9089 | 26.13 | 25.98 to 26.40 | 287.8 |
+json {"row":"zlib level 6","mode":"1","threads":1,"records":8,"runs":11,"ratio":0.908914,"median_ms":26.1294,"min_ms":25.9791,"max_ms":26.4014,"mb_s":287.81,"decoded_bytes_per_record":7520256,"ended":"11:28:08","seconds":2.5}
+| zlib level 6 | 8 records at once | 0.9089 | 6.08 | 5.85 to 6.21 | 1236.8 |
+json {"row":"zlib level 6","mode":"8 records at once","threads":8,"records":8,"runs":11,"ratio":0.908914,"median_ms":6.0806,"min_ms":5.8546,"max_ms":6.2069,"mb_s":1236.76,"decoded_bytes_per_record":7520256,"ended":"11:28:08","seconds":0.6}
+compressed with zlib level 9: 2.1 s for the 8 records, 8 threads (not a speed measurement)
+| zlib level 9 | 1 | 0.9083 | 25.92 | 25.87 to 26.12 | 290.2 |
+json {"row":"zlib level 9","mode":"1","threads":1,"records":8,"runs":11,"ratio":0.90825,"median_ms":25.9159,"min_ms":25.8669,"max_ms":26.1181,"mb_s":290.18,"decoded_bytes_per_record":7520256,"ended":"11:28:13","seconds":2.5}
+| zlib level 9 | 8 records at once | 0.9083 | 6.02 | 5.87 to 6.19 | 1248.8 |
+json {"row":"zlib level 9","mode":"8 records at once","threads":8,"records":8,"runs":11,"ratio":0.90825,"median_ms":6.022,"min_ms":5.8664,"max_ms":6.1852,"mb_s":1248.8,"decoded_bytes_per_record":7520256,"ended":"11:28:14","seconds":0.6}
+compressed with bz2 level 9: 1.1 s for the 8 records, 8 threads (not a speed measurement)
+| bz2 level 9 | 1 | 0.9247 | 298.63 | 293.88 to 309.10 | 25.2 |
+json {"row":"bz2 level 9","mode":"1","threads":1,"records":8,"runs":11,"ratio":0.924704,"median_ms":298.632,"min_ms":293.8812,"max_ms":309.0964,"mb_s":25.18,"decoded_bytes_per_record":7520256,"ended":"11:28:46","seconds":28.7}
+| bz2 level 9 | 8 records at once | 0.9247 | 78.62 | 75.10 to 80.77 | 95.7 |
+json {"row":"bz2 level 9","mode":"8 records at once","threads":8,"records":8,"runs":11,"ratio":0.924704,"median_ms":78.6194,"min_ms":75.0997,"max_ms":80.7707,"mb_s":95.65,"decoded_bytes_per_record":7520256,"ended":"11:28:54","seconds":7.6}

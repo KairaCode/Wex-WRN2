@@ -1,0 +1,34 @@
+--- wnr3_vk.c
++++ wnr3_vk.c
+@@ -575,7 +575,30 @@
+             for (m = 0; m < 3u && same; m++)
+                 same = !memcmp(device + job->scale_at[m], scales[m], job->layout.scale_count[m]) &&
+                        !memcmp(device + job->weight_at[m], weights[m], job->layout.symbol_count[m] / 2u);
+-            if (!same) printf("%s record %u: accepted by both, the decoded bytes differ\n", what, (unsigned)i);
++            if (!same) {
++                printf("%s record %u: accepted by both, the decoded bytes differ\n", what, (unsigned)i);
++                {   /* diagnostic: per region, bytes that differ, and how many of those equal the bytes before the ceil-form inverse */
++                    WexNr2Record p2 = job->view;
++                    p2.flags &= (unsigned char)~WEX_NR3_FLAG_CEIL_MASK;
++                    if (wex_nr2_decode(&p2, &job->layout, &model, coded_scales, coded_weights)) DIE("coded decode");
++                    for (m = 0; m < 3u; m++) {
++                        unsigned long ds = 0, dsc = 0, dw = 0, dwc = 0, cs = 0, first_s = 0xffffffffu, first_w = 0xffffffffu;
++                        for (b = 0; b < job->layout.scale_count[m]; b++) {
++                            unsigned char d = device[job->scale_at[m] + b];
++                            cs += coded_scales[m][b] != scales[m][b];
++                            if (d != scales[m][b]) { ds++; dsc += d == coded_scales[m][b]; if (first_s == 0xffffffffu) first_s = b; }
++                        }
++                        for (b = 0; b < job->layout.symbol_count[m] / 2u; b++) {
++                            unsigned char d = device[job->weight_at[m] + b];
++                            if (d != weights[m][b]) { dw++; dwc += d == coded_weights[m][b]; if (first_w == 0xffffffffu) first_w = b; }
++                        }
++                        printf("  matrix %u: %lu of %u scale bytes differ (%lu of them hold the coded scale; ceil inverse changes %lu scales), first at %ld;"
++                               " %lu of %u weight bytes differ (%lu hold the coded bytes), first at %ld\n", (unsigned)m, ds,
++                               (unsigned)job->layout.scale_count[m], dsc, cs, first_s == 0xffffffffu ? -1L : (long)first_s, dw,
++                               (unsigned)(job->layout.symbol_count[m] / 2u), dwc, first_w == 0xffffffffu ? -1L : (long)first_w);
++                    }
++                }
++            }
+             /* how many blocks the ceil-form inverse changed: the same streams decoded without it */
+             plain.flags &= (unsigned char)~WEX_NR3_FLAG_CEIL_MASK;
+             if (job->view.flags & WEX_NR3_FLAG_CEIL_MASK) {

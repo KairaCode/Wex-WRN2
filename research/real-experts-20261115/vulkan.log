@@ -1,0 +1,105 @@
+== 1. bash wex4/research/vulkan-decode/run.sh (MUTATIONS=0)
+<Wex-WRN2>/wex4/research/vulkan-decode/wnr3.comp
+<Wex-WRN2>/wex4/research/vulkan-decode/wnr3.comp
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357)
+selftest record 3: accepted by both, the decoded bytes differ
+selftest record 4: accepted by both, the decoded bytes differ
+selftest 0: plain, smallest chunks, odd scale counts: 9 + 101 streams, flags 0x00, error word 0x0
+selftest 1: plain, largest chunks: 3 + 6 streams, flags 0x00, error word 0x0
+selftest 2: canonical zero: 3 + 5 streams, flags 0x08, error word 0x0
+selftest 3: ceil form: 3 + 14 streams, flags 0x07, error word 0x0
+selftest 4: ceil form and canonical zero, chunk 4096: 4 + 14 streams, flags 0x0f, error word 0x0
+selftest 5: ceil form with a coded scale 0 in a max-5 block: 3 + 9 streams, flags 0x07, error word 0x4
+selftest 6: nibble 8 in a canonical-zero record: 3 + 9 streams, flags 0x08, error word 0x8
+selftest 7: one payload byte changed: 3 + 9 streams, flags 0x07, error word 0x1
+selftest 8: owner changed: every stream has a wrong hash and nothing else: 3 + 9 streams, flags 0x00, error word 0x2
+selftest 9: a scale stream one byte longer than its symbols: 15 + 53 streams, flags 0x00, error word 0x1
+selftest 10: a scale stream with an initial state below L: 15 + 53 streams, flags 0x00, error word 0x1
+selftest 11: a scale stream with an initial state of 256 L or more: 56 + 220 streams, flags 0x00, error word 0x1
+selftest: 3 accepted with the reference's bytes (534 blocks undone by the ceil-form inverse), 7 refused by both, 2 differences
+selftest: expected 5 accepted, 7 refused
+wnr3_vk: FAILED (3)
+run.sh exit status 1
+== 2. wnr3_vk decode <Wex-WRN2>/wex4/vectors/valid/tiny2-cz-upgraded.wex4
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357)
+<Wex-WRN2>/wex4/vectors/valid/tiny2-cz-upgraded.wex4: 2 WNR3 records, 2 taken, 1 batches of at most 268435456 bytes; device and reference agree on 2 accepted (flag bytes: 0x08; 0 blocks undone by the ceil-form inverse) and 0 refused (error bits 0x0); 0 refused by the host checks; 0 differences
+wnr3_vk: ok
+exit status 0
+== 2. wnr3_vk decode <SCRATCH>/w/deepseek-v41/nr3-all.wex4
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357)
+<SCRATCH>/w/deepseek-v41/nr3-all.wex4 record 0: accepted by both, the decoded bytes differ
+<SCRATCH>/w/deepseek-v41/nr3-all.wex4 record 1: accepted by both, the decoded bytes differ
+<SCRATCH>/w/deepseek-v41/nr3-all.wex4 record 2: accepted by both, the decoded bytes differ
+<SCRATCH>/w/deepseek-v41/nr3-all.wex4 record 3: accepted by both, the decoded bytes differ
+<SCRATCH>/w/deepseek-v41/nr3-all.wex4 record 4: accepted by both, the decoded bytes differ
+<SCRATCH>/w/deepseek-v41/nr3-all.wex4 record 5: accepted by both, the decoded bytes differ
+<SCRATCH>/w/deepseek-v41/nr3-all.wex4 record 6: accepted by both, the decoded bytes differ
+<SCRATCH>/w/deepseek-v41/nr3-all.wex4 record 7: accepted by both, the decoded bytes differ
+<SCRATCH>/w/deepseek-v41/nr3-all.wex4: 8 WNR3 records, 8 taken, 1 batches of at most 268435456 bytes; device and reference agree on 0 accepted (flag bytes:; 2707895 blocks undone by the ceil-form inverse) and 0 refused (error bits 0x0); 0 refused by the host checks; 8 differences
+wnr3_vk: FAILED (8)
+exit status 1
+== 2. wnr3_vk decode <SCRATCH>/w/deepseek-v41/pack-wnr3-cz.wex4
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357)
+<SCRATCH>/w/deepseek-v41/pack-wnr3-cz.wex4 record 0: accepted by both, the decoded bytes differ
+<SCRATCH>/w/deepseek-v41/pack-wnr3-cz.wex4 record 1: accepted by both, the decoded bytes differ
+<SCRATCH>/w/deepseek-v41/pack-wnr3-cz.wex4 record 2: accepted by both, the decoded bytes differ
+<SCRATCH>/w/deepseek-v41/pack-wnr3-cz.wex4 record 3: accepted by both, the decoded bytes differ
+<SCRATCH>/w/deepseek-v41/pack-wnr3-cz.wex4 record 4: accepted by both, the decoded bytes differ
+<SCRATCH>/w/deepseek-v41/pack-wnr3-cz.wex4 record 5: accepted by both, the decoded bytes differ
+<SCRATCH>/w/deepseek-v41/pack-wnr3-cz.wex4 record 6: accepted by both, the decoded bytes differ
+<SCRATCH>/w/deepseek-v41/pack-wnr3-cz.wex4 record 7: accepted by both, the decoded bytes differ
+<SCRATCH>/w/deepseek-v41/pack-wnr3-cz.wex4: 8 WNR3 records, 8 taken, 1 batches of at most 268435456 bytes; device and reference agree on 0 accepted (flag bytes:; 2707895 blocks undone by the ceil-form inverse) and 0 refused (error bits 0x0); 0 refused by the host checks; 8 differences
+wnr3_vk: FAILED (8)
+exit status 1
+== 2. wnr3_vk decode <SCRATCH>/w/qwen3-235b/nr3-all.wex4
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357)
+<SCRATCH>/w/qwen3-235b/nr3-all.wex4: 8 WNR3 records, 8 taken, 1 batches of at most 268435456 bytes; device and reference agree on 8 accepted (flag bytes: 0x07; 158 blocks undone by the ceil-form inverse) and 0 refused (error bits 0x0); 0 refused by the host checks; 0 differences
+wnr3_vk: ok
+exit status 0
+== 2. wnr3_vk decode <SCRATCH>/w/minimax-m21/nr3-all.wex4
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357)
+<SCRATCH>/w/minimax-m21/nr3-all.wex4: 8 WNR3 records, 8 taken, 1 batches of at most 268435456 bytes; device and reference agree on 8 accepted (flag bytes: 0x07; 165 blocks undone by the ceil-form inverse) and 0 refused (error bits 0x0); 0 refused by the host checks; 0 differences
+wnr3_vk: ok
+exit status 0
+steps 1 and 2: differences, see above
+== 3. diagnostic: run.sh with the decoded buffer of a copy of wnr3.comp declared coherent
+20c20
+< layout(std430, set = 0, binding = 4) buffer Decoded { uint outw[]; };               // decoded bytes, as LE words
+---
+> layout(std430, set = 0, binding = 4) coherent buffer Decoded { uint outw[]; };               // decoded bytes, as LE words
+<SCRATCH>/w/vk-coherent/wnr3.comp
+<SCRATCH>/w/vk-coherent/wnr3.comp
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357)
+selftest 0: plain, smallest chunks, odd scale counts: 9 + 101 streams, flags 0x00, error word 0x0
+selftest 1: plain, largest chunks: 3 + 6 streams, flags 0x00, error word 0x0
+selftest 2: canonical zero: 3 + 5 streams, flags 0x08, error word 0x0
+selftest 3: ceil form: 3 + 14 streams, flags 0x07, error word 0x0
+selftest 4: ceil form and canonical zero, chunk 4096: 4 + 14 streams, flags 0x0f, error word 0x0
+selftest 5: ceil form with a coded scale 0 in a max-5 block: 3 + 9 streams, flags 0x07, error word 0x4
+selftest 6: nibble 8 in a canonical-zero record: 3 + 9 streams, flags 0x08, error word 0x8
+selftest 7: one payload byte changed: 3 + 9 streams, flags 0x07, error word 0x1
+selftest 8: owner changed: every stream has a wrong hash and nothing else: 3 + 9 streams, flags 0x00, error word 0x2
+selftest 9: a scale stream one byte longer than its symbols: 15 + 53 streams, flags 0x00, error word 0x1
+selftest 10: a scale stream with an initial state below L: 15 + 53 streams, flags 0x00, error word 0x1
+selftest 11: a scale stream with an initial state of 256 L or more: 56 + 220 streams, flags 0x00, error word 0x1
+selftest: 5 accepted with the reference's bytes (534 blocks undone by the ceil-form inverse), 7 refused by both, 0 differences
+wnr3_vk: ok
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357)
+wex4/vectors/valid/tiny2-cz-upgraded.wex4: 2 WNR3 records, 2 taken, 1 batches of at most 268435456 bytes; device and reference agree on 2 accepted (flag bytes: 0x08; 0 blocks undone by the ceil-form inverse) and 0 refused (error bits 0x0); 0 refused by the host checks; 0 differences
+<SCRATCH>/w/deepseek-v41/nr3-all.wex4: 8 WNR3 records, 8 taken, 1 batches of at most 268435456 bytes; device and reference agree on 8 accepted (flag bytes: 0x07; 2707895 blocks undone by the ceil-form inverse) and 0 refused (error bits 0x0); 0 refused by the host checks; 0 differences
+<SCRATCH>/w/deepseek-v41/pack-wnr3-cz.wex4: 8 WNR3 records, 8 taken, 1 batches of at most 268435456 bytes; device and reference agree on 8 accepted (flag bytes: 0x0f; 2707895 blocks undone by the ceil-form inverse) and 0 refused (error bits 0x0); 0 refused by the host checks; 0 differences
+<SCRATCH>/w/qwen3-235b/nr3-all.wex4: 8 WNR3 records, 8 taken, 1 batches of at most 268435456 bytes; device and reference agree on 8 accepted (flag bytes: 0x07; 158 blocks undone by the ceil-form inverse) and 0 refused (error bits 0x0); 0 refused by the host checks; 0 differences
+<SCRATCH>/w/minimax-m21/nr3-all.wex4: 8 WNR3 records, 8 taken, 1 batches of at most 268435456 bytes; device and reference agree on 8 accepted (flag bytes: 0x07; 165 blocks undone by the ceil-form inverse) and 0 refused (error bits 0x0); 0 refused by the host checks; 0 differences
+wnr3_vk: ok
+batch limit 256 KiB: wex4/vectors/valid/tiny2-cz-upgraded.wex4: 2 WNR3 records, 2 taken, 1 batches of at most 262144 bytes; device and reference agree on 2 accepted (flag bytes: 0x08; 0 blocks undone by the ceil-form inverse) and 0 refused (error bits 0x0); 0 refused by the host checks; 0 differences
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357)
+wex4/vectors/invalid/canonical-zero-wnr3-data-without-the-value-exact-flag.wex4: cannot open
+run.sh with the coherent copy: exit status 2
+== 4. the reject step of run.sh, the shaders of step 3, absolute paths
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357)
+<Wex-WRN2>/wex4/vectors/invalid/canonical-zero-wnr3-data-without-the-value-exact-flag.wex4: 2 WNR3 records, 2 taken, 1 batches of at most 268435456 bytes; device and reference agree on 1 accepted (flag bytes: 0x08; 0 blocks undone by the ceil-form inverse) and 0 refused (error bits 0x0); 1 refused by the host checks; 0 differences
+<Wex-WRN2>/wex4/vectors/invalid/wnr3-record-owner-differs-from-the-owner-in-its-data.wex4: 2 WNR3 records, 2 taken, 0 batches of at most 268435456 bytes; device and reference agree on 0 accepted (flag bytes:; 0 blocks undone by the ceil-form inverse) and 0 refused (error bits 0x0); 2 refused by the host checks; 0 differences
+<Wex-WRN2>/wex4/vectors/invalid/wnr3-stream-damaged-record-hash-fixed.wex4: 2 WNR3 records, 2 taken, 1 batches of at most 268435456 bytes; device and reference agree on 1 accepted (flag bytes: 0x08; 0 blocks undone by the ceil-form inverse) and 1 refused (error bits 0x8); 0 refused by the host checks; 0 differences
+wnr3_vk: ok
+reject: exit status 0
+exit 0 after 157 s

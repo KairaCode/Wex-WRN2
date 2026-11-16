@@ -1,0 +1,18 @@
+bench_real: 8 logical CPUs, 11 runs per row, one pass not counted first
+wnr3: 8 records, model id 0x70f9af48, AVX2 kernels, every decoder's output equal to the slab
+| decoder | threads | stored / raw | median ms/record | min to max ms | MB/s |
+|---|---|---:|---:|---|---:|
+| WNR3 reference wex_nr2_decode | 1 | 0.8919 | 399.99 | 398.99 to 401.60 | 25.1 |
+json {"row":"WNR3 reference wex_nr2_decode","mode":"1","threads":1,"records":8,"runs":11,"ratio":0.891902,"median_ms":399.9950,"min_ms":398.9937,"max_ms":401.6007,"mb_s":25.07,"decoded_bytes_per_record":10027008,"ended":"11:21:13","seconds":38.4}
+| WNR3 reference wex_nr2_decode | 8 records at once | 0.8919 | 67.17 | 66.47 to 74.20 | 149.3 |
+json {"row":"WNR3 reference wex_nr2_decode","mode":"8 records at once","threads":8,"records":8,"runs":11,"ratio":0.891902,"median_ms":67.1728,"min_ms":66.4740,"max_ms":74.1955,"mb_s":149.27,"decoded_bytes_per_record":10027008,"ended":"11:21:20","seconds":6.6}
+| WNR3 fast, k1 4 streams fused (default) | 1 | 0.8919 | 50.04 | 49.71 to 50.24 | 200.4 |
+json {"row":"WNR3 fast, k1 4 streams fused (default)","mode":"1","threads":1,"records":8,"runs":11,"ratio":0.891902,"median_ms":50.0419,"min_ms":49.7081,"max_ms":50.2433,"mb_s":200.37,"decoded_bytes_per_record":10027008,"ended":"11:21:24","seconds":4.8}
+| WNR3 fast, k1 4 streams fused (default) | 8 per record | 0.8919 | 11.97 | 11.82 to 12.17 | 837.8 |
+json {"row":"WNR3 fast, k1 4 streams fused (default)","mode":"8 per record","threads":8,"records":8,"runs":11,"ratio":0.891902,"median_ms":11.9685,"min_ms":11.8202,"max_ms":12.1695,"mb_s":837.79,"decoded_bytes_per_record":10027008,"ended":"11:21:26","seconds":1.2}
+| WNR3 fast, k1 4 streams fused (default) | 8 records at once | 0.8919 | 11.60 | 11.43 to 16.08 | 864.3 |
+json {"row":"WNR3 fast, k1 4 streams fused (default)","mode":"8 records at once","threads":8,"records":8,"runs":11,"ratio":0.891902,"median_ms":11.6009,"min_ms":11.4345,"max_ms":16.0819,"mb_s":864.33,"decoded_bytes_per_record":10027008,"ended":"11:21:27","seconds":1.2}
+| WNR3 fast, k2 gather 16 streams fused | 1 | 0.8919 | 61.16 | 61.06 to 61.41 | 163.9 |
+json {"row":"WNR3 fast, k2 gather 16 streams fused","mode":"1","threads":1,"records":8,"runs":11,"ratio":0.891902,"median_ms":61.1645,"min_ms":61.0638,"max_ms":61.4122,"mb_s":163.94,"decoded_bytes_per_record":10027008,"ended":"11:21:33","seconds":5.9}
+| WNR3 fast, k2 gather 16 streams fused | 8 per record | 0.8919 | 11.30 | 11.17 to 11.50 | 887.3 |
+json {"row":"WNR3 fast, k2 gather 16 streams fused","mode":"8 per record","threads":8,"records":8,"runs":11,"ratio":0.891902,"median_ms":11.3005,"min_ms":11.1746,"max_ms":11.4989,"mb_s":887.30,"decoded_bytes_per_record":10027008,"ended":"11:21:34","seconds":1.1}

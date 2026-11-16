@@ -1,0 +1,40 @@
+compiler: gcc.exe (Rev6, Built by MSYS2 project) 16.2.0, flags -std=c99 -O3 -march=haswell -fopenmp
+python: 3.14.10
+commit: 1af6c0d
+runs per row: 11
+10:59:19 CPU load 97%, waiting
+10:59:51 CPU load 100%, waiting
+11:00:24 CPU load 100%, waiting
+11:00:56 CPU load 100%, waiting
+11:01:26 CPU load 84%, waiting
+11:01:57 CPU load 86%, waiting
+11:02:28 CPU load 50%, waiting
+11:03:02 CPU load 100%, waiting
+11:03:33 CPU load 92%, waiting
+11:04:03 CPU load 86%, waiting
+11:04:34 CPU load 100%, waiting
+11:05:05 CPU load 78%, waiting
+11:05:36 CPU load 84%, waiting
+11:06:07 CPU load 36%, waiting
+11:06:37 CPU load 33%, waiting
+11:07:08 CPU load 20%, waiting
+11:07:38 CPU load 20%, waiting
+11:08:09 CPU load 20%, waiting
+11:08:39 CPU load 22%, waiting
+11:09:10 CPU load 45%, waiting
+11:09:40 CPU load 34%, waiting
+11:10:11 CPU load 34%, waiting
+11:10:41 CPU load 29%, waiting
+11:11:11 deepseek-v41: mean CPU load of the 10 s before: 12%
+11:11:12 deepseek-v41: wnr3
+11:13:10 deepseek-v41: codecs
+11:15:05 deepseek-v41: stdlib
+11:20:30 qwen3-235b: mean CPU load of the 10 s before: 12%
+11:20:30 qwen3-235b: wnr3
+11:21:34 qwen3-235b: codecs
+11:22:25 qwen3-235b: stdlib
+11:25:21 minimax-m21: mean CPU load of the 10 s before: 12%
+11:25:21 minimax-m21: wnr3
+11:26:09 minimax-m21: codecs
+11:26:48 minimax-m21: stdlib
+11:28:54 done

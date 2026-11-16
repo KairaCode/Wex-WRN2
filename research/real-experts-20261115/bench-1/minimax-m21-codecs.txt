@@ -1,0 +1,54 @@
+bench_real: 8 logical CPUs, 11 runs per row, one pass not counted first
+codecs: 8 records; lz4 1.11.1, brotli 1.2.1, zstd 1.5.7
+| decoder | threads | stored / raw | median ms/record | min to max ms | MB/s |
+|---|---|---:|---:|---|---:|
+compressed with lz4 (LZ4_compress_default): 0.0 s for the 8 records, 8 threads (not a speed measurement)
+| lz4 (LZ4_compress_default) | 1 | 0.9727 | 0.76 | 0.60 to 1.49 | 9915.3 |
+json {"row":"lz4 (LZ4_compress_default)","mode":"1","threads":1,"records":8,"runs":11,"ratio":0.972675,"median_ms":0.7585,"min_ms":0.6048,"max_ms":1.4940,"mb_s":9915.30,"decoded_bytes_per_record":7520256,"ended":"11:26:09","seconds":0.1}
+| lz4 (LZ4_compress_default) | 8 records at once | 0.9727 | 0.54 | 0.52 to 0.61 | 13985.0 |
+json {"row":"lz4 (LZ4_compress_default)","mode":"8 records at once","threads":8,"records":8,"runs":11,"ratio":0.972675,"median_ms":0.5377,"min_ms":0.5185,"max_ms":0.6140,"mb_s":13984.99,"decoded_bytes_per_record":7520256,"ended":"11:26:10","seconds":0.1}
+compressed with lz4hc level 9: 0.4 s for the 8 records, 8 threads (not a speed measurement)
+| lz4hc level 9 | 1 | 0.9595 | 0.53 | 0.46 to 0.73 | 14247.0 |
+json {"row":"lz4hc level 9","mode":"1","threads":1,"records":8,"runs":11,"ratio":0.959501,"median_ms":0.5278,"min_ms":0.4601,"max_ms":0.7293,"mb_s":14246.96,"decoded_bytes_per_record":7520256,"ended":"11:26:10","seconds":0.1}
+| lz4hc level 9 | 8 records at once | 0.9595 | 0.61 | 0.59 to 0.64 | 12301.1 |
+json {"row":"lz4hc level 9","mode":"8 records at once","threads":8,"records":8,"runs":11,"ratio":0.959501,"median_ms":0.6113,"min_ms":0.5855,"max_ms":0.6382,"mb_s":12301.06,"decoded_bytes_per_record":7520256,"ended":"11:26:10","seconds":0.1}
+compressed with lz4hc level 12: 2.3 s for the 8 records, 8 threads (not a speed measurement)
+| lz4hc level 12 | 1 | 0.9556 | 0.47 | 0.44 to 0.64 | 15853.0 |
+json {"row":"lz4hc level 12","mode":"1","threads":1,"records":8,"runs":11,"ratio":0.955648,"median_ms":0.4744,"min_ms":0.4435,"max_ms":0.6397,"mb_s":15852.98,"decoded_bytes_per_record":7520256,"ended":"11:26:12","seconds":0.0}
+| lz4hc level 12 | 8 records at once | 0.9556 | 0.62 | 0.59 to 0.67 | 12063.3 |
+json {"row":"lz4hc level 12","mode":"8 records at once","threads":8,"records":8,"runs":11,"ratio":0.955648,"median_ms":0.6234,"min_ms":0.5859,"max_ms":0.6651,"mb_s":12063.29,"decoded_bytes_per_record":7520256,"ended":"11:26:12","seconds":0.1}
+compressed with brotli quality 1, window 24: 0.0 s for the 8 records, 8 threads (not a speed measurement)
+| brotli quality 1, window 24 | 1 | 0.9082 | 23.91 | 23.80 to 24.09 | 314.5 |
+json {"row":"brotli quality 1, window 24","mode":"1","threads":1,"records":8,"runs":11,"ratio":0.908202,"median_ms":23.9123,"min_ms":23.8011,"max_ms":24.0899,"mb_s":314.49,"decoded_bytes_per_record":7520256,"ended":"11:26:15","seconds":2.3}
+| brotli quality 1, window 24 | 8 records at once | 0.9082 | 4.45 | 4.32 to 5.12 | 1691.7 |
+json {"row":"brotli quality 1, window 24","mode":"8 records at once","threads":8,"records":8,"runs":11,"ratio":0.908202,"median_ms":4.4453,"min_ms":4.3234,"max_ms":5.1190,"mb_s":1691.71,"decoded_bytes_per_record":7520256,"ended":"11:26:15","seconds":0.4}
+compressed with brotli quality 5, window 24: 0.2 s for the 8 records, 8 threads (not a speed measurement)
+| brotli quality 5, window 24 | 1 | 0.9049 | 21.91 | 21.82 to 22.12 | 343.3 |
+json {"row":"brotli quality 5, window 24","mode":"1","threads":1,"records":8,"runs":11,"ratio":0.904945,"median_ms":21.9082,"min_ms":21.8164,"max_ms":22.1164,"mb_s":343.26,"decoded_bytes_per_record":7520256,"ended":"11:26:18","seconds":2.1}
+| brotli quality 5, window 24 | 8 records at once | 0.9049 | 4.00 | 3.95 to 4.80 | 1878.4 |
+json {"row":"brotli quality 5, window 24","mode":"8 records at once","threads":8,"records":8,"runs":11,"ratio":0.904945,"median_ms":4.0034,"min_ms":3.9485,"max_ms":4.8030,"mb_s":1878.44,"decoded_bytes_per_record":7520256,"ended":"11:26:18","seconds":0.4}
+compressed with brotli quality 9, window 24: 0.5 s for the 8 records, 8 threads (not a speed measurement)
+| brotli quality 9, window 24 | 1 | 0.9043 | 21.78 | 21.72 to 21.89 | 345.3 |
+json {"row":"brotli quality 9, window 24","mode":"1","threads":1,"records":8,"runs":11,"ratio":0.904316,"median_ms":21.7786,"min_ms":21.7209,"max_ms":21.8908,"mb_s":345.31,"decoded_bytes_per_record":7520256,"ended":"11:26:21","seconds":2.1}
+| brotli quality 9, window 24 | 8 records at once | 0.9043 | 4.02 | 3.90 to 4.53 | 1869.6 |
+json {"row":"brotli quality 9, window 24","mode":"8 records at once","threads":8,"records":8,"runs":11,"ratio":0.904316,"median_ms":4.0225,"min_ms":3.9008,"max_ms":4.5344,"mb_s":1869.55,"decoded_bytes_per_record":7520256,"ended":"11:26:22","seconds":0.4}
+compressed with brotli quality 11, window 24: 16.6 s for the 8 records, 8 threads (not a speed measurement)
+| brotli quality 11, window 24 | 1 | 0.9047 | 48.02 | 47.82 to 48.43 | 156.6 |
+json {"row":"brotli quality 11, window 24","mode":"1","threads":1,"records":8,"runs":11,"ratio":0.904663,"median_ms":48.0193,"min_ms":47.8159,"max_ms":48.4334,"mb_s":156.61,"decoded_bytes_per_record":7520256,"ended":"11:26:43","seconds":4.6}
+| brotli quality 11, window 24 | 8 records at once | 0.9047 | 7.61 | 7.34 to 7.93 | 988.8 |
+json {"row":"brotli quality 11, window 24","mode":"8 records at once","threads":8,"records":8,"runs":11,"ratio":0.904663,"median_ms":7.6055,"min_ms":7.3381,"max_ms":7.9320,"mb_s":988.79,"decoded_bytes_per_record":7520256,"ended":"11:26:44","seconds":0.7}
+compressed with zstd level 1 (libzstd): 0.0 s for the 8 records, 8 threads (not a speed measurement)
+| zstd level 1 (libzstd) | 1 | 0.9068 | 5.02 | 4.99 to 5.07 | 1499.1 |
+json {"row":"zstd level 1 (libzstd)","mode":"1","threads":1,"records":8,"runs":11,"ratio":0.906802,"median_ms":5.0166,"min_ms":4.9890,"max_ms":5.0691,"mb_s":1499.09,"decoded_bytes_per_record":7520256,"ended":"11:26:44","seconds":0.5}
+| zstd level 1 (libzstd) | 8 records at once | 0.9068 | 1.18 | 1.06 to 1.40 | 6396.3 |
+json {"row":"zstd level 1 (libzstd)","mode":"8 records at once","threads":8,"records":8,"runs":11,"ratio":0.906802,"median_ms":1.1757,"min_ms":1.0552,"max_ms":1.4007,"mb_s":6396.27,"decoded_bytes_per_record":7520256,"ended":"11:26:44","seconds":0.1}
+compressed with zstd level 3 (libzstd): 0.0 s for the 8 records, 8 threads (not a speed measurement)
+| zstd level 3 (libzstd) | 1 | 0.9077 | 5.07 | 5.02 to 5.12 | 1484.1 |
+json {"row":"zstd level 3 (libzstd)","mode":"1","threads":1,"records":8,"runs":11,"ratio":0.907682,"median_ms":5.0671,"min_ms":5.0169,"max_ms":5.1168,"mb_s":1484.13,"decoded_bytes_per_record":7520256,"ended":"11:26:45","seconds":0.5}
+| zstd level 3 (libzstd) | 8 records at once | 0.9077 | 1.17 | 1.08 to 1.55 | 6440.4 |
+json {"row":"zstd level 3 (libzstd)","mode":"8 records at once","threads":8,"records":8,"runs":11,"ratio":0.907682,"median_ms":1.1677,"min_ms":1.0774,"max_ms":1.5488,"mb_s":6440.44,"decoded_bytes_per_record":7520256,"ended":"11:26:45","seconds":0.1}
+compressed with zstd level 19 (libzstd): 2.0 s for the 8 records, 8 threads (not a speed measurement)
+| zstd level 19 (libzstd) | 1 | 0.9055 | 4.99 | 4.96 to 5.05 | 1506.5 |
+json {"row":"zstd level 19 (libzstd)","mode":"1","threads":1,"records":8,"runs":11,"ratio":0.905505,"median_ms":4.9919,"min_ms":4.9592,"max_ms":5.0540,"mb_s":1506.49,"decoded_bytes_per_record":7520256,"ended":"11:26:48","seconds":0.5}
+| zstd level 19 (libzstd) | 8 records at once | 0.9055 | 1.16 | 1.06 to 1.54 | 6499.2 |
+json {"row":"zstd level 19 (libzstd)","mode":"8 records at once","threads":8,"records":8,"runs":11,"ratio":0.905505,"median_ms":1.1571,"min_ms":1.0595,"max_ms":1.5364,"mb_s":6499.16,"decoded_bytes_per_record":7520256,"ended":"11:26:48","seconds":0.1}
