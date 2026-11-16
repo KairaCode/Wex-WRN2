@@ -8,18 +8,30 @@ bigger than a small fix, open an issue first so two people do not do the same wo
 Labels you may see on issues: **good first issue** (a few hours, little context), **help wanted**
 (larger, needs a design note first).
 
-Several items of this page got a first answer on 2026-11-14 or 2026-11-15. Where that is so, the
-item says what exists now ("Today"), with a link, and what is still open. A thing listed as open was
-not run or not measured; it is not known to fail.
+Several items of this page got a first answer from 2026-11-14 on. Where that is so, the item says what
+exists now ("Today"), with a link, and what is still open. A thing listed as open was not run or not
+measured; it is not known to fail.
 
 ## 1. Run the benchmark on your hardware (no code)
 
-- **What:** run [`bench/`](../bench/README.md) and share `results.json` through the
-  "Benchmark results" issue template. On Linux also run `bench/wex_io.py` (the read paths for expert
-  records, section 7) and attach its `wex_io.json`.
+- **What:** run [`bench/`](../bench/README.md) (Linux, or Windows in the MSYS2 UCRT64 shell) and share
+  `results.json` through the "Benchmark results" issue template. On Linux also run `bench/wex_io.py`
+  (the read paths for expert records, section 7) and attach its `wex_io.json`.
 - **Most wanted:** ARM machines (DGX Spark, Apple silicon under Linux, Ampere); AMD and Intel GPUs;
   filesystems other than NTFS (ZFS, btrfs, ext4, XFS); NVMe RAID or mirrors; machines with
   128 GB+ of RAM.
+- **Today:** `bench/bench.py` runs on Windows too (2026-11-15; before, its `disk` section stopped
+  there and `wex_check` started WSL), the CI job `windows` runs it with `--quick`, and every message
+  in `results.json` has paths, user name and host name replaced by placeholders. One Windows machine
+  ran it: Intel Core i7-7700K, 32 GB DDR4, NVIDIA RTX 3070, Windows 10 22H2, NTFS on one NVMe drive;
+  six runs of the default command in two sets while other jobs kept its CPU busy (58% to 100% total
+  CPU, median, in the 30 s before each run and in the `disk` section, which reads with one thread).
+  Its results go to a "Benchmark results" issue, not into this repository.
+- **Still open:** everything under "Most wanted"; `h2d` on Windows (it needs the CUDA toolkit, which
+  that machine does not have; `nvcc` there also needs `cl.exe` of Visual Studio on `PATH`, which is
+  installed there but was not tried with `nvcc`); a run of that machine with nothing
+  else running, on its SATA drives, and with `--file` on a model file (a cold read of real weights);
+  `bench.py` on macOS (not tried).
 - **Done when:** the issue has the JSON and a note on the run conditions.
 
 ## 2. Documentation (good first issue)
