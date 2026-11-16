@@ -10,6 +10,7 @@
 # Linux read-path benchmark), the linux-vulkan job (the WNR3 Vulkan prototype on a CPU Vulkan device) and the
 # colibri-headers job (the engine fuzzing harnesses built against colibri's own headers).
 # With the input arm_speed it also has the arm-speed jobs (the fast WNR3 decoder's speed on ARM64 Linux and macOS).
+# With the input macos_io_bench it also has the macos-io-bench job (the full read-path benchmark on macOS).
 name: CI
 
 on:
@@ -26,6 +27,8 @@ on:
         default: false
       arm_speed:
         description: "Also run synth.sh speed of the fast decoder on ARM64 Linux and macOS (a measurement, not a check)"
+      macos_io_bench:
+        description: "Also run the full bench/wex_io.py on macos-15 (macOS read paths; a measurement, not a check)"
         type: boolean
         default: false
 
@@ -33,10 +36,10 @@ permissions:
   contents: read
 
 # a newer push to the same branch or PR makes the running checks moot. Runs started by hand are in groups of
-# their own (one for each choice of linux_io_bench and arm_speed), so a push does not cancel a benchmark that is
-# running and a run started by hand does not cancel the push run of its branch
+# their own (one for each choice of linux_io_bench, arm_speed and macos_io_bench), so a push does not cancel a
+# benchmark that is running and a run started by hand does not cancel the push run of its branch
 concurrency:
-  group: ci-${{ github.ref }}-${{ github.event_name }}-${{ github.event.inputs.linux_io_bench }}-${{ github.event.inputs.arm_speed }}
+  group: ci-${{ github.ref }}-${{ github.event_name }}-${{ github.event.inputs.linux_io_bench }}-${{ github.event.inputs.arm_speed }}-${{ github.event.inputs.macos_io_bench }}
   cancel-in-progress: true
 
 jobs:
@@ -249,12 +252,22 @@ jobs:
         run: |
           CC=$(ls "$(brew --prefix)"/bin/gcc-[0-9]* | sort -t- -k2 -n | tail -1)
           export CC
-          echo "CC=$CC" >> "$GITHUB_ENV"   # the replay step below builds with the same compiler
+          echo "CC=$CC" >> "$GITHUB_ENV"   # the steps below build with the same compiler
           uname -sm; getconf PAGESIZE; "$CC" --version | head -1; "$PYTHON" --version
           set -o pipefail
           bash scripts/check_all.sh | tee "$RUNNER_TEMP/check.log"
           grep -q '^fast WNR3 decoder of wex4_tools.dll: NEON kernels$' "$RUNNER_TEMP/check.log"
           grep -q '^build: NEON kernels' "$RUNNER_TEMP/check.log"
+      # seconds: the smoke run of bench/wex_io.c on macOS (its blocks __APPLE__: F_NOCACHE, fcntl hints, msync
+      # to drop the file's pages), built with the GNU gcc of CC, then with Apple clang on the container the
+      # first call left. Both builds are C99 (-std=c99 -pedantic); wex_io.py stops on any warning. --strict: the
+      # 11 paths that macOS has must run and match the index; the 9 io_uring and POSIX_FADV_SEQUENTIAL paths
+      # print "skipped", which --strict does not count on macOS
+      - name: macOS read-path benchmark, smoke run (GNU gcc, then Apple clang)
+        run: |
+          "$CC" --version | head -1; clang --version | head -1
+          WEX_CFLAGS="-std=c99 -pedantic" python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --smoke --strict --keep
+          CC=clang WEX_CFLAGS="-std=c99 -pedantic" python3 -I bench/wex_io.py --file "$RUNNER_TEMP/wex-io-bench.wex4" --smoke --strict
       - name: Fuzz harnesses, seeds and mutators replayed (NEON kernel of the fast decoder)
         run: |
           set -o pipefail
@@ -625,6 +638,32 @@ jobs:
             { echo "### ${{ matrix.os }}, VM ${{ matrix.vm }}, $n"; echo; } >> "$GITHUB_STEP_SUMMARY"
             python3 -I wex4/research/fast-cpu-decode/speed_runs.py "$RUNNER_TEMP"/speed/"$n"-*.log | tee -a "$GITHUB_STEP_SUMMARY"
           done
+
+  # The same measurement on macOS, only when a manual run asks for it
+  # (gh workflow run ci.yml --ref <branch> -f macos_io_bench=true). The runner is a virtual machine on an Apple
+  # silicon host with a virtual disk: its numbers say how the macOS read paths compare there, not what the SSD
+  # of a Mac gives. The compiler is the runner's default gcc, which is Apple clang, in C99. --drop-caches runs
+  # purge through sudo before every pass; it empties the cache of the VM's kernel, not a cache of the host under
+  # the virtual disk. --runs 11: the order of the 11 timed paths rotates by one each round, so with 11 rounds
+  # every path takes every place in a round once (on these runners the early places of a round are slower).
+  # The first lines say whether sudo needs no password, and what the VM is
+  macos-io-bench:
+    if: github.event_name == 'workflow_dispatch' && inputs.macos_io_bench
+    runs-on: macos-15
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
+      - name: macOS read paths (bench/wex_io.py)
+        run: |
+          if sudo -n true; then echo "sudo without a password: yes"; else echo "sudo without a password: no"; fi
+          sysctl -n machdep.cpu.brand_string hw.model kern.hv_vmm_present hw.memsize hw.pagesize
+          sw_vers; gcc --version | head -1; df -h "$RUNNER_TEMP"
+          WEX_CFLAGS="-std=c99 -pedantic" python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --drop-caches --runs 11
+          jq -r .table_markdown bench/out/wex_io.json >> "$GITHUB_STEP_SUMMARY"
+          echo "----- bench/out/wex_io.json"
+          cat bench/out/wex_io.json
 
   # opt-in: only a run started by hand (workflow_dispatch) has this job. The WNR3 decode as a Vulkan compute
   # shader (wex4/research/vulkan-decode, docs/WNR3-VULKAN.md) against the CPU reference, on Mesa lavapipe: a

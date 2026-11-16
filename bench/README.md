@@ -87,12 +87,14 @@ Notes:
 - On ARM (for example a DGX Spark) the `wex_check` section runs the NEON kernel of the fast CPU decoder. It reports pass or fail and seconds, not a decode speed. For the decode speed of the NEON kernel against the scalar kernel on your CPU, run `bash wex4/research/fast-cpu-decode/synth.sh speed` after it (synthetic records, no model needed) and add its output to the issue. On a CPU with SVE, `WEX4_MARCH=-march=armv8-a+sve` before that command builds the SVE kernel 2 too and times it in the same table.
 - The GPU copy test is CUDA-only. On Intel Arc or AMD it reports `skipped`, which is expected.
 
-## Read paths for expert records (Linux): `wex_io.py`
+## Read paths for expert records (Linux and macOS): `wex_io.py`
 
 `bench.py` reads a plain file with one call per read. `wex_io.py` asks a narrower question: through which
-Linux read path should an engine read the expert records of a WEX4 container? It needs `gcc` and `python3`
-only (`CC` names another compiler, `WEX_CFLAGS` adds flags; besides gcc only the clang of the `linux-tsan`
-CI job was run), and Linux (`io_uring` is called through its system calls, so there is no liburing to install).
+Linux or macOS read path should an engine read the expert records of a WEX4 container? It needs `gcc`
+and `python3` only (`CC` names another compiler, `WEX_CFLAGS` adds flags; besides gcc only the clang of the `linux-tsan`
+CI job and, on macOS, Apple clang were run), and Linux (`io_uring` is called through its system calls, so
+there is no liburing to install) or macOS, where the same rows run through the calls macOS has
+([On macOS](#on-macos), below).
 
 ```bash
 python3 -I bench/wex_io.py --dir /path/on/your/model/volume --drop-caches
@@ -114,9 +116,10 @@ What it does:
    Linux 5.6) is reported as not run, with the reason; a path that fails the check is not timed and the
    script ends with `FAILED`. With `--strict` a path that was not run is a failure too (CI uses it,
    because all 27 paths run on its runners). The skip for an old kernel was not tried on one.
-4. **Then speed:** `--runs` timed passes per path (default 5) of `--records` records each (default 48). The
-   runs of all paths are interleaved and the order rotates, a run reads the same records on every path, and
-   the buffers are allocated and touched and the `io_uring` ring is set up before the clock starts. The
+4. **Then speed:** `--runs` rounds (default 5); a round is one timed pass of every path, of `--records`
+   records each (default 48). The order of the paths rotates by one from round to round (with as many
+   rounds as timed paths, every path takes every place in a round once), a round reads the same records
+   on every path, and the buffers are allocated and touched and the `io_uring` ring is set up before the clock starts. The
    worker threads of the multi-thread paths are created after it starts.
 
 The read paths:
@@ -149,7 +152,8 @@ record's own time). The share is printed under the table and stored per pass as 
 `announce_ms` is the time the reading thread spent in the announcing calls. A record's own time includes
 the calls that announce the record K places after it, made just before its read (the chunked path
 makes one call per chunk, so there they can be most of that time). Pages whose read is still
-under way may not be counted. The measurement needs 4096-byte pages. The chunk of the chunked path is the
+under way may not be counted. On Linux the measurement needs 4096-byte pages;
+on macOS it counts system pages ([On macOS](#on-macos), below). The chunk of the chunked path is the
 `read_ahead_kb` of the block device (128 KiB when it cannot be read), so no call asks for more than the
 kernel reads ahead on its own. In the Linux 7.0 source `readahead(2)` is a `POSIX_FADV_WILLNEED`, and one
 such call loads at most the larger of `read_ahead_kb` and `max_sectors_kb` (`force_page_cache_ra` in
@@ -162,7 +166,7 @@ while the next record loads. With `gap_ms=20` the thread spins 20 ms on the cloc
 20 ms is a chosen value, not a measured decode time. The note under the table compares each of the
 three rows with work and a prefetch with the row that has the same work and no prefetch.
 
-The script prints a Markdown table (median, minimum and maximum MB/s over the runs, MB = 10^6 bytes, and
+The script prints a Markdown table (median, minimum and maximum MB/s over the rounds, MB = 10^6 bytes, and
 the median time of one record) and writes `bench/out/wex_io.json` with every pass, the CPU, the kernel,
 the filesystem and the block-device queue settings (`read_ahead_kb`, `max_sectors_kb`, scheduler), but
 no host name, user name or path. The JSON is `version` 3: each pass has `prefetch`, `chunk_kb`, `gap_ms`,
@@ -172,7 +176,7 @@ chunk and where it came from, and each summary row of a path that announces reco
 wanted: attach the JSON to a **Benchmark results** issue.
 
 What it does not measure: the decode of a record (the rows with work spin instead), the engine's own
-caches, two drives (mirror, stripe), and anything on Windows or macOS. The only recorded runs are on
+caches, two drives (mirror, stripe), and anything on Windows (for macOS see [On macOS](#on-macos), below). The only recorded Linux runs are on
 GitHub Actions runners, shared cloud VMs with a virtual disk. Three of 2026-11-14 on two kinds of VM,
 where no read path won on both kinds:
 [research/linux-io-20261114](../research/linux-io-20261114/README.md). Eleven of 2026-11-15 on six
@@ -186,8 +190,51 @@ What CI covers: the `linux`, `linux-arm`, `linux-sanitizers` and `linux-arm-sani
 `wex_io.c` and run `--smoke --strict` (a 10 MB container, every path checked and run once; the `linux` job then reads the
 same container again through `--file`). The `linux-tsan` job runs the same smoke run built with clang under
 ThreadSanitizer (the `pread` threads and the helper thread of `prefetch=thread`). The full benchmark was
-not run on ARM. `scripts/check_all.sh` does not build `wex_io.c`, so the Windows job does not see it: its
-stub for systems other than Linux
+not run on ARM Linux. `scripts/check_all.sh` does not build `wex_io.c`, so the Windows job does not see it: its
+stub for systems other than Linux and macOS
 (it prints one `skipped` line) was built by hand with MinGW `gcc` and `clang`
 (`-std=c99 -pedantic -Wall -Wextra`, no warning) and is not built by CI. The full run is the job
 `linux-io-bench`, started by hand with `gh workflow run ci.yml --ref <branch> -f linux_io_bench=true`.
+
+### On macOS
+
+The same script and program run on macOS; on Linux nothing changed. The macOS code is in the blocks
+`__APPLE__` of `wex_io.c` and, in `wex_io.py`, in `macos_row`, the three functions after it and three lines
+of `main`. Each row keeps the options of its Linux row, so the JSON has the same keys on both systems; its
+label names the macOS call.
+
+| On Linux | On macOS |
+|---|---|
+| `O_DIRECT` | `open`, then `fcntl(F_NOCACHE, 1)` on the descriptor: no data caching for its reads |
+| `POSIX_FADV_RANDOM` | `fcntl(F_RDAHEAD, 0)`: readahead off on the descriptor |
+| `POSIX_FADV_SEQUENTIAL` | none (`F_RDAHEAD` only turns readahead off or on, and on is the default): the row prints `skipped` |
+| `POSIX_FADV_WILLNEED` on the record 1 or 4 reads ahead | `fcntl(F_RDADVISE)` on that record: an advisory read that the caller does not wait for |
+| `POSIX_FADV_DONTNEED` on the file before a pass | `msync(MS_INVALIDATE)` on a mapping of the file |
+| `/proc/sys/vm/drop_caches` (`--drop-caches`) | `sync`, then `purge`, as root or through `sudo` without a password |
+| `io_uring` (8 rows) | none: the rows print `skipped` |
+| `mincore` in 4096-byte pages | `mincore` in system pages, 16 KiB on Apple silicon; a page that a record shares with its neighbour counts for both |
+
+A stand-in call that fails is a failure (exit 1). With `--strict` the 9 rows that macOS cannot have are
+not counted as skipped; the other 11 must run. The JSON also holds what `sysctl` says (CPU, model, whether
+it is a virtual machine, RAM, page size, macOS version) and what `diskutil` says of the disk (filesystem,
+media name, bus, solid state), without host name, volume name or path. **Cold on macOS** means that
+`purge` emptied the cache of the macOS kernel and that `mincore` found none of the pass's pages in it. It
+does not reach a cache below the kernel, such as the host of a virtual machine.
+
+The only recorded runs are on GitHub Actions `macos-15` runners, virtual machines on Apple silicon hosts
+with a virtual disk, not the SSD of a Mac:
+[research/macos-io-20261115](../research/macos-io-20261115/README.md). The record is three runs of 11
+rounds each (`--runs 11`, so that each of the 11 timed paths takes every place in a round once). All 11
+paths read the right bytes. `F_NOCACHE` on 1 thread was 2.56x to 3.53x the page-cache `pread` (medians)
+and faster than it in 31 of the 33 rounds; page-cache threads gained 1.16x to 1.60x; `F_RDAHEAD` off and
+`F_RDADVISE` gave no steady gain. But the first pass of a round, the only one whose records no earlier
+pass of the round had read, was one of the two slowest of its row in 30 of the 33 rounds: a cache below
+the virtual machine served part of the reads. An earlier set of three runs of 5 rounds, where the slow
+first places of a round fell on page-cache rows only, is kept there too. Not run: a Mac outside a virtual
+machine, an Intel Mac.
+
+What CI covers on macOS: the `macos` job prints the versions of both compilers and runs `--smoke --strict`
+built with the Homebrew GNU gcc of `CC`, then reads the same container through `--file` with a build by
+Apple clang (`CC=clang`); both builds pass `WEX_CFLAGS="-std=c99 -pedantic"`, and the script stops on any
+warning. The full run is the job `macos-io-bench` (Apple clang, C99, `--runs 11`), started by hand with
+`gh workflow run ci.yml --ref <branch> -f macos_io_bench=true`.

@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0
  * Copyright 2026 Ludovico Zanichelli */
-/* wex_io -- one timed pass of expert-record reads from a WEX4 container through one Linux read path.
+/* wex_io -- one timed pass of expert-record reads from a WEX4 container through one Linux or macOS read path.
  *
  *   wex_io FILE [key=value ...]        (driven by bench/wex_io.py, which builds it, repeats it and sums up)
  *
@@ -44,6 +44,7 @@
  * refused, or an io_uring without IORING_OP_READ (Linux older than 5.6). Any other error is a failure
  * (exit 1). io_uring is used through its three system calls, no liburing. The ring is set up and the
  * buffers are touched before the clock starts; the worker threads are created after it starts.
+ * macOS: the same options through the calls macOS has; the first block __APPLE__ below says which.
  * Build: gcc -O2 -pthread bench/wex_io.c -o wex_io */
 #define _GNU_SOURCE
 #define _FILE_OFFSET_BITS 64
@@ -52,7 +53,7 @@
 #include <string.h>
 #include <stdint.h>
 
-#if defined(__linux__) || defined(__CYGWIN__)
+#if defined(__linux__) || defined(__CYGWIN__) || defined(__APPLE__)
 #include <errno.h>
 #include <fcntl.h>
 #include <pthread.h>
@@ -61,6 +62,67 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include "../c/wex4.h"
+
+#ifdef __APPLE__
+/* macOS. The Linux code keeps its calls; this block stands in for the two that macOS does not have:
+ *   O_DIRECT       direct=1 opens the file without it and then sets fcntl F_NOCACHE on the descriptor (in
+ *                  main), which turns data caching off for its reads (man fcntl). cached_after shows whether
+ *                  a pass still left pages of its records in the cache
+ *   posix_fadvise  wio_mac_fadvise. POSIX_FADV_RANDOM: fcntl F_RDAHEAD 0, readahead off on the descriptor.
+ *                  POSIX_FADV_WILLNEED: fcntl F_RDADVISE on the range, an advisory read that the kernel
+ *                  starts and the caller does not wait for. POSIX_FADV_DONTNEED: msync MS_INVALIDATE on a
+ *                  mapping of the range, which drops its cached pages (cached_before shows how many left).
+ *                  A stand-in call that fails is a failure (exit 1); on Linux what posix_fadvise returns
+ *                  is not looked at
+ * Skipped: advise=sequential (macOS has no hint that enlarges readahead: F_RDAHEAD only turns it off or on,
+ * and on is the default) and path=uring (io_uring is Linux only). mincore counts in pages of the system,
+ * 16 KiB on Apple silicon: cached_before, cached_after and ahead_cached are shares of the system pages that
+ * hold a part of the records, and a page that a record shares with its neighbour counts for both. */
+#include <limits.h>
+#ifndef POSIX_FADV_RANDOM
+#define POSIX_FADV_RANDOM 1
+#define POSIX_FADV_SEQUENTIAL 2
+#define POSIX_FADV_WILLNEED 3
+#define POSIX_FADV_DONTNEED 4
+#endif
+#ifndef O_DIRECT
+#define O_DIRECT 0   /* direct=1: F_NOCACHE is set after the open, in main */
+#endif
+
+static int wio_mac_fadvise(int fd, off_t off, off_t len, int advice) {
+    int rc = 0;
+    if (advice == POSIX_FADV_RANDOM) rc = fcntl(fd, F_RDAHEAD, 0);
+    else if (advice == POSIX_FADV_WILLNEED) {
+        struct radvisory ra;
+        ra.ra_offset = off;
+        ra.ra_count = len > (off_t)INT_MAX ? INT_MAX : (int)len;
+        rc = fcntl(fd, F_RDADVISE, &ra);
+    } else if (advice == POSIX_FADV_DONTNEED) {   /* len 0: to the end of the file, as posix_fadvise */
+        struct stat st;
+        if (fstat(fd, &st)) rc = -1;
+        else if (st.st_size > off) {
+            size_t n = len ? (size_t)len : (size_t)(st.st_size - off);
+            void *map = mmap(NULL, n, PROT_READ, MAP_SHARED, fd, off);
+            if (map == MAP_FAILED) rc = -1;
+            else {
+                rc = msync(map, n, MS_INVALIDATE);
+                int e = errno;
+                munmap(map, n);
+                errno = e;
+            }
+        }
+    } else {   /* POSIX_FADV_SEQUENTIAL: main skips advise=sequential before it gets here */
+        errno = EINVAL;
+        rc = -1;
+    }
+    if (rc == -1) {
+        fprintf(stderr, "wex_io: the macOS stand-in for posix_fadvise, advice %d, failed (%s)\n", advice, strerror(errno));
+        exit(1);
+    }
+    return 0;
+}
+#define posix_fadvise wio_mac_fadvise
+#endif
 
 #define WIO_MAX_SPLIT 64u
 #define WIO_MAX_SLOTS 256u
@@ -128,6 +190,44 @@ static int wio_sha_ok(const WioRec *r, const unsigned char *buf) {
     return !memcmp(digest, r->sha, 32u);
 }
 
+#ifdef __APPLE__
+/* the system pages that hold a part of record r: the first one and one past the last */
+static void wio_mac_pages(const WioRec *r, uint64_t *first, uint64_t *end) {
+    uint64_t ps = (uint64_t)sysconf(_SC_PAGESIZE);
+    *first = r->offset / ps;
+    *end = (r->offset + r->stored + ps - 1u) / ps;
+}
+
+/* share of the system pages of the pass's records that are in the cache, or -1 (the Linux wio_cached
+ * below counts 4096-byte pages) */
+static double wio_cached(int fd, uint64_t file_bytes, const WioPass *p) {
+    uint64_t ps = (uint64_t)sysconf(_SC_PAGESIZE), in = 0, all = 0, first, end;
+    char *vec = (char *)malloc((size_t)(file_bytes / ps) + 1u);
+    void *map = mmap(NULL, (size_t)file_bytes, PROT_READ, MAP_SHARED, fd, 0);
+    double share = -1.0;
+    if (vec && map != MAP_FAILED && !mincore(map, (size_t)file_bytes, vec)) {
+        for (uint32_t i = 0; i < p->n; i++) {
+            wio_mac_pages(&p->recs[p->plan[i]], &first, &end);
+            for (uint64_t k = first; k < end; k++) in += (unsigned char)vec[k] & 1u;
+            all += end - first;
+        }
+        share = all ? (double)in / (double)all : 0.0;
+    }
+    if (map != MAP_FAILED) munmap(map, (size_t)file_bytes);
+    free(vec);
+    return share;
+}
+
+/* ahead_cached: the count of wio_ahead_seen on Linux, in system pages */
+static void wio_mac_ahead_seen(WioPass *p, const WioRec *r) {
+    uint64_t ps = (uint64_t)sysconf(_SC_PAGESIZE), first, end;
+    wio_mac_pages(r, &first, &end);
+    if (!p->map || !p->vec || mincore(p->map + first * ps, (size_t)((end - first) * ps), (char *)p->vec)) return;
+    for (uint64_t k = 0; k < end - first; k++) p->ahead_in += p->vec[k] & 1u;
+    p->ahead_all += end - first;
+}
+#endif
+
 /* how many pages of an announced record are in the page cache now (Linux; a no-op elsewhere) */
 static void wio_ahead_seen(WioPass *p, const WioRec *r) {
 #ifdef __linux__
@@ -135,6 +235,8 @@ static void wio_ahead_seen(WioPass *p, const WioRec *r) {
     if (!p->map || !p->vec || mincore((void *)(uintptr_t)(p->map + r->offset), r->stored, p->vec)) return;
     for (uint32_t k = 0; k < pages; k++) p->ahead_in += p->vec[k] & 1u;
     p->ahead_all += pages;
+#elif defined(__APPLE__)
+    wio_mac_ahead_seen(p, r);
 #else
     (void)p; (void)r;
 #endif
@@ -407,10 +509,12 @@ static int wio_uring(WioPass *p, WioRing *rp, WioSlot *slots, unsigned char **bu
     (void)p; (void)rp; (void)slots; (void)bufs; (void)depth; (void)split; (void)bytes; (void)bad;
     return -1;
 }
+#ifndef __APPLE__   /* macOS has its own, above */
 static double wio_cached(int fd, uint64_t file_bytes, const WioPass *p) {
     (void)fd; (void)file_bytes; (void)p;
     return -1.0;
 }
+#endif
 #endif
 
 static int wio_cmp(const void *a, const void *b) {
@@ -457,6 +561,11 @@ int main(int argc, char **argv) {
 #ifndef __linux__
     if (prefetch == WIO_PF_READAHEAD) return wio_skip("readahead(2) is a Linux system call");
 #endif
+#ifdef __APPLE__
+    if (uring) return wio_skip("io_uring is Linux only: macOS has none");
+    if (!strcmp(advise, "sequential"))
+        return wio_skip("macOS has no hint that enlarges readahead (F_RDAHEAD only turns it off or on, and on is the default)");
+#endif
 
     /* header page and index, as the stores open them */
     int cfd = open(argv[1], O_RDONLY);
@@ -501,6 +610,9 @@ int main(int argc, char **argv) {
     int fd = open(argv[1], O_RDONLY | (direct ? O_DIRECT : 0));
     if (fd < 0)   /* EINVAL is how a filesystem without O_DIRECT answers; anything else is an error */
         return direct && errno == EINVAL ? wio_skip("the filesystem refuses O_DIRECT") : wio_fail("cannot open the container");
+#ifdef __APPLE__
+    if (direct && fcntl(fd, F_NOCACHE, 1) == -1) return wio_fail("fcntl F_NOCACHE");
+#endif
     WioPass pass;
     memset(&pass, 0, sizeof pass);
     pass.fd = fd; pass.recs = recs; pass.plan = plan; pass.n = n; pass.verify = verify; pass.ahead = ahead;
@@ -540,6 +652,13 @@ int main(int argc, char **argv) {
     if (ahead && sysconf(_SC_PAGESIZE) == (long)WEX4_PAGE) {   /* mincore counts in system pages */
         void *map = mmap(NULL, (size_t)file_bytes, PROT_READ, MAP_SHARED, cfd, 0);
         pass.vec = (unsigned char *)malloc((size_t)(max_stored / WEX4_PAGE) + 1u);
+        if (map != MAP_FAILED) pass.map = (const unsigned char *)map;
+    }
+#endif
+#ifdef __APPLE__
+    if (ahead) {   /* wio_mac_ahead_seen counts in system pages; a record covers at most stored / page + 2 */
+        void *map = mmap(NULL, (size_t)file_bytes, PROT_READ, MAP_SHARED, cfd, 0);
+        pass.vec = (unsigned char *)malloc((size_t)(max_stored / (uint32_t)sysconf(_SC_PAGESIZE)) + 2u);
         if (map != MAP_FAILED) pass.map = (const unsigned char *)map;
     }
 #endif
@@ -589,7 +708,7 @@ int main(int argc, char **argv) {
 }
 #else
 int main(void) {
-    puts("{\"skipped\": \"wex_io reads through the Linux system calls; it does nothing on this system\"}");
+    puts("{\"skipped\": \"wex_io reads through the Linux or macOS system calls; it does nothing on this system\"}");
     return 0;
 }
 #endif

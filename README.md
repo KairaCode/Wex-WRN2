@@ -154,7 +154,7 @@ SECURITY.md  CITATION.cff     how to report a vulnerability, how to cite
 LICENSE  NOTICE  THIRD_PARTY_NOTICES.md              Apache-2.0 text, attribution notices, third-party material
 check_repo.py  sync-map.tsv    self-check (links, c/ file map, licence headers, privacy) and the map of c/ files to the maintainer's tree
 assets/        the logo (light and dark), the mark, and the source image of the social preview (set in the repository settings)
-.github/       CI workflows (Linux, macOS and Windows CPU checks, macOS also with Apple clang; ASan and UBSan on x86-64 Linux, ARM64 Linux and macOS, TSan and MSan on x86-64 Linux; the Go reader and writer on the vectors and against the reference readers, the Rust reader on the vectors and against the C and Python readers, an opt-in Vulkan job on a CPU device, an opt-in Linux read-path benchmark, an opt-in build of the engine harnesses against colibri's headers; the libFuzzer harnesses of wex4/fuzz/ on x86-64 Linux, ARM64 Linux and macOS), issue forms, pull-request checklist
+.github/       CI workflows (Linux, macOS and Windows CPU checks, macOS also with Apple clang; ASan and UBSan on x86-64 Linux, ARM64 Linux and macOS, TSan and MSan on x86-64 Linux; the Go reader and writer on the vectors and against the reference readers, the Rust reader on the vectors and against the C and Python readers, an opt-in Vulkan job on a CPU device, opt-in Linux and macOS read-path benchmarks, an opt-in build of the engine harnesses against colibri's headers; the libFuzzer harnesses of wex4/fuzz/ on x86-64 Linux, ARM64 Linux and macOS), issue forms, pull-request checklist
 c/             engine-side WEX code in the colibri c/ layout; pull requests may change it
   *.h *.c *.cuh   format, codecs, CPU and CUDA decoders, the standalone store, wex4.h, qwen38_wex.h
   tools/          container writers, the WNR3 builder and its encoder DLL, the CUDA helper, benches
@@ -165,7 +165,7 @@ impl/          readers written from the specifications alone, not from the code 
   go-wex4/        WEX4 reader, verifier and writer in Go, with WBP1 and WNR3 codecs and a WNM2 trainer; SPEC-NOTES.md: what the specs left open
   rust-wex4/      WEX4 reader and verifier in Rust, with WBP1 and WNR3 decoders and its own SHA-256; SPEC-NOTES.md, and differential.py against the C and Python readers
 scripts/       repo-only checks: check_all.sh (every CPU check), build_cpu_check.sh, sanitize_c.sh and sanitize_libs.c, verify_wex1.py and its test
-bench/         hardware benchmark for testers (bench.py, Linux and Windows) and the Linux read paths for expert records (wex_io.py)
+bench/         hardware benchmark for testers (bench.py, Linux and Windows) and the Linux and macOS read paths for expert records (wex_io.py)
 archive/       the WNR2 lab code (encoder, trainer, checks) and its benches, kept for the record
 models/        trained WNM2 models: DeepSeek V4 Flash 0731 and V4.1 REAP-192
 fixtures/      the tiny V4.1 model and the makers of synthetic experts

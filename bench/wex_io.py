@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 Ludovico Zanichelli
-"""Linux benchmark of the read paths for expert records (Python 3 stdlib only, gcc or the compiler named in CC; Linux only).
+"""Linux and macOS benchmark of the read paths for expert records (Python 3 stdlib only, gcc or the compiler named in CC).
 
 Writes a synthetic WEX4 container (random bytes, no model weights), builds bench/wex_io.c and reads the
 container's expert records through each read path: pread through the page cache (with and without
@@ -22,10 +22,19 @@ name or path. --file reads an existing WEX4 container instead of writing one (no
 filesystem and the block device recorded are those of the file). --smoke is a seconds-long run on a tiny
 container that only shows that every path works; --strict makes a path that was skipped a failure (CI
 uses both).
+
+On macOS the same rows run through the macOS calls (macos_row below, and the blocks __APPLE__ of
+wex_io.c): F_NOCACHE where Linux has O_DIRECT, fcntl F_RDAHEAD 0 and F_RDADVISE for the posix_fadvise hints,
+msync MS_INVALIDATE to drop the file's pages before a pass, and --drop-caches runs purge (as root, through
+sudo without a password, when the user may). The io_uring rows and the POSIX_FADV_SEQUENTIAL row do not
+exist there: wex_io prints them as skipped, and --strict does not count those skips. The JSON then holds
+the CPU, the RAM, the page size and the disk from sysctl and diskutil, again without host name or path.
+Neither the msync nor purge reaches a cache below the kernel, such as the host of a virtual machine.
 """
 import argparse
 import json
 import os
+import plistlib
 import random
 import shlex
 import shutil
@@ -142,6 +151,80 @@ def one_pass(exe, container, options, chunk_kb, **more):
         return {'failed': 'bad output: ' + r.stdout[-200:]}
 
 
+# macOS. The Linux code above and below is what runs on Linux; on macOS the names of this block replace
+# CONFIGS, drop_caches and block_device (at its end). macos_row turns each row of CONFIGS into its macOS row:
+# the same options, so the JSON of the two systems has the same keys, with a label and a note that name the
+# macOS call (F_NOCACHE where Linux has O_DIRECT, F_RDAHEAD 0 for POSIX_FADV_RANDOM, F_RDADVISE for WILLNEED)
+MACOS_LABELS = (('O_DIRECT, pread', 'F_NOCACHE, pread'), ('FADV_RANDOM', 'F_RDAHEAD off'), ('WILLNEED', 'F_RDADVISE'))
+MACOS_NOTES = {
+    'path=sync direct=0': 'c/expert_store_wex.c on macOS today (open and pread, no hint)',
+    'path=sync direct=0 advise=random': 'fcntl F_RDAHEAD 0: readahead off on the descriptor',
+    'path=sync direct=1': 'fcntl F_NOCACHE; on macOS c/qwen38_wex.h opens through compat_open_direct of the engine, '
+                          'which is not in this repository',
+}
+MACOS_ABSENT = ('path=uring', 'advise=sequential')   # options of the rows macOS cannot have (wex_io prints skipped)
+NOT_ON_THIS_SYSTEM = set()   # options of the rows this system cannot have: --strict does not count their skip
+
+
+def macos_row(label, options, note):
+    """The macOS form of one row of CONFIGS."""
+    if any(word in options.split() for word in MACOS_ABSENT):
+        return label, options, 'not on macOS: skipped'
+    for linux, mac in MACOS_LABELS:
+        label = label.replace(linux, mac)
+    return label, options, MACOS_NOTES.get(options, note)
+
+
+def drop_caches_macos():
+    """sync, then purge, which empties the file cache of the whole machine; False when this user may not."""
+    for cmd in (['sh', '-c', 'sync && purge'], ['sudo', '-n', 'sh', '-c', 'sync && purge']):
+        try:
+            if subprocess.run(cmd, capture_output=True, timeout=300).returncode == 0:
+                return True
+        except (OSError, subprocess.TimeoutExpired):
+            pass
+    return False
+
+
+def block_device_macos(path):
+    """The filesystem under `path` and the whole disk it is on, from diskutil: a few fields, no volume name, no UUID."""
+    def plist(target):
+        rc, out, _ = bench.sh(['diskutil', 'info', '-plist', target])
+        try:
+            return plistlib.loads(out.encode()) if rc == 0 and out else {}
+        except Exception:   # plistlib raises several kinds; the fields then stay empty
+            return {}
+    rc, out, _ = bench.sh(['/bin/df', path])
+    lines = out.splitlines() if rc == 0 else []
+    volume = plist(lines[-1].split()[0]) if len(lines) > 1 and lines[-1].startswith('/dev/') else {}
+    stores = volume.get('APFSPhysicalStores') or [{}]
+    store = plist(stores[0].get('APFSPhysicalStore', '')) if stores[0] else volume
+    disk = plist(store.get('ParentWholeDisk', '')) if store.get('ParentWholeDisk') else store
+    info = {'filesystem': volume.get('FilesystemType'), 'model': disk.get('MediaName'), 'bus_protocol': disk.get('BusProtocol'),
+            'solid_state': disk.get('SolidState'), 'device_block_size': disk.get('DeviceBlockSize'), 'internal': disk.get('Internal')}
+    return {k: v for k, v in info.items() if v not in (None, '')}
+
+
+def sysinfo_macos():
+    """What sysctl says of the machine (no host name, no serial number). in_vm is kern.hv_vmm_present: 1 inside a
+    virtual machine."""
+    keys = (('cpu', 'machdep.cpu.brand_string'), ('hw_model', 'hw.model'), ('in_vm', 'kern.hv_vmm_present'),
+            ('physical_cpus', 'hw.physicalcpu'), ('logical_cpus', 'hw.logicalcpu'), ('mem_bytes', 'hw.memsize'),
+            ('page_bytes', 'hw.pagesize'), ('macos', 'kern.osproductversion'), ('macos_build', 'kern.osversion'))
+    info = {}
+    for name, key in keys:
+        rc, out, _ = bench.sh(['sysctl', '-n', key])
+        if rc == 0 and out:
+            info[name] = int(out) if out.isdigit() else out
+    return info
+
+
+if sys.platform == 'darwin':
+    CONFIGS = [macos_row(*config) for config in CONFIGS]
+    drop_caches, block_device = drop_caches_macos, block_device_macos
+    NOT_ON_THIS_SYSTEM = {options for _, options, _ in CONFIGS if any(word in options.split() for word in MACOS_ABSENT)}
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument('--dir', help='a directory on the volume to measure; the container is written there')
@@ -157,8 +240,8 @@ def main():
     ap.add_argument('--smoke', action='store_true', help='tiny container, 1 run: only shows that every path works')
     ap.add_argument('--strict', action='store_true', help='a read path that is skipped counts as a failure')
     a = ap.parse_args()
-    if not sys.platform.startswith('linux'):
-        sys.exit('bench/wex_io.py measures the Linux read paths; it does nothing on this system')
+    if not sys.platform.startswith(('linux', 'darwin')):
+        sys.exit('bench/wex_io.py measures the Linux and macOS read paths; it does nothing on this system')
     if bool(a.dir) == bool(a.file):
         sys.exit('give --dir (a container is written there) or --file (an existing container), not both')
     if a.file and not os.path.isfile(a.file):
@@ -187,6 +270,8 @@ def main():
     chunk = int(ra) // 4 * 4 if ra.isdigit() and int(ra) >= 4 else 0
     res['prefetch_chunk_kb'] = {'kb': chunk or 128,
                                 'from': 'read_ahead_kb of the block device' if chunk else 'default, read_ahead_kb not known'}
+    if sys.platform == 'darwin':
+        res['sysinfo'].update(sysinfo_macos())
     container, made = a.file, None
     if not container:
         container = made = os.path.join(a.dir, 'wex-io-bench.wex4')
@@ -214,7 +299,7 @@ def main():
                 failed.append(f'{label}: {got["failed"]}')
             elif 'skipped' in got:
                 res['check'][options] = 'skipped: ' + got['skipped']
-                if a.strict:
+                if a.strict and options not in NOT_ON_THIS_SYSTEM:
                     failed.append(f'{label}: skipped ({got["skipped"]}), and --strict was given')
             else:
                 res['check'][options] = f"{got['records']} records match their SHA-256"

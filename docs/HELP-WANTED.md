@@ -15,7 +15,7 @@ measured; it is not known to fail.
 ## 1. Run the benchmark on your hardware (no code)
 
 - **What:** run [`bench/`](../bench/README.md) (Linux, or Windows in the MSYS2 UCRT64 shell) and share
-  `results.json` through the "Benchmark results" issue template. On Linux also run `bench/wex_io.py`
+  `results.json` through the "Benchmark results" issue template. On Linux or macOS also run `bench/wex_io.py`
   (the read paths for expert records, section 7) and attach its `wex_io.json`.
 - **Most wanted:** ARM machines (DGX Spark, Apple silicon under Linux, Ampere); AMD and Intel GPUs;
   filesystems other than NTFS (ZFS, btrfs, ext4, XFS); NVMe RAID or mirrors; machines with
@@ -495,6 +495,18 @@ measured; it is not known to fail.
   path on every kind. With 20 ms of work after each record (a spin, not a decode), `WILLNEED` in chunks
   of the device's readahead was the fastest prefetch in every run that had those rows: 1.24x to 2.32x
   the same work without prefetch, on five kinds; not run on the sixth. So the store was not changed.
+- **macOS:** the same benchmark runs on macOS through the calls macOS has (`F_NOCACHE` for `O_DIRECT`,
+  `F_RDAHEAD` and `F_RDADVISE` for the hints, `purge` for `drop_caches`; `io_uring` and
+  `POSIX_FADV_SEQUENTIAL` print `skipped`). The `macos` CI job runs its smoke run; the job
+  `macos-io-bench` is the full run, started by hand. Measured so far: three runs of 11 rounds on GitHub
+  Actions `macos-15` runners, virtual machines on Apple silicon hosts with a virtual disk
+  ([research/macos-io-20261115](../research/macos-io-20261115/README.md); a round is one timed pass of
+  every path, and with 11 rounds every path takes every place in a round once). All 11 paths read the
+  right bytes. `F_NOCACHE` on 1 thread was 2.56x to 3.53x the page-cache `pread` and faster than it in
+  31 of the 33 rounds; page-cache threads gained 1.16x to 1.60x; `F_RDAHEAD` off and `F_RDADVISE` gave
+  no steady gain. But a cache below the virtual machine served part of the reads (the first pass of a
+  round was one of the two slowest of its row in 30 of the 33 rounds), so these numbers say nothing
+  about the SSD of a Mac. The store was not changed.
 - **What:** run `bench/wex_io.py` on real drives (NVMe first; also SATA, ZFS, btrfs, XFS, ARM) and share
   `bench/out/wex_io.json` through the "Benchmark results" issue template. Then, if a path wins on real
   drives: the change in the store (candidates the runs point at but do not support yet:
@@ -505,7 +517,9 @@ measured; it is not known to fail.
   of their own (on one kind of VM the calls held the reading thread for about 90% of the pass), other
   chunk sizes, more than one record ahead for the new paths, the rows with work on that kind of VM, a
   real decode between the reads instead of the spin, striping across drives with different speeds, and
-  everything on macOS (the benchmark is Linux only; the `macos` CI job does not build it).
+  macOS on a real Mac (the SSD of an Apple silicon Mac, an Intel Mac, an external drive: only virtual
+  machines with a virtual disk ran it), with the prefetch rows too (on macOS they have run only in the
+  smoke run of CI).
 - **Done when:** the table of `bench/wex_io.py` from at least one NVMe machine is in the repository, and
   a change of the store comes with its before/after from the same benchmark, stated as CONTRIBUTING
   section 5 asks.
@@ -559,7 +573,9 @@ listed above as well.
   change the store. A prefetch of the next record through the page cache gained there only with work
   between the reads (`WILLNEED` in chunks, 1.24x to 2.32x with a 20 ms spin standing for a decode), which
   only an engine A/B can confirm; runs on real drives and the tuning that follows from them are still open
-  *(open to you, section 7)*.
+  *(open to you, section 7)*. The same benchmark now runs on macOS, so far only on GitHub `macos-15`
+  virtual machines (three runs of 11 rounds), where a cache below the virtual machine served part of the
+  reads and the store was not changed; a run on a real Mac is open *(open to you, section 7)*.
 - **Measurements not done yet** (they need the full models, so they stay with the maintainer, see
   [STATUS.md](../STATUS.md)):
   - the SHA-256 of each record at its first read on Qwen3.8;
