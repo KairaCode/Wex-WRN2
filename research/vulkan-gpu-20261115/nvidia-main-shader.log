@@ -1,0 +1,170 @@
+[12:53:51Z: 0 other wnr3_vk processes; CPU load 85%]
+== spirv-val of main's weights.spv
+accepted
+== device NVIDIA, shader main
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357, vendor 0x10de, driver 621.1.0.0)
+device 1: llvmpipe (LLVM 23.1.4, 256 bits) (type 4, Vulkan 1.4.354, vendor 0x10005, driver 26.2.6)
+selftest record 3: accepted by both, the decoded bytes differ
+  scales of matrix 0: 15 of 500 bytes differ, the first at 8 (device 0x7b, reference 0x7a)
+  scales of matrix 1: 13 of 301 bytes differ, the first at 0 (device 0x79, reference 0x78)
+  explained: 28 differing bytes are lost decrements with a later decrement in the same word; 59 decrements of the record have one; 0 differing bytes are something else
+selftest record 4: accepted by both, the decoded bytes differ
+  scales of matrix 0: 11 of 259 bytes differ, the first at 9 (device 0x7b, reference 0x7a)
+  scales of matrix 1: 37 of 1026 bytes differ, the first at 5 (device 0x79, reference 0x78)
+  scales of matrix 2: 2 of 130 bytes differ, the first at 70 (device 0x7d, reference 0x7c)
+  explained: 50 differing bytes are lost decrements with a later decrement in the same word; 102 decrements of the record have one; 0 differing bytes are something else
+selftest 0: plain, smallest chunks, odd scale counts: 9 + 101 streams, flags 0x00, error word 0x0
+selftest 1: plain, largest chunks: 3 + 6 streams, flags 0x00, error word 0x0
+selftest 2: canonical zero: 3 + 5 streams, flags 0x08, error word 0x0
+selftest 3: ceil form: 3 + 14 streams, flags 0x07, error word 0x0
+selftest 4: ceil form and canonical zero, chunk 4096: 4 + 14 streams, flags 0x0f, error word 0x0
+selftest 5: ceil form with a coded scale 0 in a max-5 block: 3 + 9 streams, flags 0x07, error word 0x4
+selftest 6: nibble 8 in a canonical-zero record: 3 + 9 streams, flags 0x08, error word 0x8
+selftest 7: one payload byte changed: 3 + 9 streams, flags 0x07, error word 0x1
+selftest 8: owner changed: every stream has a wrong hash and nothing else: 3 + 9 streams, flags 0x00, error word 0x2
+selftest 9: a scale stream one byte longer than its symbols: 15 + 53 streams, flags 0x00, error word 0x1
+selftest 10: a scale stream with an initial state below L: 15 + 53 streams, flags 0x00, error word 0x1
+selftest 11: a scale stream with an initial state of 256 L or more: 56 + 220 streams, flags 0x00, error word 0x1
+selftest: 3 accepted with the reference's bytes (534 blocks undone by the ceil-form inverse), 7 refused by both, 2 differences
+selftest: expected 5 accepted, 7 refused
+validation layer: 0 messages
+wnr3_vk: FAILED (3)
+== device NVIDIA, shader main
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357, vendor 0x10de, driver 621.1.0.0)
+device 1: llvmpipe (LLVM 23.1.4, 256 bits) (type 4, Vulkan 1.4.354, vendor 0x10005, driver 26.2.6)
+selftest record 3: accepted by both, the decoded bytes differ
+  scales of matrix 0: 15 of 500 bytes differ, the first at 8 (device 0x7b, reference 0x7a)
+  scales of matrix 1: 13 of 301 bytes differ, the first at 0 (device 0x79, reference 0x78)
+  explained: 28 differing bytes are lost decrements with a later decrement in the same word; 59 decrements of the record have one; 0 differing bytes are something else
+selftest record 4: accepted by both, the decoded bytes differ
+  scales of matrix 0: 11 of 259 bytes differ, the first at 9 (device 0x7b, reference 0x7a)
+  scales of matrix 1: 37 of 1026 bytes differ, the first at 5 (device 0x79, reference 0x78)
+  scales of matrix 2: 2 of 130 bytes differ, the first at 70 (device 0x7d, reference 0x7c)
+  explained: 50 differing bytes are lost decrements with a later decrement in the same word; 102 decrements of the record have one; 0 differing bytes are something else
+selftest 0: plain, smallest chunks, odd scale counts: 9 + 101 streams, flags 0x00, error word 0x0
+selftest 1: plain, largest chunks: 3 + 6 streams, flags 0x00, error word 0x0
+selftest 2: canonical zero: 3 + 5 streams, flags 0x08, error word 0x0
+selftest 3: ceil form: 3 + 14 streams, flags 0x07, error word 0x0
+selftest 4: ceil form and canonical zero, chunk 4096: 4 + 14 streams, flags 0x0f, error word 0x0
+selftest 5: ceil form with a coded scale 0 in a max-5 block: 3 + 9 streams, flags 0x07, error word 0x4
+selftest 6: nibble 8 in a canonical-zero record: 3 + 9 streams, flags 0x08, error word 0x8
+selftest 7: one payload byte changed: 3 + 9 streams, flags 0x07, error word 0x1
+selftest 8: owner changed: every stream has a wrong hash and nothing else: 3 + 9 streams, flags 0x00, error word 0x2
+selftest 9: a scale stream one byte longer than its symbols: 15 + 53 streams, flags 0x00, error word 0x1
+selftest 10: a scale stream with an initial state below L: 15 + 53 streams, flags 0x00, error word 0x1
+selftest 11: a scale stream with an initial state of 256 L or more: 56 + 220 streams, flags 0x00, error word 0x1
+selftest: 3 accepted with the reference's bytes (534 blocks undone by the ceil-form inverse), 7 refused by both, 2 differences
+selftest: expected 5 accepted, 7 refused
+validation layer: 0 messages
+wnr3_vk: FAILED (3)
+== device NVIDIA, shader main, WNR3_VK_STAGE=0
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357, vendor 0x10de, driver 621.1.0.0)
+device 1: llvmpipe (LLVM 23.1.4, 256 bits) (type 4, Vulkan 1.4.354, vendor 0x10005, driver 26.2.6)
+selftest record 3: accepted by both, the decoded bytes differ
+  scales of matrix 0: 15 of 500 bytes differ, the first at 8 (device 0x7b, reference 0x7a)
+  scales of matrix 1: 13 of 301 bytes differ, the first at 0 (device 0x79, reference 0x78)
+  explained: 28 differing bytes are lost decrements with a later decrement in the same word; 59 decrements of the record have one; 0 differing bytes are something else
+selftest record 4: accepted by both, the decoded bytes differ
+  scales of matrix 0: 11 of 259 bytes differ, the first at 9 (device 0x7b, reference 0x7a)
+  scales of matrix 1: 37 of 1026 bytes differ, the first at 5 (device 0x79, reference 0x78)
+  scales of matrix 2: 2 of 130 bytes differ, the first at 70 (device 0x7d, reference 0x7c)
+  explained: 50 differing bytes are lost decrements with a later decrement in the same word; 102 decrements of the record have one; 0 differing bytes are something else
+selftest 0: plain, smallest chunks, odd scale counts: 9 + 101 streams, flags 0x00, error word 0x0
+selftest 1: plain, largest chunks: 3 + 6 streams, flags 0x00, error word 0x0
+selftest 2: canonical zero: 3 + 5 streams, flags 0x08, error word 0x0
+selftest 3: ceil form: 3 + 14 streams, flags 0x07, error word 0x0
+selftest 4: ceil form and canonical zero, chunk 4096: 4 + 14 streams, flags 0x0f, error word 0x0
+selftest 5: ceil form with a coded scale 0 in a max-5 block: 3 + 9 streams, flags 0x07, error word 0x4
+selftest 6: nibble 8 in a canonical-zero record: 3 + 9 streams, flags 0x08, error word 0x8
+selftest 7: one payload byte changed: 3 + 9 streams, flags 0x07, error word 0x1
+selftest 8: owner changed: every stream has a wrong hash and nothing else: 3 + 9 streams, flags 0x00, error word 0x2
+selftest 9: a scale stream one byte longer than its symbols: 15 + 53 streams, flags 0x00, error word 0x1
+selftest 10: a scale stream with an initial state below L: 15 + 53 streams, flags 0x00, error word 0x1
+selftest 11: a scale stream with an initial state of 256 L or more: 56 + 220 streams, flags 0x00, error word 0x1
+selftest: 3 accepted with the reference's bytes (534 blocks undone by the ceil-form inverse), 7 refused by both, 2 differences
+selftest: expected 5 accepted, 7 refused
+validation layer: 0 messages
+wnr3_vk: FAILED (3)
+== device NVIDIA, shader main, WNR3_VK_ROBUST=1
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357, vendor 0x10de, driver 621.1.0.0)
+device 1: llvmpipe (LLVM 23.1.4, 256 bits) (type 4, Vulkan 1.4.354, vendor 0x10005, driver 26.2.6)
+robustBufferAccess is on
+selftest record 3: accepted by both, the decoded bytes differ
+  scales of matrix 0: 15 of 500 bytes differ, the first at 8 (device 0x7b, reference 0x7a)
+  scales of matrix 1: 13 of 301 bytes differ, the first at 0 (device 0x79, reference 0x78)
+  explained: 28 differing bytes are lost decrements with a later decrement in the same word; 59 decrements of the record have one; 0 differing bytes are something else
+selftest record 4: accepted by both, the decoded bytes differ
+  scales of matrix 0: 11 of 259 bytes differ, the first at 9 (device 0x7b, reference 0x7a)
+  scales of matrix 1: 37 of 1026 bytes differ, the first at 5 (device 0x79, reference 0x78)
+  scales of matrix 2: 2 of 130 bytes differ, the first at 70 (device 0x7d, reference 0x7c)
+  explained: 50 differing bytes are lost decrements with a later decrement in the same word; 102 decrements of the record have one; 0 differing bytes are something else
+selftest 0: plain, smallest chunks, odd scale counts: 9 + 101 streams, flags 0x00, error word 0x0
+selftest 1: plain, largest chunks: 3 + 6 streams, flags 0x00, error word 0x0
+selftest 2: canonical zero: 3 + 5 streams, flags 0x08, error word 0x0
+selftest 3: ceil form: 3 + 14 streams, flags 0x07, error word 0x0
+selftest 4: ceil form and canonical zero, chunk 4096: 4 + 14 streams, flags 0x0f, error word 0x0
+selftest 5: ceil form with a coded scale 0 in a max-5 block: 3 + 9 streams, flags 0x07, error word 0x4
+selftest 6: nibble 8 in a canonical-zero record: 3 + 9 streams, flags 0x08, error word 0x8
+selftest 7: one payload byte changed: 3 + 9 streams, flags 0x07, error word 0x1
+selftest 8: owner changed: every stream has a wrong hash and nothing else: 3 + 9 streams, flags 0x00, error word 0x2
+selftest 9: a scale stream one byte longer than its symbols: 15 + 53 streams, flags 0x00, error word 0x1
+selftest 10: a scale stream with an initial state below L: 15 + 53 streams, flags 0x00, error word 0x1
+selftest 11: a scale stream with an initial state of 256 L or more: 56 + 220 streams, flags 0x00, error word 0x1
+selftest: 3 accepted with the reference's bytes (534 blocks undone by the ceil-form inverse), 7 refused by both, 2 differences
+selftest: expected 5 accepted, 7 refused
+validation layer: 0 messages
+wnr3_vk: FAILED (3)
+== device NVIDIA, shader coherent
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357, vendor 0x10de, driver 621.1.0.0)
+device 1: llvmpipe (LLVM 23.1.4, 256 bits) (type 4, Vulkan 1.4.354, vendor 0x10005, driver 26.2.6)
+selftest 0: plain, smallest chunks, odd scale counts: 9 + 101 streams, flags 0x00, error word 0x0
+selftest 1: plain, largest chunks: 3 + 6 streams, flags 0x00, error word 0x0
+selftest 2: canonical zero: 3 + 5 streams, flags 0x08, error word 0x0
+selftest 3: ceil form: 3 + 14 streams, flags 0x07, error word 0x0
+selftest 4: ceil form and canonical zero, chunk 4096: 4 + 14 streams, flags 0x0f, error word 0x0
+selftest 5: ceil form with a coded scale 0 in a max-5 block: 3 + 9 streams, flags 0x07, error word 0x4
+selftest 6: nibble 8 in a canonical-zero record: 3 + 9 streams, flags 0x08, error word 0x8
+selftest 7: one payload byte changed: 3 + 9 streams, flags 0x07, error word 0x1
+selftest 8: owner changed: every stream has a wrong hash and nothing else: 3 + 9 streams, flags 0x00, error word 0x2
+selftest 9: a scale stream one byte longer than its symbols: 15 + 53 streams, flags 0x00, error word 0x1
+selftest 10: a scale stream with an initial state below L: 15 + 53 streams, flags 0x00, error word 0x1
+selftest 11: a scale stream with an initial state of 256 L or more: 56 + 220 streams, flags 0x00, error word 0x1
+selftest: 5 accepted with the reference's bytes (534 blocks undone by the ceil-form inverse), 7 refused by both, 0 differences
+validation layer: 0 messages
+wnr3_vk: ok
+== device NVIDIA, shader volatile
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357, vendor 0x10de, driver 621.1.0.0)
+device 1: llvmpipe (LLVM 23.1.4, 256 bits) (type 4, Vulkan 1.4.354, vendor 0x10005, driver 26.2.6)
+selftest 0: plain, smallest chunks, odd scale counts: 9 + 101 streams, flags 0x00, error word 0x0
+selftest 1: plain, largest chunks: 3 + 6 streams, flags 0x00, error word 0x0
+selftest 2: canonical zero: 3 + 5 streams, flags 0x08, error word 0x0
+selftest 3: ceil form: 3 + 14 streams, flags 0x07, error word 0x0
+selftest 4: ceil form and canonical zero, chunk 4096: 4 + 14 streams, flags 0x0f, error word 0x0
+selftest 5: ceil form with a coded scale 0 in a max-5 block: 3 + 9 streams, flags 0x07, error word 0x4
+selftest 6: nibble 8 in a canonical-zero record: 3 + 9 streams, flags 0x08, error word 0x8
+selftest 7: one payload byte changed: 3 + 9 streams, flags 0x07, error word 0x1
+selftest 8: owner changed: every stream has a wrong hash and nothing else: 3 + 9 streams, flags 0x00, error word 0x2
+selftest 9: a scale stream one byte longer than its symbols: 15 + 53 streams, flags 0x00, error word 0x1
+selftest 10: a scale stream with an initial state below L: 15 + 53 streams, flags 0x00, error word 0x1
+selftest 11: a scale stream with an initial state of 256 L or more: 56 + 220 streams, flags 0x00, error word 0x1
+selftest: 5 accepted with the reference's bytes (534 blocks undone by the ceil-form inverse), 7 refused by both, 0 differences
+validation layer: 0 messages
+wnr3_vk: ok
+== device llvmpipe, shader main
+device 0: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357, vendor 0x10de, driver 621.1.0.0)
+device 1 *: llvmpipe (LLVM 23.1.4, 256 bits) (type 4, Vulkan 1.4.354, vendor 0x10005, driver 26.2.6)
+selftest 0: plain, smallest chunks, odd scale counts: 9 + 101 streams, flags 0x00, error word 0x0
+selftest 1: plain, largest chunks: 3 + 6 streams, flags 0x00, error word 0x0
+selftest 2: canonical zero: 3 + 5 streams, flags 0x08, error word 0x0
+selftest 3: ceil form: 3 + 14 streams, flags 0x07, error word 0x0
+selftest 4: ceil form and canonical zero, chunk 4096: 4 + 14 streams, flags 0x0f, error word 0x0
+selftest 5: ceil form with a coded scale 0 in a max-5 block: 3 + 9 streams, flags 0x07, error word 0x4
+selftest 6: nibble 8 in a canonical-zero record: 3 + 9 streams, flags 0x08, error word 0x8
+selftest 7: one payload byte changed: 3 + 9 streams, flags 0x07, error word 0x1
+selftest 8: owner changed: every stream has a wrong hash and nothing else: 3 + 9 streams, flags 0x00, error word 0x2
+selftest 9: a scale stream one byte longer than its symbols: 15 + 53 streams, flags 0x00, error word 0x1
+selftest 10: a scale stream with an initial state below L: 15 + 53 streams, flags 0x00, error word 0x1
+selftest 11: a scale stream with an initial state of 256 L or more: 56 + 220 streams, flags 0x00, error word 0x1
+selftest: 5 accepted with the reference's bytes (534 blocks undone by the ceil-form inverse), 7 refused by both, 0 differences
+validation layer: 0 messages
+wnr3_vk: ok

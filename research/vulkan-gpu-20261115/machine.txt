@@ -1,0 +1,16 @@
+== GPU (nvidia-smi)
+name, driver_version, memory.total [MiB], pcie.link.gen.max, pcie.link.width.max, clocks.max.sm [MHz]
+NVIDIA GeForce RTX 3070, 621.01, 8192 MiB, 3, 16, 2160 MHz
+== CPU
+Name=Intel(R) Core(TM) i7-7700K CPU @ 4.20GHz
+NumberOfCores=4
+NumberOfLogicalProcessors=8
+== OS
+Microsoft Windows [Versione 10.0.19045.7846]
+== tools
+gcc.exe (Rev6, Built by MSYS2 project) 16.2.0
+Glslang Version: 11:16.6.0
+SPIRV-Tools v2026.4 unknown hash, 2026-10-02T00:06:47+00:00
+mingw-w64-ucrt-x86_64-mesa 26.2.6-1
+mingw-w64-ucrt-x86_64-vulkan-loader 1~1.4.363.0-1
+mingw-w64-ucrt-x86_64-vulkan-validation-layers 1.4.363.0-1

@@ -1,0 +1,168 @@
+#version 450
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 Ludovico Zanichelli
+//
+// Reduction of a driver crash (docs/WNR3-VULKAN.md, section 6): the scale pass of wnr3.comp in the form that
+// stops a stream at once when its initial state is out of range, without the stream hash and its final
+// checks, and with each remaining part behind a switch. It decodes nothing useful; crash_probe.sh builds it in
+// place of scales.spv and runs it on one record of the selftest. Same buffers and plan as wnr3.comp.
+//   glslangValidator -V -DF_SEARCH=1 ... [-DSTOP=j] crash.comp -o scales.spv
+// Each switch is 1 (the part as in the first form, the default) or 0 (taken away):
+//   F_DATA_STOP   the stream stops when its initial state is out of range; 0: when it is stream STOP (default 0)
+//   F_ATOMIC      the stop sets the record's error bit; 0: a plain return
+//   F_STORES      the decoded bytes are stored; 0: they are only summed
+//   F_RENORM      the renormalisation loop reads the record; 0: no read after the initial state
+//   F_REC_STATE   the initial state is read from the record; 0: it is a function of the invocation index
+//   F_PLAN_TABLE  the model blob is found through the plan; 0: the first blob of the buffer
+//   F_BOUND       invocations past the record's last scale stream return; 0: every invocation of the
+//                 workgroup runs (only safe with F_STORES, F_RENORM and F_REC_STATE at 0)
+//   F_MATRIX      the matrix of the stream comes from the plan; 0: matrix 0
+//   F_LANE_COUNT  the symbol count is the stream's own (from the plan, not the same in every stream); 0: the
+//                 scale chunk size of the plan, the same in every stream
+//   F_PLAN_COUNT  the symbol count is read from the plan at all; 0: the constant 512
+//   F_NESTED      the symbol is found by the binary search in the model blob (a loop in the loop); 0: one read
+//                 of the blob at a place given by the state
+//   F_SEARCH      the symbol is read from the model blob at all; 0: the low byte of the state, no read
+#ifndef F_DATA_STOP
+#define F_DATA_STOP 1
+#endif
+#ifndef F_ATOMIC
+#define F_ATOMIC 1
+#endif
+#ifndef F_STORES
+#define F_STORES 1
+#endif
+#ifndef F_RENORM
+#define F_RENORM 1
+#endif
+#ifndef F_REC_STATE
+#define F_REC_STATE 1
+#endif
+#ifndef F_PLAN_TABLE
+#define F_PLAN_TABLE 1
+#endif
+#ifndef F_BOUND
+#define F_BOUND 1
+#endif
+#ifndef F_MATRIX
+#define F_MATRIX 1
+#endif
+#ifndef F_LANE_COUNT
+#define F_LANE_COUNT 1
+#endif
+#ifndef F_PLAN_COUNT
+#define F_PLAN_COUNT 1
+#endif
+#ifndef F_NESTED
+#define F_NESTED 1
+#endif
+#ifndef F_SEARCH
+#define F_SEARCH 1
+#endif
+#ifndef STOP
+#define STOP 0
+#endif
+
+layout(local_size_x = 32) in;
+
+layout(std430, set = 0, binding = 0) readonly buffer RecordBytes { uint rec[]; };
+layout(std430, set = 0, binding = 1) readonly buffer ModelBlobs { uint tab[]; };
+layout(std430, set = 0, binding = 2) readonly buffer Plans { uint plan[]; };
+layout(std430, set = 0, binding = 3) readonly buffer Offsets { uint offs[]; };
+layout(std430, set = 0, binding = 4) buffer Decoded { uint outw[]; };
+layout(std430, set = 0, binding = 5) buffer Errors { uint err[]; };
+layout(push_constant) uniform Push { uint record; } pc;
+
+const uint L = 1u << 23;
+
+uint record_byte(uint position) { return (rec[position >> 2] >> ((position & 3u) * 8u)) & 255u; }
+uint cdf(uint table, uint k) { return (tab[table + 8u + (k >> 1)] >> ((k & 1u) * 16u)) & 0xffffu; }
+
+void main() {
+    uint j = gl_GlobalInvocationID.x;
+    uint p = pc.record * 32u;
+#if F_BOUND
+    if (j >= plan[p + 22u]) return;
+#endif
+#if F_MATRIX
+    uint m = j >= plan[p + 21u] ? 2u : j >= plan[p + 20u] ? 1u : 0u;
+#else
+    uint m = 0u;
+#endif
+    uint chunk = plan[p + 12u];
+    uint first = (j - plan[p + 19u + m]) * chunk;
+#if F_PLAN_COUNT && F_LANE_COUNT
+    uint count = min(chunk, plan[p + 6u + m] - first);
+#elif F_PLAN_COUNT
+    uint count = chunk;
+#else
+    uint count = 512u;
+#endif
+#if F_PLAN_TABLE
+    uint table = plan[p + 17u];
+#else
+    uint table = 0u;
+#endif
+#if F_RENORM || F_REC_STATE
+    uint position = offs[plan[p + 18u] + j], end = offs[plan[p + 18u] + j + 1u];
+#else
+    uint position = 0u, end = 0u;
+#endif
+#if F_REC_STATE
+    uint state = record_byte(position) << 24 | record_byte(position + 1u) << 16 |
+                 record_byte(position + 2u) << 8 | record_byte(position + 3u);
+    position += 4u;
+#else
+    uint state = (j * 2654435761u >> 9) | L;   // in [L, 256 L)
+#endif
+#if F_DATA_STOP
+    bool stop = state < L || state >= (L << 8);
+#else
+    bool stop = j == uint(STOP);
+#endif
+    if (stop) {
+#if F_ATOMIC
+        atomicOr(err[pc.record], 1u);
+#endif
+        return;
+    }
+    uint row = 3u * 567u * 17u + m * 257u;
+    uint store = (plan[p + m] + first) >> 2;
+    uint pending = 0u, held = 0u;
+    for (uint i = 0u; i < count; i++) {
+#if F_SEARCH && F_NESTED
+        uint slot = state & 16383u, lo = 0u, hi = 256u;
+        while (lo + 1u < hi) {
+            uint mid = (lo + hi) / 2u;
+            if (cdf(table, row + mid) <= slot) lo = mid; else hi = mid;
+        }
+        uint start = cdf(table, row + lo);
+        state = (cdf(table, row + lo + 1u) - start) * (state >> 14) + slot - start;
+#elif F_SEARCH
+        uint lo = cdf(table, row + (state & 255u)) & 255u;
+        state = (state * 1664525u + 1013904223u + lo) >> 3;
+#else
+        uint lo = state & 255u;
+        state = (state * 1664525u + 1013904223u) >> 3;   // below 2^29, at times below L
+#endif
+#if F_RENORM
+        while (state < L) {
+            if (position == end) { atomicOr(err[pc.record], 1u); return; }
+            state = (state << 8) | record_byte(position);
+            position++;
+        }
+#else
+        if (state < L) state = (state << 8) | (i & 255u);
+#endif
+#if F_STORES
+        pending |= lo << (held * 8u);
+        if (++held == 4u) {
+            outw[store++] = pending;
+            pending = 0u; held = 0u;
+        }
+#else
+        pending += lo + store + held;
+#endif
+    }
+    if (pending == 0xffffffffu || position > end) atomicOr(err[pc.record], 2u);   // the loop has a use
+}

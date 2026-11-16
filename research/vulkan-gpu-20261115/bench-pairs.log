@@ -1,0 +1,326 @@
+compiler: gcc.exe (Rev6, Built by MSYS2 project) 16.2.0, -O3 -march=haswell -fopenmp
+vulkan-decode bench: done
+[17:23:59Z: 0 other wnr3_vk processes; CPU load 93%]
+== round 1, wex4/research/vulkan-decode/out/bench/big-16-5120-2304.wex4, pairs: form A search, form B table
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357, vendor 0x10de, driver 621.1.0.0)
+device 1: llvmpipe (LLVM 23.1.4, 256 bits) (type 4, Vulkan 1.4.354, vendor 0x10005, driver 26.2.6)
+bench: wex4/research/vulkan-decode/out/bench/big-16-5120-2304.wex4: 16 records in one batch, 232263680 stored bytes, 300810240 decoded bytes; the first record has 2160 + 17280 streams, chunks 2048:512, flag byte 0x00
+bench: staged upload; memory property flags: records 0x1, decoded 0x1, read-back 0xe (1 device-local, 2 host-visible, 4 coherent, 8 cached); pipelines created in 3.0 ms
+bench: pairs, form A, device: pass A                21 runs, median     0.922 ms per batch (min     0.917, max     1.146),    0.058 ms per record, 326230.1 MB/s
+bench: pairs, form B, device: pass A                21 runs, median     0.928 ms per batch (min     0.919, max     1.158),    0.058 ms per record, 323981.4 MB/s
+bench: pairs, form B / form A, pass A                    21 pairs, median 1.008 (min 0.808, max 1.260)
+bench: pairs, form A, device: pass B                21 runs, median    19.277 ms per batch (min    18.490, max    21.069),    1.205 ms per record,  15605.0 MB/s
+bench: pairs, form B, device: pass B                21 runs, median    18.483 ms per batch (min    17.826, max    19.270),    1.155 ms per record,  16274.5 MB/s
+bench: pairs, form B / form A, pass B                    21 pairs, median 0.961 (min 0.874, max 1.003)
+bench: pairs, form A, device: pass A + pass B       21 runs, median    20.198 ms per batch (min    19.414, max    21.991),    1.262 ms per record,  14892.9 MB/s
+bench: pairs, form B, device: pass A + pass B       21 runs, median    19.411 ms per batch (min    18.755, max    20.205),    1.213 ms per record,  15496.7 MB/s
+bench: pairs, form B / form A, pass A + pass B           21 pairs, median 0.963 (min 0.880, max 1.003)
+bench: device: upload (host writes, staged copy)    21 runs, median    40.070 ms per batch (min    37.841, max    51.638),    2.504 ms per record,   7507.1 MB/s
+bench: device: pass A, scales                       21 runs, median     1.203 ms per batch (min     1.078, max     6.267),    0.075 ms per record, 249987.7 MB/s
+bench: device: pass B, weights                      21 runs, median    20.724 ms per batch (min    19.607, max    23.801),    1.295 ms per record,  14514.9 MB/s
+bench: device: decode (pass A + pass B)             21 runs, median    21.883 ms per batch (min    20.722, max    27.443),    1.368 ms per record,  13746.2 MB/s
+bench: device: upload + decode                      21 runs, median    61.922 ms per batch (min    59.727, max    76.851),    3.870 ms per record,   4857.9 MB/s
+bench: device: read-back (comparison only)          21 runs, median    64.027 ms per batch (min    59.418, max    74.997),    4.002 ms per record,   4698.2 MB/s
+bench: device timestamps: pass A                    21 runs, median     0.928 ms per batch (min     0.920, max     1.149),    0.058 ms per record, 324249.6 MB/s
+bench: device timestamps: pass B                    21 runs, median    20.151 ms per batch (min    18.652, max    21.242),    1.259 ms per record,  14928.1 MB/s
+bench: device timestamps: pass A + pass B           21 runs, median    21.134 ms per batch (min    19.577, max    22.165),    1.321 ms per record,  14233.2 MB/s
+bench: CPU decoders not timed (WNR3_VK_BENCH_CPU=0)
+bench: 0 differences from the reference
+wnr3_vk: ok
+[17:24:25Z: 0 other wnr3_vk processes; CPU load 100%]
+== round 1, wex4/research/vulkan-decode/out/bench/big-16-5120-2304.wex4, pairs: form A table, form B search
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357, vendor 0x10de, driver 621.1.0.0)
+device 1: llvmpipe (LLVM 23.1.4, 256 bits) (type 4, Vulkan 1.4.354, vendor 0x10005, driver 26.2.6)
+bench: wex4/research/vulkan-decode/out/bench/big-16-5120-2304.wex4: 16 records in one batch, 232263680 stored bytes, 300810240 decoded bytes; the first record has 2160 + 17280 streams, chunks 2048:512, flag byte 0x00
+bench: staged upload; memory property flags: records 0x1, decoded 0x1, read-back 0xe (1 device-local, 2 host-visible, 4 coherent, 8 cached); pipelines created in 2.0 ms
+bench: pairs, form A, device: pass A                21 runs, median     0.928 ms per batch (min     0.914, max     0.936),    0.058 ms per record, 324003.7 MB/s
+bench: pairs, form B, device: pass A                21 runs, median     0.922 ms per batch (min     0.914, max     0.932),    0.058 ms per record, 326230.1 MB/s
+bench: pairs, form B / form A, pass A                    21 pairs, median 0.996 (min 0.984, max 1.009)
+bench: pairs, form A, device: pass B                21 runs, median    17.974 ms per batch (min    17.814, max    19.334),    1.123 ms per record,  16735.7 MB/s
+bench: pairs, form B, device: pass B                21 runs, median    19.150 ms per batch (min    18.533, max    20.201),    1.197 ms per record,  15707.7 MB/s
+bench: pairs, form B / form A, pass B                    21 pairs, median 1.040 (min 0.996, max 1.134)
+bench: pairs, form A, device: pass A + pass B       21 runs, median    18.899 ms per batch (min    18.729, max    20.263),    1.181 ms per record,  15916.3 MB/s
+bench: pairs, form B, device: pass A + pass B       21 runs, median    20.067 ms per batch (min    19.454, max    21.114),    1.254 ms per record,  14989.9 MB/s
+bench: pairs, form B / form A, pass A + pass B           21 pairs, median 1.038 (min 0.996, max 1.127)
+bench: device: upload (host writes, staged copy)    21 runs, median    53.926 ms per batch (min    41.652, max   103.619),    3.370 ms per record,   5578.2 MB/s
+bench: device: pass A, scales                       21 runs, median     7.179 ms per batch (min     1.237, max    28.431),    0.449 ms per record,  41901.4 MB/s
+bench: device: pass B, weights                      21 runs, median    23.801 ms per batch (min    18.121, max    49.843),    1.488 ms per record,  12638.6 MB/s
+bench: device: decode (pass A + pass B)             21 runs, median    32.860 ms per batch (min    20.148, max    69.832),    2.054 ms per record,   9154.4 MB/s
+bench: device: upload + decode                      21 runs, median    99.952 ms per batch (min    61.800, max   147.833),    6.247 ms per record,   3009.6 MB/s
+bench: device: read-back (comparison only)          21 runs, median    74.242 ms per batch (min    62.540, max    97.032),    4.640 ms per record,   4051.7 MB/s
+bench: device timestamps: pass A                    21 runs, median     0.931 ms per batch (min     0.920, max     0.946),    0.058 ms per record, 323157.2 MB/s
+bench: device timestamps: pass B                    21 runs, median    17.959 ms per batch (min    17.926, max    19.759),    1.122 ms per record,  16749.7 MB/s
+bench: device timestamps: pass A + pass B           21 runs, median    18.890 ms per batch (min    18.858, max    20.687),    1.181 ms per record,  15924.1 MB/s
+bench: CPU decoders not timed (WNR3_VK_BENCH_CPU=0)
+bench: 0 differences from the reference
+wnr3_vk: ok
+[17:24:51Z: 0 other wnr3_vk processes; CPU load 94%]
+== round 1, wex4/out/tiny_nr3_cz.wex4, pairs: form A search, form B table
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357, vendor 0x10de, driver 621.1.0.0)
+device 1: llvmpipe (LLVM 23.1.4, 256 bits) (type 4, Vulkan 1.4.354, vendor 0x10005, driver 26.2.6)
+bench: wex4/out/tiny_nr3_cz.wex4: 48 records in one batch, 589824 stored bytes, 626688 decoded bytes; the first record has 3 + 12 streams, chunks 2048:512, flag byte 0x08
+bench: staged upload; memory property flags: records 0x1, decoded 0x1, read-back 0xe (1 device-local, 2 host-visible, 4 coherent, 8 cached); pipelines created in 2.2 ms
+bench: pairs, form A, device: pass A                21 runs, median     0.295 ms per batch (min     0.295, max     0.297),    0.006 ms per record,   2121.1 MB/s
+bench: pairs, form B, device: pass A                21 runs, median     0.127 ms per batch (min     0.126, max     0.134),    0.003 ms per record,   4920.6 MB/s
+bench: pairs, form B / form A, pass A                    21 pairs, median 0.431 (min 0.429, max 0.453)
+bench: pairs, form A, device: pass B                21 runs, median     1.710 ms per batch (min     1.709, max     1.921),    0.036 ms per record,    366.5 MB/s
+bench: pairs, form B, device: pass B                21 runs, median     1.238 ms per batch (min     1.238, max     1.679),    0.026 ms per record,    506.1 MB/s
+bench: pairs, form B / form A, pass B                    21 pairs, median 0.724 (min 0.711, max 0.982)
+bench: pairs, form A, device: pass A + pass B       21 runs, median     2.005 ms per batch (min     2.004, max     2.216),    0.042 ms per record,    312.5 MB/s
+bench: pairs, form B, device: pass A + pass B       21 runs, median     1.369 ms per batch (min     1.364, max     1.806),    0.029 ms per record,    457.6 MB/s
+bench: pairs, form B / form A, pass A + pass B           21 pairs, median 0.681 (min 0.674, max 0.901)
+bench: device: upload (host writes, staged copy)    21 runs, median     0.235 ms per batch (min     0.205, max     0.393),    0.005 ms per record,   2664.5 MB/s
+bench: device: pass A, scales                       21 runs, median     0.431 ms per batch (min     0.410, max     0.661),    0.009 ms per record,   1453.4 MB/s
+bench: device: pass B, weights                      21 runs, median     1.877 ms per batch (min     1.827, max     2.503),    0.039 ms per record,    333.9 MB/s
+bench: device: decode (pass A + pass B)             21 runs, median     2.309 ms per batch (min     2.237, max     3.139),    0.048 ms per record,    271.4 MB/s
+bench: device: upload + decode                      21 runs, median     2.568 ms per batch (min     2.449, max     3.474),    0.053 ms per record,    244.0 MB/s
+bench: device: read-back (comparison only)          21 runs, median     0.232 ms per batch (min     0.205, max     0.665),    0.005 ms per record,   2705.9 MB/s
+bench: device timestamps: pass A                    21 runs, median     0.296 ms per batch (min     0.295, max     0.297),    0.006 ms per record,   2119.7 MB/s
+bench: device timestamps: pass B                    21 runs, median     1.710 ms per batch (min     1.709, max     2.147),    0.036 ms per record,    366.6 MB/s
+bench: device timestamps: pass A + pass B           21 runs, median     2.006 ms per batch (min     2.005, max     2.443),    0.042 ms per record,    312.5 MB/s
+bench: CPU decoders not timed (WNR3_VK_BENCH_CPU=0)
+bench: 0 differences from the reference
+wnr3_vk: ok
+[17:24:55Z: 0 other wnr3_vk processes; CPU load 96%]
+== round 1, wex4/out/tiny_nr3_cz.wex4, pairs: form A table, form B search
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357, vendor 0x10de, driver 621.1.0.0)
+device 1: llvmpipe (LLVM 23.1.4, 256 bits) (type 4, Vulkan 1.4.354, vendor 0x10005, driver 26.2.6)
+bench: wex4/out/tiny_nr3_cz.wex4: 48 records in one batch, 589824 stored bytes, 626688 decoded bytes; the first record has 3 + 12 streams, chunks 2048:512, flag byte 0x08
+bench: staged upload; memory property flags: records 0x1, decoded 0x1, read-back 0xe (1 device-local, 2 host-visible, 4 coherent, 8 cached); pipelines created in 2.2 ms
+bench: pairs, form A, device: pass A                21 runs, median     0.127 ms per batch (min     0.126, max     0.133),    0.003 ms per record,   4918.1 MB/s
+bench: pairs, form B, device: pass A                21 runs, median     0.296 ms per batch (min     0.295, max     0.298),    0.006 ms per record,   2120.6 MB/s
+bench: pairs, form B / form A, pass A                    21 pairs, median 2.316 (min 2.215, max 2.345)
+bench: pairs, form A, device: pass B                21 runs, median     1.238 ms per batch (min     1.238, max     1.549),    0.026 ms per record,    506.2 MB/s
+bench: pairs, form B, device: pass B                21 runs, median     1.710 ms per batch (min     1.709, max     2.251),    0.036 ms per record,    366.6 MB/s
+bench: pairs, form B / form A, pass B                    21 pairs, median 1.381 (min 1.104, max 1.818)
+bench: pairs, form A, device: pass A + pass B       21 runs, median     1.366 ms per batch (min     1.364, max     1.681),    0.028 ms per record,    458.9 MB/s
+bench: pairs, form B, device: pass A + pass B       21 runs, median     2.005 ms per batch (min     2.004, max     2.546),    0.042 ms per record,    312.5 MB/s
+bench: pairs, form B / form A, pass A + pass B           21 pairs, median 1.469 (min 1.192, max 1.865)
+bench: device: upload (host writes, staged copy)    21 runs, median     0.302 ms per batch (min     0.207, max     0.551),    0.006 ms per record,   2074.4 MB/s
+bench: device: pass A, scales                       21 runs, median     0.281 ms per batch (min     0.215, max     0.686),    0.006 ms per record,   2228.6 MB/s
+bench: device: pass B, weights                      21 runs, median     1.457 ms per batch (min     1.330, max     1.928),    0.030 ms per record,    430.2 MB/s
+bench: device: decode (pass A + pass B)             21 runs, median     1.760 ms per batch (min     1.545, max     2.547),    0.037 ms per record,    356.1 MB/s
+bench: device: upload + decode                      21 runs, median     2.024 ms per batch (min     1.821, max     2.926),    0.042 ms per record,    309.7 MB/s
+bench: device: read-back (comparison only)          21 runs, median     0.265 ms per batch (min     0.171, max     0.535),    0.006 ms per record,   2362.2 MB/s
+bench: device timestamps: pass A                    21 runs, median     0.127 ms per batch (min     0.127, max     0.133),    0.003 ms per record,   4928.0 MB/s
+bench: device timestamps: pass B                    21 runs, median     1.238 ms per batch (min     1.237, max     1.699),    0.026 ms per record,    506.3 MB/s
+bench: device timestamps: pass A + pass B           21 runs, median     1.365 ms per batch (min     1.364, max     1.827),    0.028 ms per record,    459.1 MB/s
+bench: CPU decoders not timed (WNR3_VK_BENCH_CPU=0)
+bench: 0 differences from the reference
+wnr3_vk: ok
+[17:24:58Z: 0 other wnr3_vk processes; CPU load 88%]
+== round 2, wex4/research/vulkan-decode/out/bench/big-16-5120-2304.wex4, pairs: form A search, form B table
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357, vendor 0x10de, driver 621.1.0.0)
+device 1: llvmpipe (LLVM 23.1.4, 256 bits) (type 4, Vulkan 1.4.354, vendor 0x10005, driver 26.2.6)
+bench: wex4/research/vulkan-decode/out/bench/big-16-5120-2304.wex4: 16 records in one batch, 232263680 stored bytes, 300810240 decoded bytes; the first record has 2160 + 17280 streams, chunks 2048:512, flag byte 0x00
+bench: staged upload; memory property flags: records 0x1, decoded 0x1, read-back 0xe (1 device-local, 2 host-visible, 4 coherent, 8 cached); pipelines created in 2.4 ms
+bench: pairs, form A, device: pass A                21 runs, median     0.925 ms per batch (min     0.910, max     1.186),    0.058 ms per record, 325315.6 MB/s
+bench: pairs, form B, device: pass A                21 runs, median     0.931 ms per batch (min     0.923, max     1.169),    0.058 ms per record, 323179.4 MB/s
+bench: pairs, form B / form A, pass A                    21 pairs, median 1.007 (min 0.780, max 1.267)
+bench: pairs, form A, device: pass B                21 runs, median    20.065 ms per batch (min    19.227, max    20.944),    1.254 ms per record,  14991.9 MB/s
+bench: pairs, form B, device: pass B                21 runs, median    18.915 ms per batch (min    18.592, max    19.943),    1.182 ms per record,  15903.3 MB/s
+bench: pairs, form B / form A, pass B                    21 pairs, median 0.943 (min 0.903, max 1.018)
+bench: pairs, form A, device: pass A + pass B       21 runs, median    21.032 ms per batch (min    20.144, max    22.095),    1.314 ms per record,  14302.6 MB/s
+bench: pairs, form B, device: pass A + pass B       21 runs, median    19.852 ms per batch (min    19.523, max    20.876),    1.241 ms per record,  15152.9 MB/s
+bench: pairs, form B / form A, pass A + pass B           21 pairs, median 0.947 (min 0.898, max 1.029)
+bench: device: upload (host writes, staged copy)    21 runs, median    41.326 ms per batch (min    37.838, max    55.856),    2.583 ms per record,   7278.9 MB/s
+bench: device: pass A, scales                       21 runs, median     1.561 ms per batch (min     1.126, max     3.129),    0.098 ms per record, 192703.5 MB/s
+bench: device: pass B, weights                      21 runs, median    20.830 ms per batch (min    19.538, max    25.267),    1.302 ms per record,  14441.4 MB/s
+bench: device: decode (pass A + pass B)             21 runs, median    22.771 ms per batch (min    20.954, max    28.119),    1.423 ms per record,  13210.3 MB/s
+bench: device: upload + decode                      21 runs, median    64.445 ms per batch (min    59.362, max    77.824),    4.028 ms per record,   4667.7 MB/s
+bench: device: read-back (comparison only)          21 runs, median    64.292 ms per batch (min    58.056, max    76.755),    4.018 ms per record,   4678.8 MB/s
+bench: device timestamps: pass A                    21 runs, median     0.920 ms per batch (min     0.912, max     1.112),    0.057 ms per record, 327092.8 MB/s
+bench: device timestamps: pass B                    21 runs, median    19.757 ms per batch (min    18.469, max    21.495),    1.235 ms per record,  15225.6 MB/s
+bench: device timestamps: pass A + pass B           21 runs, median    20.681 ms per batch (min    19.390, max    22.406),    1.293 ms per record,  14545.4 MB/s
+bench: CPU decoders not timed (WNR3_VK_BENCH_CPU=0)
+bench: 0 differences from the reference
+wnr3_vk: ok
+[17:25:24Z: 0 other wnr3_vk processes; CPU load 100%]
+== round 2, wex4/research/vulkan-decode/out/bench/big-16-5120-2304.wex4, pairs: form A table, form B search
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357, vendor 0x10de, driver 621.1.0.0)
+device 1: llvmpipe (LLVM 23.1.4, 256 bits) (type 4, Vulkan 1.4.354, vendor 0x10005, driver 26.2.6)
+bench: wex4/research/vulkan-decode/out/bench/big-16-5120-2304.wex4: 16 records in one batch, 232263680 stored bytes, 300810240 decoded bytes; the first record has 2160 + 17280 streams, chunks 2048:512, flag byte 0x00
+bench: staged upload; memory property flags: records 0x1, decoded 0x1, read-back 0xe (1 device-local, 2 host-visible, 4 coherent, 8 cached); pipelines created in 1.9 ms
+bench: pairs, form A, device: pass A                21 runs, median     0.931 ms per batch (min     0.918, max     1.169),    0.058 ms per record, 323057.3 MB/s
+bench: pairs, form B, device: pass A                21 runs, median     0.923 ms per batch (min     0.912, max     0.931),    0.058 ms per record, 325879.5 MB/s
+bench: pairs, form B / form A, pass A                    21 pairs, median 0.991 (min 0.784, max 1.001)
+bench: pairs, form A, device: pass B                21 runs, median    19.071 ms per batch (min    18.353, max    20.062),    1.192 ms per record,  15773.1 MB/s
+bench: pairs, form B, device: pass B                21 runs, median    20.126 ms per batch (min    19.087, max    21.706),    1.258 ms per record,  14946.2 MB/s
+bench: pairs, form B / form A, pass B                    21 pairs, median 1.056 (min 0.994, max 1.163)
+bench: pairs, form A, device: pass A + pass B       21 runs, median    20.006 ms per batch (min    19.282, max    20.991),    1.250 ms per record,  15035.7 MB/s
+bench: pairs, form B, device: pass A + pass B       21 runs, median    21.049 ms per batch (min    20.010, max    22.626),    1.316 ms per record,  14290.7 MB/s
+bench: pairs, form B / form A, pass A + pass B           21 pairs, median 1.047 (min 0.983, max 1.155)
+bench: device: upload (host writes, staged copy)    21 runs, median    41.440 ms per batch (min    36.035, max    47.197),    2.590 ms per record,   7258.9 MB/s
+bench: device: pass A, scales                       21 runs, median     1.377 ms per batch (min     1.123, max     3.459),    0.086 ms per record, 218374.0 MB/s
+bench: device: pass B, weights                      21 runs, median    19.504 ms per batch (min    18.737, max    21.769),    1.219 ms per record,  15423.2 MB/s
+bench: device: decode (pass A + pass B)             21 runs, median    20.968 ms per batch (min    20.167, max    23.252),    1.311 ms per record,  14346.0 MB/s
+bench: device: upload + decode                      21 runs, median    62.652 ms per batch (min    56.923, max    69.243),    3.916 ms per record,   4801.3 MB/s
+bench: device: read-back (comparison only)          21 runs, median    66.328 ms per batch (min    59.669, max    74.321),    4.146 ms per record,   4535.2 MB/s
+bench: device timestamps: pass A                    21 runs, median     0.932 ms per batch (min     0.919, max     1.207),    0.058 ms per record, 322868.6 MB/s
+bench: device timestamps: pass B                    21 runs, median    18.929 ms per batch (min    18.470, max    19.802),    1.183 ms per record,  15891.2 MB/s
+bench: device timestamps: pass A + pass B           21 runs, median    19.863 ms per batch (min    19.398, max    20.733),    1.241 ms per record,  15144.2 MB/s
+bench: CPU decoders not timed (WNR3_VK_BENCH_CPU=0)
+bench: 0 differences from the reference
+wnr3_vk: ok
+[17:25:57Z: 0 other wnr3_vk processes; CPU load 100%]
+== round 2, wex4/out/tiny_nr3_cz.wex4, pairs: form A search, form B table
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357, vendor 0x10de, driver 621.1.0.0)
+device 1: llvmpipe (LLVM 23.1.4, 256 bits) (type 4, Vulkan 1.4.354, vendor 0x10005, driver 26.2.6)
+bench: wex4/out/tiny_nr3_cz.wex4: 48 records in one batch, 589824 stored bytes, 626688 decoded bytes; the first record has 3 + 12 streams, chunks 2048:512, flag byte 0x08
+bench: staged upload; memory property flags: records 0x1, decoded 0x1, read-back 0xe (1 device-local, 2 host-visible, 4 coherent, 8 cached); pipelines created in 1.7 ms
+bench: pairs, form A, device: pass A                21 runs, median     0.346 ms per batch (min     0.346, max     0.349),    0.007 ms per record,   1811.3 MB/s
+bench: pairs, form B, device: pass A                21 runs, median     0.149 ms per batch (min     0.148, max     0.154),    0.003 ms per record,   4204.4 MB/s
+bench: pairs, form B / form A, pass A                    21 pairs, median 0.430 (min 0.429, max 0.441)
+bench: pairs, form A, device: pass B                21 runs, median     2.004 ms per batch (min     2.004, max     2.232),    0.042 ms per record,    312.7 MB/s
+bench: pairs, form B, device: pass B                21 runs, median     1.451 ms per batch (min     1.451, max     1.454),    0.030 ms per record,    431.9 MB/s
+bench: pairs, form B / form A, pass B                    21 pairs, median 0.724 (min 0.650, max 0.726)
+bench: pairs, form A, device: pass A + pass B       21 runs, median     2.350 ms per batch (min     2.349, max     2.578),    0.049 ms per record,    266.7 MB/s
+bench: pairs, form B, device: pass A + pass B       21 runs, median     1.600 ms per batch (min     1.599, max     1.605),    0.033 ms per record,    391.6 MB/s
+bench: pairs, form B / form A, pass A + pass B           21 pairs, median 0.681 (min 0.621, max 0.682)
+bench: device: upload (host writes, staged copy)    21 runs, median     3.091 ms per batch (min     0.279, max    20.477),    0.064 ms per record,    202.7 MB/s
+bench: device: pass A, scales                       21 runs, median     4.599 ms per batch (min     0.613, max    32.679),    0.096 ms per record,    136.3 MB/s
+bench: device: pass B, weights                      21 runs, median     6.175 ms per batch (min     2.197, max    27.472),    0.129 ms per record,    101.5 MB/s
+bench: device: decode (pass A + pass B)             21 runs, median    11.232 ms per batch (min     2.810, max    46.787),    0.234 ms per record,     55.8 MB/s
+bench: device: upload + decode                      21 runs, median    15.741 ms per batch (min     4.002, max    58.801),    0.328 ms per record,     39.8 MB/s
+bench: device: read-back (comparison only)          21 runs, median     3.948 ms per batch (min     0.242, max    22.785),    0.082 ms per record,    158.7 MB/s
+bench: device timestamps: pass A                    21 runs, median     0.346 ms per batch (min     0.346, max     0.347),    0.007 ms per record,   1809.5 MB/s
+bench: device timestamps: pass B                    21 runs, median     2.004 ms per batch (min     2.004, max     2.113),    0.042 ms per record,    312.7 MB/s
+bench: device timestamps: pass A + pass B           21 runs, median     2.350 ms per batch (min     2.349, max     2.459),    0.049 ms per record,    266.6 MB/s
+bench: CPU decoders not timed (WNR3_VK_BENCH_CPU=0)
+bench: 0 differences from the reference
+wnr3_vk: ok
+[17:26:03Z: 0 other wnr3_vk processes; CPU load 100%]
+== round 2, wex4/out/tiny_nr3_cz.wex4, pairs: form A table, form B search
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357, vendor 0x10de, driver 621.1.0.0)
+device 1: llvmpipe (LLVM 23.1.4, 256 bits) (type 4, Vulkan 1.4.354, vendor 0x10005, driver 26.2.6)
+bench: wex4/out/tiny_nr3_cz.wex4: 48 records in one batch, 589824 stored bytes, 626688 decoded bytes; the first record has 3 + 12 streams, chunks 2048:512, flag byte 0x08
+bench: staged upload; memory property flags: records 0x1, decoded 0x1, read-back 0xe (1 device-local, 2 host-visible, 4 coherent, 8 cached); pipelines created in 1.8 ms
+bench: pairs, form A, device: pass A                21 runs, median     0.128 ms per batch (min     0.127, max     0.133),    0.003 ms per record,   4914.4 MB/s
+bench: pairs, form B, device: pass A                21 runs, median     0.296 ms per batch (min     0.295, max     0.298),    0.006 ms per record,   2116.7 MB/s
+bench: pairs, form B / form A, pass A                    21 pairs, median 2.321 (min 2.239, max 2.332)
+bench: pairs, form A, device: pass B                21 runs, median     1.241 ms per batch (min     1.241, max     1.292),    0.026 ms per record,    505.0 MB/s
+bench: pairs, form B, device: pass B                21 runs, median     1.713 ms per batch (min     1.713, max     2.062),    0.036 ms per record,    365.8 MB/s
+bench: pairs, form B / form A, pass B                    21 pairs, median 1.381 (min 1.378, max 1.595)
+bench: pairs, form A, device: pass A + pass B       21 runs, median     1.368 ms per batch (min     1.367, max     1.425),    0.029 ms per record,    457.9 MB/s
+bench: pairs, form B, device: pass A + pass B       21 runs, median     2.009 ms per batch (min     2.008, max     2.359),    0.042 ms per record,    311.9 MB/s
+bench: pairs, form B / form A, pass A + pass B           21 pairs, median 1.468 (min 1.465, max 1.655)
+bench: device: upload (host writes, staged copy)    21 runs, median     1.488 ms per batch (min     0.202, max    12.140),    0.031 ms per record,    421.0 MB/s
+bench: device: pass A, scales                       21 runs, median     0.802 ms per batch (min     0.237, max     4.829),    0.017 ms per record,    781.6 MB/s
+bench: device: pass B, weights                      21 runs, median     2.864 ms per batch (min     1.348, max    12.305),    0.060 ms per record,    218.8 MB/s
+bench: device: decode (pass A + pass B)             21 runs, median     4.102 ms per batch (min     1.585, max    15.218),    0.085 ms per record,    152.8 MB/s
+bench: device: upload + decode                      21 runs, median     5.926 ms per batch (min     1.787, max    20.899),    0.123 ms per record,    105.8 MB/s
+bench: device: read-back (comparison only)          21 runs, median     0.729 ms per batch (min     0.185, max     9.524),    0.015 ms per record,    859.7 MB/s
+bench: device timestamps: pass A                    21 runs, median     0.128 ms per batch (min     0.127, max     0.128),    0.003 ms per record,   4909.5 MB/s
+bench: device timestamps: pass B                    21 runs, median     1.241 ms per batch (min     1.240, max     1.242),    0.026 ms per record,    505.0 MB/s
+bench: device timestamps: pass A + pass B           21 runs, median     1.369 ms per batch (min     1.368, max     1.370),    0.029 ms per record,    457.9 MB/s
+bench: CPU decoders not timed (WNR3_VK_BENCH_CPU=0)
+bench: 0 differences from the reference
+wnr3_vk: ok
+[17:26:08Z: 0 other wnr3_vk processes; CPU load 100%]
+== round 3, wex4/research/vulkan-decode/out/bench/big-16-5120-2304.wex4, pairs: form A search, form B table
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357, vendor 0x10de, driver 621.1.0.0)
+device 1: llvmpipe (LLVM 23.1.4, 256 bits) (type 4, Vulkan 1.4.354, vendor 0x10005, driver 26.2.6)
+bench: wex4/research/vulkan-decode/out/bench/big-16-5120-2304.wex4: 16 records in one batch, 232263680 stored bytes, 300810240 decoded bytes; the first record has 2160 + 17280 streams, chunks 2048:512, flag byte 0x00
+bench: staged upload; memory property flags: records 0x1, decoded 0x1, read-back 0xe (1 device-local, 2 host-visible, 4 coherent, 8 cached); pipelines created in 1.9 ms
+bench: pairs, form A, device: pass A                21 runs, median     0.928 ms per batch (min     0.921, max     0.942),    0.058 ms per record, 324104.3 MB/s
+bench: pairs, form B, device: pass A                21 runs, median     0.932 ms per batch (min     0.922, max     1.194),    0.058 ms per record, 322669.1 MB/s
+bench: pairs, form B / form A, pass A                    21 pairs, median 1.003 (min 0.989, max 1.291)
+bench: pairs, form A, device: pass B                21 runs, median    20.004 ms per batch (min    19.395, max    20.794),    1.250 ms per record,  15037.9 MB/s
+bench: pairs, form B, device: pass B                21 runs, median    18.745 ms per batch (min    18.425, max    19.611),    1.172 ms per record,  16047.5 MB/s
+bench: pairs, form B / form A, pass B                    21 pairs, median 0.932 (min 0.894, max 0.990)
+bench: pairs, form A, device: pass A + pass B       21 runs, median    20.929 ms per batch (min    20.328, max    21.725),    1.308 ms per record,  14373.1 MB/s
+bench: pairs, form B, device: pass A + pass B       21 runs, median    19.727 ms per batch (min    19.467, max    20.538),    1.233 ms per record,  15248.9 MB/s
+bench: pairs, form B / form A, pass A + pass B           21 pairs, median 0.944 (min 0.898, max 0.990)
+bench: device: upload (host writes, staged copy)    21 runs, median    47.260 ms per batch (min    41.736, max    56.508),    2.954 ms per record,   6365.0 MB/s
+bench: device: pass A, scales                       21 runs, median     1.598 ms per batch (min     1.073, max     7.451),    0.100 ms per record, 188253.5 MB/s
+bench: device: pass B, weights                      21 runs, median    21.483 ms per batch (min    19.723, max    25.816),    1.343 ms per record,  14002.1 MB/s
+bench: device: decode (pass A + pass B)             21 runs, median    23.148 ms per batch (min    20.961, max    28.856),    1.447 ms per record,  12995.3 MB/s
+bench: device: upload + decode                      21 runs, median    71.474 ms per batch (min    64.158, max    85.364),    4.467 ms per record,   4208.6 MB/s
+bench: device: read-back (comparison only)          21 runs, median    68.664 ms per batch (min    64.240, max   105.576),    4.292 ms per record,   4380.9 MB/s
+bench: device timestamps: pass A                    21 runs, median     0.922 ms per batch (min     0.914, max     1.140),    0.058 ms per record, 326366.0 MB/s
+bench: device timestamps: pass B                    21 runs, median    20.341 ms per batch (min    18.493, max    21.591),    1.271 ms per record,  14788.5 MB/s
+bench: device timestamps: pass A + pass B           21 runs, median    21.261 ms per batch (min    19.415, max    22.505),    1.329 ms per record,  14148.3 MB/s
+bench: CPU decoders not timed (WNR3_VK_BENCH_CPU=0)
+bench: 0 differences from the reference
+wnr3_vk: ok
+[17:26:36Z: 0 other wnr3_vk processes; CPU load 87%]
+== round 3, wex4/research/vulkan-decode/out/bench/big-16-5120-2304.wex4, pairs: form A table, form B search
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357, vendor 0x10de, driver 621.1.0.0)
+device 1: llvmpipe (LLVM 23.1.4, 256 bits) (type 4, Vulkan 1.4.354, vendor 0x10005, driver 26.2.6)
+bench: wex4/research/vulkan-decode/out/bench/big-16-5120-2304.wex4: 16 records in one batch, 232263680 stored bytes, 300810240 decoded bytes; the first record has 2160 + 17280 streams, chunks 2048:512, flag byte 0x00
+bench: staged upload; memory property flags: records 0x1, decoded 0x1, read-back 0xe (1 device-local, 2 host-visible, 4 coherent, 8 cached); pipelines created in 1.8 ms
+bench: pairs, form A, device: pass A                21 runs, median     0.932 ms per batch (min     0.923, max     1.212),    0.058 ms per record, 322602.7 MB/s
+bench: pairs, form B, device: pass A                21 runs, median     0.933 ms per batch (min     0.916, max     1.179),    0.058 ms per record, 322293.0 MB/s
+bench: pairs, form B / form A, pass A                    21 pairs, median 1.002 (min 0.756, max 1.264)
+bench: pairs, form A, device: pass B                21 runs, median    19.030 ms per batch (min    18.610, max    19.872),    1.189 ms per record,  15807.1 MB/s
+bench: pairs, form B, device: pass B                21 runs, median    20.054 ms per batch (min    19.610, max    21.016),    1.253 ms per record,  15000.0 MB/s
+bench: pairs, form B / form A, pass B                    21 pairs, median 1.056 (min 1.001, max 1.128)
+bench: pairs, form A, device: pass A + pass B       21 runs, median    20.002 ms per batch (min    19.545, max    20.879),    1.250 ms per record,  15039.4 MB/s
+bench: pairs, form B, device: pass A + pass B       21 runs, median    20.983 ms per batch (min    20.689, max    21.934),    1.311 ms per record,  14335.6 MB/s
+bench: pairs, form B / form A, pass A + pass B           21 pairs, median 1.053 (min 1.000, max 1.121)
+bench: device: upload (host writes, staged copy)    21 runs, median    39.674 ms per batch (min    36.018, max    48.534),    2.480 ms per record,   7582.0 MB/s
+bench: device: pass A, scales                       21 runs, median     1.120 ms per batch (min     1.053, max     1.538),    0.070 ms per record, 268676.5 MB/s
+bench: device: pass B, weights                      21 runs, median    19.006 ms per batch (min    18.573, max    19.965),    1.188 ms per record,  15827.2 MB/s
+bench: device: decode (pass A + pass B)             21 runs, median    20.143 ms per batch (min    19.666, max    21.093),    1.259 ms per record,  14933.6 MB/s
+bench: device: upload + decode                      21 runs, median    60.087 ms per batch (min    56.449, max    68.213),    3.755 ms per record,   5006.2 MB/s
+bench: device: read-back (comparison only)          21 runs, median    62.904 ms per batch (min    58.089, max    70.106),    3.931 ms per record,   4782.1 MB/s
+bench: device timestamps: pass A                    21 runs, median     0.929 ms per batch (min     0.921, max     1.201),    0.058 ms per record, 323769.4 MB/s
+bench: device timestamps: pass B                    21 runs, median    18.757 ms per batch (min    18.400, max    19.438),    1.172 ms per record,  16037.2 MB/s
+bench: device timestamps: pass A + pass B           21 runs, median    19.686 ms per batch (min    19.330, max    20.367),    1.230 ms per record,  15280.5 MB/s
+bench: CPU decoders not timed (WNR3_VK_BENCH_CPU=0)
+bench: 0 differences from the reference
+wnr3_vk: ok
+[17:27:00Z: 0 other wnr3_vk processes; CPU load 82%]
+== round 3, wex4/out/tiny_nr3_cz.wex4, pairs: form A search, form B table
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357, vendor 0x10de, driver 621.1.0.0)
+device 1: llvmpipe (LLVM 23.1.4, 256 bits) (type 4, Vulkan 1.4.354, vendor 0x10005, driver 26.2.6)
+bench: wex4/out/tiny_nr3_cz.wex4: 48 records in one batch, 589824 stored bytes, 626688 decoded bytes; the first record has 3 + 12 streams, chunks 2048:512, flag byte 0x08
+bench: staged upload; memory property flags: records 0x1, decoded 0x1, read-back 0xe (1 device-local, 2 host-visible, 4 coherent, 8 cached); pipelines created in 1.9 ms
+bench: pairs, form A, device: pass A                21 runs, median     0.296 ms per batch (min     0.295, max     0.298),    0.006 ms per record,   2115.8 MB/s
+bench: pairs, form B, device: pass A                21 runs, median     0.128 ms per batch (min     0.127, max     0.133),    0.003 ms per record,   4897.2 MB/s
+bench: pairs, form B / form A, pass A                    21 pairs, median 0.432 (min 0.428, max 0.451)
+bench: pairs, form A, device: pass B                21 runs, median     1.713 ms per batch (min     1.712, max     2.267),    0.036 ms per record,    365.8 MB/s
+bench: pairs, form B, device: pass B                21 runs, median     1.241 ms per batch (min     1.241, max     1.612),    0.026 ms per record,    505.0 MB/s
+bench: pairs, form B / form A, pass B                    21 pairs, median 0.724 (min 0.593, max 0.910)
+bench: pairs, form A, device: pass A + pass B       21 runs, median     2.009 ms per batch (min     2.008, max     2.563),    0.042 ms per record,    311.9 MB/s
+bench: pairs, form B, device: pass A + pass B       21 runs, median     1.372 ms per batch (min     1.368, max     1.745),    0.029 ms per record,    456.8 MB/s
+bench: pairs, form B / form A, pass A + pass B           21 pairs, median 0.681 (min 0.576, max 0.842)
+bench: device: upload (host writes, staged copy)    21 runs, median     0.274 ms per batch (min     0.188, max     1.481),    0.006 ms per record,   2288.9 MB/s
+bench: device: pass A, scales                       21 runs, median     0.489 ms per batch (min     0.400, max     0.937),    0.010 ms per record,   1281.8 MB/s
+bench: device: pass B, weights                      21 runs, median     1.934 ms per batch (min     1.832, max     2.578),    0.040 ms per record,    324.0 MB/s
+bench: device: decode (pass A + pass B)             21 runs, median     2.457 ms per batch (min     2.232, max     3.375),    0.051 ms per record,    255.0 MB/s
+bench: device: upload + decode                      21 runs, median     2.762 ms per batch (min     2.420, max     4.715),    0.058 ms per record,    226.9 MB/s
+bench: device: read-back (comparison only)          21 runs, median     0.262 ms per batch (min     0.192, max     0.577),    0.005 ms per record,   2391.0 MB/s
+bench: device timestamps: pass A                    21 runs, median     0.296 ms per batch (min     0.296, max     0.297),    0.006 ms per record,   2114.7 MB/s
+bench: device timestamps: pass B                    21 runs, median     1.713 ms per batch (min     1.713, max     2.299),    0.036 ms per record,    365.8 MB/s
+bench: device timestamps: pass A + pass B           21 runs, median     2.009 ms per batch (min     2.008, max     2.595),    0.042 ms per record,    311.9 MB/s
+bench: CPU decoders not timed (WNR3_VK_BENCH_CPU=0)
+bench: 0 differences from the reference
+wnr3_vk: ok
+[17:27:03Z: 0 other wnr3_vk processes; CPU load 87%]
+== round 3, wex4/out/tiny_nr3_cz.wex4, pairs: form A table, form B search
+device 0 *: NVIDIA GeForce RTX 3070 (type 2, Vulkan 1.4.357, vendor 0x10de, driver 621.1.0.0)
+device 1: llvmpipe (LLVM 23.1.4, 256 bits) (type 4, Vulkan 1.4.354, vendor 0x10005, driver 26.2.6)
+bench: wex4/out/tiny_nr3_cz.wex4: 48 records in one batch, 589824 stored bytes, 626688 decoded bytes; the first record has 3 + 12 streams, chunks 2048:512, flag byte 0x08
+bench: staged upload; memory property flags: records 0x1, decoded 0x1, read-back 0xe (1 device-local, 2 host-visible, 4 coherent, 8 cached); pipelines created in 2.0 ms
+bench: pairs, form A, device: pass A                21 runs, median     0.128 ms per batch (min     0.127, max     0.134),    0.003 ms per record,   4904.6 MB/s
+bench: pairs, form B, device: pass A                21 runs, median     0.296 ms per batch (min     0.295, max     0.298),    0.006 ms per record,   2117.6 MB/s
+bench: pairs, form B / form A, pass A                    21 pairs, median 2.314 (min 2.213, max 2.339)
+bench: pairs, form A, device: pass B                21 runs, median     1.241 ms per batch (min     1.240, max     1.471),    0.026 ms per record,    505.2 MB/s
+bench: pairs, form B, device: pass B                21 runs, median     1.712 ms per batch (min     1.712, max     2.396),    0.036 ms per record,    366.0 MB/s
+bench: pairs, form B / form A, pass B                    21 pairs, median 1.380 (min 1.234, max 1.932)
+bench: pairs, form A, device: pass A + pass B       21 runs, median     1.368 ms per batch (min     1.367, max     1.598),    0.029 ms per record,    458.0 MB/s
+bench: pairs, form B, device: pass A + pass B       21 runs, median     2.008 ms per batch (min     2.007, max     2.691),    0.042 ms per record,    312.0 MB/s
+bench: pairs, form B / form A, pass A + pass B           21 pairs, median 1.468 (min 1.322, max 1.968)
+bench: device: upload (host writes, staged copy)    21 runs, median     0.236 ms per batch (min     0.188, max     1.015),    0.005 ms per record,   2653.2 MB/s
+bench: device: pass A, scales                       21 runs, median     0.281 ms per batch (min     0.229, max     0.502),    0.006 ms per record,   2231.8 MB/s
+bench: device: pass B, weights                      21 runs, median     1.385 ms per batch (min     1.347, max     2.065),    0.029 ms per record,    452.4 MB/s
+bench: device: decode (pass A + pass B)             21 runs, median     1.704 ms per batch (min     1.580, max     2.417),    0.035 ms per record,    367.8 MB/s
+bench: device: upload + decode                      21 runs, median     1.984 ms per batch (min     1.771, max     3.159),    0.041 ms per record,    315.9 MB/s
+bench: device: read-back (comparison only)          21 runs, median     0.225 ms per batch (min     0.178, max     0.554),    0.005 ms per record,   2781.6 MB/s
+bench: device timestamps: pass A                    21 runs, median     0.128 ms per batch (min     0.127, max     0.134),    0.003 ms per record,   4893.6 MB/s
+bench: device timestamps: pass B                    21 runs, median     1.240 ms per batch (min     1.240, max     1.917),    0.026 ms per record,    505.3 MB/s
+bench: device timestamps: pass A + pass B           21 runs, median     1.368 ms per batch (min     1.367, max     2.045),    0.029 ms per record,    458.0 MB/s
+bench: CPU decoders not timed (WNR3_VK_BENCH_CPU=0)
+bench: 0 differences from the reference
+wnr3_vk: ok

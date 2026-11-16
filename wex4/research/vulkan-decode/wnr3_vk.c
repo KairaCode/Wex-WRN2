@@ -3,29 +3,41 @@
 /* WNR3 decode on Vulkan compute, checked against the CPU reference (prototype, docs/WNR3-VULKAN.md).
  *
  * The host validates each record (wex_nrx_parse) and its model (wex_nr2_model_open), uploads the record
- * bytes, the WNM2 blob, a 32-word plan and the stream offsets, and runs the two passes of wnr3.comp
+ * bytes, the WNM2 blob and a scale symbol table built from it, a 32-word plan and the stream offsets, and
+ * runs the two passes of wnr3.comp
  * (scales.spv, then weights.spv) for every record of a batch in one command buffer. The decoded bytes land
  * in a storage buffer the host never maps (device-local memory where the device has it); they are copied to
  * a host-visible buffer only to be compared here with wex_nr2_decode (c/wex_neural_rans.h).
  *
- *   wnr3_vk selftest                 synthetic records from the reference encoder: every flag, chunk sizes
+ *   wnr3_vk selftest [CASE]          synthetic records from the reference encoder: every flag, chunk sizes
  *                                    at both ends, scale counts that are not multiples of 4, and seven
- *                                    records that must be refused, each with its error bits
+ *                                    records that must be refused, each with its error bits. CASE (0 to 11)
+ *                                    takes one of the twelve records alone
  *   wnr3_vk decode FILE.wex4 ...     every WNR3 record of each file must decode, with the reference's bytes
  *   wnr3_vk reject FILE.wex4 ...     each file must hold a WNR3 record that the reference refuses; the
  *                                    Vulkan verdict must be the same for every record
  *   wnr3_vk mutate N SEED FILE.wex4 ...   N copies of each WNR3 record with one byte changed: same verdict
  *                                    as the reference, and the same bytes when both accept
+ *   wnr3_vk bench RUNS FILE.wex4 [RECORDS]   the first RECORDS WNR3 records of the file (default: as many as
+ *                                    one batch holds) decoded RUNS times on the device and on the CPU, with
+ *                                    the time of each part; the bytes must be the reference's (bench.sh)
  *
  * A file is not loaded whole: the header page, the index and the model blobs are read once, and each record
  * when its batch is filled, with 64-bit offsets. A batch is cut at MAX_BATCH records or when the next record
  * would take the stored or the decoded bytes of the batch above the batch limit.
  *
  * Environment: WNR3_VK_SHADERS = folder of scales.spv and weights.spv (default: the working directory);
- * WNR3_VK_DEVICE = index of the physical device (default 0); WNR3_VK_VALIDATE=1 turns the Khronos validation
- * layer on and makes any message of it an error; WNR3_VK_BATCH_BYTES = batch limit in bytes (default 2^28;
- * the device's maxStorageBufferRange when that is smaller); WNR3_VK_EVERY = N takes one WNR3 record in N of
- * each file (default 1: all). Exit 0 on success, 1 on a difference, 2 on a setup error. */
+ * WNR3_VK_DEVICE = index of the physical device (default 0), or a part of its name, ASCII letters compared
+ * without case (NVIDIA, llvmpipe); WNR3_VK_STAGE=1 uploads the records, the model blobs, the plans and the offsets
+ * through host-visible staging buffers into device-local ones, WNR3_VK_STAGE=0 lets the shader read the
+ * host-visible buffers the host wrote (default: 1 when the device has memory the host cannot map, else 0);
+ * WNR3_VK_ROBUST=1 enables the device feature robustBufferAccess (default: no feature); WNR3_VK_VALIDATE=1
+ * turns the Khronos validation layer on and makes any message of it an error; WNR3_VK_BATCH_BYTES = batch
+ * limit in bytes (default 2^28; the device's maxStorageBufferRange when that is smaller); WNR3_VK_EVERY = N
+ * takes one WNR3 record in N of each file (default 1: all); WNR3_VK_BENCH_CPU=0 leaves the CPU decoders out
+ * of the times of `bench`; WNR3_VK_SHADERS_B = the folder of a second form of the two shaders, which `bench`
+ * then times against the first in pairs on the same batch (and checks against the reference too).
+ * Exit 0 on success, 1 on a difference, 2 on a setup error. */
 #ifndef _WIN32
 #define _FILE_OFFSET_BITS 64       /* a 64-bit off_t for fseeko and ftello */
 #define _POSIX_C_SOURCE 200112L    /* which -std=c99 would hide */
@@ -33,12 +45,17 @@
 #include <stdio.h>
 #include <vulkan/vulkan.h>
 #include "wex4.h"
+#ifdef WNR3_VK_FAST
+#include "wex_fast_decode.h"   /* wex4/research/fast-cpu-decode: the bench mode times it too */
+#endif
 #ifdef _WIN32
+#include <windows.h>
 #define seek_file(f, at) _fseeki64(f, (long long)(at), SEEK_SET)
 #define seek_end(f) _fseeki64(f, 0, SEEK_END)
 #define tell_file(f) ((int64_t)_ftelli64(f))
 #else
 #include <sys/types.h>
+#include <time.h>
 #define seek_file(f, at) fseeko(f, (off_t)(at), SEEK_SET)
 #define seek_end(f) fseeko(f, 0, SEEK_END)
 #define tell_file(f) ((int64_t)ftello(f))
@@ -46,6 +63,8 @@
 
 #define PLAN_WORDS 32u
 #define GROUP 32u            /* local_size_x of wnr3.comp */
+#define SCALE_TABLE_BYTES (3u * WEX_NR2_TOTAL)                    /* the scale symbol of each slot, per matrix */
+#define MODEL_SLOT_BYTES (WEX_NR2_MODEL_BYTES + SCALE_TABLE_BYTES)  /* a model in the tab buffer */
 #define MAX_BATCH 64u
 #define BATCH_BYTES (UINT64_C(1) << 28)
 #define ERR_STRUCT 1u
@@ -56,7 +75,7 @@
 #define DIE(...) do { fprintf(stderr, __VA_ARGS__); fputc('\n', stderr); exit(2); } while (0)
 #define VK(call) do { VkResult vk_r = (call); if (vk_r != VK_SUCCESS) DIE("%s: VkResult %d", #call, (int)vk_r); } while (0)
 
-typedef struct { VkBuffer buffer; VkDeviceMemory memory; VkDeviceSize bytes; void *map; } Buffer;
+typedef struct { VkBuffer buffer; VkDeviceMemory memory; VkDeviceSize bytes; void *map; VkMemoryPropertyFlags flags; } Buffer;
 
 typedef struct {
     VkInstance instance;
@@ -71,9 +90,14 @@ typedef struct {
     VkDescriptorSetLayout set_layout;
     VkPipelineLayout layout;
     VkDescriptorPool descriptors;
-    VkShaderModule module[2];
-    VkPipeline pipeline[2];   /* 0 scales, 1 weights */
+    VkShaderModule module[4];
+    VkPipeline pipeline[4];   /* 2 * form + 0 scales, 2 * form + 1 weights */
+    uint32_t forms;           /* 2 when WNR3_VK_SHADERS_B names a second form of the shader (bench), else 1 */
+    uint32_t form;            /* the form slab_run binds */
     int validate;
+    int staged;               /* the inputs go through staging buffers into device-local ones (WNR3_VK_STAGE) */
+    double pipeline_ms;       /* both compute pipelines, shader modules included */
+    uint32_t timestamp_bits;  /* valid bits of the queue's timestamps (0: the queue has none) */
 } Gpu;
 
 static unsigned long validation_messages;
@@ -94,6 +118,19 @@ static void *xmalloc(size_t n) {
     void *p = calloc(n ? n : 1u, 1u);
     if (!p) DIE("out of memory (%lu bytes)", (unsigned long)n);
     return p;
+}
+
+static double now_ms(void) {
+#ifdef _WIN32
+    LARGE_INTEGER ticks, frequency;
+    QueryPerformanceCounter(&ticks);
+    QueryPerformanceFrequency(&frequency);
+    return (double)ticks.QuadPart * 1000.0 / (double)frequency.QuadPart;
+#else
+    struct timespec ts;
+    if (clock_gettime(CLOCK_MONOTONIC, &ts)) DIE("clock_gettime");
+    return (double)ts.tv_sec * 1000.0 + (double)ts.tv_nsec * 1e-6;
+#endif
 }
 
 /* a whole small file (a SPIR-V module); containers go through container_open */
@@ -128,7 +165,8 @@ static uint32_t memory_type(const Gpu *g, uint32_t allowed, VkMemoryPropertyFlag
     return UINT32_MAX;
 }
 
-/* host = 1: host-visible and coherent, mapped. host = 0: memory the host does not map, device-local and
+/* host = 1: host-visible and coherent, mapped. host = 2: the same, cached where the device has such a type
+ * (memory the host reads). host = 0: memory the host does not map, device-local and
  * not host-visible where such a type exists (a software device has none: any type then). */
 static void buffer_create(const Gpu *g, VkDeviceSize bytes, VkBufferUsageFlags usage, int host, Buffer *b) {
     VkBufferCreateInfo info;
@@ -143,8 +181,9 @@ static void buffer_create(const Gpu *g, VkDeviceSize bytes, VkBufferUsageFlags u
     VK(vkCreateBuffer(g->device, &info, NULL, &b->buffer));
     vkGetBufferMemoryRequirements(g->device, b->buffer, &need);
     if (host) {
-        type = memory_type(g, need.memoryTypeBits,
-                           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 0);
+        const VkMemoryPropertyFlags visible = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+        type = host == 2 ? memory_type(g, need.memoryTypeBits, visible | VK_MEMORY_PROPERTY_HOST_CACHED_BIT, 0) : UINT32_MAX;
+        if (type == UINT32_MAX) type = memory_type(g, need.memoryTypeBits, visible, 0);
     } else {
         type = memory_type(g, need.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
         if (type == UINT32_MAX) type = memory_type(g, need.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, 0);
@@ -155,6 +194,7 @@ static void buffer_create(const Gpu *g, VkDeviceSize bytes, VkBufferUsageFlags u
     alloc.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     alloc.allocationSize = need.size;
     alloc.memoryTypeIndex = type;
+    b->flags = g->memory.memoryTypes[type].propertyFlags;
     VK(vkAllocateMemory(g->device, &alloc, NULL, &b->memory));
     VK(vkBindBufferMemory(g->device, b->buffer, b->memory, 0));
     b->map = NULL;
@@ -167,8 +207,7 @@ static void buffer_destroy(const Gpu *g, Buffer *b) {
     memset(b, 0, sizeof(*b));
 }
 
-static VkShaderModule load_shader(const Gpu *g, const char *name) {
-    const char *folder = getenv("WNR3_VK_SHADERS");
+static VkShaderModule load_shader(const Gpu *g, const char *folder, const char *name) {
     char path[1024];
     size_t size;
     unsigned char *code;
@@ -187,10 +226,25 @@ static VkShaderModule load_shader(const Gpu *g, const char *name) {
     return module;
 }
 
+/* c with an ASCII capital letter turned into its small letter; any other byte as it is */
+static int ascii_lower(char c) { return c >= 'A' && c <= 'Z' ? c + 32 : c; }
+
+/* 1 when name holds part, ASCII letters compared without case, every other byte as it is */
+static int name_has(const char *name, const char *part) {
+    size_t i, k;
+    for (i = 0; name[i]; i++) {
+        for (k = 0; part[k] && name[i + k] && ascii_lower(name[i + k]) == ascii_lower(part[k]); k++) {}
+        if (!part[k]) return 1;
+    }
+    return 0;
+}
+
 static void gpu_open(Gpu *g) {
     static const char *const layer = "VK_LAYER_KHRONOS_validation";
     static const char *const debug_extension = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
-    const char *choice = getenv("WNR3_VK_DEVICE"), *validate = getenv("WNR3_VK_VALIDATE");
+    const char *choice = getenv("WNR3_VK_DEVICE"), *validate = getenv("WNR3_VK_VALIDATE"), *stage = getenv("WNR3_VK_STAGE"),
+               *robust = getenv("WNR3_VK_ROBUST");
+    double start;
     VkApplicationInfo app;
     VkInstanceCreateInfo instance;
     VkPhysicalDevice devices[16];
@@ -198,6 +252,7 @@ static void gpu_open(Gpu *g) {
     VkQueueFamilyProperties families[32];
     VkDeviceQueueCreateInfo queue;
     VkDeviceCreateInfo device;
+    VkPhysicalDeviceFeatures features, wanted;
     VkCommandPoolCreateInfo pool;
     VkDescriptorSetLayoutBinding bindings[6];
     VkDescriptorSetLayoutCreateInfo set_layout;
@@ -205,12 +260,14 @@ static void gpu_open(Gpu *g) {
     VkPipelineLayoutCreateInfo layout;
     VkDescriptorPoolSize pool_size;
     VkDescriptorPoolCreateInfo descriptors;
-    uint32_t count = 16u, families_count = 32u, i, index = choice ? (uint32_t)strtoul(choice, NULL, 10) : 0u;
+    uint32_t count = 16u, families_count = 32u, i, index = 0;
     float priority = 1.0f;
     static const char *const names[2] = {"scales.spv", "weights.spv"};
+    const char *folders[2];
 
     memset(g, 0, sizeof(*g));
     g->validate = validate && validate[0] == '1';
+
     memset(&app, 0, sizeof(app));
     app.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     app.pApplicationName = "wnr3_vk";
@@ -240,21 +297,46 @@ static void gpu_open(Gpu *g) {
         VkResult r = vkEnumeratePhysicalDevices(g->instance, &count, devices);
         if ((r != VK_SUCCESS && r != VK_INCOMPLETE) || !count) DIE("no Vulkan device");
     }
-    if (index >= count) DIE("WNR3_VK_DEVICE=%u but there are %u devices", (unsigned)index, (unsigned)count);
-    for (i = 0; i < count; i++) {
-        vkGetPhysicalDeviceProperties(devices[i], &properties);
-        printf("device %u%s: %s (type %d, Vulkan %u.%u.%u)\n", (unsigned)i, i == index ? " *" : "", properties.deviceName,
-               (int)properties.deviceType, (unsigned)VK_VERSION_MAJOR(properties.apiVersion),
-               (unsigned)VK_VERSION_MINOR(properties.apiVersion), (unsigned)VK_VERSION_PATCH(properties.apiVersion));
+    if (choice && choice[0] && !choice[strspn(choice, "0123456789")]) {
+        index = (uint32_t)strtoul(choice, NULL, 10);
+        if (index >= count) DIE("WNR3_VK_DEVICE=%u but there are %u devices", (unsigned)index, (unsigned)count);
+    } else if (choice && choice[0]) {   /* a part of the device name */
+        for (index = 0; index < count; index++) {
+            vkGetPhysicalDeviceProperties(devices[index], &properties);
+            if (name_has(properties.deviceName, choice)) break;
+        }
+        if (index == count) fprintf(stderr, "WNR3_VK_DEVICE=%s: no device has that in its name\n", choice);
     }
+    for (i = 0; i < count; i++) {
+        char driver[48];
+        uint32_t v;
+        vkGetPhysicalDeviceProperties(devices[i], &properties);
+        /* the driver version is the vendor's own encoding; NVIDIA packs four parts in 10, 8, 8 and 6 bits */
+        v = properties.driverVersion;
+        if (properties.vendorID == 0x10deu)
+            snprintf(driver, sizeof(driver), "%u.%u.%u.%u", (unsigned)(v >> 22), (unsigned)(v >> 14 & 255u),
+                     (unsigned)(v >> 6 & 255u), (unsigned)(v & 63u));
+        else
+            snprintf(driver, sizeof(driver), "%u.%u.%u", (unsigned)VK_VERSION_MAJOR(v), (unsigned)VK_VERSION_MINOR(v),
+                     (unsigned)VK_VERSION_PATCH(v));
+        printf("device %u%s: %s (type %d, Vulkan %u.%u.%u, vendor 0x%04x, driver %s)\n", (unsigned)i, i == index ? " *" : "",
+               properties.deviceName, (int)properties.deviceType, (unsigned)VK_VERSION_MAJOR(properties.apiVersion),
+               (unsigned)VK_VERSION_MINOR(properties.apiVersion), (unsigned)VK_VERSION_PATCH(properties.apiVersion),
+               (unsigned)properties.vendorID, driver);
+    }
+    if (index == count) exit(2);
     g->physical = devices[index];
     vkGetPhysicalDeviceProperties(g->physical, &properties);
     g->limits = properties.limits;
     vkGetPhysicalDeviceMemoryProperties(g->physical, &g->memory);
+    /* staged upload: asked for, or the device has memory the host cannot map (a GPU with memory of its own) */
+    g->staged = stage && stage[0] ? stage[0] == '1'
+              : memory_type(g, ~0u, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) != UINT32_MAX;
     vkGetPhysicalDeviceQueueFamilyProperties(g->physical, &families_count, families);
     for (i = 0; i < families_count && !(families[i].queueFlags & VK_QUEUE_COMPUTE_BIT); i++) {}
     if (i == families_count) DIE("the device has no compute queue");
     g->family = i;
+    g->timestamp_bits = families[i].timestampValidBits;
     memset(&queue, 0, sizeof(queue));
     queue.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
     queue.queueFamilyIndex = g->family;
@@ -264,6 +346,14 @@ static void gpu_open(Gpu *g) {
     device.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
     device.queueCreateInfoCount = 1u;
     device.pQueueCreateInfos = &queue;   /* no feature and no extension: core Vulkan 1.0 */
+    if (robust && robust[0] == '1') {    /* asked for: out-of-bounds buffer accesses of a shader are made harmless */
+        vkGetPhysicalDeviceFeatures(g->physical, &features);
+        if (!features.robustBufferAccess) DIE("WNR3_VK_ROBUST=1 but the device has no robustBufferAccess");
+        memset(&wanted, 0, sizeof(wanted));
+        wanted.robustBufferAccess = VK_TRUE;
+        device.pEnabledFeatures = &wanted;
+        printf("robustBufferAccess is on\n");
+    }
     VK(vkCreateDevice(g->physical, &device, NULL, &g->device));
     vkGetDeviceQueue(g->device, g->family, 0, &g->queue);
 
@@ -296,9 +386,14 @@ static void gpu_open(Gpu *g) {
     descriptors.maxSets = 1u; descriptors.poolSizeCount = 1u; descriptors.pPoolSizes = &pool_size;
     VK(vkCreateDescriptorPool(g->device, &descriptors, NULL, &g->descriptors));
 
-    for (i = 0; i < 2u; i++) {
+    folders[0] = getenv("WNR3_VK_SHADERS");
+    folders[1] = getenv("WNR3_VK_SHADERS_B");
+    if (!folders[0] || !folders[0][0]) folders[0] = ".";
+    g->forms = folders[1] && folders[1][0] ? 2u : 1u;
+    start = now_ms();
+    for (i = 0; i < 2u * g->forms; i++) {
         VkComputePipelineCreateInfo info;
-        g->module[i] = load_shader(g, names[i]);
+        g->module[i] = load_shader(g, folders[i / 2u], names[i % 2u]);
         memset(&info, 0, sizeof(info));
         info.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
         info.stage.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -308,11 +403,12 @@ static void gpu_open(Gpu *g) {
         info.layout = g->layout;
         VK(vkCreateComputePipelines(g->device, VK_NULL_HANDLE, 1u, &info, NULL, &g->pipeline[i]));
     }
+    g->pipeline_ms = now_ms() - start;
 }
 
 static void gpu_close(Gpu *g) {
     uint32_t i;
-    for (i = 0; i < 2u; i++) {
+    for (i = 0; i < 2u * g->forms; i++) {
         vkDestroyPipeline(g->device, g->pipeline[i], NULL);
         vkDestroyShaderModule(g->device, g->module[i], NULL);
     }
@@ -365,34 +461,33 @@ static void barrier(VkCommandBuffer cmd, VkBuffer buffer, VkAccessFlags from, Vk
     vkCmdPipelineBarrier(cmd, from_stage, to_stage, 0, 0, NULL, 1u, &b, 0, NULL);
 }
 
-/* Decode jobs[0..n) on the device. Returns the read-back copy of the decoded buffer (caller frees); each
- * job gets its error word and the offsets of its six regions in that copy. */
-static unsigned char *gpu_decode(Gpu *g, Job *jobs, uint32_t n) {
-    const unsigned char *models[MAX_BATCH];
-    uint32_t model_of[MAX_BATCH], model_count = 0, i, m, s;
-    uint64_t record_bytes = 0, offsets = 0, out_bytes = 0;
+/* The buffers of one batch on the device, and what the shader needs to find them. */
+typedef struct {
     Buffer rec, tab, plan, offs, out, err, back;
-    Buffer *bound[6];
-    unsigned char *result;
-    VkDescriptorSetAllocateInfo set_info;
+    Buffer stage[4];     /* staged upload only: host-visible copies of rec, tab, plan, offs */
+    int staged;
     VkDescriptorSet set;
+} Slab;
+
+enum { DO_UPLOAD = 1, DO_CLEAR = 2, DO_ZERO = 4, DO_SCALES = 8, DO_WEIGHTS = 16, DO_READBACK = 32 };
+
+/* Lay jobs[0..n) out in one batch and create its buffers. Each job gets the offsets of its six regions in
+ * the decoded buffer. staged = 0: the four input buffers are host-visible and the shader reads them where
+ * the host wrote them. staged = 1: they are device-local, filled by a copy from host-visible buffers. */
+static void slab_create(Gpu *g, Job *jobs, uint32_t n, int staged, Slab *s) {
+    uint32_t models = 0, i, m;
+    uint64_t record_bytes = 0, offsets = 0, out_bytes = 0, sizes[4];
+    Buffer *in[4], *bound[6];
+    VkDescriptorSetAllocateInfo set_info;
     VkDescriptorBufferInfo buffer_info[6];
     VkWriteDescriptorSet writes[6];
-    VkCommandBufferAllocateInfo cmd_info;
-    VkCommandBufferBeginInfo begin;
-    VkCommandBuffer cmd;
-    VkSubmitInfo submit;
-    VkFenceCreateInfo fence_info;
-    VkFence fence;
-    VkBufferCopy copy;
-    const VkPipelineStageFlags compute = VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, transfer = VK_PIPELINE_STAGE_TRANSFER_BIT;
-    const VkAccessFlags shader = VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT;
 
     if (!n || n > MAX_BATCH) DIE("a batch holds 1 to %u records", (unsigned)MAX_BATCH);
+    memset(s, 0, sizeof(*s));
+    s->staged = staged;
     for (i = 0; i < n; i++) {
-        for (m = 0; m < model_count && models[m] != jobs[i].model; m++) {}
-        if (m == model_count) models[model_count++] = jobs[i].model;
-        model_of[i] = m;
+        for (m = 0; m < i && jobs[m].model != jobs[i].model; m++) {}
+        if (m == i) models++;
         record_bytes += jobs[i].stored_bytes;
         offsets += (uint64_t)jobs[i].view.scale_streams + jobs[i].view.weight_streams + 1u;
         for (m = 0; m < 6u; m++) {   /* six regions per record, each on a 16-byte boundary */
@@ -410,26 +505,99 @@ static unsigned char *gpu_decode(Gpu *g, Job *jobs, uint32_t n) {
         DIE("%s (maxStorageBufferRange %lu)", n == 1u ? "one record is too large for one storage buffer of this device"
             : "the batch is too large for one storage buffer", (unsigned long)g->limits.maxStorageBufferRange);
 
-    buffer_create(g, record_bytes, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 1, &rec);
-    buffer_create(g, (VkDeviceSize)model_count * WEX_NR2_MODEL_BYTES, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 1, &tab);
-    buffer_create(g, (VkDeviceSize)n * PLAN_WORDS * 4u, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 1, &plan);
-    buffer_create(g, offsets * 4u, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 1, &offs);
+    in[0] = &s->rec; in[1] = &s->tab; in[2] = &s->plan; in[3] = &s->offs;
+    sizes[0] = record_bytes; sizes[1] = (uint64_t)models * MODEL_SLOT_BYTES;
+    sizes[2] = (uint64_t)n * PLAN_WORDS * 4u; sizes[3] = offsets * 4u;
+    for (i = 0; i < 4u; i++) {
+        if (staged) {
+            buffer_create(g, sizes[i], VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, 0, in[i]);
+            buffer_create(g, sizes[i], VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 1, &s->stage[i]);
+        } else {
+            buffer_create(g, sizes[i], VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 1, in[i]);
+        }
+    }
     buffer_create(g, out_bytes, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT |
-                  VK_BUFFER_USAGE_TRANSFER_DST_BIT, 0, &out);
-    buffer_create(g, (VkDeviceSize)n * 4u, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, 1, &err);
-    buffer_create(g, out_bytes, VK_BUFFER_USAGE_TRANSFER_DST_BIT, 1, &back);
+                  VK_BUFFER_USAGE_TRANSFER_DST_BIT, 0, &s->out);
+    buffer_create(g, (VkDeviceSize)n * 4u, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, 1, &s->err);
+    buffer_create(g, out_bytes, VK_BUFFER_USAGE_TRANSFER_DST_BIT, 2, &s->back);
 
-    /* every word is written byte by byte, little-endian, as the shader reads it */
-    for (m = 0; m < model_count; m++)
-        memcpy((unsigned char *)tab.map + (size_t)m * WEX_NR2_MODEL_BYTES, models[m], WEX_NR2_MODEL_BYTES);
-    record_bytes = 0; offsets = 0;
+    memset(&set_info, 0, sizeof(set_info));
+    set_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    set_info.descriptorPool = g->descriptors;
+    set_info.descriptorSetCount = 1u;
+    set_info.pSetLayouts = &g->set_layout;
+    VK(vkAllocateDescriptorSets(g->device, &set_info, &s->set));
+    bound[0] = &s->rec; bound[1] = &s->tab; bound[2] = &s->plan; bound[3] = &s->offs; bound[4] = &s->out; bound[5] = &s->err;
+    memset(writes, 0, sizeof(writes));
+    for (i = 0; i < 6u; i++) {
+        buffer_info[i].buffer = bound[i]->buffer; buffer_info[i].offset = 0; buffer_info[i].range = VK_WHOLE_SIZE;
+        writes[i].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        writes[i].dstSet = s->set; writes[i].dstBinding = i; writes[i].descriptorCount = 1u;
+        writes[i].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+        writes[i].pBufferInfo = &buffer_info[i];
+    }
+    vkUpdateDescriptorSets(g->device, 6u, writes, 0, NULL);
+}
+
+static void slab_destroy(Gpu *g, Slab *s) {
+    uint32_t i;
+    VK(vkResetDescriptorPool(g->device, g->descriptors, 0));
+    buffer_destroy(g, &s->rec); buffer_destroy(g, &s->tab); buffer_destroy(g, &s->plan); buffer_destroy(g, &s->offs);
+    buffer_destroy(g, &s->out); buffer_destroy(g, &s->err); buffer_destroy(g, &s->back);
+    for (i = 0; i < 4u; i++) if (s->staged) buffer_destroy(g, &s->stage[i]);
+}
+
+/* The scale symbol of every slot of the three scale CDFs of a validated model blob, one byte each (the
+ * table lookup of docs/WNR3-VULKAN.md section 5), built by walking each CDF and checked against the
+ * reference binary search on all 2^14 slots. The last table built is kept for the next batch. */
+static const unsigned char *scale_table(const unsigned char *blob) {
+    static unsigned char built_for[WEX_NR2_MODEL_BYTES], table[SCALE_TABLE_BYTES];
+    static int built;
+    WexNr2Model model;
+    uint32_t m, s, slot;
+    if (built && !memcmp(built_for, blob, WEX_NR2_MODEL_BYTES)) return table;
+    if (wex_nr2_model_open(blob, WEX_NR2_MODEL_BYTES, &model)) DIE("a model blob that was valid is not");
+    for (m = 0; m < 3u; m++) {
+        const unsigned char *cdf = wex_nr2_scale_cdf(&model, m);
+        unsigned char *t = table + (size_t)m * WEX_NR2_TOTAL;
+        for (s = 0; s < 256u; s++)
+            for (slot = wex_nr_u16(cdf + s * 2u); slot < wex_nr_u16(cdf + s * 2u + 2u); slot++) t[slot] = (unsigned char)s;
+        for (slot = 0; slot < WEX_NR2_TOTAL; slot++) {
+            uint32_t lo = 0, hi = 256u;
+            while (lo + 1u < hi) {
+                uint32_t mid = (lo + hi) / 2u;
+                if (wex_nr_u16(cdf + mid * 2u) <= slot) lo = mid; else hi = mid;
+            }
+            if (t[slot] != lo) DIE("the scale table of matrix %u disagrees with the binary search at slot %u", (unsigned)m, (unsigned)slot);
+        }
+    }
+    memcpy(built_for, blob, WEX_NR2_MODEL_BYTES);
+    built = 1;
+    return table;
+}
+
+/* The host's part of the upload: records, model blobs each followed by its scale table, plans and stream
+ * offsets into mapped memory. Every word is written byte by byte, little-endian, as the shader reads it. */
+static void slab_write(const Gpu *g, const Slab *s, const Job *jobs, uint32_t n) {
+    unsigned char *rec = (unsigned char *)(s->staged ? s->stage[0].map : s->rec.map);
+    unsigned char *tab = (unsigned char *)(s->staged ? s->stage[1].map : s->tab.map);
+    unsigned char *plan = (unsigned char *)(s->staged ? s->stage[2].map : s->plan.map);
+    unsigned char *offs = (unsigned char *)(s->staged ? s->stage[3].map : s->offs.map);
+    const unsigned char *models[MAX_BATCH];
+    uint32_t model_count = 0, i, m, k;
+    uint64_t record_bytes = 0, offsets = 0;
     for (i = 0; i < n; i++) {
         const Job *job = &jobs[i];
-        unsigned char *p = (unsigned char *)plan.map + (size_t)i * PLAN_WORDS * 4u;
-        unsigned char *o = (unsigned char *)offs.map + (size_t)offsets * 4u;
+        unsigned char *p = plan + (size_t)i * PLAN_WORDS * 4u, *o = offs + (size_t)offsets * 4u;
         uint32_t words[PLAN_WORDS], streams = job->view.scale_streams + job->view.weight_streams;
-        uint32_t at = (uint32_t)record_bytes + job->view.metadata_bytes, scale_stream = 0, weight_stream = 0;
-        memcpy((unsigned char *)rec.map + (size_t)record_bytes, job->stored, job->stored_bytes);
+        uint32_t at = (uint32_t)record_bytes + job->view.metadata_bytes, scale_stream = 0, weight_stream = 0, model;
+        for (model = 0; model < model_count && models[model] != job->model; model++) {}
+        if (model == model_count) {
+            models[model_count++] = job->model;
+            memcpy(tab + (size_t)model * MODEL_SLOT_BYTES, job->model, WEX_NR2_MODEL_BYTES);
+            memcpy(tab + (size_t)model * MODEL_SLOT_BYTES + WEX_NR2_MODEL_BYTES, scale_table(job->model), SCALE_TABLE_BYTES);
+        }
+        memcpy(rec + (size_t)record_bytes, job->stored, job->stored_bytes);
         memset(words, 0, sizeof(words));
         for (m = 0; m < 3u; m++) {
             words[0u + m] = job->scale_at[m];
@@ -445,12 +613,13 @@ static unsigned char *gpu_decode(Gpu *g, Job *jobs, uint32_t n) {
         if (scale_stream != job->view.scale_streams || weight_stream != job->view.weight_streams) DIE("stream count");
         words[12] = job->view.scale_chunk; words[13] = job->view.weight_chunk;
         words[14] = job->view.model_id; words[15] = job->view.owner; words[16] = job->view.word24;
-        words[17] = model_of[i] * (WEX_NR2_MODEL_BYTES / 4u);
+        words[17] = model * (MODEL_SLOT_BYTES / 4u);
+        words[27] = words[17] + WEX_NR2_MODEL_BYTES / 4u;
         words[18] = (uint32_t)offsets;
-        for (s = 0; s < PLAN_WORDS; s++) put_u32(p + s * 4u, words[s]);
-        for (s = 0; s < streams; s++) {   /* absolute byte offsets in the record buffer */
-            put_u32(o + (size_t)s * 4u, at);
-            at += wex_nr_u16(job->view.lengths + (size_t)s * 2u);
+        for (k = 0; k < PLAN_WORDS; k++) put_u32(p + k * 4u, words[k]);
+        for (k = 0; k < streams; k++) {   /* absolute byte offsets in the record buffer */
+            put_u32(o + (size_t)k * 4u, at);
+            at += wex_nr_u16(job->view.lengths + (size_t)k * 2u);
         }
         put_u32(o + (size_t)streams * 4u, at);
         if (scale_stream > g->limits.maxComputeWorkGroupCount[0] * GROUP ||
@@ -458,23 +627,24 @@ static unsigned char *gpu_decode(Gpu *g, Job *jobs, uint32_t n) {
         record_bytes += job->stored_bytes;
         offsets += streams + 1u;
     }
+}
 
-    memset(&set_info, 0, sizeof(set_info));
-    set_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    set_info.descriptorPool = g->descriptors;
-    set_info.descriptorSetCount = 1u;
-    set_info.pSetLayouts = &g->set_layout;
-    VK(vkAllocateDescriptorSets(g->device, &set_info, &set));
-    bound[0] = &rec; bound[1] = &tab; bound[2] = &plan; bound[3] = &offs; bound[4] = &out; bound[5] = &err;
-    memset(writes, 0, sizeof(writes));
-    for (i = 0; i < 6u; i++) {
-        buffer_info[i].buffer = bound[i]->buffer; buffer_info[i].offset = 0; buffer_info[i].range = VK_WHOLE_SIZE;
-        writes[i].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        writes[i].dstSet = set; writes[i].dstBinding = i; writes[i].descriptorCount = 1u;
-        writes[i].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-        writes[i].pBufferInfo = &buffer_info[i];
-    }
-    vkUpdateDescriptorSets(g->device, 6u, writes, 0, NULL);
+/* One command buffer with the parts named in what, submitted and waited for. DO_UPLOAD copies the staged
+ * inputs to the device (nothing when the upload is not staged), DO_CLEAR zeroes the error words, DO_ZERO the
+ * decoded buffer, DO_SCALES is pass A for every record, DO_WEIGHTS pass B for every record, DO_READBACK
+ * copies the decoded buffer to host-visible memory. With a query pool (2 timestamp queries) the command
+ * buffer writes a timestamp before its first command and one after its last. */
+static void slab_run(Gpu *g, const Slab *s, const Job *jobs, uint32_t n, int what, VkQueryPool queries) {
+    VkCommandBufferAllocateInfo cmd_info;
+    VkCommandBufferBeginInfo begin;
+    VkCommandBuffer cmd;
+    VkSubmitInfo submit;
+    VkFenceCreateInfo fence_info;
+    VkFence fence;
+    VkBufferCopy copy;
+    uint32_t i, m;
+    const VkPipelineStageFlags compute = VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, transfer = VK_PIPELINE_STAGE_TRANSFER_BIT;
+    const VkAccessFlags shader = VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT;
 
     memset(&cmd_info, 0, sizeof(cmd_info));
     cmd_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -486,26 +656,52 @@ static unsigned char *gpu_decode(Gpu *g, Job *jobs, uint32_t n) {
     begin.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     begin.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
     VK(vkBeginCommandBuffer(cmd, &begin));
-    vkCmdFillBuffer(cmd, err.buffer, 0, VK_WHOLE_SIZE, 0);
-    vkCmdFillBuffer(cmd, out.buffer, 0, VK_WHOLE_SIZE, 0);   /* not needed for the result: a known start for the comparison */
-    barrier(cmd, err.buffer, VK_ACCESS_TRANSFER_WRITE_BIT, shader, transfer, compute);
-    barrier(cmd, out.buffer, VK_ACCESS_TRANSFER_WRITE_BIT, shader, transfer, compute);
-    vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_COMPUTE, g->layout, 0, 1u, &set, 0, NULL);
+    if (queries) {
+        vkCmdResetQueryPool(cmd, queries, 0, 2u);
+        vkCmdWriteTimestamp(cmd, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, queries, 0);
+    }
+    copy.srcOffset = 0; copy.dstOffset = 0;
+    if ((what & DO_UPLOAD) && s->staged) {
+        const Buffer *in[4];
+        in[0] = &s->rec; in[1] = &s->tab; in[2] = &s->plan; in[3] = &s->offs;
+        for (i = 0; i < 4u; i++) {
+            copy.size = in[i]->bytes;
+            vkCmdCopyBuffer(cmd, s->stage[i].buffer, in[i]->buffer, 1u, &copy);
+            barrier(cmd, in[i]->buffer, VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT, transfer, compute);
+        }
+    }
+    if (what & DO_CLEAR) {
+        vkCmdFillBuffer(cmd, s->err.buffer, 0, VK_WHOLE_SIZE, 0);
+        barrier(cmd, s->err.buffer, VK_ACCESS_TRANSFER_WRITE_BIT, shader, transfer, compute);
+    }
+    if (what & DO_ZERO) {   /* not needed for the result: a known start for the comparison */
+        vkCmdFillBuffer(cmd, s->out.buffer, 0, VK_WHOLE_SIZE, 0);
+        barrier(cmd, s->out.buffer, VK_ACCESS_TRANSFER_WRITE_BIT, shader, transfer, compute);
+    }
+    if (what & (DO_SCALES | DO_WEIGHTS))
+        vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_COMPUTE, g->layout, 0, 1u, &s->set, 0, NULL);
     for (m = 0; m < 2u; m++) {   /* pass A for every record, then pass B for every record */
-        vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_COMPUTE, g->pipeline[m]);
+        if (!(what & (m ? DO_WEIGHTS : DO_SCALES))) continue;
+        vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_COMPUTE, g->pipeline[2u * g->form + m]);
         for (i = 0; i < n; i++) {
             uint32_t streams = m ? jobs[i].view.weight_streams : jobs[i].view.scale_streams;
             vkCmdPushConstants(cmd, g->layout, VK_SHADER_STAGE_COMPUTE_BIT, 0, 4u, &i);
             vkCmdDispatch(cmd, (streams + GROUP - 1u) / GROUP, 1u, 1u);
         }
-        /* pass B reads the scales pass A wrote; the copy reads what both wrote */
-        if (!m) barrier(cmd, out.buffer, VK_ACCESS_SHADER_WRITE_BIT, shader, compute, compute);
-        else barrier(cmd, out.buffer, VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_TRANSFER_READ_BIT, compute, transfer);
+        /* pass B reads the scales pass A wrote; the copy reads what both wrote, the host the error words */
+        if (!m) {
+            barrier(cmd, s->out.buffer, VK_ACCESS_SHADER_WRITE_BIT, shader, compute, compute);
+        } else {
+            barrier(cmd, s->out.buffer, VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_TRANSFER_READ_BIT, compute, transfer);
+            barrier(cmd, s->err.buffer, VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_HOST_READ_BIT, compute, VK_PIPELINE_STAGE_HOST_BIT);
+        }
     }
-    copy.srcOffset = 0; copy.dstOffset = 0; copy.size = out.bytes;
-    vkCmdCopyBuffer(cmd, out.buffer, back.buffer, 1u, &copy);
-    barrier(cmd, back.buffer, VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_HOST_READ_BIT, transfer, VK_PIPELINE_STAGE_HOST_BIT);
-    barrier(cmd, err.buffer, VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_HOST_READ_BIT, compute, VK_PIPELINE_STAGE_HOST_BIT);
+    if (what & DO_READBACK) {
+        copy.size = s->out.bytes;
+        vkCmdCopyBuffer(cmd, s->out.buffer, s->back.buffer, 1u, &copy);
+        barrier(cmd, s->back.buffer, VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_HOST_READ_BIT, transfer, VK_PIPELINE_STAGE_HOST_BIT);
+    }
+    if (queries) vkCmdWriteTimestamp(cmd, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, queries, 1);
     VK(vkEndCommandBuffer(cmd));
 
     memset(&fence_info, 0, sizeof(fence_info));
@@ -517,16 +713,23 @@ static unsigned char *gpu_decode(Gpu *g, Job *jobs, uint32_t n) {
     submit.pCommandBuffers = &cmd;
     VK(vkQueueSubmit(g->queue, 1u, &submit, fence));
     VK(vkWaitForFences(g->device, 1u, &fence, VK_TRUE, UINT64_MAX));
-
-    for (i = 0; i < n; i++) jobs[i].error = wex_nr_u32((const unsigned char *)err.map + (size_t)i * 4u);
-    result = (unsigned char *)xmalloc((size_t)out.bytes);
-    memcpy(result, back.map, (size_t)out.bytes);
-
     vkDestroyFence(g->device, fence, NULL);
     vkFreeCommandBuffers(g->device, g->pool, 1u, &cmd);
-    VK(vkResetDescriptorPool(g->device, g->descriptors, 0));
-    buffer_destroy(g, &rec); buffer_destroy(g, &tab); buffer_destroy(g, &plan); buffer_destroy(g, &offs);
-    buffer_destroy(g, &out); buffer_destroy(g, &err); buffer_destroy(g, &back);
+}
+
+/* Decode jobs[0..n) on the device, in one command buffer. Returns the read-back copy of the decoded buffer
+ * (caller frees); each job gets its error word and the offsets of its six regions in that copy. */
+static unsigned char *gpu_decode(Gpu *g, Job *jobs, uint32_t n) {
+    Slab s;
+    unsigned char *result;
+    uint32_t i;
+    slab_create(g, jobs, n, g->staged, &s);
+    slab_write(g, &s, jobs, n);
+    slab_run(g, &s, jobs, n, DO_UPLOAD | DO_CLEAR | DO_ZERO | DO_SCALES | DO_WEIGHTS | DO_READBACK, VK_NULL_HANDLE);
+    for (i = 0; i < n; i++) jobs[i].error = wex_nr_u32((const unsigned char *)s.err.map + (size_t)i * 4u);
+    result = (unsigned char *)xmalloc((size_t)s.out.bytes);
+    memcpy(result, s.back.map, (size_t)s.out.bytes);
+    slab_destroy(g, &s);
     return result;
 }
 
@@ -575,7 +778,18 @@ static unsigned long run_batch(Gpu *g, Job *jobs, uint32_t n, const char *what, 
             for (m = 0; m < 3u && same; m++)
                 same = !memcmp(device + job->scale_at[m], scales[m], job->layout.scale_count[m]) &&
                        !memcmp(device + job->weight_at[m], weights[m], job->layout.symbol_count[m] / 2u);
-            if (!same) printf("%s record %u: accepted by both, the decoded bytes differ\n", what, (unsigned)i);
+            if (!same) {
+                printf("%s record %u: accepted by both, the decoded bytes differ\n", what, (unsigned)i);
+                for (m = 0; m < 6u; m++) {   /* per region: how many bytes differ, and the first of them */
+                    const unsigned char *d = device + (m < 3u ? job->scale_at[m] : job->weight_at[m - 3u]);
+                    const unsigned char *r = m < 3u ? scales[m] : weights[m - 3u];
+                    uint32_t size = m < 3u ? job->layout.scale_count[m] : job->layout.symbol_count[m - 3u] / 2u, first = size, n_bad = 0;
+                    for (b = 0; b < size; b++) if (d[b] != r[b]) { if (!n_bad++) first = b; }
+                    if (n_bad) printf("  %s of matrix %u: %u of %u bytes differ, the first at %u (device 0x%02x, reference 0x%02x)\n",
+                                      m < 3u ? "scales" : "weights", (unsigned)(m % 3u), (unsigned)n_bad, (unsigned)size,
+                                      (unsigned)first, (unsigned)d[first], (unsigned)r[first]);
+                }
+            }
             /* how many blocks the ceil-form inverse changed: the same streams decoded without it */
             plain.flags &= (unsigned char)~WEX_NR3_FLAG_CEIL_MASK;
             if (job->view.flags & WEX_NR3_FLAG_CEIL_MASK) {
@@ -777,6 +991,293 @@ static unsigned long run_file(Gpu *g, const char *path, int mode, uint32_t copie
     return failures;
 }
 
+/* ---- timing ------------------------------------------------------------------------------------------- */
+
+static int by_value(const void *a, const void *b) {
+    double x = *(const double *)a, y = *(const double *)b;
+    return (x > y) - (x < y);
+}
+
+static double median_of(double *t, uint32_t runs) {   /* sorts t */
+    qsort(t, runs, sizeof(*t), by_value);
+    return runs & 1u ? t[runs / 2u] : (t[runs / 2u - 1u] + t[runs / 2u]) / 2.0;
+}
+
+/* median, minimum and maximum of t[0..runs), each the time of one pass over the batch */
+static void report(const char *name, double *t, uint32_t runs, uint32_t records, uint64_t decoded) {
+    double median = median_of(t, runs);
+    printf("bench: %-44s %u runs, median %9.3f ms per batch (min %9.3f, max %9.3f), %8.3f ms per record, %8.1f MB/s\n",
+           name, (unsigned)runs, median, t[0], t[runs - 1u], median / records, (double)decoded / 1e6 / (median / 1e3));
+}
+
+/* the device times of the two command buffers that wrote the two query pools, in ms */
+static void read_stamps(const Gpu *g, const VkQueryPool queries[2], double ms[2]) {
+    uint64_t stamp[2], mask = g->timestamp_bits >= 64u ? ~UINT64_C(0) : (UINT64_C(1) << g->timestamp_bits) - 1u;
+    uint32_t m;
+    for (m = 0; m < 2u; m++) {   /* ticks of timestampPeriod ns, timestamp_bits of them valid */
+        VK(vkGetQueryPoolResults(g->device, queries[m], 0, 2u, sizeof(stamp), stamp, sizeof(stamp[0]),
+                                 VK_QUERY_RESULT_64_BIT | VK_QUERY_RESULT_WAIT_BIT));
+        ms[m] = (double)((stamp[1] - stamp[0]) & mask) * (double)g->limits.timestampPeriod * 1e-6;
+    }
+}
+
+/* 1 when one of the six regions of job in the read-back copy device differs from the reference's bytes,
+ * whose regions start at scale_at and weight_at */
+static int regions_differ(const unsigned char *device, const Job *job, const unsigned char *reference,
+                          const uint32_t scale_at[3], const uint32_t weight_at[3]) {
+    uint32_t m;
+    for (m = 0; m < 3u; m++)
+        if (memcmp(device + job->scale_at[m], reference + scale_at[m], job->layout.scale_count[m]) ||
+            memcmp(device + job->weight_at[m], reference + weight_at[m], job->layout.symbol_count[m] / 2u)) return 1;
+    return 0;
+}
+
+/* the error words of the batch after a run: each nonzero one is a failure of the bench */
+static unsigned long bench_errors(const Slab *s, uint32_t n, uint32_t run) {
+    unsigned long failures = 0;
+    uint32_t i;
+    for (i = 0; i < n; i++)
+        if (wex_nr_u32((const unsigned char *)s->err.map + (size_t)i * 4u)) {
+            printf("bench: run %u, record %u: error word 0x%x\n", (unsigned)run, (unsigned)i,
+                   (unsigned)wex_nr_u32((const unsigned char *)s->err.map + (size_t)i * 4u));
+            failures++;
+        }
+    return failures;
+}
+
+/* The first `want` WNR3 records of a file as one batch, decoded `runs` times on the device after one second
+ * of decode passes and one whole pass that are not timed, in four parts timed on the host clock:
+ *   upload     the host writes records, model blobs, plans and stream offsets into mapped buffers; with a
+ *              staged upload also the copy of them to device-local buffers (submit and wait)
+ *   pass A     the error words cleared and every scale stream decoded (one submit and wait)
+ *   pass B     every weight stream decoded (one submit and wait)
+ *   read-back  the decoded buffer copied to host-visible memory and from there to host memory; an engine
+ *              that keeps the bytes on the device does not do this
+ * Pass A and pass B are also timed on the device, by timestamps written before the first and after the
+ * last command of their command buffer (when the queue has timestamps): no submit and no wait in them.
+ * The buffers, the pipelines and the descriptor set are created before the first pass and are in no part.
+ * Then the same records on the CPU: the reference decoder on one thread (at most 5 passes) and, in a build
+ * with -DWNR3_VK_FAST, the fast decoder of wex4/research/fast-cpu-decode on one thread and on all threads,
+ * its tables built before the clock starts. The error words of every device run are checked; the device's
+ * bytes are compared with the reference's once per form, in one more run after the timed ones (from a zeroed
+ * buffer, not timed); the fast decoder's output is compared with the reference's in every run. With
+ * WNR3_VK_BENCH_CPU=0 the CPU decoders are not timed: the reference decodes the batch once, for the
+ * comparison. With a second form of the shaders (WNR3_VK_SHADERS_B), RUNS pairs of the two forms follow the
+ * timed runs: device timestamps of pass A and pass B of each form, the order inside a pair alternating
+ * (A B, B A, ...), and per pair the ratio of form B to form A. */
+static unsigned long bench(Gpu *g, const char *path, uint32_t runs, uint32_t want) {
+    static Job jobs[MAX_BATCH];
+    enum { T_UPLOAD, T_SCALES, T_WEIGHTS, T_DECODE, T_BACK, T_NEEDED, T_GPU_SCALES, T_GPU_WEIGHTS, T_GPU_DECODE,
+           T_REFERENCE, T_FAST1, T_FASTN, T_COUNT };
+    const char *cpu_text = getenv("WNR3_VK_BENCH_CPU");
+    int cpu = !cpu_text || cpu_text[0] != '0';
+    unsigned char *bytes[MAX_BATCH], *reference[MAX_BATCH], *device, *device_b = NULL;
+    unsigned char *scales[3], *weights[3];
+    WexNr2Model model;
+    Container c;
+    Slab s;
+    VkQueryPool queries[2] = {VK_NULL_HANDLE, VK_NULL_HANDLE};
+    double *t[T_COUNT];
+    uint64_t stored = 0, decoded = 0, limit = batch_limit(g);
+    uint32_t n = 0, r, i, m, k, cpu_runs = !cpu ? 1u : runs < 5u ? runs : 5u, scale_at[3], weight_at[3];
+    unsigned long failures = 0;
+
+    container_open(path, &c);
+    for (r = 0; r < c.records && n < want && n < MAX_BATCH; r++) {
+        Wex4Record rec;
+        wex4_get_record(&c.view, r, &rec);
+        if (rec.codec != WEX4_CODEC_WNR3) continue;
+        bytes[n] = (unsigned char *)xmalloc(rec.stored);
+        read_at(&c, rec.offset, bytes[n], rec.stored);
+        if (container_job(&c, r, bytes[n], &jobs[n])) DIE("%s: record %u is refused by the host checks", path, (unsigned)r);
+        if (stored + rec.stored > limit || decoded + job_decoded_bytes(&jobs[n]) > limit) { free(bytes[n]); break; }
+        stored += rec.stored; decoded += job_decoded_bytes(&jobs[n]);
+        n++;
+    }
+    if (!n) DIE("%s: no WNR3 record fits a batch", path);
+    for (k = 0; k < (uint32_t)T_COUNT; k++) t[k] = (double *)xmalloc((size_t)runs * sizeof(double));
+    slab_create(g, jobs, n, g->staged, &s);
+    device = (unsigned char *)xmalloc((size_t)s.out.bytes);
+    printf("bench: %s: %u records in one batch, %lu stored bytes, %lu decoded bytes; the first record has %u + %u streams, "
+           "chunks %u:%u, flag byte 0x%02x\n", path, (unsigned)n, (unsigned long)stored, (unsigned long)decoded,
+           (unsigned)jobs[0].view.scale_streams, (unsigned)jobs[0].view.weight_streams, (unsigned)jobs[0].view.weight_chunk,
+           (unsigned)jobs[0].view.scale_chunk, (unsigned)jobs[0].view.flags);
+    printf("bench: %s upload; memory property flags: records 0x%x, decoded 0x%x, read-back 0x%x "
+           "(1 device-local, 2 host-visible, 4 coherent, 8 cached); pipelines created in %.1f ms\n",
+           g->staged ? "staged" : "direct", (unsigned)s.rec.flags, (unsigned)s.out.flags, (unsigned)s.back.flags, g->pipeline_ms);
+
+    if (g->timestamp_bits) {
+        VkQueryPoolCreateInfo info;
+        memset(&info, 0, sizeof(info));
+        info.sType = VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO;
+        info.queryType = VK_QUERY_TYPE_TIMESTAMP;
+        info.queryCount = 2u;
+        for (k = 0; k < 2u; k++) VK(vkCreateQueryPool(g->device, &info, NULL, &queries[k]));
+    } else {
+        printf("bench: the queue has no timestamps: no device times\n");
+    }
+    {   /* warm-up, not timed: decode passes for one second, so that a GPU has left its idle clocks */
+        double start = now_ms();
+        slab_write(g, &s, jobs, n);
+        slab_run(g, &s, jobs, n, DO_UPLOAD, VK_NULL_HANDLE);
+        while (now_ms() - start < 1000.0) slab_run(g, &s, jobs, n, DO_CLEAR | DO_SCALES | DO_WEIGHTS, VK_NULL_HANDLE);
+    }
+    for (k = 0; k <= runs; k++) {   /* pass 0 is not timed */
+        double t0 = now_ms(), t1, t2, t3, t4, gpu[2] = {0, 0};
+        slab_write(g, &s, jobs, n);
+        if (g->staged) slab_run(g, &s, jobs, n, DO_UPLOAD, VK_NULL_HANDLE);
+        t1 = now_ms();
+        slab_run(g, &s, jobs, n, DO_CLEAR | DO_SCALES, queries[0]);
+        t2 = now_ms();
+        slab_run(g, &s, jobs, n, DO_WEIGHTS, queries[1]);
+        t3 = now_ms();
+        slab_run(g, &s, jobs, n, DO_READBACK, VK_NULL_HANDLE);
+        memcpy(device, s.back.map, (size_t)s.out.bytes);
+        t4 = now_ms();
+        if (queries[0]) read_stamps(g, queries, gpu);
+        failures += bench_errors(&s, n, k);
+        if (!k) continue;
+        t[T_UPLOAD][k - 1u] = t1 - t0; t[T_SCALES][k - 1u] = t2 - t1; t[T_WEIGHTS][k - 1u] = t3 - t2;
+        t[T_DECODE][k - 1u] = t3 - t1; t[T_BACK][k - 1u] = t4 - t3; t[T_NEEDED][k - 1u] = t3 - t0;
+        t[T_GPU_SCALES][k - 1u] = gpu[0]; t[T_GPU_WEIGHTS][k - 1u] = gpu[1]; t[T_GPU_DECODE][k - 1u] = gpu[0] + gpu[1];
+    }
+    if (g->forms == 2u && queries[0]) {
+        /* the second form of the shader (WNR3_VK_SHADERS_B) against the first, in pairs on the batch as it was
+         * uploaded: A B, B A, A B, ... Device times of pass A and of pass B only; per pair the ratio B / A */
+        double *pt[2][3], *ratio[3], gpu[2];
+        static const char *const part[3] = {"pass A", "pass B", "pass A + pass B"};
+        char name[64];
+        uint32_t f, x;
+        for (x = 0; x < 3u; x++) {
+            for (f = 0; f < 2u; f++) pt[f][x] = (double *)xmalloc((size_t)runs * sizeof(double));
+            ratio[x] = (double *)xmalloc((size_t)runs * sizeof(double));
+        }
+        for (k = 0; k < runs; k++) {
+            for (x = 0; x < 2u; x++) {
+                g->form = f = (k & 1u) ^ x;
+                slab_run(g, &s, jobs, n, DO_CLEAR | DO_SCALES, queries[0]);
+                slab_run(g, &s, jobs, n, DO_WEIGHTS, queries[1]);
+                read_stamps(g, queries, gpu);
+                failures += bench_errors(&s, n, k);
+                pt[f][0][k] = gpu[0]; pt[f][1][k] = gpu[1]; pt[f][2][k] = gpu[0] + gpu[1];
+            }
+            for (x = 0; x < 3u; x++) ratio[x][k] = pt[1][x][k] / pt[0][x][k];
+        }
+        g->form = 0;
+        for (x = 0; x < 3u; x++) {
+            double median = median_of(ratio[x], runs);   /* sorts the ratios: min and max are read after it */
+            for (f = 0; f < 2u; f++) {
+                snprintf(name, sizeof(name), "pairs, form %c, device: %s", f ? 'B' : 'A', part[x]);
+                report(name, pt[f][x], runs, n, decoded);
+            }
+            printf("bench: pairs, form B / form A, %-25s %u pairs, median %.3f (min %.3f, max %.3f)\n", part[x],
+                   (unsigned)runs, median, ratio[x][0], ratio[x][runs - 1u]);
+            for (f = 0; f < 2u; f++) free(pt[f][x]);
+            free(ratio[x]);
+        }
+    }
+    for (k = 0; k < 2u; k++) if (queries[k]) vkDestroyQueryPool(g->device, queries[k], NULL);
+    /* once more from a zeroed buffer, for the comparison (each form) */
+    slab_write(g, &s, jobs, n);
+    slab_run(g, &s, jobs, n, DO_UPLOAD, VK_NULL_HANDLE);
+    if (g->forms == 2u) {
+        device_b = (unsigned char *)xmalloc((size_t)s.out.bytes);
+        g->form = 1;
+        slab_run(g, &s, jobs, n, DO_CLEAR | DO_ZERO | DO_SCALES | DO_WEIGHTS | DO_READBACK, VK_NULL_HANDLE);
+        memcpy(device_b, s.back.map, (size_t)s.out.bytes);
+        failures += bench_errors(&s, n, runs);
+        g->form = 0;
+    }
+    slab_run(g, &s, jobs, n, DO_CLEAR | DO_ZERO | DO_SCALES | DO_WEIGHTS | DO_READBACK, VK_NULL_HANDLE);
+    memcpy(device, s.back.map, (size_t)s.out.bytes);
+
+    for (i = 0; i < n; i++) reference[i] = (unsigned char *)xmalloc(layout_bytes(&jobs[i].layout, scale_at, weight_at));
+    for (k = 0; k < cpu_runs; k++) {
+        double t0 = now_ms();
+        for (i = 0; i < n; i++) {
+            layout_bytes(&jobs[i].layout, scale_at, weight_at);
+            for (m = 0; m < 3u; m++) { scales[m] = reference[i] + scale_at[m]; weights[m] = reference[i] + weight_at[m]; }
+            if (wex_nr2_model_open(jobs[i].model, WEX_NR2_MODEL_BYTES, &model) ||
+                wex_nr2_decode(&jobs[i].view, &jobs[i].layout, &model, scales, weights))
+                DIE("%s: the reference refuses record %u of the batch", path, (unsigned)i);
+        }
+        t[T_REFERENCE][k] = now_ms() - t0;
+    }
+    for (i = 0; i < n; i++) {
+        layout_bytes(&jobs[i].layout, scale_at, weight_at);
+        if (wex_nr_u32((const unsigned char *)s.err.map + (size_t)i * 4u) ||
+            regions_differ(device, &jobs[i], reference[i], scale_at, weight_at)) {
+            printf("bench: record %u: the device and the reference differ\n", (unsigned)i); failures++;
+        }
+        if (device_b && regions_differ(device_b, &jobs[i], reference[i], scale_at, weight_at)) {
+            printf("bench: record %u: form B on the device and the reference differ\n", (unsigned)i); failures++;
+        }
+    }
+    free(device_b);
+#ifdef WNR3_VK_FAST
+    if (cpu) {
+        static WexFastModel tables;
+        static const WexFastOptions one = {1, 1, 4, 1}, all = {0, 1, 4, 1};   /* the header's default kernel */
+        unsigned char *fast = NULL;
+        int pass;
+        for (pass = 0; pass < 2; pass++) {
+            for (k = 0; k <= runs; k++) {   /* pass 0 is not timed */
+                double total = 0, t0;
+                for (i = 0; i < n; i++) {
+                    size_t size = layout_bytes(&jobs[i].layout, scale_at, weight_at);
+                    fast = (unsigned char *)realloc(fast, size);
+                    if (!fast) DIE("out of memory");
+                    for (m = 0; m < 3u; m++) { scales[m] = fast + scale_at[m]; weights[m] = fast + weight_at[m]; }
+                    if (wex_nr2_model_open(jobs[i].model, WEX_NR2_MODEL_BYTES, &model)) DIE("model");
+                    if (tables.id != model.id || (!i && !k && !pass)) wex_fast_model_init(&tables, &model);
+                    t0 = now_ms();
+                    if (wex_fast_decode_with(&tables, &jobs[i].view, &jobs[i].layout, &model, scales, weights, pass ? &all : &one))
+                        DIE("%s: the fast decoder refuses record %u of the batch", path, (unsigned)i);
+                    total += now_ms() - t0;
+                    if (memcmp(fast, reference[i], size)) {
+                        printf("bench: record %u: the fast decoder and the reference differ\n", (unsigned)i); failures++;
+                    }
+                }
+                if (k) t[pass ? T_FASTN : T_FAST1][k - 1u] = total;
+            }
+        }
+        free(fast);
+    }
+#endif
+    report(g->staged ? "device: upload (host writes, staged copy)" : "device: upload (host writes)", t[T_UPLOAD], runs, n, decoded);
+    report("device: pass A, scales", t[T_SCALES], runs, n, decoded);
+    report("device: pass B, weights", t[T_WEIGHTS], runs, n, decoded);
+    report("device: decode (pass A + pass B)", t[T_DECODE], runs, n, decoded);
+    report("device: upload + decode", t[T_NEEDED], runs, n, decoded);
+    report("device: read-back (comparison only)", t[T_BACK], runs, n, decoded);
+    if (queries[0]) {
+        report("device timestamps: pass A", t[T_GPU_SCALES], runs, n, decoded);
+        report("device timestamps: pass B", t[T_GPU_WEIGHTS], runs, n, decoded);
+        report("device timestamps: pass A + pass B", t[T_GPU_DECODE], runs, n, decoded);
+    }
+    if (cpu) report("CPU: reference decoder, 1 thread", t[T_REFERENCE], cpu_runs, n, decoded);
+    else printf("bench: CPU decoders not timed (WNR3_VK_BENCH_CPU=0)\n");
+#ifdef WNR3_VK_FAST
+    if (cpu) {
+        char name[64];
+        report("CPU: fast decoder (" WEXF_KERNELS "), 1 thread", t[T_FAST1], runs, n, decoded);
+#ifdef _OPENMP
+        snprintf(name, sizeof(name), "CPU: fast decoder (" WEXF_KERNELS "), %d threads", omp_get_max_threads());
+#else
+        snprintf(name, sizeof(name), "CPU: fast decoder (" WEXF_KERNELS "), built without OpenMP");
+#endif
+        report(name, t[T_FASTN], runs, n, decoded);
+    }
+#endif
+    printf("bench: %lu differences from the reference\n", failures);
+    for (i = 0; i < n; i++) { free(reference[i]); free(bytes[i]); }
+    for (k = 0; k < (uint32_t)T_COUNT; k++) free(t[k]);
+    free(device);
+    slab_destroy(g, &s);
+    container_close(&c);
+    return failures;
+}
+
 /* ---- synthetic records -------------------------------------------------------------------------------- */
 
 enum {
@@ -874,7 +1375,9 @@ static void break_scale_stream(unsigned char *record, size_t *written, const Wex
     DIE("selftest: no scale stream fits the broken case %d", how);
 }
 
-static unsigned long selftest(Gpu *g) {
+/* only < 0: all twelve records in one batch. Else record `only` alone (for a look at one case; the counts of
+ * the whole test are then not checked). */
+static unsigned long selftest(Gpu *g, int only) {
     static const Case cases[] = {
         {"plain, smallest chunks, odd scale counts", {37u, 1030u, 513u}, 512u, 256u, 0, 0, B_NONE},
         {"plain, largest chunks", {1200u, 700u, 3u}, 16384u, 16384u, 0, 0, B_NONE},
@@ -897,7 +1400,7 @@ static unsigned long selftest(Gpu *g) {
     unsigned char *records[CASES];
     unsigned long failures = 0;
     Tally tally;
-    uint32_t c, m, i;
+    uint32_t c, m, i, from = 0, to = (uint32_t)CASES;
 
     /* a model with uneven frequencies, so that streams are not all the same length */
     rng_state = UINT64_C(0x5741524e33564b31);
@@ -965,8 +1468,10 @@ static unsigned long selftest(Gpu *g) {
         jobs[c].stored = records[c]; jobs[c].stored_bytes = (uint32_t)total; jobs[c].model = blob;
         for (m = 0; m < 3u; m++) { free(scales[m]); free(weights[m]); }
     }
-    failures += run_batch(g, jobs, (uint32_t)CASES, "selftest", &tally);
-    for (c = 0; c < (uint32_t)CASES; c++) {
+    if (only >= (int)CASES) DIE("selftest: the cases are 0 to %d", (int)CASES - 1);
+    if (only >= 0) { from = (uint32_t)only; to = from + 1u; }
+    failures += run_batch(g, jobs + from, to - from, "selftest", &tally);
+    for (c = from; c < to; c++) {
         const Case *t = &cases[c];
         /* the error word each case must end with. A changed byte ends as a wrong hash, as a stream that does
          * not end at its length, or as both in different streams: bit 1, bit 2 or both. The four cases
@@ -978,11 +1483,11 @@ static unsigned long selftest(Gpu *g) {
                (unsigned)jobs[c].view.scale_streams, (unsigned)jobs[c].view.weight_streams, (unsigned)jobs[c].view.flags,
                (unsigned)jobs[c].error, ok ? "" : "  <- not the expected one");
         if (!ok) failures++;
-        free(records[c]);
     }
+    for (c = 0; c < (uint32_t)CASES; c++) free(records[c]);
     printf("selftest: %lu accepted with the reference's bytes (%lu blocks undone by the ceil-form inverse), %lu refused by both, "
            "%lu differences\n", tally.accepted, tally.ceil_blocks, tally.refused, tally.different);
-    if (tally.accepted != (unsigned long)VALID || tally.refused != (unsigned long)BROKEN || !tally.ceil_blocks) {
+    if (only < 0 && (tally.accepted != (unsigned long)VALID || tally.refused != (unsigned long)BROKEN || !tally.ceil_blocks)) {
         printf("selftest: expected %d accepted, %d refused\n", (int)VALID, (int)BROKEN); failures++;
     }
     return failures;
@@ -993,7 +1498,7 @@ int main(int argc, char **argv) {
     unsigned long failures = 0;
     int i, mode = -1, first = 2;
     uint32_t copies = 0;
-    if (argc >= 2 && !strcmp(argv[1], "selftest") && argc == 2) mode = 3;
+    if (argc >= 2 && !strcmp(argv[1], "selftest") && argc <= 3) mode = 3;
     else if (argc >= 3 && !strcmp(argv[1], "decode")) mode = 0;
     else if (argc >= 3 && !strcmp(argv[1], "reject")) mode = 1;
     else if (argc >= 5 && !strcmp(argv[1], "mutate")) {
@@ -1002,13 +1507,20 @@ int main(int argc, char **argv) {
         rng_state = (uint64_t)strtoul(argv[3], NULL, 10) * UINT64_C(0x9e3779b97f4a7c15) + 1u;
         if (!copies) mode = -1;
     }
+    else if ((argc == 4 || argc == 5) && !strcmp(argv[1], "bench")) {
+        mode = 4;
+        copies = (uint32_t)strtoul(argv[2], NULL, 10);
+        if (!copies) mode = -1;
+    }
     if (mode < 0) {
-        fprintf(stderr, "usage: wnr3_vk selftest | decode FILE.wex4 ... | reject FILE.wex4 ... | mutate N SEED FILE.wex4 ...\n");
+        fprintf(stderr, "usage: wnr3_vk selftest [CASE] | decode FILE.wex4 ... | reject FILE.wex4 ... | mutate N SEED FILE.wex4 ... |\n"
+                        "       bench RUNS FILE.wex4 [RECORDS]\n");
         return 2;
     }
     setvbuf(stdout, NULL, _IONBF, 0);   /* a log that is a pipe shows how far a run came */
     gpu_open(&gpu);
-    if (mode == 3) failures += selftest(&gpu);
+    if (mode == 3) failures += selftest(&gpu, argc == 3 ? atoi(argv[2]) : -1);
+    else if (mode == 4) failures += bench(&gpu, argv[3], copies, argc == 5 ? (uint32_t)strtoul(argv[4], NULL, 10) : MAX_BATCH);
     else for (i = first; i < argc; i++) failures += run_file(&gpu, argv[i], mode, copies);
     gpu_close(&gpu);
     if (gpu.validate) {

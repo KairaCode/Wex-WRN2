@@ -13,6 +13,7 @@ and c/tests/test_wex_planned.c (1 layer x 2 experts).
 
     python -I fixtures/make_synth_mxfp4.py OUT_DIR [--layers 2] [--experts 8]
                                            [--names PROFILE] [--first-layer K] [--float-layer N]
+                                           [--hidden 512] [--inter 256]
     python -I fixtures/make_synth_mxfp4.py --list-names
 
 --names writes the same expert bytes under the tensor names and dtypes of another model family (NAMES below;
@@ -20,6 +21,10 @@ the sources of the names are in wex4/README.md). The table is written here by ha
 wex4/wex4_convert.py, so that the tests compare two tables. --first-layer K leaves layers 0..K-1 without
 routed experts (dense first layers, as first_k_dense_replace in DeepSeek V3, Kimi K2 and GLM-4). --float-layer N
 writes the experts of layer N as float checkpoints do: three BF16 weight matrices and no scale tensor.
+--hidden and --inter give the experts another size (both multiples of 32, the record a whole number of pages):
+--hidden 5120 --inter 2304 gives records of 18,800,640 bytes, the size of a DeepSeek V4.1 expert record, for
+speed measurements on records of that geometry (wex4/research/vulkan-decode/bench.sh). The bytes are random
+draws either way.
 
 Standard library only.
 """
@@ -56,6 +61,8 @@ def main() -> int:
     ap.add_argument("--names", choices=sorted(NAMES), default="deepseek")
     ap.add_argument("--first-layer", type=int, default=0)
     ap.add_argument("--float-layer", type=int, default=-1)
+    ap.add_argument("--hidden", type=int, default=H)
+    ap.add_argument("--inter", type=int, default=I)
     ap.add_argument("--list-names", action="store_true")
     a = ap.parse_args()
     if a.list_names:
@@ -63,10 +70,15 @@ def main() -> int:
         return 0
     if a.out is None:
         ap.error("OUT_DIR is required")
+    hidden, inter = a.hidden, a.inter
+    if hidden < 32 or inter < 32 or hidden % 32 or inter % 32:
+        ap.error("--hidden and --inter must be multiples of 32")
+    if (3 * hidden * inter * 17 // 32) % 4096:
+        ap.error("the record of this size is not a whole number of 4096-byte pages")
     a.out.mkdir(parents=True, exist_ok=True)
     (a.out / "config.json").write_text(json.dumps({
         "num_hidden_layers": a.layers, "n_routed_experts": a.experts,
-        "hidden_size": H, "moe_intermediate_size": I}))
+        "hidden_size": hidden, "moe_intermediate_size": inter}))
     rng = random.Random(a.seed)
     codes = list(range(16))
     weights = [40, 22, 12, 6, 3, 2, 1, 1, 30, 18, 10, 5, 3, 2, 1, 1]
@@ -82,7 +94,7 @@ def main() -> int:
     def bf16_bytes(n):
         return b"".join(struct.pack("<f", rng.gauss(0, 0.05))[2:] for _ in range(n))
 
-    shapes = ((I, H), (H, I), (I, H))  # w1, w2, w3: (out, in) in FP4 elements
+    shapes = ((inter, hidden), (hidden, inter), (inter, hidden))  # w1, w2, w3: (out, in) in FP4 elements
     prefix, matrices, weight_suffix, scale_suffix, weight_dtype, scale_dtype = NAMES[a.names]
     header, payload = {}, bytearray()
 

@@ -1,0 +1,14 @@
+[12:52:33Z: 0 other wnr3_vk processes; CPU load 90%]
+control 'hash: another rotation': noticed
+control 'hash: the tail of a scale stream is not folded': noticed
+control 'the final state is not compared with the hash': noticed
+control 'a wrong hash is reported as a structure error': noticed
+control 'no canonical-zero check': noticed
+control 'no error for a coded scale 0 in a max-5 block': noticed
+control 'ceil-form inverse: the weights are not doubled back': noticed
+control 'ceil-form inverse: the scale is not decremented': noticed
+control 'a stream may be longer than its symbols need': noticed
+control 'no lower bound on the initial state': noticed
+control 'no upper bound on the initial state': noticed
+negative control: 11 of 11 broken shaders noticed
+exit 0

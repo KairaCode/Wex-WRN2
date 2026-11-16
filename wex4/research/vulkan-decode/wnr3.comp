@@ -35,6 +35,7 @@ const uint P_TABLE = 17u;         // word index in tab of the record's WNM2 blob
 const uint P_OFFSETS = 18u;       // index in offs of the record's stream 0
 const uint P_SCALE_BASE = 19u;    // [4] first scale stream of matrix m; [3] = scale streams S
 const uint P_WEIGHT_BASE = 23u;   // [4] first weight stream of matrix m, counted from S; [3] = weight streams W
+const uint P_SYMBOLS = 27u;       // word index in tab of the scale symbol table that follows the blob
 
 const uint L = 1u << 23;          // WEX_NR_L
 const uint PRECISION = 14u;       // WEX_NR2_PRECISION
@@ -118,21 +119,46 @@ void main() {
     int anchor = int((word24 >> (m * 8u)) & 255u);
     bool cz = ((word24 >> 24) & FLAG_CZ) != 0u;
     bool ceil_matrix = ((word24 >> (24u + m)) & 1u) != 0u;
+    // The word of four scale bytes the stream is in is read once, when the stream enters it (scale_at is a
+    // multiple of 16), and kept here; a decrement is made in this copy and the copy is stored. Reading the
+    // word back from the buffer for every block lost decrements on an NVIDIA driver: docs/WNR3-VULKAN.md,
+    // section 6.
+    uint scale_word = 0u;
     for (uint block = 0u; block < blocks; block++) {
-        uint scale_word = outw[(scale_at + block) >> 2], shift = ((scale_at + block) & 3u) * 8u;
+        uint shift = ((scale_at + block) & 3u) * 8u;
+        if (shift == 0u) scale_word = outw[(scale_at + block) >> 2];
         uint scale = (scale_word >> shift) & 255u;                    // the coded scale, from pass A
         uint srel = uint(clamp(int(scale) - anchor, -3, 3) + 3);
         uint previous = 8u, maximum = 8u;
         uint w[4] = uint[4](0u, 0u, 0u, 0u);
         for (uint k = 0u; k < 32u; k++) {
             uint row = (m * CONTEXTS + (srel * 9u + previous) * 9u + maximum) * 17u;
-            uint slot = state & ((1u << PRECISION) - 1u), lo = 0u, hi = 16u;
+            uint slot = state & ((1u << PRECISION) - 1u);
+#ifdef SEARCH
+            uint lo = 0u, hi = 16u;
             while (lo + 1u < hi) {                                     // the reference binary search
                 uint mid = (lo + hi) / 2u;
                 if (cdf(table, row + mid) <= slot) lo = mid; else hi = mid;
             }
-            uint start = cdf(table, row + lo);
-            state = (cdf(table, row + lo + 1u) - start) * (state >> PRECISION) + slot - start;
+            uint start = cdf(table, row + lo), next = cdf(table, row + lo + 1u);
+#else
+            // The whole row at once, with no search: the 9 words that hold its 17 values are 18 lanes of 16
+            // bits. Lane v of (slot | 0x8000) - v keeps bit 15 exactly when v <= slot (v <= 2^14 > slot, so no
+            // lane borrows from the next). The symbol is the number of values 1..15 that are <= slot; the
+            // other three lanes are known for a valid model: value 0 of the row is 0 (counted), value 16 is
+            // 2^14 (not counted), and the lane that is not of this row is the 2^14 that ends the row before
+            // (an odd row) or the 0 that starts the row after (an even row).
+            uint at = table + 8u + (row >> 1), odd = row & 1u, probe = (slot * 0x00010001u) | 0x80008000u;
+            uint x[9], lo = odd - 2u;
+            for (uint i = 0u; i < 9u; i++) {
+                x[i] = tab[at + i];
+                lo += uint(bitCount((probe - x[i]) & 0x80008000u));
+            }
+            uint q = lo + odd;                                         // the lane of value lo
+            uint start = (x[q >> 1] >> ((q & 1u) * 16u)) & 0xffffu;
+            uint next = (x[(q + 1u) >> 1] >> (((q + 1u) & 1u) * 16u)) & 0xffffu;
+#endif
+            state = (next - start) * (state >> PRECISION) + slot - start;
             while (state < L) {
                 if (position == end) { fail(ERR_STRUCT); return; }
                 state = (state << 8) | record_byte(position);
@@ -150,7 +176,8 @@ void main() {
         if (ceil_matrix && maximum == 5u) {
             if (scale == 0u) { fail(ERR_CEIL); return; }
             for (uint i = 0u; i < 4u; i++) w[i] = ceil_double(w[i]);
-            outw[(scale_at + block) >> 2] = (scale_word & ~(255u << shift)) | ((scale - 1u) << shift);
+            scale_word -= 1u << shift;                                 // scale >= 1: no borrow from the next byte
+            outw[(scale_at + block) >> 2] = scale_word;
         }
         for (uint i = 0u; i < 4u; i++) outw[store + block * 4u + i] = w[i];
     }
@@ -159,12 +186,20 @@ void main() {
     uint row = 3u * CONTEXTS * 17u + m * 257u;                         // the scale CDF of matrix m
     uint store = (plan[p + P_SCALE_OUT + m] + first) >> 2;             // this stream's own scale words
     uint pending = 0u, held = 0u;
+#ifndef SEARCH
+    uint symbols = plan[p + P_SYMBOLS] + m * ((1u << PRECISION) >> 2);   // one byte per slot, built by the host
+#endif
     for (uint i = 0u; i < count; i++) {
-        uint slot = state & ((1u << PRECISION) - 1u), lo = 0u, hi = 256u;
-        while (lo + 1u < hi) {
+        uint slot = state & ((1u << PRECISION) - 1u);
+#ifdef SEARCH
+        uint lo = 0u, hi = 256u;
+        while (lo + 1u < hi) {                                          // the reference binary search
             uint mid = (lo + hi) / 2u;
             if (cdf(table, row + mid) <= slot) lo = mid; else hi = mid;
         }
+#else
+        uint lo = (tab[symbols + (slot >> 2)] >> ((slot & 3u) * 8u)) & 255u;   // one read instead of 8 probes
+#endif
         uint start = cdf(table, row + lo);
         state = (cdf(table, row + lo + 1u) - start) * (state >> PRECISION) + slot - start;
         while (state < L) {
