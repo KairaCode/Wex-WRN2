@@ -651,7 +651,10 @@ listed above as well.
   reference was found. On 2026-11-16 the helper as nvcc builds it (CUDA 13.5, `sm_86`) passed its
   CPU/GPU differential on the same GPU, also on 16 records made from real V4.1 experts and on 17 records
   of the published V4.1 container, with 120 mutated copies per bin
-  ([research/cuda-real-20261116](../research/cuda-real-20261116/README.md)). That helper under
+  ([research/cuda-real-20261116](../research/cuda-real-20261116/README.md)). The same day its
+  per-thread workspaces, which leaked when engine threads exited, became process-wide pools, and the
+  test gained a thread-churn case that the old helper fails (1654 MiB held after 64 rounds of 4
+  threads) and the pooled one passes (4 to 6 MiB, two runs). That helper under
   `compute-sanitizer`, other GPUs and a sentence of WNR3-SPEC for the host batch are open *(open to
   you, sections 2 and 3)*.
 - **The engine-side readers inside colibri:** the two engine harnesses follow colibri's headers and

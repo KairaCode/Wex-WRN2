@@ -12,7 +12,10 @@
  * 3. per records .bin (build_nr3.py bins): every record decoded by the batch
  *    API equals the stored slab, then MUTATIONS mutated records (single bit
  *    flips anywhere in the record, header byte edits) decoded by the CPU and by
- *    the GPU batch API: the same status, the same bytes when both accept.
+ *    the GPU batch API: the same status, the same bytes when both accept;
+ * 4. thread churn: 64 rounds of 4 fresh threads through every entry point, all
+ *    decoded, and the device memory the helper holds does not grow with the
+ *    threads that called it (at most 64 MiB).
  * The batch-to-host entry (feature 32) runs next to the device batch in 1 and 3.
  * usage: test_wex_nr3_gpu.exe HELPER.dll [MUTATIONS=120] [RECORDS.bin ...]
  * Every mutation keeps a copy of its record and its CPU decode in RAM: on the
@@ -307,6 +310,87 @@ static void synthetic(Arena &a) {
     }
 }
 
+/* 4. thread churn, as the engines' reader teams do (an OpenMP team whose threads a runtime retires
+ * and respawns, a reader pool per load): ROUNDS rounds of THREADS fresh threads, each decoding one
+ * record through every entry point and then exiting. Every decode must succeed and equal the CPU
+ * decode, and the device memory the helper holds afterwards must not grow with the number of
+ * threads that ever called it: workspaces belong to the calls in flight, not to the threads. */
+static void thread_churn() {
+    WexEntry e = synth_entry(256u, 1024u);
+    WexNr2Layout layout; wex_nr2_layout(&e, &layout);
+    size_t raw = (size_t)e.scale_bytes + e.weight_bytes;
+    uint64_t r64, aligned; CHECK(!wex_entry_raw_sizes(&e, &r64, &aligned));
+    std::vector<unsigned char> src(raw), out(4 * raw + 65536);
+    unsigned char *s[3], *w[3];
+    std::vector<uint64_t> wc(3 * 567 * 16, 0), sc(3 * 256, 0);
+    synth_fill(e, src.data(), 777u);
+    views(e, src.data(), s, w);
+    uint32_t flags = wex_nr3_ceil_forward(&layout, s, w, NULL);
+    wex_nr3_count(&layout, (const unsigned char *const *)s, (const unsigned char *const *)w, wc.data(), sc.data());
+    std::vector<unsigned char> blob(WEX_NR2_MODEL_BYTES);
+    wex_nr2_model_build(wc.data(), sc.data(), blob.data());
+    WexNr2Model model;
+    CHECK(!wex_nr2_model_open(blob.data(), blob.size(), &model) && reg(blob.data(), blob.size()) == 0);
+    synth_fill(e, src.data(), 777u);
+    std::vector<unsigned char> coded(src);
+    views(e, coded.data(), s, w);
+    wex_nr3_ceil_forward(&layout, s, w, NULL);
+    size_t written = 0;
+    CHECK(!wex_nr3_encode(&model, &layout, (const unsigned char *const *)s, (const unsigned char *const *)w,
+                          2048u, 512u, flags, 0x00010002u, out.data(), out.size(), &written));
+    Rec r; r.e = e; r.e.flags = WEX_ENTRY_NEURAL_RANS3;
+    r.e.total_bytes = (uint32_t)((written + 4095u) & ~(size_t)4095u);
+    CHECK(r.e.total_bytes < aligned);
+    r.record.assign(out.begin(), out.begin() + r.e.total_bytes);
+    r.expected = src;
+    std::vector<unsigned char> cpu;
+    CHECK(cpu_decode(r, model, cpu) == 0 && cpu == r.expected);
+    const size_t at = wex_record_read_offset(&r.e);
+    unsigned char *dev_out = nullptr;
+    const int THREADS = 4, ROUNDS = 64;
+    CK(cudaMalloc(&dev_out, raw * THREADS));
+    std::vector<int> bad(THREADS);
+    auto round = [&] {
+        std::vector<std::thread> team;
+        for (int t = 0; t < THREADS; t++) team.emplace_back([&, t] {
+            int fails = 0;
+            std::vector<unsigned char> slab((size_t)aligned, 0x5a);
+            memcpy(slab.data() + at, r.record.data(), r.record.size());
+            if (host_fn(&r.e, slab.data(), slab.size()) || memcmp(slab.data(), r.expected.data(), raw)) fails++;
+            unsigned char *ds[3], *dw[3];
+            views(r.e, dev_out + raw * t, ds, dw);
+            if (dev(&r.e, r.record.data(), 0, ds, dw)) fails++;
+            const WexEntry *es[1] = {&r.e};
+            const unsigned char *ps[1] = {r.record.data()};
+            std::vector<unsigned char> host(raw, 0xA5);
+            unsigned char *hd[1] = {host.data()};
+            int st[1] = {7};
+            if (batch_host(1, es, ps, 0, hd, st) || st[0] || host != r.expected) fails++;
+            if (batch(1, es, ps, 0, ds, dw, st) || st[0]) fails++;
+            bad[(size_t)t] = fails;
+        });
+        for (auto &t : team) t.join();
+        for (int t = 0; t < THREADS; t++) CHECK(bad[(size_t)t] == 0);
+        std::vector<unsigned char> back(raw);
+        for (int t = 0; t < THREADS; t++) {
+            CK(cudaMemcpy(back.data(), dev_out + raw * t, raw, cudaMemcpyDeviceToHost));
+            CHECK(back == r.expected);
+        }
+    };
+    round();   /* the first round's workspaces and the model's device tables */
+    size_t free_before, free_after, total;
+    CK(cudaMemGetInfo(&free_before, &total));
+    for (int k = 1; k < ROUNDS; k++) round();
+    CK(cudaMemGetInfo(&free_after, &total));
+    CK(cudaFree(dev_out));
+    const double grew = free_before > free_after ? (double)(free_before - free_after) / 1048576.0 : 0.0;
+    /* one round's workspaces (THREADS x a host, a device and a batch workspace of this record) are
+     * about 26 MiB; kept per thread, the other ROUNDS-1 rounds' threads held 1.6 GiB more */
+    printf("thread churn: %d rounds x %d fresh threads x 4 entry points decoded, device memory held grew %.0f MiB\n",
+           ROUNDS, THREADS, grew);
+    CHECK(grew <= 64.0);
+}
+
 static void bin_test(Arena &a, const char *path, int mutations) {
     FILE *f = fopen(path, "rb");
     CHECK(f);
@@ -403,6 +487,7 @@ int main(int argc, char **argv) {
     CK(cudaSetDevice(0));
     Arena a;
     synthetic(a);
+    thread_churn();
     int mutations = argc > 2 ? atoi(argv[2]) : 120;
     for (int i = 3; i < argc; i++) bin_test(a, argv[i], mutations);
     printf("compared %ld (rejected by both %ld)\nALL OK\n", g_compared, g_rejected_both);

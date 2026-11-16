@@ -1,5 +1,24 @@
 # The CUDA helper built with nvcc, on real DeepSeek V4.1 records, on an RTX 3070 (2026-11-16)
 
+> **Note, 2026-11-16 (later the same day): a leak in the helper this run used, and its fix.** The helper
+> of this run kept its GPU workspaces in `thread_local` storage (per calling thread: one workspace for
+> decoding to host, one for decoding to device, 8 batch lanes). When a thread exits, the destructor's
+> `cudaFree` fails on Windows (`cudaErrorDevicesUnavailable`), so each exited thread kept about 36 MiB of
+> VRAM and its page-locked buffer. This test called the helper from its main thread only, so it did not
+> see the leak; an engine, whose reader threads come and go, does. In a DeepSeek V4.1 engine run reported
+> in colibri pull request #2883 (RTX 3070, Windows 10), more than 632 threads called the helper, free
+> VRAM fell from 7.46 GB to 6 MiB, and the helper then refused 591 records with status 1, which went to
+> the CPU. `c/tools/wex_cuda_bridge.cu` now takes its workspaces from process-wide pools: a call leases
+> one and gives it back, and the pools are never freed (CUDA cannot be called while the process unloads).
+> `c/tests/test_wex_nr3_gpu.cu` has a case 4, thread churn: 64 rounds of 4 fresh threads, each decoding a
+> synthetic WNR3 record through the four entry points, all equal to the CPU decode; then the growth of the
+> device memory in use (`cudaMemGetInfo`) must be at most 64 MiB. On the machine of this run (CUDA 13.5,
+> `sm_86`, built by `integration/build/build_wex_windows.cmd` and the nvcc line below, one run each): the
+> helper of this run grew by 1654 MiB and failed; the pooled helper grew by 6 MiB in the run with
+> `real.bin` and `real--cz.bin` and by 4 MiB in the run with the two container bins, and both runs ended
+> `ALL OK` with the outcomes of the tables below. The tables below are this run's, with the old helper,
+> and are not edited.
+
 The CUDA WNR3 decoder as the engine uses it: the helper `kaira_wex_cuda.dll` built by nvcc from
 `c/tools/wex_cuda_bridge.cu`, driven by the CPU/GPU differential `c/tests/test_wex_nr3_gpu.cu` on one GPU.
 Before this run the decoder had been checked as C++ on the CPU through an emulation and with its kernels

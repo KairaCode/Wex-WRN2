@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0
  * Copyright 2026 Ludovico Zanichelli */
-/* Optional Windows WEX helper DLL. Thread-local buffers and a private CUDA
- * stream keep cold-load reconstruction separate from inference streams.
+/* Optional Windows WEX helper DLL. Pooled workspaces with private CUDA streams
+ * keep cold-load reconstruction separate from inference streams.
  * A failed decode never changes the caller's compressed slab.
  *
  * ABI 1 (wex_cuda_helper_abi) is unchanged: wex_cuda_decode_to_host.
@@ -106,6 +106,55 @@ struct WexCudaWaitOnExit {
     cudaStream_t stream;
     bool completed=false;
     ~WexCudaWaitOnExit() { if(!completed) cudaStreamSynchronize(stream); }
+};
+
+/* ---- workspace pools ------------------------------------------------------
+ * A call takes a workspace from a pool for its duration and gives it back, so
+ * the helper holds as many as there were calls in flight at once, however many
+ * threads ever called it. Workspaces kept per thread leaked: the engines' reader
+ * teams retire and respawn threads (libgomp, a reader pool per load), and a
+ * thread-exit destructor cannot free CUDA memory on Windows (cudaFree there
+ * fails with cudaErrorDevicesUnavailable), so every exited thread kept its
+ * ~2x record bytes of device memory and page-locked host memory until the
+ * device ran out and every later record went to the CPU. A pool and its idle
+ * workspaces are never destroyed (CUDA cannot be called while the process
+ * unloads). take() prefers a workspace last used on the current device. */
+template<class T> struct WexCudaPool {
+    std::mutex mutex;
+    std::vector<T*> idle;
+    T *take() {
+        int current=-1;
+        if(cudaGetDevice(&current)!=cudaSuccess) { (void)cudaGetLastError(); current=-1; }
+        {
+            std::lock_guard<std::mutex> lock(mutex);
+            if(!idle.empty()) {
+                size_t pick=idle.size()-1;
+                for(size_t i=idle.size();i-->0;) if(idle[i]->device()==current) { pick=i; break; }
+                T *w=idle[pick];
+                idle.erase(idle.begin()+(std::ptrdiff_t)pick);
+                return w;
+            }
+        }
+        return new(std::nothrow) T();
+    }
+    void give(T *w) {
+        if(!w) return;
+        std::lock_guard<std::mutex> lock(mutex);
+        try { idle.push_back(w); } catch(...) { delete w; }   /* no room in the list: free it here */
+    }
+};
+template<class T> struct WexCudaLease {
+    WexCudaPool<T> &pool;
+    T *w;
+    explicit WexCudaLease(WexCudaPool<T> &p) : pool(p), w(p.take()) {}
+    ~WexCudaLease() { pool.give(w); }
+    WexCudaLease(const WexCudaLease &)=delete;
+    WexCudaLease &operator=(const WexCudaLease &)=delete;
+};
+/* a single-record workspace (the to-host and to-device entry points) */
+struct WexCudaSingle {
+    WexCudaWorkspace workspace;
+    int device() const { return workspace.device; }
 };
 
 /* ---- WNR2 model registry --------------------------------------------------
@@ -250,8 +299,9 @@ static int wex_cuda_nr2_decode(const WexEntry *entry,const unsigned char *record
     return *workspace.host_error ? -1 : 0;
 }
 
-static WexCudaWorkspace &wex_cuda_host_workspace() { thread_local WexCudaWorkspace workspace; return workspace; }
-static WexCudaWorkspace &wex_cuda_device_workspace() { thread_local WexCudaWorkspace workspace; return workspace; }
+/* the single-record pools: to host (with page-locked host_raw) and to device */
+static WexCudaPool<WexCudaSingle> &wex_cuda_host_pool() { static auto *pool=new WexCudaPool<WexCudaSingle>(); return *pool; }
+static WexCudaPool<WexCudaSingle> &wex_cuda_device_pool() { static auto *pool=new WexCudaPool<WexCudaSingle>(); return *pool; }
 
 static int wex_cuda_nr2_to_host(const WexEntry *entry,unsigned char *slab,size_t slab_capacity) {
     uint64_t raw,aligned;
@@ -262,10 +312,12 @@ static int wex_cuda_nr2_to_host(const WexEntry *entry,unsigned char *slab,size_t
     WexCudaNr2Plan plan;
     int status=wex_cuda_nr2_prepare(entry,slab+offset,view,plan);
     if(status) return status;
+    WexCudaLease<WexCudaSingle> lease(wex_cuda_host_pool());
+    if(!lease.w) return 1;
     /* the record is fully uploaded before the decoded slab comes back */
-    status=wex_cuda_nr2_decode(entry,slab+offset,view,plan,wex_cuda_host_workspace(),nullptr);
+    status=wex_cuda_nr2_decode(entry,slab+offset,view,plan,lease.w->workspace,nullptr);
     if(status) return status;
-    std::memcpy(slab,wex_cuda_host_workspace().host_raw,(size_t)raw);
+    std::memcpy(slab,lease.w->workspace.host_raw,(size_t)raw);
     return 0;
 }
 
@@ -282,7 +334,9 @@ extern "C" __declspec(dllexport) int wex_cuda_decode_to_host(const WexEntry *ent
     size_t offset=(size_t)(aligned-entry->total_bytes);
     if(wex_nr_parse(slab+offset,entry->total_bytes,entry->weight_bytes,&view) ||
        wex_unpack_scale_tiles(view.scales,view.scale_encoded,nullptr,entry->scale_bytes)) return -1;
-    WexCudaWorkspace &workspace=wex_cuda_host_workspace();
+    WexCudaLease<WexCudaSingle> lease(wex_cuda_host_pool());
+    if(!lease.w) return 1;
+    WexCudaWorkspace &workspace=lease.w->workspace;
     size_t tiles=((size_t)entry->scale_bytes+255u)/256u;
     size_t lut_bytes=(size_t)view.classes*(view.scale_only?1u:17u)*WEX_CUDA_NR_LUT_SLOTS*4u;
     if(!workspace.ensure((size_t)aligned,tiles,lut_bytes)) return 1;
@@ -337,7 +391,9 @@ static int wex_cuda_nr2_to_device(const WexEntry *entry,const unsigned char *rec
         commit.source[3+m]=plan.weight_offset[m];
         commit.bytes[3+m]=(uint32_t)entry->weight_shapes[m][0]*entry->weight_shapes[m][1];
     }
-    return wex_cuda_nr2_decode(entry,record,view,plan,wex_cuda_device_workspace(),&commit);
+    WexCudaLease<WexCudaSingle> lease(wex_cuda_device_pool());
+    if(!lease.w) return 1;
+    return wex_cuda_nr2_decode(entry,record,view,plan,lease.w->workspace,&commit);
 }
 
 /* Reconstruct a Neural-rANS record straight into device memory that the caller
@@ -366,7 +422,9 @@ extern "C" __declspec(dllexport) int wex_cuda_decode_to_device(const WexEntry *e
     if(wex_nr_parse(record,entry->total_bytes,entry->weight_bytes,&view) ||
        wex_unpack_scale_tiles(view.scales,view.scale_encoded,nullptr,entry->scale_bytes)) return -1;
     if(cudaSetDevice(device)!=cudaSuccess) { (void)cudaGetLastError(); return 1; }
-    WexCudaWorkspace &workspace=wex_cuda_device_workspace();
+    WexCudaLease<WexCudaSingle> lease(wex_cuda_device_pool());
+    if(!lease.w) return 1;
+    WexCudaWorkspace &workspace=lease.w->workspace;
     size_t tiles=((size_t)entry->scale_bytes+255u)/256u;
     size_t lut_bytes=(size_t)view.classes*(view.scale_only?1u:17u)*WEX_CUDA_NR_LUT_SLOTS*4u;
     if(!workspace.ensure((size_t)aligned,tiles,lut_bytes)) return 1;
@@ -427,8 +485,13 @@ struct WexCudaBatchHost {
         return true;
     }
 };
-static WexCudaWorkspace *wex_cuda_batch_lanes() { thread_local WexCudaWorkspace lanes[WEX_CUDA_BATCH_LANES]; return lanes; }
-static WexCudaBatchHost &wex_cuda_batch_host() { thread_local WexCudaBatchHost host; return host; }
+/* one batch call's lanes and page-locked scratch, from a pool like the single workspaces */
+struct WexCudaBatchSet {
+    WexCudaWorkspace lanes[WEX_CUDA_BATCH_LANES];
+    WexCudaBatchHost host;
+    int device() const { return lanes[0].device; }
+};
+static WexCudaPool<WexCudaBatchSet> &wex_cuda_batch_pool() { static auto *pool=new WexCudaPool<WexCudaBatchSet>(); return *pool; }
 
 /* n WNR2 records (host memory, page-locked for full speed) to their caller-
  * owned device buffers: record i's matrix m goes to dst_scale[3*i+m] and
@@ -471,8 +534,10 @@ static int wex_cuda_batch(int n,const WexEntry *const *entries,const unsigned ch
     auto failures=[&] { int bad=0; for(int i=0;i<n;i++) bad+=status[i]!=0; return bad; };
     if(!pending) return failures();
     if(cudaSetDevice(device)!=cudaSuccess) { (void)cudaGetLastError(); finish(1); return failures(); }
-    WexCudaBatchHost &host=wex_cuda_batch_host();
-    WexCudaWorkspace *lane=wex_cuda_batch_lanes();
+    WexCudaLease<WexCudaBatchSet> lease(wex_cuda_batch_pool());
+    if(!lease.w) { finish(1); return failures(); }
+    WexCudaBatchHost &host=lease.w->host;
+    WexCudaWorkspace *lane=lease.w->lanes;
     const int lanes=pending<WEX_CUDA_BATCH_LANES ? pending : WEX_CUDA_BATCH_LANES;
     if(!WexCudaBatchHost::grow(host.offsets,host.offset_cap,offsets) ||
        !WexCudaBatchHost::grow(host.errors,host.error_cap,(size_t)n)) { finish(1); return failures(); }

@@ -33,6 +33,8 @@ What each piece is and how a record travels from the drive to the GPU: [ARCHITEC
 
 The bridge in `c/tools/` reports 63 (all six). The full helper API is in [WNR2-REFERENCE.md](WNR2-REFERENCE.md), section 10.
 
+**The helper's GPU memory.** Its workspaces are allocated outside the backend's VRAM accounting, so the VRAM reserve must cover them. Since 2026-11-16 they come from process-wide pools: a call leases one and gives it back, so the helper holds one workspace per call in flight (a batch call: 8 lanes, about 287 MiB for V4.1 records), however many threads call it, and never frees them. A helper built before that kept them per thread and leaked them when the engine's reader threads exited (on Windows the thread-exit `cudaFree` fails): in one DeepSeek V4.1 run on an 8 GB RTX 3070 free VRAM fell to 6 MiB and 591 records went to the CPU. With the pooled helper, the same container (V4.1 REAP-192 on NVMe, RTX 3070, Windows 10, Intel Core i7-7700K, 8 greedy tokens, one run each) decoded 2257 records on the helper and 0 on the CPU in 35.2 s (0.23 tok/s) with the CPU engine, against 1500 and 757 in 57.9 s before, and 2198 and 0 in 48.0 s with the Vulkan backend. These engine numbers come from colibri pull request #2883, which made the same fix; this repository has no engine run of its own. [WNR2-REFERENCE.md](WNR2-REFERENCE.md) section 10, "Helper memory footprint", has the details.
+
 ## 2. Build
 
 **CPU checks, from this repository.** `bash scripts/check_all.sh` builds and runs every test that needs no engine tree and no GPU, and ends with `all checks passed`. Windows: MSYS2 UCRT64 or MINGW64 `gcc` and Python 3 on `PATH`, run from Git Bash or an MSYS2 shell. Linux: `gcc`, Python 3 and `PYTHON=python3` (checked by CI on ubuntu-24.04, x86-64 and ARM64). macOS: Python 3, `PYTHON=python3` and a Homebrew GNU gcc named in `CC` (for example `CC=gcc-15`; the `gcc` of Xcode is Apple clang, without OpenMP), or Apple clang (`CC=clang`) with the `libomp` of Homebrew named in `WEX_OPENMP`, as the `macos-clang` CI job does (the line is in `scripts/build_cpu_check.sh`). The CPU is x86-64 with AVX2 (one test builds with `-march=haswell`) or, under Linux or macOS, 64-bit ARM, where that test builds the NEON kernel of the fast decoder instead (the `linux-arm` and `macos` CI jobs).
@@ -132,6 +134,7 @@ What the two engine profiles set on 2026-11-13: [STATUS.md](../STATUS.md).
 | `COLI_WEX_GPU_DIRECT needs ... staying on the host slab path` | the helper lacks bit 1, or the backend lacks the fp4 mirror exports | rebuild the helper or the backend |
 | `V4_PREWARM_BATCH needs V4_WEX_BATCH=1 and COLI_WEX_GPU_DIRECT>=1` | the batch path is off | set both, or drop the switch |
 | a WNR3 container is refused, or decodes on the CPU at about 33 MB/s | no helper, or one without bit 16 | put a current `kaira_wex_cuda.dll` next to the engine |
+| free VRAM falls during a run and more and more records come back from the helper with status 1 and decode on the CPU | a helper built before 2026-11-16, whose per-thread workspaces leak when engine threads exit | rebuild the helper from the current `c/tools/wex_cuda_bridge.cu`; `test_wex_nr3_gpu` (case 4, thread churn) fails on the old one |
 
 The longer table of 2026-11-09 (WNR2, tiny fixtures, MSYS2 builds) is in section 9 of the [old guide](reports/colibri-integration-20261109.md).
 
