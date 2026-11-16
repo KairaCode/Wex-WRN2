@@ -52,10 +52,13 @@ measured; it is not known to fail.
   - **Today:** five libFuzzer harnesses are in [`wex4/fuzz/`](../wex4/fuzz/README.md): the C WEX4
     reader (`c/wex4.h`), `c/tools/wex4_verify.c`, the WNR3 decoders, and the two engine-side readers
     (`c/expert_store_wex.c`, `c/qwen38_wex.h`), which are built against stand-ins for the engine
-    headers. Since 2026-11-15 every stand-in declaration follows colibri's headers and cites its line
-    (colibri `dev` at `98327913`); `WEX_FUZZ_COLIBRI=fetch bash wex4/fuzz/run.sh --replay` builds the two
-    harnesses against colibri's own headers instead and checks that both give the same declarations,
-    and the opt-in `colibri-headers` CI job does that on Linux and macOS. A second pass of each engine
+    headers. Since 2026-11-15 every stand-in declaration that colibri has follows its headers and
+    cites its line (colibri `dev` at `98327913`); the members that no public colibri tree has stay
+    inferred. `WEX_FUZZ_COLIBRI=fetch bash wex4/fuzz/run.sh --replay` builds the two harnesses against
+    colibri's own headers instead (for `fuzz_q38_wex`, colibri's `compat.h` and `st.h`; its model types
+    stay those of `engine/q38_engine.h`, checked against `qwen38_core.h` by reading, not by
+    `engine_layout.c`) and checks that both give the same declarations, and the opt-in
+    `colibri-headers` CI job does that on Linux and macOS. A second pass of each engine
     harness reaches the mirrors, the read splits, the striped read and `WEX_READ_RETRY`, and on Windows,
     with the CPU stand-in of the CUDA helper, the helper's host paths and the load wave (replayed only).
     A third pass fails reads of the engine file on purpose (opens, prefetches, lookups and loads, the

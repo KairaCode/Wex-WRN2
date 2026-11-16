@@ -120,7 +120,7 @@ The 37 files under `c/` are this repository's engine-side code. The maintainer's
 | `tools/bench_wex_decode.c` | Windows only, by hand (`windows.h`); takes two container files | no | no |
 | `tools/wexio_probe.py` | Windows only: `--self-test` reads a synthetic temp file; its default inputs are the lab's container paths on U: and C: | no | no |
 
-`scripts/check_all.sh` runs everything in the "yes" rows. `wex4/fuzz/run.sh --replay` (CI runs it after the checks) and the Fuzz workflow run `expert_store_wex.c`, `qwen38_wex.h` and `wex_decode.c` through the stand-in headers of `wex4/fuzz/engine/`, and `WEX_FUZZ_COLIBRI=fetch` builds the same harnesses against colibri's own headers ([wex4/fuzz/README.md](../wex4/fuzz/README.md)); the test of `qwen38_wex.h` and the rest are exercised in the maintainer's engine tree.
+`scripts/check_all.sh` runs everything in the "yes" rows. `wex4/fuzz/run.sh --replay` (CI runs it after the checks) and the Fuzz workflow run `expert_store_wex.c`, `qwen38_wex.h` and `wex_decode.c` through the stand-in headers of `wex4/fuzz/engine/`, and `WEX_FUZZ_COLIBRI=fetch` builds the same harnesses against colibri's own headers (for `qwen38_wex.h` only colibri's `compat.h` and `st.h`) ([wex4/fuzz/README.md](../wex4/fuzz/README.md)); the test of `qwen38_wex.h` and the rest are exercised in the maintainer's engine tree.
 
 ## How a change to `c/` gets in
 

@@ -10,7 +10,7 @@
  *    setting it must refuse leaves its default, 58 and 42);
  *  - DSV4_CUDA_MOE_MASKED=1 for one input in 8;
  *  - WEX_READ_RETRY=1 for one input in 8, with at most 2 lookups, of the first experts that have a record
- *    (each failed load waits 16 ms before its second read).
+ *    (the 16 ms pause before the second read of a failed load is skipped by read_faults.h).
  * Then it prefetches the first experts it will look up (at most 4), looks up experts (all of them up to
  * FUZZ_PATHS_LOOKUPS, else that many spread over the table) and closes.
  *
@@ -196,7 +196,7 @@ static void fuzz_store_paths(const char *primary, const unsigned char *file, siz
  * a third time: for one input in 2 the first expert with a record (from a point the input's hash picks) is
  * prefetched with its read failed, then that expert is looked up with its read failed, WEX_READ_RETRY off
  * (6 inputs in 8) or on with one read failed (1 in 8, so the second read succeeds) or two (1 in 8), then
- * looked up again with no read failed. Each failed read waits 16 ms when WEX_READ_RETRY is on.
+ * looked up again with no read failed. The 16 ms pause of WEX_READ_RETRY is skipped and counted (read_faults.h).
  *
  * Besides what the sanitizers catch (LeakSanitizer, under libFuzzer, sees what the failed open leaves):
  *  - the open reads the header page, the table, the model of a WNR2 or WNR3 container, and the mirror's
@@ -215,9 +215,9 @@ static void fuzz_store_faults_report(void) {
     fprintf(stderr, "fuzz_store_wex failing reads: %llu passes (%llu with a mirror), %llu reads to open, %llu opens "
             "with a failed read refused, %llu prefetches with a failed read, %llu lookups with a failed read (%llu "
             "read again by WEX_READ_RETRY, %llu of them served; %llu with the second read failed too), %llu "
-            "records served by the lookup after one\n",
+            "records served by the lookup after one; %llu pauses of WEX_READ_RETRY skipped in both passes\n",
             faults_passes, faults_with_mirror, faults_open_reads, faults_open_refused, faults_prefetch, faults_lookups,
-            faults_retry_one, faults_retry_served, faults_retry_two, faults_served_after);
+            faults_retry_one, faults_retry_served, faults_retry_two, faults_served_after, fuzz_fault_pauses);
 }
 
 static ColiExpertStore *fuzz_store_open_plain(int *rc) {
@@ -253,7 +253,7 @@ static void fuzz_store_faults(const char *primary, const unsigned char *file, si
     uint64_t hash = fuzz_paths_mix(fuzz_paths_hash(file, size), 1000u);   /* not the second pass's choices */
     size_t count = (size_t)h->num_layers * h->num_experts, i, pick = count;
     int mirror = (int)(hash & 1u), mode = (int)((hash >> 24) % 8u), rc, fails;
-    unsigned long long reads, failed, want_reads;
+    unsigned long long reads, failed, want_reads, pauses;
     ColiExpertStore *store;
     FuzzExtent none = {0, 0};
 
@@ -309,12 +309,16 @@ static void fuzz_store_faults(const char *primary, const unsigned char *file, si
         fails = mode == 7 ? 2 : 1;
         fuzz_setenv("WEX_READ_RETRY", mode >= 6 ? "1" : "");
         failed = fuzz_fault_failed;
+        pauses = fuzz_fault_pauses;
         fuzz_fault_arm(0, fails);
         memset(&view, 0, sizeof view);
         got = coli_expert_lookup(store, key, &view);
         fuzz_fault_disarm();
         fuzz_setenv("WEX_READ_RETRY", "");
         FUZZ_REQUIRE(fuzz_fault_failed == failed + (unsigned)fails, "a lookup did not make the reads the pass failed");
+        FUZZ_REQUIRE(fuzz_fault_pauses == pauses + (mode >= 6 ? 1u : 0u),
+                     "a lookup whose read failed did not pause exactly once before its second read (WEX_READ_RETRY), "
+                     "or paused without it");
         if (mode == 6)
             FUZZ_REQUIRE(!got == !want, "a lookup read again after a failed read (WEX_READ_RETRY) and the decoders "
                                         "disagree on a record");

@@ -77,4 +77,22 @@ static inline ssize_t fuzz_fault_pread(int fd, void *buffer, size_t bytes, off_t
 #define pread fuzz_fault_pread
 #endif
 
+/* The pause of WEX_READ_RETRY=1 (wex_retry_pause in c/expert_store_wex.c: Sleep(16) on Windows, nanosleep of
+ * 16 ms elsewhere) does not wait in the harness: it only counts, in fuzz_fault_pauses. Waiting changes nothing
+ * the oracles see, and 16 ms for each read made again would take a large part of a fuzzing run's time. No
+ * other code of the engine files calls Sleep or nanosleep. */
+static unsigned long long fuzz_fault_pauses;
+#ifdef _WIN32
+static inline void fuzz_fault_Sleep(DWORD ms) { (void)ms; fuzz_fault_pauses++; }
+#define Sleep(ms) fuzz_fault_Sleep(ms)
+#else
+#include <time.h>
+static inline int fuzz_fault_nanosleep(const struct timespec *req, struct timespec *rem) {
+    (void)req; (void)rem;
+    fuzz_fault_pauses++;
+    return 0;
+}
+#define nanosleep(req, rem) fuzz_fault_nanosleep(req, rem)
+#endif
+
 #endif /* WEX_FUZZ_READ_FAULTS_H */
