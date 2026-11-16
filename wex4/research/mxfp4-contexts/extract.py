@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 Ludovico Zanichelli
-"""Step 1: pull 24 real experts out of the production WEX3 container (read-only) into the coded domain.
+"""Step 1: pull 24 real experts out of the production WEX3 container (read-only) into the coded domain. The
+published container is that WEX3 file upgraded to WEX4 in place; it is read through its saved WEX3 page.
 
   python -I extract.py CONTAINER.wex out
 
@@ -10,6 +11,7 @@ carry) and check that the flags and rule-g anchors match the record header. Writ
 out/prod_model.wnm2 and out/manifest.json (entry bytes, record header fields, real payload sizes).
 Reads 24 records (~0.39 GiB) plus the header, model and table; writes only under OUT."""
 import ctypes as C
+import hashlib
 import json
 import os
 import random
@@ -21,6 +23,27 @@ ENTRY = struct.Struct('<QIII6H6H3I3II')
 LAYERS = [0, 5, 11, 16, 22, 28, 33, 39]
 PER_LAYER = 3
 SEED = 20261111
+
+
+def wex3_page(f):
+    """The WEX3 header page of the container. The published container is WEX4: `wex4_convert.py upgrade` kept
+    its WEX3 header page as a blob of kind 16 near the end of the file and left the WEX3 entry table, the model
+    and the records where they were. That saved page (its SHA-256 checked against the index) stands for page 0."""
+    f.seek(0)
+    page = f.read(4096)
+    if page[:4] != b'4XEW':
+        return page
+    index_offset, _, blob_count = struct.unpack_from('<QQI', page, 32)
+    f.seek(index_offset)
+    blobs = f.read(64 * blob_count)
+    for i in range(blob_count):
+        kind, _, offset, size, digest, _ = struct.unpack_from('<IIQQ32sQ', blobs, 64 * i)
+        if kind == 16 and size == 4096:
+            f.seek(offset)
+            page = f.read(4096)
+            assert hashlib.sha256(page).digest() == digest, 'the saved WEX3 header page is damaged'
+            return page
+    raise AssertionError('a WEX4 file without a saved WEX3 header page: not an upgraded WEX3 container')
 
 
 def picks():
@@ -36,7 +59,7 @@ def main():
     os.makedirs(os.path.join(out, 'slabs'), exist_ok=True)
     rows = []
     with open(container, 'rb') as f:
-        page = f.read(4096)
+        page = wex3_page(f)
         magic, version, layers, experts, _, table_offset, flags, _ = HEADER.unpack_from(page)
         assert magic == 0x57455833 and layers == 40 and experts == 192, 'not the V4.1 WEX3 container'
         wnmd, model_bytes, model_offset, model_id, _ = struct.unpack_from('<IIQII', page, 64)

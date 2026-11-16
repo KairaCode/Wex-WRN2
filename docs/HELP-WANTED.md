@@ -275,15 +275,21 @@ measured; it is not known to fail.
     Neoverse V1, 512 on A64FX), where it might win: `WEX4_MARCH=-march=armv8-a+sve` before the same
     `synth.sh speed` times both kernels; a choice at run time between a NEON and an SVE build (a
     binary built for SVE needs a CPU with SVE, and nothing checks for it).
-- **Older scripts that call `gcc` by name:** `wex4/research/fast-cpu-decode/verify/run.sh`,
-  `wex4/research/mxfp4-contexts/run_all.sh`, the two scripts of `wex4/research/wnr4-record/` and
-  `integration/build/build_test_wex_planned.sh` do not read `CC` or `WEX_OPENMP`, so they need a
-  GNU gcc named `gcc` on `PATH` (three of them also pass x86 flags: `-march=haswell`, `-mavx2`,
-  `-march=x86-64-v3`). None of them was converted: each needs inputs that are not
-  in this repository (records or the container of the real DeepSeek V4.1 model, its checkpoint,
-  numpy, or an engine tree in the maintainer's layout), so a converted script could not be run to
-  its end here or in CI. Open: the conversion, by someone who has those inputs and can show the
-  last lines of a run.
+- **The older research scripts and the engine test, with another compiler:**
+  `wex4/research/fast-cpu-decode/verify/run.sh`, `wex4/research/mxfp4-contexts/run_all.sh`, the two
+  scripts of `wex4/research/wnr4-record/` and `integration/build/build_test_wex_planned.sh`. Today
+  (2026-11-16): the five scripts read `CC` and `WEX_OPENMP` as `scripts/build_cpu_check.sh` does and pass
+  their x86 flags on x86-64 only (`WEX4_MARCH` overrides); `verify/run.sh` ran to its end on 8 real
+  WNR3-CZ records of DeepSeek V4.1 Flash with MSYS2 gcc 16.2 and clang 23.1.5 on Windows 10 and with gcc
+  15.2 under WSL2 (0 mismatches); `build_test_wex_planned.sh` built with gcc on Windows and its test
+  passed on the synthetic fixture and on 2 real experts. The same day `run_all.sh`, `wnr4-record/run.sh`
+  and `wnr4-record/verify/run_verify.sh` ran to their end with gcc 16.2 on Windows 10 on the published 40
+  x 192 WNR3-CZ container of DeepSeek V4.1 Flash, read through the WEX3 header page that its upgrade to
+  WEX4 kept; every figure of their result files came out as committed except the times (the folders'
+  `RESULTS.md`). Still open: any of the five on ARM; the two wnr4-record scripts with a clang that has
+  an OpenMP runtime; the engine test outside Windows; and the first part of `verify/st_check.py`
+  against the REAP-192 checkpoint the container was made from (the only shards on the machine were of
+  the unpruned checkpoint, whose experts are not those of the container).
 
 ## 4. A second, independent implementation
 

@@ -1,13 +1,14 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 Ludovico Zanichelli
-"""Copy what the WNR4 record experiment needs out of a WEX3 container (opened read-only).
+"""Copy what the WNR4 record experiment needs out of a WEX3 container, or out of one upgraded to WEX4 in place
+(the published container is one), opened read-only.
 
   python -I fetch.py CONTAINER CACHE_DIR records L:E,L:E,...   header page, model blob, entry table, those records
   python -I fetch.py CONTAINER CACHE_DIR scan OUT.json          every record's header + u16 length table only
 
 Nothing is written next to the container. Prints the number of bytes read from it.
 """
-import json, os, struct, sys
+import hashlib, json, os, struct, sys
 import numpy as np
 
 HDR = struct.Struct('<IIIIQQII')
@@ -15,9 +16,30 @@ WNMD = struct.Struct('<IIQII')
 ENTRY = struct.Struct('<QIII6H6H3I3II')
 
 
+def wex3_page(f):
+    """The WEX3 header page of the container. The published container is WEX4: `wex4_convert.py upgrade` kept
+    its WEX3 header page as a blob of kind 16 near the end of the file and left the WEX3 entry table, the model
+    and the records where they were. That saved page (its SHA-256 checked against the index) stands for page 0."""
+    f.seek(0)
+    page = f.read(4096)
+    if page[:4] != b'4XEW':
+        return page
+    index_offset, _, blob_count = struct.unpack_from('<QQI', page, 32)
+    f.seek(index_offset)
+    blobs = f.read(64 * blob_count)
+    for i in range(blob_count):
+        kind, _, offset, size, digest, _ = struct.unpack_from('<IIQQ32sQ', blobs, 64 * i)
+        if kind == 16 and size == 4096:
+            f.seek(offset)
+            page = f.read(4096)
+            assert hashlib.sha256(page).digest() == digest, 'the saved WEX3 header page is damaged'
+            return page
+    raise AssertionError('a WEX4 file without a saved WEX3 header page: not an upgraded WEX3 container')
+
+
 def open_container(path):
     f = open(path, 'rb')
-    page = f.read(4096)
+    page = wex3_page(f)
     magic, version, layers, experts, aligned, table_offset, flags, _ = HDR.unpack_from(page, 0)
     assert magic == 0x57455833 and version == 3, 'not a WEX3 container'
     _, model_bytes, model_offset, model_id, _ = WNMD.unpack_from(page, 64)

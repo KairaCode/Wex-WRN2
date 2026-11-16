@@ -2,6 +2,8 @@
 # Copyright 2026 Ludovico Zanichelli
 """Read-only copy of chosen records (+ header page, model, entry table) into out/cache for the verification rerun."""
 import json, os, struct, sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))   # -I drops the script directory
+from fetch import wex3_page   # the WEX3 page, also of a container upgraded to WEX4 in place
 path, cache, theirs = sys.argv[1:4]
 rows = json.load(open(theirs))['rows']
 big = max(rows, key=lambda r: r[3]); small = min(rows, key=lambda r: r[3]); worst_lenc = max(rows, key=lambda r: r[7])
@@ -15,7 +17,7 @@ picks = []
 for p in fresh + overlap + extreme:
     if p not in picks: picks.append(p)
 f = open(path, 'rb')
-page = f.read(4096)
+page = wex3_page(f)
 _, _, L, E, _, toff, _, _ = struct.unpack_from('<IIIIQQII', page, 0)
 _, mb, moff, _, _ = struct.unpack_from('<IIQII', page, 64)
 f.seek(moff); model = f.read(mb); f.seek(toff); table = f.read(L * E * 72)

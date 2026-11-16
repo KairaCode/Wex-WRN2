@@ -457,9 +457,11 @@ def stage_decbench(d):
     """Run out/decbench.exe (single thread CPU decode-cost classes) on two experts and keep its output."""
     import subprocess
     out = {}
+    # an absolute path: with the Python of MSYS2, whose os.sep is '/', Windows refuses to start 'out/decbench.exe'
+    exe = os.path.abspath(os.path.join(d.out, 'decbench.exe'))
     for i in (10, 21):
         r = d.rows[i]
-        text = subprocess.run([os.path.join(d.out, 'decbench.exe'), os.path.join(d.out, 'slabs', r['file']),
+        text = subprocess.run([exe, os.path.join(d.out, 'slabs', r['file']),
                                r['entry_hex']] + [str(a) for a in r['anchors']], capture_output=True, text=True,
                               check=True).stdout
         print(text)

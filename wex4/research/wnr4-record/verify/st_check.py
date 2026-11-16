@@ -1,7 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 Ludovico Zanichelli
 """(1) reference-decoded slab == Z(safetensors source) for two experts, independent of the codec;
-(2) chunk-size variants through the UNCHANGED WNR3 encoder/decoder (DLL): sizes vs the prototype's, decode check."""
+(2) chunk-size variants through the UNCHANGED WNR3 encoder/decoder (DLL): sizes vs the prototype's, decode check.
+
+  python -I st_check.py MODEL_DIR CACHE_DIR [L:E,L:E,...]
+
+The experts of (1) default to L39 E120 and L16 E177; MODEL_DIR must hold their six tensors and CACHE_DIR their
+records (rec_LL_EEE.bin). (2) always uses L16 E177, decoded from its record, which fetch_v.py fetches."""
 import ctypes as C, glob, json, os, struct, sys
 import numpy as np
 model_dir, cache = sys.argv[1:3]
@@ -11,7 +16,7 @@ dll.wex_nr3_encode_record.argtypes = [C.c_char_p, C.c_char_p, C.c_char_p, C.c_ui
                                       C.c_char_p, C.c_size_t, C.POINTER(C.c_size_t), C.POINTER(C.c_size_t)]
 model = open(os.path.join(cache, 'model.bin'), 'rb').read()
 table = open(os.path.join(cache, 'entries.bin'), 'rb').read()
-want = [(39, 120), (16, 177)]
+want = [tuple(map(int, x.split(':'))) for x in sys.argv[3].split(',')] if len(sys.argv) > 3 else [(39, 120), (16, 177)]
 names = {f'layers.{l}.ffn.experts.{e}.{m}.{k}': (l, e, m, k) for l, e in want for m in ('w1', 'w2', 'w3') for k in ('scale', 'weight')}
 found, read = {}, 0
 for shard in sorted(glob.glob(os.path.join(model_dir, '*.safetensors'))):
@@ -43,6 +48,12 @@ for l, e in want:
     slabs[(l, e)] = (entry, rec, slab)
 # (2) chunk variants via the production codec, one expert
 l, e = 16, 177
+if (l, e) not in slabs:   # not among the experts of (1): decode it from its record
+    entry = table[(l * 192 + e) * 72:][:72]; en = ENT.unpack(entry)
+    rec = open(os.path.join(cache, f'rec_{l:02d}_{e:03d}.bin'), 'rb').read()
+    slab = C.create_string_buffer(en[2] + en[3])
+    assert dll.wex_nr3_decode(model, entry, rec, l, e, slab) == 0
+    slabs[(l, e)] = (entry, rec, slab)
 entry, rec, slab = slabs[(l, e)]
 raw = len(slab)
 coded, stats = C.create_string_buffer(raw), (C.c_uint32 * 16)()
