@@ -109,8 +109,8 @@ measured; it is not known to fail.
     NEON kernel 1 stays the default. The `linux-arm` runner has SVE with 128-bit vectors: there the
     kernel is byte-identical to the reference decoder (also at 256, 512 and 2048 bits under QEMU,
     which checks bytes only; at 2048 bits the test records form no group of 3 vectors, so that code
-    never ran), and its fastest variant is 1.23 times slower than NEON kernel 1 on one
-    thread, on synthetic records ([results](../wex4/research/fast-cpu-decode/RESULTS.md), section
+    never ran, and groups of 2 vectors only in `mutate`), and its fastest variant is 1.23 times
+    slower than NEON kernel 1 on one thread, on synthetic records ([results](../wex4/research/fast-cpu-decode/RESULTS.md), section
     "SVE kernel 2"). So it is an option, not the default.
   - **Still open:** its speed on other ARM CPUs (Apple silicon, Ampere, DGX Spark), which needs no
     model (`bash scripts/check_all.sh`, then `bash wex4/research/fast-cpu-decode/synth.sh speed`);
