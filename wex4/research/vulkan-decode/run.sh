@@ -43,8 +43,11 @@ glsl -V -DWEIGHTS "$SHADER" -o "$OUT/weights.spv"
 "${CC:-gcc}" -std=c99 -O2 -Wall -Wextra -Wno-unused-function ${WEX_CFLAGS-} -I "$ROOT/c" "$HERE/wnr3_vk.c" -o "$OUT/wnr3_vk" -l"$LIB"
 export WNR3_VK_SHADERS="$OUT"
 X="$OUT/wnr3_vk"
+# the three accepted vectors with WNR3 records (WNR3-SPEC section 12); the last one has the chunk pairs
+# 2048:512, 512:256, 4096:1024 and 16384:16384 and a record whose anchors are not those of rule g (erratum 14)
+VALID="$V/valid/tiny2-cz-upgraded.wex4 $V/valid/wnr3-one-expert.wex4 $V/valid/wnr3-ceil-form-chunk-pairs-and-anchors.wex4"
 "$X" selftest
-"$X" decode "$V/valid/tiny2-cz-upgraded.wex4" "$@"
+"$X" decode $VALID "$@"
 # the other form of both symbol lookups (-DSEARCH: the reference binary search) on the same records
 mkdir -p "$OUT/search"
 glsl -V -DSEARCH "$SHADER" -o "$OUT/search/scales.spv"
@@ -52,7 +55,7 @@ glsl -V -DWEIGHTS -DSEARCH "$SHADER" -o "$OUT/search/weights.spv"
 search() { WNR3_VK_SHADERS="$OUT/search" "$X" "$@" > "$OUT/search.log" || { cat "$OUT/search.log"; exit 1; }; }
 search selftest
 grep -E '^selftest:' "$OUT/search.log" | sed 's/^/binary search: /'
-search decode "$V/valid/tiny2-cz-upgraded.wex4" "$@"
+search decode $VALID "$@"
 grep -E 'WNR3 records' "$OUT/search.log" | sed 's/^/binary search: /'
 # the batch cut: the same records again with a batch limit of 256 KiB, which cuts a file into several
 # batches (files above 16 MiB are left out: a second pass over a real container would only cost time)
@@ -60,22 +63,31 @@ small() {
   WNR3_VK_BATCH_BYTES=262144 "$X" decode "$1" > "$OUT/small.log" || { cat "$OUT/small.log"; exit 1; }
   grep -E 'WNR3 records' "$OUT/small.log" | sed 's/^/batch limit 256 KiB: /'
 }
-small "$V/valid/tiny2-cz-upgraded.wex4"
-for f in "$@"; do
+for f in $VALID "$@"; do
   if [ "$(wc -c < "$f")" -le 16777216 ]; then small "$f"; fi
 done
-# the three vectors whose WNR3 data is refused by a reader that decodes (WEX4_E_DATA); the first two are
-# refused by the host checks, the third by the device
-"$X" reject "$V/invalid/canonical-zero-wnr3-data-without-the-value-exact-flag.wex4" \
-            "$V/invalid/wnr3-record-owner-differs-from-the-owner-in-its-data.wex4" \
-            "$V/invalid/wnr3-stream-damaged-record-hash-fixed.wex4"
+# the twelve vectors whose WNR3 data is refused by a reader that decodes (WEX4_E_DATA in MANIFEST.tsv); some
+# are refused by the host checks, the others by the device
+I=$V/invalid
+"$X" reject "$I/canonical-zero-wnr3-data-without-the-value-exact-flag.wex4" \
+            "$I/non-zero-byte-in-the-padding-of-a-wnr3-record-record-hash-fixed.wex4" \
+            "$I/wnr3-canonical-zero-record-with-a-nibble-8.wex4" \
+            "$I/wnr3-ceil-form-block-of-maximum-5-at-coded-scale-0.wex4" \
+            "$I/wnr3-payload-sizes-differ-from-the-stream-lengths-record-hash-fixed.wex4" \
+            "$I/wnr3-record-owner-differs-from-the-owner-in-its-data.wex4" \
+            "$I/wnr3-record-whose-model-id-is-not-its-blob-id.wex4" \
+            "$I/wnr3-record-with-a-reserved-flag-bit.wex4" \
+            "$I/wnr3-record-with-a-weight-chunk-of-256.wex4" \
+            "$I/wnr3-record-with-a-zero-page-too-many.wex4" \
+            "$I/wnr3-record-with-the-magic-wnr2-record-hash-fixed.wex4" \
+            "$I/wnr3-stream-damaged-record-hash-fixed.wex4"
 # the bench mode once on two small records, both forms in pairs, the CPU decoders not timed: it must end with
 # the reference's bytes for both forms (its times are not read here; bench.sh is the measurement)
 WNR3_VK_BENCH_CPU=0 WNR3_VK_SHADERS_B="$OUT/search" "$X" bench 3 "$V/valid/tiny2-cz-upgraded.wex4" > "$OUT/bench.log" ||
   { cat "$OUT/bench.log"; exit 1; }
 grep -E 'differences from the reference' "$OUT/bench.log" | sed 's/^bench: /bench mode, both forms: /'
 if [ "${MUTATIONS:-20}" != 0 ]; then
-  "$X" mutate "${MUTATIONS:-20}" 20261114 "$V/valid/tiny2-cz-upgraded.wex4" "$@"
+  "$X" mutate "${MUTATIONS:-20}" 20261114 $VALID "$@"
 else
   echo "mutation test left out (MUTATIONS=0)"
 fi

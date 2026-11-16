@@ -296,8 +296,9 @@ not run or not measured; it is not known to fail.
   buffers, the model tables, batching, what differs from CUDA) and a prototype in
   [`wex4/research/vulkan-decode/`](../wex4/research/vulkan-decode/README.md): a compute shader and a C99
   host program that build without the CUDA toolkit and agree with the CPU reference, in bytes and in
-  verdicts, on synthetic records, on the tiny-model containers and a conformance vector, and on mutated
-  copies of them. It runs on Mesa lavapipe, a Vulkan device on the CPU, in the opt-in `linux-vulkan` job
+  verdicts, on synthetic records, on the tiny-model containers and the three accepted conformance
+  vectors with WNR3 records (since the merges of 2026-11-15; before, one), and on mutated copies of
+  them. It runs on Mesa lavapipe, a Vulkan device on the CPU, in the opt-in `linux-vulkan` job
   of `.github/workflows/ci.yml`.
 - **On a GPU (2026-11-15):** one GPU, an NVIDIA GeForce RTX 3070 with driver 621.01 on Windows 10
   ([research/vulkan-gpu-20261115](../research/vulkan-gpu-20261115/README.md)). The first run there found
