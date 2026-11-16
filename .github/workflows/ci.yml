@@ -11,6 +11,7 @@
 # colibri-headers job (the engine fuzzing harnesses built against colibri's own headers).
 # With the input arm_speed it also has the arm-speed jobs (the fast WNR3 decoder's speed on ARM64 Linux and macOS).
 # With the input macos_io_bench it also has the macos-io-bench job (the full read-path benchmark on macOS).
+# With the input vulkan_newmesa it also has the linux-vulkan-newmesa jobs (linux-vulkan on a newer Mesa, in containers).
 name: CI
 
 on:
@@ -31,15 +32,19 @@ on:
         description: "Also run the full bench/wex_io.py on macos-15 (macOS read paths; a measurement, not a check)"
         type: boolean
         default: false
+      vulkan_newmesa:
+        description: "Also run the Vulkan prototype and its crash probe on a newer Mesa (containers: archlinux, fedora)"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
 
 # a newer push to the same branch or PR makes the running checks moot. Runs started by hand are in groups of
-# their own (one for each choice of linux_io_bench, arm_speed and macos_io_bench), so a push does not cancel a
+# their own (one for each choice of linux_io_bench, arm_speed, macos_io_bench and vulkan_newmesa), so a push does not cancel a
 # benchmark that is running and a run started by hand does not cancel the push run of its branch
 concurrency:
-  group: ci-${{ github.ref }}-${{ github.event_name }}-${{ github.event.inputs.linux_io_bench }}-${{ github.event.inputs.arm_speed }}-${{ github.event.inputs.macos_io_bench }}
+  group: ci-${{ github.ref }}-${{ github.event_name }}-${{ github.event.inputs.linux_io_bench }}-${{ github.event.inputs.arm_speed }}-${{ github.event.inputs.macos_io_bench }}-${{ github.event.inputs.vulkan_newmesa }}
   cancel-in-progress: true
 
 jobs:
@@ -713,6 +718,61 @@ jobs:
           ASAN_OPTIONS: detect_leaks=0:abort_on_error=1
           UBSAN_OPTIONS: print_stacktrace=1
         run: bash wex4/research/vulkan-decode/run.sh wex4/out/tiny_nr3_cz.wex4 wex4/out/synth.wex4
+
+  # opt-in: only a run started by hand with the input vulkan_newmesa has this job
+  # (gh workflow run ci.yml --ref <branch> -f vulkan_newmesa=true). The checks of linux-vulkan and its crash probe
+  # (issue 21) on a newer Mesa than the runner's: in a container of a distribution that ships a newer Mesa
+  # lavapipe, nothing taken from the runner's packages. The images are not pinned, so the Mesa and LLVM of a run
+  # are the ones its first step prints. gdb needs ptrace in the container: SYS_PTRACE, no seccomp filter.
+  # No sanitizer build and no 5 GiB file here: linux-vulkan has them
+  linux-vulkan-newmesa:
+    if: github.event_name == 'workflow_dispatch' && inputs.vulkan_newmesa
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ["archlinux:latest", "fedora:latest"]
+    runs-on: ubuntu-24.04
+    container:
+      image: ${{ matrix.image }}
+      options: --cap-add=SYS_PTRACE --security-opt seccomp=unconfined
+    timeout-minutes: 30
+    env:
+      PYTHON: python3
+      USER: ""
+      USERNAME: ""
+      DEBUGINFOD_URLS: ""   # gdb: no symbol download from the network
+    steps:
+      - name: Compiler, Python, Vulkan headers, loader, shader compiler, lavapipe, the validation layer, vulkaninfo
+        run: |
+          if command -v pacman > /dev/null; then
+            pacman -Syu --noconfirm --needed git gcc python diffutils which vulkan-headers vulkan-icd-loader glslang \
+                vulkan-swrast vulkan-validation-layers vulkan-tools spirv-tools gdb
+            pacman -Q mesa vulkan-swrast llvm-libs glslang spirv-tools vulkan-icd-loader
+          else
+            dnf install -y git gcc python3 diffutils which findutils vulkan-headers vulkan-loader-devel glslang \
+                mesa-vulkan-drivers vulkan-validation-layers vulkan-tools spirv-tools gdb
+            rpm -q mesa-vulkan-drivers llvm-libs glslang spirv-tools vulkan-loader
+          fi
+          cat /etc/os-release | grep -E '^(PRETTY_NAME|VERSION_ID)='
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
+      - name: Vulkan device (Mesa and LLVM versions)
+        run: |
+          vulkaninfo --summary
+          vulkaninfo --summary | grep -E 'deviceName|driverName|driverInfo|apiVersion' | sed 's/^ */device: /' | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Containers with WNR3 records (wex4/out)
+        run: bash wex4/build_and_test.sh --fuzz 10
+      - name: WNR3 on Vulkan against the CPU reference, validation layer on
+        run: WNR3_VK_VALIDATE=1 bash wex4/research/vulkan-decode/run.sh wex4/out/tiny_nr3_cz.wex4 wex4/out/synth.wex4
+      # not a check, it ends with status 0 whatever it finds
+      - name: Probe of the llvmpipe crash (not a check)
+        run: |
+          set -o pipefail
+          bash wex4/research/vulkan-decode/crash_probe.sh | tee "$RUNNER_TEMP/probe.log"
+          grep -E '^(first, record|crash_min\.c, crash_min\.comp:|crash probe:)' "$RUNNER_TEMP/probe.log" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Negative control (eleven broken shaders must fail)
+        run: bash wex4/research/vulkan-decode/negative_control.sh wex4/out/tiny_nr3_cz.wex4 wex4/out/synth.wex4
 
   # opt-in: only a run started by hand has this job, because it fetches a third-party repository. The fuzz replay,
   # then the two engine harnesses of wex4/fuzz/ built against the headers of colibri itself instead of the
