@@ -111,6 +111,7 @@ timed() {   # timed NAME CMD...: runs CMD, appends "NAME seconds" to RESULTS/tim
 shard_list() { ls "$CHECKPOINT"/*.safetensors 2>/dev/null | sort; }
 free_gb() { "$PY" -I -c "import shutil,sys; print(int(shutil.disk_usage(sys.argv[1]).free/1e9))" "$1"; }
 need_container() { [ -f "$CONTAINER" ] || die "no container at $CONTAINER (run the build stage, or give --container)"; }
+native() { if command -v cygpath >/dev/null 2>&1; then cygpath -m "$1"; else echo "$1"; fi; }   # a path for a native program
 root_of() { sed -n 's/^root \([0-9a-f]\{64\}\)$/\1/p' "$RESULTS/build.log" 2>/dev/null | tail -1; }
 
 tools() {   # the libraries and wex4_verify, built once into WORK/tools (as wex4/build_and_test.sh builds them)
@@ -325,13 +326,13 @@ stage_engine() {
   ( unset COLI_WEX_PATH COLI_WEX_ROOT COLI_WEX_VERIFY COLI_WEX_CUDA_LIB
     timed engine_shards "$bin" --model "$CHECKPOINT" --ids "$ids" --greedy "$TOKENS" ) > "$RESULTS/engine-shards.txt" 2>&1 ||
     { tail -20 "$RESULTS/engine-shards.txt"; die "glm53 on the shards failed (engine-shards.txt)"; }
-  ( export COLI_WEX_PATH=$CONTAINER COLI_WEX_VERIFY=1; [ -z "$root" ] || export COLI_WEX_ROOT=$root
+  ( export COLI_WEX_PATH=$(native "$CONTAINER") COLI_WEX_VERIFY=1; [ -z "$root" ] || export COLI_WEX_ROOT=$root
     unset COLI_WEX_CUDA_LIB
     timed engine_container "$bin" --model "$CHECKPOINT" --ids "$ids" --greedy "$TOKENS" ) > "$RESULTS/engine-container.txt" 2>&1 ||
     { tail -20 "$RESULTS/engine-container.txt"; die "glm53 on the container failed (engine-container.txt)"; }
   "$PY" -I "$KIT/kit.py" engine-ab "$RESULTS/engine-shards.txt" "$RESULTS/engine-container.txt" "$RESULTS/engine.json"
   if [ -n "$CUDA_HELPER" ] || cuda_tools 2>/dev/null; then
-    ( export COLI_WEX_PATH=$CONTAINER COLI_WEX_VERIFY=1 COLI_WEX_CUDA_LIB=$CUDA_HELPER; [ -z "$root" ] || export COLI_WEX_ROOT=$root
+    ( export COLI_WEX_PATH=$(native "$CONTAINER") COLI_WEX_VERIFY=1 COLI_WEX_CUDA_LIB=$(native "$CUDA_HELPER"); [ -z "$root" ] || export COLI_WEX_ROOT=$root
       timed engine_container_cuda "$bin" --model "$CHECKPOINT" --ids "$ids" --greedy "$TOKENS" ) \
       > "$RESULTS/engine-container-cuda.txt" 2>&1 || die "glm53 on the container with the CUDA helper failed"
     "$PY" -I "$KIT/kit.py" engine-ab "$RESULTS/engine-shards.txt" "$RESULTS/engine-container-cuda.txt" "$RESULTS/engine-cuda.json"

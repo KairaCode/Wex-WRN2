@@ -39,7 +39,7 @@ An Italian summary is at the end ([Riassunto in italiano](#riassunto-in-italiano
 | Disk | about **185 GB** for the checkpoint and about **160 GB** for the container, on one or two drives | the build checks for 0.9 x the checkpoint free before it starts; the round trip writes nothing by default (`--unpack-files` writes the 185 GB again) |
 | RAM | 8 GB for stages 1-7; 32 GB for the engine stage | pack holds about 2 x threads x 60 MB of records in flight |
 | CPU | x86-64 with AVX2, or 64-bit ARM | other CPUs work, with the scalar kernel of the fast decoder |
-| NVIDIA GPU | optional | for the CUDA helper: `nvidia-smi`, and `nvcc` (CUDA 12 or later) unless you give a built helper |
+| NVIDIA GPU | optional | for the CUDA helper: `nvidia-smi`, and `nvcc` (CUDA 12 or later) unless you give a built helper. For the engine stage use a helper built from colibri's `kaira/wex-cuda-helper` at `0dc53c2a` or later (#2883): an older one leaks VRAM when the engine's reader threads exit, and then refuses records, which fall back to the CPU |
 | Vulkan GPU | optional | for the Vulkan prototype: `vulkaninfo` and `glslangValidator` |
 | Network | about 185 GB of download | resumable |
 
