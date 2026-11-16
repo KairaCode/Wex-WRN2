@@ -3,6 +3,7 @@
 # Copyright 2026 Ludovico Zanichelli
 # Builds the Go reader, runs its tests and checks every row of wex4/vectors/MANIFEST.tsv with it.
 # Needs Go on PATH and nothing else (the code uses the min and max builtins of Go 1.21; run with Go 1.21.13,
+# 1.24.13 and 1.27.4 only; the code of 2026-11-15, verify.go's content digest and one class in wex4.go, with
 # 1.24.13 and 1.27.4 only). MSYS2: export GOROOT=/ucrt64/lib/go first.
 # Usage: bash impl/go-wex4/run.sh     (last line on success: go reader: all checks passed)
 #        bash impl/go-wex4/run.sh FILE...   also verifies these WEX4 files after the vectors

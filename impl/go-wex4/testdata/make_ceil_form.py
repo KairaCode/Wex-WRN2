@@ -3,8 +3,9 @@
 # Copyright 2026 Ludovico Zanichelli
 """Source of testdata/ceil-form.wex4: two synthetic MXFP4 experts whose WNR3 records are in ceil form.
 
-The conformance vectors hold no WNR3 record with a CEIL bit (their experts have blocks of maximum 5, so the
-encoder's gate keeps every matrix plain). This script writes experts made of blocks the ceil form changes
+On 2026-11-14 the conformance vectors held no WNR3 record with a CEIL bit (their experts have blocks of maximum
+5, so the encoder's gate keeps every matrix plain); since 2026-11-15 they have such records (SPEC-NOTES.md,
+"After the sentences and vectors of 2026-11-15"). This script writes experts made of blocks the ceil form changes
 (maximum 7, no magnitude 1 or 3), blocks it leaves alone, blocks at scale 254 and 255, and all-zero blocks;
 the second matrix of the second expert has blocks of maximum 5, so that one matrix stays plain.
 

@@ -1,5 +1,7 @@
 # Spec review of WEX4-SPEC and WNR3-SPEC (2026-11-14)
 
+**Note of 2026-11-15.** The four findings left open below are answered in the specifications, with no rule changed: finding 17 by new conformance vectors (WNR3 records in ceil form, without canonical zero, with other chunk pairs; [wex4/vectors/README.md](../../wex4/vectors/README.md)), finding 18 by section 12 of WNR3-SPEC and its erratum 13, finding 19 by WEX4-SPEC section 17 (the class column is informative), finding 20 by erratum 14 of WNR3-SPEC, after a test through both C decoders showed that two records with other anchors and chunk pairs decode to the same slab. The text below is as it was written.
+
 The review that [docs/HELP-WANTED.md](../../docs/HELP-WANTED.md) section 2 asks for: both specifications read as by someone who writes a reader from them, every candidate checked against the code or the vectors before it was kept.
 
 ## Question
