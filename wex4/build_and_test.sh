@@ -75,5 +75,7 @@ for n in $("$PY" -I "$ROOT/fixtures/make_synth_mxfp4.py" --list-names | tr -d '\
   "$PY" -I "$ROOT/fixtures/make_synth_mxfp4.py" "mix/$n" --names "$n" --layers 3 --experts 2 --first-layer 1 --float-layer 2 >> prof.log
 done
 "$PY" -I "$ROOT/c/tools/repack_v4_wex.py" --model-dir prof/deepseek --output prof.wex >> prof.log
+# two experts at the shapes of GLM-5.3-Flash under the qwen38 names (test_train_threads)
+"$PY" -I "$ROOT/fixtures/make_synth_mxfp4.py" glm --names qwen38 --layers 1 --experts 2 --hidden 4096 --inter 2048 >> prof.log
 "$PY" -I "$ROOT/c/tools/build_nr3.py" ./wex_nr3_tools.dll prof.wex container prof_nr3.wex --layers 0,1 --model synth.wnm2 | tail -1
 "$PY" -I -u "$ROOT/wex4/test_wex4.py" "$S" "$@"

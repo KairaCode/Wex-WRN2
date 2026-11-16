@@ -243,6 +243,56 @@ def test_wnr3_exact():
           f'rebuilt byte-identical through the fast and the reference decoder')
 
 
+def test_train_threads():
+    """train (a WNM2 model from safetensors, no WEX1 container), pack --threads and unpack --sha-only on the qwen38
+    profile, at the expert shapes of GLM-5.3-Flash (hidden 4096, moe_intermediate 2048: gate/up weight [2048, 2048]
+    and scale [2048, 128], down weight [4096, 1024] and scale [4096, 64]) and on the small profile fixture."""
+    dll = os.path.join(WORK, 'wex_nr3_tools.dll')
+    glm = os.path.join(WORK, 'glm', 'model.safetensors')
+    tensors = st_tensors(glm)
+    shapes = {name.decode().split('.experts.0.')[1]: (dtype, shape) for name, (dtype, shape, _) in tensors.items()
+              if b'.experts.0.' in name}
+    assert shapes == {'gate_proj.weight': ('U8', (2048, 2048)), 'gate_proj.weight_scale': ('U8', (2048, 128)),
+                      'up_proj.weight': ('U8', (2048, 2048)), 'up_proj.weight_scale': ('U8', (2048, 128)),
+                      'down_proj.weight': ('U8', (4096, 1024)), 'down_proj.weight_scale': ('U8', (4096, 64))}, shapes
+    models = {}
+    for threads in (1, 3):
+        out = os.path.join(WORK, f'glm_t{threads}.wnm2')
+        ident, picks = conv.train(out, [glm], dll, 'qwen38', 80, 7, threads=threads)
+        models[threads] = open(out, 'rb').read()
+        assert picks == [(0, 0), (0, 1)] and wex4.wnm2_id(models[threads]) == ident
+    assert models[1] == models[3], 'train: the model depends on the thread count'
+    assert conv.sample_experts([(1, 2), (0, 5), (0, 1), (3, 3)], 2, 9) == conv.sample_experts([(3, 3), (0, 1), (0, 5), (1, 2)], 2, 9)
+    assert len(set(conv.sample_experts([(0, e) for e in range(100)], 10, s)[0] for s in range(20))) > 1, 'the seed is used'
+    assert rejected(conv.train, os.path.join(WORK, 'none.wnm2'), [glm], dll, 'deepseek')   # no expert under that profile
+    nr3 = conv.Nr3(dll, os.path.join(WORK, 'glm_t1.wnm2'), False)
+    roots, files = {}, {}
+    for threads in (1, 4):
+        out = os.path.join(WORK, f'glm_t{threads}.wex4')
+        report = {}
+        roots[threads] = conv.pack(out, [glm], C, 'nr3', nr3, family='qwen38', report=report, threads=threads)
+        files[threads] = open(out, 'rb').read()
+        assert report == {'expert_records': 2, 'experts_as_tensors': 0}, report
+    assert roots[1] == roots[4] and files[1] == files[4], 'pack --threads changes the file'
+    rd = wex4.Reader(io.BytesIO(files[1]), C)
+    assert [r[3] for r in rd.records if r[4] & wex4.REC_EXPERT] == [5, 5]
+    assert C.check(files[1], 3, True) == CREF.check(files[1], 3, True) and C.check(files[1], 3, True)[0] == 0
+    back = os.path.join(WORK, 'glm_back')
+    shutil.rmtree(back, ignore_errors=True)
+    digests = {}
+    assert conv.unpack(os.path.join(WORK, 'glm_t1.wex4'), back, C, sha_only=True, digests=digests) == [('model.safetensors', True)]
+    assert os.listdir(back) == [] and digests == {'model.safetensors': conv.file_sha256(glm)}
+    small = os.path.join(WORK, 'prof', 'qwen38', 'model.safetensors')
+    out = os.path.join(WORK, 'prof_q38_t2.wex4')
+    model = os.path.join(WORK, 'prof_q38.wnm2')
+    conv.train(model, [small], dll, 'qwen38', 4, 1, threads=2)
+    conv.pack(out, [small], C, 'nr3', conv.Nr3(dll, model, False), family='qwen38', threads=2)
+    assert conv.unpack(out, os.path.join(WORK, 'prof_q38_back'), C) == [('model.safetensors', True)]
+    assert open(os.path.join(WORK, 'prof_q38_back', 'model.safetensors'), 'rb').read() == open(small, 'rb').read()
+    print(f'train from safetensors, pack --threads 1/3/4, unpack --sha-only: GLM-5.3 expert shapes, 2 experts, '
+          f'{os.path.getsize(glm)} B -> {len(files[1])} B, the same model and the same file for every thread count')
+
+
 def st_tensors(path):
     """{name: (dtype, shape, bytes)} of a safetensors file."""
     _, start, tensors = conv.st_index(path)
@@ -1249,6 +1299,7 @@ def main():
     upgraded = test_upgrade()
     test_wnr3_exact()
     test_profiles()
+    test_train_threads()
     test_store()
     hostile = test_hostile(generic)
     expert_attacks = test_hostile_experts(upgraded)

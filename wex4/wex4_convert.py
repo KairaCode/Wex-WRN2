@@ -5,9 +5,16 @@
   pack      safetensors -> WEX4. The source headers are kept verbatim, so unpack rebuilds every
             source file with the same SHA-256 (unless the container is value-exact).
       python -I wex4_convert.py pack OUT.wex4 SRC.safetensors [SRC2 ...] [--dll wex4_tools.dll]
-             [--experts raw|nr3 [--names PROFILE] --nr3-dll wex_nr3_tools.dll --model FILE.wnm2 [--cz]] [--part-mib 64]
-  unpack    WEX4 -> the source safetensors files, each checked against its recorded SHA-256.
-      python -I wex4_convert.py unpack IN.wex4 OUT_DIR [--dll wex4_tools.dll]
+             [--experts raw|nr3 [--names PROFILE] --nr3-dll wex_nr3_tools.dll --model FILE.wnm2 [--cz] [--threads N]]
+             [--part-mib 64]
+            --threads N: WNR3 records encoded and checked on N threads ahead of the writer (the same file for any N).
+  train     safetensors -> a WNM2 model for pack --experts nr3, from a seeded sample of the routed experts (the
+            statistics c/tools/build_nr3.py --train collects from a WEX1 container; no container needed).
+      python -I wex4_convert.py train OUT.wnm2 SRC.safetensors [SRC2 ...] --nr3-dll wex_nr3_tools.dll
+             [--names PROFILE] [--sample 80] [--seed 20261116] [--cz] [--threads N]
+  unpack    WEX4 -> the source safetensors files, each checked against its recorded SHA-256; prints each file's
+            SHA-256. --sha-only rebuilds every file into its SHA-256 only and writes no file.
+      python -I wex4_convert.py unpack IN.wex4 OUT_DIR [--dll wex4_tools.dll] [--sha-only]
   upgrade   WEX1 (raw) or WEX3/WNR3 expert container -> WEX4, in place and non-destructive: the records
             stay where they are, the old header page and table are kept as hashed blobs, the index is appended.
       python -I wex4_convert.py upgrade FILE.wex [--names PROFILE]
@@ -21,6 +28,7 @@ import hashlib
 import io
 import json
 import os
+import random
 import re
 import struct
 import sys
@@ -212,42 +220,31 @@ def expert_entry(scales, weights):
                       *offsets, 0)
 
 
-def pack(out_path, sources, clib=None, experts=None, nr3=None, part_bytes=64 << 20, family='deepseek', report=None):
-    """safetensors files -> one WEX4 file. experts: None (tensors as they come), 'raw' or 'nr3' (expert records).
-    family: the naming profile that says which tensors are routed experts. An expert with a tensor that is not
-    MXFP4 (a float or FP8 layer of a mixed checkpoint) stays ordinary tensors; so does, under a profile whose
-    weight is not '.weight', an expert with a plain '.weight' that is not U8 or I8. An expert whose tensors are all
-    MXFP4 must be a whole slab: a missing tensor (a missing shard, the wrong profile) or a wrong shape is refused.
-    report: a dict that receives 'expert_records' and 'experts_as_tensors'."""
-    records, empty, meta_sources, indexed = [], [], [], []
-    seen = set()
-    expert_groups = {}
+def _reader(path, start, begin, end):
+    def read():
+        with open(path, 'rb') as f:
+            f.seek(start + begin)
+            return f.read(end - begin)
+    return read
 
-    def reader(path, start, begin, end):
-        def read():
-            with open(path, 'rb') as f:
-                f.seek(start + begin)
-                return f.read(end - begin)
-        return read
 
-    need(sources and part_bytes > 0, 'pack: no source file or bad part size')
-    need(len({os.path.normcase(os.path.basename(p)) for p in sources}) == len(sources), 'two sources have the same file name')
+def find_experts(indexed, family):
+    """The routed experts of indexed source files [(path, data start, st_index tensors)] under a naming profile:
+    ({(layer, expert): {(matrix, is weight): (Tensor, read)}} of the experts that become expert records,
+    [(layer, expert)] of the experts that stay ordinary tensors). The rules are pack's (its docstring); an
+    expert whose tensors are all MXFP4 but do not form a slab is refused here."""
     need(family in PROFILES, f'unknown naming profile {family!r}: one of {", ".join(PROFILES)}')
     pattern, (_, matrices, weight_suffix) = expert_pattern(family), PROFILES[family][:3]
-    for path in sources:   # every header first: the six tensors of one expert may sit in two files
-        raw, start, tensors = st_index(path)
-        meta_sources.append({'name': os.path.basename(path), 'bytes': os.path.getsize(path),
-                             'sha256': file_sha256(path), 'header': raw.decode('utf-8')})
-        indexed.append((path, start, tensors))
+    expert_groups = {}
+    for path, start, tensors in indexed:
         for name, dtype, shape, begin, end in tensors:
-            need(name not in seen, f'tensor {name!r} appears twice')
-            seen.add(name)
-            match = experts and pattern.match(name)
+            match = pattern.match(name)
             if match:
                 key = (int(match[1]), int(match[2]))
                 part = (matrices.index(match[3].decode()), match[4].decode() == weight_suffix)
                 expert_groups.setdefault(key, {})[part] = (wex4.Tensor(name, dtype, shape, end - begin),
-                                                           reader(path, start, begin, end))
+                                                           _reader(path, start, begin, end))
+
     def other_form(layer, expert, parts):
         """True when a matrix has no weight tensor under the profile's suffix but has a plain '.weight' that is
         not MXFP4 (an FP8 or float expert of a compressed-tensors export, with its scale as 'weight_scale')."""
@@ -260,12 +257,68 @@ def pack(out_path, sources, clib=None, experts=None, nr3=None, part_bytes=64 << 
                     return True
         return False
     dtypes = {name: dtype for _, _, tensors in indexed for name, dtype, *_ in tensors}
-    as_tensors = [key for key, parts in expert_groups.items() if not mxfp4_dtypes(parts) or other_form(*key, parts)]
+    as_tensors = sorted(key for key, parts in expert_groups.items() if not mxfp4_dtypes(parts) or other_form(*key, parts))
     for key in as_tensors:
         del expert_groups[key]
     for (layer, expert), parts in sorted(expert_groups.items()):
         problem = mxfp4_slab(parts)
         need(not problem, f'L{layer} E{expert}: {problem} under naming profile {family!r}')
+    return expert_groups, as_tensors
+
+
+def expert_slab(parts):
+    """(tensors in slab order: the three scales, then the three weights; legacy entry bytes; read() of the slab)
+    of one expert of find_experts."""
+    order = [parts[(m, False)] for m in range(3)] + [parts[(m, True)] for m in range(3)]
+    specs, reads = [s for s, _ in order], [r for _, r in order]
+    entry = expert_entry([s.shape for s in specs[:3]], [s.shape for s in specs[3:]])
+    return specs, entry, lambda: b''.join(r() for r in reads)
+
+
+class _Ahead:
+    """WNR3 records encoded ahead on a thread pool (the encoder and its check run in C, outside the GIL):
+    get(k) returns the record of job k, with jobs k+1 .. k+depth already running. Jobs are taken in order."""
+
+    def __init__(self, jobs, threads, depth):
+        import concurrent.futures
+        self.jobs, self.depth, self.next, self.running = jobs, depth, 0, {}
+        self.pool = concurrent.futures.ThreadPoolExecutor(threads)
+
+    def get(self, k):
+        while self.next < len(self.jobs) and self.next <= k + self.depth:
+            self.running[self.next] = self.pool.submit(self.jobs[self.next])
+            self.next += 1
+        result = self.running.pop(k).result()
+        if not self.running and self.next == len(self.jobs):
+            self.pool.shutdown()
+        return result
+
+
+def pack(out_path, sources, clib=None, experts=None, nr3=None, part_bytes=64 << 20, family='deepseek', report=None,
+         threads=1):
+    """safetensors files -> one WEX4 file. experts: None (tensors as they come), 'raw' or 'nr3' (expert records).
+    family: the naming profile that says which tensors are routed experts. An expert with a tensor that is not
+    MXFP4 (a float or FP8 layer of a mixed checkpoint) stays ordinary tensors; so does, under a profile whose
+    weight is not '.weight', an expert with a plain '.weight' that is not U8 or I8. An expert whose tensors are all
+    MXFP4 must be a whole slab: a missing tensor (a missing shard, the wrong profile) or a wrong shape is refused.
+    threads: WNR3 records encoded (and checked) on that many threads ahead of the writer; the file is the same
+    for any value. report: a dict that receives 'expert_records' and 'experts_as_tensors'."""
+    records, empty, meta_sources, indexed = [], [], [], []
+    seen = set()
+
+    need(sources and part_bytes > 0 and threads >= 1, 'pack: no source file, bad part size or thread count')
+    need(len({os.path.normcase(os.path.basename(p)) for p in sources}) == len(sources), 'two sources have the same file name')
+    need(family in PROFILES, f'unknown naming profile {family!r}: one of {", ".join(PROFILES)}')
+    for path in sources:   # every header first: the six tensors of one expert may sit in two files
+        raw, start, tensors = st_index(path)
+        meta_sources.append({'name': os.path.basename(path), 'bytes': os.path.getsize(path),
+                             'sha256': file_sha256(path), 'header': raw.decode('utf-8')})
+        indexed.append((path, start, tensors))
+        for name, *_ in tensors:
+            need(name not in seen, f'tensor {name!r} appears twice')
+            seen.add(name)
+    expert_groups, as_tensors = find_experts(indexed, family) if experts else ({}, [])
+    reader = _reader
     in_slab = {spec.name for parts in expert_groups.values() for spec, _ in parts.values()}
     if report is not None:
         report.update(expert_records=len(expert_groups), experts_as_tensors=len(as_tensors))
@@ -306,22 +359,72 @@ def pack(out_path, sources, clib=None, experts=None, nr3=None, part_bytes=64 << 
             required = wex4.REQ_VALUE_EXACT if nr3.cz else 0
         layers, n_experts = max(k[0] for k in expert_groups) + 1, max(k[1] for k in expert_groups) + 1
         need(layers <= 65536 and n_experts <= 65536, 'expert grid too large')
-        for (layer, expert), parts in sorted(expert_groups.items()):
-            order = [parts[(m, False)] for m in range(3)] + [parts[(m, True)] for m in range(3)]
-            specs, reads = [s for s, _ in order], [r for _, r in order]
-            entry = expert_entry([s.shape for s in specs[:3]], [s.shape for s in specs[3:]])
-
-            def slab(reads=reads):
-                return b''.join(r() for r in reads)
+        jobs = []
+        ahead = _Ahead(jobs, threads, 2 * threads) if nr3 and threads > 1 else None
+        for k, ((layer, expert), parts) in enumerate(sorted(expert_groups.items())):
+            specs, entry, slab = expert_slab(parts)
+            jobs.append(lambda entry=entry, slab=slab, layer=layer, expert=expert: nr3.encode(entry, slab(), layer, expert))
             codec = 'raw'
             if nr3:
-                codec = ('pre', wex4.CODEC_WNR3, lambda entry=entry, slab=slab, layer=layer, expert=expert:
-                         nr3.encode(entry, slab(), layer, expert))
+                codec = ('pre', wex4.CODEC_WNR3, (lambda k=k: ahead.get(k)) if ahead else jobs[-1])
             flags = wex4.REC_EXPERT | (wex4.REC_VALUE_EXACT if nr3 and nr3.cz else 0)
             records.append(wex4.Record(specs, sum(s.nbytes for s in specs), slab, codec, flags, layer << 16 | expert,
                                        1 if nr3 else 0))
     meta = json.dumps({'wex4_meta': 1, 'sources': meta_sources}, ensure_ascii=False, separators=(',', ':')).encode('utf-8')
     return wex4.write(out_path, records, blobs, empty, meta, layers, n_experts, required, wex4.OPT_ST_SOURCES, encoder=clib)
+
+
+def sample_experts(keys, count, seed):
+    """`count` of the (layer, expert) keys, drawn with a seeded generator and returned sorted; all of them when
+    there are no more than `count`. The same keys, count and seed give the same sample on any machine."""
+    keys = sorted(keys)
+    if count >= len(keys):
+        return keys
+    return sorted(random.Random(seed).sample(keys, count))
+
+
+def train(out_path, sources, nr3_dll, family='deepseek', count=80, seed=20261116, cz=False, threads=1):
+    """A WNM2 model for `pack --experts nr3`, trained from safetensors files: the coding statistics of a seeded
+    sample of `count` routed experts (sample_experts over the experts pack would turn into expert records), as
+    c/tools/build_nr3.py trains from a WEX1 container. Writes the 59,408-byte model to out_path (through
+    out_path.partial) and returns (model id, [(layer, expert)] of the sample)."""
+    import concurrent.futures
+    indexed = []
+    for path in sources:
+        _, start, tensors = st_index(path)
+        indexed.append((path, start, tensors))
+    groups, _ = find_experts(indexed, family)
+    need(groups, f'train: no MXFP4 routed expert under naming profile {family!r}')
+    picks = sample_experts(groups, count, seed)
+    lib = ctypes.CDLL(os.path.abspath(nr3_dll))
+    P = ctypes.c_void_p
+    lib.wex_nr3_prepare.argtypes = [P, P, ctypes.c_int, P, P]
+    lib.wex_nr3_count_expert.argtypes = [P, P, P, P]
+    lib.wex_nr3_build_model.argtypes = [P, P, P, P]
+    W, S = 3 * 567 * 16, 3 * 256
+
+    def counts(key):
+        _, entry, slab = expert_slab(groups[key])
+        data = slab()
+        coded = ctypes.create_string_buffer(len(data))
+        wc, sc = (ctypes.c_uint64 * W)(), (ctypes.c_uint64 * S)()
+        need(lib.wex_nr3_prepare(entry, data, int(cz), coded, None) >= 0, f'L{key[0]} E{key[1]}: wex_nr3_prepare failed')
+        need(lib.wex_nr3_count_expert(entry, coded, wc, sc) == 0, f'L{key[0]} E{key[1]}: wex_nr3_count_expert failed')
+        return list(wc), list(sc)
+    total_w, total_s = [0] * W, [0] * S
+    with concurrent.futures.ThreadPoolExecutor(max(1, threads)) as pool:
+        for wc, sc in pool.map(counts, picks):   # summed in sample order: the same model for any thread count
+            total_w = [a + b for a, b in zip(total_w, wc)]
+            total_s = [a + b for a, b in zip(total_s, sc)]
+    blob, ident = ctypes.create_string_buffer(wex4.WNM2_BYTES), ctypes.c_uint32()
+    need(lib.wex_nr3_build_model((ctypes.c_uint64 * W)(*total_w), (ctypes.c_uint64 * S)(*total_s), blob,
+                                 ctypes.byref(ident)) == 0, 'wex_nr3_build_model failed')
+    model = blob.raw
+    need(wex4.wnm2_id(model) == ident.value, 'the trained model does not pass the WNM2 check')
+    with open(os.fspath(out_path) + '.partial', 'wb') as f:
+        f.write(model)
+    os.replace(os.fspath(out_path) + '.partial', out_path)
+    return ident.value, picks
 
 
 def _header_tensors(path, rd):
@@ -334,8 +437,10 @@ def _header_tensors(path, rd):
     return [t[0] for t in tensors]
 
 
-def unpack(in_path, out_dir, clib=None):
-    """Rebuild every source safetensors file; returns [(name, sha256 matches)]."""
+def unpack(in_path, out_dir, clib=None, sha_only=False, digests=None):
+    """Rebuild every source safetensors file; returns [(name, sha256 matches)]. sha_only: rebuild each file as a
+    stream into its SHA-256 and write nothing but a header-sized temporary file (removed), for a check on a disk
+    that cannot hold the rebuilt files. digests: a dict that receives {name: SHA-256 hex of the rebuilt file}."""
     os.makedirs(out_dir, exist_ok=True)
     results = []
     with open(in_path, 'rb') as f:
@@ -377,14 +482,20 @@ def unpack(in_path, out_dir, clib=None):
                     for k in range(count):
                         data = record(r + k)
                         piece = data[offset:offset + nbytes] if count == 1 else data
-                        out.write(piece)
+                        if not sha_only:
+                            out.write(piece)
                         digest.update(piece)
               ok = digest.hexdigest() == recorded
               need(ok or rd.required & wex4.REQ_VALUE_EXACT, f'{name}: the rebuilt file does not match its SHA-256')
             except BaseException:
                 os.remove(tmp)
                 raise
-            os.replace(tmp, os.path.join(out_dir, name))
+            if sha_only:
+                os.remove(tmp)
+            else:
+                os.replace(tmp, os.path.join(out_dir, name))
+            if digests is not None:
+                digests[name] = digest.hexdigest()
             results.append((name, ok))
     return results
 
@@ -570,15 +681,17 @@ def main(argv):
         print(__doc__)
         return 2
     clib = wex4.CLib(option('--dll')) if '--dll' in argv else None
-    values = {argv[i + 1] for i, a in enumerate(argv[:-1]) if a.startswith('--') and a != '--cz'}
+    values = {argv[i + 1] for i, a in enumerate(argv[:-1]) if a.startswith('--') and a not in ('--cz', '--sha-only')}
     positional = [a for a in argv[2:] if not a.startswith('--') and a not in values]
+    threads = int(option('--threads', '1'))
     if argv[1] == 'pack':
         mode = option('--experts')
         need(mode in (None, 'raw', 'nr3'), '--experts takes raw or nr3')
         nr3 = Nr3(option('--nr3-dll'), option('--model'), '--cz' in argv) if mode == 'nr3' else None
         need(mode or '--names' not in argv, 'pack: --names needs --experts raw or nr3')
         report, family = {}, option('--names', 'deepseek')
-        root = pack(positional[0], positional[1:], clib, mode, nr3, int(option('--part-mib', '64')) << 20, family, report)
+        root = pack(positional[0], positional[1:], clib, mode, nr3, int(option('--part-mib', '64')) << 20, family, report,
+                    threads)
         if mode:
             print(f'{report["expert_records"]} expert records; {report["experts_as_tensors"]} experts kept as ordinary '
                   f'tensors (float or FP8, not MXFP4)')
@@ -587,8 +700,13 @@ def main(argv):
                       f'(--names; one of {", ".join(PROFILES)})', file=sys.stderr)
         print('root', root.hex())
     elif argv[1] == 'unpack':
-        for name, ok in unpack(positional[0], positional[1], clib):
-            print(name, 'sha256 identical' if ok else 'DIFFERS (value-exact container)')
+        digests = {}
+        for name, ok in unpack(positional[0], positional[1], clib, '--sha-only' in argv, digests):
+            print(name, digests[name], 'sha256 identical' if ok else 'DIFFERS (value-exact container)')
+    elif argv[1] == 'train':
+        ident, picks = train(positional[0], positional[1:], option('--nr3-dll'), option('--names', 'deepseek'),
+                             int(option('--sample', '80')), int(option('--seed', '20261116')), '--cz' in argv, threads)
+        print(f'model {ident:08x} trained on {len(picks)} experts: {",".join(f"{L}:{e}" for L, e in picks)}')
     elif argv[1] == 'upgrade':
         print(upgrade(positional[0], family=option('--names', 'deepseek')))
     elif argv[1] == 'downgrade':
