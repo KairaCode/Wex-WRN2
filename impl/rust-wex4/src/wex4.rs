@@ -710,9 +710,11 @@ pub fn check_index(h: &Header, ix: &Index, raw_padded: &[u8]) -> Res<Checked> {
                 let streams: u64 =
                     expert_scales(ix, &e).iter().map(|&s| div_ceil(s, 16384) + div_ceil(32 * s, 16384)).sum();
                 let min = align(32 + 6 * streams);
+                // EXPERT, the class of the manifest (vector wnr3-record-smaller-than-its-streams-need, 2026-11-15):
+                // the minimum is a rule of 5.2 that needs the shapes of 5.5 (SPEC-NOTES, A5 and F)
                 ensure!(
                     e.stored as u64 >= min,
-                    Record,
+                    Expert,
                     "record {}: WNR3 of {} bytes below its minimum {}",
                     r,
                     e.stored,

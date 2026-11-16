@@ -94,8 +94,8 @@ table as it is since part E; the six rules marked E3 had another class before):
 | `NAME` | name offset and length, UTF-8, NUL, the names filling the pool, the name order |
 | `TENSOR` | rank, shape, size, zero-size tensors; and in the record pass, a tensor's record, offset, end and part count, a zero-size tensor listed by a record (E3), a split tensor that is not alone in its record (E3) or whose next record is not a part (E3), and the tiling of a record (E3) |
 | `BLOB` | the rules of 5.1; in step 3 a blob's padding, its WNM2 model and id |
-| `RECORD` | the rules of 5.2 (codec, flags, sizes, blob, own owner, VALUE_EXACT), `first_tensor` and `tensor_count`, continuation parts (an orphan part, the part of another tensor, the sum of the parts), the two totals, the WNR3 minimum size |
-| `EXPERT` | the rules of 5.5, "EXPERT allows codec 0 or 5" (E3), the owner of an EXPERT record inside the grid and increasing, a grid without an expert record |
+| `RECORD` | the rules of 5.2 (codec, flags, sizes, blob, own owner, VALUE_EXACT), `first_tensor` and `tensor_count`, continuation parts (an orphan part, the part of another tensor, the sum of the parts), the two totals |
+| `EXPERT` | the rules of 5.5, "EXPERT allows codec 0 or 5" (E3), the owner of an EXPERT record inside the grid and increasing, a grid without an expert record, the WNR3 minimum size (F) |
 | `LAYOUT` | the tiling of the file by its extents (section 3) |
 | `DATA` | a record that its decoder refuses, with the cross-checks of 7.1 |
 

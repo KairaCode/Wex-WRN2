@@ -440,6 +440,19 @@ static int count_experts(const Opened *o) {
     }
     return n;
 }
+/* 1 when both libraries' loader refuses a valid file with an expert grid, as wex4/wex4_store.h refuses a file whose
+ * WNR3 records mix canonical zero and plain ones (WEX4_E_RECORD: the old store applies canonical zero to the whole
+ * container); any other refusal, or two different answers, fails */
+static int store_refused(const Tools *fast, const Tools *ref, const File *file, const Opened *o) {
+    const uint64_t cap = (uint64_t)o->h.layers * o->h.experts * sizeof(WexEntry);
+    unsigned char *table = (unsigned char *)xmalloc((size_t)cap);
+    uint32_t info[5];
+    int sa = fast->store_probe(file->path, file->data + WEX4_HEADER_HASHED, table, cap, info);
+    int sb = ref->store_probe(file->path, file->data + WEX4_HEADER_HASHED, table, cap, info);
+    CHECK(sa == sb && (sa == 0 || sa == WEX4_E_RECORD), "%s: wex4_store_probe gives %d and %d", file->path, sa, sb);
+    free(table);
+    return sa != 0;
+}
 /* flip: the byte to flip for the test of the first-read SHA-256, or 0; legacy: the expected legacy flags or -1 */
 static void part_store(const Tools *lib, const File *file, size_t flip, long legacy) {
     Opened o;
@@ -625,7 +638,7 @@ int main(int argc, char **argv) {
     unsigned char *blob;
     const int threads = argc > 8 ? atoi(argv[8]) : 4;
     const uint32_t mutations = argc > 9 ? (uint32_t)strtoul(argv[9], NULL, 10) : 200u;
-    int nvalid, rows, records = 0, experts = 0, coded = 0, stores = 0, round_trip = 0, k, cz;
+    int nvalid, rows, records = 0, experts = 0, coded = 0, stores = 0, store_refusals = 0, round_trip = 0, k, cz;
     uint64_t mapped = 0;
     setvbuf(stdout, NULL, _IONBF, 0);   /* each line when it is written, in order with the sanitizer's reports */
     if (argc == 3 && !strcmp(argv[1], "--control")) return control(argv[2]);
@@ -666,6 +679,7 @@ int main(int argc, char **argv) {
         Opened o;
         open_file(&valid[k], &o);
         if (!o.h.layers) continue;
+        if (store_refused(&fast, &ref, &valid[k], &o)) { store_refusals++; continue; }
         part_store(&fast, &valid[k], 0, -1);
         part_store(&ref, &valid[k], 0, -1);
         stores++;
@@ -673,8 +687,9 @@ int main(int argc, char **argv) {
     part_store(&fast, &wex4, wnr3.size / 2u, (long)(wnr3.h.flags & ~WEX_HEADER_SCALE_TILES));
     part_store(&ref, &wex4, wnr3.size / 2u, (long)(wnr3.h.flags & ~WEX_HEADER_SCALE_TILES));
     printf("engine loader: wex4_store_probe on %d files of both libraries: their table, every record checked, a "
-           "wrong root and a table over budget refused; a flipped bit in a record of the WEX4 file refused\n",
-           stores + 1);
+           "wrong root and a table over budget refused; a flipped bit in a record of the WEX4 file refused; %d valid "
+           "file(s) with WNR3 records with and without canonical zero refused by both, as the loader must\n",
+           stores + 1, store_refusals);
 
     for (k = 0; k < nvalid; k++) {
         if (strstr(valid[k].path, "/valid/generic.wex4")) corpus[0] = &valid[k];
