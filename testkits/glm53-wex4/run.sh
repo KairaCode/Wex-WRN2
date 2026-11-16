@@ -191,7 +191,7 @@ stage_build() {
   else
     rm -f "$WORK/glm53.wnm2" "$WORK/glm53.wnm2.args"
     timed train "$PY" -I "$CONV" train "$WORK/glm53.wnm2" $src --names qwen38 --nr3-dll "$NR3" \
-          --sample "$TRAIN" --seed "$SEED" --threads "$THREADS"
+          --sample "$TRAIN" --seed "$SEED" --spread --threads "$THREADS"
     echo "$TRAIN $SEED" > "$WORK/glm53.wnm2.args"
   fi
   timed pack "$PY" -I "$CONV" pack "$out" $src --dll "$FAST" --experts nr3 --names qwen38 \
@@ -315,10 +315,28 @@ stage_speed() {
 # ---- 8. engine ------------------------------------------------------------------------------------------------------
 stage_engine() {
   local bin=
-  for b in "$COLIBRI/glm53$EXE" "$COLIBRI/glm53"; do [ -n "$COLIBRI" ] && [ -x "$b" ] && bin=$b && break; done
+  if [ "$SYNTHETIC" = 1 ]; then
+    # a synthetic checkpoint has no model: a stand-in engine with glm53's output lines checks the stage itself
+    # (the container passed in COLI_WEX_PATH, the logs parsed, the A/B compared, the decode counts reported)
+    bin=$WORK/fake-glm53
+    cat > "$bin" <<'EOF'
+#!/usr/bin/env bash
+# a stand-in for glm53 (the kit's synthetic engine stage): glm53's output lines, fixed tokens
+if [ -n "${COLI_WEX_PATH:-}" ]; then
+  [ -f "$COLI_WEX_PATH" ] || { echo "COLI_WEX_PATH $COLI_WEX_PATH: no such file" >&2; exit 1; }
+  h=0; [ -n "${COLI_WEX_CUDA_LIB:-}" ] && [ -f "$COLI_WEX_CUDA_LIB" ] && h=6
+  echo "[glm53] WEX4 records: 6 read, 6 WNR3 decoded (CUDA helper $h, CPU $((6 - h)))" >&2
+fi
+echo "teacher_forcing 11 12 13 14 15"
+echo "greedy 21 22 23 24 25 26 27 28"
+echo "decode 8 token in 2.0s = 4.000 tok/s (0.2 s/token)"
+EOF
+    chmod +x "$bin"
+  else
+    for b in "$COLIBRI/glm53$EXE" "$COLIBRI/glm53"; do [ -n "$COLIBRI" ] && [ -x "$b" ] && bin=$b && break; done
+  fi
   if [ -z "$bin" ]; then skip "no glm53 binary (give --colibri, colibri's c/ with glm53 built from the GLM-5.3 WEX4 branch)"; return; fi
   need_container
-  [ "$SYNTHETIC" = 0 ] || { skip "a synthetic checkpoint has no model to run"; return; }
   local ids=${IDS:-$DEFAULT_IDS} root
   root=$(sed -n 's/^COLI_WEX_ROOT=\([0-9a-f]\{64\}\)$/\1/p' "$RESULTS/verify-c.txt" 2>/dev/null | tail -1)
   [ -n "$root" ] || root=$(root_of)
@@ -337,7 +355,8 @@ stage_engine() {
       > "$RESULTS/engine-container-cuda.txt" 2>&1 || die "glm53 on the container with the CUDA helper failed"
     "$PY" -I "$KIT/kit.py" engine-ab "$RESULTS/engine-shards.txt" "$RESULTS/engine-container-cuda.txt" "$RESULTS/engine-cuda.json"
   fi
-  ok "tokens identical, shards and container"
+  if [ "$SYNTHETIC" = 1 ]; then ok "the stage's plumbing, with a stand-in engine (a synthetic checkpoint has no model)"
+  else ok "tokens identical, shards and container"; fi
 }
 
 # ---- optional: give the checkpoint's disk space back -----------------------------------------------------------

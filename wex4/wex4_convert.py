@@ -11,7 +11,8 @@
   train     safetensors -> a WNM2 model for pack --experts nr3, from a seeded sample of the routed experts (the
             statistics c/tools/build_nr3.py --train collects from a WEX1 container; no container needed).
       python -I wex4_convert.py train OUT.wnm2 SRC.safetensors [SRC2 ...] --nr3-dll wex_nr3_tools.dll
-             [--names PROFILE] [--sample 80] [--seed 20261116] [--cz] [--threads N]
+             [--names PROFILE] [--sample 80] [--seed 20261116] [--spread] [--cz] [--threads N]
+            --spread: the sample spread over every layer (build_nr3.py --train-lab80's rule), else drawn at large.
   unpack    WEX4 -> the source safetensors files, each checked against its recorded SHA-256; prints each file's
             SHA-256. --sha-only rebuilds every file into its SHA-256 only and writes no file.
       python -I wex4_convert.py unpack IN.wex4 OUT_DIR [--dll wex4_tools.dll] [--sha-only]
@@ -374,16 +375,27 @@ def pack(out_path, sources, clib=None, experts=None, nr3=None, part_bytes=64 << 
     return wex4.write(out_path, records, blobs, empty, meta, layers, n_experts, required, wex4.OPT_ST_SOURCES, encoder=clib)
 
 
-def sample_experts(keys, count, seed):
+def sample_experts(keys, count, seed, spread=False):
     """`count` of the (layer, expert) keys, drawn with a seeded generator and returned sorted; all of them when
-    there are no more than `count`. The same keys, count and seed give the same sample on any machine."""
+    there are no more than `count`. The same keys, count and seed give the same sample on any machine.
+    spread: spread over every layer, as c/tools/build_nr3.py --train-lab80 does: per layer (ascending)
+    ceil(count / layers) experts drawn from that layer's, then `count` of those taken at even steps."""
     keys = sorted(keys)
     if count >= len(keys):
         return keys
-    return sorted(random.Random(seed).sample(keys, count))
+    rng = random.Random(seed)
+    if not spread:
+        return sorted(rng.sample(keys, count))
+    layers = sorted({k[0] for k in keys})
+    per = -(-count // len(layers))
+    picks = []
+    for layer in layers:
+        mine = [k for k in keys if k[0] == layer]
+        picks += sorted(rng.sample(mine, min(per, len(mine))))
+    return sorted(picks[i * len(picks) // count] for i in range(count)) if len(picks) > count else picks
 
 
-def train(out_path, sources, nr3_dll, family='deepseek', count=80, seed=20261116, cz=False, threads=1):
+def train(out_path, sources, nr3_dll, family='deepseek', count=80, seed=20261116, cz=False, threads=1, spread=False):
     """A WNM2 model for `pack --experts nr3`, trained from safetensors files: the coding statistics of a seeded
     sample of `count` routed experts (sample_experts over the experts pack would turn into expert records), as
     c/tools/build_nr3.py trains from a WEX1 container. Writes the 59,408-byte model to out_path (through
@@ -395,7 +407,7 @@ def train(out_path, sources, nr3_dll, family='deepseek', count=80, seed=20261116
         indexed.append((path, start, tensors))
     groups, _ = find_experts(indexed, family)
     need(groups, f'train: no MXFP4 routed expert under naming profile {family!r}')
-    picks = sample_experts(groups, count, seed)
+    picks = sample_experts(groups, count, seed, spread)
     lib = ctypes.CDLL(os.path.abspath(nr3_dll))
     P = ctypes.c_void_p
     lib.wex_nr3_prepare.argtypes = [P, P, ctypes.c_int, P, P]
@@ -424,6 +436,10 @@ def train(out_path, sources, nr3_dll, family='deepseek', count=80, seed=20261116
     with open(os.fspath(out_path) + '.partial', 'wb') as f:
         f.write(model)
     os.replace(os.fspath(out_path) + '.partial', out_path)
+    with open(os.fspath(out_path) + '.json', 'w', encoding='utf-8') as f:   # the record of what it was trained on
+        json.dump({'model_id': f'{ident.value:08x}', 'profile': family, 'sample': count, 'seed': seed, 'spread': spread,
+                   'cz': cz, 'experts': [f'{L}:{e}' for L, e in picks],
+                   'sources': [os.path.basename(p) for p in sources]}, f, indent=1)
     return ident.value, picks
 
 
@@ -681,7 +697,7 @@ def main(argv):
         print(__doc__)
         return 2
     clib = wex4.CLib(option('--dll')) if '--dll' in argv else None
-    values = {argv[i + 1] for i, a in enumerate(argv[:-1]) if a.startswith('--') and a not in ('--cz', '--sha-only')}
+    values = {argv[i + 1] for i, a in enumerate(argv[:-1]) if a.startswith('--') and a not in ('--cz', '--sha-only', '--spread')}
     positional = [a for a in argv[2:] if not a.startswith('--') and a not in values]
     threads = int(option('--threads', '1'))
     if argv[1] == 'pack':
@@ -705,7 +721,8 @@ def main(argv):
             print(name, digests[name], 'sha256 identical' if ok else 'DIFFERS (value-exact container)')
     elif argv[1] == 'train':
         ident, picks = train(positional[0], positional[1:], option('--nr3-dll'), option('--names', 'deepseek'),
-                             int(option('--sample', '80')), int(option('--seed', '20261116')), '--cz' in argv, threads)
+                             int(option('--sample', '80')), int(option('--seed', '20261116')), '--cz' in argv, threads,
+                             '--spread' in argv)
         print(f'model {ident:08x} trained on {len(picks)} experts: {",".join(f"{L}:{e}" for L, e in picks)}')
     elif argv[1] == 'upgrade':
         print(upgrade(positional[0], family=option('--names', 'deepseek')))

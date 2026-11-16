@@ -25,6 +25,6 @@ bash wex4/research/fast-cpu-decode/synth.sh check
 # the GLM-5.3-Flash test kit, its stages on a small synthetic checkpoint (the GPU parts run only where a GPU is)
 rm -rf out/kit
 bash testkits/glm53-wex4/run.sh --synthetic-small --work out/kit --results out/kit/results \
-    env fetch build verify roundtrip decode report > out/kit.log 2>&1 || { tail -40 out/kit.log; exit 1; }
-grep -E '^\[(build|verify|roundtrip|decode)\] ok' out/kit.log
+    env fetch build verify roundtrip decode engine report > out/kit.log 2>&1 || { tail -40 out/kit.log; exit 1; }
+grep -E '^\[(build|verify|roundtrip|decode|engine)\] ok' out/kit.log
 echo "all checks passed"

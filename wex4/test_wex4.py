@@ -264,6 +264,11 @@ def test_train_threads():
     assert models[1] == models[3], 'train: the model depends on the thread count'
     assert conv.sample_experts([(1, 2), (0, 5), (0, 1), (3, 3)], 2, 9) == conv.sample_experts([(3, 3), (0, 1), (0, 5), (1, 2)], 2, 9)
     assert len(set(conv.sample_experts([(0, e) for e in range(100)], 10, s)[0] for s in range(20))) > 1, 'the seed is used'
+    grid = [(L, e) for L in range(3, 45) for e in range(288)]
+    spread = conv.sample_experts(grid, 80, 20261116, spread=True)
+    assert len(spread) == 80 == len(set(spread)) and {L for L, _ in spread} == set(range(3, 45)), 'spread: every layer'
+    assert spread == conv.sample_experts(list(reversed(grid)), 80, 20261116, spread=True)
+    assert conv.sample_experts([(1, 0), (1, 1), (2, 0)], 2, 3, spread=True) in ([(1, 0), (2, 0)], [(1, 1), (2, 0)])
     assert rejected(conv.train, os.path.join(WORK, 'none.wnm2'), [glm], dll, 'deepseek')   # no expert under that profile
     nr3 = conv.Nr3(dll, os.path.join(WORK, 'glm_t1.wnm2'), False)
     roots, files = {}, {}
