@@ -21,9 +21,12 @@ on:
 permissions:
   contents: read
 
+# a newer push or pull-request run of the same ref makes the running one moot and cancels it. A run started by
+# hand (workflow_dispatch, often a run of hours) has a group of its own, so a push never cancels it, and it is
+# never cancelled in progress: a second run started by hand on the same ref waits for the first
 concurrency:
-  group: fuzz-${{ github.ref }}
-  cancel-in-progress: true
+  group: fuzz-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
 
 jobs:
   libfuzzer:
