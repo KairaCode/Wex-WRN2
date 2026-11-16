@@ -1,6 +1,6 @@
 # WNR2 reference: the WEX1-WEX3 containers, the WNR2 record and the WNM2 model
 
-**What this page is.** The reference of the containers before WEX4 and of the WNR2 record codec: the WEX1, WEX2 and WEX3 header page and entry table (section 5), the WNR2 record and its model descriptor (6), the rANS codec and the WNM2 model (7), the encoder and the build procedure (8), the CPU decoder (9) and the API of the CUDA helper `kaira_wex_cuda.dll` (10). Reference code: `c/wex_format.h`, `c/wex_neural_rans.h`, `c/wex_decode.h`, `c/tools/wex_cuda_bridge.cu`.
+**What this page is.** The reference of the containers before WEX4 and of the WNR2 record codec: the WEX1, WEX2 and WEX3 header page and entry table (section 5), the WNR2 record and its model descriptor (6), the rANS codec and the WNM2 model (7), the encoder and the build procedure (8), the CPU decoder (9) and the API of the CUDA helper `kaira_wex_cuda.dll` (10). Reference code: `c/wex_format.h`, `c/wex_neural_rans.h`, `c/wex_decode.h`, `c/tools/wex_cuda_bridge.cu`. The page names code by function and file; the line numbers it gave before 2026-11-15 were those of an older version of these files and no longer matched.
 
 **Status.** WEX1 to WEX3 are read by the current code and are the input of the WEX4 upgrade; no production file is in one of these forms any more. WNR2 (codec 4) was superseded by WNR3 (codec 5, [WNR3-SPEC.md](WNR3-SPEC.md)) on 2026-11-10 and every WNR2 container was deleted; its decoder is kept. The current container is WEX4 ([WEX4-SPEC.md](WEX4-SPEC.md)); what runs today is in [STATUS.md](../STATUS.md).
 
@@ -70,9 +70,9 @@ WNR2 is a lossless entropy coding of MXFP4 MoE expert records (FP4 E2M1 weights 
   - Stream length is >= 4 and <= 65535 (u16).
 - **Chunks**: both are powers of 2. Weight chunk 512..16384 (WEX_NR2_MIN_WEIGHT_CHUNK..WEX_NR2_MAX_CHUNK), scale chunk 256..16384 (WEX_NR2_MIN_SCALE_CHUNK..MAX).
   - Chunks are stored per record, so any legal value works without a format change: V4 used 4096:2048, V4.1 uses 2048:512.
-  - The encoder validates chunks at encode_nr2.cu:60-62. The decoders read them per record at wex_neural_rans.h:229-232 and wex_cuda.cuh:404-405.
+  - The encoder validates chunks in `geometry_of` (`archive/nr2/encode_nr2.cu`). The decoders read them per record in `wex_nrx_parse` (`c/wex_neural_rans.h`, called by `wex_nr2_parse`) and `wex_cuda_plan_nr2` (`c/wex_cuda.cuh`).
 - Using u16 lengths instead of u32 offsets and long streams cut stream overhead from 2.94% (WNR1) to 0.1%.
-- **Integrity model**: WNR2 records carry NO checksum or CRC. Corruption is caught only by structural rANS invariants (wex_nr2_parse, wex_neural_rans.h:213-262; wex_cuda.cuh:280-283):
+- **Integrity model**: WNR2 records carry NO checksum or CRC. Corruption is caught only by structural rANS invariants (`wex_nr2_parse` and `wex_nr2_decode` in `c/wex_neural_rans.h`; on the GPU the kernels `wex_cuda_nr2_scales` and `wex_cuda_nr2_weights` of `c/wex_cuda.cuh`):
   - initial state in [L, 256L); each stream consumes exactly its u16 length with final state == L;
   - length sums equal the payload sizes; record size == align4096(used bytes); zero padding.
   - That catches almost everything (300 fuzz cases, 0 accepted) but guarantees nothing. Whole-file integrity rests only on the sha256 values and the .verified markers; the only extra runtime check is COLI_WEX_RAM_CACHE_VERIFY=1 (64-bit checksum on RAM-cache slots).
@@ -102,7 +102,7 @@ WNR2 is a lossless entropy coding of MXFP4 MoE expert records (FP4 E2M1 weights 
   - A forward pass computes the contexts, then each stream is encoded backwards (wex_nr2_put, x_max = ((L>>14)<<8)*freq) and 4 state bytes are flushed.
   - Order: scales m0..m2, then weights m0..m2.
   - Scratch per stream is bounded by 2*WEX_NR2_MAX_CHUNK+8.
-  - CPU reference functions: wex_nr2_encode/put/flush, wex_nr2_decode/decode_symbol/stream_open, wex_nr2_count, wex_nr2_quantize, wex_nr2_model_build, wex_nr2_median (wex_neural_rans.h:264-517; decode_symbol 273, stream_open 291, decode 302-350, median 355, encode 450-517).
+  - CPU reference functions: wex_nr2_encode/put/flush, wex_nr2_decode/decode_symbol/stream_open, wex_nr2_count, wex_nr2_quantize, wex_nr2_model_build, wex_nr2_median, all in `c/wex_neural_rans.h`. Since WNR3 the bodies of the parser, the counter and the encoder are `wex_nrx_parse`, `wex_nr2_count_anchored` and `wex_nrx_encode`, which the WNR2 names call with the WNR2 magic and the medians.
 - **Why WNR2 (2026-10-20 design)**:
   - WNR1 byte budget (687 experts, % of raw): weights 3.681 bit/weight = 86.6%; rANS flush 4 B per 512 symbols 1.47%; u32 offsets 1.47%; scale tiles (1.24 bit/scale) 0.91%; per-record CDF + header + padding 0.05%. So 2.94% was parallelism overhead.
   - Held-out cross-entropy (shared model): scale+previous (WNR1) 3.684 bit/w; + block max 3.665; + position 3.660. Rows, columns, the upper neighbour and gate<->up gave nothing. Entropy-coded scales reach 0.97 bit.
@@ -113,7 +113,7 @@ WNR2 is a lossless entropy coding of MXFP4 MoE expert records (FP4 E2M1 weights 
 - **WNR1, for contrast** (codec 3, header flag 8, magic 'WNR1' 0x31524e57, L = 2^23):
   - Per-record model: a 256-entry u16 scale->class map plus up to 256 classes x 17 contexts x 17 u16 CDFs (12-bit total 4096; WEX_NR_CDF_BYTES 17*17*2).
   - Context = previous symbol, reset every 32 weights. Chunks of 256/512/1024 symbols with u32 stream offsets; scales as a tile stream.
-  - Each WNR1 record stores its own chunk (256, 512 or 1024) at byte 20, read by wex_nr_parse (wex_neural_rans.h:34-35). The pilot used 512 (pilot-v3-neural512). WEX_NR_CHUNK_SYMBOLS 1024 (wex_neural_rans.h:12) is only the largest chunk, used by wex_validate_entry (wex_format.h:225) for the minimum-size bound; no contradiction.
+  - Each WNR1 record stores its own chunk (256, 512 or 1024) at byte 20, read by `wex_nr_parse` (`c/wex_neural_rans.h`). The pilot used 512 (pilot-v3-neural512). `WEX_NR_CHUNK_SYMBOLS` 1024 (`c/wex_neural_rans.h`) is only the largest chunk, used by `wex_validate_entry` (`c/wex_format.h`) for the minimum-size bound; no contradiction.
   - Its GPU kernel wex_cuda_neural_rans_weights uses `__shared__ unsigned char input_cache[32768]`.
   - The pilot uniform fallback CDF is cdf-uniform-fallback.bin.
 - **Generic codecs measured** (16 decoded MXFP4 slabs, 213.9 MB; ratio whole / FP4 weights / UE8M0 scales):
@@ -138,7 +138,7 @@ WNR2 is a lossless entropy coding of MXFP4 MoE expert records (FP4 E2M1 weights 
   - ABI: wex_nr2_tools_abi = 1.
   - Exports: wex_nr2_count_gpu, wex_nr2_build_model, wex_nr2_model_id, wex_nr2_encode_gpu, wex_nr2_verify, wex_nr2_verify_slab, wex_nr2_check_container, wex_nr2_count_cpu, wex_nr2_encode_cpu, wex_nr2_canonical_zero, wex_nr2_release.
   - Return codes: 0 ok, -1 invalid, 1 CUDA failed. One process-wide workspace, serialized by a mutex.
-  - GPU output is byte-identical to the CPU reference. Geometry comes from each WexEntry (encode_nr2.cu:44-79).
+  - GPU output is byte-identical to the CPU reference. Geometry comes from each WexEntry (`geometry_of` in `archive/nr2/encode_nr2.cu`).
 - **Build commands**:
   - wex_nr2_tools.dll: `archive\nr2\build_tools.cmd` (nvcc, `-O3 -std=c++17 -arch=sm_120`, VS 18 BuildTools vcvars64, `-I c`; `VCVARS`, `NVCC` and `ARCH` come from the environment; the lab copy was pinned to CUDA v13.4 and `-I src/colibri/c`).
   - Helper: `lab\wex-gpu-direct-20261019\build_helper.cmd` (`nvcc -O3 -arch=sm_120 -Xcompiler /O2,/EHsc,/arch:AVX2 -shared tools/wex_cuda_bridge.cu`).
@@ -215,8 +215,8 @@ WNR2 is a lossless entropy coding of MXFP4 MoE expert records (FP4 E2M1 weights 
 
 ## 9. CPU decoder
 
-- **wex_decode_nr2_record**(entry, slab, capacity, ..., model) in wex_format.h:480-507:
-  - validates sizes, the read offset, and wex_nr2_parse with the model id;
+- **wex_decode_nr2_record**(entry, slab, capacity, model) in `c/wex_format.h`:
+  - validates sizes, the read offset, and the record with the model id (`wex_nrx_parse` with the magic of the entry's codec: WNR2 for codec 4, WNR3 for codec 5);
   - decodes into malloc scratch and memcpy's to the slab only on success.
   - The generic wex_decode_record refuses codec 4 (returns -1, "needs its model").
 - **wex_nr2_decode** decodes scales stream by stream (binary search in the 256-symbol CDF), then weights with the exact context rule.
@@ -226,11 +226,11 @@ WNR2 is a lossless entropy coding of MXFP4 MoE expert records (FP4 E2M1 weights 
   - CPU decode also loses the PCIe saving, because the raw 12.75 MiB slab goes to VRAM.
 - **Table sizes**: a CDF-only table is 567 x 32 B = 18 KB (fits L2). A 16384-entry slot->symbol LUT per context would be 9.3 MB (does not fit L1/L2).
 - **Gate**: CPU decode is worth doing only if the container stays on a single ~1.8 GiB/s drive AND a SIMD 567-context rANS microbench exceeds 2 GB/s on 3 cores; otherwise discard it.
-- **Model registry** (wex_decode.c:97-154), coli_wex_register_model(blob, bytes, &id):
+- **Model registry** (`c/wex_decode.c`), coli_wex_register_model(blob, bytes, &id):
   - validates with wex_nr2_model_open and keeps a private copy; at most WEX_NR2_MAX_MODELS = 16 per process, never freed;
   - the same id with different bytes returns -1 (hash collision); re-registering an identical model is a no-op;
   - on Windows it also calls the helper's wex_cuda_register_model and records `in_helper`.
-- **coli_wex_decode_record** (host-slab path, wex_decode.c:257-285):
+- **coli_wex_decode_record** (host-slab path, `c/wex_decode.c`):
   - For codec 4 it reads the model id at record bytes 4..7; an unknown id returns -1.
   - For codec 3, or codec 4 with the model registered in the helper, it tries the helper's wex_cuda_decode_to_host first. It prints once "[wex] CUDA reconstruction failed/unavailable (%d); using CPU fallback." and then falls back to the CPU decoder.
 - coli_wex_decode_record was moved from expert_store_wex.c to wex_decode.c on 2026-10-18 23:39 so test_deepseek_v4 links.
@@ -239,13 +239,13 @@ WNR2 is a lossless entropy coding of MXFP4 MoE expert records (FP4 E2M1 weights 
 ## 10. GPU helper kaira_wex_cuda.dll
 
 - **Source**: src\colibri\c\tools\wex_cuda_bridge.cu, kernels in wex_cuda.cuh. ABI 1 (wex_cuda_helper_abi returns 1; provides wex_cuda_decode_to_host).
-- **Loading** (wex_decode.c:13-94, Windows only, lazy pthread_once):
+- **Loading** (`wex_cuda_initialize` in `c/wex_decode.c`, Windows only, lazy pthread_once):
   - COLI_WEX_CUDA_LIB gives an absolute helper path; "0" forces the CPU.
   - Default: kaira_wex_cuda.dll next to the exe, loaded with LoadLibraryExA (LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR|DEFAULT_DIRS).
   - Requires abi == 1 and decode_to_host. Optional symbols are resolved by feature bits.
   - Logs "[wex] Neural CUDA reconstruction enabled: <path>" or "[wex] Neural CUDA helper unavailable; using the CPU decoder." The DLL is kept until exit.
   - Non-Windows builds report every CUDA path as unavailable.
-- **Feature bits** (wex_cuda_helper_features, bridge :290-296):
+- **Feature bits** (`wex_cuda_helper_features` in `c/tools/wex_cuda_bridge.cu`):
 
 | bit | name | enables |
 |---|---|---|
@@ -260,31 +260,31 @@ WNR2 is a lossless entropy coding of MXFP4 MoE expert records (FP4 E2M1 weights 
   - `int wex_cuda_decode_to_host(const WexEntry*, unsigned char *slab, size_t cap)`;
   - `int wex_cuda_decode_to_device(const WexEntry*, const unsigned char *record, int device, unsigned char *const *dst_scale, unsigned char *const *dst_weight)`;
   - `int wex_cuda_register_model(const unsigned char *blob, size_t bytes)`: 0 ok/already; -1 invalid, or another blob with the same id; 1 table of 16 full or no memory;
-  - `int wex_cuda_decode_batch_to_device(int n, const WexEntry *const*, const unsigned char *const*, int device, unsigned char *const *dst_scale, unsigned char *const *dst_weight, int *status)` (bridge :409);
+  - `int wex_cuda_decode_batch_to_device(int n, const WexEntry *const*, const unsigned char *const*, int device, unsigned char *const *dst_scale, unsigned char *const *dst_weight, int *status)`;
   - `int wex_cuda_host_register(void*, size_t)`; `int wex_cuda_host_unregister(void*)`.
-- **Engine wrappers** (wex_decode.h:24-57):
+- **Engine wrappers** (`c/wex_decode.h`):
   - coli_wex_decode_record; coli_wex_cuda_decode_count; coli_wex_cuda_device_available (feature 1);
   - coli_wex_cuda_decode_to_device: 0 ok, 1 unavailable, -1 invalid; codec 4 returns 1 unless feature 4 is present;
   - coli_wex_cuda_host_register/unregister (1 when unavailable); coli_wex_cuda_device_decode_count; coli_wex_register_model;
   - coli_wex_cuda_nr2_available (feature 4); coli_wex_cuda_batch_available (features 8 and 4);
-  - coli_wex_cuda_decode_batch_to_device (wex_decode.c:198-219): returns the count of non-zero statuses; without feature 8 every status is 1 and the caller falls back per record.
+  - coli_wex_cuda_decode_batch_to_device: returns the count of non-zero statuses; without feature 8 every status is 1 and the caller falls back per record.
 - **decode_to_device semantics**:
   - It validates, uploads, decodes into private scratch, checks the error word, commits the 6 regions, then synchronizes.
   - An invalid record returns -1 and leaves the destination untouched. Scratch follows the current device.
   - Backend and helper runtimes share the CUDA primary context, so device pointers pass between them (tested).
   - A WNR2 record without a registered model returns 1.
-  - Every decode entry point calls cudaSetDevice(device) (bridge :307, :346, :440) and never restores the caller's previous device, so the calling thread is left on `device`. Harmless on the single 5090 today; a trap for W2 integration.
-- **Helper memory footprint** (wex_cuda_bridge.cu:23-90, 384-399, 409-500): workspaces are thread_local, allocated with cudaMalloc OUTSIDE the backend's VRAM accounting, and freed only when the thread exits.
+  - Every decode entry point that takes a device (`wex_cuda_decode_to_device`, its WNR2/WNR3 path, and the two batch calls) calls cudaSetDevice(device) and never restores the caller's previous device (`wex_cuda_decode_to_host` takes no device and uses the current one), so the calling thread is left on `device`. Harmless on the single 5090 today; a trap for W2 integration.
+- **Helper memory footprint** (`WexCudaWorkspace` and the batch lanes in `c/tools/wex_cuda_bridge.cu`): workspaces are thread_local, allocated with cudaMalloc OUTSIDE the backend's VRAM accounting, and freed only when the thread exits.
   - Batch path: up to 8 lanes per calling thread, each holding device_record + device_raw at the largest aligned record. On V4.1: 8 x 2 x 17.93 MiB = ~287 MiB per thread (~16 expert mirrors).
-  - Single-record path: another 2 x aligned of VRAM per thread, plus pinned host_raw on the host path.
+  - Single-record path: one workspace per thread for the host path and one for the device path, each 2 x aligned of VRAM plus a pinned host_raw of aligned bytes. The device path allocates its host_raw too and does not use it.
   - Each ensure() requires free >= 2*bytes + tiles*4 + lut + 8 MiB.
   - The G2/W2 mirror budget (~1,030-1,110) or DSV4_CUDA_VRAM_RESERVE_MB must cover the helper lanes (WDDM over-commit risk).
 - **Helper model registry**: process-global, WEX_CUDA_NR2_MAX_MODELS = 16, WEX_CUDA_NR2_MAX_DEVICES = 64. Device tables are built lazily per (model, device) and kept for the process lifetime.
   - Layout (one cudaMalloc): blob (align256 = 59,648 B) + weight rows [3*567] x 32 B + scale_direct [3][16384] u32 (slot -> (freq-1) | (slot-start)<<14) + scale_symbol [3][16384] B.
   - Weight buckets [3*567][1<<10] u32 (~6.97 MB) exist only for lookup 0. With lookup 1 the tables total ~360 KB (359,936 B).
 - **CUDA decoder** (bit-identical to wex_nr2_decode):
-  - Host side: wex_cuda_plan_nr2 validates with wex_nr2_parse; wex_cuda_nr2_offsets prefix-sums the u16 lengths into u32 offsets (streams+1).
-  - **Scale kernel** wex_cuda_nr2_scales: one thread per stream, 32 threads/block, direct tables in dynamic shared memory. WEX_CUDA_NR2_SCALE_SMEM = 16384*5 + ring 8192 = 90,112 B ("88 KB", opt-in via cudaFuncSetAttribute).
+  - Host side: wex_cuda_plan_nr2 validates with `wex_nrx_parse` (the parser behind wex_nr2_parse, with the magic of the entry's codec, 4 or 5); wex_cuda_nr2_offsets prefix-sums the u16 lengths into u32 offsets (streams+1).
+  - **Scale kernel** wex_cuda_nr2_scales: one thread per stream, 32 threads/block, direct tables in dynamic shared memory. WEX_CUDA_NR2_SCALE_SMEM = 16384*5 + ring 8192 = 90,112 B ("88 KB", opt-in via cudaFuncSetAttribute). Code built for a GPU below compute 8.0, or with `WEX_CUDA_NR2_SCALE_DIRECT_GLOBAL=1`, keeps the 64 KB direct table in global memory and uses 16384 + 8192 = 24,576 B of shared memory; the host picks the size per device (`wex_cuda_nr2_scale_smem`).
   - **Weight kernel** wex_cuda_nr2_weights<Lookup>: one thread per stream, the matrix's 567 CDF rows in shared memory, branch-free 16-way compare (PRMT sign trick), one uint4 store per 32 symbols. Each block serves one matrix.
   - **Payload ring**: a 64-word (WEX_CUDA_NR2_RING_WORDS) shared ring per lane, refilled by cp.async at warp-uniform points, with WEX_CUDA_NR2_RING_AHEAD = 40 words ahead. Renormalization is branch-free (0/1/2 bytes per symbol). Compared with register prefetch, the scale kernel went 193 -> 75 us and the weight kernel 300 -> 253 us per expert.
   - **Errors**: any violation (bad initial state, read past end, early end, final state != L) sets *error.
@@ -308,6 +308,7 @@ WNR2 is a lossless entropy coding of MXFP4 MoE expert records (FP4 E2M1 weights 
   - Offsets and error words live in page-locked scratch (WexCudaBatchHost). Workspaces grow per call. ONE host wait per batch.
   - Destinations: record i, matrix m -> dst_scale[3*i+m] / dst_weight[3*i+m].
   - status[i]: 0 written; -1 invalid record or destination (untouched); 1 CUDA/resources unavailable or model not registered (data correct or untouched, never partial). If queueing fails at record i, i and every later record report 1.
+- **Host batch** (feature 32, `wex_cuda_decode_batch_to_host`, added 2026-11-11 for the qwen38 store): the same lanes and pipeline, but each record's raw slab is copied back to the caller's host buffer dst[i] after its kernels, with no commit step. When status[i] is not 0, dst[i] may hold partial or wrong bytes, and the caller must treat that slot as empty; the qwen38 store reads and decodes such a record again on its own (`q38_mx4_decode_wave` in `c/qwen38_wex.h`). dst[i] may overlap record i itself, not another record.
 - **Deployed helper** (since 2026-11-09 06:17): app\colibri-optimized\kaira_wex_cuda.dll = the W1 build, sha256 cceb4fb573b3b3e7b71843bf85a2b87cf9efdd94155bfc5deec717cce949e782, 387,072 B, copied from lab\v41-gpu-20261107\w1\build (built 02:04 on 2026-11-07 from the clean engine source). This binary passed the 64-record V4.1 check, was the helper in W3 and the 11-08 A/B, and ran the mirror verify (41,271 device decodes, 0 failures). Features 4 and 8 are in it.
   - The previous helper a79772004426c38fe2ed1196d27cb4e17a52512c0368d5bb71b86b2e3286b049 (2026-11-07 00:47:44, built in ws-int for the V4.1 install, same size) is kept in lab\app-before-mirror-20261109-061724.
 

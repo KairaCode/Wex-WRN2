@@ -38,15 +38,23 @@ measured; it is not known to fail.
     conformance section (section 12) and errata 13 and 14, the reject classes are informative
     (WEX4-SPEC section 17), and the table "After the sentences and vectors of 2026-11-15" of
     SPEC-NOTES says where each note went.
-  - **Still open:** not reviewed: WEX4-SPEC sections 13.1 and 14 against `wex4/wex4_convert.py` and
-    the numbers of its informative sections, WNR3-SPEC sections 5 to 11, WNR2-REFERENCE apart from
-    the one sentence of finding 13 of the review (WNR3-SPEC section 12 now names its sections 6 and 7
-    as required reading; they were not reviewed against the code either), and the GPU decoders
-    against the text.
+  - **Today, the parts the first pass left out:** a second pass on 2026-11-15
+    ([research/spec-review-20261115](../research/spec-review-20261115/README.md)) read WEX4-SPEC
+    sections 13.1 and 14 against `wex4/wex4_convert.py`, re-derived the numbers of the informative
+    sections that rest on sizes and counts, and read WNR3-SPEC sections 5 to 11, WNR2-REFERENCE and
+    the GPU decoder (`c/wex_cuda.cuh`, `c/tools/wex_cuda_bridge.cu`) against the code. 18
+    clarifications went into the three pages; an upgrade and a pack written from the clarified
+    sections give the converter's bytes.
+  - **Still open:** 3 findings of the second pass, listed in that folder (the host batch of helper
+    feature 32 writes its destination without a commit step, which WNR3-SPEC section 4.7 does not
+    allow for; the converter upgrades a WEX1 file whose header flags are not 0; one extrapolated
+    time); the GPU decoder run on a GPU against the text (it was read, and seven of its helper
+    functions were run on the CPU only); and the numbers that need the full models.
 - **Glossary:** add missing terms to [GLOSSARY.md](GLOSSARY.md). 32 terms of the specifications and of
-  the tests were added on 2026-11-14. Still open: the engine and host words of
-  [COLIBRI-INTEGRATION](COLIBRI-INTEGRATION.md) and of the dated reports, which were not gone
-  through.
+  the tests were added on 2026-11-14, and 14 engine and host words of
+  [COLIBRI-INTEGRATION](COLIBRI-INTEGRATION.md) and of the dated reports on 2026-11-15. Still open:
+  words that only one dated report uses; the reports were searched for the words of the guide, not
+  read through one by one.
 - **Translations:** a short README in your language (the Italian summary at the end of the README
   shows the expected size).
 
