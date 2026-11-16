@@ -45,7 +45,7 @@ concurrency:
 jobs:
   linux:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15   # a green run takes about 2 minutes; the default lets a hung test hold the runner for 6 hours
+    timeout-minutes: 15   # a green run took 5.1 and 3.8 minutes (runs 43811647711 and 43812551602, 2026-11-16, after the second merges); the default lets a hung test hold the runner for 6 hours
     env:
       PYTHON: python3
       USER: ""        # check_repo.py's user-name pattern reads USERNAME/USER; "runner" would match prose
@@ -89,7 +89,7 @@ jobs:
   # SVE kernel 2
   linux-arm:
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 20   # a green run took 9.4 and 9.6 minutes (runs 43797149386 and 43801674090, 2026-11-15/16), about half of it in the SVE steps
+    timeout-minutes: 20   # a green run took 11.8 and 11.7 minutes (runs 43811647711 and 43812551602, 2026-11-16, after the second merges), about 6 of them in the SVE steps
     env:
       PYTHON: python3
       USER: ""
@@ -239,7 +239,7 @@ jobs:
   # runner image ships several (gcc-13, gcc-14, ...) and the step takes the newest, so no package is downloaded
   macos:
     runs-on: macos-15
-    timeout-minutes: 15   # a green run takes about 3 minutes (two runs)
+    timeout-minutes: 15   # a green run took 4.0 minutes (runs 43811647711 and 43812551602, 2026-11-16, after the second merges, both)
     env:
       PYTHON: python3
       USER: ""
@@ -281,7 +281,7 @@ jobs:
   # Then the sanitizers on macOS, with Apple clang: the fuzz replay and every CPU check under ASan and UBSan
   macos-clang:
     runs-on: macos-15
-    timeout-minutes: 20   # a green run took 7.3 to 7.5 minutes (two runs, 2026-11-15)
+    timeout-minutes: 20   # a green run took 12.8 and 10.0 minutes (runs 43811647711 and 43812551602, 2026-11-16, after the second merges)
     env:
       PYTHON: python3
       USER: ""
@@ -345,7 +345,7 @@ jobs:
 
   windows:
     runs-on: windows-2022
-    timeout-minutes: 15   # a green run took 3 to 5.5 minutes before the bench.py step, which adds about 1
+    timeout-minutes: 15   # a green run took 5.5 and 4.1 minutes (runs 43811647711 and 43812551602, 2026-11-16, after the second merges), about 1 of them in the bench.py step
     env:
       USER: ""
       USERNAME: ""
@@ -397,7 +397,7 @@ jobs:
   # do not free everything at exit)
   linux-sanitizers:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30   # an estimate: the fuzz runs are expected to be several times slower under the sanitizers
+    timeout-minutes: 30   # a green run took 5.2 and 7.3 minutes (runs 43811647711 and 43812551602, 2026-11-16, after the second merges)
     env:
       PYTHON: python3
       USER: ""
@@ -426,7 +426,8 @@ jobs:
   # fuzz replay. Two steps fail unless the kernel they built is NEON
   linux-arm-sanitizers:
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 30   # a green run took 8.4 to 8.7 minutes (four runs, 2026-11-15), the longest job until the SVE steps of linux-arm were merged
+    timeout-minutes: 45   # a green run took 26.0 and 26.3 minutes (runs 43811647711 and 43812551602, 2026-11-16, after the second merges), about 18 of them in the replay of
+                          # fuzz_wnr3_cuda under ASan and UBSan; 8.4 to 8.7 minutes before that harness was merged
     env:
       PYTHON: python3
       USER: ""
@@ -464,7 +465,7 @@ jobs:
 # The three scripts that build C print their compiler, and the step fails unless all three name a clang
   linux-tsan:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 15   # a green run took 8.6 minutes (run 43812551602, 2026-11-16, after the second merges)
     env:
       PYTHON: python3
       USER: ""
@@ -494,7 +495,7 @@ jobs:
   # (nor Python): a branch, a pointer or a system call that depends on a byte nobody wrote stops the run
   linux-msan:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 15   # a green run took 3.7 minutes (run 43812551602, 2026-11-16, after the second merges)
     env:
       PYTHON: python3
     steps:
@@ -582,7 +583,7 @@ jobs:
         os: [ubuntu-24.04-arm, macos-15]
         vm: [1, 2, 3]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 30   # the jobs took 2 to 6 minutes on 2026-11-15
+    timeout-minutes: 30   # the jobs took 2 to 6 minutes on 2026-11-15, and 2.5 to 5 on 2026-11-16 (run 43811647711)
     env:
       PYTHON: python3
       USER: ""
@@ -651,7 +652,7 @@ jobs:
   macos-io-bench:
     if: github.event_name == 'workflow_dispatch' && inputs.macos_io_bench
     runs-on: macos-15
-    timeout-minutes: 120   # 90 were set for 11 paths x 11 rounds; 17 x 17 passes had not been timed when this was set
+    timeout-minutes: 60   # with --runs 17 a green run took 9.7 minutes (run 43811647711, 2026-11-16, one run)
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
         with:

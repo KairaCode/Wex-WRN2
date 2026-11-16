@@ -257,3 +257,17 @@ What the comparison left undecided, each a sentence the specification could add:
 5. **What a verifier reports for a record of an unknown codec** (A7): section 10, rule 6 says the file
    is valid; the two reference readers report it differently from each other.
 6. **The anchor byte 255** of a WNR3 record (A20, WNR3-SPEC erratum 11): not tested by any reader here.
+
+## F. After the merges (2026-11-16)
+
+This reader was merged with the 24 vectors of 2026-11-15 (136 rows) and the 7th column of the manifest,
+the content digest of every accepted row, which the manifest mode now checks too. In the first CI run of
+the merged tree (GitHub Actions run 43811647711) it gave the manifest's verdict, root and content digest
+on all 136 rows and its class on 119 of the 120 rejected ones. The one that differed is
+`invalid/wnr3-record-smaller-than-its-streams-need.wex4`: a WNR3 record below its minimum size, which
+the manifest gives as `WEX4_E_EXPERT` and this reader gave as `WEX4_E_RECORD`. The rule is a sentence of
+5.2 whose stream count needs the shapes of 5.5 (A5); this reader checks it in its pass over the expert
+records, and now gives it that pass's class, `EXPERT` (part B). No verdict changed. In the next run
+(43812551602) the class was the manifest's on all 120. Parts C and E5 are unchanged by the new vectors
+except as the vectors README and WNR3-SPEC section 12 now say: the ceil form, records without canonical
+zero and other chunk pairs are vectors since 2026-11-15; the four gaps of the index of part C are not.

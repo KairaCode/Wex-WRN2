@@ -298,11 +298,12 @@ measured; it is not known to fail.
 - **Today, a reader in Rust:** [impl/rust-wex4](../impl/rust-wex4/README.md) is a second reader and
   verifier written from the pages only (WEX4-SPEC, WNR3-SPEC, WNR2-REFERENCE, the glossary and the
   vectors README), with its own SHA-256 and the WBP1 and WNR3 decoders; the reference code and the Go
-  reader's code and notes were opened only after it passed. It gives the manifest's verdict, reject
-  class and root on all 112 rows, accepts three files of
+  reader's code and notes were opened only after it passed the 112 rows of 2026-11-14. Since the merges
+  (2026-11-16) it gives the manifest's verdict, reject class, root and content digest on all 136 rows
+  (one class was moved for a vector of 2026-11-15: part F of its notes), and it accepts three files of
   [impl/go-wex4/testdata](../impl/go-wex4/testdata/README.md) (one with WNR3 records in ceil form)
-  with the reference's content digest and refuses the fourth (2026-11-15; the `rust-reader` job of CI
-  runs it and a differential run). On 35 hand-made files and 20,596 mutated ones (one run on
+  with the reference's content digest and refuses the fourth (the `rust-reader` job of CI runs it and
+  a differential run). On 35 hand-made files and 20,596 mutated ones (one run on
   Windows, seed 20261115; the CI job runs 6,866 mutated files) it gave the C reader's verdict on
   every file, and so does its first version, the one that passed the 112 rows.
   The reject classes differ from the C reader's on 3 hand-made and 15 mutated files, and the C reader

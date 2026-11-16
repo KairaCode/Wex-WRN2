@@ -48,10 +48,11 @@ bash impl/rust-wex4/run.sh FILE.wex4   # the same, then checks FILE.wex4 too
 
 `run.sh` needs `cargo` and nothing else; it builds into `impl/rust-wex4/out/target` (git-ignored),
 checks the formatting when `rustfmt` is installed, runs the unit tests and every row of
-`wex4/vectors/MANIFEST.tsv` (file SHA-256, verdict, class, root). Then the valid files and three files
-of [impl/go-wex4/testdata](../go-wex4/testdata/README.md) (ceil form, 4 and 8 planes, sizes that are
-not a multiple of the plane count) must be accepted with the content digest that the Python reader
-with the C codec printed for them, and `extra-page.wex4` of that folder must be refused. It is not
+`wex4/vectors/MANIFEST.tsv` (file SHA-256, verdict, class, root, and the content digest of its 7th
+column on an accepted row). Then three files of [impl/go-wex4/testdata](../go-wex4/testdata/README.md)
+(ceil form, 4 and 8 planes, sizes that are not a multiple of the plane count), which have no row in the
+manifest, must be accepted with the content digest that the Python reader with the C codec printed for
+them, and `extra-page.wex4` of that folder must be refused. It is not
 part of `scripts/check_all.sh`, so that Rust is not needed for the repository's checks; the
 `rust-reader` job of `.github/workflows/ci.yml` runs it on ubuntu-24.04 with the runner's own cargo,
 then the differential run below. Other commands:
@@ -88,6 +89,11 @@ It counts the classes that differ and does not fail on them.
   WNR3 records with all their stream hashes. The five valid files made from `generic.wex4` (index
   first, index last, minor 9, unknown optional bits, bytes in the reserved area) give one content
   digest, as section 5 says the two layouts must.
+- **After the merges** (2026-11-16, the vectors of 2026-11-15 included): the manifest's verdict on all
+  136 rows, its class on all 120 rejected rows, its root and its content digest on all 16 accepted ones
+  (`rust-reader` job of GitHub Actions run 43812551602). One class had to move for it (SPEC-NOTES part
+  F); in the same job the differential run gave the C reader's verdict on 35 hand-made and 6,866
+  mutated files, with the class not the C reader's on 3 of each.
 - **After the rows passed** (2026-11-15, SPEC-NOTES part E, one run each): the content digest is the
   Python reader's on 18 files (the valid vectors, three files of `impl/go-wex4/testdata`, the eight
   WEX4 files that `wex4/build_and_test.sh` writes), and every record and tensor of those testdata files
@@ -111,8 +117,8 @@ It counts the classes that differ and does not fail on them.
 - The test encoders of `src/testenc.rs` are not canonical: their records show that this encoder and
   this decoder agree, not that they agree with the reference.
 - The reject classes are this reader's choice where the text does not decide (SPEC-NOTES, parts B and
-  E). Six of them were moved after the comparison to the class the C reader gives; no verdict was
-  changed by it.
+  E). Six of them were moved after the comparison to the class the C reader gives, and a seventh to the
+  class of a vector of 2026-11-15 (part F); no verdict was changed by it.
 - Tested with the vectors, hand-made and mutated files and its unit tests, not with a coverage-guided
   fuzzer. It is not in the support table of [SECURITY.md](../../SECURITY.md), so no fix is promised
   for it there.
