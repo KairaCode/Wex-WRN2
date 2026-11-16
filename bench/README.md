@@ -84,7 +84,7 @@ What it does:
    that the machine cannot run (no `O_DIRECT` on the filesystem, `io_uring` switched off or older than
    Linux 5.6) is reported as not run, with the reason; a path that fails the check is not timed and the
    script ends with `FAILED`. With `--strict` a path that was not run is a failure too (CI uses it,
-   because all 20 paths run on its runners). The skip for an old kernel was not tried on one.
+   because all 27 paths run on its runners). The skip for an old kernel was not tried on one.
 4. **Then speed:** `--runs` timed passes per path (default 5) of `--records` records each (default 48). The
    runs of all paths are interleaved and the order rotates, a run reads the same records on every path, and
    the buffers are allocated and touched and the `io_uring` ring is set up before the clock starts. The
@@ -97,6 +97,8 @@ The read paths:
 | page cache, `pread`, 1 thread | what `c/expert_store_wex.c` and `c/tools/wex4_verify.c` do on Linux today |
 | the same with `POSIX_FADV_RANDOM` or `POSIX_FADV_SEQUENTIAL` | the kernel's readahead switched off or doubled |
 | the same with `POSIX_FADV_WILLNEED` on the record 1 or 4 reads ahead | a hint for records the engine already knows it will need. The kernel may load only part of the record; the script measures how much (below) |
+| the same with the next record prefetched: one `readahead(2)` on the whole record; `POSIX_FADV_WILLNEED` in chunks of the device's readahead; a helper thread that `pread`s it | three ways to load the whole next record into the page cache while this one is read (below) |
+| page cache, `pread`, 1 thread, with 20 ms of work after each record: no prefetch, `WILLNEED` on the whole next record, `WILLNEED` in chunks, the helper thread | a prefetch gains only when the reading thread has something else to do while it loads; the work is a spin on the clock, not a decode (below) |
 | page cache, `pread`, 4 and 8 threads; `io_uring`, 8 records in flight | several misses at once through the page cache |
 | `O_DIRECT`, `pread`, 1 thread | what `c/qwen38_wex.h` does on Linux today for one read |
 | `O_DIRECT`, `pread`, 2, 4 and 8 threads | one blocking read per thread |
@@ -111,29 +113,52 @@ last. `--drop-caches` also writes `/proc/sys/vm/drop_caches` before every pass w
 `sudo` without a password). Neither reaches a cache below the kernel: the ARC of ZFS, a RAID controller,
 or the host of a virtual machine.
 
-**What `WILLNEED` loads.** In the two `WILLNEED` paths one `mincore` call just before each announced
+**What a prefetch loads.** In every path that announces records (`ahead=K`: the `WILLNEED` paths,
+`readahead(2)`, `WILLNEED` in chunks, the helper thread) one `mincore` call just before each announced
 record is read counts how many of its pages are in the page cache (inside the timed pass, outside the
-record's own time). The share is printed under the table and stored per pass as `ahead_cached`. In the
-only full run that has it (a cloud VM, block device with `read_ahead_kb` 128) it was 1.0%: the kernel had
-loaded about 130 KB of each 13.4 MB record, so those two rows did not measure a prefetch of the record.
-Pages whose read is still under way may not be counted. The measurement needs 4096-byte pages.
+record's own time). The share is printed under the table and stored per pass as `ahead_cached`;
+`announce_ms` is the time the reading thread spent in the announcing calls. A record's own time includes
+the calls that announce the record K places after it, made just before its read (the chunked path
+makes one call per chunk, so there they can be most of that time). Pages whose read is still
+under way may not be counted. The measurement needs 4096-byte pages. The chunk of the chunked path is the
+`read_ahead_kb` of the block device (128 KiB when it cannot be read), so no call asks for more than the
+kernel reads ahead on its own. In the Linux 7.0 source `readahead(2)` is a `POSIX_FADV_WILLNEED`, and one
+such call loads at most the larger of `read_ahead_kb` and `max_sectors_kb` (`force_page_cache_ra` in
+`mm/readahead.c`). The runs on cloud VMs agree: one call on a whole 13.4 MB record left 1.0%, 2.0% or
+15.8% of it in the page cache, on devices where that limit is 128 KiB, 256 KiB or 2 MiB.
+
+**Work between records.** A prefetch can gain only when the reading thread has something else to do
+while the next record loads. With `gap_ms=20` the thread spins 20 ms on the clock after each record
+(inside the timed pass, outside the record's own time). The spin stands for a decode but is none, and
+20 ms is a chosen value, not a measured decode time. The note under the table compares each of the
+three rows with work and a prefetch with the row that has the same work and no prefetch.
 
 The script prints a Markdown table (median, minimum and maximum MB/s over the runs, MB = 10^6 bytes, and
 the median time of one record) and writes `bench/out/wex_io.json` with every pass, the CPU, the kernel,
-the filesystem and the block-device queue settings (`read_ahead_kb`, scheduler), but no host name, user
-name or path. Results from real NVMe drives are wanted: attach the JSON to a **Benchmark results** issue.
+the filesystem and the block-device queue settings (`read_ahead_kb`, `max_sectors_kb`, scheduler), but
+no host name, user name or path. The JSON is `version` 3: each pass has `prefetch`, `chunk_kb`, `gap_ms`,
+`ahead_cached` and `announce_ms` (`none`, 0 or -1 where they do not apply), `prefetch_chunk_kb` gives the
+chunk and where it came from, and each summary row of a path that announces records has
+`announce_ms_median` (version 2 had none of these but `ahead_cached`). Results from real NVMe drives are
+wanted: attach the JSON to a **Benchmark results** issue.
 
-What it does not measure: the decode of a record, the engine's own caches, two drives (mirror, stripe),
-and anything on Windows or macOS. The only recorded runs are three on GitHub Actions runners, shared cloud
-VMs with a virtual disk of two kinds, where no read path won on both kinds:
-[research/linux-io-20261114](../research/linux-io-20261114/README.md). Later runs of the
-`linux-io-bench` job started by hand on the same kind of runner are not recorded.
+What it does not measure: the decode of a record (the rows with work spin instead), the engine's own
+caches, two drives (mirror, stripe), and anything on Windows or macOS. The only recorded runs are on
+GitHub Actions runners, shared cloud VMs with a virtual disk. Three of 2026-11-14 on two kinds of VM,
+where no read path won on both kinds:
+[research/linux-io-20261114](../research/linux-io-20261114/README.md). Eleven of 2026-11-15 on six
+kinds, with the prefetch paths: one hint on a whole record loaded one request of the device, with no work
+between records no prefetch helped on every kind, and with the 20 ms of work `WILLNEED` in chunks was
+the fastest prefetch in every run that had those rows (1.24x to 2.32x; not run on one kind):
+[research/linux-prefetch-20261115](../research/linux-prefetch-20261115/README.md). Other runs of the
+`linux-io-bench` job started by hand are not recorded.
 
 What CI covers: the `linux`, `linux-arm`, `linux-sanitizers` and `linux-arm-sanitizers` jobs build
 `wex_io.c` and run `--smoke --strict` (a 10 MB container, every path checked and run once; the `linux` job then reads the
 same container again through `--file`). The `linux-tsan` job runs the same smoke run built with clang under
-ThreadSanitizer (the `pread` threads). The full benchmark was not run on ARM. `scripts/check_all.sh`
-does not build `wex_io.c`, so the Windows job does not see it: its stub for systems other than Linux
+ThreadSanitizer (the `pread` threads and the helper thread of `prefetch=thread`). The full benchmark was
+not run on ARM. `scripts/check_all.sh` does not build `wex_io.c`, so the Windows job does not see it: its
+stub for systems other than Linux
 (it prints one `skipped` line) was built by hand with MinGW `gcc` and `clang`
 (`-std=c99 -pedantic -Wall -Wextra`, no warning) and is not built by CI. The full run is the job
 `linux-io-bench`, started by hand with `gh workflow run ci.yml --ref <branch> -f linux_io_bench=true`.

@@ -4,7 +4,10 @@
 
 Writes a synthetic WEX4 container (random bytes, no model weights), builds bench/wex_io.c and reads the
 container's expert records through each read path: pread through the page cache (with and without
-posix_fadvise hints), pread with O_DIRECT, both on 1 to 8 threads, and io_uring with several records or
+posix_fadvise hints), pread through the page cache with the next record prefetched (POSIX_FADV_WILLNEED on
+the whole record or in chunks of the device readahead, readahead(2), or a helper thread that preads it;
+some also with 20 ms of work after each record, a spin that stands for a decode),
+pread with O_DIRECT, both on 1 to 8 threads, and io_uring with several records or
 several sub-reads of one record in flight. Every path is first checked (SHA-256 of the records it reads
 against the index), then timed `--runs` times; the runs of all paths are interleaved, every pass starts
 from a page cache that does not hold the file (POSIX_FADV_DONTNEED, checked with mincore, plus
@@ -39,6 +42,7 @@ import bench   # noqa: E402  (sysinfo)
 import wex4    # noqa: E402  (the reference writer)
 
 # (label, options of wex_io, what it stands for)
+GAP_BASE = 'path=sync direct=0 gap_ms=20'   # the rows with work between records are compared with this one
 CONFIGS = [
     ('page cache, pread, 1 thread', 'path=sync direct=0', 'c/expert_store_wex.c and c/tools/wex4_verify.c on Linux today'),
     ('page cache, pread, FADV_RANDOM', 'path=sync direct=0 advise=random', 'kernel readahead off'),
@@ -47,6 +51,21 @@ CONFIGS = [
      'the next record is announced; how much of it the kernel then holds is measured (ahead_cached)'),
     ('page cache, pread, WILLNEED 4 records ahead', 'path=sync direct=0 ahead=4',
      'the next 4 records are announced; how much of them the kernel then holds is measured (ahead_cached)'),
+    ('page cache, pread, readahead(2) 1 record ahead', 'path=sync direct=0 ahead=1 prefetch=readahead',
+     'one readahead(2) call on the whole next record (ahead_cached measured)'),
+    ('page cache, pread, WILLNEED in chunks 1 record ahead', 'path=sync direct=0 ahead=1 prefetch=chunks',
+     'the next record announced as chunks of the device readahead, one POSIX_FADV_WILLNEED each (ahead_cached measured)'),
+    ('page cache, pread, helper thread 1 record ahead', 'path=sync direct=0 ahead=1 prefetch=thread',
+     'a second thread preads the next record into the page cache while the first reads (ahead_cached measured)'),
+    # the same with 20 ms of work after each record (a spin on the clock, no decode): time for a prefetch to land
+    ('page cache, pread, 1 thread, 20 ms of work per record', GAP_BASE,
+     'after each record the thread spins 20 ms, standing for a decode; the baseline of the next three rows'),
+    ('page cache, pread, WILLNEED 1 record ahead, 20 ms of work', 'path=sync direct=0 ahead=1 gap_ms=20',
+     'the hint of row 4 with time to land'),
+    ('page cache, pread, WILLNEED in chunks 1 record ahead, 20 ms of work', 'path=sync direct=0 ahead=1 prefetch=chunks gap_ms=20',
+     'the hint of row 7 with time to land'),
+    ('page cache, pread, helper thread 1 record ahead, 20 ms of work', 'path=sync direct=0 ahead=1 prefetch=thread gap_ms=20',
+     'the helper thread of row 8 with time to land'),
     ('page cache, pread, 4 threads', 'path=sync direct=0 threads=4', ''),
     ('page cache, pread, 8 threads', 'path=sync direct=0 threads=8', ''),
     ('page cache, io_uring, 8 records in flight', 'path=uring direct=0 depth=8', ''),
@@ -110,7 +129,9 @@ def drop_caches():
     return False
 
 
-def one_pass(exe, container, options, **more):
+def one_pass(exe, container, options, chunk_kb, **more):
+    if 'prefetch=chunks' in options.split():
+        more['chunk_kb'] = chunk_kb
     args = [exe, container] + options.split() + [f'{k}={v}' for k, v in more.items()]
     r = subprocess.run(args, capture_output=True, text=True, timeout=3600)
     if r.returncode != 0:
@@ -157,9 +178,15 @@ def main():
     if r.returncode != 0 or r.stderr.strip():
         sys.exit('bench/wex_io.c does not build without warnings:\n' + r.stderr)
 
-    res = {'bench': 'wex_io', 'version': 2, 'started': time.strftime('%Y-%m-%dT%H:%M:%S%z'),
+    res = {'bench': 'wex_io', 'version': 3, 'started': time.strftime('%Y-%m-%dT%H:%M:%S%z'),
            'sysinfo': bench.sysinfo(where), 'block_device': block_device(where),
            'runs': a.runs, 'records_per_pass': a.records, 'smoke': a.smoke, 'strict': a.strict}
+    # the chunk of prefetch=chunks: the device's readahead, so that no POSIX_FADV_WILLNEED call asks for more
+    # than the kernel reads ahead on its own; 128 KiB when the device does not say
+    ra = res['block_device'].get('read_ahead_kb', '')
+    chunk = int(ra) // 4 * 4 if ra.isdigit() and int(ra) >= 4 else 0
+    res['prefetch_chunk_kb'] = {'kb': chunk or 128,
+                                'from': 'read_ahead_kb of the block device' if chunk else 'default, read_ahead_kb not known'}
     container, made = a.file, None
     if not container:
         container = made = os.path.join(a.dir, 'wex-io-bench.wex4')
@@ -181,7 +208,7 @@ def main():
         todo = []   # the paths that passed the check: only these are timed
         for config in CONFIGS:
             label, options, _ = config
-            got = one_pass(exe, container, options, records=min(8, a.records), seed=99, verify=1)
+            got = one_pass(exe, container, options, res['prefetch_chunk_kb']['kb'], records=min(8, a.records), seed=99, verify=1)
             if 'failed' in got:
                 res['check'][options] = 'failed: ' + got['failed']
                 failed.append(f'{label}: {got["failed"]}')
@@ -200,12 +227,13 @@ def main():
             for label, options, _ in todo[run % len(todo):] + todo[:run % len(todo)] if todo else []:
                 if res['drop_caches']:
                     drop_caches()
-                got = one_pass(exe, container, options, records=a.records, seed=run + 1)
+                got = one_pass(exe, container, options, res['prefetch_chunk_kb']['kb'], records=a.records, seed=run + 1)
                 if 'mb_s' not in got:
                     failed.append(f'{label}, run {run + 1}: {got}')
                     continue
                 res['passes'][options].append(got)
-                seen = f', announced records in page cache before their read {got["ahead_cached"]}' if got.get('ahead') else ''
+                seen = (f', announced records in page cache before their read {got["ahead_cached"]}, '
+                        f'announcing calls {got["announce_ms"]} ms') if got.get('ahead') else ''
                 print(f'run {run + 1}  {label}: {got["mb_s"]} MB/s, cached before {got["cached_before"]}{seen}', flush=True)
     finally:
         if made and not a.keep and os.path.exists(made):
@@ -226,15 +254,22 @@ def main():
              'record_ms_p50_median': round(statistics.median(p['record_ms_p50'] for p in passes), 2),
              'cached_before_max': max(p['cached_before'] for p in passes), 'runs': len(passes), 'note': note}
         seen = [p['ahead_cached'] for p in passes if p.get('ahead') and p.get('ahead_cached', -1) >= 0]
+        if any(p.get('ahead') for p in passes):
+            s['announce_ms_median'] = round(statistics.median(p['announce_ms'] for p in passes), 1)
         if seen:
             s['ahead_cached_median'], s['ahead_cached_min'], s['ahead_cached_max'] = statistics.median(seen), min(seen), max(seen)
             notes.append(f'{label}: {s["ahead_cached_median"] * 100:.1f}% ({min(seen) * 100:.1f}% to {max(seen) * 100:.1f}%) '
-                         f'of the pages of the announced records were in the page cache just before their read')
+                         f'of the pages of the announced records were in the page cache just before their read; '
+                         f'the announcing calls took {s["announce_ms_median"]:.1f} ms of the pass (median)')
         elif any(p.get('ahead') for p in passes):
             notes.append(f'{label}: what the kernel read ahead was not measured (mincore failed or pages are not 4096 bytes)')
         res['summary'][options] = s
         if options == CONFIGS[0][1]:
             base = s['mb_s_median']
+        gap = res['summary'].get(GAP_BASE)
+        if 'gap_ms=' in options and options != GAP_BASE and gap and gap['mb_s_median'] > 0 and gap['record_ms_p50_median'] > 0:
+            notes.append(f'{label}: {s["mb_s_median"] / gap["mb_s_median"]:.2f}x the MB/s and '
+                         f'{s["record_ms_p50_median"] / gap["record_ms_p50_median"]:.2f}x the ms per record of "{gap["label"]}"')
         against = f'{s["mb_s_median"] / base:.2f}x' if base else ''
         rows.append(f'| {label} | {s["mb_s_median"]:.0f} | {s["mb_s_min"]:.0f} to {s["mb_s_max"]:.0f} | '
                     f'{against} | {s["record_ms_p50_median"]:.1f} | {s["cached_before_max"] * 100:.1f}% | '

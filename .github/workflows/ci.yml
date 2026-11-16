@@ -52,7 +52,7 @@ jobs:
         run: bash wex4/fuzz/run.sh --replay
       # seconds: a 10 MB container, every read path of bench/wex_io.c checked against the index's SHA-256 and
       # run once. It shows that the benchmark still builds and reads right, not how fast anything is.
-      # --strict: all 20 paths run on this runner, so a path that reports "skipped" (O_DIRECT or io_uring
+      # --strict: all 27 paths run on this runner, so a path that reports "skipped" (O_DIRECT or io_uring
       # set-up broken) fails the step. The second call reads the container the first one left (--file)
       - name: Linux read-path benchmark, smoke run
         run: |
@@ -62,7 +62,7 @@ jobs:
   # the same checks on a 64-bit ARM CPU: the fast WNR3 decoder builds its NEON kernel there (the step fails if it
   # built another one), and plain char is unsigned. Then the WEX4 tests once more with the scalar kernel forced,
   # so both kernels are compared with the reference decoder on ARM, and the speed of both (printed, never judged:
-  # a shared runner is not a benchmark machine). The smoke run builds bench/wex_io.c for ARM and runs its 20 read
+  # a shared runner is not a benchmark machine). The smoke run builds bench/wex_io.c for ARM and runs its 27 read
   # paths once (the full benchmark was not run on ARM). Then the same checks for a build with SVE, which adds the
   # SVE kernel 2
   linux-arm:
