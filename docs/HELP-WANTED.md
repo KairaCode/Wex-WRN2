@@ -474,7 +474,7 @@ measured; it is not known to fail.
     lines and a host of its own (`crash_min.comp`, `crash_min.c`) that crash only with a binding 0 in the
     descriptor set layout; the first form of the shader was valid SPIR-V and gave no message of the
     validation layer, so the crash is in the driver. On a newer Mesa on Linux it did not crash: on
-    2026-11-16 (run 43827154227, opt-in job `linux-vulkan-newmesa`, one run in each container) Mesa
+    2026-11-16 (run 43828157734, opt-in job `linux-vulkan-newmesa`, one run in each container) Mesa
     26.2.7 with LLVM 23.1.4 (`archlinux:latest`) and Mesa 26.2.6 with LLVM 23.1.2 (`fedora:latest`,
     Fedora 45) ran 0 crashes in the 50 runs of the probe, `crash_min` and the first form of the shader
     included, and passed every `run.sh` check (decode, reject, mutate, the conformance vectors; 0
