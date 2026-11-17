@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0
  * Copyright 2026 Ludovico Zanichelli */
 #include "wex_decode.h"
+#include "wex_fast_decode.h"
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -111,6 +112,9 @@ static void wex_cuda_initialize(void) {
 static pthread_mutex_t wex_nr2_mutex = PTHREAD_MUTEX_INITIALIZER;
 static WexNr2Model wex_nr2_models[WEX_NR2_MAX_MODELS];
 static int wex_nr2_model_count;
+/* The fast CPU decoder's tables of each model (wex_fast_decode.h, 224 KiB), built when the model
+ * is added and the CPU has the decoder's SIMD kernel; NULL: that model's records use the reference. */
+static WexFastModel *wex_fast_models[WEX_NR2_MAX_MODELS];
 #ifdef _WIN32
 static int wex_nr2_helper_ids[WEX_NR2_MAX_MODELS];   /* registered with the helper too */
 #endif
@@ -133,7 +137,11 @@ int coli_wex_register_model(const unsigned char *blob, size_t bytes, uint32_t *i
             memcpy(copy, blob, bytes);
             index = wex_nr2_model_count;
             if (wex_nr2_model_open(copy, bytes, &wex_nr2_models[index])) { free(copy); result = -1; }
-            else wex_nr2_model_count++;
+            else {
+                if (wexf_cpu_simd() && (wex_fast_models[index] = (WexFastModel *)malloc(sizeof(WexFastModel))))
+                    wex_fast_model_init(wex_fast_models[index], &wex_nr2_models[index]);
+                wex_nr2_model_count++;
+            }
         }
     }
 #ifdef _WIN32
@@ -320,6 +328,34 @@ int coli_wex_container_refused(uint32_t header_flags, const char *who) {
     return 0;
 }
 
+/* COLI_WEX_FAST_DECODE: unset, empty or not 0 -> the fast CPU decoder for WNR3 records; 0 -> the
+ * reference. Read at each decode (a getenv next to a decode of megabytes). */
+static int wex_fast_wanted(void) {
+    const char *value = getenv("COLI_WEX_FAST_DECODE");
+    return value && *value ? atoi(value) != 0 : 1;
+}
+
+static uint64_t wex_fast_decodes;
+static int wex_cpu_reported;
+/* One line, the first time a WNR3 record decodes on the CPU: which decoder. */
+static void wex_cpu_report(int fast, int has_kernel) {
+    if (__atomic_load_n(&wex_cpu_reported, __ATOMIC_RELAXED) || __atomic_exchange_n(&wex_cpu_reported, 1, __ATOMIC_ACQ_REL))
+        return;
+    if (fast)
+        fprintf(stderr, "[wex] WNR3 records decode on the CPU with the fast decoder (%s; COLI_WEX_FAST_DECODE=0: the reference)\n",
+                wex_fast_kernels());
+    else
+        fprintf(stderr, "[wex] WNR3 records decode on the CPU with the reference decoder (%s)\n",
+                has_kernel ? "COLI_WEX_FAST_DECODE=0" : "the fast decoder has no kernel for this CPU");
+}
+
+const char *coli_wex_cpu_decoder(void) {
+    return wexf_cpu_simd() && wex_fast_wanted() ? wex_fast_kernels() : "reference";
+}
+uint64_t coli_wex_fast_decode_count(void) {
+    return __atomic_load_n(&wex_fast_decodes, __ATOMIC_RELAXED);
+}
+
 int coli_wex_decode_record(const WexEntry *entry, unsigned char *slab, size_t capacity) {
     const WexNr2Model *model = NULL;
     int in_helper = 0;
@@ -347,6 +383,20 @@ int coli_wex_decode_record(const WexEntry *entry, unsigned char *slab, size_t ca
         }
     }
 #endif
+    if (model && entry->flags == WEX_ENTRY_NEURAL_RANS3) {
+        /* the CPU: the fast decoder where its tables were built (the CPU has its SIMD kernel) and
+         * COLI_WEX_FAST_DECODE is not 0, one thread a record (the engines decode records on several
+         * threads at once); the same checks and bytes as the reference, the slab untouched on -1 */
+        const WexFastModel *tables = wex_fast_models[model - wex_nr2_models];
+        const int fast = tables && wex_fast_wanted();
+        wex_cpu_report(fast, tables != NULL);
+        if (fast) {
+            static const WexFastOptions one = {1, 1, WEX_FAST_LANES, 1};
+            const int status = wex_fast_decode_record(entry, slab, capacity, model, tables, &one);
+            if (!status) __atomic_fetch_add(&wex_fast_decodes, UINT64_C(1), __ATOMIC_RELAXED);
+            return status;
+        }
+    }
     if (model) return wex_decode_nr2_record(entry, slab, capacity, model);
     return wex_decode_record(entry, slab, capacity);
 }

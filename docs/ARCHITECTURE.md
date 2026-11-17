@@ -97,7 +97,7 @@ The pages name a few things of the test machine: **U:** and **C:** are its two N
 
 ## The `c/` folder
 
-The 37 files under `c/` are this repository's engine-side code. The maintainer's application tree carries the same files without this repository's two- or three-line licence header (`sync-map.tsv` records the last sync; `check_repo.py --source` compares them without the header). Many of them build only inside an engine tree, because they include engine files that are not here.
+The 40 files under `c/` are this repository's engine-side code. The maintainer's application tree carries the same files without this repository's two- or three-line licence header (`sync-map.tsv` records the last sync; `check_repo.py --source` compares them without the header). Many of them build only inside an engine tree, because they include engine files that are not here.
 
 | Files | Builds or runs here | Needs an engine tree | Needs a GPU |
 |---|---|---|---|
@@ -107,7 +107,8 @@ The 37 files under `c/` are this repository's engine-side code. The maintainer's
 | `tools/wex_nr3_tools.c`, `tools/build_nr3.py`, `tools/repack_v4_wex.py`, `tools/wex_neural_rans.py`, `tools/wex_palette.py` | yes: both CPU scripts build a WNR3 container from `fixtures/v41-tiny` | no | no |
 | `tests/test_repack_v4_wex.py`, `tests/test_build_nr3_picks.py` | yes: `scripts/check_all.sh` | no | no |
 | `tests/fake_wex_cuda.c` | compile only: `scripts/build_cpu_check.sh`; on Windows `wex4/fuzz/run.sh --replay` loads it as the CUDA helper of the two engine harnesses | its users do (`test_v4_wex_nr3.c`, `test_qwen38_mxfp4.py`) | no |
-| `wex_decode.c`, `wex_decode.h` | compiled by `scripts/build_cpu_check.sh` only when it is given an engine tree; built and run without one by the two engine harnesses of `wex4/fuzz/` (`fuzz_store_wex.c`, `fuzz_q38_wex.c`) | no for the file itself | no (the helper is optional) |
+| `wex_fast_decode.h`, `tests/test_wex_fast_decode.c`, `tests/wnr3_fixture.h` | yes: `scripts/build_cpu_check.sh` builds and runs the test (three builds on x86-64, two elsewhere), which includes `wex_decode.c`; the test's `../compat.h` is a stand-in the script writes | no | no |
+| `wex_decode.c`, `wex_decode.h` | built and run by `tests/test_wex_fast_decode.c` (see the row above); compiled on its own by `scripts/build_cpu_check.sh` only when it is given an engine tree; built and run without one by the two engine harnesses of `wex4/fuzz/` (`fuzz_store_wex.c`, `fuzz_q38_wex.c`) | no for the file itself | no (the helper is optional) |
 | `expert_store_wex.c`, `expert_store_wex.h`, `tests/test_expert_store_wex.c` | `scripts/build_cpu_check.sh <TREE>/src/colibri/c`, or the `c/` folder of a colibri checkout (the opt-in `colibri-headers` CI job fetches colibri's headers and `expert_store_registry.c` for it); `expert_store_wex.c` also without an engine tree, in `wex4/fuzz/fuzz_store_wex.c`, against the stand-in headers of `wex4/fuzz/engine/`, which follow colibri's | yes for the test: `expert_store.h`, `expert_store_registry.c`, `deepseek_v4_internal.h`, `compat.h` | no |
 | `qwen38_wex.h`, `tests/test_qwen38_mxfp4.c` | the test: no; `qwen38_wex.h` in `wex4/fuzz/fuzz_q38_wex.c`, against a stand-in header that follows colibri's types and infers the members no public tree has | yes for the test: `qwen38.c`, `qwen38_core.h`, `compat.h` | no |
 | `tests/test_v4_wex_nr3.c`, `tests/test_v4_gpu_priority.c` | no | yes: `tests/test_deepseek_v4.c` and `deepseek_v4.c` | no |

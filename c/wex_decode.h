@@ -22,9 +22,18 @@ extern "C" {
 /* Neural records may use the optional sibling kaira_wex_cuda.dll on Windows.
  * COLI_WEX_CUDA_LIB selects an absolute helper path; "0" forces CPU.
  * Both paths return the same canonical host slab. Failures retain the input.
+ * On the CPU a WNR3 record goes to the fast decoder of wex_fast_decode.h (AVX2
+ * where CPUID says the CPU has it, NEON on ARM64) unless COLI_WEX_FAST_DECODE=0;
+ * to the reference decoder of wex_neural_rans.h then, on other CPUs and for WNR2
+ * records. Same bytes, same verdicts.
  */
 int coli_wex_decode_record(const WexEntry *entry, unsigned char *slab, size_t capacity);
 uint64_t coli_wex_cuda_decode_count(void);
+/* The CPU decoder of WNR3 records now: "AVX2" or "NEON" (the fast decoder), or
+ * "reference" (COLI_WEX_FAST_DECODE=0, or no kernel for this CPU). And the WNR3
+ * records the fast decoder has decoded so far. */
+const char *coli_wex_cpu_decoder(void);
+uint64_t coli_wex_fast_decode_count(void);
 
 /* Direct to VRAM (helper feature, optional): reconstruct a Neural-rANS record
  * held in host memory (entry->total_bytes) into caller-owned device buffers,

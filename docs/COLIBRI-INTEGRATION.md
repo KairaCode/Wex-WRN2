@@ -12,11 +12,11 @@ What each piece is and how a record travels from the drive to the GPU: [ARCHITEC
 |---|---|
 | format and codecs (always) | `wex_format.h`, `wex_neural_rans.h`, `wex_palette.h` |
 | WEX4 reader (always, for WEX4 files) | `wex4.h` |
-| CPU decoder and helper loader | `wex_decode.c`, `wex_decode.h` |
+| CPU decoder and helper loader | `wex_decode.c`, `wex_decode.h`; `wex_fast_decode.h` (the fast WNR3 CPU decoder that `wex_decode.c` calls) |
 | Qwen3.8 store | `qwen38_wex.h` (included by the qwen38 engine) |
 | CUDA helper source | `wex_cuda.cuh`, `tools/wex_cuda_bridge.cu` |
 | tools | `tools/repack_v4_wex.py`, `tools/repack_q38_mxfp4_wex.py`, `tools/build_nr3.py`, `tools/wex_nr3_tools.c`, `tools/wex4_verify.c` (and `tools/wex_neural_rans.py`, `tools/wex_palette.py`, which `repack_v4_wex.py` loads) |
-| tests | `tests/test_wex_format.c`, `tests/test_wex4_verify.c`, `tests/wex4_fixture.h`; the engine tests `tests/test_v4_wex_nr3.c` and `tests/test_qwen38_mxfp4.c` need the engine sources ([ARCHITECTURE.md](ARCHITECTURE.md), section "The `c/` folder") |
+| tests | `tests/test_wex_format.c`, `tests/test_wex4_verify.c`, `tests/wex4_fixture.h`, `tests/test_wex_fast_decode.c`, `tests/wnr3_fixture.h`; the engine tests `tests/test_v4_wex_nr3.c` and `tests/test_qwen38_mxfp4.c` need the engine sources ([ARCHITECTURE.md](ARCHITECTURE.md), section "The `c/` folder") |
 
 `c/expert_store_wex.c` is colibri's standalone expert store for WEX1-WEX3; it does not read WEX4.
 
@@ -100,6 +100,7 @@ Every variable that changes how a WEX file is opened or read, with its default i
 | `COLI_WEX_RAM_CACHE_GB` | 0 | RAM cache of compressed records (needs `COLI_WEX_GPU_DIRECT>=1`); `COLI_WEX_RAM_CACHE_PIN` (default on) and `COLI_WEX_RAM_CACHE_VERIFY` (default 0) tune it | `deepseek_v4.c` |
 | `WEX_READ_RETRY` | off | `1` = one retry after 16 ms when a direct read fails | `deepseek_v4.c`; `c/expert_store_wex.c` |
 | `COLI_WEX_CUDA_LIB` | `kaira_wex_cuda.dll` next to the executable | another helper; `0` = CPU decoder only | `c/wex_decode.c` |
+| `COLI_WEX_FAST_DECODE` | on | `0` = WNR3 records that decode on the CPU go to the reference decoder instead of the fast one of `c/wex_fast_decode.h` (same bytes and verdicts; the CPU also needs the decoder's AVX2 or NEON kernel, else the reference runs) | `c/wex_decode.c` |
 | `Q38_MXFP4_DIR` | unset | qwen38: read the Quark shards directly, no container (a check, not the fast path) | `c/qwen38_wex.h` |
 | `Q38_ASYNC_MISS` | 0 | qwen38 with `QT_GPU_MISS=2`: a decode step's misses are read on the loader thread, and each goes to the GPU as soon as its read lands | engine `qwen38_core.h` |
 
