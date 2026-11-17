@@ -1,0 +1,43 @@
+== 1 thread, every kernel 1/2/3/4 configuration in one AVX-512 build (out/test_z), thread CPU time
+wex_fast_model_init: 262.8 us per call (mean of 100), tables 1840144 bytes
+build: AVX2 kernels, OpenMP; model id 0x27e8a1e0
+ab: 3 records (18800640 decoded bytes each), 9 rounds, 1 threads, build AVX2, clock thread CPU time
+| variant | median ms/record | min | max | MB/s at median | median of per-round ratio to row 1 | rounds faster than row 1 |
+|---|---:|---:|---:|---:|---:|---:|
+| k1: 4 streams, fused | 95.31 | 84.75 | 107.08 | 197.3 | 1.000 | 0/9 |
+| k1: 1 stream, fused | 276.78 | 257.62 | 326.61 | 67.9 | 2.970 | 0/9 |
+| k1: 2 streams, fused | 143.85 | 137.92 | 170.93 | 130.7 | 1.619 | 0/9 |
+| k1: 3 streams, fused | 104.15 | 101.18 | 125.28 | 180.5 | 1.187 | 2/9 |
+| k1: 6 streams, fused | 93.62 | 81.80 | 107.90 | 200.8 | 0.968 | 5/9 |
+| k1: 8 streams, fused | 111.59 | 96.05 | 132.72 | 168.5 | 1.128 | 1/9 |
+| k2: gather 24 streams, fused | 146.94 | 120.00 | 158.52 | 127.9 | 1.525 | 0/9 |
+| k3: AVX2 two-level, 8 streams, fused | 131.29 | 106.17 | 133.76 | 143.2 | 1.260 | 1/9 |
+| k3: AVX2 two-level, 16 streams, fused | 81.39 | 67.18 | 86.98 | 231.0 | 0.812 | 9/9 |
+| k3: AVX2 two-level, 24 streams, fused | 67.87 | 55.37 | 69.87 | 277.0 | 0.671 | 9/9 |
+| k3: AVX2 two-level, 32 streams, fused | 60.39 | 50.35 | 66.58 | 311.3 | 0.629 | 9/9 |
+| k4: AVX-512 two-level, 16 streams, fused | 85.48 | 67.59 | 89.02 | 219.9 | 0.822 | 8/9 |
+| k4: AVX-512 two-level, 32 streams, fused | 54.47 | 47.99 | 61.85 | 345.2 | 0.574 | 9/9 |
+| k4: AVX-512 two-level, 48 streams, fused | 47.65 | 41.98 | 53.38 | 394.5 | 0.497 | 9/9 |
+| k4: AVX-512 two-level, 64 streams, fused | 51.66 | 43.61 | 56.47 | 364.0 | 0.533 | 9/9 |
+== 1 thread, unchanged header (out/test_orig, -march=haswell) vs new defaults, separate binaries, thread CPU time
+abx: 3 records, 9 rounds x 1 passes, 1 threads; ms/record
+| variant | binary | median | min | max | median ratio to row 1 | rounds faster than row 1 |
+|---|---|---:|---:|---:|---:|---:|
+| orig_k1x4 | test_orig:10 | 100.50 | 88.67 | 113.05 | 1.000 | 0/9 |
+| new_avx2_k3x4 | test_h:22 | 49.33 | 43.96 | 61.22 | 0.502 | 9/9 |
+| new_avx512_k4x3 | test_z:26 | 45.07 | 36.67 | 48.41 | 0.426 | 9/9 |
+| new_k1x4_in_z | test_z:10 | 94.89 | 84.25 | 113.75 | 0.943 | 6/9 |
+== 4 threads, wall clock, separate binaries
+abx: 3 records, 9 rounds x 1 passes, 4 threads; ms/record
+| variant | binary | median | min | max | median ratio to row 1 | rounds faster than row 1 |
+|---|---|---:|---:|---:|---:|---:|
+| orig_k1x4 | test_orig:10 | 67.63 | 53.23 | 74.66 | 1.000 | 0/9 |
+| new_avx2_k3x4 | test_h:22 | 38.58 | 33.14 | 56.21 | 0.651 | 9/9 |
+| new_avx512_k4x3 | test_z:26 | 38.57 | 28.98 | 50.55 | 0.638 | 9/9 |
+== 1 thread, wall clock, separate binaries
+abx: 3 records, 9 rounds x 1 passes, 1 threads; ms/record
+| variant | binary | median | min | max | median ratio to row 1 | rounds faster than row 1 |
+|---|---|---:|---:|---:|---:|---:|
+| orig_k1x4 | test_orig:10 | 106.15 | 89.84 | 123.12 | 1.000 | 0/9 |
+| new_avx2_k3x4 | test_h:22 | 51.59 | 45.79 | 67.85 | 0.488 | 9/9 |
+| new_avx512_k4x3 | test_z:26 | 41.65 | 36.94 | 50.99 | 0.398 | 9/9 |

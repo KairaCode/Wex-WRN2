@@ -1,0 +1,10 @@
+abx: 2 records, 7 rounds x 1 passes, 1 threads; ms/record
+| variant | binary | median | min | max | median ratio to row 1 | rounds faster than row 1 |
+|---|---|---:|---:|---:|---:|---:|
+| full | ablz_0:26 | 48.10 | 40.28 | 55.87 | 1.000 | 0/7 |
+| nohash | ablz_1:26 | 48.08 | 40.87 | 50.11 | 0.988 | 4/7 |
+| nostore | ablz_2:26 | 40.23 | 37.04 | 52.79 | 0.918 | 5/7 |
+| no_tc_gather | ablz_4:26 | 38.81 | 34.01 | 44.93 | 0.817 | 6/7 |
+| no_ta_gather | ablz_8:26 | 31.72 | 28.63 | 36.97 | 0.696 | 7/7 |
+| no_byte_gather | ablz_16:26 | 39.98 | 35.66 | 44.95 | 0.843 | 6/7 |
+| no_gathers | ablz_28:26 | 28.47 | 22.28 | 30.41 | 0.555 | 7/7 |

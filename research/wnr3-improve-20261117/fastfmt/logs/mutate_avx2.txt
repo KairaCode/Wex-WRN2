@@ -1,0 +1,2 @@
+build: WNX kernels AVX2; wex_fast_decode AVX2
+mutate: 300 damaged records: 300 rejected by the reference, 0 accepted (accepted ones decode to Z), 0 stopped at the parser; fast kernels agree on all

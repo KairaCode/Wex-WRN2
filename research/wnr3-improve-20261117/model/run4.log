@@ -1,0 +1,23 @@
+P=14 classes=8 K=1 train bits/w 3.573583 thr [231, 235, 237, 239, 241, 243, 246]
+P=14 classes=8 K=2 it 0 train bits/w 3.610001 (+0.8569% of raw vs K=1, before selector)
+P=14 classes=8 K=2 it 1 train bits/w 3.573028 (-0.0131% of raw vs K=1, before selector)
+P=14 classes=8 K=2 it 2 train bits/w 3.572891 (-0.0163% of raw vs K=1, before selector)
+P=14 classes=8 K=2 it 3 train bits/w 3.572817 (-0.0180% of raw vs K=1, before selector)
+P=14 classes=8 K=2 it 4 train bits/w 3.572780 (-0.0189% of raw vs K=1, before selector)
+P=14 classes=8 K=2 it 5 train bits/w 3.572761 (-0.0193% of raw vs K=1, before selector)
+P=14 classes=8 K=2 it 6 train bits/w 3.572751 (-0.0196% of raw vs K=1, before selector)
+P=14 classes=8 K=2 it 7 train bits/w 3.572745 (-0.0197% of raw vs K=1, before selector)
+P=14 classes=8 K=2 it 8 train bits/w 3.572741 (-0.0198% of raw vs K=1, before selector)
+P=14 classes=8 K=2 it 9 train bits/w 3.572738 (-0.0199% of raw vs K=1, before selector)
+{"variant": "P14_C8_K2", "n": 41, "all_ok": true, "mean_delta_used": -16385.70731707317, "pct_raw": -0.08715505066355811, "mean_delta_used_no_outlier": -8508.275, "pct_raw_no_outlier": -0.04525524131093409, "outlier_delta": -331483.0, "median_delta": -6243.0, "min_delta": -331483.0, "max_delta": 517.0, "mean_delta_padded": -16184.19512195122, "mean_used_of_raw": 0.8543765284897411, "table_bytes": 818010}
+P=14 classes=8 K=1 train bits/w 3.573583 thr [231, 235, 237, 239, 241, 243, 246]
+P=14 classes=8 K=4 it 0 train bits/w 3.575532 (+0.0459% of raw vs K=1, before selector)
+P=14 classes=8 K=4 it 1 train bits/w 3.572676 (-0.0213% of raw vs K=1, before selector)
+P=14 classes=8 K=4 it 2 train bits/w 3.572636 (-0.0223% of raw vs K=1, before selector)
+P=14 classes=8 K=4 it 3 train bits/w 3.572611 (-0.0229% of raw vs K=1, before selector)
+P=14 classes=8 K=4 it 4 train bits/w 3.572594 (-0.0233% of raw vs K=1, before selector)
+P=14 classes=8 K=4 it 5 train bits/w 3.572584 (-0.0235% of raw vs K=1, before selector)
+P=14 classes=8 K=4 it 6 train bits/w 3.572578 (-0.0236% of raw vs K=1, before selector)
+P=14 classes=8 K=4 it 7 train bits/w 3.572574 (-0.0237% of raw vs K=1, before selector)
+P=14 classes=8 K=4 it 8 train bits/w 3.572571 (-0.0238% of raw vs K=1, before selector)
+{"variant": "P14_C8_K4", "n": 41, "all_ok": true, "mean_delta_used": -16534.19512195122, "pct_raw": -0.08794485252603751, "mean_delta_used_no_outlier": -6928.225, "pct_raw_no_outlier": -0.03685100613596133, "outlier_delta": -400773.0, "median_delta": -4431.0, "min_delta": -400773.0, "max_delta": 2367.0, "mean_delta_padded": -16483.90243902439, "mean_used_of_raw": 0.8543686304711163, "table_bytes": 1634490}

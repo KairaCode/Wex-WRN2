@@ -1,0 +1,5 @@
+load: 6.86 4.98 5.64 9/129 1193
+build: WNX kernels AVX2 + AVX-512; wex_fast_decode AVX2
+WNR3 wex_fast_decode (AVX2 k1, 4 streams, fused)             1 thr 107.7 ms | 2 thr 59.6 ms | 3 thr 48.3 ms | 4 thr 60.5 ms |
+WNX mag_2048 AVX2 G=2                                        1 thr 32.8 ms | 2 thr 26.1 ms | 3 thr 15.7 ms | 4 thr 24.1 ms |
+WNX mag_2048 AVX-512 G=2                                     1 thr 21.5 ms | 2 thr 11.3 ms | 3 thr 8.5 ms | 4 thr 20.5 ms |

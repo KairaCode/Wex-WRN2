@@ -1,0 +1,13 @@
+MISSED | k4 weights: end-pointer check at block start | mutate: 6000 records reached the decoders (1596 accepted, 4404 rejected by the reference)
+CAUGHT | k4 weights: end-pointer check at stream end | MISMATCH at case 101 (wex_fast_decode default)
+CAUGHT | k4 weights: final state (stream hash) check | MISMATCH at case 123 (wex_fast_decode default)
+CAUGHT | k4 weights: canonical-zero check | MISMATCH at case 2650 (wex_fast_decode default)
+CAUGHT | k4 weights: ceil underflow check | MISMATCH at case 534 (wex_fast_decode default)
+MISSED | k4 scales: end-pointer check at stream end | mutate: 6000 records reached the decoders (1596 accepted, 4404 rejected by the reference)
+MISSED | k4 scales: final state (stream hash) check | mutate: 6000 records reached the decoders (1596 accepted, 4404 rejected by the reference)
+MISSED | k3 weights: end-pointer check at block start | mutate: 6000 records reached the decoders (1596 accepted, 4404 rejected by the reference)
+CAUGHT | k3 weights: end-pointer check at stream end | MISMATCH at case 101 (wex_fast_decode default)
+CAUGHT | k3 weights: final state (stream hash) check | MISMATCH at case 123 (wex_fast_decode default)
+CAUGHT | k3 weights: canonical-zero check | MISMATCH at case 3827 (wex_fast_decode default)
+CAUGHT | k3 weights: ceil underflow check | MISMATCH at case 44 (wex_fast_decode default)
+negative controls: 8 of 12 caught
