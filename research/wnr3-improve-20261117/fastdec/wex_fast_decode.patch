@@ -1,0 +1,515 @@
+--- a/wex4/research/fast-cpu-decode/wex_fast_decode.h	2026-11-17 03:25:20.855907865 +0000
++++ b/wex4/research/fast-cpu-decode/wex_fast_decode.h	2026-11-17 03:25:20.867930803 +0000
+@@ -27,7 +27,13 @@
+  *      model blob). An AArch64 build for an SVE target has the same kernel on SVE vectors of any length
+  *      (svcntw() streams per vector: 4 at 128 bits). NEON has no gather load: in a NEON build without SVE a
+  *      request for kernel 2 runs kernel 1 with 4 streams;
+- *  (e) fuse = 1 computes the MurmurHash3 of each stream and undoes the ceil form inside the decode loop.
++ *  (e) fuse = 1 computes the MurmurHash3 of each stream and undoes the ceil form inside the decode loop;
++ *  (f) kernels 3 (AVX2, 8 streams per vector) and 4 (AVX-512 F/BW/VL/CD/VBMI2, 16 streams per vector) decode
++ *      `lanes` vectors of streams with gathers from two small tables per context: ta (u16 per 32-slot bucket:
++ *      the bucket's first symbol and where the second one starts; buckets with 3+ symbols point to an exact
++ *      sub-table) and tc (start | frequency per symbol). One compare gives the symbol, no search. Kernel 4 is
++ *      the default of wex_fast_decode when compiled (-march=x86-64-v4 -mavx512vbmi2, or a -march that has them),
++ *      else kernel 3 in an AVX2 build. Both are x86 only.
+  *
+  * Renormalisation is branchless and reads 4 bytes ahead; a stream that runs past its end is noticed at the
+  * next 32-symbol boundary instead of at the byte. This is equivalent to the reference check: the read
+@@ -78,7 +84,7 @@
+ #define WEXF_SVE_LANES 64u                    /* 32-bit lanes of the longest SVE vector (2048 bits) */
+ #define WEXF_GROUP_MAX (3u * WEXF_SVE_LANES)  /* streams of one call of a kernel */
+ #else
+-#define WEXF_GROUP_MAX 24u
++#define WEXF_GROUP_MAX 64u
+ #endif
+ #define WEXF_MAX_TASKS 256u
+ #define WEXF_SLACK 104u         /* > 3 bytes x 32 symbols + a 4-byte read */
+@@ -102,18 +108,32 @@
+ 
+ typedef struct {
+     int threads;   /* OpenMP threads, 0 = the runtime's default; ignored without OpenMP */
+-    int kernel;    /* 0 checked scalar loop, 1 AVX2 or NEON search + interleaved streams, 2 AVX2 or SVE gathers */
++    int kernel;    /* 0 checked scalar loop, 1 AVX2 or NEON search + interleaved streams, 2 AVX2 or SVE gathers,
++                      3 AVX2 two-level tables, 4 AVX-512 two-level tables (x86 builds; else kernel 1) */
+     int lanes;     /* kernel 1: streams per loop (1, 2, 3, 4, 6, 8); kernel 2: vectors per loop (1, 2, 3) of 8
+-                      streams (AVX2) or svcntw() streams (SVE) */
++                      streams (AVX2) or svcntw() streams (SVE); kernels 3, 4: vectors per loop (1..4) of 8 / 16 streams */
+     int fuse;      /* kernels 1, 2: hash and ceil inverse inside the decode loop */
+ } WexFastOptions;
+ 
+ /* Decode tables of one model (AVX2 and NEON kernels). Read-only after wex_fast_model_init, shareable between threads.
+  * The entries start 64-byte aligned inside `raw`; a byte copy of the struct still decodes correctly (unaligned). */
++#define WEXF_BCTX (3u * 7u * 65u)   /* weight contexts (m * 7 + srel) * 65 + maximum * 8 + previous, 64 = block start */
++#define WEXF_ASHIFT 5u              /* kernels 3, 4: 2^5 slots per bucket */
++#define WEXF_TSUB_CAP 2048u         /* buckets with 3+ symbols (the production model has 811 at 2^5) */
++
+ typedef struct {
+     uint32_t id, skew;                         /* model id, offset of the first entry in raw */
+     unsigned char lut[3u * WEX_NR2_TOTAL];     /* slot -> scale symbol */
+     unsigned char raw[WEXF_CTX_BYTES + 64u];
++    /* kernels 3, 4: ta[context << 9 | slot >> 5] = b | sym_lo << 8, b = start of symbol sym_lo + 1 minus the first
++     * slot of the bucket (32 if the bucket holds one symbol); bit 15: the bucket holds 3+ symbols and bits 0..14
++     * number its exact sub-table, entries ta[n << 5 | slot mod 32] in tsub (one symbol each, b = 32). tsub follows ta
++     * (one index space from ta[0]); 2 bytes of padding after it, the kernels read 4 bytes per u16 entry.
++     * tc[context * 16 + symbol] = start | frequency << 16. tsub_used = UINT32_MAX: no room, kernels 3, 4 off. */
++    uint16_t ta[WEXF_BCTX << (14u - WEXF_ASHIFT)];
++    uint16_t tsub[(WEXF_TSUB_CAP << WEXF_ASHIFT) + 2u];
++    uint32_t tsub_used;
++    uint32_t tc[WEXF_BCTX * 16u];
+ } WexFastModel;
+ 
+ typedef struct {
+@@ -202,11 +222,39 @@
+     return (uint32_t)(wide >> keep);
+ }
+ 
++static inline void wexf_two_level_init(WexFastModel *f, size_t ctx, const unsigned char *cdf) {
++    const uint32_t S = WEXF_ASHIFT, B = 1u << WEXF_ASHIFT;
++    uint32_t c[17], i, s;
++    uint16_t *ta = f->ta + (ctx << (14u - WEXF_ASHIFT));
++    for (i = 0; i <= 16u; i++) c[i] = wex_nr_u16(cdf + i * 2u);
++    for (i = 0; i < 16u; i++) f->tc[ctx * 16u + i] = c[i] | (c[i + 1u] - c[i]) << 16;
++    for (s = 0; s < 16u; s++)   /* buckets whose first slot is in symbol s: one symbol until a boundary says more */
++        for (i = (c[s] + B - 1u) >> S; i < (c[s + 1u] + B - 1u) >> S; i++) ta[i] = (uint16_t)(B | s << 8);
++    for (s = 1; s < 16u; s = i) {   /* boundaries c[s] inside a bucket (not at its first slot), grouped by bucket */
++        const uint32_t k = c[s] >> S, lo = k << S;
++        for (i = s; i < 16u && c[i] >> S == k; i++) {}
++        if (c[s] == lo) { if (i - s == 1u) continue; s++; }   /* a boundary at the first slot is no boundary */
++        if (i - s == 1u) ta[k] = (uint16_t)((c[s] - lo) | (s - 1u) << 8);   /* two symbols: s - 1 and s */
++        else if (i > s) {   /* 3+ symbols: exact sub-table */
++            uint32_t r, t = s - 1u;
++            if (f->tsub_used >= WEXF_TSUB_CAP) { f->tsub_used = UINT32_MAX; return; }
++            for (r = 0; r < B; r++) {
++                while (c[t + 1u] <= lo + r) t++;
++                f->tsub[(f->tsub_used << S) + r] = (uint16_t)(B | t << 8);
++            }
++            ta[k] = (uint16_t)(0x8000u | ((WEXF_BCTX << (14u - S) >> S) + f->tsub_used));
++            f->tsub_used++;
++        }
++    }
++}
++
+ static inline void wex_fast_model_init(WexFastModel *f, const WexNr2Model *model) {
+     uint32_t m, srel, e, symbol;
+     f->id = model->id;
+     f->skew = (uint32_t)(0u - (uintptr_t)f->raw) & 63u;
+     memset(f->lut, 0, sizeof(f->lut));
++    f->tsub_used = 0;
++    f->tsub[WEXF_TSUB_CAP << WEXF_ASHIFT] = f->tsub[(WEXF_TSUB_CAP << WEXF_ASHIFT) + 1u] = 0;
+     for (m = 0; m < 3u; m++)
+         for (symbol = 0; symbol < 256u; symbol++) {
+             const unsigned char *cdf = wex_nr2_scale_cdf(model, m) + symbol * 2u;
+@@ -228,6 +276,10 @@
+                 }
+                 entry[15] = 0x7fff;   /* cdf[16] = 16384 on a valid model: the search always stops by symbol 15 */
+                 memcpy(f->raw + f->skew + ((size_t)(m * 7u + srel) * 65u + e) * WEXF_ENTRY, entry, WEXF_ENTRY);
++#if WEXF_SIMD == 1
++                if ((e == 64u || (e & 7u) <= (e >> 3)) && f->tsub_used != UINT32_MAX)   /* previous > maximum: never reached */
++                    wexf_two_level_init(f, (size_t)(m * 7u + srel) * 65u + e, cdf);
++#endif
+             }
+ }
+ 
+@@ -363,6 +415,300 @@
+     return 0;
+ }
+ 
++
++#if WEXF_SIMD == 1
++/* Kernel 3, weights (AVX2): G vectors of 8 streams (one matrix, same count). Per symbol and vector: gather 1 reads the
++ * u16 bucket entry ta of each lane (lanes in a bucket with 3+ symbols read their exact sub-table entry with a masked
++ * gather), one compare picks sym_lo or sym_lo + 1, gather 2 reads start | frequency << 16 of (context, symbol) from
++ * tc; every second symbol gather 3 reads the next 4 bytes of each stream (the state stays in [2^23, 2^31) for any
++ * input, so a symbol takes at most 2 bytes). The checks are kernel 1's: end pointer at each block start and at the
++ * end, canonical zero, stream hash, ceil inverse. */
++WEXF_INLINE int wexf_weights_t8(const WexfJob *J, const WexfStream *s, const uint32_t G, const int fuse) {
++    const uint32_t m = s[0].matrix, blocks = s[0].count / 32u, median = J->v->median[m], ceil = J->ceil >> m & 1u;
++    const int *ta = (const int *)(const void *)J->fm->ta, *tc = (const int *)(const void *)J->fm->tc;
++    const unsigned char *pay = s[0].begin;
++    const __m256i low14 = _mm256_set1_epi32((int)WEX_NR2_TOTAL - 1), lowS = _mm256_set1_epi32((1 << WEXF_ASHIFT) - 1);
++    const __m256i one = _mm256_set1_epi32(1), seven = _mm256_set1_epi32(7), m16 = _mm256_set1_epi32(0xffff);
++    const __m256i m15 = _mm256_set1_epi32(15), mff = _mm256_set1_epi32(0xff), k32 = _mm256_set1_epi32(32);
++    const __m256i bswap = _mm256_setr_epi8(3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12,
++                                           3, 2, 1, 0, 7, 6, 5, 4, 11, 10, 9, 8, 15, 14, 13, 12);
++    const __m256i c1 = _mm256_set1_epi32((int)UINT32_C(0xcc9e2d51)), c2 = _mm256_set1_epi32(0x1b873593);
++    const __m256i ones = _mm256_set1_epi32(0x11111111), eights = _mm256_set1_epi32((int)UINT32_C(0x88888888));
++    __m256i x[4], p[4], e[4], h[4], base[4], c[4], mx[4], acc[4], buf[4], bad = _mm256_setzero_si256();
++    unsigned char *out[32], *sc[32];
++    uint32_t t[8], ident[4], g, k, b, w, j;
++    for (g = 0; g < G; g++) {
++        uint32_t st[8], pp[8], ee[8], hh[8];
++        for (k = 0; k < 8u; k++) {
++            const WexfStream *q = s + g * 8u + k;
++            const unsigned char *ptr, *end;
++            if (wex_nr2_stream_open(q->begin, q->length, &ptr, &end, &st[k])) return -1;
++            pp[k] = (uint32_t)(ptr - pay); ee[k] = (uint32_t)(end - pay);
++            out[g * 8u + k] = J->weights[m] + q->first / 2u; sc[g * 8u + k] = J->scales[m] + q->first / 32u;
++            wexf_ident(J, q->index, ident);
++            hh[k] = wex_nr3_ident_hash(ident);
++        }
++        x[g] = _mm256_loadu_si256((const __m256i *)(const void *)st); p[g] = _mm256_loadu_si256((const __m256i *)(const void *)pp);
++        e[g] = _mm256_loadu_si256((const __m256i *)(const void *)ee); h[g] = _mm256_loadu_si256((const __m256i *)(const void *)hh);
++        buf[g] = acc[g] = _mm256_setzero_si256();
++    }
++    for (b = 0; b < blocks; b++) {
++        for (g = 0; g < G; g++) {
++            if (_mm256_movemask_epi8(_mm256_cmpgt_epi32(p[g], e[g]))) return -1;   /* offsets < 2^31 */
++            for (k = 0; k < 8u; k++) t[k] = (m * 7u + wex_nr2_srel(sc[g * 8u + k][b], median)) * 65u;
++            base[g] = _mm256_loadu_si256((const __m256i *)(const void *)t);
++            c[g] = _mm256_add_epi32(base[g], _mm256_set1_epi32(64));
++            mx[g] = _mm256_setzero_si256();
++        }
++        for (w = 0; w < 4u; w++) {
++            for (j = 0; j < 8u; j++)
++                for (g = 0; g < G; g++) {
++                    const __m256i slot = _mm256_and_si256(x[g], low14), r = _mm256_and_si256(slot, lowS);
++                    const __m256i ia = _mm256_add_epi32(_mm256_slli_epi32(c[g], 14 - WEXF_ASHIFT), _mm256_srli_epi32(slot, WEXF_ASHIFT));
++                    __m256i wa = _mm256_i32gather_epi32(ta, ia, 2), sym, wc, xn, shift, bytes, a, n;
++                    const int flag = _mm256_movemask_ps(_mm256_castsi256_ps(_mm256_slli_epi32(wa, 16)));
++                    if (__builtin_expect(flag != 0, 0)) {   /* 3+ symbols in the bucket: exact sub-table */
++                        const __m256i fm = _mm256_srai_epi32(_mm256_slli_epi32(wa, 16), 31);
++                        const __m256i isub = _mm256_add_epi32(_mm256_slli_epi32(_mm256_and_si256(wa, _mm256_set1_epi32(0x7fff)), WEXF_ASHIFT), r);
++                        wa = _mm256_mask_i32gather_epi32(wa, ta, isub, fm, 2);
++                    }
++                    /* sym = sym_lo + 1 - (b > r) */
++                    sym = _mm256_add_epi32(_mm256_add_epi32(_mm256_and_si256(_mm256_srli_epi32(wa, 8), m15), one),
++                                           _mm256_cmpgt_epi32(_mm256_and_si256(wa, mff), r));
++                    wc = _mm256_i32gather_epi32(tc, _mm256_add_epi32(_mm256_slli_epi32(c[g], 4), sym), 4);
++                    if (!(j & 1u)) bytes = _mm256_shuffle_epi8(_mm256_i32gather_epi32((const int *)(const void *)pay, p[g], 1), bswap);
++                    else bytes = buf[g];
++                    xn = _mm256_sub_epi32(_mm256_add_epi32(_mm256_mullo_epi32(_mm256_srli_epi32(wc, 16), _mm256_srli_epi32(x[g], WEX_NR2_PRECISION)), slot),
++                                          _mm256_and_si256(wc, m16));
++                    /* bytes needed: (x < 2^23) + (x < 2^15); x < 2^31, signed compares are right */
++                    n = _mm256_add_epi32(_mm256_cmpgt_epi32(_mm256_set1_epi32((int)WEX_NR_L), xn),
++                                         _mm256_cmpgt_epi32(_mm256_set1_epi32((int)(WEX_NR_L >> 8)), xn));
++                    shift = _mm256_slli_epi32(_mm256_sub_epi32(_mm256_setzero_si256(), n), 3);
++                    x[g] = _mm256_or_si256(_mm256_sllv_epi32(xn, shift), _mm256_srlv_epi32(bytes, _mm256_sub_epi32(k32, shift)));
++                    buf[g] = _mm256_sllv_epi32(bytes, shift);
++                    p[g] = _mm256_sub_epi32(p[g], n);
++                    acc[g] = _mm256_or_si256(_mm256_srli_epi32(acc[g], 4), _mm256_slli_epi32(sym, 28));
++                    a = _mm256_and_si256(sym, seven);
++                    mx[g] = _mm256_max_epu32(mx[g], a);
++                    c[g] = _mm256_add_epi32(base[g], _mm256_add_epi32(_mm256_slli_epi32(mx[g], 3), a));
++                }
++            for (g = 0; g < G; g++) {
++                const __m256i z = _mm256_xor_si256(acc[g], eights);
++                bad = _mm256_or_si256(bad, _mm256_andnot_si256(z, _mm256_and_si256(_mm256_sub_epi32(z, ones), eights)));
++                _mm256_storeu_si256((__m256i *)(void *)t, acc[g]);
++                for (k = 0; k < 8u; k++) memcpy(out[g * 8u + k] + (size_t)b * 16u + w * 4u, &t[k], 4);
++                if (fuse) {
++                    __m256i q = _mm256_mullo_epi32(acc[g], c1);
++                    q = _mm256_mullo_epi32(_mm256_or_si256(_mm256_slli_epi32(q, 15), _mm256_srli_epi32(q, 17)), c2);
++                    q = _mm256_xor_si256(h[g], q);
++                    q = _mm256_or_si256(_mm256_slli_epi32(q, 13), _mm256_srli_epi32(q, 19));
++                    h[g] = _mm256_add_epi32(_mm256_add_epi32(_mm256_slli_epi32(q, 2), q), _mm256_set1_epi32((int)UINT32_C(0xe6546b64)));
++                }
++            }
++        }
++        if (fuse && ceil)
++            for (g = 0; g < G; g++) {
++                uint32_t five = (uint32_t)_mm256_movemask_ps(_mm256_castsi256_ps(_mm256_cmpeq_epi32(mx[g], _mm256_set1_epi32(5))));
++                for (; five; five &= five - 1u) {
++                    k = g * 8u + _tzcnt_u32(five);
++                    if (wexf_ceil_fused(out[k] + (size_t)b * 16u, sc[k] + b)) return -1;
++                }
++            }
++    }
++    if (J->cz && !_mm256_testz_si256(bad, bad)) return -1;
++    for (g = 0; g < G; g++) {
++        uint32_t st[8], pp[8], ee[8], hh[8];
++        _mm256_storeu_si256((__m256i *)(void *)st, x[g]); _mm256_storeu_si256((__m256i *)(void *)pp, p[g]);
++        _mm256_storeu_si256((__m256i *)(void *)ee, e[g]); _mm256_storeu_si256((__m256i *)(void *)hh, h[g]);
++        for (k = 0; k < 8u; k++) {
++            uint32_t x0;
++            if (fuse) x0 = WEX_NR_L + (wex_nr3_h32_final(hh[k], 16u + blocks * 16u) & WEX_NR3_HASH_MASK);
++            else { wexf_ident(J, s[g * 8u + k].index, ident); x0 = wex_nr3_stream_x0(ident, out[g * 8u + k], blocks * 16u); }
++            if (pp[k] != ee[k] || st[k] != x0) return -1;
++            if (!fuse && ceil && wexf_ceil_blocks(out[g * 8u + k], sc[g * 8u + k], blocks)) return -1;
++        }
++    }
++    return 0;
++}
++#endif
++
++#if WEXF_SIMD == 1 && defined(__AVX512F__) && defined(__AVX512BW__) && defined(__AVX512VL__) && defined(__AVX512CD__) && \
++    defined(__AVX512VBMI2__)
++#define WEXF_AVX512 1
++/* Kernel 4, weights (AVX-512 F/BW/VL/CD/VBMI2): kernel 3 on G vectors of 16 streams; renormalisation shift =
++ * 8 x bytes = lzcnt(x << 1) & 24, then one VPSHLDVD; symbols packed with VPSHRDD. */
++WEXF_INLINE int wexf_weights_t16(const WexfJob *J, const WexfStream *s, const uint32_t G, const int fuse) {
++    const uint32_t m = s[0].matrix, blocks = s[0].count / 32u, median = J->v->median[m], ceil = J->ceil >> m & 1u;
++    const uint16_t *ta = J->fm->ta;
++    const uint32_t *tc = J->fm->tc;
++    const unsigned char *pay = s[0].begin;
++    const __m512i low14 = _mm512_set1_epi32((int)WEX_NR2_TOTAL - 1), lowS = _mm512_set1_epi32((1 << WEXF_ASHIFT) - 1);
++    const __m512i one = _mm512_set1_epi32(1), seven = _mm512_set1_epi32(7), m16 = _mm512_set1_epi32(0xffff);
++    const __m512i m15 = _mm512_set1_epi32(15), m24 = _mm512_set1_epi32(24), mff = _mm512_set1_epi32(0xff);
++    const __m512i bswap = _mm512_set_epi8(12, 13, 14, 15, 8, 9, 10, 11, 4, 5, 6, 7, 0, 1, 2, 3, 12, 13, 14, 15, 8, 9, 10, 11,
++                                          4, 5, 6, 7, 0, 1, 2, 3, 12, 13, 14, 15, 8, 9, 10, 11, 4, 5, 6, 7, 0, 1, 2, 3,
++                                          12, 13, 14, 15, 8, 9, 10, 11, 4, 5, 6, 7, 0, 1, 2, 3);
++    const __m512i c1 = _mm512_set1_epi32((int)UINT32_C(0xcc9e2d51)), c2 = _mm512_set1_epi32(0x1b873593);
++    const __m512i ones = _mm512_set1_epi32(0x11111111), eights = _mm512_set1_epi32((int)UINT32_C(0x88888888));
++    __m512i x[4], p[4], e[4], h[4], base[4], c[4], mx[4], acc[4], buf[4], bad = _mm512_setzero_si512();
++    unsigned char *out[64], *sc[64];
++    uint32_t t[16], ident[4], g, k, b, w, j;
++    for (g = 0; g < G; g++) {
++        uint32_t st[16], pp[16], ee[16], hh[16];
++        for (k = 0; k < 16u; k++) {
++            const WexfStream *q = s + g * 16u + k;
++            const unsigned char *ptr, *end;
++            if (wex_nr2_stream_open(q->begin, q->length, &ptr, &end, &st[k])) return -1;
++            pp[k] = (uint32_t)(ptr - pay); ee[k] = (uint32_t)(end - pay);
++            out[g * 16u + k] = J->weights[m] + q->first / 2u; sc[g * 16u + k] = J->scales[m] + q->first / 32u;
++            wexf_ident(J, q->index, ident);
++            hh[k] = wex_nr3_ident_hash(ident);
++        }
++        x[g] = _mm512_loadu_si512(st); p[g] = _mm512_loadu_si512(pp); e[g] = _mm512_loadu_si512(ee); h[g] = _mm512_loadu_si512(hh);
++        buf[g] = acc[g] = _mm512_setzero_si512();
++    }
++    for (b = 0; b < blocks; b++) {
++        for (g = 0; g < G; g++) {
++            if (_mm512_cmpgt_epu32_mask(p[g], e[g])) return -1;
++            for (k = 0; k < 16u; k++) t[k] = (m * 7u + wex_nr2_srel(sc[g * 16u + k][b], median)) * 65u;
++            base[g] = _mm512_loadu_si512(t);
++            c[g] = _mm512_add_epi32(base[g], _mm512_set1_epi32(64));   /* block start: previous = 8, maximum = 8 */
++            mx[g] = _mm512_setzero_si512();
++        }
++        for (w = 0; w < 4u; w++) {
++            for (j = 0; j < 8u; j++)
++                for (g = 0; g < G; g++) {
++                    const __m512i slot = _mm512_and_si512(x[g], low14), r = _mm512_and_si512(slot, lowS);
++                    const __m512i ia = _mm512_add_epi32(_mm512_slli_epi32(c[g], 14 - WEXF_ASHIFT), _mm512_srli_epi32(slot, WEXF_ASHIFT));
++                    __m512i wa = _mm512_i32gather_epi32(ia, (const void *)ta, 2), sym, wc, xn, shift, bytes, a;
++                    __mmask16 flag = _mm512_test_epi32_mask(wa, _mm512_set1_epi32(0x8000)), hi;
++                    if (__builtin_expect(flag != 0, 0)) {   /* 3+ symbols in the bucket: exact sub-table */
++                        const __m512i isub = _mm512_add_epi32(_mm512_slli_epi32(_mm512_and_si512(wa, _mm512_set1_epi32(0x7fff)), WEXF_ASHIFT), r);
++                        wa = _mm512_mask_i32gather_epi32(wa, flag, isub, (const void *)ta, 2);
++                    }
++                    hi = _mm512_cmpge_epu32_mask(r, _mm512_and_si512(wa, mff));
++                    sym = _mm512_and_si512(_mm512_srli_epi32(wa, 8), m15);
++                    sym = _mm512_mask_add_epi32(sym, hi, sym, one);
++                    wc = _mm512_i32gather_epi32(_mm512_add_epi32(_mm512_slli_epi32(c[g], 4), sym), (const void *)tc, 4);
++                    if (!(j & 1u)) bytes = _mm512_shuffle_epi8(_mm512_i32gather_epi32(p[g], (const void *)pay, 1), bswap);
++                    else bytes = buf[g];
++                    xn = _mm512_sub_epi32(_mm512_add_epi32(_mm512_mullo_epi32(_mm512_srli_epi32(wc, 16), _mm512_srli_epi32(x[g], WEX_NR2_PRECISION)), slot),
++                                          _mm512_and_si512(wc, m16));
++                    shift = _mm512_and_si512(_mm512_lzcnt_epi32(_mm512_slli_epi32(xn, 1)), m24);   /* 8 x bytes needed */
++                    x[g] = _mm512_shldv_epi32(xn, bytes, shift);
++                    buf[g] = _mm512_sllv_epi32(bytes, shift);
++                    p[g] = _mm512_add_epi32(p[g], _mm512_srli_epi32(shift, 3));
++                    acc[g] = _mm512_shrdi_epi32(acc[g], sym, 4);   /* symbol 0 of the word ends in bits 0..3 */
++                    a = _mm512_and_si512(sym, seven);
++                    mx[g] = _mm512_max_epu32(mx[g], a);
++                    c[g] = _mm512_add_epi32(base[g], _mm512_add_epi32(_mm512_slli_epi32(mx[g], 3), a));
++                }
++            for (g = 0; g < G; g++) {
++                const __m512i z = _mm512_xor_si512(acc[g], eights);   /* a zero nibble of z = a nibble 8 */
++                bad = _mm512_or_si512(bad, _mm512_andnot_si512(z, _mm512_and_si512(_mm512_sub_epi32(z, ones), eights)));
++                _mm512_storeu_si512(t, acc[g]);
++                for (k = 0; k < 16u; k++) memcpy(out[g * 16u + k] + (size_t)b * 16u + w * 4u, &t[k], 4);
++                if (fuse) {
++                    __m512i q = _mm512_rol_epi32(_mm512_mullo_epi32(acc[g], c1), 15);
++                    q = _mm512_xor_si512(h[g], _mm512_mullo_epi32(q, c2));
++                    q = _mm512_rol_epi32(q, 13);
++                    h[g] = _mm512_add_epi32(_mm512_add_epi32(_mm512_slli_epi32(q, 2), q), _mm512_set1_epi32((int)UINT32_C(0xe6546b64)));
++                }
++            }
++        }
++        if (fuse && ceil)
++            for (g = 0; g < G; g++)
++                for (uint32_t five = _mm512_cmpeq_epi32_mask(mx[g], _mm512_set1_epi32(5)); five; five &= five - 1u) {
++                    k = g * 16u + (uint32_t)__builtin_ctz(five);
++                    if (wexf_ceil_fused(out[k] + (size_t)b * 16u, sc[k] + b)) return -1;
++                }
++    }
++    if (J->cz && _mm512_test_epi32_mask(bad, bad)) return -1;
++    for (g = 0; g < G; g++) {
++        uint32_t st[16], pp[16], ee[16], hh[16];
++        _mm512_storeu_si512(st, x[g]); _mm512_storeu_si512(pp, p[g]); _mm512_storeu_si512(ee, e[g]); _mm512_storeu_si512(hh, h[g]);
++        for (k = 0; k < 16u; k++) {
++            uint32_t x0;
++            if (fuse) x0 = WEX_NR_L + (wex_nr3_h32_final(hh[k], 16u + blocks * 16u) & WEX_NR3_HASH_MASK);
++            else { wexf_ident(J, s[g * 16u + k].index, ident); x0 = wex_nr3_stream_x0(ident, out[g * 16u + k], blocks * 16u); }
++            if (pp[k] != ee[k] || st[k] != x0) return -1;
++            if (!fuse && ceil && wexf_ceil_blocks(out[g * 16u + k], sc[g * 16u + k], blocks)) return -1;
++        }
++    }
++    return 0;
++}
++
++/* Kernel 4, scales: G vectors of 16 streams (one matrix, same count, a multiple of 4). Per symbol and vector: one gather
++ * of lut[slot] (slot -> symbol), one of cdf[symbol] | cdf[symbol + 1] << 16, every second symbol one of the next 4
++ * bytes; the stream hash is computed in the loop (4 symbols = one 32-bit block). */
++WEXF_INLINE int wexf_scales_t16(const WexfJob *J, const WexfStream *s, const uint32_t G) {
++    const uint32_t m = s[0].matrix, count = s[0].count;
++    const unsigned char *cdf = wex_nr2_scale_cdf(J->model, m), *lut = J->fm->lut + (size_t)m * WEX_NR2_TOTAL;
++    const unsigned char *pay = s[0].begin;
++    const __m512i low14 = _mm512_set1_epi32((int)WEX_NR2_TOTAL - 1), mff = _mm512_set1_epi32(0xff), m16 = _mm512_set1_epi32(0xffff);
++    const __m512i m24 = _mm512_set1_epi32(24);
++    const __m512i bswap = _mm512_set_epi8(12, 13, 14, 15, 8, 9, 10, 11, 4, 5, 6, 7, 0, 1, 2, 3, 12, 13, 14, 15, 8, 9, 10, 11,
++                                          4, 5, 6, 7, 0, 1, 2, 3, 12, 13, 14, 15, 8, 9, 10, 11, 4, 5, 6, 7, 0, 1, 2, 3,
++                                          12, 13, 14, 15, 8, 9, 10, 11, 4, 5, 6, 7, 0, 1, 2, 3);
++    const __m512i c1 = _mm512_set1_epi32((int)UINT32_C(0xcc9e2d51)), c2 = _mm512_set1_epi32(0x1b873593);
++    __m512i x[3], p[3], e[3], h[3], acc[3], buf[3];
++    unsigned char *out[48];
++    uint32_t t[16], ident[4], g, k, j, i;
++    for (g = 0; g < G; g++) {
++        uint32_t st[16], pp[16], ee[16], hh[16];
++        for (k = 0; k < 16u; k++) {
++            const WexfStream *q = s + g * 16u + k;
++            const unsigned char *ptr, *end;
++            if (wex_nr2_stream_open(q->begin, q->length, &ptr, &end, &st[k])) return -1;
++            pp[k] = (uint32_t)(ptr - pay); ee[k] = (uint32_t)(end - pay);
++            out[g * 16u + k] = J->scales[m] + q->first;
++            wexf_ident(J, q->index, ident);
++            hh[k] = wex_nr3_ident_hash(ident);
++        }
++        x[g] = _mm512_loadu_si512(st); p[g] = _mm512_loadu_si512(pp); e[g] = _mm512_loadu_si512(ee); h[g] = _mm512_loadu_si512(hh);
++        buf[g] = acc[g] = _mm512_setzero_si512();
++    }
++    for (i = 0; i < count; i += 4u) {
++        if (!(i & 31u))
++            for (g = 0; g < G; g++) if (_mm512_cmpgt_epu32_mask(p[g], e[g])) return -1;
++        for (j = 0; j < 4u; j++)
++            for (g = 0; g < G; g++) {
++                const __m512i slot = _mm512_and_si512(x[g], low14);
++                const __m512i sym = _mm512_and_si512(_mm512_i32gather_epi32(slot, (const void *)lut, 1), mff);
++                const __m512i sf = _mm512_i32gather_epi32(_mm512_add_epi32(sym, sym), (const void *)cdf, 1);
++                const __m512i start = _mm512_and_si512(sf, m16);
++                __m512i bytes, xn, shift;
++                if (!(j & 1u)) bytes = _mm512_shuffle_epi8(_mm512_i32gather_epi32(p[g], (const void *)pay, 1), bswap);
++                else bytes = buf[g];
++                xn = _mm512_add_epi32(_mm512_mullo_epi32(_mm512_sub_epi32(_mm512_srli_epi32(sf, 16), start), _mm512_srli_epi32(x[g], WEX_NR2_PRECISION)),
++                                      _mm512_sub_epi32(slot, start));
++                shift = _mm512_and_si512(_mm512_lzcnt_epi32(_mm512_slli_epi32(xn, 1)), m24);
++                x[g] = _mm512_shldv_epi32(xn, bytes, shift);
++                buf[g] = _mm512_sllv_epi32(bytes, shift);
++                p[g] = _mm512_add_epi32(p[g], _mm512_srli_epi32(shift, 3));
++                acc[g] = _mm512_shrdi_epi32(acc[g], sym, 8);   /* symbol 0 of the word ends in bits 0..7 */
++            }
++        for (g = 0; g < G; g++) {
++            __m512i q = _mm512_rol_epi32(_mm512_mullo_epi32(acc[g], c1), 15);
++            _mm512_storeu_si512(t, acc[g]);
++            for (k = 0; k < 16u; k++) memcpy(out[g * 16u + k] + i, &t[k], 4);
++            q = _mm512_xor_si512(h[g], _mm512_mullo_epi32(q, c2));
++            q = _mm512_rol_epi32(q, 13);
++            h[g] = _mm512_add_epi32(_mm512_add_epi32(_mm512_slli_epi32(q, 2), q), _mm512_set1_epi32((int)UINT32_C(0xe6546b64)));
++        }
++    }
++    for (g = 0; g < G; g++) {
++        uint32_t st[16], pp[16], ee[16], hh[16];
++        _mm512_storeu_si512(st, x[g]); _mm512_storeu_si512(pp, p[g]); _mm512_storeu_si512(ee, e[g]); _mm512_storeu_si512(hh, h[g]);
++        for (k = 0; k < 16u; k++)
++            if (pp[k] != ee[k] || st[k] != WEX_NR_L + (wex_nr3_h32_final(hh[k], 16u + count) & WEX_NR3_HASH_MASK)) return -1;
++    }
++    return 0;
++}
++#else
++#define WEXF_AVX512 0
++#endif
++
+ #if WEXF_SIMD == 1
+ /* Kernel 2, weights: G vectors of 8 streams (one matrix, same count). Per symbol: 4 gathers binary-search the
+  * 16-entry CDF and leave cdf[symbol] / cdf[symbol + 1] in start / end, 1 gather fetches the next bytes. */
+@@ -647,6 +993,17 @@
+ /* Out-of-line instances: the group size and the fuse flag are compile-time constants inside each. */
+ static int wexf_group(const WexfJob *J, const WexfStream *s, int weights, uint32_t n) {
+     const int fuse = J->o.fuse;
++#ifdef WEXF_TEST_HOOK
++    WEXF_TEST_HOOK(J->o.kernel, weights, n);   /* test coverage counters; empty in normal builds */
++#endif
++    if (!weights && n == 32u) {   /* kernel 4 */
++        uint32_t i;
++#if WEXF_AVX512
++        if (!(s[0].count % 4u)) return wexf_scales_t16(J, s, 2);
++#endif
++        for (i = 0; i < 32u; i += 8u) if (wexf_scales_n(J, s + i, 8)) return -1;
++        return 0;
++    }
+     if (!weights) switch (n) {
+         case 1: return wexf_scales_n(J, s, 1);
+         case 2: return wexf_scales_n(J, s, 2);
+@@ -665,6 +1022,31 @@
+         default: return wexf_weights_g8(J, s, 3, 1);
+     }
+ #endif
++#if WEXF_AVX512
++    if (J->o.kernel == 4 && n >= 16u) switch (n / 16u * 2u + (uint32_t)fuse) {
++        case 2: return wexf_weights_t16(J, s, 1, 0);
++        case 3: return wexf_weights_t16(J, s, 1, 1);
++        case 4: return wexf_weights_t16(J, s, 2, 0);
++        case 5: return wexf_weights_t16(J, s, 2, 1);
++        case 6: return wexf_weights_t16(J, s, 3, 0);
++        case 7: return wexf_weights_t16(J, s, 3, 1);
++        case 8: return wexf_weights_t16(J, s, 4, 0);
++        default: return wexf_weights_t16(J, s, 4, 1);
++    }
++#endif
++#if WEXF_SIMD == 1
++    if (J->o.kernel == 3 && n >= 8u) switch (n / 8u * 2u + (uint32_t)fuse) {
++        case 2: return wexf_weights_t8(J, s, 1, 0);
++        case 3: return wexf_weights_t8(J, s, 1, 1);
++        case 4: return wexf_weights_t8(J, s, 2, 0);
++        case 5: return wexf_weights_t8(J, s, 2, 1);
++        case 6: return wexf_weights_t8(J, s, 3, 0);
++        case 7: return wexf_weights_t8(J, s, 3, 1);
++        case 8: return wexf_weights_t8(J, s, 4, 0);
++        default: return wexf_weights_t8(J, s, 4, 1);
++    }
++    if (J->o.kernel >= 3) return wexf_weights_n(J, s, 1, fuse);   /* wexf_run gives a full group or 1 stream */
++#endif
+ #if WEXF_SVE
+     if (J->o.kernel == 2 && n >= (uint32_t)svcntw()) switch (n / (uint32_t)svcntw() * 2u + (uint32_t)fuse) {
+         case 2: return wexf_weights_sve(J, s, 1, 0);
+@@ -701,6 +1083,8 @@
+     uint32_t want = 1u;
+ #if WEXF_SIMD
+     if (J->o.kernel == 1) want = (uint32_t)J->o.lanes;
++    if (J->o.kernel == 3) want = weights ? 8u * (uint32_t)J->o.lanes : 8u;
++    if (J->o.kernel == 4) want = weights ? 16u * (uint32_t)J->o.lanes : 32u;
+ #if WEXF_SVE
+     if (J->o.kernel == 2) want = weights ? (uint32_t)svcntw() * (uint32_t)J->o.lanes : 8u;
+ #else
+@@ -754,7 +1138,8 @@
+     const uint64_t unit = 6u * (uint64_t)svcntw() % 48u ? 12u * (uint64_t)svcntw() : 6u * (uint64_t)svcntw();
+     const uint64_t per = ((streams + WEXF_MAX_TASKS - 1u) / WEXF_MAX_TASKS + unit - 1u) / unit * unit;
+ #else
+-    const uint64_t per = ((streams + WEXF_MAX_TASKS - 1u) / WEXF_MAX_TASKS + 47u) / 48u * 48u;
++    const uint64_t unit = J->o.kernel >= 3 ? 192u : 48u;   /* kernels 3, 4: groups of 8, 16, ..., 64 streams */
++    const uint64_t per = ((streams + WEXF_MAX_TASKS - 1u) / WEXF_MAX_TASKS + unit - 1u) / unit * unit;
+ #endif
+     const int tasks = per ? (int)((streams + per - 1u) / per) : 0;
+     const unsigned char *payload = weights ? J->v->weight_payload : J->v->scale_payload;
+@@ -789,7 +1174,9 @@
+     J.fm = tables;
+ #if WEXF_SIMD
+     if (!tables || tables->id != model->id) J.o.kernel = 0;
+-    if (J.o.kernel < 0 || J.o.kernel > 2) J.o.kernel = 1;
++    if (J.o.kernel < 0 || J.o.kernel > 4 || (J.o.kernel >= 3 && WEXF_SIMD != 1) || (J.o.kernel == 4 && !WEXF_AVX512) ||
++        (J.o.kernel >= 3 && tables && tables->tsub_used == UINT32_MAX)) { J.o.kernel = 1; J.o.lanes = WEX_FAST_LANES; }
++    if (J.o.kernel >= 3 && (J.o.lanes < 1 || J.o.lanes > 4)) J.o.lanes = J.o.kernel == 4 ? 3 : 4;
+ #if WEXF_SIMD == 2 && !WEXF_SVE
+     if (J.o.kernel == 2) { J.o.kernel = 1; J.o.lanes = WEX_FAST_LANES; }   /* no gather kernel on NEON */
+ #endif
+@@ -821,10 +1208,19 @@
+     return status;
+ }
+ 
+-/* Default: the fastest configuration measured (see RESULTS.md): kernel 1, WEX_FAST_LANES streams, fused. */
++/* Default: the fastest configuration measured (see RESULTS.md): kernel 4 (3 vectors of 16 streams) in a build with
++ * AVX-512 F/BW/VL/CD/VBMI2, kernel 3 (4 vectors of 8 streams) in an AVX2 build, else kernel 1 with WEX_FAST_LANES
++ * streams; fused. */
++#if WEXF_AVX512
++#define WEXF_DEFAULT_KERNEL 4, 3
++#elif WEXF_SIMD == 1
++#define WEXF_DEFAULT_KERNEL 3, 4
++#else
++#define WEXF_DEFAULT_KERNEL 1, WEX_FAST_LANES
++#endif
+ static inline int wex_fast_decode(const WexNr2Record *v, const WexNr2Layout *layout, const WexNr2Model *model,
+                                   unsigned char *const scales_out[3], unsigned char *const weights_out[3]) {
+-    static const WexFastOptions best = {0, 1, WEX_FAST_LANES, 1};
++    static const WexFastOptions best = {0, WEXF_DEFAULT_KERNEL, 1};
+     return wex_fast_decode_opt(v, layout, model, scales_out, weights_out, &best);
+ }
+ #endif
