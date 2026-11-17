@@ -1,0 +1,46 @@
+qwen-mxfp4 all: 16 records, stored 36806656 of 41779200 B, all decoded equal to the source
+qwen-mxfp4 A: 16 records, stored 36798464 of 41779200 B, all decoded equal to the source
+qwen-mxfp4 B: 16 records, stored 36806656 of 41779200 B, all decoded equal to the source
+qwen-mxfp4 all-cz: 16 records, stored 36806656 of 41779200 B, all decoded equal to the source
+qwen-mxfp4 A-cz: 16 records, stored 36798464 of 41779200 B, all decoded equal to the source
+qwen-mxfp4 B-cz: 16 records, stored 36806656 of 41779200 B, all decoded equal to the source
+{"byte-exact": {"decoded": 41779200, "in_sample": 36806656, "cross_fold": 36806656, "ratio_in_sample": 0.8809803921568627, "ratio_cross_fold": 0.8809803921568627}, "cz": {"decoded": 41779200, "in_sample": 36806656, "cross_fold": 36806656, "ratio_in_sample": 0.8809803921568627, "ratio_cross_fold": 0.8809803921568627}}
+glm-mxfp4 all: 16 records, stored 190189568 of 213909504 B, all decoded equal to the source
+glm-mxfp4 A: 16 records, stored 190193664 of 213909504 B, all decoded equal to the source
+glm-mxfp4 B: 16 records, stored 190197760 of 213909504 B, all decoded equal to the source
+glm-mxfp4 all-cz: 16 records, stored 190189568 of 213909504 B, all decoded equal to the source
+glm-mxfp4 A-cz: 16 records, stored 190193664 of 213909504 B, all decoded equal to the source
+glm-mxfp4 B-cz: 16 records, stored 190197760 of 213909504 B, all decoded equal to the source
+{"byte-exact": {"decoded": 213909504, "in_sample": 190189568, "cross_fold": 190201856, "ratio_in_sample": 0.8891122855392157, "ratio_cross_fold": 0.8891697303921569}, "cz": {"decoded": 213909504, "in_sample": 190189568, "cross_fold": 190201856, "ratio_in_sample": 0.8891122855392157, "ratio_cross_fold": 0.8891697303921569}}
+ds-mxfp4 all: 16 records, stored 264830976 of 300810240 B, all decoded equal to the source
+ds-mxfp4 A: 16 records, stored 264863744 of 300810240 B, all decoded equal to the source
+ds-mxfp4 B: 16 records, stored 264859648 of 300810240 B, all decoded equal to the source
+ds-mxfp4 all-cz: 16 records, stored 256569344 of 300810240 B, all decoded equal to the source
+ds-mxfp4 A-cz: 16 records, stored 256614400 of 300810240 B, all decoded equal to the source
+ds-mxfp4 B-cz: 16 records, stored 256610304 of 300810240 B, all decoded equal to the source
+{"byte-exact": {"decoded": 300810240, "in_sample": 264830976, "cross_fold": 264916992, "ratio_in_sample": 0.8803921568627451, "ratio_cross_fold": 0.8806781045751634}, "cz": {"decoded": 300810240, "in_sample": 256569344, "cross_fold": 256671744, "ratio_in_sample": 0.8529275599128541, "ratio_cross_fold": 0.8532679738562091}}
+ds-quark all: 16 records, stored 256569344 of 300810240 B, all decoded equal to the source
+ds-quark A: 16 records, stored 256614400 of 300810240 B, all decoded equal to the source
+ds-quark B: 16 records, stored 256610304 of 300810240 B, all decoded equal to the source
+ds-quark all-cz: 16 records, stored 256569344 of 300810240 B, all decoded equal to the source
+ds-quark A-cz: 16 records, stored 256614400 of 300810240 B, all decoded equal to the source
+ds-quark B-cz: 16 records, stored 256610304 of 300810240 B, all decoded equal to the source
+{"byte-exact": {"decoded": 300810240, "in_sample": 256569344, "cross_fold": 256671744, "ratio_in_sample": 0.8529275599128541, "ratio_cross_fold": 0.8532679738562091}, "cz": {"decoded": 300810240, "in_sample": 256569344, "cross_fold": 256671744, "ratio_in_sample": 0.8529275599128541, "ratio_cross_fold": 0.8532679738562091}}
+L4 E12: {'codec': 5, 'stored': 11894784, 'decoded': 13369344, 'wnr3_flags': '0x07', 'equal_to_source': True, 'equal_to_z_source': True, 'sha256_stored': '79bfb9737411dc621cc055f71fff87b4195caf37c3d8844af22684c62148b114'}
+L4 E119: {'codec': 5, 'stored': 11886592, 'decoded': 13369344, 'wnr3_flags': '0x07', 'equal_to_source': True, 'equal_to_z_source': True, 'sha256_stored': '07f0f15f2850357ee80fa4abfc4d2c820b19cc3e117fce9c699b03dc02643260'}
+L9 E110: {'codec': 5, 'stored': 11886592, 'decoded': 13369344, 'wnr3_flags': '0x07', 'equal_to_source': True, 'equal_to_z_source': True, 'sha256_stored': 'd3d6ed9e5bc742bad24df3cba87b91fb855ca51225b4a7a521ced6ac745b9ffd'}
+L9 E175: {'codec': 5, 'stored': 11894784, 'decoded': 13369344, 'wnr3_flags': '0x07', 'equal_to_source': True, 'equal_to_z_source': True, 'sha256_stored': '8e746b692b2c8b757f9d6b81e2858022d0d63e03a4b1102c73ac60a25c144a2c'}
+L15 E110: {'codec': 5, 'stored': 11878400, 'decoded': 13369344, 'wnr3_flags': '0x07', 'equal_to_source': True, 'equal_to_z_source': True, 'sha256_stored': '837094ad02c935826eb9d7b62ed30bf20d86cccdcf99266479181d57d439ecd0'}
+L15 E176: {'codec': 5, 'stored': 11878400, 'decoded': 13369344, 'wnr3_flags': '0x07', 'equal_to_source': True, 'equal_to_z_source': True, 'sha256_stored': '5a579d3c0dcf0a3234fc8620d6a067ca8f0b85eeebaa3324ea23ac084e78a5c3'}
+L22 E5: {'codec': 5, 'stored': 11886592, 'decoded': 13369344, 'wnr3_flags': '0x07', 'equal_to_source': True, 'equal_to_z_source': True, 'sha256_stored': 'f0f4e7d9a847a3567b1fa86b5122001314e8bf9e900dc8cecb9a999cd93bf138'}
+L22 E31: {'codec': 5, 'stored': 11874304, 'decoded': 13369344, 'wnr3_flags': '0x07', 'equal_to_source': True, 'equal_to_z_source': True, 'sha256_stored': '3db9f4a23ae63c644a8a75896bac2e3906b421739112c994610452fc0bae740b'}
+L26 E145: {'codec': 5, 'stored': 11886592, 'decoded': 13369344, 'wnr3_flags': '0x07', 'equal_to_source': True, 'equal_to_z_source': True, 'sha256_stored': 'ff030ef1d02b6cbc42fd26e8efd2bc8607eddc0d2ecfaa41d77a4094201892e6'}
+L26 E150: {'codec': 5, 'stored': 11878400, 'decoded': 13369344, 'wnr3_flags': '0x07', 'equal_to_source': True, 'equal_to_z_source': True, 'sha256_stored': 'ad9f0e6a41873d61267efd23b49a3935077501c98e0d646c7cd1fbe7829bcfbf'}
+L32 E60: {'codec': 5, 'stored': 11870208, 'decoded': 13369344, 'wnr3_flags': '0x07', 'equal_to_source': True, 'equal_to_z_source': True, 'sha256_stored': '2e13dd274fea292fb9ce3b484f262820d66f3f93fdc73496327dc9f89faebc22'}
+L32 E260: {'codec': 5, 'stored': 11882496, 'decoded': 13369344, 'wnr3_flags': '0x07', 'equal_to_source': True, 'equal_to_z_source': True, 'sha256_stored': '8495d33ae58cb373239090a9f99d887a880cf44785c4d6851ab7378fb13d663d'}
+L38 E88: {'codec': 5, 'stored': 11894784, 'decoded': 13369344, 'wnr3_flags': '0x07', 'equal_to_source': True, 'equal_to_z_source': True, 'sha256_stored': 'b5c22b29f1fbfa487b77ffe4b0aab23abc13665cba8129197b84a292efc74c71'}
+L38 E241: {'codec': 5, 'stored': 11866112, 'decoded': 13369344, 'wnr3_flags': '0x07', 'equal_to_source': True, 'equal_to_z_source': True, 'sha256_stored': '53e640ecd927f570b3f2d5cc0533b524e9b22988c0c3afe8436be4267d25b2b8'}
+L41 E154: {'codec': 5, 'stored': 11931648, 'decoded': 13369344, 'wnr3_flags': '0x07', 'equal_to_source': True, 'equal_to_z_source': True, 'sha256_stored': 'c5bd83323b58a76d055e504fbed386f0cb14c2920e03f6f2e84abc37748a7a7e'}
+L41 E275: {'codec': 5, 'stored': 11898880, 'decoded': 13369344, 'wnr3_flags': '0x07', 'equal_to_source': True, 'equal_to_z_source': True, 'sha256_stored': 'ac77e781fb80a5b12109715f7a5b89e4273793afa2b97bc0dcb46ca42786f2cf'}
+{"container_root": "db3fb6c2a0803740cd5eecb633b8bb5cdeb8df0cccc933238e1fe53200349e9d", "decoded": 213909504, "stored": 190189568, "ratio": 0.8891122855392157}
+done

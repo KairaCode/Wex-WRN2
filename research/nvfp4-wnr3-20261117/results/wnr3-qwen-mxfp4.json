@@ -1,0 +1,716 @@
+{
+ "checkpoint": "qwen-mxfp4",
+ "profile": "qwen38",
+ "folds": {
+  "1": "A",
+  "7": "B",
+  "14": "A",
+  "21": "B",
+  "29": "A",
+  "32": "B",
+  "40": "A",
+  "43": "B"
+ },
+ "models": {
+  "all": {
+   "model_id": "0x7fc309a2",
+   "trained_on": [
+    "L1:E24",
+    "L1:E239",
+    "L7:E220",
+    "L7:E351",
+    "L14:E221",
+    "L14:E352",
+    "L21:E11",
+    "L21:E62",
+    "L29:E300",
+    "L29:E362",
+    "L32:E121",
+    "L32:E493",
+    "L40:E408",
+    "L40:E482",
+    "L43:E131",
+    "L43:E308"
+   ]
+  },
+  "A": {
+   "model_id": "0x7bcc9797",
+   "trained_on": [
+    "L1:E24",
+    "L1:E239",
+    "L14:E221",
+    "L14:E352",
+    "L29:E300",
+    "L29:E362",
+    "L40:E408",
+    "L40:E482"
+   ]
+  },
+  "B": {
+   "model_id": "0x925e6801",
+   "trained_on": [
+    "L7:E220",
+    "L7:E351",
+    "L21:E11",
+    "L21:E62",
+    "L32:E121",
+    "L32:E493",
+    "L43:E131",
+    "L43:E308"
+   ]
+  },
+  "all-cz": {
+   "model_id": "0x7fc309a2",
+   "trained_on": [
+    "L1:E24",
+    "L1:E239",
+    "L7:E220",
+    "L7:E351",
+    "L14:E221",
+    "L14:E352",
+    "L21:E11",
+    "L21:E62",
+    "L29:E300",
+    "L29:E362",
+    "L32:E121",
+    "L32:E493",
+    "L40:E408",
+    "L40:E482",
+    "L43:E131",
+    "L43:E308"
+   ]
+  },
+  "A-cz": {
+   "model_id": "0x7bcc9797",
+   "trained_on": [
+    "L1:E24",
+    "L1:E239",
+    "L14:E221",
+    "L14:E352",
+    "L29:E300",
+    "L29:E362",
+    "L40:E408",
+    "L40:E482"
+   ]
+  },
+  "B-cz": {
+   "model_id": "0x925e6801",
+   "trained_on": [
+    "L7:E220",
+    "L7:E351",
+    "L21:E11",
+    "L21:E62",
+    "L32:E121",
+    "L32:E493",
+    "L43:E131",
+    "L43:E308"
+   ]
+  }
+ },
+ "records": {
+  "all": {
+   "L1_E24": {
+    "codec": 5,
+    "stored": 2293760,
+    "decoded": 2611200,
+    "sha256_slab": "6802129b4060f6a088e8db5eb8c07898bd20bfe749c7ee4a4d7ec0024edcf437"
+   },
+   "L1_E239": {
+    "codec": 5,
+    "stored": 2306048,
+    "decoded": 2611200,
+    "sha256_slab": "365af160f30fc100947bc70e2dea41c7b9ef388155faafb5dba496ca85825009"
+   },
+   "L7_E220": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "6420e27edea5c35915ee1b1eabc318d95faf4d9c13779fedf04898710ccf10dc"
+   },
+   "L7_E351": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "04357981077f2facb44e11ccc45ecdd080aa451e9c5f4cc33471dcabf483d277"
+   },
+   "L14_E221": {
+    "codec": 5,
+    "stored": 2306048,
+    "decoded": 2611200,
+    "sha256_slab": "ec0e1429b6c02bc3a63ad7dd3ec73556df3f4f97c51207c0c22c0c5f503bb8e9"
+   },
+   "L14_E352": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "ed9532b8fa8f2f28618e0600eff600a5287323a05f9b68d245ec9888a492d5e0"
+   },
+   "L21_E11": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "c1cef384b5589ed38e18df1fecdbb1cb9be8f37f8f9017fd52cb5f391ff23408"
+   },
+   "L21_E62": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "b25f3b2370521bdacf8c23688699b7f4e4b607bf122cd801aafb71558a8f1d4e"
+   },
+   "L29_E300": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "171f96972f4ce4e1914169c21ff8c724a87f9b36c0a614ccbaf3362ddd2440d0"
+   },
+   "L29_E362": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "7a77b9b74f622c09e4d8a1243d05f891b642ef54e919a1d41f479ab6086a428b"
+   },
+   "L32_E121": {
+    "codec": 5,
+    "stored": 2306048,
+    "decoded": 2611200,
+    "sha256_slab": "34615fcf5fc8746123db031e9368d2a6f708c2b42842549dc2438c46fb60362a"
+   },
+   "L32_E493": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "93f67f9ac0cb801bea3591e09ab75b70a380b16afe255da86ea0aeacdf3582dd"
+   },
+   "L40_E408": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "6a9ebd3c4559463aba08f18cae1414c5277d80de821c31365fcb9719ce80c09b"
+   },
+   "L40_E482": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "766a0b83f34f839e2968bc738f0c68a736e8ca1c44c4548418585dc8b4a15578"
+   },
+   "L43_E131": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "48551a435d4099b19a32a9582b1569a3c2e57b86638ecba1aa1ccde31649b562"
+   },
+   "L43_E308": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "78ac30e3642984ceb2476f6067afd75cfb953ca43df8c3ad9f893e82e987c7bb"
+   }
+  },
+  "A": {
+   "L1_E24": {
+    "codec": 5,
+    "stored": 2293760,
+    "decoded": 2611200,
+    "sha256_slab": "6802129b4060f6a088e8db5eb8c07898bd20bfe749c7ee4a4d7ec0024edcf437"
+   },
+   "L1_E239": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "365af160f30fc100947bc70e2dea41c7b9ef388155faafb5dba496ca85825009"
+   },
+   "L7_E220": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "6420e27edea5c35915ee1b1eabc318d95faf4d9c13779fedf04898710ccf10dc"
+   },
+   "L7_E351": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "04357981077f2facb44e11ccc45ecdd080aa451e9c5f4cc33471dcabf483d277"
+   },
+   "L14_E221": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "ec0e1429b6c02bc3a63ad7dd3ec73556df3f4f97c51207c0c22c0c5f503bb8e9"
+   },
+   "L14_E352": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "ed9532b8fa8f2f28618e0600eff600a5287323a05f9b68d245ec9888a492d5e0"
+   },
+   "L21_E11": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "c1cef384b5589ed38e18df1fecdbb1cb9be8f37f8f9017fd52cb5f391ff23408"
+   },
+   "L21_E62": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "b25f3b2370521bdacf8c23688699b7f4e4b607bf122cd801aafb71558a8f1d4e"
+   },
+   "L29_E300": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "171f96972f4ce4e1914169c21ff8c724a87f9b36c0a614ccbaf3362ddd2440d0"
+   },
+   "L29_E362": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "7a77b9b74f622c09e4d8a1243d05f891b642ef54e919a1d41f479ab6086a428b"
+   },
+   "L32_E121": {
+    "codec": 5,
+    "stored": 2306048,
+    "decoded": 2611200,
+    "sha256_slab": "34615fcf5fc8746123db031e9368d2a6f708c2b42842549dc2438c46fb60362a"
+   },
+   "L32_E493": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "93f67f9ac0cb801bea3591e09ab75b70a380b16afe255da86ea0aeacdf3582dd"
+   },
+   "L40_E408": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "6a9ebd3c4559463aba08f18cae1414c5277d80de821c31365fcb9719ce80c09b"
+   },
+   "L40_E482": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "766a0b83f34f839e2968bc738f0c68a736e8ca1c44c4548418585dc8b4a15578"
+   },
+   "L43_E131": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "48551a435d4099b19a32a9582b1569a3c2e57b86638ecba1aa1ccde31649b562"
+   },
+   "L43_E308": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "78ac30e3642984ceb2476f6067afd75cfb953ca43df8c3ad9f893e82e987c7bb"
+   }
+  },
+  "B": {
+   "L1_E24": {
+    "codec": 5,
+    "stored": 2293760,
+    "decoded": 2611200,
+    "sha256_slab": "6802129b4060f6a088e8db5eb8c07898bd20bfe749c7ee4a4d7ec0024edcf437"
+   },
+   "L1_E239": {
+    "codec": 5,
+    "stored": 2306048,
+    "decoded": 2611200,
+    "sha256_slab": "365af160f30fc100947bc70e2dea41c7b9ef388155faafb5dba496ca85825009"
+   },
+   "L7_E220": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "6420e27edea5c35915ee1b1eabc318d95faf4d9c13779fedf04898710ccf10dc"
+   },
+   "L7_E351": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "04357981077f2facb44e11ccc45ecdd080aa451e9c5f4cc33471dcabf483d277"
+   },
+   "L14_E221": {
+    "codec": 5,
+    "stored": 2306048,
+    "decoded": 2611200,
+    "sha256_slab": "ec0e1429b6c02bc3a63ad7dd3ec73556df3f4f97c51207c0c22c0c5f503bb8e9"
+   },
+   "L14_E352": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "ed9532b8fa8f2f28618e0600eff600a5287323a05f9b68d245ec9888a492d5e0"
+   },
+   "L21_E11": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "c1cef384b5589ed38e18df1fecdbb1cb9be8f37f8f9017fd52cb5f391ff23408"
+   },
+   "L21_E62": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "b25f3b2370521bdacf8c23688699b7f4e4b607bf122cd801aafb71558a8f1d4e"
+   },
+   "L29_E300": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "171f96972f4ce4e1914169c21ff8c724a87f9b36c0a614ccbaf3362ddd2440d0"
+   },
+   "L29_E362": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "7a77b9b74f622c09e4d8a1243d05f891b642ef54e919a1d41f479ab6086a428b"
+   },
+   "L32_E121": {
+    "codec": 5,
+    "stored": 2306048,
+    "decoded": 2611200,
+    "sha256_slab": "34615fcf5fc8746123db031e9368d2a6f708c2b42842549dc2438c46fb60362a"
+   },
+   "L32_E493": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "93f67f9ac0cb801bea3591e09ab75b70a380b16afe255da86ea0aeacdf3582dd"
+   },
+   "L40_E408": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "6a9ebd3c4559463aba08f18cae1414c5277d80de821c31365fcb9719ce80c09b"
+   },
+   "L40_E482": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "766a0b83f34f839e2968bc738f0c68a736e8ca1c44c4548418585dc8b4a15578"
+   },
+   "L43_E131": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "48551a435d4099b19a32a9582b1569a3c2e57b86638ecba1aa1ccde31649b562"
+   },
+   "L43_E308": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "78ac30e3642984ceb2476f6067afd75cfb953ca43df8c3ad9f893e82e987c7bb"
+   }
+  },
+  "all-cz": {
+   "L1_E24": {
+    "codec": 5,
+    "stored": 2293760,
+    "decoded": 2611200,
+    "sha256_slab": "6802129b4060f6a088e8db5eb8c07898bd20bfe749c7ee4a4d7ec0024edcf437"
+   },
+   "L1_E239": {
+    "codec": 5,
+    "stored": 2306048,
+    "decoded": 2611200,
+    "sha256_slab": "365af160f30fc100947bc70e2dea41c7b9ef388155faafb5dba496ca85825009"
+   },
+   "L7_E220": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "6420e27edea5c35915ee1b1eabc318d95faf4d9c13779fedf04898710ccf10dc"
+   },
+   "L7_E351": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "04357981077f2facb44e11ccc45ecdd080aa451e9c5f4cc33471dcabf483d277"
+   },
+   "L14_E221": {
+    "codec": 5,
+    "stored": 2306048,
+    "decoded": 2611200,
+    "sha256_slab": "ec0e1429b6c02bc3a63ad7dd3ec73556df3f4f97c51207c0c22c0c5f503bb8e9"
+   },
+   "L14_E352": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "ed9532b8fa8f2f28618e0600eff600a5287323a05f9b68d245ec9888a492d5e0"
+   },
+   "L21_E11": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "c1cef384b5589ed38e18df1fecdbb1cb9be8f37f8f9017fd52cb5f391ff23408"
+   },
+   "L21_E62": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "b25f3b2370521bdacf8c23688699b7f4e4b607bf122cd801aafb71558a8f1d4e"
+   },
+   "L29_E300": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "171f96972f4ce4e1914169c21ff8c724a87f9b36c0a614ccbaf3362ddd2440d0"
+   },
+   "L29_E362": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "7a77b9b74f622c09e4d8a1243d05f891b642ef54e919a1d41f479ab6086a428b"
+   },
+   "L32_E121": {
+    "codec": 5,
+    "stored": 2306048,
+    "decoded": 2611200,
+    "sha256_slab": "34615fcf5fc8746123db031e9368d2a6f708c2b42842549dc2438c46fb60362a"
+   },
+   "L32_E493": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "93f67f9ac0cb801bea3591e09ab75b70a380b16afe255da86ea0aeacdf3582dd"
+   },
+   "L40_E408": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "6a9ebd3c4559463aba08f18cae1414c5277d80de821c31365fcb9719ce80c09b"
+   },
+   "L40_E482": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "766a0b83f34f839e2968bc738f0c68a736e8ca1c44c4548418585dc8b4a15578"
+   },
+   "L43_E131": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "48551a435d4099b19a32a9582b1569a3c2e57b86638ecba1aa1ccde31649b562"
+   },
+   "L43_E308": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "78ac30e3642984ceb2476f6067afd75cfb953ca43df8c3ad9f893e82e987c7bb"
+   }
+  },
+  "A-cz": {
+   "L1_E24": {
+    "codec": 5,
+    "stored": 2293760,
+    "decoded": 2611200,
+    "sha256_slab": "6802129b4060f6a088e8db5eb8c07898bd20bfe749c7ee4a4d7ec0024edcf437"
+   },
+   "L1_E239": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "365af160f30fc100947bc70e2dea41c7b9ef388155faafb5dba496ca85825009"
+   },
+   "L7_E220": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "6420e27edea5c35915ee1b1eabc318d95faf4d9c13779fedf04898710ccf10dc"
+   },
+   "L7_E351": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "04357981077f2facb44e11ccc45ecdd080aa451e9c5f4cc33471dcabf483d277"
+   },
+   "L14_E221": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "ec0e1429b6c02bc3a63ad7dd3ec73556df3f4f97c51207c0c22c0c5f503bb8e9"
+   },
+   "L14_E352": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "ed9532b8fa8f2f28618e0600eff600a5287323a05f9b68d245ec9888a492d5e0"
+   },
+   "L21_E11": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "c1cef384b5589ed38e18df1fecdbb1cb9be8f37f8f9017fd52cb5f391ff23408"
+   },
+   "L21_E62": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "b25f3b2370521bdacf8c23688699b7f4e4b607bf122cd801aafb71558a8f1d4e"
+   },
+   "L29_E300": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "171f96972f4ce4e1914169c21ff8c724a87f9b36c0a614ccbaf3362ddd2440d0"
+   },
+   "L29_E362": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "7a77b9b74f622c09e4d8a1243d05f891b642ef54e919a1d41f479ab6086a428b"
+   },
+   "L32_E121": {
+    "codec": 5,
+    "stored": 2306048,
+    "decoded": 2611200,
+    "sha256_slab": "34615fcf5fc8746123db031e9368d2a6f708c2b42842549dc2438c46fb60362a"
+   },
+   "L32_E493": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "93f67f9ac0cb801bea3591e09ab75b70a380b16afe255da86ea0aeacdf3582dd"
+   },
+   "L40_E408": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "6a9ebd3c4559463aba08f18cae1414c5277d80de821c31365fcb9719ce80c09b"
+   },
+   "L40_E482": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "766a0b83f34f839e2968bc738f0c68a736e8ca1c44c4548418585dc8b4a15578"
+   },
+   "L43_E131": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "48551a435d4099b19a32a9582b1569a3c2e57b86638ecba1aa1ccde31649b562"
+   },
+   "L43_E308": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "78ac30e3642984ceb2476f6067afd75cfb953ca43df8c3ad9f893e82e987c7bb"
+   }
+  },
+  "B-cz": {
+   "L1_E24": {
+    "codec": 5,
+    "stored": 2293760,
+    "decoded": 2611200,
+    "sha256_slab": "6802129b4060f6a088e8db5eb8c07898bd20bfe749c7ee4a4d7ec0024edcf437"
+   },
+   "L1_E239": {
+    "codec": 5,
+    "stored": 2306048,
+    "decoded": 2611200,
+    "sha256_slab": "365af160f30fc100947bc70e2dea41c7b9ef388155faafb5dba496ca85825009"
+   },
+   "L7_E220": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "6420e27edea5c35915ee1b1eabc318d95faf4d9c13779fedf04898710ccf10dc"
+   },
+   "L7_E351": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "04357981077f2facb44e11ccc45ecdd080aa451e9c5f4cc33471dcabf483d277"
+   },
+   "L14_E221": {
+    "codec": 5,
+    "stored": 2306048,
+    "decoded": 2611200,
+    "sha256_slab": "ec0e1429b6c02bc3a63ad7dd3ec73556df3f4f97c51207c0c22c0c5f503bb8e9"
+   },
+   "L14_E352": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "ed9532b8fa8f2f28618e0600eff600a5287323a05f9b68d245ec9888a492d5e0"
+   },
+   "L21_E11": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "c1cef384b5589ed38e18df1fecdbb1cb9be8f37f8f9017fd52cb5f391ff23408"
+   },
+   "L21_E62": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "b25f3b2370521bdacf8c23688699b7f4e4b607bf122cd801aafb71558a8f1d4e"
+   },
+   "L29_E300": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "171f96972f4ce4e1914169c21ff8c724a87f9b36c0a614ccbaf3362ddd2440d0"
+   },
+   "L29_E362": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "7a77b9b74f622c09e4d8a1243d05f891b642ef54e919a1d41f479ab6086a428b"
+   },
+   "L32_E121": {
+    "codec": 5,
+    "stored": 2306048,
+    "decoded": 2611200,
+    "sha256_slab": "34615fcf5fc8746123db031e9368d2a6f708c2b42842549dc2438c46fb60362a"
+   },
+   "L32_E493": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "93f67f9ac0cb801bea3591e09ab75b70a380b16afe255da86ea0aeacdf3582dd"
+   },
+   "L40_E408": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "6a9ebd3c4559463aba08f18cae1414c5277d80de821c31365fcb9719ce80c09b"
+   },
+   "L40_E482": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "766a0b83f34f839e2968bc738f0c68a736e8ca1c44c4548418585dc8b4a15578"
+   },
+   "L43_E131": {
+    "codec": 5,
+    "stored": 2297856,
+    "decoded": 2611200,
+    "sha256_slab": "48551a435d4099b19a32a9582b1569a3c2e57b86638ecba1aa1ccde31649b562"
+   },
+   "L43_E308": {
+    "codec": 5,
+    "stored": 2301952,
+    "decoded": 2611200,
+    "sha256_slab": "78ac30e3642984ceb2476f6067afd75cfb953ca43df8c3ad9f893e82e987c7bb"
+   }
+  }
+ },
+ "summary": {
+  "byte-exact": {
+   "decoded": 41779200,
+   "in_sample": 36806656,
+   "cross_fold": 36806656,
+   "ratio_in_sample": 0.8809803921568627,
+   "ratio_cross_fold": 0.8809803921568627
+  },
+  "cz": {
+   "decoded": 41779200,
+   "in_sample": 36806656,
+   "cross_fold": 36806656,
+   "ratio_in_sample": 0.8809803921568627,
+   "ratio_cross_fold": 0.8809803921568627
+  }
+ }
+}

@@ -1,0 +1,36 @@
+json {"dir": "ds-nvfp4", "codec": "zstd -19", "slabs": 16, "raw": 318505344, "stored": 270499802, "ratio": 0.849279, "decode_mb_s_1thread": 862.2, "runs": 3}
+json {"dir": "ds-nvfp4", "codec": "lz4 default", "slabs": 16, "raw": 318505344, "stored": 295860713, "ratio": 0.928903, "decode_mb_s_1thread": 2170.8, "runs": 3}
+json {"dir": "ds-nvfp4", "codec": "lz4 -12 (HC)", "slabs": 16, "raw": 318505344, "stored": 287482331, "ratio": 0.902598, "decode_mb_s_1thread": 2327.5, "runs": 3}
+json {"dir": "ds-nvfp4", "codec": "WBP1 1 plane", "slabs": 16, "raw": 318505344, "stored": 291012608, "ratio": 0.913682, "decode_mb_s_1thread": 173.8, "runs": 3}
+json {"dir": "ds-nvfp4", "codec": "WBP1 2 planes", "slabs": 16, "raw": 318505344, "stored": 291020800, "ratio": 0.913708, "decode_mb_s_1thread": 173.4, "runs": 3}
+json {"dir": "ds-mxfp4", "codec": "zstd -19", "slabs": 16, "raw": 300810240, "stored": 278629951, "ratio": 0.926265, "decode_mb_s_1thread": 834.9, "runs": 3}
+json {"dir": "ds-mxfp4", "codec": "lz4 default", "slabs": 16, "raw": 300810240, "stored": 291837673, "ratio": 0.970172, "decode_mb_s_1thread": 2340.9, "runs": 3}
+json {"dir": "ds-mxfp4", "codec": "lz4 -12 (HC)", "slabs": 16, "raw": 300810240, "stored": 286387881, "ratio": 0.952055, "decode_mb_s_1thread": 2346.0, "runs": 3}
+json {"dir": "ds-mxfp4", "codec": "WBP1 1 plane", "slabs": 16, "raw": 300810240, "stored": 288636928, "ratio": 0.959532, "decode_mb_s_1thread": 175.5, "runs": 3}
+json {"dir": "ds-mxfp4", "codec": "WBP1 2 planes", "slabs": 16, "raw": 300810240, "stored": 288636928, "ratio": 0.959532, "decode_mb_s_1thread": 174.8, "runs": 3}
+json {"dir": "ds-quark", "codec": "zstd -19", "slabs": 16, "raw": 300810240, "stored": 270415029, "ratio": 0.898956, "decode_mb_s_1thread": 827.5, "runs": 3}
+json {"dir": "ds-quark", "codec": "lz4 default", "slabs": 16, "raw": 300810240, "stored": 291837673, "ratio": 0.970172, "decode_mb_s_1thread": 2213.6, "runs": 3}
+json {"dir": "ds-quark", "codec": "lz4 -12 (HC)", "slabs": 16, "raw": 300810240, "stored": 286387881, "ratio": 0.952055, "decode_mb_s_1thread": 2372.5, "runs": 3}
+json {"dir": "ds-quark", "codec": "WBP1 1 plane", "slabs": 16, "raw": 300810240, "stored": 280735744, "ratio": 0.933265, "decode_mb_s_1thread": 173.4, "runs": 3}
+json {"dir": "ds-quark", "codec": "WBP1 2 planes", "slabs": 16, "raw": 300810240, "stored": 280743936, "ratio": 0.933292, "decode_mb_s_1thread": 172.4, "runs": 3}
+json {"dir": "qwen-nvfp4", "codec": "zstd -19", "slabs": 16, "raw": 44237184, "stored": 41820979, "ratio": 0.945381, "decode_mb_s_1thread": 1454.0, "runs": 3}
+json {"dir": "qwen-nvfp4", "codec": "lz4 default", "slabs": 16, "raw": 44237184, "stored": 44188214, "ratio": 0.998893, "decode_mb_s_1thread": 2490.1, "runs": 3}
+json {"dir": "qwen-nvfp4", "codec": "lz4 -12 (HC)", "slabs": 16, "raw": 44237184, "stored": 42956723, "ratio": 0.971055, "decode_mb_s_1thread": 2321.5, "runs": 3}
+json {"dir": "qwen-nvfp4", "codec": "WBP1 1 plane", "slabs": 16, "raw": 44237184, "stored": 43311104, "ratio": 0.979066, "decode_mb_s_1thread": 175.9, "runs": 3}
+json {"dir": "qwen-nvfp4", "codec": "WBP1 2 planes", "slabs": 16, "raw": 44237184, "stored": 43315200, "ratio": 0.979158, "decode_mb_s_1thread": 176.1, "runs": 3}
+json {"dir": "qwen-mxfp4", "codec": "zstd -19", "slabs": 16, "raw": 41779200, "stored": 37652178, "ratio": 0.901218, "decode_mb_s_1thread": 722.1, "runs": 3}
+json {"dir": "qwen-mxfp4", "codec": "lz4 default", "slabs": 16, "raw": 41779200, "stored": 40494805, "ratio": 0.969258, "decode_mb_s_1thread": 2385.1, "runs": 3}
+json {"dir": "qwen-mxfp4", "codec": "lz4 -12 (HC)", "slabs": 16, "raw": 41779200, "stored": 39787403, "ratio": 0.952326, "decode_mb_s_1thread": 2493.1, "runs": 3}
+json {"dir": "qwen-mxfp4", "codec": "WBP1 1 plane", "slabs": 16, "raw": 41779200, "stored": 39084032, "ratio": 0.93549, "decode_mb_s_1thread": 171.8, "runs": 3}
+json {"dir": "qwen-mxfp4", "codec": "WBP1 2 planes", "slabs": 16, "raw": 41779200, "stored": 39100416, "ratio": 0.935882, "decode_mb_s_1thread": 172.0, "runs": 3}
+json {"dir": "glm-nvfp4", "codec": "zstd -19", "slabs": 16, "raw": 226492800, "stored": 212061547, "ratio": 0.936284, "decode_mb_s_1thread": 1622.2, "runs": 3}
+json {"dir": "glm-nvfp4", "codec": "lz4 default", "slabs": 16, "raw": 226492800, "stored": 223389257, "ratio": 0.986297, "decode_mb_s_1thread": 2328.1, "runs": 3}
+json {"dir": "glm-nvfp4", "codec": "lz4 -12 (HC)", "slabs": 16, "raw": 226492800, "stored": 216925285, "ratio": 0.957758, "decode_mb_s_1thread": 2234.3, "runs": 3}
+json {"dir": "glm-nvfp4", "codec": "WBP1 1 plane", "slabs": 16, "raw": 226492800, "stored": 221224960, "ratio": 0.976742, "decode_mb_s_1thread": 177.8, "runs": 3}
+json {"dir": "glm-nvfp4", "codec": "WBP1 2 planes", "slabs": 16, "raw": 226492800, "stored": 221237248, "ratio": 0.976796, "decode_mb_s_1thread": 177.4, "runs": 3}
+json {"dir": "glm-mxfp4", "codec": "zstd -19", "slabs": 16, "raw": 213909504, "stored": 192744831, "ratio": 0.901058, "decode_mb_s_1thread": 801.3, "runs": 3}
+json {"dir": "glm-mxfp4", "codec": "lz4 default", "slabs": 16, "raw": 213909504, "stored": 206202373, "ratio": 0.96397, "decode_mb_s_1thread": 2313.2, "runs": 3}
+json {"dir": "glm-mxfp4", "codec": "lz4 -12 (HC)", "slabs": 16, "raw": 213909504, "stored": 203244076, "ratio": 0.95014, "decode_mb_s_1thread": 2328.9, "runs": 3}
+json {"dir": "glm-mxfp4", "codec": "WBP1 1 plane", "slabs": 16, "raw": 213909504, "stored": 200196096, "ratio": 0.935892, "decode_mb_s_1thread": 174.3, "runs": 3}
+json {"dir": "glm-mxfp4", "codec": "WBP1 2 planes", "slabs": 16, "raw": 213909504, "stored": 200200192, "ratio": 0.935911, "decode_mb_s_1thread": 174.1, "runs": 3}
+exit 0

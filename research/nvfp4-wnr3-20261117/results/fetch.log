@@ -1,0 +1,19 @@
+deepseek: 40 MoE layers 0..39; chosen [(1, 12), (1, 119), (6, 110), (6, 175), (12, 110), (12, 176), (18, 5), (18, 31), (22, 145), (22, 150), (28, 60), (28, 361), (34, 204), (34, 375), (38, 65), (38, 88)]
+  ds-nvfp4: 192 tensors in 8 shards, 318505344 B planned
+  wrote ds-nvfp4/experts.safetensors 318526544 B sha256 9dd9a32cbb64867207ee051ac50bd9d8ad4c00f662637d9880fecc96f716460b
+  ds-mxfp4: 96 tensors in 8 shards, 300810240 B planned
+  wrote ds-mxfp4/experts.safetensors 300820800 B sha256 68ed960e7094f5956c5acb2f61806fc5fbaaf199473dd4c47d9943118efde1c6
+  ds-quark: 96 tensors in 8 shards, 300810240 B planned
+  wrote ds-quark/experts.safetensors 300820896 B sha256 ecfbdd3a32f6e7a651e5232f710c8fe432e355d9c23ee104d4d710fc675a2386
+qwen: 48 MoE layers 0..47; chosen [(1, 24), (1, 239), (7, 220), (7, 351), (14, 221), (14, 352), (21, 11), (21, 62), (29, 300), (29, 362), (32, 121), (32, 493), (40, 408), (40, 482), (43, 131), (43, 308)]
+  qwen-nvfp4: 192 tensors in 6 shards, 44237184 B planned
+  wrote qwen-nvfp4/experts.safetensors 44263240 B sha256 ea52967ec9d1f1e08d811ee5a7cbd5bba41879813216b072aa0823a62e9437e2
+  qwen-mxfp4: 96 tensors in 16 shards, 41779200 B planned
+  wrote qwen-mxfp4/experts.safetensors 41792216 B sha256 b5c05d381d388644984b4a69d430b227a166faceca1ac8d3e720d496ab85021f
+glm: 42 MoE layers 3..44; chosen [(4, 12), (4, 119), (9, 110), (9, 175), (15, 110), (15, 176), (22, 5), (22, 31), (26, 145), (26, 150), (32, 60), (32, 260), (38, 88), (38, 241), (41, 154), (41, 275)]
+  glm-nvfp4: 192 tensors in 21 shards, 226492800 B planned
+  wrote glm-nvfp4/experts.safetensors 226519208 B sha256 9cf278518309d56276fde7187525c872c033f7d8d8e6f4cfe4c240e6f80c4369
+  glm-mxfp4: 96 tensors in 12 shards, 213909504 B planned
+  wrote glm-mxfp4/experts.safetensors 213922760 B sha256 8ec7ace774150a3f6885f464b2e0904c8d842a777d5a374e958534afc2eeaf3e
+received 1607712546 B in 446 requests, 0 retries
+exit 0
