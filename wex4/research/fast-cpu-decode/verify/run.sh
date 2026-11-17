@@ -34,7 +34,7 @@ else
   FOUR="out/H_L8_E100.rec out/H_L2_E75.rec out/H_L37_E150.rec out/H_L14_E128.rec"
 fi
 "$CC" $W -I.. -O3 $MARCH $OMP ../test_fast_decode.c -o out/test_fast.exe
-if [ -n "$WIN" ]; then "$CC" $W -I.. -I. -O3 $MARCH $OMP vh.c -o out/vh.exe; fi
+if [ -n "$WIN" ]; then "$CC" -I.. $W -I. -O3 $MARCH $OMP vh.c -o out/vh.exe; fi
 out/test_fast.exe equal "$M" $H                       # held-out byte equality
 out/test_fast.exe bench "$M" 5 $H                     # the experiment's table on held-out records
 if [ -n "$WIN" ]; then

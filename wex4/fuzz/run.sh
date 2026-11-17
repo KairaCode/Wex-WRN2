@@ -52,7 +52,7 @@ RUNS="fuzz_wex4_file fuzz_wnr3_record fuzz_wex4_verify fuzz_store_wex fuzz_store
 W="-Wall -Wextra -Wno-unused-parameter -Wno-unused-function -Wno-unknown-pragmas"
 # wex4/fuzz/engine: stand-ins for the engine headers that c/expert_store_wex.c includes (fuzz_store_wex);
 # -pthread: the store's cache lock and the model registry of c/wex_decode.c
-INC="-I $ROOT/c -I $ROOT/wex4/research/fast-cpu-decode -I $ROOT/wex4/fuzz/engine -pthread"
+INC="-I $ROOT/wex4/research/fast-cpu-decode -I $ROOT/c -I $ROOT/wex4/fuzz/engine -pthread"
 # the AVX2 kernels of the fast WNR3 decoder need -march=haswell on x86; on AArch64 the same source builds its NEON
 # kernel with no flag, on any other CPU fuzz_wnr3_record compares its scalar kernel
 case $(uname -m) in
@@ -174,7 +174,7 @@ engine_extras() {   # --replay, after the runs
   for h in fuzz_store_wex fuzz_q38_wex; do
     # no engine/ on the include path: every engine header comes from the tree
     "${CC:-gcc}" -O2 $W ${WEX_CFLAGS-} $MARCH -DWEX_FUZZ_STANDALONE -DWEX_FUZZ_COLIBRI \
-        -I "$ROOT/c" -I "$ROOT/wex4/research/fast-cpu-decode" -I "$tree/c" -pthread "$ROOT/wex4/fuzz/$h.c" \
+        -I "$ROOT/wex4/research/fast-cpu-decode" -I "$ROOT/c" -I "$tree/c" -pthread "$ROOT/wex4/fuzz/$h.c" \
         -o "$O/$h-colibri$EXE"
     echo "== $h, against the headers of $tree/c"
     replay_one "$h" "$O/$h-colibri$EXE"
