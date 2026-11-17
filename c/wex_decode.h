@@ -70,9 +70,11 @@ int coli_wex_cuda_decode_batch_to_device(int n, const WexEntry *const *entries,
  * GPU, record i's canonical raw slab written to the host buffer dst[i] (the layout
  * coli_wex_decode_record leaves at the slab start; dst[i] may overlap record i
  * itself -- the in-place decode -- never another record). status[i]: 0 written, -1
- * invalid record, 1 unavailable; on a non-zero status dst[i] may be half written,
- * so the caller decodes that record again on its own. Returns the count of
- * non-zero statuses (every one 1 when the helper lacks the feature). */
+ * invalid record (dst[i] untouched), 1 unavailable (dst[i] untouched, except after a
+ * CUDA failure during the copy back itself, which may leave part of a correct slab);
+ * on a non-zero status the caller treats the slot as empty and decodes that record
+ * again on its own. Returns the count of non-zero statuses (every one 1 when the
+ * helper lacks the feature). */
 int coli_wex_cuda_batch_host_available(void);
 int coli_wex_cuda_decode_batch_to_host(int n, const WexEntry *const *entries,
                                        const unsigned char *const *records, int device,

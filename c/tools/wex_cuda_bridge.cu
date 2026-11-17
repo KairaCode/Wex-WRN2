@@ -2,7 +2,8 @@
  * Copyright 2026 Ludovico Zanichelli */
 /* Optional Windows WEX helper DLL. Pooled workspaces with private CUDA streams
  * keep cold-load reconstruction separate from inference streams.
- * A failed decode never changes the caller's compressed slab.
+ * A failed decode never changes the caller's compressed slab, and never writes
+ * the caller's destination.
  *
  * ABI 1 (wex_cuda_helper_abi) is unchanged: wex_cuda_decode_to_host.
  * wex_cuda_helper_features() lists optional additions, resolved by name:
@@ -502,7 +503,7 @@ static WexCudaPool<WexCudaBatchSet> &wex_cuda_batch_pool() { static auto *pool=n
  * Every copy and kernel has completed when the call returns. Returns the
  * number of records whose status is not 0.
  * With dst_host (and no dst_scale/dst_weight): record i's raw slab goes to the
- * host buffer dst_host[i] instead, by a copy back after its kernels. */
+ * host buffer dst_host[i] instead, copied back only once its error word is 0. */
 static int wex_cuda_batch(int n,const WexEntry *const *entries,const unsigned char *const *records,int device,
     unsigned char *const *dst_scale,unsigned char *const *dst_weight,unsigned char *const *dst_host,int *status) {
     if(n<=0) return 0;
@@ -545,15 +546,14 @@ static int wex_cuda_batch(int n,const WexEntry *const *entries,const unsigned ch
         if(!lane[l].ensure(max_aligned,max_streams,4u,false) || !lane[l].ensure_nr2()) {
             (void)cudaGetLastError(); finish(1); return failures();
         }
-    int broken_at=n;   /* first record whose queueing failed: it and later ones report 1 */
-    int k=0;
-    for(int i=0;i<n && broken_at==n;i++) {
-        if(status[i]!=PENDING) continue;
-        WexCudaWorkspace &w=lane[k++%lanes];
+    /* record i's upload and kernels on lane w (and, for device destinations, its
+     * commit), then its error word; 0 = queued or refused before queueing (status
+     * set), -1 = a CUDA call failed: the lane's order is unknown */
+    auto queue=[&](int i,WexCudaWorkspace &w)->int {
         const WexEntry *entry=entries[i];
         const WexCudaNr2Plan &plan=plans[(size_t)i];
         WexCudaNr2Tables tables;
-        if(wex_cuda_nr2_tables(plan.model_id,device,w.stream,&tables)) { status[i]=1; continue; }
+        if(wex_cuda_nr2_tables(plan.model_id,device,w.stream,&tables)) { status[i]=1; return 0; }
         uint32_t *host_offsets=host.offsets+offset_at[(size_t)i];
         wex_cuda_nr2_offsets(&views[(size_t)i],&plan,host_offsets);
         WexCudaCommit commit;
@@ -567,8 +567,6 @@ static int wex_cuda_batch(int n,const WexEntry *const *entries,const unsigned ch
         }
         cudaStream_t copy=w.stream,work=w.aux;
         const unsigned char *record=records[i];
-        /* a queued call that fails leaves the lane's order unknown: stop queueing,
-         * wait for what is queued, and report the rest as unavailable */
         if(cudaStreamWaitEvent(copy,w.consumed,0)!=cudaSuccess ||
            cudaMemcpyAsync(w.device_offsets,host_offsets,((size_t)plan.streams+1u)*4u,cudaMemcpyHostToDevice,copy)!=cudaSuccess ||
            cudaMemcpyAsync(w.device_record,record,plan.weight_payload,cudaMemcpyHostToDevice,copy)!=cudaSuccess ||
@@ -583,24 +581,69 @@ static int wex_cuda_batch(int n,const WexEntry *const *entries,const unsigned ch
            wex_cuda_launch_nr2_weights<WEX_CUDA_NR2_LOOKUP>(&plan,&tables,w.device_record,w.device_offsets,
                                                             w.device_raw,w.device_error,work)!=cudaSuccess ||
            cudaEventRecord(w.consumed,work)!=cudaSuccess ||
-           (dst_host ? wex_cuda_copy_back(entry,plan,w.device_raw,dst_host[i],work)
-                     : wex_cuda_launch_commit(w.device_raw,&commit,w.device_error,work))!=cudaSuccess ||
+           (!dst_host && wex_cuda_launch_commit(w.device_raw,&commit,w.device_error,work)!=cudaSuccess) ||
            cudaMemcpyAsync(host.errors+i,w.device_error,4u,cudaMemcpyDeviceToHost,work)!=cudaSuccess) {
             (void)cudaGetLastError();
-            broken_at=i;
+            return -1;
         }
-    }
+        return 0;
+    };
+    auto drain=[&](int count)->bool {   /* every queued copy and kernel of lanes 0..count-1 */
+        bool clean=true;
+        for(int l=0;l<count;l++) {
+            if(cudaStreamSynchronize(lane[l].aux)!=cudaSuccess) clean=false;
+            if(cudaStreamSynchronize(lane[l].stream)!=cudaSuccess) clean=false;
+        }
+        if(!clean) (void)cudaGetLastError();
+        return clean;
+    };
+    /* a queued call that fails leaves the lane's order unknown: stop queueing,
+     * wait for what is queued, and report it and the rest as unavailable */
+    int broken_at=n;
     bool synced=true;
-    for(int l=0;l<lanes;l++) {
-        if(cudaStreamSynchronize(lane[l].aux)!=cudaSuccess) synced=false;
-        if(cudaStreamSynchronize(lane[l].stream)!=cudaSuccess) synced=false;
+    if(!dst_host) {
+        /* device destinations: the commit kernel writes them only after a clean
+         * decode, so every record is queued at once and the host waits once */
+        for(int i=0,k=0;i<n && broken_at==n;i++)
+            if(status[i]==PENDING && queue(i,lane[k++%lanes])) broken_at=i;
+        synced=drain(lanes);
+        for(int i=0;i<n;i++)
+            if(status[i]==PENDING) {
+                status[i]=i>=broken_at || !synced ? 1 : host.errors[i] ? -1 : 0;
+                if(status[i]==-1) wex_cuda_nr3_report(host.errors[i]);
+            }
+        return failures();
     }
-    if(!synced) (void)cudaGetLastError();
-    for(int i=0;i<n;i++)
-        if(status[i]==PENDING) {
-            status[i]=i>=broken_at || !synced ? 1 : host.errors[i] ? -1 : 0;
-            if(status[i]==-1) wex_cuda_nr3_report(host.errors[i]);
+    /* host destinations: no device-side step can gate a copy to host memory, so
+     * the records go in rounds of one per lane: their decodes, one host wait for
+     * their error words, then a copy back of only the records that decoded clean,
+     * and a second wait. A refused record leaves dst[i] untouched, as every other
+     * entry point does (WNR3-SPEC 4.7). Each copy back starts after its record's
+     * whole upload and kernels, so dst[i] may overlap record i itself. */
+    int round[WEX_CUDA_BATCH_LANES];
+    for(int i=0;i<n && broken_at==n && synced;) {
+        int used=0;
+        for(;i<n && used<lanes;i++) {
+            if(status[i]!=PENDING) continue;
+            if(queue(i,lane[used])) { broken_at=i; break; }
+            if(status[i]==PENDING) round[used++]=i;
         }
+        if(!(synced=drain(used))) break;
+        for(int r=0;r<used;r++) {
+            const int j=round[r];
+            if(host.errors[j]) { status[j]=-1; wex_cuda_nr3_report(host.errors[j]); continue; }
+            if(wex_cuda_copy_back(entries[j],plans[(size_t)j],lane[r].device_raw,dst_host[j],lane[r].aux)!=cudaSuccess) {
+                (void)cudaGetLastError();
+                status[j]=1;   /* dst[j] may hold part of the copy: CUDA failed, the record did not */
+                continue;
+            }
+            status[j]=-2;      /* copied back once the lanes drain */
+        }
+        bool copied=drain(used);
+        for(int r=0;r<used;r++) if(status[round[r]]==-2) status[round[r]]=copied ? 0 : 1;
+        synced=copied;
+    }
+    finish(1);   /* not queued: a CUDA failure stopped the call first */
     return failures();
 }
 
@@ -615,15 +658,16 @@ extern "C" __declspec(dllexport) int wex_cuda_decode_batch_to_device(int n,const
  * full speed) decoded on the GPU into caller host buffers: dst[i] receives
  * record i's raw slab (scale_bytes + weight_bytes, canonical WEX layout, as
  * wex_cuda_decode_to_host leaves at the slab start); dst[i] must not overlap any
- * OTHER record, but may overlap record i itself (qwen38 decodes in place, the
- * record in its slab's tail): the copy back runs on `work` after event `data`,
- * i.e. after record i's whole upload -- keep that order in any rework.
- * dst[i] is best page-locked (wex_cuda_host_register). status[i]: 0 decoded
- * and written; -1 invalid record or a failed integrity check; 1 CUDA/resources
- * unavailable or model not registered. Unlike the device batch there is no
- * commit kernel: when status[i] != 0, dst[i] may hold partial or wrong bytes,
- * so the caller must treat that slot as empty. Every copy has completed when
- * the call returns. Returns the number of records whose status is not 0. */
+ * OTHER record, but may overlap record i itself (a store that decodes in place,
+ * the record in its slab's tail): the copy back starts only after the host saw
+ * record i's error word, so after its whole upload and kernels -- keep that order
+ * in any rework. dst[i] is best page-locked (wex_cuda_host_register).
+ * status[i]: 0 decoded and written; -1 invalid record or a failed integrity
+ * check, dst[i] untouched; 1 CUDA/resources unavailable or model not registered:
+ * dst[i] untouched, except after a CUDA failure during the copy back itself,
+ * which may leave part of a correct slab there (so a caller treats a slot whose
+ * status is not 0 as empty). Every copy has completed when the call returns.
+ * Returns the number of records whose status is not 0. */
 extern "C" __declspec(dllexport) int wex_cuda_decode_batch_to_host(int n,const WexEntry *const *entries,
     const unsigned char *const *records,int device,unsigned char *const *dst,int *status) {
     if(!dst) return n>0 ? n : 0;
