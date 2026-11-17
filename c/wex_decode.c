@@ -100,7 +100,7 @@ static void wex_cuda_initialize(void) {
             if (symbol) memcpy(&wex_cuda_batch_host_fn, &symbol, sizeof(wex_cuda_batch_host_fn));
         }
     }
-    /* The helper owns thread-local CUDA buffers; retain it until process exit. */
+    /* The helper's pools own CUDA buffers for the life of the process; retain it until exit. */
     fprintf(stderr, "[wex] Neural CUDA reconstruction enabled: %s\n", path);
 }
 #endif

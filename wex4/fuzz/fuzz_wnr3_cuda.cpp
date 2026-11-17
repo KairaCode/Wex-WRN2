@@ -30,9 +30,11 @@
  *   - the CPU accepts the record exactly when every GPU path returns 0, and then every GPU path gives its bytes;
  *   - a GPU path that does not return 0 returns -1, or 1 when the record parses and names a model that is not
  *     registered (what the bridge reports as "helper unavailable");
- *   - on failure the host slab of wex_cuda_decode_to_host and the device buffers of wex_cuda_decode_to_device
- *     and of wex_cuda_decode_batch_to_device are untouched (the batch to host may leave anything there, as its
- *     comment says); the valid record of a batch decodes whatever its neighbour is;
+ *   - on failure the host slab of wex_cuda_decode_to_host, the device buffers of wex_cuda_decode_to_device and
+ *     of wex_cuda_decode_batch_to_device and the host slab of wex_cuda_decode_batch_to_host (the record in its
+ *     tail included) are untouched (WNR3-SPEC 4.7; the batch to host since 2026-11-17, when it went to rounds
+ *     that copy back only the records that decoded clean); the valid record of a batch decodes whatever its
+ *     neighbour is;
  *   - the error word has no bit outside 1 | 2 | 4 | 8, bit 8 only for a record with the CZ flag and bit 4 only
  *     for a record with a CEIL flag.
  * At exit the harness prints what it ran: inputs, records, verdicts, the error bits seen and the size of the
@@ -335,7 +337,8 @@ static int compare(const WexEntry *entry, const unsigned char *stored) {
     WexNr2Record view;
     const Model *model;
     unsigned char *record, *expected, *slab, *scale_dst[3], *weight_dst[3];
-    unsigned char *batch_scale[6], *batch_weight[6], *host_dst[2];
+    unsigned char *batch_scale[6], *batch_weight[6], *host_dst[2], *host_before[2];
+    size_t host_bytes[2];
     size_t matrix_bytes[6];
     int cpu, parses, expect_fail, b, i, input_first = (int)(count_records & 1u);
     unsigned m;
@@ -452,6 +455,10 @@ static int compare(const WexEntry *entry, const unsigned char *stored) {
                 memcpy(host_dst[k] + at, records[k], entries[k]->total_bytes);
                 host_records[k] = host_dst[k] + at;
             }
+            host_bytes[k] = (size_t)a2;   /* the slab as the call finds it, record in its tail included */
+            host_before[k] = (unsigned char *)malloc(host_bytes[k]);
+            if (!host_before[k]) abort();
+            memcpy(host_before[k], host_dst[k], host_bytes[k]);
         }
         bad = g.batch_host(2, entries, host_records, 0, host_dst, status);
         count_calls++;
@@ -461,7 +468,10 @@ static int compare(const WexEntry *entry, const unsigned char *stored) {
         FUZZ_REQUIRE(bad == (status[0] != 0) + (status[1] != 0), "wex_cuda_decode_batch_to_host returns a wrong count");
         if (!status[input_at]) FUZZ_REQUIRE(!memcmp(host_dst[input_at], expected, (size_t)raw),
                                             "wex_cuda_decode_batch_to_host decodes other bytes than the CPU");
-        free(host_dst[0]); free(host_dst[1]);
+        for (k = 0; k < 2; k++)
+            if (status[k]) FUZZ_REQUIRE(!memcmp(host_dst[k], host_before[k], host_bytes[k]),
+                                        "wex_cuda_decode_batch_to_host wrote the destination of a record it refused");
+        free(host_dst[0]); free(host_dst[1]); free(host_before[0]); free(host_before[1]);
         /* the kernels alone, both lookups: the error word */
         for (k = 0; k < 2; k++) {
             int d = b ? direct_decode(direct75, k, entry, record, model ? model->blob : NULL, &error[k])
