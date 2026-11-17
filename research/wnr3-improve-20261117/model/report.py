@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reduce out/real_*.json to the results table (results.json + results.md).
+"""Reduce out/real_*.json to the results table (results.json + results_table.md).
 Delta = record bytes (unpadded) - stored production record bytes (unpadded), per record, held-out.
 normal = the 40 TEST records with anchors (120,120,120); shifted = the 38 records of the container whose
 rule-g anchors differ (37 fetched for this + L39 E120 of TEST). Container extrapolation (stratified):
@@ -57,7 +57,7 @@ for r in out:
         "%+.0f" % r["normal_vs_P14_B"] if r["normal_vs_P14_B"] is not None else "-",
         "%+.0f" % r["L39E120_B"] if r["L39E120_B"] is not None else "-",
         ("%+.0f (%d)" % (r["shifted_mean_B"], r["n_shifted"])) if r["shifted_mean_B"] is not None else "-", cont, r["extra_table_bytes"]))
-open(W + "/results.md", "w").write("\n".join(lines) + "\n")
+open(W + "/results_table.md", "w").write("\n".join(lines) + "\n")
 print("\n".join(lines))
 
 # split B (robustness): TRAIN = (37l+11),(53l+7); TEST = (37l+101) + L39 E120
@@ -72,5 +72,5 @@ for name, d in rows.items():
     lb.append("| %s | %s | %+.0f (%+.4f%%) | %+.0f | %.0f | %+.0f |" % (name, "41/41" if sb[name]["verified"] else "NO", sb[name]["normal_mean_B"],
               sb[name]["normal_mean_B"] / RAW * 100, sb[name]["median"], sb[name]["sem"], sb[name]["L39E120_B"]))
 json.dump(dict(splitA=out, splitB=sb), open(W + "/results.json", "w"), indent=1)
-open(W + "/results.md", "a").write("\n".join(lb) + "\n")
+open(W + "/results_table.md", "a").write("\n".join(lb) + "\n")
 print("\n".join(lb))

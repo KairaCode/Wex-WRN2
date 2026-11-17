@@ -317,7 +317,7 @@ table sets, fetched headers/records) is excluded and is rebuilt by the first ste
 |---|---|---|
 | `floor/`, `check-floor/` | section 1, S4, M1, M10-M11 | out/floor.json, decomp.jsonl, cm_*_test.jsonl, rt.jsonl, rt_scale.jsonl, mi2.jsonl; check: out/sib_check.json, out/indep.jsonl |
 | `overhead/`, `check-overhead/` | S1-S10, audit | out/report.txt, final_table.txt, audit_report.txt, explain_outlier.txt; check: indep/est.json, myaudit/summary.txt |
-| `model/`, `check-model/` | M2-M9 | out/real_*.json, results.md; check: out/real_P14_z8_sesc.json, indep_A.json, indep_B.json |
+| `model/`, `check-model/` | M2-M9 | out/real_*.json, results_table.md; check: out/real_P14_z8_sesc.json, indep_A.json, indep_B.json |
 | `fastfmt/`, `check-fastfmt/` | W1-W5 | logs/enc_*.txt, eval_test.txt, equal_*.txt, mutate_*.txt; check: logs/vs_trainwnr3.txt (like-for-like sizes), wnr3_train.txt, indep_bound.txt, mutate_negcontrol.txt |
 | `fastdec/`, `check-fastdec/` | D1-D3 | wex_fast_decode.patch, logs/equal_*.txt, mutate_*.txt, negcontrol_final.txt, ablation_*.txt; check: logs/check_ref_*_121.txt, time_check_cpu1*.txt |
 | `timing/` | section 3 | logs/timing_tables.md, timing_flags.md, raw_*.json, eq_summary.txt, session.txt |

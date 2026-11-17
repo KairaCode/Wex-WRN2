@@ -9,8 +9,8 @@ Copied from /tmp/wnr3-research/model without `coded/` (2.8 GB), `extra/` (37 fet
     python3 ksets2.py 14 16 1 z8 && python3 real.py P14 P14_sesc P14_C16_K1 P14_C16_K1_z8_sesc prod
     SET=extra python3 real.py prod P14 P14_sesc P14_C16_K1 P14_C16_K1_z8_sesc
     SPLIT=B python3 ksets2.py 14 16 1 z8 && SPLIT=B python3 real.py prod P14 P14_sesc P14_C16_K1_z8_sesc
-    python3 esc_test.py; python3 timing.py; python3 report.py   # -> results.md / results.json
+    python3 esc_test.py; python3 timing.py; python3 report.py   # -> results_table.md / results.json
     # everything in order: sh run_all.sh
 
 Numbers backed here: out/real_*.json (one per variant, per-record sizes and SHA-256 round-trip status),
-results.md/json.
+results_table.md/json.
