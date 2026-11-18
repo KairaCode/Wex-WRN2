@@ -1,0 +1,5 @@
+eval: 41 experts, 1450967040 weights (35389440 per expert)
+P=10 bit/w: mag7+sign 3.57689  joint15 3.57734  pos(7x32)mag+sign 3.57691  wnr3-567ctx 3.57810 | scales 197341 B/expert
+P=12 bit/w: mag7+sign 3.57662  joint15 3.57668  pos(7x32)mag+sign 3.57665  wnr3-567ctx 3.57621 | scales 155901 B/expert
+P=14 bit/w: mag7+sign 3.57661  joint15 3.57661  pos(7x32)mag+sign 3.57664  wnr3-567ctx 3.57587 | scales 147786 B/expert
+P=16 bit/w: mag7+sign -nan  joint15 -nan  pos(7x32)mag+sign -nan  wnr3-567ctx 0.00000 | scales 146051 B/expert

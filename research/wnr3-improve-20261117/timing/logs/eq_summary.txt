@@ -1,0 +1,27 @@
+SUMMARY w3:1,4,1: 121 records, 0 mismatches
+SUMMARY w3:1,4,1: 121 records, 0 mismatches
+SUMMARY w3:3,4,1: 121 records, 0 mismatches
+SUMMARY w3:4,3,1: 121 records, 0 mismatches
+SUMMARY ref: 121 records, 0 mismatches
+mag_2048: encode round trips ok: 121 / 121; TEST files identical to fastfmt/out: 41 / 41
+orig_a2 SUMMARY wnx:wnx/mag_2048:1:1: 121 records, 0 mismatches
+orig_a2 SUMMARY wnx:wnx/mag_2048:1:2: 121 records, 0 mismatches
+orig_a5 SUMMARY wnx:wnx/mag_2048:2:1: 121 records, 0 mismatches
+orig_a5 SUMMARY wnx:wnx/mag_2048:2:2: 121 records, 0 mismatches
+ffold_a5 SUMMARY wnx:wnx/mag_2048:2:2: 121 records, 0 mismatches
+new_a5 SUMMARY wnx:wnx/mag_2048:2:2: 121 records, 0 mismatches
+magt_2048: encode round trips ok: 121 / 121; TEST files identical to fastfmt/out: 41 / 41
+orig_a2 SUMMARY wnx:wnx/magt_2048:1:1: 121 records, 0 mismatches
+orig_a2 SUMMARY wnx:wnx/magt_2048:1:2: 121 records, 0 mismatches
+orig_a5 SUMMARY wnx:wnx/magt_2048:2:1: 121 records, 0 mismatches
+orig_a5 SUMMARY wnx:wnx/magt_2048:2:2: 121 records, 0 mismatches
+ffold_a5 SUMMARY wnx:wnx/magt_2048:2:2: 121 records, 0 mismatches
+new_a5 SUMMARY wnx:wnx/magt_2048:2:2: 121 records, 0 mismatches
+joint_2048: encode round trips ok: 121 / 121; TEST files identical to fastfmt/out: 41 / 41
+orig_a2 SUMMARY wnx:wnx/joint_2048:1:1: 121 records, 0 mismatches
+orig_a2 SUMMARY wnx:wnx/joint_2048:1:2: 121 records, 0 mismatches
+orig_a5 SUMMARY wnx:wnx/joint_2048:2:1: 121 records, 0 mismatches
+orig_a5 SUMMARY wnx:wnx/joint_2048:2:2: 121 records, 0 mismatches
+ffold_a5 SUMMARY wnx:wnx/joint_2048:2:2: 121 records, 0 mismatches
+new_a5 SUMMARY wnx:wnx/joint_2048:2:2: 121 records, 0 mismatches
+DONE

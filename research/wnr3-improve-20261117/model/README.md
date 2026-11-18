@@ -1,0 +1,1 @@
+Model lane (static model, training, table sets) for WNR3/WNR4. Rerun everything: `sh run_all.sh` (from this directory); results table only: `python3 report.py` (reads out/real_*.json). Findings: RESULTS.md.

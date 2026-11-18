@@ -1,0 +1,8 @@
+abx: 3 records, 9 rounds x 1 passes, 1 threads; ms/record
+| variant | binary | median | min | max | median ratio to row 1 | rounds faster than row 1 |
+|---|---|---:|---:|---:|---:|---:|
+| orig_k1x6 | test_orig:11 | 93.61 | 79.91 | 102.14 | 1.000 | 0/9 |
+| orig_k1x4 | test_orig:10 | 108.93 | 89.78 | 114.88 | 1.137 | 2/9 |
+| origz_k1x6 | test_orig_z:11 | 87.33 | 82.35 | 99.00 | 0.965 | 7/9 |
+| new_avx2_k3x4 | test_h:22 | 56.48 | 50.55 | 64.11 | 0.577 | 9/9 |
+| new_avx512_k4x3 | test_z:26 | 48.22 | 41.91 | 51.66 | 0.511 | 9/9 |

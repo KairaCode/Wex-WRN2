@@ -1,0 +1,10 @@
+{"variant": "P14_C8_K1", "n": 41, "all_ok": true, "mean_delta_used": -13194.609756097561, "pct_raw": -0.07018170528289229, "mean_delta_used_no_outlier": -7342.8, "pct_raw_no_outlier": -0.03905611723856209, "outlier_delta": -247267.0, "median_delta": -4636.0, "min_delta": -247267.0, "max_delta": 688.0, "mean_delta_padded": -12487.80487804878, "mean_used_of_raw": 0.8545462619435478, "table_bytes": 409770}
+P=14 classes=16 K=1 train bits/w 3.573394 thr [228, 231, 233, 235, 236, 237, 238, 239, 240, 241, 242, 243, 245, 246, 249]
+{"variant": "P14_C16_K1", "n": 41, "all_ok": true, "mean_delta_used": -14493.463414634147, "pct_raw": -0.07709026615388703, "mean_delta_used_no_outlier": -7927.475, "pct_raw_no_outlier": -0.042165984774986384, "outlier_delta": -277133.0, "median_delta": -5124.0, "min_delta": -277133.0, "max_delta": 219.0, "mean_delta_padded": -14186.146341463415, "mean_used_of_raw": 0.8544771763348379, "table_bytes": 818010}
+P=14 classes=8 K=1 train bits/w 3.573387 thr [231, 235, 237, 239, 241, 243, 246]
+P=14 classes=8 K=4 it 0 train bits/w 3.895510 (+7.5794% of raw vs K=1, before selector)
+P=14 classes=8 K=4 it 1 train bits/w 3.573379 (-0.0002% of raw vs K=1, before selector)
+P=14 classes=8 K=4 it 2 train bits/w 3.573365 (-0.0005% of raw vs K=1, before selector)
+P=14 classes=8 K=4 it 3 train bits/w 3.573360 (-0.0006% of raw vs K=1, before selector)
+P=14 classes=8 K=4 it 4 train bits/w 3.573357 (-0.0007% of raw vs K=1, before selector)
+{"variant": "P14_C8_K4", "n": 41, "all_ok": true, "mean_delta_used": -11558.219512195123, "pct_raw": -0.06147779816110049, "mean_delta_used_no_outlier": -3967.5, "pct_raw_no_outlier": -0.02110300500408497, "outlier_delta": -315187.0, "median_delta": -1315.0, "min_delta": -315187.0, "max_delta": 4629.0, "mean_delta_padded": -11189.073170731708, "mean_used_of_raw": 0.8546333010147656, "table_bytes": 1634490}

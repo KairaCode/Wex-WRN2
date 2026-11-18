@@ -1,0 +1,9 @@
+wex_fast_model_init: 193.9 us per call (mean of 100), tables 1840144 bytes
+build: AVX2 kernels, OpenMP; model id 0x27e8a1e0
+mutate: 4000 records reached the decoders (1088 accepted, 2912 rejected by the reference)
+        2804 of them byte-mutated (2804 rejected, 0 accepted by the reference); 285 more mutated records stopped at the parser,
+        224 mutations that changed nothing were dropped
+        1196 constructed records (expected accept 1021, expected reject 108, either 67), 116000 fast decodes over 29 variants, 0 mismatches
+        weight streams decoded inside full SIMD groups: kernel 2 4237056, kernel 3 3239872, kernel 4 3602800; scale streams in groups of 32
+        for kernel 4 (AVX-512 scale kernel when the count is a multiple of 4): 289920
+exit 0

@@ -1,0 +1,7 @@
+A_lenc_sd            trials 18000 rejected 18000 same 0 WRONG 0 digest_only 0 xcheck 60(0) {}
+wnr3_train           trials 18000 rejected 18000 same 0 WRONG 0 digest_only 0 xcheck 60(0) {}
+C_A_inl_rec16        trials 18000 rejected 18000 same 0 WRONG 0 digest_only 0 xcheck 60(0) {}
+D_C_tail2_dig        trials 18000 rejected 18000 same 0 WRONG 0 digest_only 0 xcheck 60(0) {}
+E_C_tail5_dig        trials 18000 rejected 17625 same 375 WRONG 0 digest_only 51 xcheck 60(0) {}
+F_r16k16_inl_rec16   trials 18000 rejected 18000 same 0 WRONG 0 digest_only 0 xcheck 60(0) {}
+tail5_nodig          trials 18000 rejected 17551 same 389 WRONG 60 digest_only 0 xcheck 60(0) {'bitflip': 5, 'byte': 5, 'swap': 50}
