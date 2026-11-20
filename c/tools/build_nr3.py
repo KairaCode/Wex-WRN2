@@ -2,8 +2,8 @@
 # Copyright 2026 Ludovico Zanichelli
 """WNR3 builder.
 
-Reads expert slabs from a WEX1 container of any geometry (V4.1 REAP-192: 40 x 192,
-U:\\kaira_wex\\v41-reap\\v4_flash_experts.wex; Qwen3.8-Flash-Next AMD MXFP4: 48 x 512 routed),
+Reads expert slabs from a WEX1 container of any geometry (V4.1 REAP-192: 40 x 192;
+Qwen3.8-Flash-Next AMD MXFP4: 48 x 512 routed),
 encodes WNR3 records with tools/wex_nr3_tools.dll (CPU) and CPU-verifies every record before writing.
 
   python -I build_nr3.py DLL WEX1 bins OUT.bin  (--experts L:E,... | --g3 RECORDS.json) MODEL_OPTS [--cz]
