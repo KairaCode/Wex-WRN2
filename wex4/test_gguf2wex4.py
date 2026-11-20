@@ -151,6 +151,13 @@ class GgufToWex4(unittest.TestCase):
         with self.assertRaises(wex4.FormatError):
             g2w.pack(os.path.join(self.d, 'x.wex4'), model, log=NULL)
 
+    def test_tensor_in_two_parts_refused(self):
+        stem = os.path.join(self.d, 'm')
+        for k in (1, 2):
+            write_gguf(f'{stem}-0000{k}-of-00002.gguf', layer(0, 2)[:3])
+        with self.assertRaises(wex4.FormatError):
+            g2w.pack(os.path.join(self.d, 'x.wex4'), f'{stem}-00001-of-00002.gguf', log=NULL)
+
     def test_tampered_record_refused(self):
         model = os.path.join(self.d, 'tiny.gguf')
         write_gguf(model, layer(0, 2))

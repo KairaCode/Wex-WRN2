@@ -168,13 +168,15 @@ def scan(model):
     """Parts, their parse, the dense tensors and the expert layers of a GGUF model."""
     parts = split_parts(model)
     need(len({os.path.normcase(os.path.basename(p)) for p in parts}) == len(parts), 'two parts with one name')
-    parsed, dense, layers = [], [], {}
+    parsed, dense, layers, seen = [], [], {}, set()
     for i, path in enumerate(parts):
         size = os.path.getsize(path)
         with open(path, 'rb') as f:
             data, alignment, tensors = parse(f, size)
         parsed.append((path, size, data, alignment, tensors))
         for name, ne, ggml_type, offset, nbytes in tensors:
+            need(name not in seen, f'tensor {name} in two parts')   # an expert kind would be overwritten silently
+            seen.add(name)
             m = EXPERT.match(name)
             if m and len(ne) == 3:
                 kinds = layers.setdefault(int(m[1]), {})
