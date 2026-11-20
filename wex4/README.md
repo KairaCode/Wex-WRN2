@@ -10,6 +10,7 @@ The C reader **[`../c/wex4.h`](../c/wex4.h) is the engine-side reader** (`src/co
 |---|---|
 | `wex4.py` | Python reference, standard library only, written independently of `c/wex4.h`: the tests run both on the same bytes and require the same verdict. Command line: `python -I wex4.py info FILE`, `python -I wex4.py verify FILE [--dll out/wex4_tools.dll]` |
 | `wex4_convert.py` | `pack` / `unpack` (safetensors to WEX4 and back), `upgrade` / `downgrade` (a WEX1 or WEX3/WNR3 expert container to WEX4 in place and back; the records are not moved). `--names deepseek` or `--names qwen38` picks the tensor names |
+| `gguf2wex4.py` | `pack` / `unpack` (a GGUF model, split or not, to WEX4 and back byte for byte; each routed expert one record, the GGUF headers kept as blobs; spec section 14.1). Tests: `test_gguf2wex4.py` |
 | `wex4_store.h` | prototype of the engine loader of spec section 13.2: opens a WEX4 expert container and gives the store the table it keeps today, plus the per-record SHA-256 |
 | `wex4_tools.c` | the C side of the tests, loaded through ctypes: validator, codecs, in-process fuzzer. Builds twice, with the reference WNR3 decoder and with the fast one |
 | `test_wex4.py` | round trips, C against Python, hostile files, mutation fuzzing, and the check of the conformance vectors |
