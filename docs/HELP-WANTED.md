@@ -57,10 +57,10 @@ measured; it is not known to fail.
     the GPU decoder (`c/wex_cuda.cuh`, `c/tools/wex_cuda_bridge.cu`) against the code. 18
     clarifications went into the three pages; an upgrade and a pack written from the clarified
     sections give the converter's bytes.
-  - **Still open:** 3 findings of the second pass, listed in that folder (the host batch of helper
-    feature 32 writes its destination without a commit step, which WNR3-SPEC section 4.7 does not
-    allow for; the converter upgrades a WEX1 file whose header flags are not 0; one extrapolated
-    time); the six questions of part E5 of the Rust reader's
+  - **Still open:** 2 findings of the second pass, listed in that folder (the converter upgrades a
+    WEX1 file whose header flags are not 0; one extrapolated time); the third, the host batch of
+    helper feature 32 writing the destination of a record it refused, was fixed in
+    `c/tools/wex_cuda_bridge.cu` on 2026-11-17 (it copies back only the records that decoded clean); the six questions of part E5 of the Rust reader's
     [SPEC-NOTES.md](../impl/rust-wex4/SPEC-NOTES.md) (2026-11-15); and the numbers that need the
     full models.
   - **The GPU decoder against the text:** reviewed on 2026-11-15
@@ -73,8 +73,9 @@ measured; it is not known to fail.
     do not always name the cause, `wex_cuda_decode_batch_to_host`, which can write its destination
     for a record it refuses where section 4.7 says "destination untouched", and 3 bytes that the
     scale kernel may read while they are still being copied (never used by a stream that decodes
-    right). **Still open:** a sentence in WNR3-SPEC 4.7 for `wex_cuda_decode_batch_to_host`; the
-    WNR2 path of the same kernels and the WNR1 and palette kernels, which were not reviewed.
+    right). The host batch leaves that destination untouched since 2026-11-17, and the harness of
+    section 3 requires it. **Still open:** the WNR2 path of the same kernels and the WNR1 and palette
+    kernels, which were not reviewed.
 - **Glossary:** add missing terms to [GLOSSARY.md](GLOSSARY.md). 32 terms of the specifications and of
   the tests were added on 2026-11-14, and 14 engine and host words of
   [COLIBRI-INTEGRATION](COLIBRI-INTEGRATION.md) and of the dated reports on 2026-11-15. Still open:
@@ -700,8 +701,9 @@ listed above as well.
   per-thread workspaces, which leaked when engine threads exited, became process-wide pools, and the
   test gained a thread-churn case that the old helper fails (1654 MiB held after 64 rounds of 4
   threads) and the pooled one passes (4 to 6 MiB, two runs). That helper under
-  `compute-sanitizer`, other GPUs and a sentence of WNR3-SPEC for the host batch are open *(open to
-  you, sections 2 and 3)*.
+  `compute-sanitizer` and other GPUs are open, and so is a GPU run from this repository of the host
+  batch's change of 2026-11-17 (rounds that copy back only clean records; reported as passing on an
+  RTX 3070 in the maintainer's engine tree) *(open to you, sections 2 and 3)*.
 - **The engine-side readers inside colibri:** the two engine harnesses follow colibri's headers and
   build against them (a pinned `dev` commit, the opt-in `colibri-headers` CI job). `c/qwen38_wex.h` and
   the members it adds to colibri's expert index are in no public colibri tree yet, so its harness keeps

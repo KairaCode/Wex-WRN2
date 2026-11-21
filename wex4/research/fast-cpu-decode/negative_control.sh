@@ -31,8 +31,8 @@ case $(uname -m) in
   x86_64|amd64|i?86) MARCH=${WEX4_MARCH--march=haswell} ;;
   *) MARCH=${WEX4_MARCH-} ;;
 esac
-SIMD=$(printf '#include "wex_fast_decode.h"\nsimd WEXF_SIMD\n' | "$CC" $MARCH -E -P -I"$SRC" -I"$HERE" -x c - | sed -n 's/^simd //p')
-SVE=$(printf '#include "wex_fast_decode.h"\nsve WEXF_SVE\n' | "$CC" $MARCH -E -P -I"$SRC" -I"$HERE" -x c - | sed -n 's/^sve //p')
+SIMD=$(printf '#include "wex_fast_decode.h"\nsimd WEXF_SIMD\n' | "$CC" $MARCH -E -P -I"$HERE" -I"$SRC" -x c - | sed -n 's/^simd //p')
+SVE=$(printf '#include "wex_fast_decode.h"\nsve WEXF_SVE\n' | "$CC" $MARCH -E -P -I"$HERE" -I"$SRC" -x c - | sed -n 's/^sve //p')
 fail=0
 check() {   # name, sed expression, records
     name=$1; edit=$2; shift 2

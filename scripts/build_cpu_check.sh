@@ -4,7 +4,11 @@
 # CPU check of the WNR3 sync, no GPU and no real model needed:
 #   1. c/tests/test_wex_format.c (codec 5: hash vectors, round trips, mutations, corruption audit, container rules)
 #      and c/tests/test_wex4_verify.c (c/tools/wex4_verify.c on small WEX4 files; c/tools/wex4_verify.c also alone,
-#      compile only)
+#      compile only), then c/tests/test_wex_fast_decode.c (the fast WNR3 decoder c/wex_fast_decode.h, and
+#      coli_wex_decode_record of c/wex_decode.c with COLI_WEX_FAST_DECODE unset, 1 and 0, against the reference
+#      decoder on synthetic records). On x86-64 in three builds: -march=haswell (the AVX2 kernel compiled for the
+#      target), the x86-64 baseline (the AVX2 kernel behind a target attribute, chosen at run time by CPUID) and
+#      -DWEX_FAST_SCALAR (kernel 0 only); elsewhere in two: the default (NEON on ARM64) and the scalar one
 #   2. c/tools/wex_nr3_tools.c -> wex_nr3_tools.dll and c/tests/fake_wex_cuda.c -> fake_wex_cuda.dll (compile only)
 #   3. c/tools/build_nr3.py smoke: a WEX1 of fixtures/v41-tiny (c/tools/repack_v4_wex.py), then WNR3-CZ bins and a
 #      WNR3-CZ container from it, every record CPU-verified by the builder
@@ -52,6 +56,34 @@ W="-O2 -Wall -Wextra -Wno-unused-parameter -Wno-unused-function ${WEX_CFLAGS-}"
 ./test_wex4_verify.exe > test_wex4_verify.log 2>&1 || { cat test_wex4_verify.log; exit 1; }
 tail -1 test_wex4_verify.log
 "$CC" $W $OMP -c "$C/tools/wex4_verify.c" -o wex4_verify.o
+# test_wex_fast_decode.c includes the engine's compat.h (for setenv and unsetenv on Windows), which is not in this
+# repository: a stand-in, found as "../compat.h" through -I stand-in/tests. On Windows _putenv_s(name, "") removes
+# the variable, as unsetenv does
+mkdir -p stand-in/tests
+cat > stand-in/compat.h <<'EOF'
+/* stand-in for the engine's compat.h, written by scripts/build_cpu_check.sh: setenv and unsetenv on Windows */
+#ifdef _WIN32
+#include <stdlib.h>
+static inline int compat_setenv(const char *name, const char *value, int overwrite) {
+    if (!overwrite && getenv(name)) return 0;
+    return _putenv_s(name, value) ? -1 : 0;
+}
+static inline int compat_unsetenv(const char *name) { return _putenv_s(name, "") ? -1 : 0; }
+#define setenv(name, value, overwrite) compat_setenv(name, value, overwrite)
+#define unsetenv(name) compat_unsetenv(name)
+#endif
+EOF
+case $(uname -m) in
+  x86_64|amd64) FAST_BUILDS="haswell:-march=haswell baseline: scalar:-DWEX_FAST_SCALAR" ;;
+  *) FAST_BUILDS="default: scalar:-DWEX_FAST_SCALAR" ;;
+esac
+for b in $FAST_BUILDS; do
+  n=test_wex_fast_decode_${b%%:*}
+  "$CC" $W $OMP ${b#*:} -I stand-in/tests "$C/tests/test_wex_fast_decode.c" -o "$n.exe" -pthread
+  # one line per build (its kernel and its verdict); the whole output when it fails
+  "./$n.exe" > "$n.log" 2>&1 || { cat "$n.log"; exit 1; }
+  echo "$n: $(sed -n 's/^ *fast decoder: //p' "$n.log"); $(tail -1 "$n.log")"
+done
 "$CC" $W $SO "$C/tools/wex_nr3_tools.c" -o wex_nr3_tools.dll
 "$CC" $W $SO $STATIC_GCC $FAKE_EXPORT "$C/tests/fake_wex_cuda.c" -o fake_wex_cuda.dll
 "$PY" -I "$C/tools/repack_v4_wex.py" --model-dir "$ROOT/fixtures/v41-tiny" --output tiny.wex > tiny.wex.log

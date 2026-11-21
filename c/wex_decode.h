@@ -22,9 +22,18 @@ extern "C" {
 /* Neural records may use the optional sibling kaira_wex_cuda.dll on Windows.
  * COLI_WEX_CUDA_LIB selects an absolute helper path; "0" forces CPU.
  * Both paths return the same canonical host slab. Failures retain the input.
+ * On the CPU a WNR3 record goes to the fast decoder of wex_fast_decode.h (AVX2
+ * where CPUID says the CPU has it, NEON on ARM64) unless COLI_WEX_FAST_DECODE=0;
+ * to the reference decoder of wex_neural_rans.h then, on other CPUs and for WNR2
+ * records. Same bytes, same verdicts.
  */
 int coli_wex_decode_record(const WexEntry *entry, unsigned char *slab, size_t capacity);
 uint64_t coli_wex_cuda_decode_count(void);
+/* The CPU decoder of WNR3 records now: "AVX2" or "NEON" (the fast decoder), or
+ * "reference" (COLI_WEX_FAST_DECODE=0, or no kernel for this CPU). And the WNR3
+ * records the fast decoder has decoded so far. */
+const char *coli_wex_cpu_decoder(void);
+uint64_t coli_wex_fast_decode_count(void);
 
 /* Direct to VRAM (helper feature, optional): reconstruct a Neural-rANS record
  * held in host memory (entry->total_bytes) into caller-owned device buffers,
@@ -70,9 +79,11 @@ int coli_wex_cuda_decode_batch_to_device(int n, const WexEntry *const *entries,
  * GPU, record i's canonical raw slab written to the host buffer dst[i] (the layout
  * coli_wex_decode_record leaves at the slab start; dst[i] may overlap record i
  * itself -- the in-place decode -- never another record). status[i]: 0 written, -1
- * invalid record, 1 unavailable; on a non-zero status dst[i] may be half written,
- * so the caller decodes that record again on its own. Returns the count of
- * non-zero statuses (every one 1 when the helper lacks the feature). */
+ * invalid record (dst[i] untouched), 1 unavailable (dst[i] untouched, except after a
+ * CUDA failure during the copy back itself, which may leave part of a correct slab);
+ * on a non-zero status the caller treats the slot as empty and decodes that record
+ * again on its own. Returns the count of non-zero statuses (every one 1 when the
+ * helper lacks the feature). */
 int coli_wex_cuda_batch_host_available(void);
 int coli_wex_cuda_decode_batch_to_host(int n, const WexEntry *const *entries,
                                        const unsigned char *const *records, int device,
