@@ -11,7 +11,7 @@ Every measurement behind the formats and the read path: container sizes, integri
 
 ## Machine
 
-One desktop: NVIDIA RTX 5090 (32 GB, sm_120), two NVMe drives, U: (PCIe 4) and C: (PCIe 5), each holding a full copy of the containers, Windows 11. Engines built with MSYS2 UCRT64 gcc 16.2 and the CUDA toolkit 13.4 (the maintainer's build notes); tools run with Python 3.14. The CPU-only baseline of 2026-11-07 ran on the same machine.
+One desktop: AMD Ryzen 9 7950X3D, 32 GB of DDR5-6200 RAM, NVIDIA RTX 5090 (32 GB, sm_120), two NVMe drives, U: (PCIe 4) and C: (PCIe 5), each holding a full copy of the containers, Windows 11. Engines built with MSYS2 UCRT64 gcc 16.2 and the CUDA toolkit 13.4 (the maintainer's build notes); tools run with Python 3.14. The CPU-only baseline of 2026-11-07 ran on the same machine. The RAM budget of a run (`--ram`, `RAM_GB`) is the cap the engine is given, not the RAM of the machine. Sources for the CPU and the RAM: [wex-architecture-20261018.it.md](reports/wex-architecture-20261018.it.md) and [wnr4-entropy-engine-evaluation-20261108.it.md](reports/wnr4-entropy-engine-evaluation-20261108.it.md).
 
 ## Reproduce
 

@@ -66,30 +66,44 @@ def chart_codecs(t):
             ax.set_yticklabels([])
     cs.footer(fig, t, 'Source: docs/BENCHMARKS.md, "WNR3 against general-purpose codecs on real expert records" '
               '(2026-11-15). WNR3 byte-exact, with a model\ntrained on the same 8 records; brotli at level 11 (9 on '
-              'MiniMax), the best general codec measured.\nOn the CPU zstd, zlib and lz4 decode faster than WNR3; lzma, and brotli 11 on one thread, decode slower.', h)
+              'MiniMax), the best general codec measured. The ratios do not depend on the machine.\nDecode speed, '
+              'measured on an Intel Core i7-7700K with 32 GB of RAM: zstd, zlib and lz4 decode faster than WNR3; lzma, '
+              'and brotli 11 on one thread, slower.', h)
     return fig
 
 
+MACHINE = ('Machine: RTX 5090 (32 GB VRAM), AMD Ryzen 9 7950X3D, 32 GB DDR5-6200, Windows 11.\n'
+           'Drives: U: NVMe PCIe 4.0 and C: NVMe PCIe 5.0, a full copy of the container on each; "U: + C:" splits the '
+           'expert reads 38/62.\nRAM budget: the cap the engine is given for its RAM use; the rest of the 32 GB is '
+           'left to the system.')
+
+
 def chart_speed(t):
-    # docs/BENCHMARKS.md: V4.1 "containers, drives and decode speed" (WEX4 installed engine, one pair, 3 prompts x 64
-    # tokens, logits bit-identical); Qwen3.8 "Qwen3.8-Flash-Next MXFP4" (decode tok/s, 258-token prompt, one run each).
-    v41 = [('WEX4, one drive', 2.26, 'gray'), ('WEX4, two drives', 3.01, 'blue')]
-    q38 = [('FP8 experts', 4.39, 'gray'), ('MXFP4 WNR3, one drive', 9.48, 'blue'),
-           ('MXFP4 raw, one drive', 11.48, 'blue'), ('MXFP4 raw, two drives', 12.45, 'blue')]
-    h = 4.6
+    # V4.1: research/wnr2-fastbench-20261109/NOTE-5-mirror-ab-20261110.md (docs/BENCHMARKS.md "containers, drives
+    # and decode speed", first row): RAM_GB 16, ctx 32768, 7 prompts x 64 tokens, one pair, 971 experts in VRAM.
+    # Qwen3.8: docs/reports/QWEN38-MXFP4-20261111.md "Speed": RAM 13 GB, 258-token prompt, 200 tokens, one run each.
+    v41 = [('raw WEX1, U: only', 2.02, 'gray'), ('WNR2, U: + C:', 2.99, 'blue')]
+    q38 = [('FP8 experts, U: only', 4.39, 'gray'), ('MXFP4 WNR3, U: only', 9.48, 'blue'),
+           ('MXFP4 raw, U: only', 11.48, 'blue'), ('MXFP4 raw, U: + C:', 12.45, 'blue')]
+    h = 5.6
     fig = cs.figure(t, h)
-    cs.header(fig, t, 'Generation speed in the engine', 'Tokens per second while generating, RTX 5090. '
-              'A second drive with a copy of the container splits the expert reads.', h)
-    ax1 = cs.axes(fig, t, [0.27, 0.575, 0.67, 0.115], 'DeepSeek V4.1 REAP-192 (WNR3-CZ records)')
-    ax2 = cs.axes(fig, t, [0.27, 0.215, 0.67, 0.23], 'Qwen3.8-Flash-Next')
+    cs.header(fig, t, 'Generation speed in the engine', 'Tokens per second while generating. A second drive '
+              'with a copy of the container splits the expert reads.', h)
+    fig.text(0.045, 1 - 0.98 / h, MACHINE, fontsize=8, color=t['ink2'], va='top', linespacing=1.5)
+    ax1 = cs.axes(fig, t, [0.27, 0.545, 0.67, 0.09],
+                  'DeepSeek V4.1 REAP-192 · RAM budget 16 GB · 971 experts in VRAM')
+    ax2 = cs.axes(fig, t, [0.27, 0.2, 0.67, 0.2],
+                  'Qwen3.8-Flash-Next · RAM budget 13 GB · ~25.5 GB of experts in VRAM')
     for ax, rows, xmax in ((ax1, v41, 3.6), (ax2, q38, 14.5)):
         cs.hbars(ax, [r[0] for r in rows], [r[1] for r in rows], [t[r[2]] for r in rows], t, xmax,
                  lambda v: f'{v:.2f} tok/s')
     ax1.set_xticks([0, 1, 2, 3])
     ax2.set_xticks([0, 3, 6, 9, 12])
-    cs.footer(fig, t, 'Source: docs/BENCHMARKS.md. V4.1: one pair, 3 prompts x 64 tokens, logits bit-identical. '
-              'Qwen3.8: WEX1 containers, engine of 2026-11-11, 258-token\nprompt, one run each (later builds are faster). Not comparable across the two models (different sizes, '
-              'RAM budgets and prompts).', h)
+    cs.footer(fig, t, 'Sources: docs/BENCHMARKS.md ("Machine"). V4.1: research/wnr2-fastbench-20261109 NOTE-5, one '
+              'pair (2026-11-10), 7 prompts x 64 tokens, ctx 32768,\ntoken ids and logits bit-identical; format and '
+              'drive split change together. Qwen3.8: docs/reports/QWEN38-MXFP4-20261111.md, 258-token prompt,\n200 '
+              'tokens, one run each, engine of 2026-11-11 (later builds are faster). Not comparable across the two '
+              'models (different sizes, budgets, prompts).', h)
     return fig
 
 

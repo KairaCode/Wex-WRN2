@@ -163,7 +163,7 @@ The V4.1 switch report's own reading of its numbers: on this machine the second 
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/charts/speed-dark.png">
-  <img alt="Bar chart: tokens per second on an RTX 5090. DeepSeek V4.1: one drive 2.26, two drives 3.01. Qwen3.8-Flash-Next: FP8 experts 4.39, MXFP4 WNR3 one drive 9.48, MXFP4 raw one drive 11.48, MXFP4 raw two drives 12.45." src="assets/charts/speed-light.png" width="800">
+  <img alt="Bar chart: tokens per second on an RTX 5090 (32 GB VRAM) with a Ryzen 9 7950X3D and 32 GB of RAM; drive U: is NVMe PCIe 4.0, C: NVMe PCIe 5.0. DeepSeek V4.1, RAM budget 16 GB: raw WEX1 on U: 2.02, WNR2 on U: + C: 2.99. Qwen3.8-Flash-Next, RAM budget 13 GB: FP8 experts 4.39, MXFP4 WNR3 on U: 9.48, MXFP4 raw on U: 11.48, MXFP4 raw on U: + C: 12.45." src="assets/charts/speed-light.png" width="800">
 </picture>
 
 <picture>
