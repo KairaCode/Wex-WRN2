@@ -473,7 +473,7 @@ jobs:
 # The three scripts that build C print their compiler, and the step fails unless all three name a clang
   linux-tsan:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15   # a green run took 8.6 minutes (run 43812551602, 2026-11-16, after the second merges)
+    timeout-minutes: 30   # a green run took 8.6 minutes (run 43812551602, 2026-11-16, after the second merges); raised from 15 because on the head of pull request 51 the job ran to the limit and was cut there (run 44202436823, job 134459690635, 2026-11-18, killed at 15m17s with fuzz_wnr3_cuda-replay the last live process): the WNR3 fast decoder is in that harness's libraries now, so the replay under TSan is longer than it was
     env:
       PYTHON: python3
       USER: ""
