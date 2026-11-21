@@ -1,0 +1,13 @@
+pack out/packs3/q38mx.pack: 64 records of 2611200 B, kind MX, G 128; 16 CPUs
+WNR4 CPU  1 threads:    43.6 ms/record    0.060 GB/s
+WNR4 CPU  2 threads:    23.7 ms/record    0.110 GB/s
+WNR4 CPU  4 threads:    12.1 ms/record    0.216 GB/s
+WNR4 CPU  8 threads:     7.0 ms/record    0.374 GB/s
+WNR4 CPU 16 threads:     5.3 ms/record    0.496 GB/s
+WNR4 CPU batch of 64,  1 threads:   0.057 GB/s
+WNR4 CPU batch of 64,  2 threads:   0.113 GB/s
+WNR4 CPU batch of 64,  4 threads:   0.224 GB/s
+WNR4 CPU batch of 64,  8 threads:   0.398 GB/s
+WNR4 CPU batch of 64, 16 threads:   0.705 GB/s
+WNR4 CPU batch of 64, 32 threads:   0.714 GB/s
+WNR3 CPU reference, 1 thread:    98.3 ms/record    0.027 GB/s

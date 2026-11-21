@@ -1,0 +1,12 @@
+pack out/packs3/q38nv.pack: 64 records of 2764800 B, kind NV, G 128; 16 CPUs
+WNR4 CPU  1 threads:    55.0 ms/record    0.050 GB/s
+WNR4 CPU  2 threads:    27.7 ms/record    0.100 GB/s
+WNR4 CPU  4 threads:    15.2 ms/record    0.181 GB/s
+WNR4 CPU  8 threads:     8.8 ms/record    0.314 GB/s
+WNR4 CPU 16 threads:     6.2 ms/record    0.446 GB/s
+WNR4 CPU batch of 64,  1 threads:   0.051 GB/s
+WNR4 CPU batch of 64,  2 threads:   0.103 GB/s
+WNR4 CPU batch of 64,  4 threads:   0.200 GB/s
+WNR4 CPU batch of 64,  8 threads:   0.355 GB/s
+WNR4 CPU batch of 64, 16 threads:   0.482 GB/s
+WNR4 CPU batch of 64, 32 threads:   0.596 GB/s
