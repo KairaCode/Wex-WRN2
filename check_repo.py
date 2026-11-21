@@ -25,7 +25,7 @@ privacy pattern fail. Tracked files only: run it after `git add`.
            included), an e-mail address that is not a noreply one or an access token fails the
            check. Warnings: the words scratchpad / session id, session and temp paths, assistant
            and session words, a private IPv4 address, the login name and the machine name of whoever
-           runs the check.
+           runs the check. The warning patterns also search the tracked path of every file.
            ALLOWED lists the few warning matches that stay, as (file, pattern, line id): the matches
            of that pattern on the first line of that file whose line_id() is that id are not counted.
            The id is a hash of the whole line (line end left out), so that this file does not repeat
@@ -54,12 +54,13 @@ LOGIN = os.environ.get('USERNAME') or os.environ.get('USER') or '\0'
 HOST = os.environ.get('COMPUTERNAME') or os.environ.get('HOSTNAME') or socket.gethostname() or '\0'
 STRICT = 3   # the first three patterns have no match in the repository: one match fails the check
 PRIVACY = (
-    ('profile path', re.compile(r'(?i)[\\/]users[\\/]+[\w.-]+')),
+    ('profile path', re.compile(r'(?i)[\\/](?:users|home)[\\/]+[\w.-]+')),
     ('e-mail', re.compile(r'(?i)(?<![\w.+-])(?![\w.+@-]*noreply)[\w.+-]+@[\w-]+(?:\.[\w-]+)*\.[a-z]{2,}')),
     ('token', re.compile(r'ghp_[A-Za-z0-9]{20,}|github_pat_\w{20,}|\bsk-[A-Za-z0-9_-]{20,}|\bAKIA[0-9A-Z]{16}\b'
-                         r'|Bearer [A-Za-z0-9._~+/-]{20,}')),
+                         r'|Bearer [A-Za-z0-9._~+/-]{20,}|\bhf_[A-Za-z0-9]{30,}\b')),
     ('scratchpad / session id', re.compile(r'(?i)scratchpad|session[ _-]?id')),
-    ('session path', re.compile(r'(?i)\.claude[\\/]\w|[\\/]worktrees[\\/]|\bappdata\b|%temp%|[\\/]temp[\\/]')),
+    ('session path', re.compile(r'(?i)\.claude[\\/]\w|[\\/]worktrees[\\/]|\bappdata\b|%temp%|[\\/]temp[\\/]'
+                                r'|(?<![\w.~})-])/tmp/')),
     ('assistant / session words', re.compile(
         r'(?i)(?<![./\\])\b(?:claude|anthropic|opus|sonnet|haiku|codex|chatgpt)\b|\bmain[ -]session\b'
         r'|\bsessione principale\b|\bsub-?agents?\b'
@@ -100,11 +101,11 @@ def line_id(line):
 # Lower-case literals of each pattern: every match holds one of them, so a file that holds none is not
 # searched. The nine searches of every file took 14 of the check's 15 seconds; the counts do not change.
 LITERALS = {
-    'profile path': ('users',),
+    'profile path': ('users', 'home'),
     'e-mail': ('@',),
-    'token': ('ghp_', 'github_pat_', 'sk-', 'akia', 'bearer '),
+    'token': ('ghp_', 'github_pat_', 'sk-', 'akia', 'bearer ', 'hf_'),
     'scratchpad / session id': ('scratchpad', 'session'),
-    'session path': ('.claude', 'worktrees', 'appdata', 'temp'),
+    'session path': ('.claude', 'worktrees', 'appdata', 'temp', '/tmp/'),
     'assistant / session words': ('claude', 'anthropic', 'opus', 'sonnet', 'haiku', 'codex', 'chatgpt', 'session',
                                   'agent', 'memory', 'toolu_', 'wf_'),
     'private IPv4 address': ('10.', '192.168', '172.'),
@@ -279,8 +280,9 @@ def check_licence(files):
 
 
 def privacy_counts(data, path='', allowed=ALLOWED):
-    """{pattern name: matches} in one file's bytes; a binary file is searched for profile paths only. The
-    entries of `allowed` for `path` leave out the matches of their line (header)."""
+    """{pattern name: matches} in one file's bytes, plus the warning matches in its path (a tracked path is
+    public too); a binary file's bytes are searched for profile paths only. The entries of `allowed` for
+    `path` leave out the matches of their line (header)."""
     text = data.decode('utf-8', 'replace')
     low = fold(text)
     mine = [(name, lid) for f, name, lid in allowed if f == path and name not in STRICT_NAMES]
@@ -295,6 +297,10 @@ def privacy_counts(data, path='', allowed=ALLOWED):
         for _, a, b in (sp for sp in spans if sp[0] == name):
             starts = [s for s in starts if not a <= s < b]
         counts[name] = len(starts)
+    for name, p in PRIVACY[STRICT:]:
+        n = len(p.findall(path))
+        if n:
+            counts[name] = counts.get(name, 0) + n
     return counts
 
 
@@ -335,23 +341,28 @@ def self_test():
     assert [t for _, t in link_targets(md)] == ['../b%20c.md#s', 'i.svg', 'j.svg', 'd/e.md', 'https://x.y/z']
     assert resolve('docs/p.md', '../b%20c.md#s') == 'b c.md' and resolve('p.md', 'https://x.y/z') is None
     profile, mail, token, words, spath, assistant = (p for _, p in PRIVACY[:6])
-    for hit in ('C:\\Users\\someone\\x', 'C:\\\\Users\\\\someone', 'D:/Users/someone/x', '/c/Users/someone/x', '\\Users\\someone'):
+    for hit in ('C:\\Users\\someone\\x', 'C:\\\\Users\\\\someone', 'D:/Users/someone/x', '/c/Users/someone/x', '\\Users\\someone',
+                '/home/someone/x'):
         assert profile.search(hit), hit
     assert not profile.search('<HOME>\\x') and mail.search('a.b@example.org')
     assert not mail.search('1+bot@users.noreply.github.com') and not mail.search('noreply@example.org')
     assert words.search('Session-ID') and words.search('ScratchPad')
     assert token.search('ghp_' + 'a1' * 18) and token.search('Bearer ' + 'x' * 24) and not token.search('task-' + 'a' * 24)
-    for hit in ('<TREE>\\.claude\\worktrees\\x', 'C:\\Temp\\x', '%TEMP%\\x', 'AppData\\Local'):
+    assert privacy_counts(b'hf_' + b'a1' * 17)['token'] == 1 and not token.search('hf_hub_download')
+    for hit in ('<TREE>\\.claude\\worktrees\\x', 'C:\\Temp\\x', '%TEMP%\\x', 'AppData\\Local', 'cd /tmp/x', 'C:/tmp/x'):
         assert spath.search(hit), hit
     assert not spath.search('temperature 0.6') and not spath.search('prefix-store/template')
+    assert not spath.search('$W/tmp/x') and not spath.search('./tmp/x')
     for hit in ('asked Claude to', 'the main session', 'la Sessione principale', 'two sub-agents', 'a memory note',
                 'wf_2af1fd28-820'):
         assert assistant.search(hit), hit
     assert not assistant.search('x/.claude/y') and not assistant.search('magnum opuses') and not assistant.search('wf_run')
     binary, text = b'\0\0D:\\Users\\someone\\x a.b@example.org', b'D:\\Users\\someone\\x a.b@example.org'
     assert privacy_counts(binary) == {'profile path': 1}, 'binary files: profile paths only'
+    assert privacy_counts(b'\0', 'r/scratchpad-a/x.bin') == {'profile path': 0, 'scratchpad / session id': 1}, \
+        'tracked paths are searched, binary files too'
     assert [privacy_counts(text)[k] for k in ('profile path', 'e-mail', 'token')] == [1, 1, 0]
-    mixed = 'C:\\U\u017fers\\x a@b.org ghp_' + 'a1' * 18 + ' Se\u017f\u017fion-\u0130D C:\\Temp\\x asked Claude wf_2af1fd28 192.168.1.20'
+    mixed = 'C:\\U\u017fers\\x a@b.org ghp_' + 'a1' * 18 + ' hf_' + 'b2' * 17 + ' Se\u017f\u017fion-\u0130D C:\\Temp\\x asked Claude wf_2af1fd28 192.168.1.20'
     assert privacy_counts(mixed.encode()) == {name: len(p.findall(mixed)) for name, p in PRIVACY}, 'LITERALS hide a match'
     assert all(privacy_counts(mixed.encode())[name] for name, _ in PRIVACY[:7])
     line = b'Trailer: the main session, two sub-agents'

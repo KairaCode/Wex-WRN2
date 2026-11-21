@@ -1,9 +1,9 @@
 """Fetch the 32-byte WNR3 header of all 7,680 records of the published container by HTTP range requests
-(read only; nothing is written to /tmp/wnr3-data). Output: headers.bin (7680 x 32 B, index = layer*192+expert)."""
+(read only; nothing is written to <TMP>/wnr3-data). Output: headers.bin (7680 x 32 B, index = layer*192+expert)."""
 import struct, urllib.request, time, sys, numpy as np
 from concurrent.futures import ThreadPoolExecutor
 URL = "https://huggingface.co/Kaira666/Kaira-WEX4-Experts/resolve/main/v41-reap/v4_flash_experts.nr3.wex"
-t = open("/tmp/wnr3-data/recs/entries.bin", "rb").read()
+t = open("<TMP>/wnr3-data/recs/entries.bin", "rb").read()
 offs = [struct.unpack_from("<QI", t, i * 72) for i in range(7680)]
 def get(i):
     off = offs[i][0]

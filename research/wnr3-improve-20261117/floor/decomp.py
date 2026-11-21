@@ -6,7 +6,7 @@ import numpy as np
 from multiprocessing import Pool
 from load import load, MAN, H as HERE
 
-blob = np.fromfile("/tmp/wnr3-data/recs/model.bin", dtype=np.uint8)
+blob = np.fromfile("<TMP>/wnr3-data/recs/model.bin", dtype=np.uint8)
 W = np.frombuffer(blob[32:32 + 3 * 567 * 34].tobytes(), dtype="<u2").reshape(3, 567, 17).astype(np.float64)
 S = np.frombuffer(blob[57866:57866 + 3 * 514].tobytes(), dtype="<u2").reshape(3, 257).astype(np.float64)
 WL = -np.log2(np.diff(W, axis=2) / 16384.0)     # 3, 567, 16

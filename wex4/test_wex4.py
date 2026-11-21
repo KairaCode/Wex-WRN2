@@ -38,6 +38,11 @@ rng = random.Random(20261111)
 UPGRADED = {}   # source file name -> its WEX4 form, filled by test_upgrade (vectors)
 
 
+def randbytes(n):
+    """rng.randbytes(n) (Python 3.9 and later), the same bytes; getrandbits(0) needs 3.9 too."""
+    return rng.getrandbits(8 * n).to_bytes(n, 'little') if n else b''
+
+
 def bf16(n, sigma=0.05):
     return b''.join(struct.pack('<f', rng.gauss(0, sigma))[2:] for _ in range(n))
 
@@ -72,7 +77,7 @@ def py_verdict(data):
 
 def test_sha():
     for n in list(range(0, 200)) + [4064, 4096, 65537]:
-        data = rng.randbytes(n)
+        data = randbytes(n)
         out = ctypes.create_string_buffer(32)
         C.lib.wex4_sha256_bytes(data, n, out)
         assert out.raw == hashlib.sha256(data).digest(), n
@@ -80,7 +85,7 @@ def test_sha():
 
 
 def test_bp():
-    cases = [skewed(30000), bf16(9000), rng.randbytes(20000), bytes(5000), b'\x7f' * 70000, skewed(1), skewed(7),
+    cases = [skewed(30000), bf16(9000), randbytes(20000), bytes(5000), b'\x7f' * 70000, skewed(1), skewed(7),
              bf16(40000, 3.0), struct.pack('<2000f', *[rng.gauss(0, 1) for _ in range(2000)])]
     cases += [skewed(n) for n in range(2, 10)]
     count = 0
@@ -100,7 +105,7 @@ def test_bp():
 
 
 def sample_records():
-    a, b, c, d = skewed(20000), bf16(6000), rng.randbytes(9000), bf16(11000)
+    a, b, c, d = skewed(20000), bf16(6000), randbytes(9000), bf16(11000)
     f32 = struct.pack('<6000f', *[rng.gauss(0, 1) for _ in range(6000)])
     big = bf16(26000)   # split in 3 parts of 20000, 20000 and 12000 bytes
     parts = [big[i:i + 20000] for i in range(0, len(big), 20000)]
@@ -193,6 +198,18 @@ def test_safetensors():
     blob[blob.index(b'[0,4]') + 1] = ord('1')   # data_offsets [1,4]: a hole at byte 0 and a wrong size
     open(os.path.join(src, 'hole.safetensors'), 'wb').write(blob)
     assert rejected(conv.st_index, os.path.join(src, 'hole.safetensors'))
+    # source names that differ only by case, or end in a dot or a space, open one file on Windows
+    renamed = os.path.join(WORK, 'st_name.wex4')
+    for name in (b'A.safetensors', b'b.safetensor.', b'b.safetensor '):
+        blob = bytearray(open(out, 'rb').read().replace(b'"name":"b.safetensors"', b'"name":"' + name + b'"'))
+        assert name in blob
+        open(renamed, 'wb').write(reseal(blob))
+        assert refusal(conv.unpack, renamed, back, C).startswith('metadata: source file name'), name
+    os.makedirs(os.path.join(src, 'upper'), exist_ok=True)
+    shutil.copyfile(sources[0], os.path.join(src, 'upper', 'A.safetensors'))
+    assert rejected(conv.pack, renamed, [sources[0], os.path.join(src, 'upper', 'A.safetensors')])
+    print('source names: unpack refuses a name that differs from another only by case or ends in a dot or a space; '
+          'pack refuses a.safetensors with A.safetensors')
 
 
 def test_experts():
@@ -472,6 +489,14 @@ def test_upgrade():
         assert open(work, 'rb').read() == before, 'downgrade must restore the container exactly'
         print(f'upgrade {name}: +{info["added"]} B (index {info["index_bytes"]} B, {info["records"]} records), '
               f'records untouched, legacy table reproduced, every expert decoded exactly, downgrade exact')
+    wex1 = open(os.path.join(WORK, 'tiny.wex'), 'rb').read()
+    for offset in (32, 36):   # header flags 64 (canonical zero) and the reserved word: the C reader refuses both
+        blob = bytearray(wex1)
+        struct.pack_into('<I', blob, offset, 64)
+        work = os.path.join(WORK, 'up_refused.wex')
+        open(work, 'wb').write(blob)
+        assert rejected(conv.upgrade, work) and open(work, 'rb').read() == blob, offset
+    print('upgrade refuses a WEX1 with header flags or a reserved word that is not 0, and leaves it as it was')
     return data
 
 
@@ -1105,7 +1130,8 @@ def vector_name(label):
 
 
 def write_vectors(out, generic, hostile):
-    """Conformance vectors: the files these tests build, with their verdicts (wex4/vectors/README.md)."""
+    """Conformance vectors: the files these tests build, with their verdicts (wex4/vectors/README.md).
+    The review files are read from wex4/review and not copied: their `../review` rows resolve only from wex4/vectors."""
     attacks, accepted = hostile
     files = {'valid/generic.wex4': generic,
              'valid/generic-index-last.wex4': open(os.path.join(WORK, 't_last.wex4'), 'rb').read(),
@@ -1119,7 +1145,7 @@ def write_vectors(out, generic, hostile):
     for path in sorted(files) + sorted(f'../review/security-c/findings/{n}' for n in os.listdir(review) if n.endswith('.wex4')):
         data = files.get(path)
         if data is None:
-            data = open(os.path.join(out, path), 'rb').read()
+            data = open(os.path.join(review, os.path.basename(path)), 'rb').read()
         else:
             os.makedirs(os.path.dirname(os.path.join(out, path)), exist_ok=True)
             with open(os.path.join(out, path), 'wb') as f:

@@ -2,7 +2,7 @@
 # order-0 scale tables, per value; and the anchors of the 7,680 records (headers.bin).
 # usage: python3 explain_outlier.py > out/explain_outlier.txt
 import numpy as np, json, struct, collections
-b = open('/tmp/wnr3-data/recs/model.bin', 'rb').read()
+b = open('<TMP>/wnr3-data/recs/model.bin', 'rb').read()
 meta = {(r['layer'], r['expert']): r for r in json.load(open('meta.json'))}
 for key in [(39, 120), (39, 154), (0, 7)]:
     r = meta[key]; s = np.fromfile('scales/%02d_%03d.bin' % key, np.uint8); off = 0; tot = 0

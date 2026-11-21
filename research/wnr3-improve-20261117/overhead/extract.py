@@ -1,10 +1,10 @@
 # Decode each sample record with the reference decoder, bring it back to the coded domain
 # (wex_nr3_prepare cz=1) and save its CODED scales (3 matrices, slab order) to scales/LL_EEE.bin,
 # plus per-record facts (stored size, SP, WP, flags, anchors) to meta.json.
-# usage: python3 extract.py   (reads /tmp/wnr3-data, writes ./scales and ./meta.json)
+# usage: python3 extract.py   (reads <TMP>/wnr3-data, writes ./scales and ./meta.json)
 import ctypes, struct, os, glob, json, sys
 from multiprocessing import Pool
-D = "/tmp/wnr3-data"; HERE = os.path.dirname(os.path.abspath(__file__))
+D = "<TMP>/wnr3-data"; HERE = os.path.dirname(os.path.abspath(__file__))
 RAW = 18800640
 
 def work(p):

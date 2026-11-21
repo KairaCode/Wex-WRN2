@@ -47,13 +47,13 @@ static const char *outdirs[4];
 
 static void load_models(int n, char **dirs) {
     size_t b;
-    unsigned char *blob = read_file("/tmp/wnr3-data/recs/model.bin", &b, 0);
+    unsigned char *blob = read_file("<TMP>/wnr3-data/recs/model.bin", &b, 0);
     int i;
     if (wex_nr2_model_open(blob, b, &model3)) exit(2);
     fm3 = (WexFastModel *)aligned_alloc(64, (sizeof(WexFastModel) + 63u) & ~(size_t)63u);
     wex_fast_model_init(fm3, &model3);
     {
-        unsigned char *c = read_file("/tmp/wnr3-research/fastfmt/out_train.counts", &b, 0);
+        unsigned char *c = read_file("<TMP>/wnr3-research/fastfmt/out_train.counts", &b, 0);
         /* Counts layout of ff.c: nib[3][7][16] first, then pos, then sc[3][256] */
         const uint64_t (*nib)[7][16] = (const uint64_t(*)[7][16])(const void *)c;
         const uint64_t (*sc)[256] = (const uint64_t(*)[256])(const void *)(c + 8u * (3 * 7 * 16 + 3 * 7 * 32 * 16));
@@ -77,12 +77,12 @@ static void load_rec(const char *zpath, Rec *r) {
     int i;
     base = base ? base + 1 : zpath;
     sscanf(base, "Z_%d_%d.bin", &r->layer, &r->expert);
-    snprintf(p, sizeof p, "/tmp/wnr3-research/fastfmt/data/E_%02d_%03d.bin", r->layer, r->expert);
+    snprintf(p, sizeof p, "<TMP>/wnr3-research/fastfmt/data/E_%02d_%03d.bin", r->layer, r->expert);
     eb = read_file(p, &b, 0); memcpy(&r->e, eb, 72); free(eb);
     wex_entry_raw_sizes(&r->e, &raw, &al); r->raw = raw;
     wex_nr2_layout(&r->e, &r->lay);
     r->z = read_file(zpath, &b, 0);
-    snprintf(p, sizeof p, "/tmp/wnr3-data/recs/rec_%02d_%03d.bin", r->layer, r->expert);
+    snprintf(p, sizeof p, "<TMP>/wnr3-data/recs/rec_%02d_%03d.bin", r->layer, r->expert);
     r->w3 = read_file(p, &r->w3n, 0);
     if (wex_nr3_parse(r->w3, r->w3n, &r->lay, model3.id, &r->v3)) { fprintf(stderr, "wnr3 parse\n"); exit(2); }
     for (i = 0; i < nout; i++) {

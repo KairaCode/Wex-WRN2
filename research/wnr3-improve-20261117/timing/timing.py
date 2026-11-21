@@ -11,8 +11,8 @@ Speed-up of X in a round = mean(A before X, A after X) / X. Reported: median and
 Raw samples go to logs/raw_MODE.json."""
 import json, os, statistics, subprocess, sys, time
 
-HERE = "/tmp/wnr3-research/timing"
-FF = "/tmp/wnr3-research/fastfmt/out"
+HERE = "<TMP>/wnr3-research/timing"
+FF = "<TMP>/wnr3-research/fastfmt/out"
 RECS = "00_007 05_080 10_153 15_034 20_107 25_180 30_061 35_134 39_120".split()
 RAW = 18800640
 BASE = ("A: wex_fast_decode unchanged, k1 x4 fused", "orig_a2", "w3:1,4,1")

@@ -7,7 +7,7 @@ import numpy as np
 from load import load, MAN, H
 from static_sib import quantize
 RAW = 18800640
-blob = np.fromfile("/tmp/wnr3-data/recs/model.bin", dtype=np.uint8)
+blob = np.fromfile("<TMP>/wnr3-data/recs/model.bin", dtype=np.uint8)
 S = np.frombuffer(blob[57866:57866 + 3 * 514].tobytes(), dtype="<u2").reshape(3, 257).astype(np.float64)
 SL = -np.log2(np.diff(S, axis=1) / 16384.0)
 

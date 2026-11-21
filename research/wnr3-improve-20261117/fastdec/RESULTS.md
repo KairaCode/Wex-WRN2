@@ -3,7 +3,7 @@
 Records on disk do not change, so the size effect is 0 bytes. Only the CPU decoder changes. Everything below was
 measured on this machine: a shared 4-vCPU Xeon VM (Emerald Rapids, family 6 model 207, AVX2 + AVX-512
 F/BW/VL/CD/VBMI/VBMI2/IFMA, 2.1 GHz nominal; a dependent `imul` chain runs at 1.24 core cycles per TSC tick,
-so the core clock is about 2.6 GHz; `gbench.c`). Data: the real production records in `/tmp/wnr3-data/recs`
+so the core clock is about 2.6 GHz; `gbench.c`). Data: the real production records in `<TMP>/wnr3-data/recs`
 (WNR3-CZ, flags 0x0f, 35,389,440 weight symbols + 1,105,920 scale symbols per record). gcc 13.3, `-O3`.
 No perf counters exist in this VM (`perf_event_open` fails), so the breakdown comes from ablation builds and
 timing.
@@ -199,10 +199,10 @@ only (README), not the checks.
 ## Rerun
 
 ```sh
-cd /tmp/wnr3-research/fastdec
+cd <TMP>/wnr3-research/fastdec
 ./build.sh                                   # out/test_z, out/test_h, out/test_orig, scalar, UBSan
 ./run_equal2.sh                              # (uses logs/equal_z_121.txt to skip done records; empty it to redo)
 ./run_mutate.sh                              # 4,000 + 3,000 + 800 UBSan mutations (logs/mutate_*.txt)
-python3 negcontrol.py 6000 99 /tmp/wnr3-data/recs/rec_00_007.bin /tmp/wnr3-data/recs/rec_20_073.bin /tmp/wnr3-data/recs/rec_39_120.bin
+python3 negcontrol.py 6000 99 <TMP>/wnr3-data/recs/rec_00_007.bin <TMP>/wnr3-data/recs/rec_20_073.bin <TMP>/wnr3-data/recs/rec_39_120.bin
 ./run_time.sh                                # timing tables (logs/time_run*.txt)
 ```

@@ -1,6 +1,6 @@
 # check-fastdec: reproduction of the 'fastdec' lane (faster decoder, same format)
 
-All files here; the lane's directory /tmp/wnr3-research/fastdec was only read.
+All files here; the lane's directory \<TMP>/wnr3-research/fastdec was only read.
 
 ## What was rerun
 - `build.sh` (copied) -> out/test_z, test_h, test_orig, ... built clean with gcc 13.

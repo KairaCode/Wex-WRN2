@@ -197,11 +197,11 @@ The index of every page, with its kind, language and state, is [docs/README.md](
 
 ```text
 README.md  STATUS.md  CHANGELOG.md  CONTRIBUTING.md   front page, what runs today, format changes, rules
-SECURITY.md  CITATION.cff     how to report a vulnerability, how to cite
+SECURITY.md  CITATION.cff  CODE_OF_CONDUCT.md   how to report a vulnerability, how to cite, conduct
 LICENSE  NOTICE  THIRD_PARTY_NOTICES.md              Apache-2.0 text, attribution notices, third-party material
 check_repo.py  sync-map.tsv    self-check (links, c/ file map, licence headers, privacy) and the map of c/ files to the maintainer's tree
 assets/        the logo (light and dark), the mark, and the source image of the social preview (set in the repository settings)
-.github/       CI workflows (Linux, macOS and Windows CPU checks, macOS also with Apple clang; ASan and UBSan on x86-64 Linux, ARM64 Linux and macOS, TSan and MSan on x86-64 Linux; the Go reader and writer on the vectors and against the reference readers, the Rust reader on the vectors and against the C and Python readers, an opt-in Vulkan job on a CPU device, opt-in Linux and macOS read-path benchmarks, an opt-in build of the engine harnesses against colibri's headers; the libFuzzer harnesses of wex4/fuzz/ on x86-64 Linux, ARM64 Linux and macOS), issue forms, pull-request checklist
+.github/       CI workflows (Linux, macOS and Windows CPU checks, macOS also with Apple clang; ASan and UBSan on x86-64 Linux, ARM64 Linux and macOS, TSan and MSan on x86-64 Linux; the Go reader and writer on the vectors and against the reference readers, the Rust reader on the vectors and against the C and Python readers, opt-in Vulkan jobs on a CPU device (lavapipe, also on a newer Mesa in containers), opt-in speed runs of the fast WNR3 decoder on ARM64 Linux and macOS, opt-in Linux and macOS read-path benchmarks, an opt-in build of the engine harnesses against colibri's headers; the libFuzzer harnesses of wex4/fuzz/ on x86-64 Linux, ARM64 Linux and macOS), issue forms, pull-request checklist
 c/             engine-side WEX code in the colibri c/ layout; pull requests may change it
   *.h *.c *.cuh   format, codecs, CPU and CUDA decoders, the standalone store, wex4.h, qwen38_wex.h
   tools/          container writers, the WNR3 builder and its encoder DLL, the CUDA helper, benches
@@ -217,7 +217,7 @@ archive/       the WNR2 lab code (encoder, trainer, checks) and its benches, kep
 models/        trained WNM2 models: DeepSeek V4 Flash 0731 and V4.1 REAP-192
 fixtures/      the tiny V4.1 model and the makers of synthetic experts
 integration/   engine, backend and host excerpts, build scripts, patches
-docs/          living pages: index, architecture, glossary, benchmarks, integration guide, WNR2 reference, WNR3 and WEX4 specs, the Vulkan design note
+docs/          living pages: index, architecture, glossary, benchmarks, integration guide, help wanted, WNR2 reference, WNR3 and WEX4 specs, the Vulkan design note
   reports/        dated, frozen reports (some in Italian)
   i18n/           short summaries of this README in Spanish, French, German and Simplified Chinese
 research/      dated lab runs, frozen; README.md is the index
@@ -258,7 +258,7 @@ This repository ships no model weights, and it does not accept them: real contai
 
 - `models/*.wnm2` and the lab models under `research/`: symbol-frequency tables computed from the routed experts of DeepSeek V4 Flash 0731 and DeepSeek V4.1 Flash 1017 REAP-192 (both MIT, Copyright (c) 2023 DeepSeek). They are statistics, not weights.
 - `fixtures/v41-tiny/`: a synthetic test model with seeded random weights at toy shapes, written by colibri's `tools/make_dsv41_tiny.py`.
-- `research/`: measurements (counts, sizes, entropies, hashes) of records of those checkpoints, and, under `research/wnr3-20261107/team3/other-tensors/data/`, copies of DeepSeek inference code, a model card and safetensors headers (MIT; licence text next to them).
+- `research/`: measurements (counts, sizes, entropies, hashes) of records of those checkpoints and of other public checkpoints named in THIRD_PARTY_NOTICES.md, and, under `research/wnr3-20261107/team3/other-tensors/data/`, copies of DeepSeek inference code, a model card and safetensors headers (MIT; licence text next to them).
 
 The source and licence of each of these is in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). A fixture or data file derived from real weights is added only together with a row there that names its source and licence.
 

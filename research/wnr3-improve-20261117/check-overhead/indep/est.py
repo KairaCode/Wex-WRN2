@@ -1,7 +1,7 @@
 # Independent estimate of the lane's top numbers (lenc, sd, inline per-record scales, tail5) from the STORED
 # production records, written without the lane's code. Scales are decoded here with the reference library.
 import ctypes, struct, os, numpy as np, json, math
-D = "/tmp/wnr3-data"; RAW = 18800640
+D = "<TMP>/wnr3-data"; RAW = 18800640
 lib = ctypes.CDLL(D + "/libwex_nr3_tools.so")
 model = open(D + "/recs/model.bin", "rb").read(); table = open(D + "/recs/entries.bin", "rb").read()
 TEST = [(l, (53 * l + 7) % 192) for l in range(40)] + [(39, 120)]

@@ -10,7 +10,7 @@ ideal code-length bound (-log2 p under the quantised 14-bit tables), held out.
 Usage: SPLIT=A|B python3 indep.py  -> indep_<SPLIT>.json"""
 import json, os, struct, numpy as np
 from multiprocessing import Pool
-D = "/tmp/wnr3-data"; W = "/tmp/wnr3-research/check-model"; WI = "/tmp/wnr3-research/model"
+D = "<TMP>/wnr3-data"; W = "<TMP>/wnr3-research/check-model"; WI = "<TMP>/wnr3-research/model"
 RAW = 18800640; NC = 567; P = 14; M = 1 << P
 SPLIT = os.environ.get("SPLIT", "A")
 PREP = json.load(open(W + "/prep.json")); EXTRA = json.load(open(W + "/prep_extra.json"))

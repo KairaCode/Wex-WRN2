@@ -1,5 +1,5 @@
 WEX level A (mode 0, host slab) for stock colibri: JustVugg/colibri 561966ec, files c/deepseek_v4.c and
-c/Makefile.deepseek-v4. Hooks A1-A11 of docs/COLIBRI-INTEGRATION.md section 5.1, taken from KAIRA 88ddb07, with
+c/Makefile.deepseek-v4. Hooks A1-A11 of docs/COLIBRI-INTEGRATION.md section 5.1, taken from the maintainer's engine tree of 2026-11-07, with
 three upstream adaptations: the WEX fields other than wex_entries exist only on Windows; v4_read_expert_record
 derives layer/expert from the record pointer (upstream V4ExpertRecord has no layer/expert fields); a GGUF record
 never matches a container.

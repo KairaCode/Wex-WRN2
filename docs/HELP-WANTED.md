@@ -27,9 +27,9 @@ measured; it is not known to fail.
   six runs of the default command in two sets while other jobs kept its CPU busy (58% to 100% total
   CPU, median, in the 30 s before each run and in the `disk` section, which reads with one thread).
   Its results go to a "Benchmark results" issue, not into this repository.
-- **Still open:** everything under "Most wanted"; `h2d` on Windows (it needs the CUDA toolkit, which
-  that machine does not have; `nvcc` there also needs `cl.exe` of Visual Studio on `PATH`, which is
-  installed there but was not tried with `nvcc`); a run of that machine with nothing
+- **Still open:** everything under "Most wanted"; `h2d` on Windows (not run yet; that machine has had
+  CUDA 13.5 and MSVC since 2026-11-16, [research/cuda-real-20261116](../research/cuda-real-20261116/README.md));
+  a run of that machine with nothing
   else running, on its SATA drives, and with `--file` on a model file (a cold read of real weights);
   `bench.py` on macOS (not tried).
 - **Done when:** the issue has the JSON and a note on the run conditions.
@@ -279,8 +279,9 @@ measured; it is not known to fail.
 - **The older research scripts and the engine test, with another compiler:**
   `wex4/research/fast-cpu-decode/verify/run.sh`, `wex4/research/mxfp4-contexts/run_all.sh`, the two
   scripts of `wex4/research/wnr4-record/` and `integration/build/build_test_wex_planned.sh`. Today
-  (2026-11-16): the five scripts read `CC` and `WEX_OPENMP` as `scripts/build_cpu_check.sh` does and pass
-  their x86 flags on x86-64 only (`WEX4_MARCH` overrides); `verify/run.sh` ran to its end on 8 real
+  (2026-11-16): the five scripts read `CC` (and `WEX_OPENMP` where they use OpenMP: all but `run_all.sh`)
+  as `scripts/build_cpu_check.sh` does; the three with an x86 flag (`verify/run.sh`, `run_all.sh`,
+  `build_test_wex_planned.sh`) pass it on x86-64 only, and `WEX4_MARCH` overrides it; `verify/run.sh` ran to its end on 8 real
   WNR3-CZ records of DeepSeek V4.1 Flash with MSYS2 gcc 16.2 and clang 23.1.5 on Windows 10 and with gcc
   15.2 under WSL2 (0 mismatches); `build_test_wex_planned.sh` built with gcc on Windows and its test
   passed on the synthetic fixture and on 2 real experts. The same day `run_all.sh`, `wnr4-record/run.sh`
@@ -336,16 +337,15 @@ measured; it is not known to fail.
   file, come out byte for byte, WNR3 records included, and the trainer gives the two WNM2 models of
   those files byte for byte. The digest matched the reference's on its first reading.
 - **Still open for the writer:**
-  - the sentence of section 5 lists fewer choices than a writer has to fix (version and feature
-    words, the expert grid, the blobs, the reserved header area), section 7 does not give the
-    converters' `chunk_log2`, and WNR2-REFERENCE section 7 calls the CDF of an empty context
-    "near-uniform" where the files show it uniform: notes E1 to E6 and E8 of
-    [SPEC-NOTES.md](../impl/go-wex4/SPEC-NOTES.md), each wanting a sentence of the specification;
+  - notes E2 and E4 of [SPEC-NOTES.md](../impl/go-wex4/SPEC-NOTES.md), and the scale tables of
+    E8, still want a sentence of the specification (E1, E3 and the weight tables of E8 were
+    answered by the WEX4-SPEC revisions of 2026-11-15 and 2026-11-21 and by WNR3-SPEC section 5;
+    E5 and E6 are settled by the files only);
   - a writer in another language, written the same way; a second one would show whether the notes
     of part E are enough;
   - the same tensors through the Go writer and through `wex4/wex4_convert.py pack`, compared byte
     for byte: it needs a safetensors reader in the Go writer and the converter's grouping rule
-    (WEX4-SPEC section 14 gives it in two sentences), and was not tried. One part of it was: on
+    (WEX4-SPEC section 14 gives it in full since 2026-11-15), and was not tried. One part of it was: on
     `testdata/planes.wex4`, which `pack` wrote, the Go writer's default codec and parameters give
     the file byte for byte (the grouping and the metadata were taken from the file);
   - a real model: the writer was run on files of 843,776 B at most and on synthetic experts of
@@ -590,7 +590,8 @@ measured; it is not known to fail.
     fetch them, about 320 MB, and need no model); the GPU decoders against GPU codecs (nvCOMP, GDeflate);
     per-tensor compression (scales and weights apart); zstd with a trained dictionary or long-distance
     matching; byte-shuffle filters (Blosc2) and OpenZL.
-- **Ideas for a next codec:** see [NEXT-FORMAT-SPEC](NEXT-FORMAT-SPEC.md) and the research reports in
+- **Ideas for a next codec:** see [WEX4-SPEC section 12](WEX4-SPEC.md#12-compression-what-was-measured-what-is-adopted)
+  and [section 16](WEX4-SPEC.md#16-open-questions) and the research reports in
   [docs/reports](reports/). Any proposal has to stay lossless (bit-identical weights).
 
 ## Roadmap: what is still open on the maintainer's side
@@ -600,8 +601,9 @@ listed above as well.
 
 - **Integration into colibri.** The format and its readers are being upstreamed into
   [colibri](https://github.com/JustVugg/colibri) `dev` as a series of small pull requests: Qwen3.8 MXFP4
-  experts first (#2822-#2825 are open), then the WEX4 container, the WNR3 codec and its GPU decode, and
-  the I/O switches. Reviewing or testing those PRs on your hardware helps directly.
+  experts (#2822-#2825, merged on 2026-11-15 and 2026-11-16); the WEX4 container with its reader, the WNR3 codec on CPU and CUDA,
+  engine hooks and bench are in #2920 (under review: its review fixes were ported here on 2026-11-20,
+  [CHANGELOG.md](../CHANGELOG.md)); then the I/O switches. Reviewing or testing those PRs on your hardware helps directly.
 - **WNR3 decode on Vulkan:** the design note and a prototype are in, checked on a CPU Vulkan device and on
   one GPU (an RTX 3070). On that GPU, on 2026-11-16, the shader of today gave the reference's bytes on all
   7,680 records of the published DeepSeek V4.1 container, and decoded its records in 1.06 ms of device

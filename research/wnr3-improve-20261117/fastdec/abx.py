@@ -6,7 +6,7 @@ run's median ms/record is taken). Prints per row: median, min, max over rounds, 
 per-round ratio to the first row, plus how many rounds the row beat the first row."""
 import subprocess, sys, statistics, os, re
 
-MODEL = os.environ.get("MODEL", "/tmp/wnr3-data/recs/model.bin")
+MODEL = os.environ.get("MODEL", "<TMP>/wnr3-data/recs/model.bin")
 rounds, threads, passes = int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3])
 args = sys.argv[4:]
 sep = args.index("--")

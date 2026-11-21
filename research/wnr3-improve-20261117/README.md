@@ -23,7 +23,7 @@ Build WNR4 only on the WNX skeleton (MAGT, Bw = 2048, Bs = 512), and only after 
 matches today's 0.37 ms/record on the RTX 3070. If it does not, the fallback is profile C (-0.215%) or no WNR4.
 
 All numbers below were measured on this machine, CPU only: a shared 4-vCPU Xeon (Sapphire/Emerald Rapids
-class, 2.1 GHz, AVX2 + AVX-512), on the 121 sample records of `/tmp/wnr3-data` (plus 37 fetched
+class, 2.1 GHz, AVX2 + AVX-512), on the 121 sample records of `<TMP>/wnr3-data` (plus 37 fetched
 anchor-shifted records where stated). Where a skeptic's reproduction differs from a lane's number, the
 **skeptic's number is used** and the lane's is given in brackets.
 
@@ -310,7 +310,7 @@ and ship the decoder patch.
 
 Each subfolder holds the scripts and small raw results of one lane or check. Each has a `RERUN.md` with its
 rerun command; the lanes' own `RESULTS.md`/`README.md` and the checkers' `CHECK.md`/`NOTES.md` are included.
-`collect.py` re-creates this layout from `/tmp/wnr3-research`. Generated data (coded slabs, encoded records,
+`collect.py` re-creates this layout from `<TMP>/wnr3-research`. Generated data (coded slabs, encoded records,
 table sets, fetched headers/records) is excluded and is rebuilt by the first steps of each rerun.
 
 | folder | backs | key raw files |

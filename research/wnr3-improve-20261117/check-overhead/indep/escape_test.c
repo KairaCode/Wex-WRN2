@@ -10,8 +10,8 @@ int main(int argc, char **argv) {
     int i, fails = 0;
     for (i = 0; i < 16; i++) { flat16[i * 2] = (unsigned char)(i * 1024); flat16[i * 2 + 1] = (unsigned char)((i * 1024) >> 8); }
     flat16[32] = 0; flat16[33] = 0x40;
-    open_recs("/tmp/wnr3-data/recs", &K); load_train("..", &tblob, &tmodel, &st);
-    if (load_expert(&K, "/tmp/wnr3-data/recs", argc > 1 ? argv[1] : "10:153", &X)) return 1;
+    open_recs("<TMP>/wnr3-data/recs", &K); load_train("..", &tblob, &tmodel, &st);
+    if (load_expert(&K, "<TMP>/wnr3-data/recs", argc > 1 ? argv[1] : "10:153", &X)) return 1;
     /* inject escapes: values far outside anchor-7..anchor+7, at stream/block boundaries and inside */
     X.sc[0][0] = (unsigned char)(X.anchor[0] + 8); X.sc[0][5] = (unsigned char)(X.anchor[0] + 40); X.sc[0][511] = 0; X.sc[0][512] = 255;
     X.sc[1][63] = (unsigned char)(X.anchor[1] - 8); X.sc[2][X.L.scale_count[2] - 1] = 1;

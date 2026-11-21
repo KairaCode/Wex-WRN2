@@ -56,8 +56,9 @@ Summary of 2026-11-13; the page of record for what runs is [STATUS.md](../STATUS
 | [README.md](README.md) | EN | index | current | Which page do I need? |
 | [GLOSSARY.md](GLOSSARY.md) | EN | reference | current | What does this word mean, and which file defines it? |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | EN | overview | current | How do the pieces fit together, where does a record go from the checkpoint to the GPU, and what is not in this repository? |
-| [BENCHMARKS.md](BENCHMARKS.md) | EN | measurements | current: every table, newest rows of 2026-11-15 | What was measured, under which conditions, how many runs stand behind it, and where is the raw output? |
+| [BENCHMARKS.md](BENCHMARKS.md) | EN | measurements | current: every table, newest rows of 2026-11-16 | What was measured, under which conditions, how many runs stand behind it, and where is the raw output? |
 | [COLIBRI-INTEGRATION.md](COLIBRI-INTEGRATION.md) | EN | guide | current: WEX4 with RAW or WNR3 records | What do I copy and build, how do I make, verify and pin a container, which variables does the engine read, and what does an error line mean? |
+| [HELP-WANTED.md](HELP-WANTED.md) | EN | task list | current | What can an outside contributor pick up, and how is each task known to be done? |
 | [WEX4-SPEC.md](WEX4-SPEC.md) | EN | spec | current: format version 4.0, in production | What are the bytes of a WEX4 file, how is it validated and hashed, and how is a WEX1 or WNR3 container upgraded in place? |
 | [WNR3-SPEC.md](WNR3-SPEC.md) | EN | spec | current: FINAL v1, in production. Sections 0 to 8 with the errata at the top are the format; sections 9 to 11 are the implementation plan, historical | What are the bytes of a WNR3 record, and how are ceil-form, rule g, canonical zero and the stream hash encoded and checked? |
 | [WNR3-VULKAN.md](WNR3-VULKAN.md) | EN | design note | current: a design with a prototype checked on a CPU Vulkan device and on one GPU (an RTX 3070), with speed numbers on synthetic and on real records there; on that GPU every record of the published V4.1 container gave the reference's bytes; no engine hook | How does the WNR3 decode map to a Vulkan compute shader (streams and workgroups, buffers, model tables, batching), what was verified, and what is open? |
@@ -92,10 +93,10 @@ Each is a summary of the root [README](../README.md), about the size of its Ital
 
 | File | Lang. | Kind | State | Question it answers |
 |---|---|---|---|---|
-| [README.es.md](i18n/README.es.md) | ES | translation | follows the README of 2026-11-15 | What is WEX, what runs today, how do I try it, and where do I start? |
-| [README.fr.md](i18n/README.fr.md) | FR | translation | follows the README of 2026-11-15 | the same |
-| [README.de.md](i18n/README.de.md) | DE | translation | follows the README of 2026-11-15 | the same |
-| [README.zh-CN.md](i18n/README.zh-CN.md) | ZH | translation | follows the README of 2026-11-15 | the same |
+| [README.es.md](i18n/README.es.md) | ES | translation | follows the README of 2026-11-21 | What is WEX, what runs today, how do I try it, and where do I start? |
+| [README.fr.md](i18n/README.fr.md) | FR | translation | follows the README of 2026-11-21 | the same |
+| [README.de.md](i18n/README.de.md) | DE | translation | follows the README of 2026-11-21 | the same |
+| [README.zh-CN.md](i18n/README.zh-CN.md) | ZH | translation | follows the README of 2026-11-21 | the same |
 
 ## Outside `docs/`
 

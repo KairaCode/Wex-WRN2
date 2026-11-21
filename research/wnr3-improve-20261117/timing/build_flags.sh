@@ -3,10 +3,10 @@
 #   *_h5:  -O3 -march=haswell -mavx512f -mavx512bw -mavx512vl -mavx512dq -mavx512cd -mavx512vbmi2 (haswell tuning + AVX-512)
 #   *_nat: -O3 -march=native (this Xeon: sapphirerapids-class tuning)
 set -e
-cd /tmp/wnr3-research/timing
-C="-I/workspace/Wex-WRN2/c -I/tmp/wnr3-research/fastfmt"
+cd '<TMP>'/wnr3-research/timing
+C="-I/workspace/Wex-WRN2/c -I<TMP>/wnr3-research/fastfmt"
 ORIG="-I/workspace/Wex-WRN2/wex4/research/fast-cpu-decode"
-NEW="-I/tmp/wnr3-research/fastdec"
+NEW="-I<TMP>/wnr3-research/fastdec"
 H5="-O3 -march=haswell -mavx512f -mavx512bw -mavx512vl -mavx512dq -mavx512cd -mavx512vbmi2 -fopenmp"
 NAT="-O3 -march=native -fopenmp"
 gcc $H5 $NEW $C tdrv.c -o bin/new_h5

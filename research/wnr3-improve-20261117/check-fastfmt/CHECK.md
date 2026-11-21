@@ -1,6 +1,6 @@
 # Check of the fastfmt (decode-speed format) lane
 
-Everything here was rerun in /tmp/wnr3-research/check-fastfmt. The lane's sources were copied unchanged, except that bench.c's two hard-coded paths now point to this directory.
+Everything here was rerun in \<TMP>/wnr3-research/check-fastfmt. The lane's sources were copied unchanged, except that bench.c's two hard-coded paths now point to this directory.
 
 - prep.py: all 121 records decoded with the production reference. The Z/E files are byte-identical to the lane's data/.
 - ff train: out_train.counts is byte-identical. ff eval: logs/eval_test.txt is identical.

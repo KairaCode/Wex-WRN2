@@ -11,7 +11,7 @@ How the pieces of this repository fit together: which file reads or writes what,
 | CUDA helper | `c/wex_cuda.cuh`, `c/tools/wex_cuda_bridge.cu` -> `kaira_wex_cuda.dll` | GPU decoders. Feature bits: 1 decode into VRAM, 2 host register, 4 WNR2, 8 batched decode into VRAM, 16 WNR3, 32 batched decode into host memory |
 | Vulkan decoder (prototype, in no engine) | `wex4/research/vulkan-decode/wnr3.comp`, `wnr3_vk.c`; design in [WNR3-VULKAN.md](WNR3-VULKAN.md) | the WNR3 decode as a Vulkan compute shader, compared with the CPU reference on a CPU Vulkan device and on one GPU (an NVIDIA RTX 3070). Records made from real experts were decoded there by the prototype of before its driver fix ([research/real-experts-20261115](../research/real-experts-20261115/README.md)), and by the shader of today every record of the published V4.1 container ([research/vulkan-real-20261116](../research/vulkan-real-20261116/README.md)) |
 | WEX4 reader | `c/wex4.h` | header-only C: header page and index validation (WEX4-SPEC section 6), SHA-256 (with a SHA-NI path), the WBP1 codec, record decode through `wex_format.h` |
-| WEX4 checker | `c/tools/wex4_verify.c` | hashes every blob and record of a WEX4 file against its index, on 8 threads by default, and prints `COLI_WEX_ROOT=<root>`; exit 0 pass, 1 mismatch, 2 not WEX4. It does not decode |
+| WEX4 checker | `c/tools/wex4_verify.c` | hashes every blob and record of a WEX4 file against its index, on 8 threads by default, and prints `COLI_WEX_ROOT=<root>`; exit 0 pass, 1 mismatch, 2 not WEX4, 3 out of memory. It does not decode |
 | Qwen3.8 store | `c/qwen38_wex.h` | the qwen38 engine's reader of WEX1, WNR3 and WEX4 files; included by the engine's `qwen38_core.h`. Its header comment lists its environment variables |
 | Standalone store | `c/expert_store_wex.c`, `c/expert_store_wex.h` | an expert store for WEX1-WEX3 behind colibri's `COLI_EXPERT_STORE` interface; it does not read WEX4 |
 | Writers | `c/tools/repack_v4_wex.py` (DeepSeek V4 / V4.1), `c/tools/repack_q38_mxfp4_wex.py` (Qwen3.8 MXFP4), with `c/tools/wex_neural_rans.py` and `c/tools/wex_palette.py` for codecs 1-3 | safetensors -> WEX1 (or WEX2 / WEX3 with codecs 1-3) |
@@ -30,7 +30,8 @@ safetensors checkpoint
    |  c/tools/repack_q38_mxfp4_wex.py  (Qwen3.8 MXFP4)
    v
 WEX1 file ---------------------------------------------------------------+
-   |  c/tools/build_nr3.py DLL WEX1 container OUT.wex --cz                  |
+   |  c/tools/build_nr3.py DLL WEX1 container OUT.wex                       |
+   |    --layers all --train-lab80 --cz                                     |
    |  (WNM2 model trained on chosen experts, every record CPU-checked)      |
    v                                                                        |
 WEX3 file with WNR3 records (codec 5) and the WNM2 model                    |
@@ -53,7 +54,8 @@ This is the DeepSeek engine's path, as implemented in the engine's `deepseek_v4.
 
 ```text
 open      header page -> index (SHA-256 checked) -> root compared with COLI_WEX_ROOT when it is pinned
-          mirrors: the same file name in each COLI_WEX_EXTRA_MIRRORS folder; equal header pages = same container
+          mirrors: the same file name in each COLI_MODEL_MIRROR and COLI_WEX_EXTRA_MIRRORS folder,
+          up to three; equal header pages = same container
              |
 prewarm   at start, the VRAM tier is filled with the most used experts: one record at a time,
           COLI_V4_TIER_PREWARM_AHEAD records ahead, or batches of 8 (V4_PREWARM_BATCH=1)
@@ -118,7 +120,7 @@ The 37 files under `c/` are this repository's engine-side code. The maintainer's
 | `tools/repack_q38_mxfp4_wex.py` | with numpy and a Qwen3.8 MXFP4 checkpoint | no | no |
 | `wex_cuda.cuh`, `tools/wex_cuda_bridge.cu` | `integration/build/build_wex_windows.cmd` (MSVC and the CUDA toolkit); also as host C++ without the toolkit, through an emulation of the CUDA constructs, in `wex4/fuzz/fuzz_wnr3_cuda.cpp` (the WNR3 path only), and the kernels as PTX from clang without the toolkit (`wex4/fuzz/run.sh --gpu`, an NVIDIA driver) | no | to run on a GPU; the emulation needs none |
 | `tests/test_wex_nr3_gpu.cu`, `tools/bench_wex_cuda.cu` | with nvcc, by hand | no | yes |
-| `tools/bench_wex_decode.c` | Windows only, by hand (`windows.h`); takes two container files | no | no |
+| `tools/bench_wex_decode.c` | Windows only, by hand (`windows.h`); takes two container files; records of codecs 0 to 3 only (raw, scale tiles, palette3, WNR1): WNR2 and WNR3 records need their model, which it does not load | no | no |
 | `tools/wexio_probe.py` | Windows only: `--self-test` reads a synthetic temp file; its default inputs are the lab's container paths on U: and C: | no | no |
 
 `scripts/check_all.sh` runs everything in the "yes" rows. `wex4/fuzz/run.sh --replay` (CI runs it after the checks) and the Fuzz workflow run `expert_store_wex.c`, `qwen38_wex.h` and `wex_decode.c` through the stand-in headers of `wex4/fuzz/engine/`, and `wex_cuda.cuh` with `tools/wex_cuda_bridge.cu` through the CUDA emulation of `wex4/fuzz/cuda_host.h` and `WEX_FUZZ_COLIBRI=fetch` builds the two engine harnesses against colibri's own headers (for `qwen38_wex.h` only colibri's `compat.h` and `st.h`) ([wex4/fuzz/README.md](../wex4/fuzz/README.md)); the test of `qwen38_wex.h` and the rest are exercised in the maintainer's engine tree.

@@ -5,7 +5,7 @@ Also: is the variant / split choice reproducible when chosen on TRAIN only (2-fo
 import os, sys, json, struct
 import numpy as np
 from multiprocessing import Pool
-D = "/tmp/wnr3-data"; H = os.path.dirname(os.path.abspath(__file__)); RAW = 18800640
+D = "<TMP>/wnr3-data"; H = os.path.dirname(os.path.abspath(__file__)); RAW = 18800640
 ENTRY = struct.Struct('<QIII6H6H3I3II')
 TABLE = open(D + "/recs/entries.bin", "rb").read()
 blob = np.fromfile(D + "/recs/model.bin", np.uint8)

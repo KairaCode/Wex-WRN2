@@ -1,10 +1,10 @@
 # floor (lane) — rerun
 
-Copied from /tmp/wnr3-research/floor: scripts and the small raw outputs in `out/`. Not copied: `out/coded/`
+Copied from \<TMP>/wnr3-research/floor: scripts and the small raw outputs in `out/`. Not copied: `out/coded/`
 (2.2 GB of coded slabs, rebuilt by `extract.py`), `out/tables/` (rebuilt by `static_sib.py`), `out/adj/` (2 records
 fetched by `adjacent.py`), binaries.
 
-Needs /tmp/wnr3-data and /workspace/Wex-WRN2. Run from a writable copy of this folder. `run_cm.py` and the
+Needs \<TMP>/wnr3-data and /workspace/Wex-WRN2. Run from a writable copy of this folder. `run_cm.py` and the
 `run_rt*.py` scripts append to their output: delete `out/*.jsonl` before a clean rerun. About 2 h on 2 threads.
 
     python3 extract.py 2

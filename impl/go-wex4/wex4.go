@@ -41,8 +41,8 @@ const (
 	wnm2Bytes    = 59408
 )
 
-// The reject classes. The names are the ones the manifest of wex4/vectors uses for the C reader; the
-// specification does not define them (SPEC-NOTES.md, note 1).
+// The reject classes. The names are the ones the manifest of wex4/vectors uses for the C reader
+// (WEX4-SPEC section 17: the class is informative; SPEC-NOTES.md, B7).
 const (
 	EMagic   = "WEX4_E_MAGIC"
 	EHash    = "WEX4_E_HASH"
@@ -164,6 +164,9 @@ func ParseHeader(page []byte, realSize uint64) (*Header, *Error) {
 	}
 	if h.MaxDecoded > capDecoded {
 		return nil, fail(EHeader, "max_decoded %d is above 2^30", h.MaxDecoded)
+	}
+	if h.Records == 0 && (h.MaxDecoded != 0 || h.TotalDecoded != 0) {
+		return nil, fail(EHeader, "max_decoded %d and total_decoded %d without records", h.MaxDecoded, h.TotalDecoded)
 	}
 	// the counts and sizes are capped, so the sum is below 2^34
 	sum := blobEntry*uint64(h.Blobs) + recordEntry*uint64(h.Records) + (tensorEntry+4)*uint64(h.Tensors) +

@@ -2,7 +2,7 @@
 # Byte equality on all 121 records (1 and 4 threads) for every timed variant, final binaries.
 # WNX: all 121 records re-encoded here (TRAIN records in-sample; only for equality), TEST re-encodes compared
 # byte for byte with the fastfmt lane's out/ files, then the local copies are deleted (disk).
-cd /tmp/wnr3-research/timing
+cd '<TMP>'/wnr3-research/timing
 : > logs/eq_summary.txt
 ./eq.sh orig_a2 ref eq_ref.txt >> logs/eq_summary.txt &
 ./eq.sh orig_a2 w3:1,4,1 eq_orig_a2_k1x4.txt >> logs/eq_summary.txt

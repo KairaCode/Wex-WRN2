@@ -5,7 +5,7 @@ prepare(cz=1) -> coded slab, check flags/anchors vs the record header, re-encode
 counts/<LL_EEE>.npz, prep.json (baseline sizes)."""
 import ctypes, struct, os, sys, glob, hashlib, json, numpy as np
 from multiprocessing import Pool
-D = "/tmp/wnr3-data"; W = "/tmp/wnr3-research/model"
+D = "<TMP>/wnr3-data"; W = "<TMP>/wnr3-research/model"
 RAW = 18800640
 os.makedirs(W + "/coded", exist_ok=True); os.makedirs(W + "/counts", exist_ok=True)
 model = open(D + "/recs/model.bin", "rb").read(); table = open(D + "/recs/entries.bin", "rb").read()

@@ -1,7 +1,7 @@
 # check-overhead (skeptic) — rerun
 
 Own files only. Copy ../overhead/* into a working directory first. `run_main.sh` has its directory hard-coded
-(/tmp/wnr3-research/check-overhead): edit the `cd` line.
+(\<TMP>/wnr3-research/check-overhead): edit the `cd` line.
 
     bash run_main.sh                                   # train (cmp with lane's tables) + run on 41 TEST records
     python3 indep/est.py                               # own estimate from stored records: lenc, sd, profile C (0.217%), tail5
