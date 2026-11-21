@@ -66,6 +66,25 @@ Largest record (G = 128): Qwen3.8 MX 2,338,816 B, NV 2,580,480 B, V4.1 16,728,06
 
 How the gain splits (Qwen3.8 MX, 64-256 record checks, same model): new skeleton at G = 128 without the tail trick -0.43 points; tail in the state -0.07; last-4 position bucket -0.07 (pb 1 -> 5 on 2048 records: 0.87589 -> 0.87526). NVFP4: delta-from-above scale context -0.18, position bucket -0.09, skeleton and tail the rest. Container-level option not taken: 512-byte instead of 4096-byte record alignment would save another ~0.07 points on Qwen3.8's 2.3 MB records (~0.01 on V4.1).
 
+### 4b. Other MoE models (64-expert samples)
+
+The samples of the WNR3 study of 2026-11-21 (8 layers x 8 experts per model, fetched by HTTP range from the published checkpoints; Qwen3.8 from the local containers), coded with the same method as that study: models trained on the sample itself in 2 folds (each fold coded with the model of the other), byte-exact and canonical zero, every record decoded back and compared (0 failures), ratio = stored / raw padded to 4096 B. WNR3 numbers: that study's cross-validated results on the same experts (WNR3 at 2048:512 for MXFP4, WNR3-NV at 8192:2048 for NVFP4). Script: `research/wnr4-20261121/other_models.py`; results in `results/other/`.
+
+| model (64-expert sample, 2-fold CV) | record | WNR3 byte-exact | WNR4 G128 | WNR4 G32 | WNR3 CZ | WNR4 CZ G128 | WNR4 CZ G32 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Qwen3.8-Flash-Next MXFP4 (AMD Quark PTQ) | 2.61 MB | 0.8802 | 0.8747 | 0.8766 | 0.8802 | 0.8747 | 0.8766 |
+| Ling-3.0-flash MXFP4 | 3.13 MB | 0.8942 | 0.8890 | 0.8911 | 0.8689 | 0.8637 | 0.8659 |
+| AliceAI-80B-A3B PTQ MXFP4 | 1.67 MB | 0.9102 | 0.9052 | 0.9069 | 0.9102 | 0.9052 | 0.9069 |
+| Qwen3.8-Flash-Next NVFP4 | 2.76 MB | 0.9282 | 0.9250 | 0.9273 | 0.9104 | 0.9073 | 0.9095 |
+| Qwen3.8-Flash-Next FP4-Local (QAD) NVFP4 | 2.76 MB | 0.9327 | 0.9285 | 0.9309 | 0.9170 | 0.9128 | 0.9152 |
+| AliceAI-80B-A3B PTQ NVFP4 | 1.77 MB | 0.9285 | 0.9282 | 0.9301 | 0.9134 | 0.9134 | 0.9152 |
+| Edge0-120B NVFP4 | 1.38 MB | 0.9179 | 0.9137 | 0.9157 | 0.9179 | 0.9137 | 0.9157 |
+| Edge0-145B NVFP4 | 1.94 MB | 0.9336 | 0.9291 | 0.9316 | 0.9183 | 0.9139 | 0.9163 |
+
+- WNR4 at G = 128 is smaller on all eight (by 0.4-0.55 points of raw), except AliceAI NVFP4, where it ties (-0.03 byte-exact, 0.00 CZ): small 1.77 MB records, where WNR3-NV's long 8192-nibble streams already have little framing and WNR4's tile states plus the 4096-byte padding weigh more. G = 32 is still smaller than WNR3 on the MXFP4 models and about equal on NVFP4.
+- These models are trained on 32 experts per fold; WNR4's bigger tables (position buckets, the 4,160 NVFP4 scale contexts) are the more undertrained of the two, so a model counted on a full container should widen the gap a little (on Qwen3.8 MX the 2048-record run gives the same -0.56 points as this sample).
+- QAT/QAD weights (FP4-Local) and NVFP4 in general leave less to gain for any context model; the ratio difference between codecs is small next to the difference between formats.
+
 ## 5. Decode speed
 
 RTX 5090 (170 SMs), CUDA 13.4, sm_120. Records resident in VRAM unless noted; "kernel only" = CUDA events around the one launch of the batch, median of 5; decoded GB/s = slab bytes / time. Every bench run first decodes every record of its pack on the GPU and compares it with the expected bytes (all identical), and flips one payload bit per record (all refused). Final configuration: word window, symbol start/end by two row loads ("LD"), block size chosen from the batch's tile count (4, 8 or 16 warps), NVFP4 rows through L1 at 16 warps. Logs: `research/wnr4-20261121/results/bench8-*.log` (round of 2026-11-21 04:29, the G sweep) and `bench9-*.log` (05:21, after the review fixes, WNR3 measured in the same run); the earlier rounds are `bench3-*` and `bench6-*`. Between rounds the same binary moved by up to ~30% (WNR3's kernels: 90 GB/s in bench6, 62 in bench8, 91 in bench9; their per-record launches make them sensitive to host load), so compare numbers within one log.

@@ -1,0 +1,26 @@
+{
+ "model": "yandex/AliceAI-Foundation-80B-A3B-Base",
+ "format": "nvfp4",
+ "experts": 64,
+ "raw_bytes": 1769472,
+ "folds": 2,
+ "pb": 5,
+ "configs": {
+  "byte-exact G=32": {
+   "ratio": 0.9300853587962963,
+   "fails": 0
+  },
+  "byte-exact G=128": {
+   "ratio": 0.9282407407407407,
+   "fails": 0
+  },
+  "CZ G=32": {
+   "ratio": 0.9152199074074074,
+   "fails": 0
+  },
+  "CZ G=128": {
+   "ratio": 0.9134476273148148,
+   "fails": 0
+  }
+ }
+}
