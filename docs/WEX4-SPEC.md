@@ -104,7 +104,7 @@ Readers do not care which one they get: they read the header page, then the inde
 | 4 | 2 | version_major | 4 |
 | 6 | 2 | version_minor | 0; readers accept any value (section 10) |
 | 8 | 8 | required_features | bit 0 VALUE_EXACT: the file may hold value-exact records (set by a canonical-zero build even if every record fell back to raw); a reader refuses the file if any bit it does not know is set |
-| 16 | 8 | optional_features | bit 0 ST_SOURCES (the metadata holds safetensors sources, section 14); unknown bits are ignored |
+| 16 | 8 | optional_features | bit 0 ST_SOURCES (the metadata holds safetensors sources, section 14), bit 1 GGUF_SOURCES (GGUF sources, section 14.1); unknown bits are ignored |
 | 24 | 8 | file_bytes | exact size of the file, a multiple of 4096 |
 | 32 | 8 | index_offset | multiple of 4096, >= 4096 |
 | 40 | 8 | index_bytes | exact (unpadded) size of the index, <= 2^28 |
@@ -144,7 +144,7 @@ The index encoding is **canonical**: once the writer has fixed the layout, the g
 
 | off | size | field | rule |
 |---|---|---|---|
-| 0 | 4 | kind | 1 = WNM2 model (must be 59,408 bytes, id != 0). Other kinds are opaque to readers. Used by the upgrade: 16 = old WEX header page, 17 = old WEX entry table, 18 = other old bytes |
+| 0 | 4 | kind | 1 = WNM2 model (must be 59,408 bytes, id != 0). Other kinds are opaque to readers. Used by the upgrade: 16 = old WEX header page, 17 = old WEX entry table, 18 = other old bytes; used by the GGUF converter: 32 = a GGUF part's bytes before its tensor data (section 14.1) |
 | 4 | 4 | id | kind 1: the model's FNV-1a id (checked when the blob is loaded). Other kinds: any value, not read by readers (the upgrade writes 0) |
 | 8 | 8 | offset | start of the extent: a multiple of 4096, as every extent (section 3). Readers check it through the tiling rule, which no other offset can pass |
 | 16 | 8 | bytes | 1 .. 2^30; the extent is `align(bytes)`, zero-padded |
@@ -535,6 +535,20 @@ A pack written from this section and sections 4 and 5, with the reference WBP1 e
 **Unpack** (`... unpack IN.wex4 OUT_DIR`) rebuilds each source file: 8-byte length, the verbatim header, then every tensor in its original offset order, and compares the SHA-256 with the recorded one. Tested byte-identical on synthetic files (all corner cases: empty tensor, scalar, sub-byte dtype, unpadded header, two files) and on the tiny V4.1 fixture (634 tensors, 5 dtypes) with RAW expert records. On the tiny fixture every non-CZ expert falls back to RAW, so the byte-exact round trip through non-CZ WNR3 records is tested on a second synthetic model with compressible experts (4 WNR3 records). Every naming profile is tested the same way on a synthetic fixture with its names (2 layers x 3 experts, RAW and WNR3 expert records); one of them, `qwen38`, also on one whole real checkpoint with RAW expert records (14 files back with their SHA-256, [research/converter-qwen35-20261116](../research/converter-qwen35-20261116/README.md)). Unpack re-parses the stored header strictly and requires every entry to match the container's tensor before writing; it refuses a source name that is not a plain file name (a path, `.` or `..`), a name given twice, and a name that would write over the container itself. A file that fails its SHA-256 is not left in place, except from a value-exact container, where a rebuilt file is expected to differ: it is kept and reported as `DIFFERS (value-exact container)`.
 
 **Value-exact containers.** With `--cz` the rebuilt file differs from the source exactly in the FP4 -0 nibbles (tested: every differing nibble is 0x8 in the source and 0x0 in the rebuilt file). Such a container cannot replace the safetensors as a byte-exact archive; a non-CZ container can.
+
+### 14.1 GGUF mapping
+
+**Pack** (`python -I wex4/gguf2wex4.py pack OUT.wex4 MODEL.gguf`, MODEL may be the first part of a split model). Every part's header is parsed with bounds checks (version 2 or 3, counts, key/value types, nested arrays, alignment a power of two, every tensor's ggml type known and inside the file, no overlap) before anything is used. Then:
+
+- each part's bytes before its tensor data (magic, metadata, tensor infos, the padding to the data, or the whole file for a split's metadata-only first part) are one blob of kind 32, verbatim, id = the part's index;
+- each routed expert (`blk.L.ffn_{gate,gate_up,up,down}_exps.weight`, 3 dims, ne[2] = experts) is ONE RAW record: its slices of those tensors in the order gate, gate_up, up, down, as tensors `NAME#E`. A layer's experts are consecutive records of one stored size, so expert E of a layer is at `first + E * stride`: one aligned read. These records are not EXPERT-flagged (5.5 is the MXFP4 slab) and the header's expert grid is 0 x 0; a reader finds a layer by the name of its expert 0;
+- every other tensor is a RAW record of its own, split into parts above 64 MiB, under its GGUF name;
+- dtype: F32, F16, BF16, I8, I16, I32, I64, F64 as their codes, any other ggml type t as the opaque code 128 + t; shape is ne reversed (outermost first), without the expert axis for a slice;
+- metadata `{"wex4_meta":1,"gguf_sources":[{"name","bytes","sha256","blob","data","alignment"}]}`, optional bit 1 set.
+
+A part whose bytes between or after its tensors are not zero is refused (unpack could not rebuild them).
+
+**Unpack** (`... unpack IN.wex4 OUT_DIR`, or `--check` to hash without writing) rebuilds each part: the header blob, then each tensor at its offset with zero bytes between, zero bytes to the recorded size, and compares the SHA-256 with the recorded one. Tests: `wex4/test_gguf2wex4.py` (single file, split model with a metadata-only part, experts across parts, merged gate_up, another alignment, refusals). The engine side (the qwen36 engine's `Q36_WEX4=<file>`) reads a layer's experts with the packed read of the colibri GGUF container after checking that every part's header equals its blob.
 
 ---
 
