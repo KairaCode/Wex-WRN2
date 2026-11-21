@@ -644,6 +644,7 @@ static int wex_cuda_batch(int n,const WexEntry *const *entries,const unsigned ch
         for(int r=0;r<used;r++) if(status[round[r]]==-2) status[round[r]]=copied ? 0 : 1;
         synced=copied;
     }
+    if(broken_at<n) drain(lanes);   /* the lane whose queue() failed may still hold copies and kernels */
     finish(1);   /* not queued: a CUDA failure stopped the call first */
     return failures();
 }
