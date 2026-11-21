@@ -7,7 +7,54 @@
 
 # WEX
 
-WEX is a family of expert-container formats for streamed Mixture-of-Experts inference: one file of 4096-aligned records, one per routed expert, that the engine reads from NVMe while it generates.
+WEX is a file format for keeping the "expert" blocks of large Mixture-of-Experts AI models on an SSD, so that a program can load each block with one fast read. **WEX is lossless: a program reads back exactly the weights that were stored. It does not quantize, round or prune anything.**
+
+## In plain words
+
+A Mixture-of-Experts model is split into hundreds of small blocks of weights called *experts*, and only a few of them work on each word. When the model is too big for the computer's memory, the program keeps some experts in memory and reads the others from the SSD the moment they are needed. A WEX file is where those experts are kept, laid out so that each one comes off the disk in a single read.
+
+**Think of a ZIP file.** When you zip a document and unzip it later, you get the same document back, every letter in place; the ZIP was only a smaller way to keep it. WEX works the same way for expert weights:
+
+- **WEX4** is the file layout: one slot per expert, and a fingerprint (SHA-256) of every slot. An uncompressed ("RAW") slot holds the expert's original bytes, unchanged.
+- **WNR3** is optional compression inside it, like ZIP: it makes a 4-bit expert 12-15% smaller (0.880 of its uncompressed size for Qwen3.8-Flash-Next, 0.854 for DeepSeek V4.1 REAP-192, over whole files), and unpacking gives back the same weights. In one optional mode, *canonical zero*, a zero written as "-0" comes back written as "+0": the same number, like writing 0 or -0 on paper (details below).
+
+**Where precision is lost: before WEX.** To *quantize* is to round numbers to fewer bits so that they take less space; the rounding cannot be undone. The published expert files hold 4-bit weights (MXFP4; int4 for one Sage-S2.1-Flash file). Turning a model's 16-bit or 8-bit weights into 4-bit numbers is a quantization, and it does lose some precision, but it happens before WEX: DeepSeek publishes the experts of DeepSeek V4.1 in MXFP4, and the Qwen3.8-Flash-Next experts used here were quantized by AMD with AMD-Quark. The DeepSeek V4.1 model used here is also pruned by a third party (REAP-192: 192 of the 384 experts of each layer kept), which is lossy too. The Sage-S2.1-Flash files published next to the WEX files were requantized by us from the official FP8 release; that step is lossy and its quality was not measured. WEX then stores those weights as they are.
+
+| Step | Lossy? | Done by |
+|---|---|---|
+| quantizing the weights to 4 bits | yes | before WEX: the model's publisher, a third party, or the person converting (we requantized Sage-S2.1-Flash ourselves for the published files) |
+| pruning experts (REAP), when used | yes | before WEX: a third party |
+| storing in a WEX4 file, RAW records | no: the same bytes | this repository |
+| WNR3 compression of an MXFP4 expert | no: the same bytes, or with canonical zero the same numbers (see below) | this repository |
+| WBP1 compression of a BF16, FP8, F32 or integer tensor | no: the same bytes | this repository |
+
+The published files are on Hugging Face, with a table of who made each lossy step: [Kaira666/Kaira-WEX4-Experts](https://huggingface.co/Kaira666/Kaira-WEX4-Experts).
+
+## Is this a quantization? No.
+
+- **Does WEX reduce the precision of the weights?** No. Quantization rounds every weight to a number with fewer bits, so the numbers change. WEX rounds nothing: unpack a stored expert and you have the weights that were put in.
+- **Then why is a WNR3 record smaller?** For the same reason a ZIP is smaller. In real weights some 4-bit values occur much more often than others; WNR3 gives the common ones short codes and the rare ones long codes. It uses a table that says how common each value usually is; if the table guesses wrong, the record only gets bigger, never different. Nothing is generated or predicted by an AI (the method is context-modelled rANS entropy coding, and the table is a count table, not a neural network). A record that would not get smaller is stored uncompressed ([WEX4-SPEC](docs/WEX4-SPEC.md) section 5.2).
+- **What does "value-exact, not byte-exact" mean?** In 4-bit floating point, zero can be written two ways, +0 and -0, and both are the same number. With *canonical zero*, WNR3 writes every -0 as +0, which saves space (0.8545 of raw instead of 0.8818 on 40 held-out DeepSeek V4.1 experts, [WNR3-VERIFY](docs/reports/WNR3-VERIFY.md)). Every weight unpacks to the same number; only the way some zeros are written differs from the source. On DeepSeek V4.1 the model's output scores were exactly the same as with a byte-exact file, on 7 prompts of 64 tokens ([WNR3-PRODUCTION](docs/reports/WNR3-PRODUCTION-20261110.md)). Without canonical zero, WNR3 is byte-exact.
+- **The codec table below has a row that says "lossy".** That row, palette3 (codec 2), is an old experiment, never used in production. No file uses it and it is not part of WEX4: WEX4 allows only codecs 0, 5 and 6, all lossless (5 with canonical zero is value-exact).
+- **What do the words mean?** *Lossless*: unpacking gives back exactly what was packed. *Byte-exact*: every byte is the same, and a byte-by-byte comparison finds zero differences. *Value-exact*: every weight unpacks to the same number; only the way zero is written may differ. *SHA-256 per record*: each stored expert has a fingerprint in the file's table of contents; if even one bit of the stored data changes, the fingerprint no longer matches, so a damaged file is caught (this proves the file is intact, not that unpacking is exact). *Root*: one fingerprint for the whole file. *Content digest*: one fingerprint of all the unpacked weights, the same for two files that unpack to the same weights, compressed or not.
+
+## Check it yourself
+
+Each command answers a different question:
+
+```sh
+sha256sum FILE.wex                           # is my download intact? compare with the SHA-256 the download page lists
+gcc -O2 -fopenmp c/tools/wex4_verify.c -o wex4_verify
+./wex4_verify FILE.wex                       # is every stored record undamaged? hashes, does not unpack; prints the root
+bash scripts/check_all.sh                    # builds the helper library wex4/out/wex4_tools.dll (named .dll on every system)
+python -I wex4/wex4.py verify FILE.wex --dll wex4/out/wex4_tools.dll                  # unpacks every record; prints the content digest
+python -I wex4/wex4_convert.py unpack IN.wex4 OUT_DIR --dll wex4/out/wex4_tools.dll   # a packed checkpoint: rebuilds every safetensors file, checked against its recorded SHA-256
+python -I c/tools/repack_q38_mxfp4_wex.py --verify FILE.wex                           # an older WEX1 file with a .manifest.json: re-hashes every layer (needs numpy)
+```
+
+Two files that hold the same tensors give the same content digest, whether their records are RAW or WNR3: run `wex4.py verify` on a RAW file and on its WNR3 copy, and equal digests mean every expert unpacked to exactly the same bytes. What no published command does yet is compare a WEX4 file with the original upstream safetensors it was built from. A program that pins the root (`COLI_WEX_ROOT`) refuses any other file and checks each record's SHA-256 the first time it reads it.
+
+## About this repository
 
 The repository slug says `Wex-WRN2` for historical reasons; the codec is spelled **WNR2** in every constant, file and page.
 
@@ -17,7 +64,7 @@ Short summaries of this page in other languages, each dated, with this page as t
 
 ## What WEX is
 
-Some Mixture-of-Experts (MoE) models do not fit in the machine's memory: DeepSeek V4.1 REAP-192 has 7,680 routed experts of 18.8 MB each. The engine keeps some experts resident and reads the others from NVMe when the router picks them. A WEX file is laid out for that read: every record starts on a 4096-byte boundary, is a multiple of 4096 bytes long, and is fetched with one unbuffered read. A record is either the expert's native MXFP4 slab (4-bit FP4 weights plus one E8M0 scale byte per 32 weights) or a lossless rANS coding of it (WNR3 with canonical zero: 0.854 of raw over the whole DeepSeek V4.1 container), which the CUDA helper decodes straight into VRAM. The current container, WEX4, wraps the same records in a SHA-256-hashed header page and index: 32 bytes, the root, identify the whole file, and the DeepSeek engine, with the root pinned, checks each record against it the first time it reads it. WEX was developed for KAIRA, a private local inference application whose engines are builds of the [colibri](https://github.com/JustVugg/colibri) C engine. The engine-side format code is in `c/`, and its integration into colibri is in progress. How the pieces fit together, and what is not in this repository: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+Some Mixture-of-Experts (MoE) models do not fit in the machine's memory: DeepSeek V4.1 REAP-192 has 7,680 routed experts of 18.8 MB each. The engine keeps some experts resident and reads the others from NVMe when the router picks them. A WEX file is laid out for that read: every record starts on a 4096-byte boundary, is a multiple of 4096 bytes long, and is fetched with one unbuffered read. A record is either the expert's MXFP4 slab exactly as the checkpoint stores it (4-bit FP4 weights plus one E8M0 scale byte per 32 weights; a RAW record) or a lossless rANS coding of that slab (WNR3 with canonical zero: 0.854 of the raw size over the whole DeepSeek V4.1 container), which the CUDA helper decodes straight into VRAM. The current container, WEX4, wraps the same records in a SHA-256-hashed header page and index: 32 bytes, the root, identify the whole file, and the DeepSeek engine, with the root pinned, checks each record against it the first time it reads it. WEX was developed for builds of the [colibri](https://github.com/JustVugg/colibri) C engine. The engine-side format code is in `c/`, and its integration into colibri is in progress. How the pieces fit together, and what is not in this repository: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Why not safetensors or GGUF
 
@@ -98,9 +145,9 @@ Field names and offsets are those of [WEX4-SPEC](docs/WEX4-SPEC.md) sections 3 t
 |---|---|---|---|
 | DeepSeek V4.1 REAP-192 | WNR3 with canonical zero: 123,306,192,896 B, **0.854** of the raw WEX1 container and 0.949 of WNR2 | whole container, 7,680 records, built and read back 7,680 of 7,680; value-exact, not byte-exact | [WNR3-PRODUCTION](docs/reports/WNR3-PRODUCTION-20261110.md) |
 | DeepSeek V4.1 REAP-192 | WNR3 accepted **0** wrong single-bit flips of 2,231,336 on the GPU and 0 of 3,000 on the CPU; WNR2 accepted 1.8-1.9% of random flips | GPU: every bit of chosen regions of 3 real records; CPU: random flips over a whole real record | [WNR3-VERIFY](docs/reports/WNR3-VERIFY.md) |
-| DeepSeek V4.1 REAP-192, RTX 5090 | second drive: 2.02 -> **2.99 tok/s** (+49%), token ids and logits bit-identical | one pair, 7 prompts x 64 tokens; A is WEX1 on U:, B is WNR2 on U: + C: split 38/62, so format and split are not isolated | [NOTE-5](research/wnr2-fastbench-20261109/NOTE-5-mirror-ab-20261110.md) |
-| DeepSeek V4.1 REAP-192, RTX 5090 | WEX4 around the same records: +6,717,440 B, 2.077 against 2.070 tok/s (**+0.32%**, inside the run-to-run noise), same tokens and logits | U: only, 7 prompts x 64 tokens, 2 + 2 runs one after the other, not interleaved | [wex4-m3 RESULT](research/wex4-m3-20261111/RESULT.md) |
-| Qwen3.8-Flash-Next MXFP4, RTX 5090 | WNR3 is **0.880** of WEX1 on disk but slower to read: 9.48 against 11.48 tok/s (258-token prompt), 5.27 against 7.18 (2k prompt). These containers keep RAW records | one run per arm, U: only, RAM 13 GB; no canonical zero (the export has no FP4 -0) | [QWEN38-MXFP4](docs/reports/QWEN38-MXFP4-20261111.md) |
+| DeepSeek V4.1 REAP-192, RTX 5090 | second drive: 2.02 -> **2.99 tok/s** (+49%), token ids and logits bit-identical | one pair, 7 prompts x 64 tokens; A is WEX1 on one drive, B is WNR2 on two drives split 38/62, so format and split are not isolated | [NOTE-5](research/wnr2-fastbench-20261109/NOTE-5-mirror-ab-20261110.md) |
+| DeepSeek V4.1 REAP-192, RTX 5090 | WEX4 around the same records: +6,717,440 B, 2.077 against 2.070 tok/s (**+0.32%**, inside the run-to-run noise), same tokens and logits | one drive, 7 prompts x 64 tokens, 2 + 2 runs one after the other, not interleaved | [wex4-m3 RESULT](research/wex4-m3-20261111/RESULT.md) |
+| Qwen3.8-Flash-Next MXFP4, RTX 5090 | WNR3 is **0.880** of WEX1 on disk but slower to read: 9.48 against 11.48 tok/s (258-token prompt), 5.27 against 7.18 (2k prompt). These containers keep RAW records | one run per arm, one drive, RAM 13 GB; no canonical zero (the export has no FP4 -0) | [QWEN38-MXFP4](docs/reports/QWEN38-MXFP4-20261111.md) |
 
 The V4.1 switch report's own reading of its numbers: on this machine the second drive is the lever, not the format.
 
@@ -110,8 +157,8 @@ Summary of 2026-11-13; [STATUS.md](STATUS.md) is the page of record, with the ro
 
 | Model | Container | Records | Bytes per copy | Drives | Integrity |
 |---|---|---|---|---|---|
-| DeepSeek V4.1 REAP-192 (MXFP4) | WEX4 since 2026-11-11 (WNR3 since 2026-11-10) | 7,680 WNR3 with canonical zero | 123,312,910,336 | U: plus a full mirror on C:, reads split 38/62 | root pinned; SHA-256 of each record at its first read |
-| Qwen3.8-Flash-Next (MXFP4 routed experts) | WEX4 since 2026-11-11 | 24,576 RAW | 64,251,047,936 | U: plus a full mirror on C:, reads split 38/62 | both copies verified on 2026-11-13; root recorded, not pinned; header and index checked at open |
+| DeepSeek V4.1 REAP-192 (MXFP4) | WEX4 since 2026-11-11 (WNR3 since 2026-11-10) | 7,680 WNR3 with canonical zero | 123,312,910,336 | two NVMe drives, a full copy on each, reads split 38/62 | root pinned; SHA-256 of each record at its first read |
+| Qwen3.8-Flash-Next (MXFP4 routed experts) | WEX4 since 2026-11-11 | 24,576 RAW | 64,251,047,936 | two NVMe drives, a full copy on each, reads split 38/62 | both copies verified on 2026-11-13; root recorded, not pinned; header and index checked at open |
 
 Every measurement table: [docs/BENCHMARKS.md](docs/BENCHMARKS.md). Format changes by date: [CHANGELOG.md](CHANGELOG.md).
 
@@ -221,10 +268,11 @@ Contributions are welcome under the Apache License 2.0, inbound = outbound; a co
 
 ## In breve (italiano)
 
-Sintesi del 2026-11-15 di questa pagina; dove i due testi differiscono, vale quello inglese.
+Sintesi del 2026-11-21 di questa pagina; dove i due testi differiscono, vale quello inglese.
 
-- **Cos'è.** WEX è una famiglia di formati contenitore per gli expert dei modelli Mixture-of-Experts: un file di record allineati a 4096 byte, uno per expert, che il motore legge da NVMe con una sola lettura mentre genera. WEX4 aggiunge un header e un indice con lo SHA-256 di ogni record; WNR3 è la codifica rANS senza perdita dei record. WEX4 (versione di formato 4.0) e WNR3 (v1) sono congelati; il codice è l'implementazione di riferimento, di livello ricerca e pensata anzitutto per Windows.
-- **Cosa gira oggi** (sintesi del 2026-11-13). DeepSeek V4.1 REAP-192 legge un WEX4 con record WNR3 (0,854 del formato grezzo), Qwen3.8-Flash-Next un WEX4 con record MXFP4 grezzi; entrambi da due drive NVMe (U: e C:, letture divise 38/62). Stato aggiornato: [STATUS.md](STATUS.md).
+- **Cos'è.** WEX è un formato di file, senza perdita, per gli expert dei modelli Mixture-of-Experts: un file di record allineati a 4096 byte, uno per expert, che il motore legge da NVMe con una sola lettura mentre genera. WEX4 aggiunge un header e un indice con lo SHA-256 di ogni record; WNR3 è la codifica rANS senza perdita dei record. WEX4 (versione di formato 4.0) e WNR3 (v1) sono congelati; il codice è l'implementazione di riferimento, di livello ricerca e pensata anzitutto per Windows.
+- **Senza perdita, non è una quantizzazione.** Come con uno ZIP, si riottengono gli stessi pesi che sono stati salvati: gli stessi byte, oppure, con lo zero canonico, gli stessi numeri (uno zero scritto "-0" torna scritto "+0"). WEX non arrotonda, non quantizza e non pota niente. La precisione dei pesi a 4 bit si perde prima di WEX: nella quantizzazione fatta dall'editore del modello o da terzi (AMD per Qwen3.8), nella potatura REAP di DeepSeek V4.1 fatta da terzi, e nella nostra riquantizzazione dei file Sage-S2.1-Flash pubblicati. Come verificarlo: [Check it yourself](#check-it-yourself).
+- **Cosa gira oggi** (sintesi del 2026-11-13). DeepSeek V4.1 REAP-192 legge un WEX4 con record WNR3 (0,854 del formato grezzo), Qwen3.8-Flash-Next un WEX4 con record MXFP4 grezzi; entrambi da due drive NVMe con una copia completa ciascuno, letture divise 38/62. Stato aggiornato: [STATUS.md](STATUS.md).
 - **Come provarlo.** `bash scripts/check_all.sh` compila e lancia i controlli su CPU (test dei formati, lettori e convertitori WEX4, vettori di conformità, decoder WNR3 veloce) e il controllo del repository, senza GPU e senza modelli; se tutto va bene l'ultima riga è `all checks passed`, con codice di uscita 0. I prerequisiti sono nella sezione [Try it in ten minutes](#try-it-in-ten-minutes). La CI lo esegue su Linux (x86-64 e ARM64), macOS (Apple silicon, con GNU gcc e con Apple clang) e Windows; i sanitizer, il fuzzing e i lettori in Go e in Rust sono job a parte.
 - **Da dove cominciare.** [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) per l'insieme, [docs/WEX4-SPEC.md](docs/WEX4-SPEC.md) e [docs/WNR3-SPEC.md](docs/WNR3-SPEC.md) per i byte, [impl/go-wex4/](impl/go-wex4/README.md) per l'implementazione in Go scritta dalle sole specifiche, [docs/COLIBRI-INTEGRATION.md](docs/COLIBRI-INTEGRATION.md) per collegare un motore, [docs/HELP-WANTED.md](docs/HELP-WANTED.md) per i compiti aperti, [CONTRIBUTING.md](CONTRIBUTING.md) per contribuire, [SECURITY.md](SECURITY.md) per segnalare una vulnerabilità.
 - **Licenza.** Apache 2.0 ([LICENSE](LICENSE), [NOTICE](NOTICE)). Il repository non contiene pesi di modelli. Alcuni report datati in `docs/reports/` sono in italiano.
