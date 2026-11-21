@@ -5,7 +5,7 @@
 **Question.** Can a successor of WNR3 store MXFP4/NVFP4 routed experts in fewer bytes than WNR3 **and** decode on the GPU fast enough (target >= 40 GB/s of decoded slab on the RTX 5090, batched, straight into VRAM) for compressed experts to beat re-reading RAW records from NVMe?
 
 **Answer in short.**
-- Ratio: yes, by 0.3-0.6 points of raw on every container measured, on 2048 held-out records each, all byte-exact: Qwen3.8 MXFP4 **0.8753 vs WNR3 0.8809**, Qwen3.8 NVFP4 byte-exact **0.9238 vs WNR3-NV 0.9271**, DeepSeek V4.1 MXFP4 **0.8488 vs WNR3 0.8539** (G = 128; G = 256 a further -0.03 to -0.04).
+- Ratio: yes, by 0.3-0.6 points of raw on every container measured, on 2048 held-out records each, every record decoded back and compared (Qwen3.8 byte-exact, V4.1 in the canonical-zero domain of its production records): Qwen3.8 MXFP4 **0.8753 vs WNR3 0.8809**, Qwen3.8 NVFP4 byte-exact **0.9238 vs WNR3-NV 0.9271**, DeepSeek V4.1 MXFP4 **0.8488 vs WNR3 0.8539** (G = 128; G = 256 a further -0.03 to -0.04).
 - Where the gain comes from: framing (lengths, per-stream flush and hash) is gone, the last 4 nibbles of every lane ride in its initial state, NVFP4 scales are coded against the row above, and a position bucket for the last 4 nibbles of a block. The weight model itself is at its floor: no context tried (per-layer tables, column profiles shared across experts, block-maximum-first, finer scale classes, more training data) gains more than 0.02% held out.
 - Speed: yes. The CUDA decoder (one warp per tile, 32 rANS lanes sharing a 16-bit word stream, one launch per batch, output straight into the destination slots) decodes **up to 206 GB/s** of slab on the RTX 5090 (Qwen3.8 MXFP4, kernel only), 140 GB/s on NVFP4 and 188 GB/s on V4.1, against 90 GB/s for WNR3's kernels on the same records and no GPU decoder at all for WNR3-NV. From page-locked host memory, upload included, it reaches 49-54 GB/s, which is the PCIe 5 upload rate: decode is no longer the bottleneck. The >= 40 GB/s target holds from a batch of 8 records (G = 32) or 16-32 records (G = 128).
 - Trade-off: G (cells per lane per tile) sets ratio vs latency; G = 32 gives 0.19 ms per lone Qwen3.8 record and 104-204 GB/s at batch 8-32 for +0.2 points of ratio (still 0.4 below WNR3).
@@ -17,7 +17,7 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../../research/wnr4-20261121/charts/wnr4-gpu-dark.png">
-  <img alt="Line charts: GPU decode GB/s by records per launch on an RTX 5090. Qwen3.8 MXFP4 at 128 records: WNR4 209, WNR3 kernels 91. DeepSeek V4.1 at 32 records: WNR4 187, WNR3 kernels 105." src="../../research/wnr4-20261121/charts/wnr4-gpu-light.png" width="800">
+  <img alt="Line charts: GPU decode GB/s by records per batch on an RTX 5090 (WNR4 one launch per batch, WNR3 two kernels per record). Qwen3.8 MXFP4 at 128 records: WNR4 209, WNR3 kernels 91. DeepSeek V4.1 at 32 records: WNR4 187, WNR3 kernels 105." src="../../research/wnr4-20261121/charts/wnr4-gpu-light.png" width="800">
 </picture>
 
 <picture>

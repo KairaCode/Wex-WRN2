@@ -30,7 +30,7 @@ def chart_ratio(t):
     fig = cs.figure(t, h)
     cs.header(fig, t, 'WNR4 stores experts in fewer bytes',
               'Space saved on the records of the speed packs (1 - stored/raw, higher is better), every record '
-              'decoded back\nand compared. The WNR3 bar of the NVFP4 pack is WNR3-NV.', h)
+              'decoded back\nand compared. NVFP4: byte-exact, WNR3 is WNR3-NV. V4.1: canonical zero (-0 stored as +0), as in production.', h)
     x0, w, gap = 0.14, 0.25, 0.03
     for k, (name, title) in enumerate(PACKS):
         wnr4, wnr3 = pack_ratios(name)
@@ -56,8 +56,9 @@ def chart_gpu(t):
     v41 = {'WNR4 G=128': [25.6, 146, 187, 187], 'WNR3 kernels': [30.6, 90, 103, 105]}
     h = 4.3
     fig = cs.figure(t, h)
-    cs.header(fig, t, 'GPU decode: one launch per batch',
-              'Decoded GB/s by records per launch, RTX 5090, kernel time, records in VRAM, both codecs in one run.', h)
+    cs.header(fig, t, 'GPU decode by batch size',
+              'Decoded GB/s, RTX 5090, kernel time, records in VRAM, both codecs in one run. WNR4: one launch per '
+              'batch;\nWNR3: two kernels per record on 8 streams.', h)
     colors = {'WNR4 G=128': t['blue'], 'WNR3 kernels': t['orange']}
     for k, (title, data, bs) in enumerate((('Qwen3.8 MXFP4 (2.6 MB records)', q38, batches),
                                            ('DeepSeek V4.1 MXFP4 (18.8 MB records)', v41, batches[:4]))):
@@ -76,7 +77,7 @@ def chart_gpu(t):
                     markeredgecolor=t['surface'], markeredgewidth=1.5, solid_capstyle='round')
             ax.text(bs[-1] * 1.12, ys[-1], f'{ys[-1]:.0f}', va='center', ha='left', fontsize=9, fontweight='bold',
                     color=t['ink'])
-        ax.set_xlabel('records per launch', fontsize=8.5, color=t['muted'], labelpad=4)
+        ax.set_xlabel('records per batch', fontsize=8.5, color=t['muted'], labelpad=4)
         if k == 0:
             ax.set_ylabel('GB/s', fontsize=8.5, color=t['muted'])
     handles = [cs.plt.Line2D([], [], color=colors[n], linewidth=2, marker='o', markersize=5.5,
@@ -86,7 +87,7 @@ def chart_gpu(t):
     for txt in leg.get_texts():
         txt.set_color(t['ink2'])
     cs.footer(fig, t, 'Source: docs/reports/wnr4-research-20261121.md section 5 (results/bench9-*.log), median of 5 '
-              'launches per point.\nFrom page-locked host memory, upload included, WNR4 reaches 49-54 GB/s on '
+              'runs per point.\nFrom page-locked host memory, upload included, WNR4 reaches 49-54 GB/s on '
               'Qwen3.8: the PCIe 5 upload is the limit there, not the decoder.', h)
     return fig
 
@@ -100,8 +101,8 @@ def chart_models(t):
     rows.sort(key=lambda r: r[1])
     h = 4.9
     fig = cs.figure(t, h)
-    cs.header(fig, t, 'Eight more MoE exports', 'Space saved, byte-exact, on 64-expert samples (2-fold '
-              'cross-validation). WNR4 at G=128 against WNR3.', h)
+    cs.header(fig, t, 'Eight MoE exports, 64-expert samples', 'Space saved, byte-exact, models trained in 2 folds ('
+              'each fold coded with the other). WNR4 at G=128 against WNR3.', h)
     ax = cs.axes(fig, t, [0.36, 0.17, 0.53, 0.62])
     n = len(rows)
     ax.set_ylim(n - 0.5, -0.5)
@@ -113,8 +114,8 @@ def chart_models(t):
     for i, (_, wnr3, wnr4) in enumerate(rows):
         a, b = 100 * (1 - wnr3), 100 * (1 - wnr4)
         ax.plot([a, b], [i, i], color=t['base'], linewidth=2.2, zorder=2, solid_capstyle='round')
-        ax.scatter([a], [i], s=46, color=t['orange'], zorder=3, edgecolors=t['surface'], linewidths=1.5)
-        ax.scatter([b], [i], s=46, color=t['blue'], zorder=4, edgecolors=t['surface'], linewidths=1.5)
+        ax.scatter([b], [i], s=46, color=t['blue'], zorder=3, edgecolors=t['surface'], linewidths=1.5)
+        ax.scatter([a], [i], s=22, color=t['orange'], zorder=4, edgecolors=t['surface'], linewidths=1.0)
         ax.text(max(a, b) + 0.18, i, f'{b - a:+.2f} pt', va='center', ha='left', fontsize=8.5, color=t['ink2'])
     handles = [cs.plt.Line2D([], [], color=c, linestyle='none', marker='o', markersize=7, markeredgecolor=t['surface'])
                for c in (t['blue'], t['orange'])]

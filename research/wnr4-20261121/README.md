@@ -16,7 +16,7 @@ Can a successor of WNR3 store MXFP4 and NVFP4 routed experts in fewer bytes than
 
 ## Results
 
-Stored / raw (records padded to 4096 B), 2048 held-out records each, all byte-exact; kernel GB/s of decoded slab (best batch); from `results/measure-*.json` and `results/bench8-*.log`, `results/bench9-*.log`.
+Stored / raw (records padded to 4096 B), 2048 held-out records each, every record decoded back and compared (Qwen3.8 byte-exact, V4.1 in the canonical-zero domain of its production records); kernel GB/s of decoded slab (best batch); from `results/measure-*.json` and `results/bench8-*.log`, `results/bench9-*.log`.
 
 | container | WNR3 (same training records) | WNR4 G = 128 | WNR4 GPU kernel | WNR3 GPU kernels, same run |
 |---|---:|---:|---:|---:|
@@ -31,7 +31,7 @@ Stored / raw (records padded to 4096 B), 2048 held-out records each, all byte-ex
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="charts/wnr4-gpu-dark.png">
-  <img alt="Line charts: GPU decode GB/s by records per launch on an RTX 5090. Qwen3.8 MXFP4 at 128 records: WNR4 209, WNR3 kernels 91. DeepSeek V4.1 at 32 records: WNR4 187, WNR3 kernels 105." src="charts/wnr4-gpu-light.png" width="800">
+  <img alt="Line charts: GPU decode GB/s by records per batch on an RTX 5090 (WNR4 one launch per batch, WNR3 two kernels per record). Qwen3.8 MXFP4 at 128 records: WNR4 209, WNR3 kernels 91. DeepSeek V4.1 at 32 records: WNR4 187, WNR3 kernels 105." src="charts/wnr4-gpu-light.png" width="800">
 </picture>
 
 <picture>
