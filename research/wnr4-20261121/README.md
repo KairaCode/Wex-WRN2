@@ -26,7 +26,7 @@ Stored / raw (records padded to 4096 B), 2048 held-out records each, every recor
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="charts/wnr4-ratio-dark.png">
-  <img alt="Bar charts: space saved on the speed packs. Qwen3.8 MXFP4: WNR4 12.4%, WNR3 11.9%, nvCOMP ANS 10.0%. Qwen3.8 NVFP4: WNR4 7.6%, WNR3-NV 7.3%, nvCOMP ANS 6.3%. DeepSeek V4.1: WNR4 15.2%, WNR3 14.6%, nvCOMP ANS 10.2%." src="charts/wnr4-ratio-light.png" width="800">
+  <img alt="Bar charts: the speed packs as published and stored. Qwen3.8 MXFP4, 128 records: original 334.2 MB, WNR4 292.6 MB (-12.4%), WNR3 294.5 MB (-11.9%), nvCOMP ANS 300.7 MB (-10.0%). Qwen3.8 NVFP4, 128 records: original 353.9 MB, WNR4 327.0 MB (-7.6%), WNR3-NV 328.1 MB (-7.3%), nvCOMP ANS 331.7 MB (-6.3%). DeepSeek V4.1, 32 records: original 601.6 MB, WNR4 510.4 MB (-15.2%), WNR3 513.5 MB (-14.6%), nvCOMP ANS 540.4 MB (-10.2%)." src="charts/wnr4-ratio-light.png" width="800">
 </picture>
 
 <picture>
@@ -36,7 +36,7 @@ Stored / raw (records padded to 4096 B), 2048 held-out records each, every recor
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="charts/wnr4-models-dark.png">
-  <img alt="Dot chart: space saved by WNR4 against WNR3 on 64-expert samples of eight MoE exports; WNR4 saves 0.32 to 0.55 points more on seven and ties on AliceAI NVFP4." src="charts/wnr4-models-light.png" width="800">
+  <img alt="Dot chart: size as a share of the export's own files (100%) on 64-expert samples of eight MoE exports, WNR3 between 88.0% and 93.4%; WNR4 is 0.32 to 0.55 points smaller than WNR3 on seven and ties on AliceAI NVFP4." src="charts/wnr4-models-light.png" width="800">
 </picture>
 
 From page-locked host memory, upload included, WNR4 reaches 49-54 GB/s on Qwen3.8 MXFP4 (the PCIe 5 upload is the limit). The full tables, the G sweep, the CPU decoder, the nvCOMP and NVDEC baselines and the other models are in the [dated report](../../docs/reports/wnr4-research-20261121.md).

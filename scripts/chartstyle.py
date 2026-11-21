@@ -96,6 +96,22 @@ def hbars(ax, labels, values, colors, t, xmax, fmt, height=0.56, radius_px=4, no
                     zorder=4, bbox=mask)
 
 
+def size_panels(fig, t, panels, top_in, height_in, row_in=0.165, gap_in=0.5, left=0.25):
+    """Stacked panels of byte sizes in MB, one per (title, rows); rows are (label, bytes, color key) and the first
+    row is the original the others are compared with. Every panel has the same scale relative to its original."""
+    y = 1 - top_in / height_in
+    for title, rows in panels:
+        hgt = row_in * len(rows) / height_in
+        ax = axes(fig, t, [left, y - hgt, 0.94 - left, hgt], title)
+        orig = rows[0][1]
+        hbars(ax, [r[0] for r in rows], [r[1] / 1e6 for r in rows], [t[r[2]] for r in rows], t, 1.45 * orig / 1e6,
+              lambda v: f'{v:,.1f} MB', height=0.62,
+              notes=[None] + [f'{100 * (r[1] / orig - 1):+.1f}%'.replace('-', '−') for r in rows[1:]])
+        ax.set_xticks([])
+        ax.spines['bottom'].set_visible(False)
+        y -= hgt + gap_in / height_in
+
+
 def save(fig, out_dir, name, theme):
     os.makedirs(out_dir, exist_ok=True)
     path = os.path.join(out_dir, f'{name}-{theme}.png')
