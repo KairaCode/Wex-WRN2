@@ -121,3 +121,15 @@ Written while the content digest, the writer and the WNM2 trainer of this folder
 **What a writer needs that WEX4-SPEC does not say it needs.** The WBP1 encoder cannot be written from WEX4-SPEC alone: the quantiser (E2) and the encoder's bound (E4) are in WNR2-REFERENCE section 7. Section 17 ("a conforming writer") names section 5 and section 6 only. A WNR3 writer needs a WNM2 model; the trainer needs WNR2-REFERENCE section 7 and WNR3-SPEC section 5 (E8).
 
 **Not tried.** Whether a file that follows the reading of E2 or E5 the other way is refused by the reference (a CDF that is valid and not the quantiser's, a plane stored raw that the rule would code): section 7.2 says the encoder is canonical, not that a reader checks it, and the decoders have no way to know the counts' source. No such file was built.
+
+## After the revisions of 2026-11-15 and 2026-11-21
+
+Part E is about WEX4-SPEC document revision 2026-11-14 and is left as it was written. The second revision of 2026-11-15, from a review of sections 13.1 and 14 against the converter ([research/spec-review-20261115](../../research/spec-review-20261115/README.md)), the revision of 2026-11-21 and WNR3-SPEC section 5 answer three of its notes.
+
+| Note | Now in the text |
+|---|---|
+| E1 | WEX4-SPEC section 5 since revision 2026-11-21: the choices that fix the header page and the index include the header's version and feature words (`version_minor`, `optional_features`, required bit 0), the expert grid, the blobs and the order of the zero-size tensors; section 4 has the reserved area written as zero |
+| E3 | WEX4-SPEC section 7: `chunk_log2` = 12, and `transform` = 1 for a record that holds one float tensor (F16, BF16, F32, F64) or a part of one, 0 for a record of grouped small tensors. Section 14: the element size is in bytes, 1 for sub-byte and opaque dtypes, and how tensors are grouped (under 64 KiB, the same element size, one source file, up to 4 MiB). The writer's default rotation differed from section 7 for a record of small tensors that are all floats: it gave 1. Since 2026-11-21 it gives 0 ([README](README.md), the manifest table) |
+| E8 | for the weight tables, WNR3-SPEC section 5: a context that never occurred in training gets the uniform table, 1024 of 16384 for each nibble. A scale table with no count is still not stated |
+
+Still open: E2 and E4. E5 and E6 stay settled by the files only; E7 was not a question.

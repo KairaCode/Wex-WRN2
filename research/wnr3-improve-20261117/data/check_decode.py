@@ -1,5 +1,5 @@
 import ctypes, struct, os, sys, glob, hashlib
-D="/tmp/wnr3-data"; lib=ctypes.CDLL(D+"/libwex_nr3_tools.so")
+D="<TMP>/wnr3-data"; lib=ctypes.CDLL(D+"/libwex_nr3_tools.so")
 model=open(D+"/recs/model.bin","rb").read(); table=open(D+"/recs/entries.bin","rb").read()
 ES=72; n=0; bad=[]
 for p in sorted(glob.glob(D+"/recs/rec_*.bin")):

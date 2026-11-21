@@ -347,7 +347,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument('--dir', required=True, help='a directory on the volume the models live on')
     ap.add_argument('--file', help='an existing large file to read instead of creating one')
-    ap.add_argument('--size-gb', type=int, default=16, help='size of the test file to create (default 16)')
+    ap.add_argument('--size-gb', type=int, default=None, help='size of the test file to create (default 16, 4 with --quick)')
     ap.add_argument('--quick', action='store_true', help='shorter runs (smaller buffers, 8 s per read test)')
     ap.add_argument('--skip', default='', help='comma list of sections to skip: ram_bw,h2d,disk,wex_check')
     a = ap.parse_args()
@@ -359,7 +359,7 @@ def main():
     steps = [
         ('ram_bw', lambda: build_run('ram_bw.c', 'ram_bw', ['gcc', '-O2', '-fopenmp'], ['256' if a.quick else '2048'])),
         ('h2d', lambda: build_run('h2d.cu', 'h2d', ['nvcc', '-O2'], [])),
-        ('disk', lambda: disk(a.dir, a.file, 4 if a.quick else a.size_gb, a.quick)),
+        ('disk', lambda: disk(a.dir, a.file, a.size_gb if a.size_gb is not None else (4 if a.quick else 16), a.quick)),
         ('wex_check', wex_check),
     ]
     for name, fn in steps:

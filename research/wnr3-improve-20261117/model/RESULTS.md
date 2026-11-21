@@ -21,7 +21,7 @@ The three changes:
 
 ## Data, method, checks
 
-- Data: the 121 sample records of `/tmp/wnr3-data` (README there). Split A, as in the README:
+- Data: the 121 sample records of `<TMP>/wnr3-data` (README there). Split A, as in the README:
   TRAIN = experts (37l+11)%192 and (37l+101)%192 (80 records), TEST = (53l+7)%192 (40) + L39 E120.
   Split B, a robustness check: TRAIN = (37l+11) and (53l+7), TEST = (37l+101) + L39 E120.
 - **Additional data fetched (read only, HTTP range, into this directory):**

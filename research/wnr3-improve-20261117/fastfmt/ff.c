@@ -179,7 +179,7 @@ static int cmd_enc(const char *kind, const char *trainc, uint32_t Bw, uint32_t B
         rec = (unsigned char *)malloc(cap);
         used = wnx_encode(M, &x.lay, x.cs, x.cw, x.ceil, (uint32_t)x.layer << 16 | (uint32_t)x.expert, Bw, Bs, !strcmp(kind, "magt"), rec, cap, &total);
         if (!used) { printf("encode failed %s\n", paths[i]); return 1; }
-        snprintf(p, sizeof p, "/tmp/wnr3-data/recs/rec_%02d_%03d.bin", x.layer, x.expert);
+        snprintf(p, sizeof p, "<TMP>/wnr3-data/recs/rec_%02d_%03d.bin", x.layer, x.expert);
         { unsigned char *w3 = read_file(p, &wb); free(w3); }
         snprintf(p, sizeof p, "%s/X_%02d_%03d.wnx", outdir, x.layer, x.expert);
         write_file(p, rec, total);

@@ -2,7 +2,7 @@
 no quantisation = lower bound for a per-record table) + table bytes (1 + 3 per used symbol) vs the production ideal;
 and the real stored scale payload SP vs rt_scale own_bytes (real)."""
 import json, struct, numpy as np
-D="/tmp/wnr3-data"; RAW=18800640; ENTRY=struct.Struct('<QIII6H6H3I3II'); T=open(D+"/recs/entries.bin","rb").read()
+D="<TMP>/wnr3-data"; RAW=18800640; ENTRY=struct.Struct('<QIII6H6H3I3II'); T=open(D+"/recs/entries.bin","rb").read()
 blob=np.fromfile(D+"/recs/model.bin",np.uint8); S=np.frombuffer(blob[57866:57866+3*514].tobytes(),"<u2").reshape(3,257).astype(float); SF=np.diff(S,axis=1)
 rt={(d["layer"],d["expert"]):d for d in map(json.loads,open("out/rt_scale.jsonl"))}
 rows=[]

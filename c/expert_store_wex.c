@@ -572,7 +572,11 @@ int coli_v4_expert_store_open_wex(
         if (len > 4 && strcmp(options->model_dir + len - 4, ".wex") == 0) {
             snprintf(path_primary, sizeof(path_primary), "%s", options->model_dir);
         } else {
+#ifdef _WIN32
             snprintf(path_primary, sizeof(path_primary), "%s\\v4_flash_experts.wex", options->model_dir);
+#else
+            snprintf(path_primary, sizeof(path_primary), "%s/v4_flash_experts.wex", options->model_dir);
+#endif
         }
     }
 
@@ -588,9 +592,9 @@ int coli_v4_expert_store_open_wex(
     );
     if (hFilePrimary == INVALID_HANDLE_VALUE) {
         DWORD err = GetLastError();
-        fprintf(stderr, "[WEX] Container '%s' not found (err %lu). Falling back to standard planned store.\n",
-                path_primary, (unsigned long)err);
-        return coli_v4_expert_store_open_planned(engine, config, options, output, error, error_size);
+        if (error && error_size)
+            snprintf(error, error_size, "cannot open WEX at '%s' (err %lu)", path_primary, (unsigned long)err);
+        return -1;
     }
 
     HANDLE hFileMirror = INVALID_HANDLE_VALUE;

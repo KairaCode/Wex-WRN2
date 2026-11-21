@@ -359,6 +359,39 @@ static void test_mirror(const char *filename, int backslash) {
     printf("Mirror generation, table and file-size validation passed (%s).\n", filename);
 }
 
+/* COLI_WEX_PATH unset: model_dir names the folder of v4_flash_experts.wex (joined with '\' on
+ * Windows, '/' elsewhere). Without that file the open fails and the error names the path. */
+static void test_default_path(void) {
+    const char *directory = "test_wex_default";
+    const char *path = "test_wex_default/v4_flash_experts.wex";
+    Fixture fixture = fixture_make(1, 1, 2, 0);
+    ColiDeepSeekV4ExpertStoreOptions options = {0};
+    ColiExpertStore *store = NULL;
+    char error[256] = {0};
+#ifdef _WIN32
+    assert(_mkdir(directory) == 0);
+#else
+    assert(mkdir(directory, 0700) == 0);
+#endif
+    file_write(path, fixture.data, fixture.bytes);
+    options.model_dir = directory;
+    options.layers = 1; options.experts_per_layer = 2;
+    env_set("COLI_WEX_PATH", NULL);
+    assert(coli_v4_expert_store_open_wex(NULL, NULL, &options, &store, error, sizeof(error)) == 0 && store);
+    store->ops->destroy(store);
+    assert(remove(path) == 0);
+    store = NULL;
+    assert(coli_v4_expert_store_open_wex(NULL, NULL, &options, &store, error, sizeof(error)) != 0 && !store);
+    assert(strstr(error, "v4_flash_experts.wex"));
+#ifdef _WIN32
+    assert(_rmdir(directory) == 0);
+#else
+    assert(rmdir(directory) == 0);
+#endif
+    free(fixture.data);
+    puts("Default container path in model_dir opened; a missing one refused with its path in the error.");
+}
+
 static void test_external_v3(const char *reference_path, const char *container_path, int expect_cuda) {
     FILE *file = fopen(reference_path, "rb");
     WexHeader header;
@@ -619,6 +652,7 @@ int main(int argc, char **argv) {
     test_slab_bound(2);
     test_mirror("v4_flash_experts.v2.wex", 0);
     test_mirror("custom_expert_container.wex", 1);
+    test_default_path();
     if (argc == 3 || (argc == 4 && !strcmp(argv[3], "--expect-cuda")))
         test_external_v3(argv[1], argv[2], argc == 4);
     else assert(argc == 1);

@@ -1,7 +1,7 @@
 # A record coding designed for decode speed (WNX prototype), against WNR3-CZ + `wex_fast_decode`
 
 Lane: decode-speed format. Everything here was run on the shared 4-core Xeon (Sapphire Rapids class, 2.1 GHz,
-AVX2 + AVX-512) of this session, CPU only, on the 121 real production records of `/tmp/wnr3-data` with the
+AVX2 + AVX-512) of this session, CPU only, on the 121 real production records of `<TMP>/wnr3-data` with the
 suggested split (models trained on the 80 TRAIN records, every size and speed figure on the 41 TEST records or
 a subset of them). Scripts, raw logs and the rerun line are in this directory (`README.md`).
 

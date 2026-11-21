@@ -2,7 +2,7 @@
 # Timing, interleaved A/B (rows alternate, order rotates each round), 3 real records.
 # 1 thread: per-thread CPU time (AB_CPU=1) because the shared machine is oversubscribed; 4 threads: wall clock.
 cd "$(dirname "$0")"
-R=/tmp/wnr3-data/recs
+R='<TMP>'/wnr3-data/recs
 RECS="$R/rec_00_007.bin $R/rec_20_073.bin $R/rec_39_120.bin"
 echo "== 1 thread, every kernel 1/2/3/4 configuration in one AVX-512 build (out/test_z), thread CPU time"
 AB_CPU=1 ./out/test_z ab $R/model.bin 9 1 10,7,8,9,11,12,18,19,20,21,22,24,25,26,27 $RECS

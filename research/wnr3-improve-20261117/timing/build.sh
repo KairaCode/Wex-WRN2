@@ -4,10 +4,10 @@
 #   AVX-512 set: -O3 -march=x86-64-v4 -mavx512vbmi2 -fopenmp       (F/BW/CD/DQ/VL + VBMI2; Zen 4 has all of them)
 # plus ffold_a5 = fastfmt's own AVX-512 flags (-march=haswell -mavx512f/bw/vl/dq), as a cross-check of the WNX kernels.
 set -e
-cd /tmp/wnr3-research/timing
-C="-I/workspace/Wex-WRN2/c -I/tmp/wnr3-research/fastfmt"
+cd '<TMP>'/wnr3-research/timing
+C="-I/workspace/Wex-WRN2/c -I<TMP>/wnr3-research/fastfmt"
 ORIG="-I/workspace/Wex-WRN2/wex4/research/fast-cpu-decode"
-NEW="-I/tmp/wnr3-research/fastdec"
+NEW="-I<TMP>/wnr3-research/fastdec"
 A2="-O3 -march=haswell -fopenmp"
 A5="-O3 -march=x86-64-v4 -mavx512vbmi2 -fopenmp"
 gcc $A2 $NEW $C tdrv.c -o bin/new_a2

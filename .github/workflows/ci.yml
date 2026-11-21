@@ -6,9 +6,10 @@
 # TSan and MSan with clang, and the libraries of the Python tests under both (linux-tsan, linux-msan); the Go reader and writer on the conformance vectors and against the
 # reference readers (go-reader); and the Rust reader on the conformance vectors and against the C and the Python
 # reader (rust-reader).
-# No GPU, no model weights, no secrets. A run started by hand can also have the linux-io-bench job (the full
-# Linux read-path benchmark), the linux-vulkan job (the WNR3 Vulkan prototype on a CPU Vulkan device) and the
-# colibri-headers job (the engine fuzzing harnesses built against colibri's own headers).
+# No GPU, no model weights, no secrets. A run started by hand can also have the linux-vulkan job (the WNR3 Vulkan
+# prototype on a CPU Vulkan device) and the colibri-headers job (the engine fuzzing harnesses built against
+# colibri's own headers).
+# With the input linux_io_bench it also has the linux-io-bench job (the full Linux read-path benchmark).
 # With the input arm_speed it also has the arm-speed jobs (the fast WNR3 decoder's speed on ARM64 Linux and macOS).
 # With the input macos_io_bench it also has the macos-io-bench job (the full read-path benchmark on macOS).
 # With the input vulkan_newmesa it also has the linux-vulkan-newmesa jobs (linux-vulkan on a newer Mesa, in containers).
@@ -28,6 +29,8 @@ on:
         default: false
       arm_speed:
         description: "Also run synth.sh speed of the fast decoder on ARM64 Linux and macOS (a measurement, not a check)"
+        type: boolean
+        default: false
       macos_io_bench:
         description: "Also run the full bench/wex_io.py on macos-15 (macOS read paths; a measurement, not a check)"
         type: boolean
@@ -244,7 +247,7 @@ jobs:
   # runner image ships several (gcc-13, gcc-14, ...) and the step takes the newest, so no package is downloaded
   macos:
     runs-on: macos-15
-    timeout-minutes: 15   # a green run took 4.0 minutes (runs 43811647711 and 43812551602, 2026-11-16, after the second merges: the job was green in both, though 43811647711's own rollup was failure (its linux-tsan, linux-msan and rust-reader jobs failed), both)
+    timeout-minutes: 15   # a green run took 4.0 minutes in both runs 43811647711 and 43812551602 (2026-11-16, after the second merges: the job was green in both, though 43811647711's own rollup was failure: its linux-tsan, linux-msan and rust-reader jobs failed)
     env:
       PYTHON: python3
       USER: ""

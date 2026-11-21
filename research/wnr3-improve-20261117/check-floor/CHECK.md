@@ -1,4 +1,4 @@
-# check-floor: verification of the 'entropy floor' lane (/tmp/wnr3-research/floor)
+# check-floor: verification of the 'entropy floor' lane (\<TMP>/wnr3-research/floor)
 All reruns in this directory (copies of the lane's scripts; own outputs in out/). Own scripts: indep.py (re-encode
 all 121 coded slabs with the production encoder + production-counter ideal costs), sib_check.py (own context code +
 own quantiser for the sibling tables, plus variant/split selection by 2-fold CV inside TRAIN), scale_indep.py,

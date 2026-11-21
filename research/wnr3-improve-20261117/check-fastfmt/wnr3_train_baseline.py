@@ -1,7 +1,7 @@
 # Independent same-training-set baseline: WNR3-CZ re-encoded with a WNM2 model trained on the 80 TRAIN records
 # (production WCHUNK/SCHUNK = 2048/512), real records, reference decode == Z(source). Writes logs/wnr3_train.txt.
 import ctypes as C, os, struct, sys
-D = "/tmp/wnr3-data"; H = os.path.dirname(os.path.abspath(__file__))
+D = "<TMP>/wnr3-data"; H = os.path.dirname(os.path.abspath(__file__))
 lib = C.CDLL(D + "/libwex_nr3_tools.so")
 P = C.c_void_p
 lib.wex_nr3_encode_record.argtypes = [P, P, P, C.c_uint32, C.c_uint32, C.c_uint32, C.c_uint32, P, C.c_size_t, P, P]

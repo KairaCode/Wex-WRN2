@@ -1,6 +1,6 @@
-# Check of the model lane (/tmp/wnr3-research/model), 2026-11-17
+# Check of the model lane (\<TMP>/wnr3-research/model), 2026-11-17
 
-Everything here was rerun in /tmp/wnr3-research/check-model. The copied scripts are unmodified, except that
+Everything here was rerun in \<TMP>/wnr3-research/check-model. The copied scripts are unmodified, except that
 common.py writes here and reads only the coded slabs from the lane. Those slabs were first proven
 byte-identical to a fresh reference decode followed by prepare(cz=1) (myprep.py). Logs: myprep.log, runA.log,
 runB.log, runC.log. Per-record JSON: out/. Independent bound: indep.py -> indep_A.json, indep_B.json.

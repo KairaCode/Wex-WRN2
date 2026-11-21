@@ -1,5 +1,5 @@
 #!/bin/sh
-cd /tmp/wnr3-research/check-fastfmt
+cd '<TMP>'/wnr3-research/check-fastfmt
 ./ff enc magt  out_train.counts 2048 2048 out/magt_2048  $(cat test.txt) > logs/enc_magt_2048.txt
 ./ff enc magt  out_train.counts 4096 4096 out/magt_4096  $(cat test.txt) > logs/enc_magt_4096.txt
 ./ff enc magt  out_train.counts 2048 512  out/magt_2048_s512 $(cat test.txt) > logs/enc_magt_2048_s512.txt

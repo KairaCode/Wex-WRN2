@@ -11,7 +11,7 @@ import subprocess, sys, os, re
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = "/workspace/Wex-WRN2/c"
-MODEL = "/tmp/wnr3-data/recs/model.bin"
+MODEL = "<TMP>/wnr3-data/recs/model.bin"
 cases, seed, recs = sys.argv[1], sys.argv[2], sys.argv[3:]
 base = open(os.path.join(HERE, "wex_fast_decode.h")).read()
 

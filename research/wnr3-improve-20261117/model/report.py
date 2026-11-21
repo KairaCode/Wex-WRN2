@@ -5,7 +5,7 @@ normal = the 40 TEST records with anchors (120,120,120); shifted = the 38 record
 rule-g anchors differ (37 fetched for this + L39 E120 of TEST). Container extrapolation (stratified):
 7,642 x mean(normal) + 38 x mean(shifted) (+ the extra table bytes once)."""
 import json, glob, os, numpy as np
-W = "/tmp/wnr3-research/model"; RAW = 18800640; N_NORMAL, N_SHIFT = 7642, 38
+W = "<TMP>/wnr3-research/model"; RAW = 18800640; N_NORMAL, N_SHIFT = 7642, 38
 CONT = 123312910336
 rows = {}
 for p in sorted(glob.glob(W + "/out/real_*.json")):

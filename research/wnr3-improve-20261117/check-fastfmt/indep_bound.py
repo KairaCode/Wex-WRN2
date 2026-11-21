@@ -2,7 +2,7 @@
 # held-out ideal cost of the WNX MAG model: 7 srel contexts per matrix, 8 magnitudes + 1 raw bit per non-zero.
 # Train counts on TRAIN, score TEST. Reports exact-probability and 12-bit-quantised (simple largest-remainder) costs.
 import ctypes as C, os, struct, numpy as np
-D = "/tmp/wnr3-data"; H = os.path.dirname(os.path.abspath(__file__))
+D = "<TMP>/wnr3-data"; H = os.path.dirname(os.path.abspath(__file__))
 lib = C.CDLL(D + "/libwex_nr3_tools.so")
 ENT = struct.Struct("<QIII6H6H3I3II")
 def counts(path):

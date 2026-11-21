@@ -9,7 +9,7 @@ For each of the 121 sample records:
 import ctypes as C, struct, os, sys, json, glob
 import numpy as np
 from multiprocessing import Pool
-D = "/tmp/wnr3-data"; H = os.path.dirname(os.path.abspath(__file__))
+D = "<TMP>/wnr3-data"; H = os.path.dirname(os.path.abspath(__file__))
 ENTRY = struct.Struct('<QIII6H6H3I3II'); RAW = 18800640
 
 def work(p):

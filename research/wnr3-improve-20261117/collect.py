@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Copy scripts and small text results of every lane and check into this folder.
-Run from anywhere: python3 /tmp/wnr3-research/report/collect.py"""
+Run from anywhere: python3 <TMP>/wnr3-research/report/collect.py"""
 import os, shutil, filecmp
-R = '/tmp/wnr3-research'; DST = os.path.join(R, 'report')
+R = '<TMP>/wnr3-research'; DST = os.path.join(R, 'report')
 SRC_EXT = {'.py', '.c', '.h', '.sh', '.inc', '.patch', '.md'}
 RES_EXT = {'.json', '.jsonl', '.txt', '.log', '.md', '.out'}
 SKIP_DIRS = {'__pycache__', 'data', 'coded', 'tables', 'adj', 'bin', 'extra', 'counts', 'scales', 'repo_fcd', 'wnx'}

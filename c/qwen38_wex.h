@@ -232,7 +232,7 @@ static int q38_wex4_manifest(int fd,const Cfg *c,unsigned char *page,unsigned ch
             memcpy(page+WEX_NR2_DESCRIPTOR_OFFSET,words,sizeof words);
         }
         uint32_t marker=WEX4_MAGIC;
-        memcpy(page+56u,&marker,4u);   /* tells the caller the hashes are behind the table */
+        memcpy(page+56u,&marker,4u);   /* sets the rewritten page apart from a legacy mirror's (not read as a flag) */
         memcpy(page+WEX4_HEADER_HASHED,h.root,32u);
     }
     fprintf(stderr,"[qwen38] WEX4 container (hashed header and index)\n");
@@ -330,10 +330,9 @@ static void q38_mx4_attach_wex(Model *m,Q38Int4Experts *x,const char *path) {
             }
     x->wex_fd[0]=fd;x->wex_n=1;
     {   /* COLI_WEX_VERIFY=1: each record's stored bytes are hashed at their first read (per layout) */
-        uint32_t marker;const char *verify=q38_mx4_env("COLI_WEX_VERIFY");
-        memcpy(&marker,page+56u,4u);
+        const char *verify=q38_mx4_env("COLI_WEX_VERIFY");
         if(verify&&atoi(verify)){
-            if(marker==WEX4_MAGIC){
+            if(x->wex4){   /* not page bytes 56..59: a legacy file's are never validated */
                 x->wex_seen=(unsigned char*)calloc((size_t)c->layers*c->experts,1u);
                 if(!x->wex_seen){fprintf(stderr,"OOM WEX4 first-read marks\n");exit(1);}
                 x->wex_sha=table+wex4_align(table_bytes);

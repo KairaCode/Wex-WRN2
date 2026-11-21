@@ -201,7 +201,7 @@ static int decode_fast(const WexNr2Record *v, const WexNr2Layout *l, const WexNr
 
 typedef struct { WexEntry entry; WexNr2Layout layout; unsigned char *record; size_t total; } Real;
 
-/* fastdec lane: also takes the bare rec_LL_EEE.bin files of /tmp/wnr3-data/recs (entry read from entries.bin
+/* fastdec lane: also takes the bare rec_LL_EEE.bin files of <TMP>/wnr3-data/recs (entry read from entries.bin
  * in the same directory, row layer * 192 + expert). */
 static unsigned char *read_rec_with_entry(const char *path, size_t *bytes) {
     const char *base = strrchr(path, '/');

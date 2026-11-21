@@ -6,7 +6,7 @@ def H(c):
     c=c[c>0]; n=c.sum(); return -(c*np.log2(c/n)).sum()/n
 def mi(l,e):
     ((s1,q1),(s3,q3)),anc3=mats(l,e)
-    rec=open("/tmp/wnr3-data/recs/rec_%02d_%03d.bin"%(l,e),"rb").read(32); anc1=rec[24]
+    rec=open("<TMP>/wnr3-data/recs/rec_%02d_%03d.bin"%(l,e),"rb").read(32); anc1=rec[24]
     blk=np.arange(q3.size)//32
     z=(np.clip(s3[blk]-anc3,-3,3)+3)*7+np.clip(s1[blk]-anc1,-3,3)+3
     a3=q3&7; a1=q1&7; n=q3.size

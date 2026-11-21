@@ -8,7 +8,7 @@
  *                                        THREADS > 0: threads per record; THREADS < 0: -THREADS records at once, 1 thread each
  *                                        prints "PASS wall_ms_per_record cpu_ms_per_record" per pass
  * VARIANT: ref | w3:KERNEL,LANES,FUSE | wnx:DIR:KERNEL:G     ID: LL_EEE
- * Z(source) = /tmp/wnr3-research/fastfmt/data/Z_LL_EEE.bin (checked against wex_nr2_decode by "tdrv equal ref"). */
+ * Z(source) = <TMP>/wnr3-research/fastfmt/data/Z_LL_EEE.bin (checked against wex_nr2_decode by "tdrv equal ref"). */
 #define _GNU_SOURCE
 #include "wnx_fast.h"
 #include "wex_fast_decode.h"
@@ -54,7 +54,7 @@ typedef struct {
 
 static void setup(const char *var) {
     size_t b;
-    unsigned char *blob = read_file("/tmp/wnr3-data/recs/model.bin", &b);
+    unsigned char *blob = read_file("<TMP>/wnr3-data/recs/model.bin", &b);
     memset(&V, 0, sizeof V);
     if (wex_nr2_model_open(blob, b, &model3)) exit(2);
     if (!strcmp(var, "ref")) V.kind = 0;
@@ -77,7 +77,7 @@ static void setup(const char *var) {
         V.k = atoi(d + 1);
         if (V.k == 2 && !WNXF_512) { fprintf(stderr, "WNX kernel 2 needs an AVX-512 build\n"); exit(2); }
         snprintf(V.dir, sizeof V.dir, "%.*s", (int)(d - (var + 4)), var + 4);
-        cnt = read_file("/tmp/wnr3-research/fastfmt/out_train.counts", &b);
+        cnt = read_file("<TMP>/wnr3-research/fastfmt/out_train.counts", &b);
         {   /* the same model build as fastfmt bench.c / ff.c (counts layout of ff.c) */
             const uint64_t (*nib)[7][16] = (const uint64_t(*)[7][16])(const void *)cnt;
             const uint64_t (*sc)[256] = (const uint64_t(*)[256])(const void *)(cnt + 8u * (3 * 7 * 16 + 3 * 7 * 32 * 16));
@@ -95,13 +95,13 @@ static void load_rec(const char *id, Rec *r, int want_z) {
     uint64_t raw, al;
     memset(r, 0, sizeof *r);
     if (sscanf(id, "%d_%d", &r->layer, &r->expert) != 2) exit(2);
-    snprintf(p, sizeof p, "/tmp/wnr3-research/fastfmt/data/E_%02d_%03d.bin", r->layer, r->expert);
+    snprintf(p, sizeof p, "<TMP>/wnr3-research/fastfmt/data/E_%02d_%03d.bin", r->layer, r->expert);
     eb = read_file(p, &b); memcpy(&r->e, eb, 72); free(eb);
     wex_entry_raw_sizes(&r->e, &raw, &al); r->raw = raw;
     wex_nr2_layout(&r->e, &r->lay);
-    if (want_z) { snprintf(p, sizeof p, "/tmp/wnr3-research/fastfmt/data/Z_%02d_%03d.bin", r->layer, r->expert); r->z = read_file(p, &b); if (b != raw) exit(2); }
+    if (want_z) { snprintf(p, sizeof p, "<TMP>/wnr3-research/fastfmt/data/Z_%02d_%03d.bin", r->layer, r->expert); r->z = read_file(p, &b); if (b != raw) exit(2); }
     if (V.kind < 2) {
-        snprintf(p, sizeof p, "/tmp/wnr3-data/recs/rec_%02d_%03d.bin", r->layer, r->expert);
+        snprintf(p, sizeof p, "<TMP>/wnr3-data/recs/rec_%02d_%03d.bin", r->layer, r->expert);
         r->rec = read_file(p, &r->n);
         if (r->n != r->e.total_bytes || wex_nr3_parse(r->rec, r->n, &r->lay, model3.id, &r->v3)) { fprintf(stderr, "wnr3 parse %s\n", p); exit(2); }
     } else {

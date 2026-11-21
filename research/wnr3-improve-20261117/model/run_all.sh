@@ -1,13 +1,13 @@
 #!/bin/sh
 # Full rerun of the model lane from this directory (CPU, 2 processes; ~2.5 h on the shared 4-core Xeon).
-# Needs /tmp/wnr3-data (read only) and network for the two fetch steps (headers 7,680 x 32 B; 37 records, 586 MB).
+# Needs <TMP>/wnr3-data (read only) and network for the two fetch steps (headers 7,680 x 32 B; 37 records, 586 MB).
 set -e
-cd /tmp/wnr3-research/model
+cd '<TMP>'/wnr3-research/model
 gcc -O2 -shared -fPIC -Wall -I/workspace/Wex-WRN2/c -o mlib.so mlib.c
 python3 prep.py                         # 121 records: decode, coded slabs, counts, re-encode == stored
 python3 fetch_headers.py                # headers.bin: anchors and SP of all 7,680 records
 python3 fetch_shifted.py                # extra/: the 37 other records with anchors != (120,120,120)
-python3 prep.py /tmp/wnr3-research/model/extra
+python3 prep.py '<TMP>'/wnr3-research/model/extra
 python3 recount.py                      # anchor-relative scale counts (+ cross-check of the counts)
 python3 harness.py                      # prototype == stored records byte for byte; q_rule == library
 python3 screen.py > screen.log          # ideal code lengths (bounds)

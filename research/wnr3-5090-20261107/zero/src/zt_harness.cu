@@ -1,5 +1,5 @@
 // Canonical-zero (WNR2z) GPU bit test harness for KAIRA's DeepSeek V4 CUDA backend.
-// The backend source is included VERBATIM (worktree beautiful-volhard-bfc14a, git HEAD 88ddb07),
+// The backend source is included VERBATIM (worktree <worktree>, git HEAD 88ddb07),
 // so every kernel and every static dispatch helper called below is the shipped code, compiled with
 // the same flags as the shipped DLL flavour (generic: sm_120 C++17; DeepGEMM: sm_120a C++20).
 // Only additions: the C exports zt_* (host glue), one warp-per-row wrapper around the device function

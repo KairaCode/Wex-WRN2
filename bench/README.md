@@ -11,7 +11,7 @@ Nothing is downloaded or installed by the benchmark itself. A standard Linux box
 
 | Needed for | Debian / Ubuntu | Fedora | Check |
 |---|---|---|---|
-| everything | `sudo apt install git gcc python3 make` | `sudo dnf install git gcc python3 make` | `gcc --version`, `python3 --version` (3.8 or later) |
+| everything | `sudo apt install git gcc python3 make` | `sudo dnf install git gcc python3 make` | `gcc --version`, `python3 --version` (3.8 or later; CI tests 3.12, the `python3` of Ubuntu 24.04, and newer) |
 | GPU copy test (NVIDIA only, optional) | the CUDA toolkit (`nvcc`); DGX OS already has it | same | `nvcc --version`; if it is installed but not found: `export PATH=/usr/local/cuda/bin:$PATH` |
 | extra details in the report (optional) | `sudo apt install pciutils` (`lspci`); `zfsutils-linux` if you use ZFS | `pciutils` | not required, the fields just stay empty |
 
@@ -42,9 +42,9 @@ The same lines on Windows, in the MSYS2 UCRT64 shell; there the folder `D:\model
 - `--file BIG_FILE`: read an existing large file instead, for example a model file you have not read for
   a while. That is the closest thing to a cold read on ZFS, whose ARC cache cannot be dropped without
   root.
-- `--quick`: about 2 minutes instead of about 10. It does not shorten `wex_check`: on the Windows machine of
-  the notes below a default run took 5 to 7.5 minutes, 2.5 to 4.7 of them in `wex_check` (six runs, with
-  other jobs on the CPU).
+- `--quick`: about 2 minutes instead of about 10, with a 4 GiB test file unless `--size-gb` is given. It
+  does not shorten `wex_check`: on the Windows machine of the notes below a default run took 5 to 7.5
+  minutes, 2.5 to 4.7 of them in `wex_check` (six runs, with other jobs on the CPU).
 - `--skip h2d,wex_check`: skip sections.
 
 The script prints each section as it goes and writes `bench/out/results.json`. **Read it before sharing

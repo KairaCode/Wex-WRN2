@@ -2,7 +2,7 @@
 # Z(source) = the exact bytes WNR3-CZ decodes to, as data/Z_LL_EEE.bin (+ entry as data/E_LL_EEE.bin).
 import ctypes, os, sys, glob
 from multiprocessing import Pool
-D = "/tmp/wnr3-data"; OUT = os.path.dirname(os.path.abspath(__file__)) + "/data"
+D = "<TMP>/wnr3-data"; OUT = os.path.dirname(os.path.abspath(__file__)) + "/data"
 model = open(D + "/recs/model.bin", "rb").read(); table = open(D + "/recs/entries.bin", "rb").read()
 def one(p):
     lib = ctypes.CDLL(D + "/libwex_nr3_tools.so")

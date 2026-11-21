@@ -48,12 +48,18 @@ def align(n):
     return (n + ALIGN - 1) // ALIGN * ALIGN
 
 
+def require(ok, what):
+    """A check that also runs under python -O, which strips assert statements."""
+    if not ok:
+        raise SystemExit(what)
+
+
 class Tools:
     def __init__(self, path):
-        lib = C.CDLL(path)
+        lib = C.CDLL(os.path.abspath(path))   # Windows does not load a bare DLL name from the current folder
         P, U32, SZ = C.c_void_p, C.c_uint32, C.c_size_t
         lib.wex_nr3_tools_abi.restype = U32
-        assert lib.wex_nr3_tools_abi() == 1, 'wex_nr3_tools.dll ABI'
+        require(lib.wex_nr3_tools_abi() == 1, 'wex_nr3_tools.dll ABI')
         lib.wex_nr3_prepare.argtypes = [P, P, C.c_int, P, P]
         lib.wex_nr3_count_expert.argtypes = [P, P, P, P]
         lib.wex_nr3_build_model.argtypes = [P, P, P, P]
@@ -72,7 +78,7 @@ class Wex1:
         with open(path, 'rb') as f:
             self.page = f.read(ALIGN)
             h = HEADER.unpack_from(self.page)
-            assert h[0] == WEX_MAGIC_V1 and h[1] == 1, 'source must be a WEX1 container'
+            require(h[0] == WEX_MAGIC_V1 and h[1] == 1, 'source must be a WEX1 container')
             self.layers, self.experts, self.table_offset = h[2], h[3], h[5]
             f.seek(self.table_offset)
             tab = f.read(self.layers * self.experts * ENTRY.size)
@@ -83,12 +89,12 @@ class Wex1:
 
     def slab(self, layer, expert):
         e = self.entry(layer, expert)
-        assert e[1] and e[-1] == 0, f'L{layer} E{expert}: not a raw WEX1 entry'
+        require(e[1] and e[-1] == 0, f'L{layer} E{expert}: not a raw WEX1 entry')
         raw = e[2] + e[3]
         with open(self.path, 'rb') as f:
             f.seek(e[0])
             data = f.read(raw)
-        assert len(data) == raw
+        require(len(data) == raw, f'L{layer} E{expert}: short read')
         return e, data
 
 
@@ -122,8 +128,8 @@ def train(tools, src, pairs, cz):
         eb = entry_bytes(e, 0, align(len(data)))
         coded = C.create_string_buffer(len(data))
         lw, ls = (C.c_uint64 * (3 * 567 * 16))(), (C.c_uint64 * (3 * 256))()
-        assert tools.lib.wex_nr3_prepare(eb, data, int(cz), coded, None) >= 0
-        assert tools.lib.wex_nr3_count_expert(eb, coded, lw, ls) == 0
+        require(tools.lib.wex_nr3_prepare(eb, data, int(cz), coded, None) >= 0, f'L{pair[0]} E{pair[1]}: prepare failed')
+        require(tools.lib.wex_nr3_count_expert(eb, coded, lw, ls) == 0, f'L{pair[0]} E{pair[1]}: count failed')
         return lw, ls
     with cf.ThreadPoolExecutor(THREADS) as pool:
         for lw, ls in pool.map(one, pairs):
@@ -133,7 +139,7 @@ def train(tools, src, pairs, cz):
                 sc[i] += ls[i]
     blob = C.create_string_buffer(MODEL_BYTES)
     mid = C.c_uint32()
-    assert tools.lib.wex_nr3_build_model(wc, sc, blob, C.byref(mid)) == 0
+    require(tools.lib.wex_nr3_build_model(wc, sc, blob, C.byref(mid)) == 0, 'model build failed')
     return blob.raw, mid.value
 
 
@@ -145,7 +151,7 @@ def encode_one(tools, src, blob, layer, expert, cz):
     coded = C.create_string_buffer(raw)
     stats = (C.c_uint32 * 16)()
     flags = tools.lib.wex_nr3_prepare(eb, data, int(cz), coded, stats)
-    assert flags >= 0
+    require(flags >= 0, f'L{layer} E{expert}: prepare failed')
     expected = C.create_string_buffer(data, raw)
     if cz:
         tools.lib.wex_nr3_canonicalize(eb, expected)
@@ -155,7 +161,7 @@ def encode_one(tools, src, blob, layer, expert, cz):
     owner = layer << 16 | expert
     rc = tools.lib.wex_nr3_encode_record(blob, eb, coded, flags, owner, WCHUNK, SCHUNK, out, cap,
                                          C.byref(used), C.byref(total))
-    assert rc in (0, 1), (layer, expert, rc)
+    require(rc in (0, 1), f'L{layer} E{expert}: encode failed ({rc})')
     exp = expected.raw[:raw]
     row = {'layer': layer, 'expert': expert, 'ceil_mask': flags & 7, 'cz': bool(flags & 8),
            'gate_failed': [m for m in range(3) if not flags >> m & 1],
@@ -168,7 +174,7 @@ def encode_one(tools, src, blob, layer, expert, cz):
         return e, exp, None, row
     record = out.raw[:total.value]
     vb = entry_bytes(e, 0, total.value, CODEC_NR3)
-    assert tools.lib.wex_nr3_verify(blob, vb, record, layer, expert, exp) == 0, f'L{layer} E{expert}: CPU verify failed'
+    require(tools.lib.wex_nr3_verify(blob, vb, record, layer, expert, exp) == 0, f'L{layer} E{expert}: CPU verify failed')
     row['codec'] = CODEC_NR3
     return e, exp, record, row
 
@@ -177,7 +183,7 @@ def get_model(tools, src, args, cz):
     if '--model' in args:
         blob = open(args[args.index('--model') + 1], 'rb').read()
         mid = C.c_uint32()
-        assert len(blob) == MODEL_BYTES and tools.lib.wex_nr3_model_id(blob, C.byref(mid)) == 0, 'invalid model'
+        require(len(blob) == MODEL_BYTES and tools.lib.wex_nr3_model_id(blob, C.byref(mid)) == 0, 'invalid model')
         return blob, mid.value, 'file'
     if '--train-lab80' in args:
         pairs = lab80(src.layers, src.experts)
@@ -228,7 +234,10 @@ def mode_bins(tools, src, out, args, cz):
 
 def mode_container(tools, src, out, args, cz):
     text = args[args.index('--layers') + 1]
-    layers = list(range(src.layers)) if text == 'all' else [int(x) for x in text.split(',')]
+    # sorted and deduplicated: records go in table order (wex_validate_table)
+    layers = list(range(src.layers)) if text == 'all' else sorted({int(x) for x in text.split(',') if x})
+    if any(not 0 <= L < src.layers for L in layers):
+        raise SystemExit(f'--layers must be in [0, {src.layers})')
     limit = int(args[args.index('--max-experts') + 1]) if '--max-experts' in args else src.experts
     # an expert the source lacks (empty entry, e.g. a partial WEX1) stays zero -> safetensors
     pairs = [(L, e) for L in layers for e in range(limit) if src.entry(L, e)[1]]
@@ -263,7 +272,7 @@ def mode_container(tools, src, out, args, cz):
         f.write(b''.join(table).ljust(align(count * ENTRY.size), b'\0'))
         f.truncate(offset)
     tab = C.create_string_buffer(b''.join(table), count * ENTRY.size)
-    assert tools.lib.wex_nr3_check_container(bytes(page), blob, tab, offset) == 0, 'container check failed'
+    require(tools.lib.wex_nr3_check_container(bytes(page), blob, tab, offset) == 0, 'container check failed')
     check_profiles(tmp, table, cz)
     os.replace(tmp, out)
     summary = {'model_id': f'0x{mid:08x}', 'model': how, 'cz': cz, 'layers': layers, 'records': len(report),
@@ -283,7 +292,7 @@ def check_profiles(path, table, cz):
                 continue
             f.seek(fields[0] + 27)
             got = f.read(1)[0] & 8
-            assert got == want, f'entry {i}: record CZ bit {got} != container {want}'
+            require(got == want, f'entry {i}: record CZ bit {got} != container {want}')
 
 
 def main():

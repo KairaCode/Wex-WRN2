@@ -333,8 +333,9 @@ empty name= dtype=U8 shape=0
 	if len(got) != len(want) || res.H.Tensors-res.X.DataTensors != 3 {
 		t.Errorf("%d data tensors and %d tensors of 0 bytes read back", len(got), res.H.Tensors-res.X.DataTensors)
 	}
-	// the choices left to the writer: planes 4 with the rotation for F32, 1 plane for mixed element sizes
-	for rec, wantParams := range map[uint32][4]byte{6: {4, 12, 0, 1}, 7: {1, 12, 0, 0}, 11: {2, 12, 0, 1}} {
+	// the choices left to the writer: planes 4 and no rotation for a group of two F32 tensors under 64 KiB,
+	// 1 plane for mixed element sizes, the rotation for a part of a split BF16 tensor
+	for rec, wantParams := range map[uint32][4]byte{6: {4, 12, 0, 0}, 7: {1, 12, 0, 0}, 11: {2, 12, 0, 1}} {
 		r := res.X.Record(rec)
 		p := file[r.Offset+12 : r.Offset+16]
 		if r.Codec != codecWBP1 || p[0] != wantParams[0] || p[1] != wantParams[1] || p[3] != wantParams[3] {
@@ -468,6 +469,24 @@ func TestWriterOtherChoices(t *testing.T) {
 	})
 	if !bytes.Equal(mustRead(t, out), mustRead(t, pathOf("testdata/planes.wex4"))) {
 		t.Errorf("testdata/planes.wex4 with the writer's defaults is not the file of pack")
+	}
+
+	// planes.wex4 has no record whose tensors are all floats and under 64 KiB. The converter codes such a
+	// group with transform 0, also a group of one, and one float tensor of 64 KiB or more with transform 1
+	// (WEX4-SPEC sections 7 and 14)
+	for _, c := range []struct {
+		sizes []uint64
+		want  byte
+	}{{[]uint64{4000, 8000}, 0}, {[]uint64{4000}, 0}, {[]uint64{64 << 10}, 1}} {
+		r := srcRecord{codec: "wbp1", planes: -1, chunk: -1, transform: -1}
+		n := uint64(0)
+		for _, s := range c.sizes {
+			r.tensors = append(r.tensors, srcTensor{dtype: 13, nbytes: s})
+			n += s
+		}
+		if _, _, tr, err := wbp1Params(&r, &r.tensors[0], n); err != nil || tr != c.want {
+			t.Errorf("F32 tensors of %v bytes: transform %d (%v), want %d", c.sizes, tr, err, c.want)
+		}
 	}
 }
 

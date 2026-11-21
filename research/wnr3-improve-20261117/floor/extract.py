@@ -4,7 +4,7 @@ coded scales + coded nibbles). Writes out/manifest.json with the stored record s
   python3 extract.py [jobs]"""
 import ctypes as C, struct, os, sys, glob, json
 from multiprocessing import Pool
-D = "/tmp/wnr3-data"; OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "out")
+D = "<TMP>/wnr3-data"; OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "out")
 ENTRY = struct.Struct('<QIII6H6H3I3II')
 RAW = 18800640
 

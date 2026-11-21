@@ -26,11 +26,11 @@ WEX4 upgraded in place from WEX3; production WNR3-CZ records, codec 5, record fl
 
 Raw record (decoded slab) = 18,800,640 B: scales w1, w2, w3 then packed FP4 weights w1, w2, w3.
 
-## Rebuilding /tmp/wnr3-data
+## Rebuilding \<TMP>/wnr3-data
 
-    mkdir -p /tmp/wnr3-data && cp rangefetch.py check_decode.py /tmp/wnr3-data/ && cd /tmp/wnr3-data
+    mkdir -p <TMP>/wnr3-data && cp rangefetch.py check_decode.py <TMP>/wnr3-data/ && cd <TMP>/wnr3-data
     python3 rangefetch.py meta
     python3 rangefetch.py records "$(cat <this folder>/sample.txt)"
     python3 <Wex-WRN2>/wex4/research/wnr4-record/fetch.py v4_flash_experts.nr3.wex recs records "$(cat <this folder>/sample.txt)"
-    (cd <Wex-WRN2>/c && gcc -O2 -shared -fPIC -I. tools/wex_nr3_tools.c -o /tmp/wnr3-data/libwex_nr3_tools.so)
+    (cd <Wex-WRN2>/c && gcc -O2 -shared -fPIC -I. tools/wex_nr3_tools.c -o <TMP>/wnr3-data/libwex_nr3_tools.so)
     python3 check_decode.py      # 121 decoded, failures: []

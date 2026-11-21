@@ -1,6 +1,6 @@
 # fastdec: faster WNR3 CPU decode, same format
 
-Rerun everything (from this directory): `./build.sh && ./run_equal2.sh && ./run_mutate.sh && python3 negcontrol.py 6000 99 /tmp/wnr3-data/recs/rec_{00_007,20_073,39_120}.bin && ./run_time.sh` (results in `logs/`; see RESULTS.md).
+Rerun everything (from this directory): `./build.sh && ./run_equal2.sh && ./run_mutate.sh && python3 negcontrol.py 6000 99 <TMP>/wnr3-data/recs/rec_{00_007,20_073,39_120}.bin && ./run_time.sh` (results in `logs/`; see RESULTS.md).
 
 | file | what |
 |---|---|

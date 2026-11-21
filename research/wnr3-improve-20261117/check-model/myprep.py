@@ -6,7 +6,7 @@ library counts and numpy anchor-relative scale counts written to THIS directory 
 Writes prep.json, prep_extra.json here."""
 import ctypes, struct, os, sys, glob, hashlib, json, numpy as np
 from multiprocessing import Pool
-D = "/tmp/wnr3-data"; W = "/tmp/wnr3-research/check-model"; WI = "/tmp/wnr3-research/model"
+D = "<TMP>/wnr3-data"; W = "<TMP>/wnr3-research/check-model"; WI = "<TMP>/wnr3-research/model"
 RAW = 18800640
 os.makedirs(W + "/counts", exist_ok=True)
 model = open(D + "/recs/model.bin", "rb").read(); table = open(D + "/recs/entries.bin", "rb").read()

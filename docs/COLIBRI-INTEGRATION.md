@@ -60,7 +60,7 @@ From a checkpoint to a verified WEX4 file. Every command runs from the repositor
 
    ```sh
    gcc -O2 -fopenmp c/tools/wex4_verify.c -o wex4_verify.exe
-   ./wex4_verify.exe experts.wex       # exit 0 pass, 1 mismatch, 2 not WEX4; prints COLI_WEX_ROOT=<64 hex>
+   ./wex4_verify.exe experts.wex       # exit 0 pass, 1 mismatch, 2 not WEX4, 3 out of memory; prints COLI_WEX_ROOT=<64 hex>
    ```
 
 5. **Mirror (optional).** Copy the file byte for byte to another drive, under the same file name. Two copies are the same container when their header pages are equal; `wex4_verify` prints the same root for both.
@@ -82,9 +82,11 @@ Every variable that changes how a WEX file is opened or read, with its default i
 
 | Variable | Default | Effect | Read in |
 |---|---|---|---|
-| `COLI_WEX_PATH` | DeepSeek: `<model_dir>\v4_flash_experts.wex`, opened if it exists; qwen38: unset (no container) | the container | `deepseek_v4.c`; `c/qwen38_wex.h`; `c/expert_store_wex.c` |
+| `COLI_WEX_PATH` | DeepSeek: `<model_dir>\v4_flash_experts.wex`, opened if it exists; `c/expert_store_wex.c`: the same file name, with `/` as the separator off Windows; qwen38: unset (no container) | the container | `deepseek_v4.c`; `c/qwen38_wex.h`; `c/expert_store_wex.c` |
 | `COLI_WEX_EXTRA_MIRRORS` | unset | `;`-separated folders that hold a byte copy under the same file name; up to three | `deepseek_v4.c`; `c/qwen38_wex.h` |
-| `COLI_WEX_WEIGHTS` | equal shares | read split over primary and mirrors, one positive weight per copy (`38,62` on the test machine); an expert always goes to the same drive. A wrong count is ignored with a log line | `deepseek_v4.c`; `c/qwen38_wex.h` |
+| `COLI_MODEL_MIRROR` | unset | DeepSeek: `;`- or `,`-separated folders with copies of the safetensors shards (for the shard dual-SSD route) and/or of the container; each one holding a matching container under the same file name becomes a container mirror, ahead of those of `COLI_WEX_EXTRA_MIRRORS` (up to three in all). `c/expert_store_wex.c`: one folder (the whole value), whose copy of the container is the mirror. qwen38 does not read it | `deepseek_v4.c`; `c/expert_store_wex.c` |
+| `COLI_WEX_WEIGHTS` | qwen38: equal shares. DeepSeek: equal shares with 2 or 3 mirrors; with one mirror and no valid list, the shard dual-SSD route (`coli_st_expert_route`), which sends every read to the primary unless `COLI_MODEL_MIRROR` registers shard copies, so always set it | read split over primary and mirrors, one positive weight per copy (`38,62` on the test machine); an expert always goes to the same drive. A wrong count is ignored with a log line | `deepseek_v4.c`; `c/qwen38_wex.h` |
+| `COLI_DISK_WEIGHTS` | DeepSeek: a start-up probe of the drives ([2026-11-09 guide](reports/colibri-integration-20261109.md), section 5.5); `c/expert_store_wex.c`: `58,42` | two weights, primary and mirror: the split of the shard dual-SSD route, which the DeepSeek engine takes for one mirror without `COLI_WEX_WEIGHTS`, and of the standalone store | colibri's `coli_st_mirror_setup`, called from `deepseek_v4.c`; `c/expert_store_wex.c` |
 | `COLI_WEX_ROOT` | unset | 64 hex digits: a WEX4 file with another root is refused; under a pin, a file that is not WEX4 is refused too (DeepSeek falls back to the safetensors, qwen38 stops) | `deepseek_v4.c`; `c/qwen38_wex.h` |
 | `COLI_WEX_VERIFY` | DeepSeek: on when `COLI_WEX_ROOT` is set, else off; qwen38: 0, whatever the root | `1` = SHA-256 of each record's stored bytes at its first read; a record that fails stays refused (DeepSeek serves it from the safetensors; qwen38 stops) | `deepseek_v4.c`; `c/qwen38_wex.h` |
 | `COLI_WEX_GPU_DIRECT` | 0 | DeepSeek: 1 = misses outside RAM are decoded straight into VRAM; 2 = the next-layer prefetcher too. Needs helper bit 1 and a backend with the fp4 mirror exports, else it logs and stays on the host slab | `deepseek_v4.c` |
@@ -100,6 +102,7 @@ Every variable that changes how a WEX file is opened or read, with its default i
 | `COLI_WEX_RAM_CACHE_GB` | 0 | RAM cache of compressed records (needs `COLI_WEX_GPU_DIRECT>=1`); `COLI_WEX_RAM_CACHE_PIN` (default on) and `COLI_WEX_RAM_CACHE_VERIFY` (default 0) tune it | `deepseek_v4.c` |
 | `WEX_READ_RETRY` | off | `1` = one retry after 16 ms when a direct read fails | `deepseek_v4.c`; `c/expert_store_wex.c` |
 | `COLI_WEX_CUDA_LIB` | `kaira_wex_cuda.dll` next to the executable | another helper; `0` = CPU decoder only | `c/wex_decode.c` |
+| `DSV4_CUDA_MOE_MASKED` | unset | not 0 = the CUDA backend's masked DeepGEMM MoE path, which is not proven value-exact: a canonical-zero (`--cz`) container is then refused at open | `c/wex_decode.c` (`coli_wex_container_refused`, called by all three open paths: DeepSeek, qwen38 and `c/expert_store_wex.c`) |
 | `Q38_MXFP4_DIR` | unset | qwen38: read the Quark shards directly, no container (a check, not the fast path) | `c/qwen38_wex.h` |
 | `Q38_ASYNC_MISS` | 0 | qwen38 with `QT_GPU_MISS=2`: a decode step's misses are read on the loader thread, and each goes to the GPU as soon as its read lands | engine `qwen38_core.h` |
 
@@ -107,10 +110,10 @@ What the two engine profiles set on 2026-11-13: [STATUS.md](../STATUS.md).
 
 ## 6. Mirrors and split reads
 
-- A mirror is a byte copy of the container on another drive, under the same file name, in a folder listed in `COLI_WEX_EXTRA_MIRRORS`. A copy whose header page differs is ignored with a log line.
-- Each (layer, expert) goes to one drive, picked by a hash weighted with `COLI_WEX_WEIGHTS`. Weights proportional to the drives' measured speed are a starting point: on the test machine `38,62` matches U: (PCIe 4) against C: (PCIe 5), and the second drive gave V4.1 +49% decode ([BENCHMARKS.md](BENCHMARKS.md)).
+- A mirror is a byte copy of the container on another drive, under the same file name, in a folder listed in `COLI_WEX_EXTRA_MIRRORS` or `COLI_MODEL_MIRROR`: the DeepSeek engine takes both lists, up to three mirrors; qwen38 only `COLI_WEX_EXTRA_MIRRORS`; the standalone store `c/expert_store_wex.c` one `COLI_MODEL_MIRROR` folder. A copy whose header page differs is ignored with a log line.
+- Each (layer, expert) goes to one drive, picked by a hash weighted with `COLI_WEX_WEIGHTS`. Weights proportional to the drives' measured speed are a starting point: on the test machine `38,62` matches U: (PCIe 4) against C: (PCIe 5), and the second drive gave V4.1 +49% decode ([BENCHMARKS.md](BENCHMARKS.md)). In the DeepSeek engine, one mirror without `COLI_WEX_WEIGHTS` takes the shard dual-SSD route instead (`coli_st_expert_route`), which sends every read to the primary unless `COLI_MODEL_MIRROR` registers shard copies: always set it, and check that the log shows `[v4_wex] read split over 2 drives`.
 - Splitting one record across both drives (`V4_WEX_STRIPE=1`) measured -8.7% on V4.1, so it stays off; sub-reads (`V4_WEX_SUBREADS=4`) measured +7.7% and are on in the `v41gpu` profile.
-- Pick the read size and queue depth with `c/tools/wexio_probe.py` (Windows, read-only; `--self-test` first). It refuses to run while the application or an engine is running, and its default inputs are the test machine's container paths: pass `--file` for yours.
+- Pick the read size and queue depth with `c/tools/wexio_probe.py` (Windows, read-only; `--self-test` first). It refuses to run while the application or an engine is running, and its default inputs are the test machine's container paths: pass `--file LABEL=PATH` once per drive (for example `--file C=X:\a.wex --file U=Y:\b.wex`) for yours.
 
 ## 7. Integrity
 
@@ -131,9 +134,11 @@ What the two engine profiles set on 2026-11-13: [STATUS.md](../STATUS.md).
 | `a container that is not WEX4 is not the pinned COLI_WEX_ROOT` | a WEX1-WEX3 file under a pin | upgrade it to WEX4, or unset the pin |
 | `Ignoring mismatched mirror` | the copy differs from the primary | recopy and verify it |
 | `COLI_WEX_WEIGHTS '...' ignored` | the count is not 1 + mirrors, or a weight is not positive | fix the list |
+| no `[v4_wex] read split over N drives` line with one mirror | `COLI_WEX_WEIGHTS` unset: the DeepSeek engine takes the shard dual-SSD route, which sends every read to the primary unless `COLI_MODEL_MIRROR` registers shard copies | set it to two weights |
 | `COLI_WEX_GPU_DIRECT needs ... staying on the host slab path` | the helper lacks bit 1, or the backend lacks the fp4 mirror exports | rebuild the helper or the backend |
 | `V4_PREWARM_BATCH needs V4_WEX_BATCH=1 and COLI_WEX_GPU_DIRECT>=1` | the batch path is off | set both, or drop the switch |
 | a WNR3 container is refused, or decodes on the CPU at about 33 MB/s | no helper, or one without bit 16 | put a current `kaira_wex_cuda.dll` next to the engine |
+| `[...] value-exact (canonical-zero) container refused: DSV4_CUDA_MOE_MASKED is not proven value-exact` | a container built with `--cz`, and `DSV4_CUDA_MOE_MASKED` set and not 0 | unset `DSV4_CUDA_MOE_MASKED`, or use a container built without `--cz` |
 | free VRAM falls during a run and more and more records come back from the helper with status 1 and decode on the CPU | a helper built before 2026-11-16, whose per-thread workspaces leak when engine threads exit | rebuild the helper from the current `c/tools/wex_cuda_bridge.cu`; `test_wex_nr3_gpu` (case 4, thread churn) fails on the old one |
 
 The longer table of 2026-11-09 (WNR2, tiny fixtures, MSYS2 builds) is in section 9 of the [old guide](reports/colibri-integration-20261109.md).

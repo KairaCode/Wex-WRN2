@@ -3,7 +3,7 @@
 # (2) AVX2 build with TEST_DEFAULT_ONLY (k0 + the default entry point = kernel 3 x 4) on all 121;
 # (3) AVX2 build, every variant, on 12 records (one per ~3 layers + the outlier).
 cd "$(dirname "$0")"
-R=/tmp/wnr3-data/recs
+R='<TMP>'/wnr3-data/recs
 while [ -n "${WAIT_PID:-}" ] && kill -0 "$WAIT_PID" 2>/dev/null; do sleep 5; done
 for f in $R/rec_*.bin; do
   grep -q "^$f: reference" logs/equal_z_121.txt && continue

@@ -1,5 +1,5 @@
 """Cross-LAYER relation (same expert index in the adjacent layer): the 121-record sample has no such pair, so this
-fetches 2 extra records over HTTP range requests straight into out/adj/ (nothing written to /tmp/wnr3-data):
+fetches 2 extra records over HTTP range requests straight into out/adj/ (nothing written to <TMP>/wnr3-data):
 L1 E7 (next to TEST L0 E7) and L23 E21 (next to TEST L22 E21). Each is decoded with the reference decoder (stream
 hashes checked), brought to the coded domain, and I(a ; a_adjacent | srel) / I(s ; s_adjacent) are measured as in
 mi2.py.  python3 adjacent.py -> out/adjacent.json"""
@@ -8,7 +8,7 @@ import numpy as np
 from load import load, H
 from mi2 import cmi
 URL = "https://huggingface.co/Kaira666/Kaira-WEX4-Experts/resolve/main/v41-reap/v4_flash_experts.nr3.wex"
-D = "/tmp/wnr3-data"; ENTRY = struct.Struct('<QIII6H6H3I3II'); RAW = 18800640
+D = "<TMP>/wnr3-data"; ENTRY = struct.Struct('<QIII6H6H3I3II'); RAW = 18800640
 PAIRS = [((0, 7), (1, 7)), ((22, 21), (23, 21))]
 
 def fetch(l, e):

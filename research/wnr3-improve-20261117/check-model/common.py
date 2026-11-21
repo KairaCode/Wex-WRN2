@@ -1,6 +1,6 @@
 """Shared helpers: data access, quantisers, the C prototype (mlib.so) and the tool library."""
 import ctypes, json, os, struct, hashlib, numpy as np
-D = "/tmp/wnr3-data"; W = "/tmp/wnr3-research/check-model"; WI = "/tmp/wnr3-research/model"  # coded slabs read from the lane after sha check (myprep.py)
+D = "<TMP>/wnr3-data"; W = "<TMP>/wnr3-research/check-model"; WI = "<TMP>/wnr3-research/model"  # coded slabs read from the lane after sha check (myprep.py)
 RAW = 18800640
 NC = 567
 PREP = json.load(open(W + "/prep.json"))

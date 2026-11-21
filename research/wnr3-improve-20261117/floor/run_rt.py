@@ -10,11 +10,11 @@ if __name__ == "__main__":
     ks = [tuple(map(int, t.split(":"))) for t in sys.argv[1].split(",")]
     for k in ks:
         f, geo, anc = args_for(*k)
-        rec = "/tmp/wnr3-data/recs/rec_%02d_%03d.bin" % k
+        rec = "<TMP>/wnr3-data/recs/rec_%02d_%03d.bin" % k
         base = None
         runs = [("prod", "-", 0)] + [(v, os.path.join(H, "out", "tables", "m2_%s_%s.u16" % (v, "lo" if k[0] < 8 else "hi")), VAR[v]) for v in VAR]
         for name, tab, vid in runs:
-            p = subprocess.run([os.path.join(H, "rt"), f, rec, "/tmp/wnr3-data/recs/model.bin", tab, str(vid)] + geo,
+            p = subprocess.run([os.path.join(H, "rt"), f, rec, "<TMP>/wnr3-data/recs/model.bin", tab, str(vid)] + geo,
                                capture_output=True, text=True)
             d = json.loads(p.stdout); d.update(layer=k[0], expert=k[1], name=name, exit=p.returncode)
             if name == "prod": base = d["w3_bytes"]
