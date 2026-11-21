@@ -215,7 +215,7 @@ int main(int argc, char **argv) {
     return tasks_of(view.weight_streams) >= 2 ? 0 : 1;
 }
 EOF
-"$CC" $W $S -I "$C" -I "$ROOT/wex4/research/fast-cpu-decode" -I "$ROOT/wex4/fuzz" tasks.c -o tasks
+"$CC" $W $S -I "$ROOT/wex4/research/fast-cpu-decode" -I "$C" -I "$ROOT/wex4/fuzz" tasks.c -o tasks
 ./tasks synth_nr3.wex || { echo "the synthetic record gives the fast decoder fewer than 2 tasks: step 4 would not run its parallel path" >&2; exit 1; }
 
 # 4. the fuzzing harnesses on their seeds, then on the synthetic file
@@ -235,7 +235,7 @@ case $(uname -m) in
 esac
 L="-g -fno-omit-frame-pointer $SAN ${WEX_CFLAGS-}"
 REF="-O2 $L -I $C"
-FAST="-O3 $MARCH -DWEX4_FAST_NR3 $L -I $C -I $ROOT/wex4/research/fast-cpu-decode"
+FAST="-O3 $MARCH -DWEX4_FAST_NR3 $L -I $ROOT/wex4/research/fast-cpu-decode -I $C"
 # as in wex4/build_and_test.sh: prove that the two builds of wex4_tools.c hold two decoders, or the fast decoder
 # would drop out of this step without a failure
 site() { "$CC" $1 -E "$ROOT/wex4/wex4_tools.c" | grep -c "return $2(&view, &layout, model, scales, weights)" || true; }

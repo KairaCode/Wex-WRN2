@@ -97,10 +97,15 @@ static void fuzz_setup(void) {
     atexit(fuzz_cleanup);
 }
 
-/* the registry of c/wex_decode.c, emptied: its models are heap copies that nothing else holds */
+/* the registry of c/wex_decode.c, emptied: its models are heap copies that nothing else holds, and so are the
+ * fast decoder's tables of each (c/wex_fast_decode.h; NULL where they were not built) */
 static void fuzz_forget_models(void) {
     int i;
-    for (i = 0; i < wex_nr2_model_count; i++) free((void *)wex_nr2_models[i].blob);
+    for (i = 0; i < wex_nr2_model_count; i++) {
+        free((void *)wex_nr2_models[i].blob);
+        free(wex_fast_models[i]);
+        wex_fast_models[i] = NULL;
+    }
     wex_nr2_model_count = 0;
 #ifdef _WIN32
     memset(wex_nr2_helper_ids, 0, sizeof wex_nr2_helper_ids);

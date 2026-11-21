@@ -12,11 +12,13 @@
  * 3. per records .bin (build_nr3.py bins): every record decoded by the batch
  *    API equals the stored slab, then MUTATIONS mutated records (single bit
  *    flips anywhere in the record, header byte edits) decoded by the CPU and by
- *    the GPU batch API: the same status, the same bytes when both accept;
+ *    the two GPU batch APIs: the same status, the same bytes when both accept,
+ *    the destination untouched when both refuse;
  * 4. thread churn: 64 rounds of 4 fresh threads through every entry point, all
  *    decoded, and the device memory the helper holds does not grow with the
  *    threads that called it (at most 64 MiB).
- * The batch-to-host entry (feature 32) runs next to the device batch in 1 and 3.
+ * The batch-to-host entry (feature 32) runs next to the device batch in 1, 2 and 3;
+ * a record it refuses leaves its destination untouched (WNR3-SPEC 4.7).
  * usage: test_wex_nr3_gpu.exe HELPER.dll [MUTATIONS=120] [RECORDS.bin ...]
  * Every mutation keeps a copy of its record and its CPU decode in RAM: on the
  * 103 real V4.1 records 300 needed ~17 GB, 120 ran on a 16 GB laptop (2026-11-11). */
@@ -113,6 +115,12 @@ static void gpu_batch(Arena &a, const std::vector<const Rec *> &rs, std::vector<
     batch(n, es.data(), ps.data(), 0, a.ds.data(), a.dw.data(), st.data());
 }
 
+/* a batch-to-host destination the helper did not write (gpu_batch_host fills it with 0xA5) */
+static bool host_untouched(const std::vector<unsigned char> &v) {
+    for (unsigned char c : v) if (c != 0xA5) return false;
+    return true;
+}
+
 /* GPU batch decode of n records into host buffers (feature 32); out[i] = raw slab */
 static void gpu_batch_host(const std::vector<const Rec *> &rs, const std::vector<unsigned char *> &pinned,
                            std::vector<int> &st, std::vector<std::vector<unsigned char>> &out) {
@@ -179,11 +187,11 @@ static void compare_all_paths(Arena &a, const Rec &r, const WexNr2Model &model, 
     gpu_batch(a, {&r}, st, pin);
     CHECK(st[0] == cs);
     if (!cs) CHECK(a.fetch(0, r.e) == r.expected); else CHECK(a.untouched(0));
-    /* batch to host (dst undefined on failure) */
+    /* batch to host: dst untouched on failure (WNR3-SPEC 4.7) */
     { std::vector<int> hs; std::vector<std::vector<unsigned char>> ho;
       gpu_batch_host({&r}, pin, hs, ho);
       CHECK(hs[0] == cs);
-      if (!cs) CHECK(ho[0] == r.expected); }
+      if (!cs) CHECK(ho[0] == r.expected); else CHECK(host_untouched(ho[0])); }
     /* single to device */
     unsigned char *s3[3] = {a.ds[0], a.ds[1], a.ds[2]}, *w3[3] = {a.dw[0], a.dw[1], a.dw[2]};
     CK(cudaMemset(a.base, 0xA5, a.per));
@@ -464,7 +472,7 @@ static void bin_test(Arena &a, const char *path, int mutations) {
         for (size_t k = 0; k < rs.size(); k++) {
             int c = cpu_status[(size_t)i + k];
             if (st[k] != c) { fprintf(stderr, "mutation %d (to host): cpu %d gpu %d\n", i + (int)k, c, st[k]); exit(1); }
-            if (!c) CHECK(ho[k] == cpu_out[(size_t)i + k]);
+            if (!c) CHECK(ho[k] == cpu_out[(size_t)i + k]); else CHECK(host_untouched(ho[k]));
         }
     }
     for (auto p : pin) if (p) cudaFreeHost(p);

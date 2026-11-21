@@ -43,15 +43,15 @@ case $(uname -m) in
   *) MARCH=${WEX4_MARCH-} ;;
 esac
 F="-O3 $MARCH $OMP -DWEX4_FAST_NR3"
-"$CC" $W $F $STATIC_SO -I "$ROOT/c" -I "$ROOT/wex4/research/fast-cpu-decode" "$ROOT/wex4/wex4_tools.c" -o "$S/wex4_tools.dll"
+"$CC" $W $F $STATIC_SO -I "$ROOT/wex4/research/fast-cpu-decode" -I "$ROOT/c" "$ROOT/wex4/wex4_tools.c" -o "$S/wex4_tools.dll"
 # which kernels that was (WEXF_KERNELS of wex_fast_decode.h under the same flags): AVX2, NEON, NEON+SVE (with an
 # SVE flag such as WEX4_MARCH=-march=armv8-a+sve) or scalar
 KERNELS=$(printf '#include "wex_fast_decode.h"\nkernels WEXF_KERNELS\n' |
-          "$CC" $F -E -P -I "$ROOT/c" -I "$ROOT/wex4/research/fast-cpu-decode" -x c - | sed -n 's/^kernels "\(.*\)"$/\1/p')
+          "$CC" $F -E -P -I "$ROOT/wex4/research/fast-cpu-decode" -I "$ROOT/c" -x c - | sed -n 's/^kernels "\(.*\)"$/\1/p')
 echo "fast WNR3 decoder of wex4_tools.dll: $KERNELS kernels"
 # c/wex4.h is the engine-side file and can change with the engine: prove that the two DLLs really hold two decoders
 # (a sync once dropped the hook, and the fast-versus-reference tests compared the reference with itself)
-site() { "$CC" $1 -E -I "$ROOT/c" -I "$ROOT/wex4/research/fast-cpu-decode" "$ROOT/wex4/wex4_tools.c" | grep -c "return $2(&view, &layout, model, scales, weights)" || true; }
+site() { "$CC" $1 -E -I "$ROOT/wex4/research/fast-cpu-decode" -I "$ROOT/c" "$ROOT/wex4/wex4_tools.c" | grep -c "return $2(&view, &layout, model, scales, weights)" || true; }
 if [ "$(site "$F" wex_fast_decode)" != 1 ] || [ "$(site "" wex_nr2_decode)" != 1 ]; then
   echo "wex4_decode_record does not call wex_fast_decode in wex4_tools.dll and wex_nr2_decode in wex4_tools_ref.dll" >&2; exit 1
 fi

@@ -1,4 +1,4 @@
-# source_commit 940275ab32a58f62903e75e6e78626555e352531 2026-11-13
+# source_commit 640825581fde1e46bf079fa0efee9771effe391b 2026-11-18
 c/expert_store_wex.c	src/colibri/c/expert_store_wex.c
 c/expert_store_wex.h	src/colibri/c/expert_store_wex.h
 c/qwen38_wex.h	src/colibri/c/qwen38_wex.h
@@ -13,10 +13,12 @@ c/tests/test_v4_gpu_priority.c	src/colibri/c/tests/test_v4_gpu_priority.c
 c/tests/test_v4_mirror_guard_source.py	src/colibri/c/tests/test_v4_mirror_guard_source.py
 c/tests/test_v4_wex_nr3.c	src/colibri/c/tests/test_v4_wex_nr3.c
 c/tests/test_wex4_verify.c	src/colibri/c/tests/test_wex4_verify.c
+c/tests/test_wex_fast_decode.c	src/colibri/c/tests/test_wex_fast_decode.c
 c/tests/test_wex_format.c	src/colibri/c/tests/test_wex_format.c
 c/tests/test_wex_nr3_gpu.cu	src/colibri/c/tests/test_wex_nr3_gpu.cu
 c/tests/test_wex_planned.c	src/colibri/c/tests/test_wex_planned.c
 c/tests/wex4_fixture.h	src/colibri/c/tests/wex4_fixture.h
+c/tests/wnr3_fixture.h	src/colibri/c/tests/wnr3_fixture.h
 c/tools/bench_wex_cuda.cu	src/colibri/c/tools/bench_wex_cuda.cu
 c/tools/bench_wex_decode.c	src/colibri/c/tools/bench_wex_decode.c
 c/tools/build_nr3.py	src/colibri/c/tools/build_nr3.py
@@ -33,6 +35,7 @@ c/wex4.h	src/colibri/c/wex4.h
 c/wex_cuda.cuh	src/colibri/c/wex_cuda.cuh
 c/wex_decode.c	src/colibri/c/wex_decode.c
 c/wex_decode.h	src/colibri/c/wex_decode.h
+c/wex_fast_decode.h	src/colibri/c/wex_fast_decode.h
 c/wex_format.h	src/colibri/c/wex_format.h
 c/wex_neural_rans.h	src/colibri/c/wex_neural_rans.h
 c/wex_palette.h	src/colibri/c/wex_palette.h
