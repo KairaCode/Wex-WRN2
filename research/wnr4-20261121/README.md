@@ -24,6 +24,21 @@ Stored / raw (records padded to 4096 B), 2048 held-out records each, all byte-ex
 | Qwen3.8 NVFP4, byte-exact | 0.9271 (WNR3-NV) | 0.9238 | 140 GB/s | none (no GPU decoder) |
 | DeepSeek V4.1 MXFP4 | 0.8539 | 0.8488 | 187-188 GB/s (batch 16-32) | 105 GB/s |
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/wnr4-ratio-dark.png">
+  <img alt="Bar charts: space saved on the speed packs. Qwen3.8 MXFP4: WNR4 12.4%, WNR3 11.9%, nvCOMP ANS 10.0%. Qwen3.8 NVFP4: WNR4 7.6%, WNR3-NV 7.3%, nvCOMP ANS 6.3%. DeepSeek V4.1: WNR4 15.2%, WNR3 14.6%, nvCOMP ANS 10.2%." src="charts/wnr4-ratio-light.png" width="800">
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/wnr4-gpu-dark.png">
+  <img alt="Line charts: GPU decode GB/s by records per launch on an RTX 5090. Qwen3.8 MXFP4 at 128 records: WNR4 209, WNR3 kernels 91. DeepSeek V4.1 at 32 records: WNR4 187, WNR3 kernels 105." src="charts/wnr4-gpu-light.png" width="800">
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="charts/wnr4-models-dark.png">
+  <img alt="Dot chart: space saved by WNR4 against WNR3 on 64-expert samples of eight MoE exports; WNR4 saves 0.32 to 0.55 points more on seven and ties on AliceAI NVFP4." src="charts/wnr4-models-light.png" width="800">
+</picture>
+
 From page-locked host memory, upload included, WNR4 reaches 49-54 GB/s on Qwen3.8 MXFP4 (the PCIe 5 upload is the limit). The full tables, the G sweep, the CPU decoder, the nvCOMP and NVDEC baselines and the other models are in the [dated report](../../docs/reports/wnr4-research-20261121.md).
 
 ## Limits
@@ -51,6 +66,7 @@ From page-locked host memory, upload included, WNR4 reaches 49-54 GB/s on Qwen3.
 | `gpu/bench_cpu.c` | CPU decode speed (reference decoder, OpenMP over tiles) and WNR3's CPU reference |
 | `run_gpu_round.sh`, `run_cpu_round.sh`, `run_round8.sh`, `run_verify.sh` | GPU and CPU rounds; LOCKSH (optional) names a shell file with `take_lock LABEL` / `release_lock` for a machine-wide GPU lock |
 | `literature.md` | literature and the transfer model |
+| `charts.py`, `charts/` | the PNG charts of the README and the report (light and dark), drawn with `scripts/chartstyle.py` from `results/` and the report |
 | `results/` | logs and JSON of the runs quoted in the docs (the WNR3 columns of the 64-expert sample table come from a study that is not in this repository) |
 
 ## Rerun

@@ -10,6 +10,21 @@
 - Speed: yes. The CUDA decoder (one warp per tile, 32 rANS lanes sharing a 16-bit word stream, one launch per batch, output straight into the destination slots) decodes **up to 206 GB/s** of slab on the RTX 5090 (Qwen3.8 MXFP4, kernel only), 140 GB/s on NVFP4 and 188 GB/s on V4.1, against 90 GB/s for WNR3's kernels on the same records and no GPU decoder at all for WNR3-NV. From page-locked host memory, upload included, it reaches 49-54 GB/s, which is the PCIe 5 upload rate: decode is no longer the bottleneck. The >= 40 GB/s target holds from a batch of 8 records (G = 32) or 16-32 records (G = 128).
 - Trade-off: G (cells per lane per tile) sets ratio vs latency; G = 32 gives 0.19 ms per lone Qwen3.8 record and 104-204 GB/s at batch 8-32 for +0.2 points of ratio (still 0.4 below WNR3).
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../../research/wnr4-20261121/charts/wnr4-ratio-dark.png">
+  <img alt="Bar charts: space saved on the speed packs. Qwen3.8 MXFP4: WNR4 12.4%, WNR3 11.9%, nvCOMP ANS 10.0%. Qwen3.8 NVFP4: WNR4 7.6%, WNR3-NV 7.3%, nvCOMP ANS 6.3%. DeepSeek V4.1: WNR4 15.2%, WNR3 14.6%, nvCOMP ANS 10.2%." src="../../research/wnr4-20261121/charts/wnr4-ratio-light.png" width="800">
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../../research/wnr4-20261121/charts/wnr4-gpu-dark.png">
+  <img alt="Line charts: GPU decode GB/s by records per launch on an RTX 5090. Qwen3.8 MXFP4 at 128 records: WNR4 209, WNR3 kernels 91. DeepSeek V4.1 at 32 records: WNR4 187, WNR3 kernels 105." src="../../research/wnr4-20261121/charts/wnr4-gpu-light.png" width="800">
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../../research/wnr4-20261121/charts/wnr4-models-dark.png">
+  <img alt="Dot chart: space saved by WNR4 against WNR3 on 64-expert samples of eight MoE exports; WNR4 saves 0.32 to 0.55 points more on seven and ties on AliceAI NVFP4." src="../../research/wnr4-20261121/charts/wnr4-models-light.png" width="800">
+</picture>
+
 Everything here is measured on this machine (RTX 5090, Ryzen 9 7950X3D, 32 GB) unless marked. Literature: [research/wnr4-20261121/literature.md](../../research/wnr4-20261121/literature.md). Format: [WNR4-SPEC.md](../WNR4-SPEC.md). Code and raw results: [research/wnr4-20261121](../../research/wnr4-20261121/README.md).
 
 ## 1. Starting point
