@@ -60,8 +60,8 @@ def chart_gpu(t):
               'Decoded GB/s, kernel time, records in VRAM, both codecs in one run. WNR4: one launch per batch;\n'
               'WNR3: two kernels per record on 8 streams.', h)
     fig.text(0.045, 1 - 1.18 / h, 'Machine: RTX 5090 (32 GB VRAM, PCIe 5.0 x16), AMD Ryzen 9 7950X3D, 32 GB '
-             'DDR5-6200, Windows 11, CUDA 13.4.\nNo engine and no drive in these runs: the records were loaded into '
-             'VRAM first, so neither the RAM nor the drives limit them.', fontsize=8, color=t['ink2'], va='top',
+             'DDR5-6200, Windows 11, CUDA 13.4.\nNo engine, so no RAM budget, and no NVMe drive read (neither PCIe 4.0 '
+             'nor 5.0): the records were loaded into VRAM first.', fontsize=8, color=t['ink2'], va='top',
              linespacing=1.5)
     colors = {'WNR4 G=128': t['blue'], 'WNR3 kernels': t['orange']}
     for k, (title, data, bs) in enumerate((('Qwen3.8 MXFP4 (2.6 MB records)', q38, batches),

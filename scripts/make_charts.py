@@ -85,26 +85,29 @@ def chart_codecs(t):
     return fig
 
 
-MACHINE = ('Machine: RTX 5090 (32 GB VRAM), AMD Ryzen 9 7950X3D, 32 GB DDR5-6200, Windows 11.\n'
-           'Drives: U: NVMe PCIe 4.0 and C: NVMe PCIe 5.0, a full copy of the container on each; "U: + C:" splits the '
-           'expert reads 38/62.\nRAM budget: the cap the engine is given for its RAM use; the rest of the 32 GB is '
-           'left to the system.')
+MACHINE = ('Machine: RTX 5090 (32 GB VRAM), AMD Ryzen 9 7950X3D, 32 GB DDR5-6200, Windows 11; engines built with gcc '
+           '16.2 and CUDA 13.4.\nDrives: U: = NVMe PCIe 4.0 (Gen4), C: = NVMe PCIe 5.0 (Gen5), a full copy of the '
+           'container on each; "U: + C:" splits the expert reads 38/62.\nRAM budget: the cap the engine is given for '
+           'its RAM use (16 GB in the V4.1 runs, 13 GB in the Qwen3.8 runs), not the 32 GB of the machine.')
 
 
 def chart_speed(t):
     # V4.1: research/wnr2-fastbench-20261109/NOTE-5-mirror-ab-20261110.md (docs/BENCHMARKS.md "containers, drives
-    # and decode speed", first row): RAM_GB 16, ctx 32768, 7 prompts x 64 tokens, one pair, 971 experts in VRAM.
-    # Qwen3.8: docs/reports/QWEN38-MXFP4-20261111.md "Speed": RAM 13 GB, 258-token prompt, 200 tokens, one run each.
-    v41 = [('raw WEX1, U: only', 2.02, 'gray'), ('WNR2, U: + C:', 2.99, 'blue')]
-    q38 = [('FP8 experts, U: only', 4.39, 'gray'), ('MXFP4 WNR3, U: only', 9.48, 'blue'),
-           ('MXFP4 raw, U: only', 11.48, 'blue'), ('MXFP4 raw, U: + C:', 12.45, 'blue')]
+    # and decode speed", first row): RAM_GB 16 in both arms, ctx 32768, 7 prompts x 64 tokens, one pair, 971 (A) and
+    # 970 (B) experts in VRAM; A read U: only, B U: + C: split 38/62 (OS read bytes C: 61%, U: 39%).
+    # Qwen3.8: docs/reports/QWEN38-MXFP4-20261111.md "Speed": RAM 13 GB ("ram_gb": 13 in every speed-*.json),
+    # 258-token prompt, 200 tokens, one run each. The FP8 snapshot is on U: (docs/reports/WNR3-VERIFY.md, disk table;
+    # the --snap path in research/qwen38-mxfp4-20261111/q_ab.py).
+    v41 = [('raw WEX1, U: Gen4', 2.02, 'gray'), ('WNR2, U: Gen4 + C: Gen5', 2.99, 'blue')]
+    q38 = [('FP8 experts, U: Gen4', 4.39, 'gray'), ('MXFP4 WNR3, U: Gen4', 9.48, 'blue'),
+           ('MXFP4 raw, U: Gen4', 11.48, 'blue'), ('MXFP4 raw, U: Gen4 + C: Gen5', 12.45, 'blue')]
     h = 5.6
     fig = cs.figure(t, h)
     cs.header(fig, t, 'Generation speed in the engine', 'Tokens per second while generating. A second drive '
               'with a copy of the container splits the expert reads.', h)
     fig.text(0.045, 1 - 0.98 / h, MACHINE, fontsize=8, color=t['ink2'], va='top', linespacing=1.5)
     ax1 = cs.axes(fig, t, [0.27, 0.545, 0.67, 0.09],
-                  'DeepSeek V4.1 REAP-192 · RAM budget 16 GB · 971 experts in VRAM')
+                  'DeepSeek V4.1 REAP-192 · RAM budget 16 GB · 970-971 experts in VRAM')
     ax2 = cs.axes(fig, t, [0.27, 0.2, 0.67, 0.2],
                   'Qwen3.8-Flash-Next · RAM budget 13 GB · ~25.5 GB of experts in VRAM')
     for ax, rows, xmax in ((ax1, v41, 3.6), (ax2, q38, 14.5)):

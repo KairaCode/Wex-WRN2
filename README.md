@@ -169,7 +169,7 @@ The V4.1 switch report's own reading of its numbers: on this machine the second 
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/charts/speed-dark.png">
-  <img alt="Bar chart: tokens per second on an RTX 5090 (32 GB VRAM) with a Ryzen 9 7950X3D and 32 GB of RAM; drive U: is NVMe PCIe 4.0, C: NVMe PCIe 5.0. DeepSeek V4.1, RAM budget 16 GB: raw WEX1 on U: 2.02, WNR2 on U: + C: 2.99. Qwen3.8-Flash-Next, RAM budget 13 GB: FP8 experts 4.39, MXFP4 WNR3 on U: 9.48, MXFP4 raw on U: 11.48, MXFP4 raw on U: + C: 12.45." src="assets/charts/speed-light.png" width="800">
+  <img alt="Bar chart: tokens per second on an RTX 5090 (32 GB VRAM) with a Ryzen 9 7950X3D and 32 GB of DDR5-6200, Windows 11, engines built with gcc 16.2 and CUDA 13.4; drive U: is NVMe PCIe 4.0 (Gen4), C: NVMe PCIe 5.0 (Gen5), and U: + C: splits the expert reads 38/62. DeepSeek V4.1, engine RAM budget 16 GB: raw WEX1 on U: 2.02, WNR2 on U: + C: 2.99. Qwen3.8-Flash-Next, engine RAM budget 13 GB: FP8 experts on U: 4.39, MXFP4 WNR3 on U: 9.48, MXFP4 raw on U: 11.48, MXFP4 raw on U: + C: 12.45." src="assets/charts/speed-light.png" width="800">
 </picture>
 
 <picture>
@@ -177,7 +177,7 @@ The V4.1 switch report's own reading of its numbers: on this machine the second 
   <img alt="Bar charts: 136 conformance vectors (16 accepted, 120 refused, by error class) and 14 CI jobs per pull request (Linux x86-64 7, Linux arm64 3, macOS arm64 3, Windows 1)." src="assets/charts/tests-light.png" width="800">
 </picture>
 
-Each chart names its source in its footnote; `python scripts/make_charts.py` draws them again (matplotlib), in a light and a dark version. The "original" bars are the expert bytes of the published safetensors: `python -I scripts/expert_bytes.py REPO PROFILE` sums them from the shard headers on Hugging Face (two range requests per shard, no tensor data).
+Each chart names its source in its footnote. The speed chart was measured on one desktop (RTX 5090 32 GB, Ryzen 9 7950X3D, 32 GB DDR5-6200, Windows 11; drive U: NVMe PCIe 4.0, C: NVMe PCIe 5.0) and gives, per model, the RAM budget of the engine (16 GB for V4.1, 13 GB for Qwen3.8) and, per bar, the drive or drives the experts were read from ([docs/BENCHMARKS.md](docs/BENCHMARKS.md), "Machine"); the size and codec charts do not depend on the machine. `python scripts/make_charts.py` draws them again (matplotlib), in a light and a dark version. The "original" bars are the expert bytes of the published safetensors: `python -I scripts/expert_bytes.py REPO PROFILE` sums them from the shard headers on Hugging Face (two range requests per shard, no tensor data).
 
 ## What runs today
 

@@ -17,7 +17,7 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../../research/wnr4-20261121/charts/wnr4-gpu-dark.png">
-  <img alt="Line charts: GPU decode GB/s by records per batch on an RTX 5090 (WNR4 one launch per batch, WNR3 two kernels per record). Qwen3.8 MXFP4 at 128 records: WNR4 209, WNR3 kernels 91. DeepSeek V4.1 at 32 records: WNR4 187, WNR3 kernels 105." src="../../research/wnr4-20261121/charts/wnr4-gpu-light.png" width="800">
+  <img alt="Line charts: GPU decode GB/s by records per batch on an RTX 5090 (32 GB, PCIe 5.0 x16) with a Ryzen 9 7950X3D, 32 GB of DDR5-6200, Windows 11 and CUDA 13.4, kernel time with the records already in VRAM: no engine, so no RAM budget, and no drive read (WNR4 one launch per batch, WNR3 two kernels per record). Qwen3.8 MXFP4 at 128 records: WNR4 209, WNR3 kernels 91. DeepSeek V4.1 at 32 records: WNR4 187, WNR3 kernels 105." src="../../research/wnr4-20261121/charts/wnr4-gpu-light.png" width="800">
 </picture>
 
 <picture>
