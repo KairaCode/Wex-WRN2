@@ -84,8 +84,10 @@ CONTROLS = [
      'if (*(const volatile uint32_t *)error) return;', ';'),
     ('bridge: kernel B does not wait for the weight payload', BRIDGE,
      'RUN_OK(cudaStreamWaitEvent(work,workspace.data,0));', ';'),
-    ('bridge: the copy back of the host batch does not wait for the kernels', BRIDGE,
-     'wex_cuda_copy_back(entry,plan,w.device_raw,dst_host[i],work)', 'wex_cuda_copy_back(entry,plan,w.device_raw,dst_host[i],copy)'),
+    ('bridge: the host batch copies back a record refused on the device', BRIDGE,
+     'if(host.errors[j]) { status[j]=-1; wex_cuda_nr3_report(host.errors[j]); continue; }',
+     'if(host.errors[j]) { status[j]=-1; wex_cuda_nr3_report(host.errors[j]);'
+     ' (void)wex_cuda_copy_back(entries[j],plans[(size_t)j],lane[r].device_raw,dst_host[j],lane[r].aux); continue; }'),
     ('bridge: a batch record refused on the device gets status 0', BRIDGE,
      'host.errors[i] ? -1 : 0;', 'host.errors[i] ? 0 : 0;'),
 ]
@@ -135,7 +137,7 @@ def build(index, change, gpu=False):
     exe = os.path.join(folder, 'fuzz_wnr3_cuda' + EXE)
     command = [os.environ.get('CXX') or 'g++', '-std=c++17', '-O1', '-Wall', '-Wextra', '-Wno-unused-parameter',
                '-Wno-unused-function', '-Wno-unknown-pragmas', '-DWEX_FUZZ_STANDALONE', '-pthread',
-               '-I', folder, '-I', os.path.join(ROOT, 'c'), '-I', os.path.join(ROOT, 'wex4', 'research', 'fast-cpu-decode'),
+               '-I', folder, '-I', os.path.join(ROOT, 'wex4', 'research', 'fast-cpu-decode'), '-I', os.path.join(ROOT, 'c'),
                '-I', os.path.join(ROOT, 'wex4', 'fuzz', 'engine'), '-I', os.path.join(ROOT, 'wex4', 'fuzz'),
                os.path.join(ROOT, 'wex4', 'fuzz', 'fuzz_wnr3_cuda.cpp'), '-o', exe] + (['-DWEX_FUZZ_GPU'] if gpu else [])
     r = subprocess.run(command, capture_output=True, text=True, cwd=folder)

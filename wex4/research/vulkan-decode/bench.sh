@@ -63,8 +63,8 @@ if [ ! -f "$FILE" ]; then
   rm -rf "$B/synth" "$B/big.wex"
 fi
 echo "compiler: $("$CC" --version | sed -n 1p), -O3 $MARCH -fopenmp"
-"$CC" -std=c11 -O3 $MARCH -fopenmp -Wall -Wextra -Wno-unused-function ${WEX_CFLAGS-} -DWNR3_VK_FAST -I "$ROOT/c" \
-    -I "$ROOT/wex4/research/fast-cpu-decode" "$HERE/wnr3_vk.c" -o "$B/wnr3_vk" -l"$LIB"
+"$CC" -std=c11 -O3 $MARCH -fopenmp -Wall -Wextra -Wno-unused-function ${WEX_CFLAGS-} -DWNR3_VK_FAST \
+    -I "$ROOT/wex4/research/fast-cpu-decode" -I "$ROOT/c" "$HERE/wnr3_vk.c" -o "$B/wnr3_vk" -l"$LIB"
 : > "$B/glslang.log"
 glsl() { glslangValidator "$@" >> "$B/glslang.log" 2>&1 || { cat "$B/glslang.log"; exit 1; }; }
 for form in search table; do

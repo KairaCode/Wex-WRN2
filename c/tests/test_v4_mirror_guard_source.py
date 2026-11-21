@@ -16,7 +16,11 @@ reaches a full card, so this pins the guard at source level:
   against the reserve, the probe resets them;
 - only an appended slot adds to them (a recycled one reuses its VRAM), both on
   the plain create path and on the WEX direct fill path;
-- the guard applies from 8 live mirrors on.
+- the guard applies from 8 live mirrors on;
+- a failed upload (upstream 4891a34d) rolls its slot back, so no entry stays
+  keyed to its expert without tensors, and the card counts as full until the
+  next probe; an attach without a host copy gives up no victim
+  (tests/test_v4_mirror_upload_failure.c runs these on host stand-ins).
 """
 import unittest
 from pathlib import Path
@@ -66,6 +70,24 @@ class V4MirrorGuardSourceTest(unittest.TestCase):
         publish = definition(self.text, "static int v4_gpu_mirror_publish(")
         self.assertIn("if (!h->recycle) v4_gpu_mirror_grown_bytes += v4_gpu_mirror_bytes(view);",
                       publish)
+
+    def test_failed_upload_rolls_back(self):
+        fail = find(self.body, "v4_gpu_mirror_upload_failed = 1;")
+        rollback = self.body[fail - 700:fail]
+        # unkeyed on V4 and V4.1 alike, an appended slot dropped
+        self.assertIn("cache->entries[found].layer = cache->entries[found].expert = -1;\n"
+                      "            if (appended && found == cache->count - 1) {", rollback)
+        self.assertIn("cache->resident_count = resident_before;", rollback)
+        # the card counts as full until the next probe, which clears it
+        self.assertIn("v4_gpu_mirror_last_free_mb = 0;", rollback)
+        self.assertIn("v4_gpu_mirror_grown_bytes = 0;", rollback)
+        probe = find(self.body, "v4_gpu_mirror_last_free_mb = dsv4_cuda_mem_free_mb(cache->device);")
+        self.assertIn("v4_gpu_mirror_upload_failed = 0;", self.body[probe:find(self.body, "}", probe)])
+        self.assertIn("(cache->count > 0 || v4_gpu_mirror_upload_failed)", self.body)
+
+    def test_no_host_copy_gives_up_no_victim(self):
+        check = find(self.body, "if (!fill && !(view->gate.data && view->gate.scales")
+        self.assertLess(check, find(self.body, "if (!grow || cache->count >= resident_cap) {"))
 
     def test_mirror_bytes_match_the_upload(self):
         start = find(self.text, "static long long v4_gpu_mirror_bytes(")
