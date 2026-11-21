@@ -17,31 +17,31 @@ import chartstyle as cs  # noqa: E402
 RES = os.path.join(HERE, 'results')
 PACKS = [('q38mx', 'Qwen3.8 MXFP4'), ('q38nv', 'Qwen3.8 NVFP4'), ('v41', 'DeepSeek V4.1 MXFP4')]
 NVCOMP = {'q38mx': 0.8997, 'q38nv': 0.9372, 'v41': 0.8983}     # report section 6, fast at 8-64 records
+RECORD = {'q38mx': 2_611_200, 'q38nv': 2_764_800, 'v41': 18_800_640}   # bytes of one expert as published
 
 
-def pack_ratios(name):
+def pack_bytes(name):
+    """Bytes of a speed pack: its records as published, stored by WNR4 G=128, stored by WNR3 (WNR3-NV on NVFP4)."""
     d = json.load(open(os.path.join(RES, f'pack3-{name}.json'), encoding='utf-8'))
     wnr3 = d.get('wnr3_same_train') or d.get('wnr3nv_same_train_8192_2048')
-    return d['wnr4']['128']['ratio'], wnr3['ratio']
+    return d['raw_bytes'], d['wnr4']['128']['stored'], wnr3['stored']
 
 
 def chart_ratio(t):
-    h = 4.2
+    h = 5.4
     fig = cs.figure(t, h)
     cs.header(fig, t, 'WNR4 stores experts in fewer bytes',
-              'Space saved on the records of the speed packs (1 - stored/raw, higher is better), every record '
-              'decoded back\nand compared. NVFP4: byte-exact, WNR3 is WNR3-NV. V4.1: canonical zero (-0 stored as +0), as in production.', h)
-    x0, w, gap = 0.14, 0.25, 0.03
-    for k, (name, title) in enumerate(PACKS):
-        wnr4, wnr3 = pack_ratios(name)
-        ax = cs.axes(fig, t, [x0 + k * (w + gap), 0.26, w, 0.37], title)
-        labels = ['WNR4 G=128', 'WNR3', 'nvCOMP ANS']
-        cs.hbars(ax, labels, [100 * (1 - r) for r in (wnr4, wnr3, NVCOMP[name])], [t['blue'], t['orange'], t['gray']],
-                 t, 20.5, lambda v: f'{v:.1f}%', height=0.6)
-        ax.set_xticks([0, 5, 10, 15, 20])
-        ax.set_xticklabels(['0', '5', '10', '15', '20%'])
-        if k:
-            ax.set_yticklabels(['', '', ''])
+              'The records of the speed packs: their bytes as published, then stored (shorter is better), every '
+              'record decoded back\nand compared. NVFP4: byte-exact. V4.1: canonical zero (-0 stored as +0), as in '
+              'production.', h)
+    panels = []
+    for name, title in PACKS:
+        raw, wnr4, wnr3 = pack_bytes(name)
+        fmt = 'NVFP4' if 'NVFP4' in title else 'MXFP4'
+        panels.append((f'{title} · {raw // RECORD[name]} records', [
+            (f'original {fmt} files', raw, 'muted'), ('WNR4 G=128', wnr4, 'blue'),
+            ('WNR3-NV' if fmt == 'NVFP4' else 'WNR3', wnr3, 'orange'), ('nvCOMP ANS', raw * NVCOMP[name], 'gray')]))
+    cs.size_panels(fig, t, panels, 1.45, h)
     cs.footer(fig, t, 'Source: research/wnr4-20261121/results/pack3-*.json (128 Qwen3.8 and 32 V4.1 records, models '
               'counted on 256 other records).\nnvCOMP 6.0 ANS: the configuration that stays fast at 8-64 records '
               '(64-256 KiB chunks), docs/reports/wnr4-research-20261121.md\nsection 6; its harness is not in this '
@@ -100,34 +100,40 @@ def chart_models(t):
     for line in open(os.path.join(RES, 'other', 'summary.md'), encoding='utf-8'):
         cells = [c.strip() for c in line.strip().strip('|').split('|')]
         if len(cells) == 8 and cells[2][:2] == '0.':
-            rows.append((cells[0], float(cells[2]), float(cells[3])))
-    rows.sort(key=lambda r: r[1])
-    h = 4.9
+            rows.append((cells[0], cells[1], float(cells[2]), float(cells[3])))
+    rows.sort(key=lambda r: -r[2])
+    h = 5.6
     fig = cs.figure(t, h)
-    cs.header(fig, t, 'Eight MoE exports, 64-expert samples', 'Space saved, byte-exact, models trained in 2 folds ('
-              'each fold coded with the other). WNR4 at G=128 against WNR3.', h)
-    ax = cs.axes(fig, t, [0.36, 0.17, 0.53, 0.62])
+    cs.header(fig, t, 'Eight MoE exports, 64-expert samples', 'Size as a share of the export\'s own files (100%), '
+              'byte-exact, models trained in 2 folds (each fold coded\nwith the other). WNR4 at G=128 against WNR3. '
+              'Dots, not bars: the gaps are a few tenths of a point.', h)
+    ax = cs.axes(fig, t, [0.36, 0.15, 0.55, 0.6])
     n = len(rows)
     ax.set_ylim(n - 0.5, -0.5)
     ax.set_yticks(range(n))
-    ax.set_yticklabels([r[0].replace(' (', '\n(') if len(r[0]) > 34 else r[0] for r in rows], fontsize=8.5)
-    ax.set_xlim(6, 13.5)
-    ax.set_xticks([6, 8, 10, 12])
-    ax.set_xticklabels(['6', '8', '10', '12%'])
-    for i, (_, wnr3, wnr4) in enumerate(rows):
-        a, b = 100 * (1 - wnr3), 100 * (1 - wnr4)
-        ax.plot([a, b], [i, i], color=t['base'], linewidth=2.2, zorder=2, solid_capstyle='round')
+    ax.set_yticklabels([f'{name}\n64 experts of {rec}' for name, rec, _, _ in rows], fontsize=8.2, linespacing=1.25)
+    ax.set_xlim(86, 104.5)
+    ax.set_xticks([86, 90, 94, 98, 100])
+    ax.set_xticklabels(['86', '90', '94', '98', '100%'])
+    for i, (_, _, wnr3, wnr4) in enumerate(rows):
+        a, b = 100 * wnr3, 100 * wnr4
+        ax.plot([b, 100], [i, i], color=t['base'], linewidth=2.2, zorder=2, solid_capstyle='round')
+        ax.scatter([100], [i], s=30, color=t['muted'], zorder=3, edgecolors=t['surface'], linewidths=1.0)
         ax.scatter([b], [i], s=46, color=t['blue'], zorder=3, edgecolors=t['surface'], linewidths=1.5)
         ax.scatter([a], [i], s=22, color=t['orange'], zorder=4, edgecolors=t['surface'], linewidths=1.0)
-        ax.text(max(a, b) + 0.18, i, f'{b - a:+.2f} pt', va='center', ha='left', fontsize=8.5, color=t['ink2'])
+        ax.text(100.6, i, f'{b - a:+.2f} pt'.replace('-', '−'), va='center', ha='left', fontsize=8.5,
+                color=t['ink2'])
+    colors = (t['muted'], t['blue'], t['orange'])
     handles = [cs.plt.Line2D([], [], color=c, linestyle='none', marker='o', markersize=7, markeredgecolor=t['surface'])
-               for c in (t['blue'], t['orange'])]
-    leg = fig.legend(handles, ['WNR4 G=128', 'WNR3 (WNR3-NV on NVFP4)'], loc='upper left',
-                     bbox_to_anchor=(0.355, 0.84), ncol=2, frameon=False, fontsize=9)
+               for c in colors]
+    leg = fig.legend(handles, ['original files', 'WNR4 G=128', 'WNR3 (WNR3-NV on NVFP4)'], loc='upper left',
+                     bbox_to_anchor=(0.355, 0.81), ncol=3, frameon=False, fontsize=9)
     for txt in leg.get_texts():
         txt.set_color(t['ink2'])
     cs.footer(fig, t, 'Source: research/wnr4-20261121/results/other/ (WNR4 columns, other_models.py). The WNR3 '
-              'columns are copied from a study that is not in this repository.', h)
+              'columns are copied from a study that is not in this repository.\nOriginal files: the bytes of each '
+              'expert (weights and scales) in the export\'s safetensors; the delta is WNR4 minus WNR3, in points of that '
+              'size.', h)
     return fig
 
 
