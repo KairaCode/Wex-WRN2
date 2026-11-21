@@ -1,6 +1,6 @@
 # WNR4 specification (DRAFT 0.1, 2026-11-21)
 
-**Status:** research prototype. Not in any container, engine or helper. WNR3 (codec 5) and WNR3-NV (codec 7) are unchanged. Measurements and the reasoning behind every choice: [research/wnr4-20261121](../research/wnr4-20261121/README.md) and [wnr4-research.md](wnr4-research.md).
+**Status:** research prototype. Not in any container, engine or production helper (a prototype helper is in `wnr4/tools`). WNR3 (codec 5) is unchanged; so is WNR3-NV, the NVFP4 variant of WNR3 on the not yet public `nvfp4-wnr3` branch, which proposes codec 7 for itself (WEX4-SPEC still lists 7 as reserved for the next expert codec). Measurements and the reasoning behind every choice: [research/wnr4-20261121](../research/wnr4-20261121/README.md) and [wnr4-research.md](wnr4-research.md).
 
 **One paragraph.** WNR4 is a lossless record codec for MXFP4 and NVFP4 routed-expert slabs, built so that a GPU can decode many records in one launch at tens of GB/s. It keeps WNR3's weight model (block-scale class relative to a rule-g anchor, previous magnitude, running maximum; 16-symbol 14-bit tables; canonical zero; ceil form for MXFP4), optionally refined by the nibble's position in the last four of its block, codes NVFP4 scales as a delta from the scale above with the up-left/up-right deltas as context, and changes the skeleton: a record is a list of *tiles*; a tile is 32 rANS coders (*lanes*) that share one 16-bit word stream, decoded by one warp in lockstep; the last 4 nibbles of each lane ride in its initial state. Integrity moves from a 23-bit hash per 1 KB stream to a 32-bit hash per tile plus checked end states and an exact word count.
 
@@ -64,4 +64,4 @@ These are implementation notes; only sections 1-4 are normative.
 
 ## 6. Open
 
-New WEX4 codec id (proposed 8, required feature bit), blob kind (3), conformance vectors, helper entry points and engine integration, fuzzing of the parser beyond the tests in the research folder.
+New WEX4 codec id (proposed 8 if WNR3-NV takes 7, else 7; required feature bit), blob kind (3), conformance vectors, helper entry points and engine integration, fuzzing of the parser beyond the tests in the research folder.

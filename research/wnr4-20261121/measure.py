@@ -9,8 +9,9 @@ Test records: seeded, the same number per layer (data.Dataset.split). Every test
 every G, decoded by the reference decoder and compared with the expected output domain: Z(source) under
 CZ, else the source (v41: the WNR3 decode, which is Z(source)). WNR3 baseline: MX = WNR3 encoder with
 the WNM2 model of the same train records at 2048:512 (v41 also reports its stored production records);
-NV = no WNR3-NV encoder on this branch, see the report. --pack writes N test records (WNR4 at --pack-G,
-plus WNR3 for MX) for the GPU bench."""
+NV = the WNR3-NV encoder at 8192:2048 with the model of the same train records, when out/wex_nv_tools.dll
+(built from the nvfp4-wnr3 branch, see README) exists and --wnr3 is not 0; else no NV baseline.
+--pack writes N test records (WNR4 at --pack-G, plus WNR3 for MX) for the GPU bench."""
 import ctypes as C
 import json
 import os

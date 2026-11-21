@@ -8,3 +8,5 @@
 | AliceAI-80B-A3B PTQ NVFP4 | 1.77 MB | 0.9285 | 0.9282 | 0.9301 | 0.9134 | 0.9134 | 0.9152 |
 | Edge0-120B NVFP4 | 1.38 MB | 0.9179 | 0.9137 | 0.9157 | 0.9179 | 0.9137 | 0.9157 |
 | Edge0-145B NVFP4 | 1.94 MB | 0.9336 | 0.9291 | 0.9316 | 0.9183 | 0.9139 | 0.9163 |
+
+WNR4 columns: `other_models.py` (the JSON files here). WNR3 columns: copied from the cross-validated WNR3 study of the same samples, which is not in this repository.

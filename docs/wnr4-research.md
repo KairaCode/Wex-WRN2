@@ -18,26 +18,29 @@ Everything here is measured on this machine (RTX 5090, Ryzen 9 7950X3D, 32 GB) u
 
 ## 2. Where the redundancy is (held-out measurements)
 
-Context study (`stats/run_stats.py`, `stats/ctx3.py`; 256 training records, 128-2048 test records, cross-entropy under 14-bit quantized tables, fraction of raw):
+Context study (256 training records, other records as the test set, cross-entropy under 14-bit quantized tables, fraction of raw). Sources: `stats/ctx3.py`, whose console output is copied in [results/ctx3-console.txt](../research/wnr4-20261121/results/ctx3-console.txt) (run numbers below refer to it; the script grew between runs, so each column quotes one run where it can), and `stats/run_stats.py` ([results/stats-q38mx.log](../research/wnr4-20261121/results/stats-q38mx.log), 2048 test records; marked "stats"). The test sets differ, so the same model can differ in the fifth digit between the two (WNR3 contexts on MX: 0.86691 in ctx3, 0.86699 in stats).
 
-| model of the weight nibbles | Qwen3.8 MX (CZ) | Qwen3.8 NV (byte-exact) |
+| model of the weight nibbles | Qwen3.8 MX (CZ), run 3 | Qwen3.8 NV (byte-exact), run 4 |
 |---|---:|---:|
 | WNR3 contexts (class, previous, running max) | 0.86691 | 0.86690 |
-| class only | 0.86793 | 0.86808 (class + position) |
+| class only (MX, stats) / class + position (NV) | 0.86793 | 0.86813 |
 | + position in block (32 or 16 buckets) | 0.86604 | 0.86556 |
-| + last-4-positions bucket (5 buckets) | 0.8660 | 0.86598 |
+| + last-4-positions bucket (5 buckets) | - (in the codec: -0.06 points, section 4) | 0.86598 |
 | per-layer tables / 8 layer groups | 0.86688 / 0.86684 | 0.86714 / 0.86691 |
-| block maximum coded first | worse (+0.002) | worse |
-| finer scale classes (R + 4, R + 8) | - | 0.86673 / 0.86672 |
+| block maximum coded first | worse (+0.0018, stats) | worse (+0.0003 in-sample, run 1) |
+| finer scale classes (R + 4, R + 8), run 8 | - | 0.86673 / 0.86672 |
 
-| model of the scales | Qwen3.8 MX | Qwen3.8 NV |
+| model of the scales | Qwen3.8 MX, run 3 | Qwen3.8 NV, run 5 |
 |---|---:|---:|
 | order 0 | 0.00730 | 0.06527 |
+| up (row above) | 0.00730 (stats) | 0.05811 |
+| up + up-left/up-right deltas | - | 0.05605 |
 | left neighbour (WNR3-NV) | 0.00727 | 0.05805 |
-| up (row above) | 0.00730 | 0.05830 |
-| up + up-left/up-right deltas | - | 0.05607 |
-| delta from up, ctx (up/4, dul, dur) - **WNR4** | - | 0.05620 |
 | left + up (full table) | 0.00726 | 0.05611 |
+| left + delta from up + up-left delta | - | 0.05582 |
+| run 8: up + deltas / delta from up, ctx (up/4, dul, dur) - **WNR4** | - | 0.05618 / 0.05620 |
+
+The contexts that use the left neighbour are not open to WNR4: its phase 1 decodes a scale row across the lanes, so the left neighbour is decoded by another lane in the same step. WNR4 takes the best context without it, the row above and its two diagonal neighbours, with a table of 4,160 contexts that costs 0.00002 of raw against the full table of the same neighbours (run 8).
 
 Other checks (in-sample bounds, so upper bounds on any gain): per-record column classes 0.004-0.039 bit/w on gate/up before the cost of the table (net ~0); the same column profile taken from other experts of the layer 0.0002-0.015 bit/w; a layer-shared scale profile -0.01..-0.03 bit/scale. Cross-expert and cross-layer structure is ~0, as the 2026-11-17 study found.
 
@@ -68,7 +71,7 @@ How the gain splits (Qwen3.8 MX, 64-256 record checks, same model): new skeleton
 
 ### 4b. Other MoE models (64-expert samples)
 
-The samples of the WNR3 study of 2026-11-21 (8 layers x 8 experts per model, fetched by HTTP range from the published checkpoints; Qwen3.8 from the local containers), coded with the same method as that study: models trained on the sample itself in 2 folds (each fold coded with the model of the other), byte-exact and canonical zero, every record decoded back and compared (0 failures), ratio = stored / raw padded to 4096 B. WNR3 numbers: that study's cross-validated results on the same experts (WNR3 at 2048:512 for MXFP4, WNR3-NV at 8192:2048 for NVFP4). Script: `research/wnr4-20261121/other_models.py`; results in `results/other/`.
+The samples of the WNR3 study of 2026-11-21 (8 layers x 8 experts per model, fetched by HTTP range from the published checkpoints; Qwen3.8 from the local containers), coded with the same method as that study: models trained on the sample itself in 2 folds (each fold coded with the model of the other), byte-exact and canonical zero, every record decoded back and compared (0 failures), ratio = stored / raw padded to 4096 B. WNR3 numbers: that study's cross-validated results on the same experts (WNR3 at 2048:512 for MXFP4, WNR3-NV at 8192:2048 for NVFP4). That study is not in this repository: its WNR3 columns are copied here and in `results/other/summary.md`, and `other_models.py` computes the WNR4 columns only. Script: `research/wnr4-20261121/other_models.py`; results in `results/other/`.
 
 | model (64-expert sample, 2-fold CV) | record | WNR3 byte-exact | WNR4 G128 | WNR4 G32 | WNR3 CZ | WNR4 CZ G128 | WNR4 CZ G32 |
 |---|---:|---:|---:|---:|---:|---:|---:|
@@ -81,8 +84,8 @@ The samples of the WNR3 study of 2026-11-21 (8 layers x 8 experts per model, fet
 | Edge0-120B NVFP4 | 1.38 MB | 0.9179 | 0.9137 | 0.9157 | 0.9179 | 0.9137 | 0.9157 |
 | Edge0-145B NVFP4 | 1.94 MB | 0.9336 | 0.9291 | 0.9316 | 0.9183 | 0.9139 | 0.9163 |
 
-- WNR4 at G = 128 is smaller on all eight (by 0.4-0.55 points of raw), except AliceAI NVFP4, where it ties (-0.03 byte-exact, 0.00 CZ): small 1.77 MB records, where WNR3-NV's long 8192-nibble streams already have little framing and WNR4's tile states plus the 4096-byte padding weigh more. G = 32 is still smaller than WNR3 on the MXFP4 models and about equal on NVFP4.
-- These models are trained on 32 experts per fold; WNR4's bigger tables (position buckets, the 4,160 NVFP4 scale contexts) are the more undertrained of the two, so a model counted on a full container should widen the gap a little (on Qwen3.8 MX the 2048-record run gives the same -0.56 points as this sample).
+- WNR4 at G = 128 is smaller on seven of the eight (by 0.5-0.55 points of raw on the MXFP4 models, 0.3-0.45 on the NVFP4 ones), and ties on AliceAI NVFP4 (-0.03 byte-exact, 0.00 CZ): small 1.77 MB records, where WNR3-NV's long 8192-nibble streams already have little framing and WNR4's tile states plus the 4096-byte padding weigh more. G = 32 is still smaller than WNR3 on the MXFP4 models and about equal on NVFP4.
+- These models are trained on 32 experts per fold; WNR4's bigger tables (position buckets, the 4,160 NVFP4 scale contexts) are the more undertrained of the two, so a model counted on a full container should widen the gap a little (on Qwen3.8 MX the 2048-record run gives about the same gap as this sample, -0.56 against -0.55 points).
 - QAT/QAD weights (FP4-Local) and NVFP4 in general leave less to gain for any context model; the ratio difference between codecs is small next to the difference between formats.
 
 ## 5. Decode speed
@@ -95,7 +98,7 @@ RTX 5090 (170 SMs), CUDA 13.4, sm_120. Records resident in VRAM unless noted; "k
 |---|---:|---:|---:|---:|---:|---:|---:|
 | Qwen3.8 MX (32, 0.8774) | 14 | 104 | 160 | 204 | 205 | - | 0.19 ms |
 | Qwen3.8 MX (64, 0.8762) | 7 | 55 | 103 | 159 | 205 | - | 0.37 ms |
-| Qwen3.8 MX (128, 0.8753) | 4 | 28 | 55 | 91 | 157 | 206 | 0.75 ms |
+| Qwen3.8 MX (128, 0.8755) | 4 | 28 | 55 | 91 | 157 | 206 | 0.75 ms |
 | Qwen3.8 MX (256, 0.8752) | 2 | 14 | 29 | 48 | 92 | - | 1.44 ms |
 | Qwen3.8 NV (32, 0.9262) | 11 | 88 | 138 | 138 | 149 | - | 0.25 ms |
 | Qwen3.8 NV (64, 0.9246) | 6 | 47 | 81 | 132 | 139 | - | 0.47 ms |
@@ -106,11 +109,11 @@ RTX 5090 (170 SMs), CUDA 13.4, sm_120. Records resident in VRAM unless noted; "k
 | same run (bench9): WNR3 kernels, Qwen3.8 MX (2048:512, 0.8812) | 4.3 | 33 | 32 | 56 | 80 | 91 | |
 | same run (bench9): WNR4 V4.1 (128) / WNR3 kernels V4.1 | 25.6 / 30.6 | 146 / 90 | 187 / 103 | 187 / 105 | - | - | |
 
-This is the ratio vs speed trade-off: G sets both. A lane's chain is G x 33 (MX) or G x 34 (NV) dependent steps (~170 ns each now), so one record's latency is proportional to G, and a batch needs enough tiles (a Qwen3.8 record has 156 tiles at G = 32, 39 at G = 128) to fill 170 SMs. G = 32 costs 0.2 points of ratio against G = 128 and is still 0.4 points smaller than WNR3; at batch 8-16 it is 4x faster than G = 128 and 3x faster than WNR3's kernels. For one record alone at G = 128, WNR3's kernels are slightly faster (4.3 vs 3.6 GB/s on Qwen3.8, 30.6 vs 25.6 on V4.1): a latency-bound caller should use G = 32 (0.19 ms per Qwen3.8 record).
+This is the ratio vs speed trade-off: G sets both. A lane's chain is G x 33 (MX) or G x 34 (NV) dependent steps (~170 ns each now), so one record's latency is proportional to G, and a batch needs enough tiles (a Qwen3.8 record has 150 tiles at G = 32, 39 at G = 128) to fill 170 SMs. G = 32 costs 0.2 points of ratio against G = 128 and is still 0.4 points smaller than WNR3; at batch 8-16 it is 2.9-3.7x faster than G = 128 and about 4x faster than WNR3's kernels (bench8-q38mx-G32: 104 / 160 GB/s against 25 / 42 for WNR3 in the same log). For one record alone at G = 128, WNR3's kernels are slightly faster (4.3 vs 3.6 GB/s on Qwen3.8, 30.6 vs 25.6 on V4.1): a latency-bound caller should use G = 32 (0.19 ms per Qwen3.8 record).
 
 What each step gave (Qwen3.8 MX, G = 128, batch 128, kernel only, same records): first version 61.2 GB/s; word window in registers instead of one global load per renormalisation 73.0; 16-warp blocks (one shared table copy for 16 tiles, <= 64 registers, 2 blocks per SM) 149.0; no `break` in the symbol loop (the compiler then drops the divergent-collective slow paths around every ballot/shuffle) and LD lookup 206. NVFP4 first version 25.6 GB/s (its 77 KB tables allowed one 4-warp block per SM, and an 8-step binary search in global memory per scale), with 16-warp blocks, rows through L1, the two-level scale table and the same symbol-loop changes 140 (5.5x).
 
-Nsight Compute (enabled for this round), first launch of each pack (128 records, 4,992 tiles, 16 warps per block): MX 2.87 instructions per cycle (67% of issue slots), achieved occupancy 55% (limit: 64 registers and 41 KB of shared memory, 2 blocks per SM), top stall "waiting for shared memory / shuffle" (32% of the 9.3 cycles between issues), ~100 warp instructions per decoded symbol; NV 2.14 IPC, top stall waiting for L1 loads of the rows and scale tables (56% of 13.3 cycles), L1 hit rate 96%. Next lever: fewer instructions per symbol (the comparison half of the 16-symbol search is ~25 of them) and register pressure for a third block per SM.
+Nsight Compute (enabled for this round), first launch of each pack (128 records, 4,992 tiles, 16 warps per block): MX 2.87 instructions per cycle (67% of issue slots), achieved occupancy 55% (limit: 64 registers and 41 KB of shared memory, 2 blocks per SM), top stall "waiting for shared memory / shuffle" (32% of the 9.3 cycles between issues), ~106 warp instructions per lockstep step of a warp (32 symbols, one per lane), i.e. ~3.3 per decoded symbol (2.15 G instructions for 128 records of 153,600 cells x 33 symbols); NV 2.14 IPC, top stall waiting for L1 loads of the rows and scale tables (56% of 13.3 cycles), L1 hit rate 96%. Next lever: fewer instructions per step (the comparison half of the 16-symbol search is ~25 of them) and register pressure for a third block per SM.
 
 **End to end from page-locked host** (plan on the CPU + upload of the compressed records + decode, two streams so batch i+1 uploads while batch i decodes; error words read once at the end; no commit copy; whole pack): Qwen3.8 MX 49-54 GB/s decoded (43-47 GB/s of compressed bytes moved: the PCIe 5 x16 upload is the limit, not the decoder), NVFP4 41-51 GB/s, V4.1 48-60 GB/s. Like for like with WNR3's production helper (synchronous per batch, status read back each batch, plus a commit kernel that copies every slab again so destinations stay untouched on failure; WNR4 decodes straight into the destination and gives that guarantee up): WNR4's synchronous helper call 33.8 GB/s at batch 32 and 43.1 at 64 vs WNR3 28.3 at 32 on Qwen3.8 MX (bench9/helper9, same run); on V4.1 41.5 vs 42.9 at batch 8 and 45.0 vs 47.1 at 16, i.e. equal when synchronous; WNR4's asynchronous path (two batches in flight) 55.6 GB/s at 8. NVFP4 has no WNR3 GPU path.
 
@@ -128,24 +131,26 @@ Both run on the same packs (128 Qwen3.8 MX, 128 Qwen3.8 NV, 32 V4.1 records), ou
 
 An engine decodes a miss batch of a few to a few dozen records, so the table compares nvCOMP configurations that stay fast at 8-64 records per call (weights and scales in 64 KiB or 256 KiB chunks). The configurations with the best whole-pack ratio code each record's weights as one ANS chunk; they are fast only when a whole pack (128 records, 32 for V4.1) is one call: at 8 Qwen3.8 records that configuration decodes at 24 GB/s of kernel time and 15.5 GB/s with the upload, below PCIe. Both kinds of point are listed.
 
-| pack | nvCOMP-ANS fast at 8-64 records (ratio) | best whole-pack ratio (one chunk per record; GB/s for the whole pack) | WNR3 | WNR4 G = 128 | WNR4 lead over the fast point |
+WNR3 and WNR4 columns: the same packs (`results/pack3-*.json`; the 2048-record ratios of section 4 differ by at most 0.0004).
+
+| pack | nvCOMP-ANS fast at 8-64 records (ratio) | best whole-pack ratio (one chunk per record; GB/s for the whole pack) | WNR3 / WNR3-NV | WNR4 G = 128 | WNR4 lead over the fast point |
 |---|---:|---|---:|---:|---:|
-| Qwen3.8 MX | 0.8997 | 0.8951 (351 GB/s) | 0.8809 | 0.8753 | 2.44 pt |
-| Qwen3.8 NV | 0.9372 | 0.9328 (378 GB/s) | 0.9271 | 0.9238 | 1.34 pt |
+| Qwen3.8 MX | 0.8997 | 0.8951 (351 GB/s) | 0.8812 | 0.8755 | 2.42 pt |
+| Qwen3.8 NV | 0.9372 | 0.9328 (378 GB/s) | 0.9272 | 0.9239 | 1.33 pt |
 | V4.1 MX | 0.8983-0.8985 | 0.8983 (552 GB/s) | 0.8536 | 0.8484 | ~5.0 pt |
 
-(WNR3's lead over the same fast points: 1.88 / 1.01 / ~4.5 points of raw.)
+(WNR3's lead over the same fast points: 1.85 / 1.00 / ~4.5 points of raw. WNR4 at G = 32 on the Qwen3.8 MX pack: 0.8774, 2.23 points below the fast point.)
 
 - nvCOMP's codecs are generic byte coders: on the packed FP4 bytes the best is 0.943 (Qwen3.8 MX), 0.987 (NV), 0.946 (V4.1); Bitcomp, Cascaded, LZ4 and Snappy store weights at 1.0 or more. Only the scales compress (ANS 0.12-0.13 on UE8M0, 0.49-0.51 on E4M3). LZ/Deflate-family decoders are 19-176 GB/s.
-- **Speed is where nvCOMP-ANS wins**: 850-900 GB/s of output for a whole pack with a warm L2; with the L2 flushed, ANS-u8 at 64 KiB decodes 554 GB/s at 8 records and 611 GB/s at 16 (Qwen3.8 MX), and the 256 KiB point used for the break-even below 276 GB/s at 8 records. That is 1.5-4x WNR4's kernel.
-- **What decides between them** is how decode meets I/O. Overlapped (batch k decodes while batch k+1 arrives): WNR4 delivers its full byte saving as soon as its decode exceeds I/O / ratio, 6-16 GB/s from NVMe and ~57 GB/s from pinned RAM over PCIe 5; its 140-209 GB/s clear both, so WNR4 moves 2.4% (Qwen3.8 MX), 1.3% (NV) and ~5% (V4.1) fewer bytes of raw than a small-batch nvCOMP-ANS. Serial (read, then decode): WNR4's extra decode time must be below the transfer time it saves. Against the consistent small-batch Qwen3.8 MX point (0.8997, 276 GB/s with a cold L2) that needs WNR4 > 118 GB/s from a 5 GB/s NVMe, > 186 GB/s from a 14 GB/s NVMe and > 243 GB/s from pinned RAM at 50 GB/s; WNR4's 140-209 GB/s clears the first, about meets the second and misses the third. A decoder at only 40 GB/s would lose in every serial case. Integration should therefore overlap decode with reads, which is also what the latency-bound engines need anyway.
+- **Speed is where nvCOMP-ANS wins**: 850-900 GB/s of output for a whole pack with a warm L2 (about 4x WNR4's 206 GB/s on a whole pack); with the L2 flushed, ANS-u8 at 64 KiB decodes 554 GB/s at 8 records and 611 GB/s at 16 (Qwen3.8 MX), and the 256 KiB point used for the break-even below 276 GB/s at 8 records. At the same batch size WNR4's kernel is 104 / 160 GB/s at G = 32 and 28 / 55 GB/s at G = 128 (8 / 16 records, section 5), so nvCOMP-ANS is about 4-5x faster than WNR4 at G = 32 and 11-20x faster than at G = 128 on engine-size batches.
+- **What decides between them** is how decode meets I/O, compared at the same batch size. Overlapped (batch k decodes while batch k+1 arrives): WNR4 delivers its full byte saving as soon as its decode exceeds I/O / ratio, 6-16 GB/s from NVMe and ~57 GB/s from pinned RAM over PCIe 5. G = 32 (104 GB/s from 8 records) clears both; G = 128 clears NVMe from 8 records but needs about 32 records (91 GB/s) to clear PCIe. Then WNR4 moves 2.2-2.4% (Qwen3.8 MX), 1.3% (NV) and ~5% (V4.1) fewer bytes of raw than a small-batch nvCOMP-ANS. Serial (read, then decode): WNR4's extra decode time must be below the transfer time it saves. Against the consistent 8-record Qwen3.8 MX point (0.8997, 276 GB/s with a cold L2), G = 128 needs > 118 / 186 / 243 GB/s and G = 32 (its smaller lead) > 124 / 192 / 246 GB/s from a 5 GB/s NVMe / a 14 GB/s NVMe / pinned RAM at 50 GB/s. At 8 records WNR4 (104 GB/s at G = 32, 28 at G = 128) loses all three; at 16-64 records G = 32 (160-205 GB/s) beats the 5 GB/s NVMe case against this point, and nvCOMP itself gets faster with the batch, which raises the thresholds. So in a serial path a small-batch nvCOMP-ANS is faster end to end in almost every case, and a decoder at only 40 GB/s would lose every one. Integration should therefore overlap decode with reads, which is also what the latency-bound engines need anyway.
 - An independent re-check (own harness, no code shared with the first) found no timing, ratio or bit-exactness error (580/580 configurations exact); the corrections above (small-batch points, cold-L2 speeds, a consistent break-even) come from it.
 
 **NVDEC (hardware video decoder) probe**: expert bytes packed as frames of lossless HEVC (x265, NVENC) and AV1 (libaom, SVT-AV1) streams, decoded by NVDEC through ffmpeg (cuvid and `-hwaccel cuda`). Lossless video *expands* the FP4 weights (1.30-1.43x; there is no spatial correlation to exploit); only the scales shrink (0.165 MX, 0.504 NV). Decode: HEVC lossless 0.33-0.35 GB/s for one ffmpeg stream (0.26 GB/s from MKV), AV1 lossless 0.07-0.40 GB/s. One stream does not saturate the decoder (24-49% decoder use); two concurrent streams give ~0.44 GB/s in all, so the hardware ceiling is somewhat higher but still ~90x below 40 GB/s. HEVC 4:2:0/4:4:4 lossless decodes bit-exact; HEVC 4:0:0 is refused by NVDEC (`CUDA_ERROR_NOT_SUPPORTED`); AV1 lossless 4:2:0 at 1280x2048 decodes **not** bit-exact on NVDEC (the same file decodes exactly in software and at 1280x1024); `hevc_cuvid` with `-stream_loop` on a valid 4:4:4 MKV errored after ~2.7 s. Not viable, not even for the scales.
 
 ## 7. What is ready, what is not
 
-**Ready (prototype quality, on this branch, nothing pushed):**
+**Ready (prototype quality, not used by any container or engine):**
 - Format spec (`docs/WNR4-SPEC.md`, DRAFT 0.1, sections 1-4 normative), model blob WNM4, record layout, tile and integrity rules.
 - CPU codec `wnr4/wnr4.h`: trainer, encoder, reference decoder, batch decoder; tool API `wnr4/tools/wnr4_tools.c`.
 - CUDA decoder `wnr4/wnr4_cuda.cuh` and helper DLL `wnr4/tools/wnr4_cuda_bridge.cu` (register model, asynchronous submit/wait with four slots per thread and device, synchronous call, release); writes straight into caller destinations.
@@ -153,11 +158,11 @@ An engine decodes a miss batch of a few to a few dozen records, so the table com
 - An adversarial review of the code (three lenses, each finding checked by a second reviewer) found no divergence between the CPU decoder, the CUDA kernel and the encoder and no out-of-bounds path for a static hostile record; its confirmed findings (spec wording, geometry checks, helper slot handling and status codes, test assertions, comparisons across runs, local paths in logs) are fixed.
 
 **Not done:**
-- No WEX4 codec id or blob kind assigned (proposed: codec 8 with a required feature bit, blob kind 3), no conformance vectors, no Python or Go/Rust reader.
+- No WEX4 codec id or blob kind assigned (proposed: codec 8 with a required feature bit if WNR3-NV takes 7, else 7; blob kind 3), no conformance vectors, no Python or Go/Rust reader.
 - No engine integration: no container written in WNR4, no engine run, no tok/s measured. The expected effect on tok/s is small where engines are bound by host overhead or read latency (a few percent) and large only where compression lets the expert set fit in VRAM + RAM.
 - CPU fallback is scalar (0.6-0.7 GB/s on 16-32 threads); a SIMD lane-parallel decoder is open.
-- GPU: instruction count per symbol (~100 warp instructions) and register pressure (64 registers cap the blocks per SM) are the next levers; single-record latency at G = 128 is no better than WNR3's (use G = 32 for latency-bound callers).
+- GPU: instruction count per step (~106 warp instructions per 32 symbols) and register pressure (64 registers cap the blocks per SM) are the next levers; single-record latency at G = 128 is no better than WNR3's (use G = 32 for latency-bound callers).
 - The NVFP4 baselines (WNR3-NV) and the NVFP4 reader come from the `nvfp4-wnr3` branch, which is not public yet.
 - Full 2048-record runs exist only for Qwen3.8 (MXFP4, NVFP4) and DeepSeek V4.1 MXFP4; the other models (section 4b) are 64-expert samples, and int4-g64 exports are not covered.
 
-**Recommendation.** Adopt WNR4 as the successor of WNR3 for new containers once it is wired into an engine and an A/B shows the tok/s, with G = 32 where single-record latency matters (engine misses) and G = 128-256 for bulk/archival use; keep WNR3 readable unchanged. Use the decoder overlapped with reads; in a strictly serial read-then-decode path from pinned RAM on Qwen3.8 a small-batch nvCOMP-ANS is as fast end to end and should be the comparison point.
+**Recommendation.** Adopt WNR4 as the successor of WNR3 for new containers once it is wired into an engine and an A/B shows the tok/s, with G = 32 where single-record latency matters (engine misses) and G = 128-256 for bulk/archival use; keep WNR3 readable unchanged. Use the decoder overlapped with reads; in a strictly serial read-then-decode path a small-batch nvCOMP-ANS is faster end to end in almost every case and should be the comparison point.

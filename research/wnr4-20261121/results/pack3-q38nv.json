@@ -1,0 +1,22 @@
+{
+ "dataset": "q38nv",
+ "cz": false,
+ "pb": 5,
+ "train": 256,
+ "test": 128,
+ "raw_bytes": 353894400,
+ "wnm4_id": "ca18bb51",
+ "fails": [],
+ "wnr4": {
+  "128": {
+   "stored": 326967296,
+   "ratio": 0.9239120370370371,
+   "max_record": 2580480
+  }
+ },
+ "wnr3nv_same_train_8192_2048": {
+  "stored": 328126464,
+  "ratio": 0.9271875
+ },
+ "seconds": 14.9891996383667
+}
