@@ -1,8 +1,42 @@
 # WNR4 research (2026-11-21)
 
-The measurements behind [docs/wnr4-research.md](../../docs/wnr4-research.md) and [docs/WNR4-SPEC.md](../../docs/WNR4-SPEC.md). Codec: `wnr4/wnr4.h` (CPU), `wnr4/wnr4_cuda.cuh` (CUDA), `wnr4/tools/wnr4_tools.c` (ctypes tool API), `wnr4/tools/wnr4_cuda_bridge.cu` (prototype helper DLL), `wnr4/tests/test_wnr4.c` (CPU tests and fuzz).
+The measurements behind [docs/reports/wnr4-research-20261121.md](../../docs/reports/wnr4-research-20261121.md) and [docs/WNR4-SPEC.md](../../docs/WNR4-SPEC.md). Codec: `wnr4/wnr4.h` (CPU), `wnr4/wnr4_cuda.cuh` (CUDA), `wnr4/tools/wnr4_tools.c` (ctypes tool API), `wnr4/tools/wnr4_cuda_bridge.cu` (prototype helper DLL), `wnr4/tests/test_wnr4.c` (CPU tests and fuzz).
 
-## Files
+## Question
+
+Can a successor of WNR3 store MXFP4 and NVFP4 routed experts in fewer bytes than WNR3 and decode them on the GPU at 40 GB/s or more (batched, straight into VRAM), so that compressed experts can beat re-reading RAW records?
+
+## Setup
+
+- Machine: one Windows 11 desktop, RTX 5090 (170 SMs; CUDA 13.4, `sm_120`, nvcc through `nvcc.cmd` with MSVC), Ryzen 9 7950X3D, 32 GB RAM. CPU code built with MSYS2 UCRT64 gcc.
+- Data, read only: three WEX4 containers. Qwen3.8-Flash-Next MXFP4 (RAW records, 24,576 experts), the same model's NVFP4 export (24,576), DeepSeek V4.1 REAP-192 MXFP4 (WNR3-CZ records, 7,680; its records are decoded to the coded domain first). Paths come from the `WNR4_*` variables or `out/paths.json`.
+- Ratio runs: models counted on 256 training records evenly spaced in (layer, expert) order, 2048 other records as the test set (seeded, the same number per layer); every test record encoded, decoded by the reference decoder and compared. WNR3 and WNR3-NV baselines encoded by their own encoders with models of the same 256 records.
+- Speed runs: packs of 128 (Qwen3.8) and 32 (V4.1) test records (`out/packs3`), every record decoded on the GPU and compared before timing; kernel time = CUDA events around the one launch, median of 5.
+- No engine build and no engine run: the codec is measured on its own. Commands: section "Rerun" below.
+
+## Results
+
+Stored / raw (records padded to 4096 B), 2048 held-out records each, all byte-exact; kernel GB/s of decoded slab (best batch); from `results/measure-*.json` and `results/bench8-*.log`, `results/bench9-*.log`.
+
+| container | WNR3 (same training records) | WNR4 G = 128 | WNR4 GPU kernel | WNR3 GPU kernels, same run |
+|---|---:|---:|---:|---:|
+| Qwen3.8 MXFP4 | 0.8809 | 0.8753 | 206-209 GB/s (batch 128) | 91 GB/s |
+| Qwen3.8 NVFP4, byte-exact | 0.9271 (WNR3-NV) | 0.9238 | 140 GB/s | none (no GPU decoder) |
+| DeepSeek V4.1 MXFP4 | 0.8539 | 0.8488 | 187-188 GB/s (batch 16-32) | 105 GB/s |
+
+From page-locked host memory, upload included, WNR4 reaches 49-54 GB/s on Qwen3.8 MXFP4 (the PCIe 5 upload is the limit). The full tables, the G sweep, the CPU decoder, the nvCOMP and NVDEC baselines and the other models are in the [dated report](../../docs/reports/wnr4-research-20261121.md).
+
+## Limits
+
+- One machine and one GPU. Speed points are medians of 5 within one log; the same binary moved by up to ~30% between rounds, so compare numbers within one log.
+- No engine run and no tok/s: what WNR4 would change in an engine is not measured here.
+- The NVFP4 reader and the WNR3-NV baseline come from the `nvfp4-wnr3` branch, which is not public yet; the NVFP4 runs cannot be reproduced from this repository alone.
+- The nvCOMP and NVDEC baselines of the report ran outside this repository (nvCOMP is a proprietary SDK); their harnesses are not included.
+- The other models of the report are 64-expert samples, and their WNR3 columns are copied from a study that is not in this repository.
+- The output of `stats/ctx2.py` and `stats/ctx3.py` was printed, not saved; `results/ctx3-console.txt` is a copy from the terminal.
+- The CPU decoder is scalar (0.6-0.7 GB/s on 16-32 threads); no SIMD lane-parallel decoder was written.
+
+## Raw files and scripts
 
 | file | what |
 |---|---|

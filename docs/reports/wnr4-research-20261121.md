@@ -1,5 +1,7 @@
 # WNR4: research, design and measurements (2026-11-21)
 
+> **Dated report (2026-11-21).** Research on a successor of WNR3; nothing here is in production. The format draft: [WNR4-SPEC.md](../WNR4-SPEC.md). What runs today: [STATUS.md](../../STATUS.md). This WNR4 is not the "WNR4 record" of [WEX4-SPEC.md](../WEX4-SPEC.md) section 12.2 (three changes to WNR3's stream skeleton); it goes further, see the [glossary](../GLOSSARY.md).
+
 **Question.** Can a successor of WNR3 store MXFP4/NVFP4 routed experts in fewer bytes than WNR3 **and** decode on the GPU fast enough (target >= 40 GB/s of decoded slab on the RTX 5090, batched, straight into VRAM) for compressed experts to beat re-reading RAW records from NVMe?
 
 **Answer in short.**
@@ -8,7 +10,7 @@
 - Speed: yes. The CUDA decoder (one warp per tile, 32 rANS lanes sharing a 16-bit word stream, one launch per batch, output straight into the destination slots) decodes **up to 206 GB/s** of slab on the RTX 5090 (Qwen3.8 MXFP4, kernel only), 140 GB/s on NVFP4 and 188 GB/s on V4.1, against 90 GB/s for WNR3's kernels on the same records and no GPU decoder at all for WNR3-NV. From page-locked host memory, upload included, it reaches 49-54 GB/s, which is the PCIe 5 upload rate: decode is no longer the bottleneck. The >= 40 GB/s target holds from a batch of 8 records (G = 32) or 16-32 records (G = 128).
 - Trade-off: G (cells per lane per tile) sets ratio vs latency; G = 32 gives 0.19 ms per lone Qwen3.8 record and 104-204 GB/s at batch 8-32 for +0.2 points of ratio (still 0.4 below WNR3).
 
-Everything here is measured on this machine (RTX 5090, Ryzen 9 7950X3D, 32 GB) unless marked. Literature: [research/wnr4-20261121/literature.md](../research/wnr4-20261121/literature.md). Format: [WNR4-SPEC.md](WNR4-SPEC.md). Code and raw results: [research/wnr4-20261121](../research/wnr4-20261121/README.md).
+Everything here is measured on this machine (RTX 5090, Ryzen 9 7950X3D, 32 GB) unless marked. Literature: [research/wnr4-20261121/literature.md](../../research/wnr4-20261121/literature.md). Format: [WNR4-SPEC.md](../WNR4-SPEC.md). Code and raw results: [research/wnr4-20261121](../../research/wnr4-20261121/README.md).
 
 ## 1. Starting point
 
@@ -18,7 +20,7 @@ Everything here is measured on this machine (RTX 5090, Ryzen 9 7950X3D, 32 GB) u
 
 ## 2. Where the redundancy is (held-out measurements)
 
-Context study (256 training records, other records as the test set, cross-entropy under 14-bit quantized tables, fraction of raw). Sources: `stats/ctx3.py` (and `stats/ctx2.py` for run 1, in-sample), whose console output is copied in [results/ctx3-console.txt](../research/wnr4-20261121/results/ctx3-console.txt) (run numbers below refer to it; the script grew between runs, so each column quotes one run where it can), and `stats/run_stats.py` ([results/stats-q38mx.log](../research/wnr4-20261121/results/stats-q38mx.log), 2048 test records; marked "stats"). The test sets differ, so the same model can differ in the fifth digit between the two (WNR3 contexts on MX: 0.86691 in ctx3, 0.86699 in stats).
+Context study (256 training records, other records as the test set, cross-entropy under 14-bit quantized tables, fraction of raw). Sources: `stats/ctx3.py` (and `stats/ctx2.py` for run 1, in-sample), whose console output is copied in [results/ctx3-console.txt](../../research/wnr4-20261121/results/ctx3-console.txt) (run numbers below refer to it; the script grew between runs, so each column quotes one run where it can), and `stats/run_stats.py` ([results/stats-q38mx.log](../../research/wnr4-20261121/results/stats-q38mx.log), 2048 test records; marked "stats"). The test sets differ, so the same model can differ in the fifth digit between the two (WNR3 contexts on MX: 0.86691 in ctx3, 0.86699 in stats).
 
 | model of the weight nibbles | Qwen3.8 MX (CZ), run 3 | Qwen3.8 NV (byte-exact), run 4 |
 |---|---:|---:|
