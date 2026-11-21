@@ -1,0 +1,242 @@
+==WARNING== Note: Running with unmodified GPU clocks. If not controlled otherwise, profiling results may be inconsistent.
+==PROF== Connected to process 34672 (out/bench_gpu8.exe)
+==PROF== Profiling "wnr4_cuda_kernel": 0%....50%....100% - 21 passes
+device NVIDIA GeForce RTX 5090, 170 SMs; pack out/packs3/q38mx.pack: 128 records, kind MX, G 128, raw 2611200 B
+stored/raw: WNR4 0.87553, WNR3 0.88118
+WNR4 GPU bit-exact: 128 of 128 records (4992 jobs)
+WNR4 GPU single-bit flips (one per record, payload bytes; header and offsets are checked on the host): 128 of 128 rejected
+WNR4 kernel only (records in VRAM), row_find, warps/block 4, rows shared, median of 1:
+  batch    1:    0.860 ms      3.0 GB/s  (48 warps)
+  batch    2:    0.827 ms      6.3 GB/s  (84 warps)
+  batch    4:    0.821 ms     12.7 GB/s  (156 warps)
+  batch    8:    0.811 ms     25.7 GB/s  (312 warps)
+  batch   16:    0.810 ms     51.6 GB/s  (624 warps)
+  batch   32:    1.028 ms     81.2 GB/s  (1248 warps)
+  batch   64:    2.002 ms     83.5 GB/s  (2496 warps)
+  batch  128:    3.996 ms     83.6 GB/s  (4992 warps)
+WNR4 kernel only (records in VRAM), LD lookup, warps/block 4, rows shared, median of 1:
+  batch    1:    0.807 ms      3.2 GB/s  (48 warps)
+  batch    2:    0.800 ms      6.5 GB/s  (84 warps)
+  batch    4:    0.783 ms     13.3 GB/s  (156 warps)
+  batch    8:    0.788 ms     26.5 GB/s  (312 warps)
+  batch   16:    0.796 ms     52.5 GB/s  (624 warps)
+  batch   32:    0.980 ms     85.2 GB/s  (1248 warps)
+  batch   64:    1.859 ms     89.9 GB/s  (2496 warps)
+  batch  128:    3.677 ms     90.9 GB/s  (4992 warps)
+WNR4 kernel only (records in VRAM), LD lookup, warps/block 8, rows shared, median of 1:
+  batch    1:    0.814 ms      3.2 GB/s  (48 warps)
+  batch    2:    0.812 ms      6.4 GB/s  (96 warps)
+  batch    4:    0.831 ms     12.6 GB/s  (168 warps)
+  batch    8:    0.804 ms     26.0 GB/s  (312 warps)
+  batch   16:    0.789 ms     53.0 GB/s  (624 warps)
+  batch   32:    0.989 ms     84.5 GB/s  (1248 warps)
+  batch   64:    1.116 ms    149.8 GB/s  (2496 warps)
+  batch  128:    2.150 ms    155.4 GB/s  (4992 warps)
+WNR4 kernel only (records in VRAM), LD lookup, warps/block 16, rows shared, median of 1:
+  batch    1:    0.896 ms      2.9 GB/s  (48 warps)
+  batch    2:    0.945 ms      5.5 GB/s  (96 warps)
+  batch    4:    0.948 ms     11.0 GB/s  (192 warps)
+  batch    8:    0.946 ms     22.1 GB/s  (336 warps)
+  batch   16:    0.943 ms     44.3 GB/s  (624 warps)
+  batch   32:    1.060 ms     78.8 GB/s  (1248 warps)
+  batch   64:    1.065 ms    156.9 GB/s  (2496 warps)
+  batch  128:    1.657 ms    201.7 GB/s  (4992 warps)
+WNR4 kernel only (records in VRAM), LD lookup, warps/block 16, rows L1, median of 1:
+  batch    1:    0.914 ms      2.9 GB/s  (48 warps)
+  batch    2:    0.962 ms      5.4 GB/s  (96 warps)
+  batch    4:    0.966 ms     10.8 GB/s  (192 warps)
+  batch    8:    0.996 ms     21.0 GB/s  (336 warps)
+  batch   16:    1.000 ms     41.8 GB/s  (624 warps)
+  batch   32:    1.085 ms     77.0 GB/s  (1248 warps)
+  batch   64:    1.120 ms    149.3 GB/s  (2496 warps)
+  batch  128:    1.729 ms    193.3 GB/s  (4992 warps)
+WNR4 kernel only (records in VRAM), LD lookup, warps/block auto, rows auto, median of 1:
+  batch    1:    0.792 ms      3.3 GB/s  (48 warps)
+  batch    2:    0.787 ms      6.6 GB/s  (84 warps)
+  batch    4:    0.773 ms     13.5 GB/s  (156 warps)
+  batch    8:    0.781 ms     26.8 GB/s  (312 warps)
+  batch   16:    0.799 ms     52.3 GB/s  (624 warps)
+  batch   32:    0.968 ms     86.3 GB/s  (1248 warps)
+  batch   64:    1.085 ms    154.1 GB/s  (2496 warps)
+  batch  128:    1.659 ms    201.5 GB/s  (4992 warps)
+WNR4 GPU bit-exact (defaults: LD, auto block size): 128 of 128 records
+WNR4 end to end from page-locked host (plan + upload + decode), whole pack:
+  batch   1:    63.39 ms for 128 records      5.3 GB/s decoded (4.6 GB/s read)
+  batch   4:    20.61 ms for 128 records     16.2 GB/s decoded (14.2 GB/s read)
+  batch   8:    11.87 ms for 128 records     28.2 GB/s decoded (24.7 GB/s read)
+  batch  16:     8.73 ms for 128 records     38.3 GB/s decoded (33.5 GB/s read)
+  batch  32:     7.61 ms for 128 records     43.9 GB/s decoded (38.4 GB/s read)
+WNR3 production batch: 128 of 128 records bit-exact (failures reported 0)
+WNR3 production helper batch (upload included), whole pack:
+  batch   1:    39.57 ms      8.4 GB/s decoded
+  batch   4:    31.18 ms     10.7 GB/s decoded
+  batch   8:    29.42 ms     11.4 GB/s decoded
+  batch  16:    30.80 ms     10.9 GB/s decoded
+  batch  32:    26.47 ms     12.6 GB/s decoded
+WNR3 kernels only (records in VRAM; scales + weights kernels per record, 8 streams), median of 1:
+  batch    1:    0.688 ms      3.8 GB/s
+  batch    2:    0.717 ms      7.3 GB/s
+  batch    4:    0.926 ms     11.3 GB/s
+  batch    8:    1.135 ms     18.4 GB/s
+  batch   16:    1.805 ms     23.2 GB/s
+  batch   32:    3.613 ms     23.1 GB/s
+  batch   64:    6.653 ms     25.1 GB/s
+  batch  128:   12.937 ms     25.8 GB/s
+done
+==PROF== Disconnected from process 34672
+[34672] bench_gpu8.exe@127.0.0.1
+  void wnr4_cuda_kernel<0, 1, 16, 0, 1>(const Wnr4CudaJob *, unsigned int, const Wnr4CudaRec *, Wnr4CudaTables, unsigned int *) (312, 1, 1)x(512, 1, 1), Context 1, Stream 7, Device 0, CC 12.0
+    Warning: Data collection happened without fixed GPU frequencies. Profiling results may be inconsistent.
+    Section: Compute Workload Analysis
+    -------------------- ----------- ------------
+    Metric Name          Metric Unit Metric Value
+    -------------------- ----------- ------------
+    Executed Ipc Active   inst/cycle         2,87
+    Executed Ipc Elapsed  inst/cycle         2,69
+    Issue Slots Busy               %        67,22
+    Issued Ipc Active     inst/cycle         2,87
+    SM Busy                        %        67,22
+    -------------------- ----------- ------------
+
+    INF   ALU is the highest-utilized pipeline (43.9%) based on elapsed cycles in the workload, taking into account the 
+          rates of its different instructions. It is the logical aggregation of ALU Heavy and ALU Lite. It's dominated  
+          by its ALU Heavy sub-pipeline. It is well-utilized, but should not be a bottleneck. Based on the number of    
+          executed instructions, the highest utilized pipeline (57.9%) is ALU Heavy. It is part of the aggregated pipe  
+          ALU. Comparing the two, the overall pipeline utilization appears to be caused by frequent, low-latency        
+          instructions. See the Profiling Guide                                                                         
+          (https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html#metrics-decoder) or hover over the          
+          pipeline name to understand the workloads handled by each pipeline. The Instruction Statistics section shows  
+          the mix of executed instructions for this workload. Check the Warp State Statistics section for which         
+          reasons cause warps to stall.                                                                                 
+
+    Section: Memory Workload Analysis
+    --------------------------------------- ----------- ------------
+    Metric Name                             Metric Unit Metric Value
+    --------------------------------------- ----------- ------------
+    Local Memory Spilling Requests                                 0
+    Local Memory Spilling Request Overhead            %            0
+    L2 Sector Promotion Misses                        %            0
+    Shared Memory Spilling Requests                                0
+    Shared Memory Spilling Request Overhead           %            0
+    Memory Throughput                           Gbyte/s       392,53
+    Mem Busy                                          %        78,77
+    Max Bandwidth                                     %        33,01
+    L1/TEX Hit Rate                                   %        16,67
+    L2 Persisting Size                            Mbyte        18,87
+    L2 Compression Success Rate                       %            0
+    L2 Compression Ratio                                           0
+    L2 Compression Input Sectors                 sector            0
+    L2 Hit Rate                                       %         7,36
+    Mem Pipes Busy                                    %        33,01
+    --------------------------------------- ----------- ------------
+
+    Section: Scheduler Statistics
+    ---------------------------- ----------- ------------
+    Metric Name                  Metric Unit Metric Value
+    ---------------------------- ----------- ------------
+    One or More Eligible                   %        73,18
+    Issued Warp Per Scheduler                        0,73
+    No Eligible                            %        26,82
+    Active Warps Per Scheduler          warp         6,78
+    Eligible Warps Per Scheduler        warp         1,75
+    ---------------------------- ----------- ------------
+
+    Section: Warp State Statistics
+    ---------------------------------------- ----------- ------------
+    Metric Name                              Metric Unit Metric Value
+    ---------------------------------------- ----------- ------------
+    Warp Cycles Per Issued Instruction             cycle         9,27
+    Warp Cycles Per Executed Instruction           cycle         9,27
+    Avg. Active Threads Per Warp                                31,98
+    Avg. Not Predicated Off Threads Per Warp                    30,66
+    ---------------------------------------- ----------- ------------
+
+    WRN   The optional metric smsp__pcsamp_sample_count could not be found. Collecting it as an additional metric could 
+          enable the rule to provide more guidance.                                                                     
+    ----- --------------------------------------------------------------------------------------------------------------
+    OPT   Est. Local Speedup: 32.54%                                                                                    
+          On average, each warp of this workload spends 3.0 cycles being stalled waiting for a scoreboard dependency on 
+          a MIO (memory input/output) operation (not to L1TEX). The primary reason for a high number of stalls due to   
+          short scoreboards is typically memory operations to shared memory. Other reasons include frequent execution   
+          of special math instructions (e.g. MUFU) or dynamic branching (e.g. BRX, JMX). Consult the Memory Workload    
+          Analysis section to verify if there are shared memory operations and reduce bank conflicts, if reported.      
+          Assigning frequently accessed values to variables can assist the compiler in using low-latency registers      
+          instead of direct memory accesses. This stall type represents about 32.5% of the total average of 9.3 cycles  
+          between issuing two instructions.                                                                             
+    ----- --------------------------------------------------------------------------------------------------------------
+    INF   Check the Warp Stall Sampling (All Samples) table for the top stall locations in your source based on         
+          sampling data. The Profiling Guide                                                                            
+          (https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html#metrics-reference) provides more details    
+          on each stall reason.                                                                                         
+
+    Section: Instruction Statistics
+    ---------------------------------------- ----------- -------------
+    Metric Name                              Metric Unit  Metric Value
+    ---------------------------------------- ----------- -------------
+    Local Memory Spilling Requests                  byte             0
+    Shared Memory Spilling Requests                 byte             0
+    Avg. Executed Instructions Per Scheduler        inst  3.155.893,39
+    Executed Instructions                           inst 2.146.007.504
+    Avg. Issued Instructions Per Scheduler          inst  3.155.893,40
+    Issued Instructions                             inst 2.146.007.510
+    ---------------------------------------- ----------- -------------
+
+    Section: Launch Statistics
+    -------------------------------- --------------- ---------------
+    Metric Name                          Metric Unit    Metric Value
+    -------------------------------- --------------- ---------------
+    Block Size                                                   512
+    Cluster Scheduling Policy                           PolicySpread
+    Cluster Size                                                   0
+    Function Cache Configuration                     CachePreferNone
+    Grid Size                                                    312
+    Preferred Cluster Size                                         0
+    Registers Per Thread             register/thread              64
+    Shared Memory Configuration Size           Kbyte          102,40
+    Driver Shared Memory Per Block       Kbyte/block            1,02
+    Dynamic Shared Memory Per Block      Kbyte/block           41,44
+    Static Shared Memory Per Block        byte/block             528
+    # SMs                                         SM             170
+    Stack Size                                                 1.024
+    Threads                                   thread         159.744
+    # TPCs                                                        85
+    Enabled TPC IDs                                              all
+    Uses Green Context                                             0
+    Waves Per SM                                                0,92
+    -------------------------------- --------------- ---------------
+
+    OPT   If you execute __syncthreads() to synchronize the threads of a block, it is recommended to have at least two  
+          blocks per multiprocessor (compared to the currently executed 1.8 blocks) This way, blocks that aren't        
+          waiting for __syncthreads() can keep the hardware busy.                                                       
+
+    Section: Occupancy
+    ------------------------------- ----------- ------------
+    Metric Name                     Metric Unit Metric Value
+    ------------------------------- ----------- ------------
+    Max Active Clusters                 cluster            0
+    Max Cluster Size                      block            8
+    Overall GPU Occupancy                     %            0
+    Cluster Occupancy                         %            0
+    Block Limit Barriers                  block           24
+    Block Limit SM                        block           24
+    Block Limit Registers                 block            2
+    Block Limit Shared Mem                block            2
+    Block Limit Warps                     block            3
+    Theoretical Active Warps per SM        warp           32
+    Theoretical Occupancy                     %        66,67
+    Achieved Occupancy                        %        55,41
+    Achieved Active Warps Per SM           warp        26,60
+    ------------------------------- ----------- ------------
+
+    OPT   Est. Local Speedup: 16.89%                                                                                    
+          The difference between calculated theoretical (66.7%) and measured achieved occupancy (55.4%) can be the      
+          result of warp scheduling overheads or workload imbalances during the kernel execution. Load imbalances can   
+          occur between warps within a block as well as across blocks of the same kernel. See the CUDA Best Practices   
+          Guide (https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/index.html#occupancy) for more details on     
+          optimizing occupancy.                                                                                         
+    ----- --------------------------------------------------------------------------------------------------------------
+    OPT   Est. Local Speedup: 33.33%                                                                                    
+          The 8.00 theoretical warps per scheduler this kernel can issue according to its occupancy are below the       
+          hardware maximum of 12. This kernel's theoretical occupancy (66.7%) is limited by the number of required      
+          registers, and the required amount of shared memory.                                                          
+

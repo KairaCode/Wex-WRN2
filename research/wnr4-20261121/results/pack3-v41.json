@@ -1,0 +1,26 @@
+{
+ "dataset": "v41",
+ "cz": true,
+ "pb": 5,
+ "train": 256,
+ "test": 32,
+ "raw_bytes": 601620480,
+ "wnm4_id": "acb93153",
+ "fails": [],
+ "wnr4": {
+  "128": {
+   "stored": 510435328,
+   "ratio": 0.8484340958605664,
+   "max_record": 16007168
+  }
+ },
+ "wnr3_same_train": {
+  "stored": 513536000,
+  "ratio": 0.8535879629629629
+ },
+ "wnr3_production_records": {
+  "stored": 513531904,
+  "ratio": 0.8535811546840959
+ },
+ "seconds": 87.17157030105591
+}

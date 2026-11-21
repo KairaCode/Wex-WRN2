@@ -22,7 +22,8 @@
  *  - a container for another geometry, or both sources at once, is refused (child process);
  *  - the WEX4 form of the WEX1 container (tests/wex4_fixture.h) gives the same records; a pinned
  *    COLI_WEX_ROOT refuses another root and the WEX1 form; COLI_WEX_VERIFY=1 stops the engine on
- *    a changed record byte, which loads without it (wex4_checks; also run under --nr3, whose
+ *    a changed record byte, which loads without it; under it a WEX1 file whose header page holds
+ *    the WEX4 magic at byte 56 gets no record hashes (wex4_checks; also run under --nr3, whose
  *    multi-page records check a striped read's own hash against a differing mirror).
  * With a fixture holding experts-mxfp4.nr3.wex (make_qwen38_tiny_mxfp4.py --inter 512, then
  * tools/build_nr3.py container): the WNR3 records decode to the WEX1 container's bytes on the
@@ -501,6 +502,17 @@ static void wex4_checks(const char *self,const char *snap){
     ck(child(self,"--refuse",snap,wex_path)!=0,"W06: under a pinned root the WEX1 form (no root) is refused");
     unsetenv("COLI_WEX_ROOT");
     ck(child(self,"--refuse",snap,wex_path)==0,"no pin: the WEX1 form still attaches");
+    {   /* a WEX1 file with the WEX4 magic at header byte 56, which no legacy check reads */
+        uint32_t magic=WEX4_MAGIC;unsigned char saved[4];
+        memcpy(saved,old+56,4);memcpy(old+56,&magic,4);
+        put_file(bad_path,old,(size_t)size);
+        memcpy(old+56,saved,4);
+        setenv("COLI_WEX_PATH",bad_path,1);setenv("COLI_WEX_VERIFY","1",1);
+        Model b;model_init(&b,snap,1,8);q38_expert_mx4_attach(&b);
+        ck(b.x4&&!b.x4->wex4&&!b.x4->wex_sha,"COLI_WEX_VERIFY=1, a WEX1 file with the WEX4 magic at byte 56: no record hashes");
+        q38_model_free(&b);
+        unsetenv("COLI_WEX_VERIFY");setenv("COLI_WEX_PATH",w4_path,1);
+    }
     if(e0->total_bytes>=2*WEX_ALIGN){
         /* a mirror whose layer 0 expert 0 differs in its last page: a lone miss of it takes its tail
          * from the mirror (drive 0 hashed, cut 25/75), which the striped layout's own hash catches */

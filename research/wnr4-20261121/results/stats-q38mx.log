@@ -1,0 +1,30 @@
+  256/2304 6 s
+  512/2304 13 s
+  768/2304 19 s
+  1024/2304 26 s
+  1280/2304 33 s
+  1536/2304 39 s
+  1792/2304 46 s
+  2048/2304 53 s
+  2304/2304 61 s
+W wnr3 (cls,pm,mx) per block @12           3.6850 b/w  0.86706 of raw
+W wnr3 (cls,pm,mx) per block @14           3.6847 b/w  0.86699 of raw
+W cls only @12                             3.6890 b/w  0.86800 of raw
+W cls only @14                             3.6887 b/w  0.86793 of raw
+W run8 (cls,pm,mx) @12                     3.6885 b/w  0.86787 of raw
+W run8 (cls,pm,mx) @14                     3.6882 b/w  0.86780 of raw
+W run8 (cls,mx) @12                        3.6885 b/w  0.86787 of raw
+W run8 (cls,mx) @14                        3.6882 b/w  0.86780 of raw
+W cls x blockmax M (nibbles) @12           3.6930 b/w  0.86894 of raw
+W cls x blockmax M (nibbles) @14           3.6924 b/w  0.86880 of raw
+W mag8|cls (+sign) @12                     3.6886 b/w  0.86791 of raw
+W mag8|cls (+sign) @14                     3.6886 b/w  0.86791 of raw
+W mag8|run8 (+sign) @12                    3.6881 b/w  0.86778 of raw
+W mag8|run8 (+sign) @14                    3.6881 b/w  0.86778 of raw
+W mag8|cls,M (+sign) @12                   3.6924 b/w  0.86880 of raw
+W mag8|cls,M (+sign) @14                   3.6923 b/w  0.86877 of raw
+S up                                       0.9925 b/s  0.00730 of raw
+S order0                                   0.9929 b/s  0.00730 of raw
+S left (WNR3-NV)                           0.9876 b/s  0.00726 of raw
+S pair (even order0, odd left)             0.9901 b/s  0.00728 of raw
+flags {15: 2304} 61 s

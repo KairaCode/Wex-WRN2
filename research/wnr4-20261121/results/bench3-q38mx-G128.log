@@ -1,0 +1,36 @@
+device NVIDIA GeForce RTX 5090, 170 SMs; pack out/packs3/q38mx.pack: 128 records, kind MX, G 128, raw 2611200 B
+stored/raw: WNR4 0.87553, WNR3 0.88118
+WNR4 GPU bit-exact: 128 of 128 records (4992 jobs)
+WNR4 GPU single-bit flips (one per record, payload bytes; header and offsets are checked on the host): 128 of 128 rejected
+WNR4 kernel only (records in VRAM), median of 5:
+  batch    1:    0.976 ms      2.7 GB/s  (48 warps)
+  batch    2:    0.972 ms      5.4 GB/s  (84 warps)
+  batch    4:    0.955 ms     10.9 GB/s  (156 warps)
+  batch    8:    0.952 ms     22.0 GB/s  (312 warps)
+  batch   16:    0.955 ms     43.7 GB/s  (624 warps)
+  batch   32:    1.368 ms     61.1 GB/s  (1248 warps)
+  batch   64:    2.659 ms     62.8 GB/s  (2496 warps)
+  batch  128:    5.509 ms     60.7 GB/s  (4992 warps)
+WNR4 end to end from page-locked host (plan + upload + decode), whole pack:
+  batch   1:    88.53 ms for 128 records      3.8 GB/s decoded (3.3 GB/s read)
+  batch   4:    25.44 ms for 128 records     13.1 GB/s decoded (11.5 GB/s read)
+  batch   8:    14.37 ms for 128 records     23.3 GB/s decoded (20.4 GB/s read)
+  batch  16:     8.99 ms for 128 records     37.2 GB/s decoded (32.6 GB/s read)
+  batch  32:     6.97 ms for 128 records     47.9 GB/s decoded (42.0 GB/s read)
+WNR3 production batch: 128 of 128 records bit-exact (failures reported 0)
+WNR3 production helper batch (upload included), whole pack:
+  batch   1:    36.63 ms      9.1 GB/s decoded
+  batch   4:    19.16 ms     17.4 GB/s decoded
+  batch   8:    13.66 ms     24.5 GB/s decoded
+  batch  16:    10.64 ms     31.4 GB/s decoded
+  batch  32:    11.01 ms     30.4 GB/s decoded
+WNR3 kernels only (records in VRAM; scales + weights kernels per record, 8 streams), median of 5:
+  batch    1:    0.490 ms      5.3 GB/s
+  batch    2:    0.485 ms     10.8 GB/s
+  batch    4:    0.580 ms     18.0 GB/s
+  batch    8:    0.692 ms     30.2 GB/s
+  batch   16:    0.952 ms     43.9 GB/s
+  batch   32:    1.601 ms     52.2 GB/s
+  batch   64:    2.250 ms     74.3 GB/s
+  batch  128:    3.998 ms     83.6 GB/s
+done

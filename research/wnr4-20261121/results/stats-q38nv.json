@@ -1,0 +1,112 @@
+{
+ "dataset": "q38nv",
+ "cz": true,
+ "train": 256,
+ "test": 2048,
+ "raw_bytes_test": 5662310400,
+ "flags_seen": {
+  "8": 2304
+ },
+ "weights": {
+  "wnr3 (cls,pm,mx) per block @12": {
+   "bits_per_weight": 3.821361557712594,
+   "of_raw": 0.8491914572694653
+  },
+  "wnr3 (cls,pm,mx) per block @14": {
+   "bits_per_weight": 3.8210698151883222,
+   "of_raw": 0.8491266255974049
+  },
+  "cls only @12": {
+   "bits_per_weight": 3.8269710993880843,
+   "of_raw": 0.850438022086241
+  },
+  "cls only @14": {
+   "bits_per_weight": 3.826681669405701,
+   "of_raw": 0.850373704312378
+  },
+  "run8 (cls,pm,mx) @12": {
+   "bits_per_weight": 3.825021945844973,
+   "of_raw": 0.8500048768544385
+  },
+  "run8 (cls,pm,mx) @14": {
+   "bits_per_weight": 3.8247296746780814,
+   "of_raw": 0.8499399277062404
+  },
+  "run8 (cls,mx) @12": {
+   "bits_per_weight": 3.8250703006567166,
+   "of_raw": 0.8500156223681592
+  },
+  "run8 (cls,mx) @14": {
+   "bits_per_weight": 3.8247793307243425,
+   "of_raw": 0.8499509623831872
+  },
+  "cls x blockmax M (nibbles) @12": {
+   "bits_per_weight": 3.84317238483169,
+   "of_raw": 0.8540383077403756
+  },
+  "cls x blockmax M (nibbles) @14": {
+   "bits_per_weight": 3.8426755166050173,
+   "of_raw": 0.8539278925788927
+  },
+  "mag8|cls (+sign) @12": {
+   "bits_per_weight": 3.826595899630958,
+   "of_raw": 0.8503546443624351
+  },
+  "mag8|cls (+sign) @14": {
+   "bits_per_weight": 3.8265920305032,
+   "of_raw": 0.8503537845562666
+  },
+  "mag8|run8 (+sign) @12": {
+   "bits_per_weight": 3.824637551730442,
+   "of_raw": 0.8499194559400981
+  },
+  "mag8|run8 (+sign) @14": {
+   "bits_per_weight": 3.8246336030325137,
+   "of_raw": 0.8499185784516696
+  },
+  "mag8|cls,M (+sign) @12": {
+   "bits_per_weight": 3.8426589308560772,
+   "of_raw": 0.8539242068569061
+  },
+  "mag8|cls,M (+sign) @14": {
+   "bits_per_weight": 3.8425511219970425,
+   "of_raw": 0.853900249332676
+  }
+ },
+ "scales": {
+  "order0 even": {
+   "bits": 1469975165.1441755,
+   "of_raw": 0.032450869461875836
+  },
+  "order0 odd": {
+   "bits": 1470042491.4247837,
+   "of_raw": 0.03245235574300165
+  },
+  "left even": {
+   "bits": 1316413562.7208886,
+   "of_raw": 0.029060875104994433
+  },
+  "left odd": {
+   "bits": 1312740872.8315597,
+   "of_raw": 0.028979797558244945
+  },
+  "up": {
+   "bits_per_scale": 4.196727169235756,
+   "of_raw": 0.05828787735049661
+  },
+  "order0": {
+   "bits_per_scale": 4.673032214751179,
+   "of_raw": 0.06490322520487748
+  },
+  "left (WNR3-NV)": {
+   "bits_per_scale": 4.178928431753235,
+   "of_raw": 0.05804067266323938
+  },
+  "pair (even order0, odd left)": {
+   "bits_per_scale": 4.423008025448696,
+   "of_raw": 0.06143066702012078
+  }
+ },
+ "blockmax_bits_per_block": 0.7733391019314537,
+ "seconds": 74.10144281387329
+}

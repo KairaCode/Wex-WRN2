@@ -7,7 +7,7 @@ Small WEX4 files with the verdict a conforming reader must give ([WEX4-SPEC](../
 | `valid/` | 15 | open the file, verify every hash, decode every record, and report the root given in the manifest. The WNR3 records need a WNR3 decoder: [WNR3-SPEC](../../docs/WNR3-SPEC.md), whose section 12 says what else to read ([WNR2-REFERENCE](../../docs/WNR2-REFERENCE.md) sections 6 and 7) and lists the checks of a decoder with the vector of each |
 | `invalid/` | 110 | refuse the file, without reading or writing out of bounds, allocating without limit or hanging |
 | `legacy/` | 1 | a WEX3 file with WNR3 records: not WEX4, so a WEX4 reader refuses it (wrong magic); it is the input of the upgrade test below |
-| `../review/security-c/findings/` | 10 | the files of the 2026-11-11 security review, which stay in the review folder; their current verdicts are listed too |
+| `../review/security-c/findings/` | 10 (its `.wex4` files; the two `.bin` files there are WBP1 records on their own, not containers, and have no row) | the files of the 2026-11-11 security review, which stay in the review folder; their current verdicts are listed too |
 
 `MANIFEST.tsv` has one row per file, tab-separated:
 

@@ -6,9 +6,10 @@
 # TSan and MSan with clang, and the libraries of the Python tests under both (linux-tsan, linux-msan); the Go reader and writer on the conformance vectors and against the
 # reference readers (go-reader); and the Rust reader on the conformance vectors and against the C and the Python
 # reader (rust-reader).
-# No GPU, no model weights, no secrets. A run started by hand can also have the linux-io-bench job (the full
-# Linux read-path benchmark), the linux-vulkan job (the WNR3 Vulkan prototype on a CPU Vulkan device) and the
-# colibri-headers job (the engine fuzzing harnesses built against colibri's own headers).
+# No GPU, no model weights, no secrets. A run started by hand can also have the linux-vulkan job (the WNR3 Vulkan
+# prototype on a CPU Vulkan device) and the colibri-headers job (the engine fuzzing harnesses built against
+# colibri's own headers).
+# With the input linux_io_bench it also has the linux-io-bench job (the full Linux read-path benchmark).
 # With the input arm_speed it also has the arm-speed jobs (the fast WNR3 decoder's speed on ARM64 Linux and macOS).
 # With the input macos_io_bench it also has the macos-io-bench job (the full read-path benchmark on macOS).
 # With the input vulkan_newmesa it also has the linux-vulkan-newmesa jobs (linux-vulkan on a newer Mesa, in containers).
@@ -28,6 +29,8 @@ on:
         default: false
       arm_speed:
         description: "Also run synth.sh speed of the fast decoder on ARM64 Linux and macOS (a measurement, not a check)"
+        type: boolean
+        default: false
       macos_io_bench:
         description: "Also run the full bench/wex_io.py on macos-15 (macOS read paths; a measurement, not a check)"
         type: boolean
@@ -50,7 +53,7 @@ concurrency:
 jobs:
   linux:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15   # a green run took 5.1 and 3.8 minutes (runs 43811647711 and 43812551602, 2026-11-16, after the second merges); the default lets a hung test hold the runner for 6 hours
+    timeout-minutes: 15   # a green run took 5.1 and 3.8 minutes (runs 43811647711 and 43812551602, 2026-11-16, after the second merges: the job was green in both, though 43811647711's own rollup was failure (its linux-tsan, linux-msan and rust-reader jobs failed)); the default lets a hung test hold the runner for 6 hours
     env:
       PYTHON: python3
       USER: ""        # check_repo.py's user-name pattern reads USERNAME/USER; "runner" would match prose
@@ -94,7 +97,7 @@ jobs:
   # SVE kernel 2
   linux-arm:
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 20   # a green run took 11.8 and 11.7 minutes (runs 43811647711 and 43812551602, 2026-11-16, after the second merges), about 6 of them in the SVE steps
+    timeout-minutes: 20   # a green run took 11.8 and 11.7 minutes (runs 43811647711 and 43812551602, 2026-11-16, after the second merges: the job was green in both, though 43811647711's own rollup was failure (its linux-tsan, linux-msan and rust-reader jobs failed)), about 6 of them in the SVE steps
     env:
       PYTHON: python3
       USER: ""
@@ -244,7 +247,7 @@ jobs:
   # runner image ships several (gcc-13, gcc-14, ...) and the step takes the newest, so no package is downloaded
   macos:
     runs-on: macos-15
-    timeout-minutes: 15   # a green run took 4.0 minutes (runs 43811647711 and 43812551602, 2026-11-16, after the second merges, both)
+    timeout-minutes: 15   # a green run took 4.0 minutes in both runs 43811647711 and 43812551602 (2026-11-16, after the second merges: the job was green in both, though 43811647711's own rollup was failure: its linux-tsan, linux-msan and rust-reader jobs failed)
     env:
       PYTHON: python3
       USER: ""
@@ -282,11 +285,11 @@ jobs:
   # macOS again, with the compiler of Xcode: Apple clang, which refuses -fopenmp and ships no OpenMP runtime.
   # WEX_OPENMP gives the scripts the flags that turn OpenMP on in the compiler and the libomp of Homebrew to
   # link (the first step installs it when the runner image has none, as on 2026-11-15). The CPU checks fail
-  # unless the three scripts that build C name Apple clang and the fast decoder's harness is NEON with OpenMP.
+  # unless the four scripts that build C name Apple clang and the fast decoder's harness is NEON with OpenMP.
   # Then the sanitizers on macOS, with Apple clang: the fuzz replay and every CPU check under ASan and UBSan
   macos-clang:
     runs-on: macos-15
-    timeout-minutes: 20   # a green run took 12.8 and 10.0 minutes (runs 43811647711 and 43812551602, 2026-11-16, after the second merges)
+    timeout-minutes: 20   # a green run took 12.8 and 10.0 minutes (runs 43811647711 and 43812551602, 2026-11-16, after the second merges: the job was green in both, though 43811647711's own rollup was failure (its linux-tsan, linux-msan and rust-reader jobs failed))
     env:
       PYTHON: python3
       USER: ""
@@ -310,7 +313,7 @@ jobs:
           bash scripts/check_all.sh | tee "$RUNNER_TEMP/check.log"
           grep -q '^fast WNR3 decoder of wex4_tools.dll: NEON kernels$' "$RUNNER_TEMP/check.log"
           grep -q '^build: NEON kernels, OpenMP;' "$RUNNER_TEMP/check.log"
-          test "$(grep -c '^compiler: Apple clang' "$RUNNER_TEMP/check.log")" = 3
+          test "$(grep -c '^compiler: Apple clang' "$RUNNER_TEMP/check.log")" = 4
       - name: Fuzz harnesses, seeds and mutators replayed (Apple clang)
         run: |
           set -o pipefail
@@ -350,7 +353,7 @@ jobs:
 
   windows:
     runs-on: windows-2022
-    timeout-minutes: 15   # a green run took 5.5 and 4.1 minutes (runs 43811647711 and 43812551602, 2026-11-16, after the second merges), about 1 of them in the bench.py step
+    timeout-minutes: 15   # a green run took 5.5 and 4.1 minutes (runs 43811647711 and 43812551602, 2026-11-16, after the second merges: the job was green in both, though 43811647711's own rollup was failure (its linux-tsan, linux-msan and rust-reader jobs failed)), about 1 of them in the bench.py step
     env:
       USER: ""
       USERNAME: ""
@@ -402,7 +405,7 @@ jobs:
   # do not free everything at exit)
   linux-sanitizers:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30   # a green run took 5.2 and 7.3 minutes (runs 43811647711 and 43812551602, 2026-11-16, after the second merges)
+    timeout-minutes: 30   # a green run took 5.2 and 7.3 minutes (runs 43811647711 and 43812551602, 2026-11-16, after the second merges: the job was green in both, though 43811647711's own rollup was failure (its linux-tsan, linux-msan and rust-reader jobs failed))
     env:
       PYTHON: python3
       USER: ""
@@ -431,7 +434,7 @@ jobs:
   # fuzz replay. Two steps fail unless the kernel they built is NEON
   linux-arm-sanitizers:
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 45   # a green run took 26.0 and 26.3 minutes (runs 43811647711 and 43812551602, 2026-11-16, after the second merges), about 18 of them in the replay of
+    timeout-minutes: 45   # a green run took 26.0 and 26.3 minutes (runs 43811647711 and 43812551602, 2026-11-16, after the second merges: the job was green in both, though 43811647711's own rollup was failure (its linux-tsan, linux-msan and rust-reader jobs failed)), about 18 of them in the replay of
                           # fuzz_wnr3_cuda under ASan and UBSan; 8.4 to 8.7 minutes before that harness was merged
     env:
       PYTHON: python3
@@ -467,10 +470,10 @@ jobs:
   # tests in Python with the runtime preloaded (scripts/sanitize_c.sh lists what runs).
   # Then the smoke run of bench/wex_io.c, which has its own pread threads, under ThreadSanitizer.
 # The last step is not a sanitizer run: every CPU check built with clang, so that CC=clang keeps working.
-# The three scripts that build C print their compiler, and the step fails unless all three name a clang
+# The four scripts that build C print their compiler, and the step fails unless all four name a clang
   linux-tsan:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15   # a green run took 8.6 minutes (run 43812551602, 2026-11-16, after the second merges)
+    timeout-minutes: 30   # a green run took 8.6 minutes (run 43812551602, 2026-11-16, after the second merges); raised from 15 because on the head of pull request 51 the job ran to the limit and was cut there (run 44202436823, job 134459690635, 2026-11-18, killed at 15m17s with fuzz_wnr3_cuda-replay the last live process): the WNR3 fast decoder is in that harness's libraries now, so the replay under TSan is longer than it was
     env:
       PYTHON: python3
       USER: ""
@@ -492,8 +495,8 @@ jobs:
           set -o pipefail
           CC=clang bash scripts/check_all.sh | tee "$RUNNER_TEMP/clang.log"
           grep '^compiler: ' "$RUNNER_TEMP/clang.log"
-          test "$(grep -c '^compiler: ' "$RUNNER_TEMP/clang.log")" = 3
-          test "$(grep -c '^compiler: .*clang' "$RUNNER_TEMP/clang.log")" = 3
+          test "$(grep -c '^compiler: ' "$RUNNER_TEMP/clang.log")" = 4
+          test "$(grep -c '^compiler: .*clang' "$RUNNER_TEMP/clang.log")" = 4
 
   # the same executables, and the libraries of the Python tests called from scripts/sanitize_libs.c, under
   # MemorySanitizer (clang), built without OpenMP, so that no library that is not instrumented is in the process
@@ -519,7 +522,7 @@ jobs:
   # and max builtins of Go 1.21 and no module)
   go-reader:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 15   # the job took 36 and 40 seconds (runs 44202443775 and 44202436823, 2026-11-18); the default lets a hung reader hold the runner for 6 hours
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
         with:
@@ -537,7 +540,7 @@ jobs:
   # of scripts/check_all.sh, so that Rust is not needed for the repository's checks
   rust-reader:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 15   # the job took 1m20 and 1m29 seconds (runs 44202436823 and 44202443775, 2026-11-18); the default lets a hung reader hold the runner for 6 hours
     env:
       PYTHON: python3
       USER: ""
@@ -657,7 +660,7 @@ jobs:
   macos-io-bench:
     if: github.event_name == 'workflow_dispatch' && inputs.macos_io_bench
     runs-on: macos-15
-    timeout-minutes: 60   # with --runs 17 a green run took 9.7 minutes (run 43811647711, 2026-11-16, one run)
+    timeout-minutes: 60   # with --runs 17 a green run took 9.7 minutes (run 43811647711, 2026-11-16, one run; that job was green, the run's rollup was failure)
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
         with:

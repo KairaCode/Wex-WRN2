@@ -1,0 +1,25 @@
+helper on out/packs3/q38mx.pack: 128 records, 2611200 B each
+  batch   1:  130.34 ms for 128 records,    2.6 GB/s decoded, bit-exact 128/128
+  batch   2:   71.49 ms for 128 records,    4.7 GB/s decoded, bit-exact 128/128
+  batch   4:   39.98 ms for 128 records,    8.4 GB/s decoded, bit-exact 128/128
+  batch   8:   22.99 ms for 128 records,   14.5 GB/s decoded, bit-exact 128/128
+  batch  16:   14.14 ms for 128 records,   23.6 GB/s decoded, bit-exact 128/128
+  batch  32:    9.88 ms for 128 records,   33.8 GB/s decoded, bit-exact 128/128
+  batch  64:    7.76 ms for 128 records,   43.1 GB/s decoded, bit-exact 128/128
+  batch 128:   11.57 ms for 128 records,   28.9 GB/s decoded, bit-exact 128/128
+  async batch   4 (2 in flight):   19.28 ms for 128 records,   17.3 GB/s decoded, failures 0, bit-exact 128/128
+  async batch   8 (2 in flight):   10.80 ms for 128 records,   31.0 GB/s decoded, failures 0, bit-exact 128/128
+  async batch  16 (2 in flight):    7.28 ms for 128 records,   45.9 GB/s decoded, failures 0, bit-exact 128/128
+  async batch  32 (2 in flight):    6.48 ms for 128 records,   51.6 GB/s decoded, failures 0, bit-exact 128/128
+corrupted record 3 of a batch of 8: failures 1
+  status[0] = 0
+  status[1] = 0
+  status[2] = 0
+  status[3] = -1
+  status[4] = 0
+  status[5] = 0
+  status[6] = 0
+  status[7] = 0
+unknown model -> 1, wrong owner -> -1: OK
+slot ring: 4 in flight accepted, 5th refused, out-of-order waits OK, stale ticket -1, release OK
+helper q38mx exit 0

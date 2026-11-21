@@ -9,8 +9,10 @@
  * (blob padding must be zero). Header page, blobs, records and index tile the file, and the root
  * (the header page's hash) covers the index, so a pass means every byte of the file is the one
  * the root names. Prints "COLI_WEX_ROOT=<root>" for the engine's environment; exit 0 only then
- * (1: some blob or record does not match, 2: the file does not open as WEX4).
- * Reads are unbuffered (no page-cache churn), 8 MiB at a time, on THREADS threads (default 8).
+ * (1: some blob or record does not match, 2: the file does not open as WEX4, 3: out of memory
+ * before every blob and record was checked, and none checked failed).
+ * Reads are unbuffered on Windows (no page-cache churn), ordinary buffered reads elsewhere,
+ * 8 MiB at a time, on THREADS threads (default 8).
  * The file is opened read-only and never written. */
 #include <stdio.h>
 #include <stdlib.h>
@@ -90,13 +92,19 @@ static int wex4_verify_file(const char *path, int threads, char root[65], FILE *
     if (f == W4V_BAD) { fprintf(log, "%s: cannot be opened\n", path); return 2; }
     size = w4v_size(f);
     page = (unsigned char *)w4v_alloc(WEX4_PAGE);
-    if (!page || size < WEX4_PAGE || w4v_read(f, page, WEX4_PAGE, 0)) { fprintf(log, "%s: no header page\n", path); goto done; }
+    if (!page) { fprintf(log, "%s: out of memory\n", path); status = 3; goto done; }
+    if (size < WEX4_PAGE || w4v_read(f, page, WEX4_PAGE, 0)) { fprintf(log, "%s: no header page\n", path); goto done; }
     int rc = wex4_parse_header(page, size, &h);
     if (rc) { fprintf(log, "%s: not a valid WEX4 header page (wex4.h error %d)\n", path, rc); goto done; }
     for (int i = 0; i < 32; i++) snprintf(root + i * 2, 3, "%02x", h.root[i]);
     index = (unsigned char *)w4v_alloc((size_t)wex4_align(h.index_bytes) + WEX4_PAGE);
-    if (!index || (h.index_bytes && w4v_read(f, index, (uint32_t)wex4_align(h.index_bytes), h.index_offset)) ||
-        (rc = wex4_open(&h, index, (size_t)wex4_align(h.index_bytes), &v))) {
+    if (!index || (h.index_bytes && w4v_read(f, index, (uint32_t)wex4_align(h.index_bytes), h.index_offset))) {
+        fprintf(log, "%s: the index cannot be read (%s)\n", path, index ? "read failed" : "out of memory");
+        root[0] = 0;
+        if (!index) status = 3;
+        goto done;
+    }
+    if ((rc = wex4_open(&h, index, (size_t)wex4_align(h.index_bytes), &v))) {
         fprintf(log, "%s: the index does not open (wex4.h error %d)\n", path, rc);
         root[0] = 0;
         goto done;
@@ -106,9 +114,14 @@ static int wex4_verify_file(const char *path, int threads, char root[65], FILE *
     if (threads < 1) threads = 1;
     time_t w0 = time(NULL);
     int64_t items = (int64_t)h.blobs + h.records;
+    int oom = 0;
 #pragma omp parallel num_threads(threads) reduction(+ : bad, checked)
     {
         unsigned char *buf = (unsigned char *)w4v_alloc(W4V_CHUNK);
+        if (!buf) {
+#pragma omp atomic write
+            oom = 1;
+        }
 #pragma omp for schedule(dynamic, 1)
         for (int64_t i = 0; i < items; i++) {
             uint64_t off, bytes;
@@ -118,7 +131,8 @@ static int wex4_verify_file(const char *path, int threads, char root[65], FILE *
             } else {
                 Wex4Record r; wex4_get_record(&v, (uint32_t)(i - h.blobs), &r); off = r.offset; bytes = r.stored; want = r.sha;
             }
-            int got = buf ? w4v_item(f, buf, off, bytes, want) : -1;
+            if (!buf) continue;   /* not checked (exit 3), not counted as a mismatch */
+            int got = w4v_item(f, buf, off, bytes, want);
             if (got) {
                 bad++;
 #pragma omp critical
@@ -130,9 +144,12 @@ static int wex4_verify_file(const char *path, int threads, char root[65], FILE *
         w4v_free(buf);
     }
     double wall = difftime(time(NULL), w0);
+    if (oom) fprintf(log, "%s: out of memory (an 8 MiB buffer per thread): not every blob and record was checked\n", path);
     if (bad) {
         fprintf(log, "FAILED: %d of %lld blobs/records do not match; do not pin this file\n", bad, (long long)items);
         status = 1;
+    } else if (oom) {
+        status = 3;
     } else {
         fprintf(log, "every blob and record matches the index: %.2f GB checked in about %.0f s (%d threads)\n",
                 checked / 1e9, wall, threads);

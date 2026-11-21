@@ -1,0 +1,21 @@
+helper on out/packs3/v41.pack: 32 records, 18800640 B each
+  batch   1:   54.36 ms for 32 records,   11.1 GB/s decoded, bit-exact 32/32
+  batch   2:   31.72 ms for 32 records,   19.0 GB/s decoded, bit-exact 32/32
+  batch   4:   20.46 ms for 32 records,   29.4 GB/s decoded, bit-exact 32/32
+  batch   8:   14.93 ms for 32 records,   40.3 GB/s decoded, bit-exact 32/32
+  batch  16:   14.05 ms for 32 records,   42.8 GB/s decoded, bit-exact 32/32
+  batch  32:   21.29 ms for 32 records,   28.3 GB/s decoded, bit-exact 32/32
+  async batch   4 (2 in flight):   20.31 ms for 32 records,   29.6 GB/s decoded, failures 0, bit-exact 32/32
+  async batch   8 (2 in flight):   14.76 ms for 32 records,   40.8 GB/s decoded, failures 0, bit-exact 32/32
+  async batch  16 (2 in flight):   13.75 ms for 32 records,   43.8 GB/s decoded, failures 0, bit-exact 32/32
+  async batch  32 (2 in flight):   13.61 ms for 32 records,   44.2 GB/s decoded, failures 0, bit-exact 32/32
+corrupted record 3 of a batch of 8: failures 1
+  status[0] = 0
+  status[1] = 0
+  status[2] = 0
+  status[3] = -1
+  status[4] = 0
+  status[5] = 0
+  status[6] = 0
+  status[7] = 0
+unknown model -> 1, wrong owner -> -1: OK

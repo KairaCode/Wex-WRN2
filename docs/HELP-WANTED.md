@@ -27,9 +27,9 @@ measured; it is not known to fail.
   six runs of the default command in two sets while other jobs kept its CPU busy (58% to 100% total
   CPU, median, in the 30 s before each run and in the `disk` section, which reads with one thread).
   Its results go to a "Benchmark results" issue, not into this repository.
-- **Still open:** everything under "Most wanted"; `h2d` on Windows (it needs the CUDA toolkit, which
-  that machine does not have; `nvcc` there also needs `cl.exe` of Visual Studio on `PATH`, which is
-  installed there but was not tried with `nvcc`); a run of that machine with nothing
+- **Still open:** everything under "Most wanted"; `h2d` on Windows (not run yet; that machine has had
+  CUDA 13.5 and MSVC since 2026-11-16, [research/cuda-real-20261116](../research/cuda-real-20261116/README.md));
+  a run of that machine with nothing
   else running, on its SATA drives, and with `--file` on a model file (a cold read of real weights);
   `bench.py` on macOS (not tried).
 - **Done when:** the issue has the JSON and a note on the run conditions.
@@ -280,8 +280,9 @@ measured; it is not known to fail.
 - **The older research scripts and the engine test, with another compiler:**
   `wex4/research/fast-cpu-decode/verify/run.sh`, `wex4/research/mxfp4-contexts/run_all.sh`, the two
   scripts of `wex4/research/wnr4-record/` and `integration/build/build_test_wex_planned.sh`. Today
-  (2026-11-16): the five scripts read `CC` and `WEX_OPENMP` as `scripts/build_cpu_check.sh` does and pass
-  their x86 flags on x86-64 only (`WEX4_MARCH` overrides); `verify/run.sh` ran to its end on 8 real
+  (2026-11-16): the five scripts read `CC` (and `WEX_OPENMP` where they use OpenMP: all but `run_all.sh`)
+  as `scripts/build_cpu_check.sh` does; the three with an x86 flag (`verify/run.sh`, `run_all.sh`,
+  `build_test_wex_planned.sh`) pass it on x86-64 only, and `WEX4_MARCH` overrides it; `verify/run.sh` ran to its end on 8 real
   WNR3-CZ records of DeepSeek V4.1 Flash with MSYS2 gcc 16.2 and clang 23.1.5 on Windows 10 and with gcc
   15.2 under WSL2 (0 mismatches); `build_test_wex_planned.sh` built with gcc on Windows and its test
   passed on the synthetic fixture and on 2 real experts. The same day `run_all.sh`, `wnr4-record/run.sh`
@@ -337,16 +338,15 @@ measured; it is not known to fail.
   file, come out byte for byte, WNR3 records included, and the trainer gives the two WNM2 models of
   those files byte for byte. The digest matched the reference's on its first reading.
 - **Still open for the writer:**
-  - the sentence of section 5 lists fewer choices than a writer has to fix (version and feature
-    words, the expert grid, the blobs, the reserved header area), section 7 does not give the
-    converters' `chunk_log2`, and WNR2-REFERENCE section 7 calls the CDF of an empty context
-    "near-uniform" where the files show it uniform: notes E1 to E6 and E8 of
-    [SPEC-NOTES.md](../impl/go-wex4/SPEC-NOTES.md), each wanting a sentence of the specification;
+  - notes E2 and E4 of [SPEC-NOTES.md](../impl/go-wex4/SPEC-NOTES.md), and the scale tables of
+    E8, still want a sentence of the specification (E1, E3 and the weight tables of E8 were
+    answered by the WEX4-SPEC revisions of 2026-11-15 and 2026-11-21 and by WNR3-SPEC section 5;
+    E5 and E6 are settled by the files only);
   - a writer in another language, written the same way; a second one would show whether the notes
     of part E are enough;
   - the same tensors through the Go writer and through `wex4/wex4_convert.py pack`, compared byte
     for byte: it needs a safetensors reader in the Go writer and the converter's grouping rule
-    (WEX4-SPEC section 14 gives it in two sentences), and was not tried. One part of it was: on
+    (WEX4-SPEC section 14 gives it in full since 2026-11-15), and was not tried. One part of it was: on
     `testdata/planes.wex4`, which `pack` wrote, the Go writer's default codec and parameters give
     the file byte for byte (the grouping and the metadata were taken from the file);
   - a real model: the writer was run on files of 843,776 B at most and on synthetic experts of
@@ -586,12 +586,56 @@ measured; it is not known to fail.
     on one thread and 820 to 890 on 8, zstd about 1,500 and 5,500 to 6,900; only lzma, bz2 and (on one
     thread) brotli at quality 11 were slower than it
     ([research/real-experts-20261115](../research/real-experts-20261115/README.md), section 3).
+  - **Today, GPU codecs (2026-11-21):** nvCOMP 6.0 (its batched API: ANS, Bitcomp, Cascaded, GDeflate,
+    LZ4, Snappy, Zstd, Deflate; 580 configurations, all decoded bit-exactly) and NVDEC ran on an RTX 5090
+    on the packs of the WNR4 research (128 Qwen3.8 MXFP4, 128 Qwen3.8 NVFP4 and 32 DeepSeek V4.1
+    records; [report, section 6](reports/wnr4-research-20261121.md#6-baselines-run-on-the-same-data)).
+    The nvCOMP-ANS configurations that stay fast at 8-64 records store 0.8997, 0.9372 and 0.8983-0.8985
+    of raw, against 0.8812, 0.9272 and 0.8536 for WNR3 (WNR3-NV on NVFP4) and 0.8755, 0.9239 and 0.8484
+    for WNR4 at G = 128 on the same packs; the LZ and Deflate-family decoders, GDeflate among them, are
+    19-176 GB/s. nvCOMP-ANS decodes much faster: with the L2 flushed, 554 GB/s at 8 records and 611 GB/s
+    at 16 (Qwen3.8 MXFP4), against 104 and 160 GB/s for WNR4 at G = 32. NVDEC is not viable: lossless
+    video expands the FP4 weights (1.30-1.43x), and HEVC lossless decodes at 0.33-0.35 GB/s for one
+    stream, ~0.44 GB/s with two. The nvCOMP harness is not in this repository (nvCOMP is a proprietary
+    SDK).
   - **Still open:** the same on whole checkpoints, with a model trained as in production (80 experts
     spread over the layers); other CPUs, and the NEON kernel on these records (the scripts of that folder
-    fetch them, about 320 MB, and need no model); the GPU decoders against GPU codecs (nvCOMP, GDeflate);
-    per-tensor compression (scales and weights apart); zstd with a trained dictionary or long-distance
-    matching; byte-shuffle filters (Blosc2) and OpenZL.
-- **Ideas for a next codec:** see [NEXT-FORMAT-SPEC](NEXT-FORMAT-SPEC.md) and the research reports in
+    fetch them, about 320 MB, and need no model); the GPU codecs on other GPUs; per-tensor compression
+    (scales and weights apart); zstd with a trained dictionary or long-distance matching; byte-shuffle
+    filters (Blosc2) and OpenZL.
+- **WNR4, what is left** (help wanted; several items need an NVIDIA GPU):
+  - **Today (2026-11-21):** [WNR4-SPEC](WNR4-SPEC.md) is a research draft (DRAFT 0.1) of a successor of
+    WNR3 with kinds MX, NV and GG, to which WEX4 assigns codec 8 as a draft; no production container
+    holds it and no engine reads it ([STATUS.md](../STATUS.md), "Planned"). The code is in `wnr4/`: a CPU
+    reference codec, CUDA decoders and a prototype helper DLL. The CPU tests
+    (`bash scripts/build_wnr4_check.sh`, which `scripts/check_all.sh` runs in CI) include a mutation fuzz
+    for each kind. The measurements are in the
+    [report](reports/wnr4-research-20261121.md), sections 5 to 8; the GPU code has run on one GPU only
+    (an RTX 5090, `sm_120`).
+  - **Still open:**
+    - a SIMD lane-parallel CPU decoder (8 lanes per AVX2 register): the reference decoder is scalar with
+      an AVX2 16-symbol search, 0.057-0.060 GB/s per thread and 0.71 GB/s with 16-32 threads on Qwen3.8
+      MXFP4 (report, section 5);
+    - a decoder for non-NVIDIA GPUs, Vulkan first (as section 6 asks for WNR3): the GPU decoders are CUDA
+      only (`wnr4/wnr4_cuda.cuh`, `wnr4/wnr4_gg_cuda.cuh`);
+    - runs on other NVIDIA GPUs and on more than one GPU;
+    - the GPU tests in CI (`wnr4/tests/test_wnr4_gg_gpu.cu` and the GPU bench of
+      [research/wnr4-20261121](../research/wnr4-20261121/README.md)), which needs a GPU runner;
+    - fuzzing of the WNR4 record parser beyond the existing mutation fuzz of `wnr4/tests` (random flips of
+      1 to 3 bits): no harness of [wex4/fuzz](../wex4/fuzz/README.md) reads WNR4 records;
+    - conformance vectors for codec 8, which wait until the WEX4 draft is adopted;
+    - a container writer for kinds MX and NV (`wex4/wnr4gg.py` writes kind GG only; the MX and NV records
+      of the research are bench packs), with the required feature bit that kinds MX and NV need in
+      EXPERT records (WNR4-SPEC section 7);
+    - an int4 kind with its GPU kernel: a CPU prototype for int4-g64 exports, not in this repository,
+      stores 1.4-2.5 points less than zstd -19 and has no per-tile hash, tail in the state, GPU kernel or
+      container writer yet (report, section 8.3);
+    - kinds for the IQ2 slices of GGUF experts (IQ2_XXS, IQ2_S, IQ2_XS), which kind GG stores verbatim: a
+      pre-study estimates about 1.1 GB more saved on Qwen3.8-Flash-Next UD-IQ1_M (report, section 8.2);
+    - a G = 16 point, latency of one record and ratio: the sweep of the report's section 5 starts at
+      G = 32.
+- **Ideas for a next codec:** see [WEX4-SPEC section 12](WEX4-SPEC.md#12-compression-what-was-measured-what-is-adopted)
+  and [section 16](WEX4-SPEC.md#16-open-questions) and the research reports in
   [docs/reports](reports/). Any proposal has to stay lossless (bit-identical weights).
 
 ## Roadmap: what is still open on the maintainer's side
@@ -601,8 +645,9 @@ listed above as well.
 
 - **Integration into colibri.** The format and its readers are being upstreamed into
   [colibri](https://github.com/JustVugg/colibri) `dev` as a series of small pull requests: Qwen3.8 MXFP4
-  experts first (#2822-#2825 are open), then the WEX4 container, the WNR3 codec and its GPU decode, and
-  the I/O switches. Reviewing or testing those PRs on your hardware helps directly.
+  experts (#2822-#2825, merged on 2026-11-15 and 2026-11-16); the WEX4 container with its reader, the WNR3 codec on CPU and CUDA,
+  engine hooks and bench are in #2920 (under review: its review fixes were ported here on 2026-11-20,
+  [CHANGELOG.md](../CHANGELOG.md)); then the I/O switches. Reviewing or testing those PRs on your hardware helps directly.
 - **WNR3 decode on Vulkan:** the design note and a prototype are in, checked on a CPU Vulkan device and on
   one GPU (an RTX 3070). On that GPU, on 2026-11-16, the shader of today gave the reference's bytes on all
   7,680 records of the published DeepSeek V4.1 container, and decoded its records in 1.06 ms of device
@@ -671,8 +716,13 @@ listed above as well.
   RAW expert records). Runs on whole real checkpoints of the other profiles are open *(open to you,
   section 5)*.
 - **Compression baselines:** WNR3 against zstd, lz4, brotli, lzma, zlib and bz2 on 24 real expert
-  records is in (smaller files, slower CPU decode); whole checkpoints, other CPUs and GPU codecs are
-  open *(open to you, section 8)*.
+  records is in (smaller files, slower CPU decode), and since 2026-11-21 nvCOMP and NVDEC against WNR3
+  and WNR4 on one GPU (nvCOMP-ANS: larger files, much faster decode); whole checkpoints, other CPUs and
+  other GPUs are open *(open to you, section 8)*.
+- **WNR4:** a research draft of a successor of WNR3 (kinds MX, NV and GG; WEX4 codec 8 as a draft), in
+  no production container and no engine. Its engine integration was analysed on 2026-11-21 and not done
+  ([report, section 8](reports/wnr4-research-20261121.md#8-later-on-2026-11-21-engine-decision-kind-gg-int4-g64));
+  the codec work left is open *(open to you, section 8)*.
 - **A first tagged release** of the specifications (WEX4 4.0, WNR3 v1) with the conformance vectors, so
   other implementations can name the version they pass.
 

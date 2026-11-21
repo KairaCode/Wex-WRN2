@@ -113,17 +113,19 @@ def block_device(path):
 def make_container(path, layers, experts, rows, cols, seed=1):
     """A WEX4 file with layers x experts RAW expert records (3 scale and 3 weight matrices each) of seeded
     random bytes: incompressible, so a compressing filesystem or a thin virtual disk cannot flatter the reads."""
-    if cols % 32 or not 0 < rows <= 65535 or not 0 < cols // 2 <= 65535:
-        sys.exit('--rows and --cols: 1 to 65535 rows, cols a multiple of 32 up to 131070')
     scale, weight = (rows, cols // 32), (rows, cols // 2)
     decoded = 3 * (scale[0] * scale[1] + weight[0] * weight[1])
+    if cols % 32 or not 0 < rows <= 65535 or not 0 < cols // 2 <= 65535 or decoded > wex4.MAX_DECODED:
+        sys.exit('--rows and --cols: 1 to 65535 rows, cols a multiple of 32 up to 131040, '
+                 'and 3 x rows x cols x 17/32 at most 2^30 bytes per record')
     rng = random.Random(seed)
     records = []
     for layer in range(layers):
         for expert in range(experts):
             names = [f'L{layer}.E{expert}.w{m}.{kind}' for kind in ('scale', 'weight') for m in (1, 2, 3)]
             tensors = [wex4.Tensor(name, 'U8', shape, shape[0] * shape[1]) for name, shape in zip(names, [scale] * 3 + [weight] * 3)]
-            records.append(wex4.Record(tensors, decoded, lambda: rng.getrandbits(decoded * 8).to_bytes(decoded, 'little'),
+            records.append(wex4.Record(tensors, decoded, lambda: b''.join(rng.getrandbits(8 * min(1 << 26, decoded - i)).to_bytes(min(1 << 26, decoded - i), 'little')
+                                                                       for i in range(0, decoded, 1 << 26)),
                                        'raw', wex4.REC_EXPERT, layer << 16 | expert))
     return wex4.write(path, records, layers=layers, experts=experts)
 

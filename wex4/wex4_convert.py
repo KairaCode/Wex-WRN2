@@ -162,15 +162,18 @@ def st_index(path, data_check=True):
 
 
 def file_sha256(path):
+    h = hashlib.sha256()
     with open(path, 'rb') as f:
-        return hashlib.file_digest(f, 'sha256').hexdigest()
+        for block in iter(lambda: f.read(1 << 20), b''):
+            h.update(block)
+    return h.hexdigest()
 
 
 class Nr3:
     """c/tools/wex_nr3_tools.c: the WNR3 encoder used for expert records."""
 
     def __init__(self, dll, model_path, cz):
-        lib = ctypes.CDLL(os.fspath(dll))
+        lib = ctypes.CDLL(os.path.abspath(dll))   # Windows does not load a bare DLL name from the current folder
         P, U32, SZ = ctypes.c_void_p, ctypes.c_uint32, ctypes.c_size_t
         lib.wex_nr3_prepare.argtypes = [P, P, ctypes.c_int, P, P]
         lib.wex_nr3_encode_record.argtypes = [P, P, P, U32, U32, U32, U32, P, SZ, P, P]
@@ -231,7 +234,9 @@ def pack(out_path, sources, clib=None, experts=None, nr3=None, part_bytes=64 << 
         return read
 
     need(sources and part_bytes > 0, 'pack: no source file or bad part size')
-    need(len({os.path.normcase(os.path.basename(p)) for p in sources}) == len(sources), 'two sources have the same file name')
+    names = [os.path.basename(p) for p in sources]   # the names unpack accepts: see unpack()
+    need(len({n.casefold() for n in names}) == len(names) and not any(n.endswith(('.', ' ')) for n in names),
+         'two sources have the same file name (case ignored), or a name ends in a dot or a space')
     need(family in PROFILES, f'unknown naming profile {family!r}: one of {", ".join(PROFILES)}')
     pattern, (_, matrices, weight_suffix) = expert_pattern(family), PROFILES[family][:3]
     for path in sources:   # every header first: the six tensors of one expert may sit in two files
@@ -347,8 +352,9 @@ def unpack(in_path, out_dir, clib=None):
             need(all(type(x) is str for s in sources for x in s), 'metadata: source fields')
         except (ValueError, RecursionError, KeyError, TypeError) as error:
             raise wex4.FormatError(f'metadata: {error!r}') from None
-        names = [os.path.normcase(n) for n, _, _ in sources]
-        need(len(set(names)) == len(names) and all(n and n == os.path.basename(n) and n not in ('.', '..') and
+        # the same rules on every platform: on Windows 'm.st', 'M.st', 'm.st.' and 'm.st ' are one file (on macOS by default, the first two)
+        names = [n.casefold() for n, _, _ in sources]
+        need(len(set(names)) == len(names) and all(n and n == os.path.basename(n) and not n.endswith(('.', ' ')) and
                                                    os.path.normcase(os.path.abspath(os.path.join(out_dir, n))) != os.path.normcase(os.path.abspath(in_path)) for n, _, _ in sources),
              'metadata: source file name (unsafe, repeated or the container itself)')
         cache = {}
@@ -429,10 +435,12 @@ def upgrade(path, hash_records=True, family='deepseek'):
         f.seek(0)
         page = f.read(PAGE)
         need(len(page) == PAGE, 'file shorter than a header page')
-        magic, version, layers, n_experts, _, table_offset, hflags, _ = WEX_HEADER.unpack_from(page)
+        magic, version, layers, n_experts, slab, table_offset, hflags, reserved = WEX_HEADER.unpack_from(page)
         need((magic, version) in ((0x57455831, 1), (0x57455833, 3)), 'not a WEX1 or WEX3 container')
         nr3, cz = bool(hflags & 32), bool(hflags & 64)
-        need(version == 1 or (nr3 and not hflags & ~(1 | 32 | 64)), 'only raw (WEX1) and WNR3 containers can be upgraded')
+        need((version == 1 and hflags == 0) or (version == 3 and nr3 and not hflags & ~(1 | 32 | 64)),
+             'only raw (WEX1) and WNR3 containers can be upgraded')
+        need(reserved == 0 and 0 < slab <= 0xffffffff and slab % PAGE == 0, 'header reserved word or slab size')
         table_bytes = layers * n_experts * ENTRY.size
         need(layers <= 65536 and n_experts <= 65536 and table_bytes <= old_bytes - min(table_offset, old_bytes), 'expert grid or short entry table')
         f.seek(table_offset)

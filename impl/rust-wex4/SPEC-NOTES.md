@@ -216,17 +216,17 @@ reader's on 18 of the 27 hand-made files and on 18,003 of the 18,378 mutated one
 |---|---|---|
 | A1, A3, A4, A8 (the weight context, the rANS step, the WNM2 layout and checks) | WNR3-SPEC errata 9, 10, 12 | written from the errata; no question left |
 | A2 (the order of a WBP1 record) | WEX4-SPEC 7.2 | the same |
-| A5 (the order of the overflow check of a shape) | no | the same reading: left to right, refused at the first overflow even when a later dimension is 0. `[0, 2^32, 2^32]` is accepted and `[2^32, 2^32, 0]` refused, by all four readers (E1). Parts A to D did not list it as a question: the loop was the obvious one |
+| A5 (the order of the overflow check of a shape) | no [since 2026-11-15: 5.3] | the same reading: left to right, refused at the first overflow even when a later dimension is 0. `[0, 2^32, 2^32]` is accepted and `[2^32, 2^32, 0]` refused, by all four readers (E1). Parts A to D did not list it as a question: the loop was the obvious one |
 | A6 (a zero-size tensor is one of 0 bytes) | 5.3 | the same; three hand-made files with an opaque dtype, 0 bytes and no 0 dimension are accepted by all four |
 | A7 (`blob <= blob_count`) | 5.2 | the same |
 | A9 (the exact `stored_bytes` of a WBP1 record) | 7.2 | the same; `extra-page.wex4` is refused |
 | B2 (`n_p` when `p >= decoded_bytes`) | 7.2 | the same |
-| B3 (the weight shape of 5.5, and the bound on `16 * cols`) | no | the same reading: `[rows_m, 16 * cols_m]` of scale tensor m, and `16 * cols_m <= 65535`. Not listed in parts A to D either |
+| B3 (the weight shape of 5.5, and the bound on `16 * cols`) | no [since 2026-11-15: 5.5] | the same reading: `[rows_m, 16 * cols_m]` of scale tensor m, and `16 * cols_m <= 65535`. Not listed in parts A to D either |
 | B4 (the stream count of the WNR3 minimum) | 5.2 | the same |
-| B5 (an unknown codec that names a blob) | no | the same (A6 here) |
+| B5 (an unknown codec that names a blob) | no [since 2026-11-15: 5.2] | the same (A6 here) |
 | B6 (the fields of the content digest) | 5 | computed, and equal to the Python reader's on 18 files (E1) |
-| B7 (the classes) | no | part B and E2 |
-| B8 (a blob's offset is aligned only through the tiling) | no | the same |
+| B7 (the classes) | no [since 2026-11-15: 17, the class is informative] | part B and E2 |
+| B8 (a blob's offset is aligned only through the tiling) | no [since 2026-11-15: 5.1] | the same |
 | C (the pages a reader needs) | - | the same three pages; WNR2-REFERENCE for the stream framing and the WNM2 model (A16 to A18 here) |
 | D (what the vectors do not exercise) | - | part C here lists the same gaps, and four of the index: no empty index, no blob of kind 18, no file above 4 GiB, no unknown codec |
 
@@ -249,14 +249,20 @@ What the comparison left undecided, each a sentence the specification could add:
 1. **The reject classes.** The C, the Go and this reader do not give one class on 7 of the 27 refused
    hand-made files, and the C reader gives two classes to one sentence (E2). Either the specification
    defines a class per rule, or it says that the class is informative and only the verdict is
-   conformance (as the vectors README already says).
+   conformance (as the vectors README already says). [WEX4-SPEC section 17 says so since 2026-11-15:
+   the class is informative, and the class a conforming reader reports is its own.]
 2. **The order of the overflow check of a shape** (Go A5): all four readers refuse
-   `[2^32, 2^32, 0]` and accept `[0, 2^32, 2^32]`; the text does not say so.
-3. **The bound on `16 * cols`** of an expert weight tensor (Go B3).
+   `[2^32, 2^32, 0]` and accept `[0, 2^32, 2^32]`; the text does not say so. [WEX4-SPEC 5.3 says so
+   since 2026-11-15, with these two shapes and a third as examples.]
+3. **The bound on `16 * cols`** of an expert weight tensor (Go B3). [WEX4-SPEC 5.5 since 2026-11-15:
+   the bound holds for every dimension of the six tensors, `16 * cols` included.]
 4. **The empty index at 4096** (A3): written as a fact of section 4, not as a rule of step 1.
 5. **What a verifier reports for a record of an unknown codec** (A7): section 10, rule 6 says the file
    is valid; the two reference readers report it differently from each other.
 6. **The anchor byte 255** of a WNR3 record (A20, WNR3-SPEC erratum 11): not tested by any reader here.
+   [WNR3-SPEC erratum 14 (2026-11-15): a decoder accepts any anchor byte, 0 to 255. The last record of
+   the vector `valid/wnr3-ceil-form-chunk-pairs-and-anchors.wex4` was encoded with the anchors 255, 0
+   and 122 and decodes; this reader accepts the file with the manifest's content digest (part F).]
 
 ## F. After the merges (2026-11-16)
 
@@ -271,3 +277,5 @@ records, and now gives it that pass's class, `EXPERT` (part B). No verdict chang
 (43812551602) the class was the manifest's on all 120. Parts C and E5 are unchanged by the new vectors
 except as the vectors README and WNR3-SPEC section 12 now say: the ceil form, records without canonical
 zero and other chunk pairs are vectors since 2026-11-15; the four gaps of the index of part C are not.
+The sentences of WEX4-SPEC revision 2026-11-15 and WNR3-SPEC erratum 14 answer items 1, 2, 3 and 6 of
+E5 and five rows of the table of E4 (brackets there).

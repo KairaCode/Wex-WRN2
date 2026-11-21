@@ -1,0 +1,26 @@
+{
+ "model": "nvidia/Qwen3.8-Flash-Next-FP4-Local",
+ "format": "nvfp4",
+ "experts": 64,
+ "raw_bytes": 2764800,
+ "folds": 2,
+ "pb": 5,
+ "configs": {
+  "byte-exact G=32": {
+   "ratio": 0.9308796296296297,
+   "fails": 0
+  },
+  "byte-exact G=128": {
+   "ratio": 0.9285185185185185,
+   "fails": 0
+  },
+  "CZ G=32": {
+   "ratio": 0.9152314814814815,
+   "fails": 0
+  },
+  "CZ G=128": {
+   "ratio": 0.9128009259259259,
+   "fails": 0
+  }
+ }
+}

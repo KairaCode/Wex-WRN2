@@ -11,7 +11,7 @@ Every measurement behind the formats and the read path: container sizes, integri
 
 ## Machine
 
-One desktop: NVIDIA RTX 5090 (32 GB, sm_120), two NVMe drives, U: (PCIe 4) and C: (PCIe 5), each holding a full copy of the containers, Windows 11. Engines built with MSYS2 UCRT64 gcc 16.2 and the CUDA toolkit 13.4 (the maintainer's build notes); tools run with Python 3.14. The CPU-only baseline of 2026-11-07 ran on the same machine.
+One desktop: AMD Ryzen 9 7950X3D, 32 GB of DDR5-6200 RAM, NVIDIA RTX 5090 (32 GB, sm_120), two NVMe drives, U: (PCIe 4) and C: (PCIe 5), each holding a full copy of the containers, Windows 11. Engines built with MSYS2 UCRT64 gcc 16.2 and the CUDA toolkit 13.4 (the maintainer's build notes); tools run with Python 3.14. The CPU-only baseline of 2026-11-07 ran on the same machine. The RAM budget of a run (`--ram`, `RAM_GB`) is the cap the engine is given, not the RAM of the machine. Sources for the CPU and the RAM: [wex-architecture-20261018.it.md](reports/wex-architecture-20261018.it.md) and [wnr4-entropy-engine-evaluation-20261108.it.md](reports/wnr4-entropy-engine-evaluation-20261108.it.md).
 
 ## Reproduce
 
@@ -298,6 +298,63 @@ The same `bench/wex_io.py` and container on macOS, through the calls macOS has: 
 | page cache already warm | 7,561 (4,207 to 8,336) | 7,392 (5,045 to 8,216) | 7,411 (5,456 to 8,125) |
 
 All 11 paths read records whose SHA-256 matched the index. On these virtual machines `F_NOCACHE` on 1 thread was 2.56x to 3.53x the page-cache `pread` and faster than it in 31 of the 33 rounds of the three runs; page-cache threads gained 1.16x to 1.60x (4 and 8 threads); `F_RDAHEAD` off and `F_RDADVISE` gave 0.90x to 1.16x, faster than row 1 in about half of the rounds. The ranges are wide and overlap, and "cold" is the cache of the virtual machine only: the first pass of a round, the only one whose records no earlier pass of the round had read, was one of the two slowest of its row in 30 of the 33 rounds, on every kind of row, and `F_NOCACHE` on 1 thread took 2.3 ms per 13.4 MB record (median), close to the 1.7 ms of the warm page cache. A cache below the virtual machine, most likely the host's, served part of the reads; that is an interpretation, the host cannot be seen from inside. An earlier set of three runs with 5 rounds, where the rotation put the slow first places of a round on page-cache rows only, is kept in the research folder and not used here. The store was not changed. **Not measured:** a Mac outside a virtual machine (its SSD), an Intel Mac, an external drive, a run in which every pass reads records no earlier pass read, and any engine.
+
+## WNR4 record codec: ratio and decode speed (2026-11-21, research, no engine)
+
+WNR4 is a draft ([WNR4-SPEC.md](WNR4-SPEC.md)): no production container or engine uses it, so these are numbers of the codec alone, with no tok/s. Kinds MX and NV: section 5 of the dated report [wnr4-research-20261121.md](reports/wnr4-research-20261121.md), on the machine of the other tables (RTX 5090 with 170 SMs, CUDA 13.4, `sm_120`; Ryzen 9 7950X3D), raw output in [research/wnr4-20261121](../research/wnr4-20261121/README.md). Kind GG: [research/wnr4-gg-20261121](../research/wnr4-gg-20261121/README.md). The code and its build lines: [wnr4/README.md](../wnr4/README.md).
+
+Ratio, for scale (stored / raw, 2048 held-out records per container, G = 128, report section 4): Qwen3.8-Flash-Next MXFP4 0.8753 against WNR3 0.8809, Qwen3.8 NVFP4 0.9238 against WNR3-NV 0.9271, DeepSeek V4.1 REAP-192 0.8488 against WNR3 0.8539. The stored/raw in brackets in the next table is that of the smaller speed pack measured, not the 2048-record figure.
+
+**Kinds MX and NV, kernel only, GB/s of decoded slab by batch size.** Records resident in VRAM; CUDA events around the one launch of the batch, median of 5; b = records per launch; latency = one record alone. Every record of each pack was first decoded on the GPU and compared with the expected bytes (all identical), and one payload bit was flipped per record (all refused). Logs: `bench8-*.log` (the G sweep) and `bench9-*.log` (after the review fixes, WNR3's kernels in the same run) in [research/wnr4-20261121/results](../research/wnr4-20261121/README.md). The same binary moved by up to ~30% between rounds, so compare numbers within one log.
+
+| data (G, stored/raw) | b 1 | b 8 | b 16 | b 32 | b 64 | b 128 | latency, 1 record |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Qwen3.8 MX (32, 0.8774) | 14 | 104 | 160 | 204 | 205 | - | 0.19 ms |
+| Qwen3.8 MX (64, 0.8762) | 7 | 55 | 103 | 159 | 205 | - | 0.37 ms |
+| Qwen3.8 MX (128, 0.8755) | 4 | 28 | 55 | 91 | 157 | 206 | 0.75 ms |
+| Qwen3.8 MX (256, 0.8752) | 2 | 14 | 29 | 48 | 92 | - | 1.44 ms |
+| Qwen3.8 NV (32, 0.9262) | 11 | 88 | 138 | 138 | 149 | - | 0.25 ms |
+| Qwen3.8 NV (64, 0.9246) | 6 | 47 | 81 | 132 | 139 | - | 0.47 ms |
+| Qwen3.8 NV (128, 0.9239) | 3 | 24 | 47 | 78 | 135 | 140 | 0.90 ms |
+| Qwen3.8 NV (256, 0.9235) | 2 | 12 | 24 | 41 | 79 | - | 1.79 ms |
+| V4.1 MX (128, 0.8484) | 25 | 144 | 188 | 185 | - | - | 0.75 ms |
+| same run (bench9): WNR4 Qwen3.8 MX (128) | 3.6 | 29 | 58 | 92 | 164 | 209 | |
+| same run (bench9): WNR3 kernels, Qwen3.8 MX (2048:512, 0.8812) | 4.3 | 33 | 32 | 56 | 80 | 91 | |
+| same run (bench9): WNR4 V4.1 (128) / WNR3 kernels V4.1 | 25.6 / 30.6 | 146 / 90 | 187 / 103 | 187 / 105 | - | - | |
+
+For one record alone at G = 128 WNR3's kernels are slightly faster (4.3 against 3.6 GB/s on Qwen3.8, 30.6 against 25.6 on V4.1); a latency-bound caller should use G = 32 (0.19 ms per Qwen3.8 record).
+
+**Kinds MX and NV, from page-locked host memory**, GB/s of decoded slab (report section 5; helper logs `helper9-*.log`). End to end = plan on the CPU, upload of the compressed records and decode of the whole pack, two streams so that batch i+1 uploads while batch i decodes. WNR3's production helper also runs a commit kernel that copies every slab again, so that a destination stays untouched on failure; WNR4 decodes straight into the destination and gives that guarantee up.
+
+| path | Qwen3.8 MXFP4 | Qwen3.8 NVFP4 | DeepSeek V4.1 |
+|---|---|---|---|
+| end to end, whole pack | 49-54 (43-47 GB/s of compressed bytes moved: the PCIe 5 x16 upload is the limit) | 41-51 | 48-60 |
+| WNR4 helper, asynchronous, two batches in flight | 51.6 at batch 32, 45.9 at 16 | 49.6 at batch 32 | 55.6 at batch 8 |
+| WNR4 helper, synchronous call | 33.8 at batch 32, 43.1 at 64 | | 41.5 at batch 8, 45.0 at 16 |
+| WNR3 production helper, synchronous, same run | 28.3 at batch 32 | no GPU path | 42.9 at batch 8, 47.1 at 16 |
+
+**Kinds MX and NV, CPU** (reference decoder, scalar with an AVX2 16-symbol search, OpenMP over tiles; `cpu-*.log`): 0.057-0.060 GB/s per thread on the MXFP4 records (0.050-0.051 on NVFP4), 2.2x WNR3's reference decoder (0.027); with 16-32 threads 0.71 GB/s on a batch of 64 Qwen3.8 MX records, 0.60 on a batch of 64 NVFP4 records and 0.63 on a batch of 8 V4.1 records. That is above the shipped WNR3 fast decoder's 0.15-0.5 GB/s, but a fallback: a SIMD lane-parallel decoder is not written.
+
+**Kind GG, GPU.** 96 sampled routed experts of Qwen3.8-Flash-Next UD-IQ1_M (GGUF by unsloth; layers 0, 6, 12, 24, 36 and 47, experts 0-15), all 96 coded with a model that the test trains on the even-numbered records (the 48 even real ones and the even ones of two synthetic groups it cuts from them), test `wnr4/tests/test_wnr4_gg_gpu.cu` through the helper, on the RTX 5090 of the other tables. Records resident in VRAM, L2 (96 MiB) flushed before each run, kernel only, median of 20, 4 warps per block; per record 460,800 coded bytes (the Q2_0 down slice) and 844,800 verbatim bytes (gate and up). "Whole records" includes the copy of the verbatim slices. Log: [gpu-test.log](../research/wnr4-gg-20261121/results/gpu-test.log).
+
+| records per batch | G = 32, coded slices | G = 32, whole records | G = 128, coded slices | G = 128, whole records |
+|---:|---|---|---|---|
+| 1 | 0.224 ms, 2.1 GB/s | 0.234 ms, 5.6 GB/s | 0.861 ms, 0.5 GB/s | 0.872 ms, 1.5 GB/s |
+| 8 | 0.227 ms, 16.3 GB/s | 0.247 ms, 42.3 GB/s | 0.869 ms, 4.2 GB/s | 0.890 ms, 11.7 GB/s |
+| 16 | 0.234 ms, 31.5 GB/s | 0.265 ms, 78.8 GB/s | 0.874 ms, 8.4 GB/s | 0.906 ms, 23.0 GB/s |
+| 32 | 0.259 ms, 57.0 GB/s | 0.314 ms, 133.0 GB/s | 0.875 ms, 16.8 GB/s | 0.931 ms, 44.9 GB/s |
+
+At batch 32, G = 32 decodes the coded slices 3.4 times as fast as G = 128 (57.0 against 16.8 GB/s). Every real and synthetic record decoded bit-exact through the helper and records with a flipped payload bit were refused; the synthetic records also at 8 and 16 warps per block.
+
+**Kind GG, size and CPU speed.** Only the Q2_0 and IQ4_NL slices are coded (in these packs the down slices); gate and up are stored verbatim, so the ratio depends on their share of the record. Three measurements on different data:
+
+| data (G = 32 unless noted) | stored / raw | CPU speed | machine; logs |
+|---|---|---|---|
+| the 96 sampled experts of the GPU test: the 48 odd ones, coded with a model trained on the 48 even ones | 0.9553; 0.9546 at G = 128 | | [first-check.log](../research/wnr4-gg-20261121/results/first-check.log) |
+| whole Qwen3.8-Flash-Next UD-IQ1_M, routed experts: 24,576 records, 34,812,723,200 B; model from every 8th record (3,072) | records 0.9574 (33,354,760,192 of 34,839,986,176 B RAW); container 33,377,181,696 B against 34,862,370,816 B RAW: 1.49 GB (4.3%) less | pack 144-176 MB/s; verify against the RAW container, 4 threads, 390 MB/s, every record identical | a second Windows desktop (Ryzen 7 9700X, 16 GB RAM, Python 3.14); [pack_wnr4.log](../research/wnr4-gg-20261121/results/full-model/pack_wnr4.log), [verify_wnr4.log](../research/wnr4-gg-20261121/results/full-model/verify_wnr4.log); container file sizes: [research README](../research/wnr4-gg-20261121/README.md), "Whole model A" (not in the logs) |
+| a second GGUF quantization of a Qwen3.8-Flash-Next variant with 256 experts per layer, labelled IQ1_M: 288 held-out records (10 experts per layer, 4 of them for training) | 0.9763 (575,422,464 of 589,363,200 B); layers with an IQ4_NL down slice 0.9780, with a Q2_0 one 0.9669; the 192 training records 0.9764 | decode 224 MB/s on 1 thread, 1.69 GB/s on 16; encode 324-330 MB/s on 1 thread | a Ryzen 9 7950X3D (the machine of the other tables), gcc 16.2 `-O3 -march=native -fopenmp`; [measure-t1.log](../research/wnr4-gg-20261121/results/second-pack/measure-t1.log), [measure-t16.log](../research/wnr4-gg-20261121/results/second-pack/measure-t16.log) |
+
+All 480 records of the second pack decoded byte-identical at 1 and 16 threads. An earlier run of the same sample, with the codec at an earlier commit (same format, same ratio 0.9763), measured 218 MB/s and 1.88 GB/s (its log is not in the research folder), so CPU decode on 16 threads is 1.7-1.9 GB/s. The engine that runs this pack reads expert records from NVMe at about 4.7 GB/s on one read thread (an engine measurement, not in this repository): decode on the CPU is slower than the read it would replace, and even with free decode 2.4% fewer bytes give at most about +2% tok/s, below that engine's A/B noise (1.4-2.8% per-arm spread). So kind GG gives no gain when the experts are read from disk, and no engine uses it. Before the WNR4-GG container was packed, every record of the RAW container was checked equal to its GGUF slices and to its SHA-256 (0 bad, 110 s; [check_raw.log](../research/wnr4-gg-20261121/results/full-model/check_raw.log)).
 
 ## Earlier results
 

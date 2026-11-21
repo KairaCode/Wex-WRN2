@@ -56,11 +56,13 @@ Summary of 2026-11-13; the page of record for what runs is [STATUS.md](../STATUS
 | [README.md](README.md) | EN | index | current | Which page do I need? |
 | [GLOSSARY.md](GLOSSARY.md) | EN | reference | current | What does this word mean, and which file defines it? |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | EN | overview | current | How do the pieces fit together, where does a record go from the checkpoint to the GPU, and what is not in this repository? |
-| [BENCHMARKS.md](BENCHMARKS.md) | EN | measurements | current: every table, newest rows of 2026-11-15 | What was measured, under which conditions, how many runs stand behind it, and where is the raw output? |
+| [BENCHMARKS.md](BENCHMARKS.md) | EN | measurements | current: every table, newest rows of 2026-11-16 | What was measured, under which conditions, how many runs stand behind it, and where is the raw output? |
 | [COLIBRI-INTEGRATION.md](COLIBRI-INTEGRATION.md) | EN | guide | current: WEX4 with RAW or WNR3 records | What do I copy and build, how do I make, verify and pin a container, which variables does the engine read, and what does an error line mean? |
+| [HELP-WANTED.md](HELP-WANTED.md) | EN | task list | current | What can an outside contributor pick up, and how is each task known to be done? |
 | [WEX4-SPEC.md](WEX4-SPEC.md) | EN | spec | current: format version 4.0, in production | What are the bytes of a WEX4 file, how is it validated and hashed, and how is a WEX1 or WNR3 container upgraded in place? |
 | [WNR3-SPEC.md](WNR3-SPEC.md) | EN | spec | current: FINAL v1, in production. Sections 0 to 8 with the errata at the top are the format; sections 9 to 11 are the implementation plan, historical | What are the bytes of a WNR3 record, and how are ceil-form, rule g, canonical zero and the stream hash encoded and checked? |
 | [WNR3-VULKAN.md](WNR3-VULKAN.md) | EN | design note | current: a design with a prototype checked on a CPU Vulkan device and on one GPU (an RTX 3070), with speed numbers on synthetic and on real records there; on that GPU every record of the published V4.1 container gave the reference's bytes; no engine hook | How does the WNR3 decode map to a Vulkan compute shader (streams and workgroups, buffers, model tables, batching), what was verified, and what is open? |
+| [WNR4-SPEC.md](WNR4-SPEC.md) | EN | spec | current: DRAFT 0.1, a research prototype; WEX4 codec 8 and blob kind 3 assigned as a draft (WEX4-SPEC 7.3), for GGUF expert records (kind 2, GG); not in any production container or engine | What would a WNR4 record be: tiles of 32 rANS lanes decoded by one GPU warp, WNR3's weight model, NVFP4 scales coded from the row above, a 32-bit tile hash? And kind GG: the same tiles over the Q2_0 and IQ4_NL blocks of GGUF expert slices? |
 | [WNR2-REFERENCE.md](WNR2-REFERENCE.md) | EN | reference | current as the description of the WEX1 / WEX2 / WEX3 layout, the WNR2 record, the WNM2 model, the encoder and the helper API (sections 4 to 10); WNR2 itself is superseded and no WNR2 container exists. Sections 1 to 3 and 11 to 15 point to the history report | What is in a WEX1 / WEX2 / WEX3 container, a WNR2 record and a WNM2 model, and what does the CUDA helper offer? |
 | [NEXT-FORMAT-SPEC.md](NEXT-FORMAT-SPEC.md) | EN | stub | current | Nothing. It is the old path of WEX4-SPEC.md, kept because a comment in the mirrored `c/wex4.h` names it |
 
@@ -68,6 +70,7 @@ Summary of 2026-11-13; the page of record for what runs is [STATUS.md](../STATUS
 
 | File | Lang. | Kind | State | Question it answers |
 |---|---|---|---|---|
+| [wnr4-research-20261121.md](reports/wnr4-research-20261121.md) | EN | dated report | historical | Can a successor of WNR3 store MXFP4/NVFP4 experts in fewer bytes and decode them on the GPU at 40 GB/s or more, and how does it compare with nvCOMP and NVDEC on the same records? |
 | [colibri-integration-20261109.md](reports/colibri-integration-20261109.md) | EN, Italian summary at the top | dated report (the integration guide until 2026-11-13) | historical: WEX1, WEX2 and WNR2 level by level, engine quotes of 2026-11-09, sections 12 to 14 a deployment log of 2026-11-09/10 | How were the WEX1-WNR2 hooks ported into colibri, built, generated, verified and deployed? |
 | [wnr2-history-20261110.md](reports/wnr2-history-20261110.md) | EN | dated report (taken out of WNR2-REFERENCE.md on 2026-11-13) | historical: the WNR2 period, 2026-10-20 to 2026-11-10 | What did the owner decide, where did every container and model sit, what was measured with WNR2 and when, and which sources disagreed? |
 | [QWEN38-MXFP4-20261111.md](reports/QWEN38-MXFP4-20261111.md) | EN | dated report | historical (banner: its status lines say WEX1, the containers are WEX4). Its measurements are the record for Qwen3.8 | Do the MXFP4 experts of Qwen3.8 keep the quality of the FP8 ones, how large and how fast are their containers, and what did the engine-side fixes gain? |
@@ -92,13 +95,13 @@ Each is a summary of the root [README](../README.md), about the size of its Ital
 
 | File | Lang. | Kind | State | Question it answers |
 |---|---|---|---|---|
-| [README.es.md](i18n/README.es.md) | ES | translation | follows the README of 2026-11-15 | What is WEX, what runs today, how do I try it, and where do I start? |
-| [README.fr.md](i18n/README.fr.md) | FR | translation | follows the README of 2026-11-15 | the same |
-| [README.de.md](i18n/README.de.md) | DE | translation | follows the README of 2026-11-15 | the same |
-| [README.zh-CN.md](i18n/README.zh-CN.md) | ZH | translation | follows the README of 2026-11-15 | the same |
+| [README.es.md](i18n/README.es.md) | ES | translation | follows the README of 2026-11-21 | What is WEX, what runs today, how do I try it, and where do I start? |
+| [README.fr.md](i18n/README.fr.md) | FR | translation | follows the README of 2026-11-21 | the same |
+| [README.de.md](i18n/README.de.md) | DE | translation | follows the README of 2026-11-21 | the same |
+| [README.zh-CN.md](i18n/README.zh-CN.md) | ZH | translation | follows the README of 2026-11-21 | the same |
 
 ## Outside `docs/`
 
 - What runs, measurements, sync state: [STATUS.md](../STATUS.md). Format changes by date: [CHANGELOG.md](../CHANGELOG.md). Rules for changing this repository: [CONTRIBUTING.md](../CONTRIBUTING.md).
-- Research runs, one row each: [research/README.md](../research/README.md). The studies and reviews behind WEX4 sit next to its code: [wex4/README.md](../wex4/README.md).
+- Research runs, one row each: [research/README.md](../research/README.md). The studies and reviews behind WEX4 sit next to its code: [wex4/README.md](../wex4/README.md). The WNR4 runs: [research/wnr4-20261121](../research/wnr4-20261121/README.md) (kinds MX and NV, behind the WNR4 report) and [research/wnr4-gg-20261121](../research/wnr4-gg-20261121/README.md) (kind GG).
 - The draft that preceded the WNR3 specification is `research/wnr3-20261107/team4/spec-update/WNR3-DRAFT-v2.1.md`. It describes a model blob, a 64-byte record header and coded stream lengths that were **not** adopted (WNR3-SPEC.md, section 0): do not implement from it.

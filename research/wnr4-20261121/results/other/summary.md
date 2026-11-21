@@ -1,0 +1,12 @@
+| model (64-expert sample, 2-fold CV) | record | WNR3 byte-exact | WNR4 G128 | WNR4 G32 | WNR3 CZ | WNR4 CZ G128 | WNR4 CZ G32 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Qwen3.8-Flash-Next MXFP4 (AMD Quark PTQ) | 2.61 MB | 0.8802 | 0.8747 | 0.8766 | 0.8802 | 0.8747 | 0.8766 |
+| Ling-3.0-flash MXFP4 | 3.13 MB | 0.8942 | 0.8890 | 0.8911 | 0.8689 | 0.8637 | 0.8659 |
+| AliceAI-80B-A3B PTQ MXFP4 | 1.67 MB | 0.9102 | 0.9052 | 0.9069 | 0.9102 | 0.9052 | 0.9069 |
+| Qwen3.8-Flash-Next NVFP4 | 2.76 MB | 0.9282 | 0.9250 | 0.9273 | 0.9104 | 0.9073 | 0.9095 |
+| Qwen3.8-Flash-Next FP4-Local (QAD) NVFP4 | 2.76 MB | 0.9327 | 0.9285 | 0.9309 | 0.9170 | 0.9128 | 0.9152 |
+| AliceAI-80B-A3B PTQ NVFP4 | 1.77 MB | 0.9285 | 0.9282 | 0.9301 | 0.9134 | 0.9134 | 0.9152 |
+| Edge0-120B NVFP4 | 1.38 MB | 0.9179 | 0.9137 | 0.9157 | 0.9179 | 0.9137 | 0.9157 |
+| Edge0-145B NVFP4 | 1.94 MB | 0.9336 | 0.9291 | 0.9316 | 0.9183 | 0.9139 | 0.9163 |
+
+WNR4 columns: `other_models.py` (the JSON files here). WNR3 columns: copied from the cross-validated WNR3 study of the same samples, which is not in this repository.

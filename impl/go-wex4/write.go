@@ -495,9 +495,10 @@ func WriteFile(m *Manifest, out string) (*Written, error) {
 	return w, nil
 }
 
-// wbp1Params: the parameters of a WBP1 record. What the manifest does not give is chosen as section 7 says
-// the converters choose: planes = the element size in bytes, transform 1 for floats (F16, BF16, F32, F64).
-// The specification does not give the converters' chunk_log2 (SPEC-NOTES.md, E3): 12 here.
+// wbp1Params: the parameters of a WBP1 record. What the manifest does not give is chosen as sections 7 and
+// 14 say the converters choose: planes = the element size in bytes, chunk_log2 12, and transform 1 for a
+// record that holds one float tensor (F16, BF16, F32, F64) of 64 KiB or more, or a part of a split one; 0
+// for every other record (the converters group tensors under 64 KiB and code a group with 0, also a group of one).
 func wbp1Params(r *srcRecord, first *srcTensor, n uint64) (planes uint64, chunk uint, transform byte, err error) {
 	elem, float := uint64(1), true
 	ts := r.tensors
@@ -524,7 +525,8 @@ func wbp1Params(r *srcRecord, first *srcTensor, n uint64) (planes uint64, chunk 
 	if r.chunk >= 0 {
 		chunk = uint(r.chunk)
 	}
-	if float && planes > 1 && n%planes == 0 {
+	alone := len(ts) == 1 && (ts[0].nbytes >= 64<<10 || r.part || r.bytes != 0)
+	if float && alone && planes > 1 && n%planes == 0 {
 		transform = 1
 	}
 	if r.transform >= 0 {

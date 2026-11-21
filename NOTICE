@@ -77,5 +77,8 @@ Other third-party material
 THIRD_PARTY_NOTICES.md lists the remaining third-party material and its
 licences: portions of ds4 (MIT) that colibri's backend_cuda_dsv4.cu carries,
 copies of DeepSeek inference code and of a model card (MIT) under
-research/wnr3-20261107/team3/other-tensors/data/, and the files computed from
-DeepSeek model weights (MIT). No model weights are in this repository.
+research/wnr3-20261107/team3/other-tensors/data/, a text extract of the OCP
+Microscaling Formats (MX) Specification v1.0 (OWFa 1.0) under
+research/wnr3-20261107/team2/zero-safety/out/, and the files computed from
+the weights of DeepSeek checkpoints (MIT) and of other public checkpoints. No
+model weights are in this repository.

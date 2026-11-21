@@ -5,6 +5,8 @@
  * Reads at most two records. CPU timings include compressed-input restore;
  * 'direct' instead measures Win32 unbuffered read plus decode. No GPU timing.
  * For lossy WEX3 supply a raw WEX1 of the quantized reference, not the original.
+ * Raw, scale-tile, palette3 and WNR1 records (codec 0-3) only: WNR2 and WNR3 records
+ * (codec 4/5) need their container's model and are refused.
  */
 #ifndef WEX_FORMAT_HEADER
 #define WEX_FORMAT_HEADER "../wex_format.h"
@@ -97,6 +99,10 @@ int main(int argc, char **argv) {
         if (!encoded->total_bytes) continue;
         REQUIRE(!wex_validate_entry(&raw_header, raw, raw_size) && !raw->flags);
         REQUIRE(!wex_validate_entry(&compressed_header, encoded, compressed_size));
+        if (wex_entry_nr_model(encoded)) {
+            fprintf(stderr, "WNR2/WNR3 (codec 4/5) records need their model: not supported by this benchmark\n");
+            return 1;
+        }
         REQUIRE(!wex_entry_raw_sizes(encoded, &bytes, &aligned));
         REQUIRE(raw->scale_bytes == encoded->scale_bytes && raw->weight_bytes == encoded->weight_bytes);
         REQUIRE(!memcmp(raw->scale_shapes, encoded->scale_shapes,

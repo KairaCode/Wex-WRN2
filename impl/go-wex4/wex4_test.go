@@ -307,6 +307,32 @@ func TestExtraPage(t *testing.T) {
 	}
 }
 
+// A header page and nothing else, with max_decoded or total_decoded set: refused in step 1, which asks for
+// both to be 0 when record_count is 0 (WEX4-SPEC section 6).
+func TestDecodedWithoutRecords(t *testing.T) {
+	for _, c := range []struct {
+		at    int // the byte set to 1, 0 for none
+		class string
+	}{{0, ""}, {68, EHeader}, {88, EHeader}} {
+		b := make([]byte, pageBytes)
+		le.PutUint32(b[0:], magicWEX4)
+		le.PutUint16(b[4:], 4)
+		le.PutUint64(b[24:], pageBytes)
+		le.PutUint64(b[32:], pageBytes)
+		if c.at != 0 {
+			b[c.at] = 1
+		}
+		rehash(b)
+		got := ""
+		if _, e := ParseHeader(b, pageBytes); e != nil {
+			got = e.Class
+		}
+		if got != c.class {
+			t.Errorf("byte %d set to 1: class %q, want %q", c.at, got, c.class)
+		}
+	}
+}
+
 // Tensors outside every record (record_count 0), made from the first such tensor of generic.wex4 with both
 // hashes recomputed. The verdicts wanted are those of the two reference readers, asked on 2026-11-14 on
 // the same bytes (SPEC-NOTES.md, A5 and A6).

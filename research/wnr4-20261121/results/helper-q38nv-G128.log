@@ -1,0 +1,19 @@
+helper on out/packs3/q38nv.pack: 128 records, 2764800 B each
+  batch   1:  236.00 ms for 128 records,    1.5 GB/s decoded, bit-exact 128/128
+  batch   2:  126.59 ms for 128 records,    2.8 GB/s decoded, bit-exact 128/128
+  batch   4:   68.29 ms for 128 records,    5.2 GB/s decoded, bit-exact 128/128
+  batch   8:   36.92 ms for 128 records,    9.6 GB/s decoded, bit-exact 128/128
+  batch  16:   21.61 ms for 128 records,   16.4 GB/s decoded, bit-exact 128/128
+  batch  32:   21.24 ms for 128 records,   16.7 GB/s decoded, bit-exact 128/128
+  batch  64:   20.46 ms for 128 records,   17.3 GB/s decoded, bit-exact 128/128
+  batch 128:   20.13 ms for 128 records,   17.6 GB/s decoded, bit-exact 128/128
+corrupted record 3 of a batch of 8: failures 1
+  status[0] = 0
+  status[1] = 0
+  status[2] = 0
+  status[3] = -1
+  status[4] = 0
+  status[5] = 0
+  status[6] = 0
+  status[7] = 0
+unknown model -> 1, wrong owner -> -1: OK
