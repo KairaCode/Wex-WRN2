@@ -54,15 +54,19 @@ def chart_gpu(t):
     batches = [1, 8, 16, 32, 64, 128]
     q38 = {'WNR4 G=128': [3.6, 29, 58, 92, 164, 209], 'WNR3 kernels': [4.3, 33, 32, 56, 80, 91]}
     v41 = {'WNR4 G=128': [25.6, 146, 187, 187], 'WNR3 kernels': [30.6, 90, 103, 105]}
-    h = 4.3
+    h = 4.8
     fig = cs.figure(t, h)
     cs.header(fig, t, 'GPU decode by batch size',
-              'Decoded GB/s, RTX 5090, kernel time, records in VRAM, both codecs in one run. WNR4: one launch per '
-              'batch;\nWNR3: two kernels per record on 8 streams.', h)
+              'Decoded GB/s, kernel time, records in VRAM, both codecs in one run. WNR4: one launch per batch;\n'
+              'WNR3: two kernels per record on 8 streams.', h)
+    fig.text(0.045, 1 - 1.18 / h, 'Machine: RTX 5090 (32 GB VRAM, PCIe 5.0 x16), AMD Ryzen 9 7950X3D, 32 GB '
+             'DDR5-6200, Windows 11, CUDA 13.4.\nNo engine and no drive in these runs: the records were loaded into '
+             'VRAM first, so neither the RAM nor the drives limit them.', fontsize=8, color=t['ink2'], va='top',
+             linespacing=1.5)
     colors = {'WNR4 G=128': t['blue'], 'WNR3 kernels': t['orange']}
     for k, (title, data, bs) in enumerate((('Qwen3.8 MXFP4 (2.6 MB records)', q38, batches),
                                            ('DeepSeek V4.1 MXFP4 (18.8 MB records)', v41, batches[:4]))):
-        ax = cs.axes(fig, t, [0.08 + k * 0.47, 0.22, 0.38, 0.47], title)
+        ax = cs.axes(fig, t, [0.08 + k * 0.47, 0.2, 0.38, 0.42], title)
         ax.grid(axis='y', color=t['grid'], linewidth=0.8)
         ax.grid(axis='x', visible=False)
         ax.set_xscale('log', base=2)
@@ -82,8 +86,7 @@ def chart_gpu(t):
             ax.set_ylabel('GB/s', fontsize=8.5, color=t['muted'])
     handles = [cs.plt.Line2D([], [], color=colors[n], linewidth=2, marker='o', markersize=5.5,
                              markeredgecolor=t['surface']) for n in colors]
-    leg = fig.legend(handles, list(colors), loc='upper right', bbox_to_anchor=(0.955, 0.815), ncol=2, frameon=False,
-                     fontsize=9, handlelength=1.8)
+    leg = fig.axes[0].legend(handles, list(colors), loc='upper left', frameon=False, fontsize=9, handlelength=1.8)
     for txt in leg.get_texts():
         txt.set_color(t['ink2'])
     cs.footer(fig, t, 'Source: docs/reports/wnr4-research-20261121.md section 5 (results/bench9-*.log), median of 5 '
