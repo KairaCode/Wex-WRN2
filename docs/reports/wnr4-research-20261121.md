@@ -175,11 +175,91 @@ WNR3 and WNR4 columns: the same packs (`results/pack3-*.json`; the 2048-record r
 - An adversarial review of the code (three lenses, each finding checked by a second reviewer) found no divergence between the CPU decoder, the CUDA kernel and the encoder and no out-of-bounds path for a static hostile record; its confirmed findings (spec wording, geometry checks, helper slot handling and status codes, test assertions, comparisons across runs, local paths in logs) are fixed.
 
 **Not done:**
-- No WEX4 codec id or blob kind assigned (proposed: codec 8 with a required feature bit if WNR3-NV takes 7, else 7; blob kind 3), no conformance vectors, no Python or Go/Rust reader.
-- No engine integration: no container written in WNR4, no engine run, no tok/s measured. The expected effect on tok/s is small where engines are bound by host overhead or read latency (a few percent) and large only where compression lets the expert set fit in VRAM + RAM.
+- No WEX4 codec id or blob kind assigned (proposed: codec 8 with a required feature bit if WNR3-NV takes 7, else 7; blob kind 3), no conformance vectors, no Python or Go/Rust reader (update, later on 2026-11-21: codec 8 and blob kind 3 assigned as a draft, see section 8).
+- No engine integration: no container written in WNR4, no engine run, no tok/s measured. The expected effect on tok/s is small where engines are bound by host overhead or read latency (a few percent) and large only where compression lets the expert set fit in VRAM + RAM (update, later on 2026-11-21: see section 8).
 - CPU fallback is scalar (0.6-0.7 GB/s on 16-32 threads); a SIMD lane-parallel decoder is open.
 - GPU: instruction count per step (~106 warp instructions per 32 symbols) and register pressure (64 registers cap the blocks per SM) are the next levers; single-record latency at G = 128 is no better than WNR3's (use G = 32 for latency-bound callers).
 - The NVFP4 baselines (WNR3-NV) and the NVFP4 reader come from the `nvfp4-wnr3` branch, which is not public yet.
-- Full 2048-record runs exist only for Qwen3.8 (MXFP4, NVFP4) and DeepSeek V4.1 MXFP4; the other models (section 4b) are 64-expert samples, and int4-g64 exports are not covered.
+- Full 2048-record runs exist only for Qwen3.8 (MXFP4, NVFP4) and DeepSeek V4.1 MXFP4; the other models (section 4b) are 64-expert samples, and int4-g64 exports are not covered (update, later on 2026-11-21: see section 8).
 
 **Recommendation.** Adopt WNR4 as the successor of WNR3 for new containers once it is wired into an engine and an A/B shows the tok/s, with G = 32 where single-record latency matters (engine misses) and G = 128-256 for bulk/archival use; keep WNR3 readable unchanged. Use the decoder overlapped with reads; in a strictly serial read-then-decode path a small-batch nvCOMP-ANS is faster end to end in most cases and should be the comparison point.
+
+## 8. Later on 2026-11-21: engine decision, kind GG, int4-g64
+
+Sections 1-7 stay as first written; this section adds what was decided and measured later the same day. Since then [WEX4-SPEC.md](../WEX4-SPEC.md) assigns WNR4, as a draft, codec 8 and blob kind 3 (its section 7.3), for records that are neither EXPERT nor VALUE_EXACT; kinds MX and NV in EXPERT records still need a required feature bit ([WNR4-SPEC.md](../WNR4-SPEC.md) section 7).
+
+### 8.1 Engine integration: analysed, not done
+
+Decided on 2026-11-21 by analysis only, for kinds MX and NV in the maintainer's engines; no engine code was written.
+
+- **Qwen3.8-Flash-Next MXFP4.** A replay of a recorded expert trace showed that the RAM WNR4 frees (+14% RAM slots) is worth only -0.6 to -4.8% of step time, even with a decode that costs nothing. That is below the minimum detectable effect of the A/B, 7.6%. A path that decodes back to host memory, like WNR3's (section 1), would lose 10-25%. The RAW container stays.
+- **DeepSeek V4.1 REAP-192.** VRAM and RAM hold decoded records, so the capacity gain is about 0. The only lever is a faster decode of an exposed miss, and only at G = 32: at G = 128 one record alone decodes no faster than with WNR3 (section 5). Estimate: +1.5 to +3% tok/s, which the ±3% run noise cannot resolve.
+- **What would reopen it.** For V4.1, a micro-benchmark of G = 32 at batch 1-2 on V4.1 records. For Qwen3.8, the gate is an exposed decode of at most ~0.05 ms per layer, what the RAW DMA of one RAM hit costs today (2.61 MB at 48.6 GiB/s); the estimated effect is -10 to +3% without overlapping the decode and +2 to +5% with overlap. The engine estimate used ~0.24 ms per G = 32 record end to end; the kernel-only latency of one record alone at G = 32 is 0.19 ms (MX) and 0.25 ms (NV), section 5.
+- The GG containers of section 8.2 are not integrated in any engine either.
+
+### 8.2 Kind GG: GGUF 2-bit experts
+
+Kind 2, GG ([WNR4-SPEC.md](../WNR4-SPEC.md#5-kind-2-gg-gguf-expert-slices) section 5), puts the WNR4 skeleton under another model for GGUF routed-expert records (gate | up | down slices, as `wex4/gguf2wex4.py` writes them). It codes the 18-byte blocks of the Q2_0 (ggml type 42) and IQ4_NL (20) slices; every other slice is stored verbatim. Scripts and logs: [research/wnr4-gg-20261121](../../research/wnr4-gg-20261121/README.md). The three GG ratios below are for different data: 0.9546 / 0.9553 (48 held-out records), 0.9574 (the whole model) and 0.9763 (288 held-out records of a second pack, whose down slices are mostly IQ4_NL, which compresses less than Q2_0).
+
+**First check** (`results/first-check.log`, script `measure_sample.py`, sampler `wnr4/tests/sample_gg_experts.py`). 96 sampled experts of Qwen3.8-Flash-Next UD-IQ1_M (GGUF by unsloth), layers 0, 6, 12, 24, 36 and 47, experts 0-15; model trained on the 48 even experts, the 48 odd ones coded and decoded back byte-exact (8 decode threads). Stored/raw against the 4096-aligned raw record: G = 128 0.9546 (0.9531 on the 40 records with gate/up of type 16, 0.9610 on the 8 with type 22); G = 32 0.9553 (0.9540; 0.9610). Model blob 36,644 B.
+
+**GPU** (`results/gpu-test.log`, test `wnr4/tests/test_wnr4_gg_gpu.cu`). The same 96 records on the RTX 5090 (CUDA 13.4, sm_120), resident in VRAM, L2 (96 MiB) flushed before each run, kernel only, median of 20; 460,800 coded + 844,800 verbatim B per record:
+
+| G | batch | decode | GB/s of coded slices | with the verbatim copy | GB/s of records |
+|---:|---:|---:|---:|---:|---:|
+| 32 | 1 | 0.224 ms | 2.1 | 0.234 ms | 5.6 |
+| 32 | 8 | 0.227 ms | 16.3 | 0.247 ms | 42.3 |
+| 32 | 16 | 0.234 ms | 31.5 | 0.265 ms | 78.8 |
+| 32 | 32 | 0.259 ms | 57.0 | 0.314 ms | 133.0 |
+| 128 | 1 | 0.861 ms | 0.5 | 0.872 ms | 1.5 |
+| 128 | 8 | 0.869 ms | 4.2 | 0.890 ms | 11.7 |
+| 128 | 16 | 0.874 ms | 8.4 | 0.906 ms | 23.0 |
+| 128 | 32 | 0.875 ms | 16.8 | 0.931 ms | 44.9 |
+
+At batch 32, G = 32 is 57.0 / 16.8 = 3.4 times G = 128. Every real and synthetic record decoded bit-exact through the helper, and every record with a flipped payload bit was refused; the synthetic groups also ran at 8 and 16 warps per block.
+
+**Whole model** (`results/full-model/`). Qwen3.8-Flash-Next UD-IQ1_M routed experts: 48 layers x 512 experts = 24,576 records, each gate | up | down; down is Q2_0 (ggml 42) in 46 layers and IQ4_NL (20) in 2; gate and up are IQ2_XXS (16), IQ2_S (22) or IQ2_XS (17); 34,812,723,200 B of expert bytes. Run on a second Windows desktop (Ryzen 7 9700X, 16 GB RAM, Python 3.14):
+
+| step | result | log |
+|---|---|---|
+| `wex4/gguf2wex4.py pack --experts-only` | RAW container 34,862,370,816 B, root `837198d1b8adab49a04077e129e516f7bb45089668177e5238a545a49f646f1a`; every record equal to its GGUF slices and its SHA-256 (`check_vs_gguf.py`, 110 s, 0 bad) | `pack_raw.log`, `check_raw.log` |
+| `wex4/wnr4gg.py train --every 8` | 3,072 records (4.35 GB), model id 0xa7b23c09, 36,644 B | `train.log` |
+| `wex4/wnr4gg.py pack` (G = 32) | WNR4-GG container 33,377,181,696 B; records 33,354,760,192 B against 34,839,986,176 B RAW (0.9574); 144-176 MB/s | `pack_wnr4.log` |
+| `wex4/wnr4gg.py verify --source RAW` | all 24,576 records (all codec 8) decoded on the CPU (4 threads) identical to the RAW container, 390 MB/s | `verify_wnr4.log` |
+
+So the container is 1.49 GB (4.3%) smaller on disk. Only the down slice is coded; gate and up (IQ2) are stored verbatim.
+
+**A second expert pack** (`results/second-pack/`, scripts `sample_pack.py` and `measure_pack.py`): a second GGUF quantization of a Qwen3.8-Flash-Next variant with 256 experts per layer, labelled IQ1_M; 48 layers x 256 = 12,288 experts, 25.146 GB; hidden 2560, expert FFN 640. Its gate/up are IQ3_XXS (18) in 17 layers, IQ2_S (22) in 20, IQ3_S (21) in 10 and IQ4_XS (23) in 1; down is IQ4_NL (20) in 39 layers and Q2_0 (42) in 9. Gate and up are about 59% of the bytes (from the slice sizes in `results/second-pack/sample.json`), all verbatim under GG. Sample: 10 experts per layer (`random.Random(20261121)`), 4 for training (192 records), 6 held out (288 records).
+
+- Held out: 575,422,464 of 589,363,200 B = 0.9763; layers with an IQ4_NL down 0.9780 (the down slice alone ~0.949, 234 records), with a Q2_0 down 0.9669 (down ~0.884, 54 records); by gate/up type IQ3_XXS 0.9769, IQ3_S 0.9787, IQ2_S 0.9739, IQ4_XS 0.9821 (6 records only); training records 0.9764 (no overfit). All 480 records byte-identical at 1 and 16 decode threads.
+- Speed (Ryzen 9 7950X3D, gcc 16.2 `-O3 -march=native -fopenmp`): encode on one thread 324-330 MB/s; decode 224 MB/s on 1 thread and 1.69 GB/s on 16 in the logged run. An earlier run of the same sample with the codec at an earlier commit (same format, same ratio 0.9763) measured 218 MB/s and 1.88 GB/s, so CPU decode on 16 threads is 1.7-1.9 GB/s. Whole pack, estimated: ~24.55 GB (0.9763 of 25.146 GB), ~0.6 GB saved.
+- Read from disk: the engine that runs this pack reads expert records from NVMe at about 4.7 GB/s on one read thread. CPU decode at 1.7-1.9 GB/s on 16 threads is slower than the read it would replace, and with a free decode the 2.4% fewer bytes give at most about +2% tok/s, below the A/B noise (1.4-2.8% per-arm spread; the read speed and the noise are engine measurements, not in this repository). Verdict: no gain when the experts are read from disk; not integrated.
+
+**Why GG codes only Q2_0 and IQ4_NL.** A pre-study with an earlier prototype coder in the WNR4 style (not the GG codec; no scripts or logs in this repository) on 192 records of Qwen3.8-Flash-Next UD-Q2_0, sampled by HTTP range, with the same block types as UD-IQ1_M; tables trained on 2 experts per layer and tested on 2 others. Stored/raw (zstd -19 in brackets): Q2_0 0.862 (0.905), IQ4_NL 0.946 (0.981), IQ2_XXS 0.958 (0.998), IQ2_S 0.949 (1.000); IQ2_XS not measured. Q2_0 code frequencies 0.275 / 0.428 / 0.235 / 0.062; IQ2 codes are grid indices and signs near maximum entropy, and richer contexts (previous symbol, row above, class of d) move less than 0.3 points. Few records: Q2_0 was tested on 20, IQ4_NL on 12. Its estimate for UD-IQ1_M was ~32.2 GB with every type coded (-7.5%) and ~33.3 GB with Q2_0 and IQ4_NL only (-4.5%); the measured container is 33.38 GB. Coding the IQ2 slices would save about 1.1 GB more on UD-IQ1_M, with per-type layouts; left for later.
+
+### 8.3 int4-g64 prototype
+
+Section 7 said int4-g64 exports are not covered. A CPU prototype was then built on the WNR4 skeleton; it is not in this repository. The format it codes: signed int4 stored as v+8 in a nibble, one f32 scale per 64 inputs along the row, no zero point. Design: 32-lane tiles, one 16-bit word stream, phase 1 the scales, phase 2 the nibbles; the lane unit is a 64-nibble group with its f32 scale. 768 held-out experts (256 per source) round-trip byte-exact at 1 and 8 threads.
+
+| source | stored/raw | zstd -19 |
+|---|---:|---:|
+| Qwen3.8-Flash-Next int4g64 | 0.7829 | 0.8074 |
+| Sage-S2.1-Flash int4 | 0.7855 | 0.8039 |
+| Inkling-2-Mini int4g64 | 0.8264 | 0.8406 |
+
+That is 1.4-2.5 points better than zstd -19 (2.45, 1.84 and 1.42 points), mostly from the scales. CPU decode 400-530 MB/s on 8 threads, encode 130-195 MB/s. Qwen3.8 with all experts: int4g64 + this codec 53.20 GB, against MXFP4 + WNR4 G = 128 56.17 GB and MXFP4 + WNR3 56.53 GB. Not done: the per-tile hash, the tail in the state, a GPU kernel, a container writer. Recommendation: make it a WNR4 kind, not a separate codec.
+
+### 8.4 Full-container sizes
+
+No whole WNR4 container of kind MX or NV exists: the first two rows are estimates. The GG row is measured (section 8.2).
+
+| experts | uncompressed | in WNR4 |
+|---|---:|---:|
+| Qwen3.8-Flash-Next MXFP4 | 59.8 GiB | 52.5 GiB at G = 32 (estimate) |
+| Edge0-145B NVFP4 | 44.4 GiB | 41.2 GiB as WNR4-NV (estimate) |
+| Qwen3.8-Flash-Next UD-IQ1_M (GGUF) | RAW container 34,862,370,816 B | WNR4-GG container 33,377,181,696 B (measured) |
+
+Where each number comes from:
+- 59.8 GiB is the 24,576 RAW records of 2,613,248 B of the production container ([STATUS.md](../../STATUS.md)). The estimate applies 0.8774, the G = 32 ratio of the 64-record Qwen3.8 MX speed pack (sections 5 and 6); the 2048-record G = 32 ratio of section 4 is 0.87729, and both give 52.5 GiB.
+- 44.4 GiB is the maintainer's figure for the Edge0-145B export's routed experts, not measured in this repository. 41.2 GiB matches the WNR4 G = 128 byte-exact ratio of Edge0-145B in section 4b (0.9291, a 64-expert sample) to the rounding of the two sizes.
+- The GG sizes are from `results/full-model/` (section 8.2). The GB of section 8.3 are 10^9 bytes; the GiB here are 2^30 bytes.

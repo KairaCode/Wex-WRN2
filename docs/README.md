@@ -103,5 +103,5 @@ Each is a summary of the root [README](../README.md), about the size of its Ital
 ## Outside `docs/`
 
 - What runs, measurements, sync state: [STATUS.md](../STATUS.md). Format changes by date: [CHANGELOG.md](../CHANGELOG.md). Rules for changing this repository: [CONTRIBUTING.md](../CONTRIBUTING.md).
-- Research runs, one row each: [research/README.md](../research/README.md). The studies and reviews behind WEX4 sit next to its code: [wex4/README.md](../wex4/README.md).
+- Research runs, one row each: [research/README.md](../research/README.md). The studies and reviews behind WEX4 sit next to its code: [wex4/README.md](../wex4/README.md). The WNR4 runs: [research/wnr4-20261121](../research/wnr4-20261121/README.md) (kinds MX and NV, behind the WNR4 report) and [research/wnr4-gg-20261121](../research/wnr4-gg-20261121/README.md) (kind GG).
 - The draft that preceded the WNR3 specification is `research/wnr3-20261107/team4/spec-update/WNR3-DRAFT-v2.1.md`. It describes a model blob, a 64-byte record header and coded stream lengths that were **not** adopted (WNR3-SPEC.md, section 0): do not implement from it.
