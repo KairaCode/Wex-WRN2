@@ -1,0 +1,9 @@
+G=32 decode threads=1  byte-identical failures: 0 / 480
+test         rec  288 raw   589363200 coded   575422464 ratio 0.9763  down~0.9420  enc   323.9 MB/s  dec   223.7 MB/s
+test d=20    rec  234 raw   501964800 coded   490917888 ratio 0.9780  down~0.9488  enc   308.2 MB/s  dec   212.4 MB/s
+test d=42    rec   54 raw    87398400 coded    84504576 ratio 0.9669  down~0.8837  enc   457.7 MB/s  dec   322.2 MB/s
+test gu=18   rec  102 raw   213657600 coded   208723968 ratio 0.9769  down~0.9424  enc   321.6 MB/s  dec   223.5 MB/s
+test gu=21   rec   60 raw   137011200 coded   134098944 ratio 0.9787  down~0.9446  enc   342.9 MB/s  dec   241.5 MB/s
+test gu=22   rec  120 raw   222720000 coded   216911872 ratio 0.9739  down~0.9400  enc   312.0 MB/s  dec   212.0 MB/s
+test gu=23   rec    6 raw    15974400 coded    15687680 ratio 0.9821  down~0.9481  enc   382.7 MB/s  dec   265.7 MB/s
+train        rec  192 raw   392908800 coded   383651840 ratio 0.9764  down~0.9423  enc   322.8 MB/s  dec   225.6 MB/s

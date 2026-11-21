@@ -585,11 +585,54 @@ measured; it is not known to fail.
     on one thread and 820 to 890 on 8, zstd about 1,500 and 5,500 to 6,900; only lzma, bz2 and (on one
     thread) brotli at quality 11 were slower than it
     ([research/real-experts-20261115](../research/real-experts-20261115/README.md), section 3).
+  - **Today, GPU codecs (2026-11-21):** nvCOMP 6.0 (its batched API: ANS, Bitcomp, Cascaded, GDeflate,
+    LZ4, Snappy, Zstd, Deflate; 580 configurations, all decoded bit-exactly) and NVDEC ran on an RTX 5090
+    on the packs of the WNR4 research (128 Qwen3.8 MXFP4, 128 Qwen3.8 NVFP4 and 32 DeepSeek V4.1
+    records; [report, section 6](reports/wnr4-research-20261121.md#6-baselines-run-on-the-same-data)).
+    The nvCOMP-ANS configurations that stay fast at 8-64 records store 0.8997, 0.9372 and 0.8983-0.8985
+    of raw, against 0.8812, 0.9272 and 0.8536 for WNR3 (WNR3-NV on NVFP4) and 0.8755, 0.9239 and 0.8484
+    for WNR4 at G = 128 on the same packs; the LZ and Deflate-family decoders, GDeflate among them, are
+    19-176 GB/s. nvCOMP-ANS decodes much faster: with the L2 flushed, 554 GB/s at 8 records and 611 GB/s
+    at 16 (Qwen3.8 MXFP4), against 104 and 160 GB/s for WNR4 at G = 32. NVDEC is not viable: lossless
+    video expands the FP4 weights (1.30-1.43x), and HEVC lossless decodes at 0.33-0.35 GB/s for one
+    stream, ~0.44 GB/s with two. The nvCOMP harness is not in this repository (nvCOMP is a proprietary
+    SDK).
   - **Still open:** the same on whole checkpoints, with a model trained as in production (80 experts
     spread over the layers); other CPUs, and the NEON kernel on these records (the scripts of that folder
-    fetch them, about 320 MB, and need no model); the GPU decoders against GPU codecs (nvCOMP, GDeflate);
-    per-tensor compression (scales and weights apart); zstd with a trained dictionary or long-distance
-    matching; byte-shuffle filters (Blosc2) and OpenZL.
+    fetch them, about 320 MB, and need no model); the GPU codecs on other GPUs; per-tensor compression
+    (scales and weights apart); zstd with a trained dictionary or long-distance matching; byte-shuffle
+    filters (Blosc2) and OpenZL.
+- **WNR4, what is left** (help wanted; several items need an NVIDIA GPU):
+  - **Today (2026-11-21):** [WNR4-SPEC](WNR4-SPEC.md) is a research draft (DRAFT 0.1) of a successor of
+    WNR3 with kinds MX, NV and GG, to which WEX4 assigns codec 8 as a draft; no production container
+    holds it and no engine reads it ([STATUS.md](../STATUS.md), "Planned"). The code is in `wnr4/`: a CPU
+    reference codec, CUDA decoders and a prototype helper DLL. The CPU tests
+    (`bash scripts/build_wnr4_check.sh`, which `scripts/check_all.sh` runs in CI) include a mutation fuzz
+    for each kind. The measurements are in the
+    [report](reports/wnr4-research-20261121.md), sections 5 to 8; the GPU code has run on one GPU only
+    (an RTX 5090, `sm_120`).
+  - **Still open:**
+    - a SIMD lane-parallel CPU decoder (8 lanes per AVX2 register): the reference decoder is scalar with
+      an AVX2 16-symbol search, 0.057-0.060 GB/s per thread and 0.71 GB/s with 16-32 threads on Qwen3.8
+      MXFP4 (report, section 5);
+    - a decoder for non-NVIDIA GPUs, Vulkan first (as section 6 asks for WNR3): the GPU decoders are CUDA
+      only (`wnr4/wnr4_cuda.cuh`, `wnr4/wnr4_gg_cuda.cuh`);
+    - runs on other NVIDIA GPUs and on more than one GPU;
+    - the GPU tests in CI (`wnr4/tests/test_wnr4_gg_gpu.cu` and the GPU bench of
+      [research/wnr4-20261121](../research/wnr4-20261121/README.md)), which needs a GPU runner;
+    - fuzzing of the WNR4 record parser beyond the existing mutation fuzz of `wnr4/tests` (random flips of
+      1 to 3 bits): no harness of [wex4/fuzz](../wex4/fuzz/README.md) reads WNR4 records;
+    - conformance vectors for codec 8, which wait until the WEX4 draft is adopted;
+    - a container writer for kinds MX and NV (`wex4/wnr4gg.py` writes kind GG only; the MX and NV records
+      of the research are bench packs), with the required feature bit that kinds MX and NV need in
+      EXPERT records (WNR4-SPEC section 7);
+    - an int4 kind with its GPU kernel: a CPU prototype for int4-g64 exports, not in this repository,
+      stores 1.4-2.5 points less than zstd -19 and has no per-tile hash, tail in the state, GPU kernel or
+      container writer yet (report, section 8.3);
+    - kinds for the IQ2 slices of GGUF experts (IQ2_XXS, IQ2_S, IQ2_XS), which kind GG stores verbatim: a
+      pre-study estimates about 1.1 GB more saved on Qwen3.8-Flash-Next UD-IQ1_M (report, section 8.2);
+    - a G = 16 point, latency of one record and ratio: the sweep of the report's section 5 starts at
+      G = 32.
 - **Ideas for a next codec:** see [WEX4-SPEC section 12](WEX4-SPEC.md#12-compression-what-was-measured-what-is-adopted)
   and [section 16](WEX4-SPEC.md#16-open-questions) and the research reports in
   [docs/reports](reports/). Any proposal has to stay lossless (bit-identical weights).
@@ -671,8 +714,13 @@ listed above as well.
   RAW expert records). Runs on whole real checkpoints of the other profiles are open *(open to you,
   section 5)*.
 - **Compression baselines:** WNR3 against zstd, lz4, brotli, lzma, zlib and bz2 on 24 real expert
-  records is in (smaller files, slower CPU decode); whole checkpoints, other CPUs and GPU codecs are
-  open *(open to you, section 8)*.
+  records is in (smaller files, slower CPU decode), and since 2026-11-21 nvCOMP and NVDEC against WNR3
+  and WNR4 on one GPU (nvCOMP-ANS: larger files, much faster decode); whole checkpoints, other CPUs and
+  other GPUs are open *(open to you, section 8)*.
+- **WNR4:** a research draft of a successor of WNR3 (kinds MX, NV and GG; WEX4 codec 8 as a draft), in
+  no production container and no engine. Its engine integration was analysed on 2026-11-21 and not done
+  ([report, section 8](reports/wnr4-research-20261121.md#8-later-on-2026-11-21-engine-decision-kind-gg-int4-g64));
+  the codec work left is open *(open to you, section 8)*.
 - **A first tagged release** of the specifications (WEX4 4.0, WNR3 v1) with the conformance vectors, so
   other implementations can name the version they pass.
 

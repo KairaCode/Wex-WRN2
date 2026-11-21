@@ -2,7 +2,8 @@
  * Copyright 2026 Ludovico Zanichelli */
 /* WNR4 CUDA helper (prototype, separate from c/tools/wex_cuda_bridge.cu): model registry and batched decode
  * straight into caller-owned device buffers. Per batch: one upload of its records, one kernel launch for
- * every tile of every record, one copy of the error words back.
+ * every tile of every record (kind GG: plus one launch that copies the verbatim slices), one copy of the
+ * error words back.
  *   nvcc -O3 -std=c++17 -arch=sm_120 -shared wnr4/tools/wnr4_cuda_bridge.cu -o wnr4_cuda.dll
  * geo = u32[13]: kind, scount[3], scols[3], soff[3], woff[3] (wnr4_geo).
  * Asynchronous use: wnr4_cuda_batch_submit() enqueues a batch and returns a ticket; up to WNR4_CUDA_SLOTS
@@ -10,8 +11,13 @@
  * submitted it) with wnr4_cuda_batch_wait(), and the record buffers must stay valid and unchanged until then.
  * The helper's own streams (stream == NULL) are non-blocking: they are not ordered after work the caller
  * queued on the legacy default stream; synchronise first, or pass your own stream.
- * Every call leaves the caller's current CUDA device as it found it. */
+ * Every call leaves the caller's current CUDA device as it found it.
+ * Kind GG (GGUF Q2_0 / IQ4_NL slices, wnr4/wnr4_gg.h): wnr4_cuda_gg_register_model(), then
+ * wnr4_cuda_gg_batch_submit() (waited for with wnr4_cuda_batch_wait(), same slots) or the synchronous
+ * wnr4_cuda_gg_decode_batch(). The geometry (nseg, types[], bytes[]) is the same for every record of a batch;
+ * each record decodes to its whole slab at dst[i] (device, any alignment), verbatim slices copied there too. */
 #include "../wnr4_cuda.cuh"
+#include "../wnr4_gg_cuda.cuh"
 #include <mutex>
 #include <vector>
 
@@ -29,6 +35,7 @@
 
 namespace {
 struct Model { Wnr4Model host; int device; unsigned char *dev; Wnr4CudaTables tab; };
+struct GgModel { Wnr4GgModel host; int device; unsigned char *dev; };
 template<typename T> bool grow_dev(T *&p, size_t &cap, size_t n) {
     if (n <= cap) return true;
     if (p) cudaFree(p);
@@ -48,6 +55,8 @@ struct Slot {
     Wnr4CudaJob *djob = nullptr, *hjob = nullptr; size_t djob_cap = 0, hjob_cap = 0;
     Wnr4CudaRec *dinfo = nullptr, *hinfo = nullptr; size_t dinfo_cap = 0, hinfo_cap = 0;
     uint32_t *derr = nullptr, *herr = nullptr; size_t derr_cap = 0, herr_cap = 0;
+    Wnr4GgCudaJob *dgjob = nullptr, *hgjob = nullptr; size_t dgjob_cap = 0, hgjob_cap = 0;   /* kind GG */
+    Wnr4GgCudaCopy *dcopy = nullptr, *hcopy = nullptr; size_t dcopy_cap = 0, hcopy_cap = 0;
     cudaEvent_t done = nullptr;
     cudaStream_t own = nullptr;   /* this slot's stream when the caller gives none: batches in flight overlap */
     std::vector<int> status;      /* host-side verdicts before the GPU (0 = queued) */
@@ -62,6 +71,10 @@ struct Slot {
         if (hjob) cudaFreeHost(hjob);
         if (hinfo) cudaFreeHost(hinfo);
         if (herr) cudaFreeHost(herr);
+        if (dgjob) cudaFree(dgjob);
+        if (dcopy) cudaFree(dcopy);
+        if (hgjob) cudaFreeHost(hgjob);
+        if (hcopy) cudaFreeHost(hcopy);
         if (done) cudaEventDestroy(done);
         if (own) cudaStreamDestroy(own);
         (void)cudaGetLastError();
@@ -96,15 +109,38 @@ struct DeviceGuard {   /* restores the caller's current device */
 };
 std::mutex lock_models;
 std::vector<Model *> models;
+std::vector<GgModel *> gg_models;
 thread_local Rings rings;
 
-Model *find_locked(uint32_t id, int device) {
-    for (Model *m : models) if (m->host.id == id && m->device == device) return m;
+template<typename M> M *find_locked(const std::vector<M *> &list, uint32_t id, int device) {
+    for (M *m : list) if (m->host.id == id && m->device == device) return m;
     return nullptr;
 }
-Model *find(uint32_t id, int device) {
+template<typename M> M *find(const std::vector<M *> &list, uint32_t id, int device) {
     std::lock_guard<std::mutex> g(lock_models);
-    return find_locked(id, device);
+    return find_locked(list, id, device);
+}
+/* The calling thread's next slot on `device` (already current): 0 and *out, *ticket, or WNR4_E_BUSY / WNR4_E_CUDA. */
+int take_slot(int device, Slot **out, int *ticket) {
+    Ring *R = rings.get(device);
+    *ticket = (int)(rings.next & 0x7fffffffu);
+    Slot &s = R->slot[(unsigned)*ticket % WNR4_CUDA_SLOTS];
+    if (s.busy) return WNR4_E_BUSY;   /* never drop verdicts the caller has not read */
+    if (!s.done && cudaEventCreateWithFlags(&s.done, cudaEventDisableTiming) != cudaSuccess) { (void)cudaGetLastError(); s.done = nullptr; return WNR4_E_CUDA; }
+    if (!s.own && cudaStreamCreateWithFlags(&s.own, cudaStreamNonBlocking) != cudaSuccess) { (void)cudaGetLastError(); s.own = nullptr; return WNR4_E_CUDA; }
+    *out = &s;
+    return 0;
+}
+/* After a batch's work was queued on st (e = the first error): the error words back, the event, the slot busy. */
+int close_slot(Slot &s, cudaError_t e, int n, cudaStream_t st, int ticket) {
+    if (e == cudaSuccess) e = cudaMemcpyAsync(s.herr, s.derr, 4u * (size_t)n, cudaMemcpyDeviceToHost, st);
+    /* the event is recorded even after a failed step, so wait always waits for what was queued */
+    cudaError_t ev = cudaEventRecord(s.done, st);
+    s.broken = e != cudaSuccess || ev != cudaSuccess;   /* every queued record then reports 1 */
+    if (s.broken) (void)cudaGetLastError();
+    s.busy = true; s.ticket = ticket;
+    rings.next++;
+    return ticket;
 }
 int finish(Slot &s, int *status) {   /* waits for the slot's batch and writes the verdicts */
     int n = (int)s.status.size(), bad = 0;
@@ -121,7 +157,7 @@ int finish(Slot &s, int *status) {   /* waits for the slot's batch and writes th
 }
 }
 
-WNR4_API unsigned int wnr4_cuda_abi(void) { return 4u; }
+WNR4_API unsigned int wnr4_cuda_abi(void) { return 5u; }   /* 5: kind GG entry points */
 
 /* Validates the WNM4 blob and uploads its tables to `device`. 0 ok (also when already registered),
  * -1 invalid blob, 1 CUDA error. */
@@ -130,7 +166,7 @@ WNR4_API int wnr4_cuda_register_model(const unsigned char *blob, size_t bytes, i
     Model *m = new Model();
     if (wnr4_model_open(blob, bytes, &m->host)) { delete m; return -1; }
     std::lock_guard<std::mutex> g(lock_models);   /* find and insert under one lock */
-    if (find_locked(m->host.id, device)) { wnr4_model_free(&m->host); delete m; return 0; }
+    if (find_locked(models, m->host.id, device)) { wnr4_model_free(&m->host); delete m; return 0; }
     std::vector<unsigned char> img(wnr4_cuda_table_bytes(&m->host));
     wnr4_cuda_table_image(&m->host, img.data());
     m->device = device; m->dev = nullptr;
@@ -156,16 +192,14 @@ WNR4_API int wnr4_cuda_batch_submit(int n, const uint32_t *geo, const unsigned c
     Wnr4Geo g;
     if (n <= 0 || !geo || !records || !totals || !owners || !dst_scale || !dst_weight ||
         wnr4_geo(&g, geo[0], geo + 1, geo + 4, geo + 7, geo + 10)) return WNR4_E_ARGS;
-    Model *m = find(model_id, device);
+    Model *m = find(models, model_id, device);
     if (!m) return WNR4_E_MODEL;
     DeviceGuard guard;
     if (cudaSetDevice(device) != cudaSuccess) { (void)cudaGetLastError(); return WNR4_E_CUDA; }
-    Ring *R = rings.get(device);
-    const int ticket = (int)(rings.next & 0x7fffffffu);
-    Slot &s = R->slot[(unsigned)ticket % WNR4_CUDA_SLOTS];
-    if (s.busy) return WNR4_E_BUSY;   /* never drop verdicts the caller has not read */
-    if (!s.done && cudaEventCreateWithFlags(&s.done, cudaEventDisableTiming) != cudaSuccess) { (void)cudaGetLastError(); s.done = nullptr; return WNR4_E_CUDA; }
-    if (!s.own && cudaStreamCreateWithFlags(&s.own, cudaStreamNonBlocking) != cudaSuccess) { (void)cudaGetLastError(); s.own = nullptr; return WNR4_E_CUDA; }
+    Slot *sp = nullptr;
+    int ticket = 0, busy = take_slot(device, &sp, &ticket);
+    if (busy) return busy;
+    Slot &s = *sp;
     cudaStream_t st = stream ? (cudaStream_t)stream : s.own;
     size_t bytes = 0;
     std::vector<size_t> at((size_t)n);
@@ -197,14 +231,7 @@ WNR4_API int wnr4_cuda_batch_submit(int n, const uint32_t *geo, const unsigned c
     if (e == cudaSuccess && !jobs.empty()) e = cudaMemcpyAsync(s.djob, s.hjob, sizeof(Wnr4CudaJob) * jobs.size(), cudaMemcpyHostToDevice, st);
     if (e == cudaSuccess) e = cudaMemsetAsync(s.derr, 0, 4u * (size_t)n, st);
     if (e == cudaSuccess) e = wnr4_cuda_launch(m->tab, s.djob, (uint32_t)jobs.size(), s.dinfo, s.derr, st);
-    if (e == cudaSuccess) e = cudaMemcpyAsync(s.herr, s.derr, 4u * (size_t)n, cudaMemcpyDeviceToHost, st);
-    /* the event is recorded even after a failed step, so wait always waits for what was queued */
-    cudaError_t ev = cudaEventRecord(s.done, st);
-    s.broken = e != cudaSuccess || ev != cudaSuccess;   /* every queued record then reports 1 */
-    if (s.broken) (void)cudaGetLastError();
-    s.busy = true; s.ticket = ticket;
-    rings.next++;
-    return ticket;
+    return close_slot(s, e, n, st, ticket);
 }
 
 /* Waits for a submitted batch and writes status[i]: 0 decoded, -1 invalid record or failed integrity
@@ -232,6 +259,96 @@ WNR4_API int wnr4_cuda_decode_batch(int n, const uint32_t *geo, const unsigned c
     if (n <= 0) return 0;
     if (!status) return n;
     int t = wnr4_cuda_batch_submit(n, geo, records, totals, owners, model_id, device, dst_scale, dst_weight, nullptr);
+    if (t < 0) {
+        const int v = t == WNR4_E_ARGS ? -1 : 1;
+        for (int i = 0; i < n; i++) status[i] = v;
+        return n;
+    }
+    return wnr4_cuda_batch_wait(t, status);
+}
+
+/* ---- kind GG ------------------------------------------------------------------ */
+/* Validates the WNM4 kind-2 blob and uploads its tables to `device`, as wnr4_cuda_register_model(): 0 ok
+ * (also when already registered) and *id = the model id, -1 invalid blob, 1 CUDA error (*id = 0 on -1 and 1; 0 is never a model id). */
+WNR4_API int wnr4_cuda_gg_register_model(const unsigned char *blob, size_t bytes, int device, uint32_t *id) {
+    DeviceGuard guard;
+    if (id) *id = 0;   /* never a valid model id */
+    GgModel *m = new GgModel();
+    if (wnr4_gg_model_open(blob, bytes, &m->host)) { delete m; return -1; }
+    const uint32_t mid = m->host.id;
+    std::lock_guard<std::mutex> g(lock_models);   /* find and insert under one lock */
+    if (find_locked(gg_models, mid, device)) { wnr4_gg_model_free(&m->host); delete m; if (id) *id = mid; return 0; }
+    std::vector<unsigned char> img(wnr4_gg_cuda_table_bytes());
+    wnr4_gg_cuda_table_image(&m->host, img.data());
+    m->device = device; m->dev = nullptr;
+    if (cudaSetDevice(device) != cudaSuccess || cudaMalloc(&m->dev, img.size()) != cudaSuccess ||
+        cudaMemcpy(m->dev, img.data(), img.size(), cudaMemcpyHostToDevice) != cudaSuccess) {
+        (void)cudaGetLastError();
+        if (m->dev) cudaFree(m->dev);
+        wnr4_gg_model_free(&m->host); delete m; return 1;
+    }
+    gg_models.push_back(m);
+    if (id) *id = mid;
+    return 0;
+}
+
+/* Enqueues n records of one geometry (nseg slices of ggml types[] and sizes bytes[]; records[i]: totals[i]
+ * bytes of page-locked host memory) for decoding into dst[i] (device, the record's whole decoded slab) on
+ * `stream` (NULL = the slot's own non-blocking stream). Returns a ticket for wnr4_cuda_batch_wait(), or
+ * WNR4_E_ARGS, WNR4_E_MODEL, WNR4_E_CUDA (nothing queued) or WNR4_E_BUSY, as wnr4_cuda_batch_submit(). */
+WNR4_API int wnr4_cuda_gg_batch_submit(int n, uint32_t nseg, const uint32_t *types, const uint32_t *bytes,
+                                       const unsigned char *const *records, const size_t *totals, const uint32_t *owners,
+                                       uint32_t model_id, int device, unsigned char *const *dst, void *stream) {
+    Wnr4GgGeo g;
+    if (n <= 0 || !types || !bytes || !records || !totals || !owners || !dst || wnr4_gg_geo(&g, nseg, types, bytes))
+        return WNR4_E_ARGS;
+    GgModel *m = find(gg_models, model_id, device);
+    if (!m) return WNR4_E_MODEL;
+    DeviceGuard guard;
+    if (cudaSetDevice(device) != cudaSuccess) { (void)cudaGetLastError(); return WNR4_E_CUDA; }
+    Slot *sp = nullptr;
+    int ticket = 0, busy = take_slot(device, &sp, &ticket);
+    if (busy) return busy;
+    Slot &s = *sp;
+    cudaStream_t st = stream ? (cudaStream_t)stream : s.own;
+    size_t all = 0, max_copy = 0;
+    std::vector<size_t> at((size_t)n);
+    for (int i = 0; i < n; i++) { at[(size_t)i] = all; all += (totals[i] + 255u) & ~(size_t)255u; }
+    if (!grow_dev(s.drec, s.drec_cap, all) || !grow_dev(s.derr, s.derr_cap, (size_t)n) ||
+        !grow_host(s.herr, s.herr_cap, (size_t)n)) return WNR4_E_CUDA;
+    s.status.assign((size_t)n, -1);
+    std::vector<Wnr4GgCudaJob> by_sub[2], jobs;
+    std::vector<Wnr4GgCudaCopy> copies;
+    for (int i = 0; i < n; i++)
+        if (records[i] && dst[i] && !wnr4_gg_cuda_plan(&g, &m->host, records[i], totals[i], owners[i], s.drec + at[(size_t)i],
+                                                       (uint32_t)i, dst[i], by_sub, copies))
+            s.status[(size_t)i] = 0;
+    const uint32_t W = wnr4_gg_cuda_jobs(by_sub, jobs);
+    if (!grow_dev(s.dgjob, s.dgjob_cap, jobs.size() + 1u) || !grow_host(s.hgjob, s.hgjob_cap, jobs.size() + 1u) ||
+        !grow_dev(s.dcopy, s.dcopy_cap, copies.size() + 1u) || !grow_host(s.hcopy, s.hcopy_cap, copies.size() + 1u))
+        return WNR4_E_CUDA;
+    if (!jobs.empty()) memcpy(s.hgjob, jobs.data(), sizeof(Wnr4GgCudaJob) * jobs.size());
+    if (!copies.empty()) memcpy(s.hcopy, copies.data(), sizeof(Wnr4GgCudaCopy) * copies.size());
+    for (auto &c : copies) max_copy = c.bytes > max_copy ? c.bytes : max_copy;
+    cudaError_t e = cudaSuccess;
+    for (int i = 0; i < n && e == cudaSuccess; i++)
+        if (!s.status[(size_t)i]) e = cudaMemcpyAsync(s.drec + at[(size_t)i], records[i], totals[i], cudaMemcpyHostToDevice, st);
+    if (e == cudaSuccess && !jobs.empty()) e = cudaMemcpyAsync(s.dgjob, s.hgjob, sizeof(Wnr4GgCudaJob) * jobs.size(), cudaMemcpyHostToDevice, st);
+    if (e == cudaSuccess && !copies.empty()) e = cudaMemcpyAsync(s.dcopy, s.hcopy, sizeof(Wnr4GgCudaCopy) * copies.size(), cudaMemcpyHostToDevice, st);
+    if (e == cudaSuccess) e = cudaMemsetAsync(s.derr, 0, 4u * (size_t)n, st);
+    if (e == cudaSuccess) e = wnr4_gg_cuda_launch(m->dev, m->host.id, s.dgjob, (uint32_t)jobs.size(), W, s.derr, st);
+    if (e == cudaSuccess) e = wnr4_gg_cuda_copy(s.dcopy, (uint32_t)copies.size(), max_copy, st);
+    return close_slot(s, e, n, st, ticket);
+}
+
+/* Synchronous GG batch: status[i] and the return value as wnr4_cuda_decode_batch() (the number of records with
+ * status != 0; when the batch could not be queued, n with every status -1 for bad arguments or geometry, else 1). */
+WNR4_API int wnr4_cuda_gg_decode_batch(int n, uint32_t nseg, const uint32_t *types, const uint32_t *bytes,
+                                       const unsigned char *const *records, const size_t *totals, const uint32_t *owners,
+                                       uint32_t model_id, int device, unsigned char *const *dst, int *status) {
+    if (n <= 0) return 0;
+    if (!status) return n;
+    int t = wnr4_cuda_gg_batch_submit(n, nseg, types, bytes, records, totals, owners, model_id, device, dst, nullptr);
     if (t < 0) {
         const int v = t == WNR4_E_ARGS ? -1 : 1;
         for (int i = 0; i < n; i++) status[i] = v;

@@ -1,0 +1,41 @@
+group of 80 records, G 32: CPU encode + decode OK, stored/raw 0.9542 (all records, odd and even)
+group of 16 records, G 32: CPU encode + decode OK, stored/raw 0.9612 (all records, odd and even)
+group of 21 records, G 3: CPU encode + decode OK, stored/raw 1.0000 (all records, odd and even)
+group of 21 records, G 1: CPU encode + decode OK, stored/raw 1.0000 (all records, odd and even)
+model id 0x02cfe5d4 registered
+real: 80 records, G 32, 1305600 B each (460800 coded), sync batches of 32: bit-exact 80/80
+  async batches of 16 (2 in flight): failures 0, bit-exact with status 0 80/80
+  one payload bit flipped in each odd record: refused 40/40, the even ones bit-exact with status 0 40/40
+real: 16 records, G 32, 1510400 B each (460800 coded), sync batches of 32: bit-exact 16/16
+  async batches of 16 (2 in flight): failures 0, bit-exact with status 0 16/16
+  one payload bit flipped in each odd record: refused 8/8, the even ones bit-exact with status 0 8/8
+synthetic: 21 records, G 3, 22853 B each (18756 coded), sync batches of 32: bit-exact 21/21
+  async batches of 16 (2 in flight): failures 0, bit-exact with status 0 21/21
+  one payload bit flipped in each odd record: refused 10/10, the even ones bit-exact with status 0 11/11
+synthetic: 21 records, G 1, 39 B each (36 coded), sync batches of 32: bit-exact 21/21
+  async batches of 16 (2 in flight): failures 0, bit-exact with status 0 21/21
+  one payload bit flipped in each odd record: refused 10/10, the even ones bit-exact with status 0 11/11
+synthetic, 8 warps/block: 21 records, G 3, 22853 B each (18756 coded), sync batches of 32: bit-exact 21/21
+  async batches of 16 (2 in flight): failures 0, bit-exact with status 0 21/21
+  one payload bit flipped in each odd record: refused 10/10, the even ones bit-exact with status 0 11/11
+synthetic, 8 warps/block: 21 records, G 1, 39 B each (36 coded), sync batches of 32: bit-exact 21/21
+  async batches of 16 (2 in flight): failures 0, bit-exact with status 0 21/21
+  one payload bit flipped in each odd record: refused 10/10, the even ones bit-exact with status 0 11/11
+synthetic, 16 warps/block: 21 records, G 3, 22853 B each (18756 coded), sync batches of 32: bit-exact 21/21
+  async batches of 16 (2 in flight): failures 0, bit-exact with status 0 21/21
+  one payload bit flipped in each odd record: refused 10/10, the even ones bit-exact with status 0 11/11
+synthetic, 16 warps/block: 21 records, G 1, 39 B each (36 coded), sync batches of 32: bit-exact 21/21
+  async batches of 16 (2 in flight): failures 0, bit-exact with status 0 21/21
+  one payload bit flipped in each odd record: refused 10/10, the even ones bit-exact with status 0 11/11
+one unused word in a tile -> -1, wrong owner -> -1, unknown model -> 1, bad geometry -> -1, no status array -> n: OK
+kernel only, records resident in VRAM, L2 (96 MiB) flushed before each run (G 32, 460800 coded + 844800 verbatim B per record, median of 20):
+  batch  1:   25 tiles,  4 warps/block: decode 0.224 ms =    2.1 GB/s of coded slices; with the verbatim copy 0.234 ms =    5.6 GB/s of records; bit-exact 1/1
+  batch  8:  200 tiles,  4 warps/block: decode 0.227 ms =   16.3 GB/s of coded slices; with the verbatim copy 0.247 ms =   42.3 GB/s of records; bit-exact 8/8
+  batch 16:  400 tiles,  4 warps/block: decode 0.234 ms =   31.5 GB/s of coded slices; with the verbatim copy 0.265 ms =   78.8 GB/s of records; bit-exact 16/16
+  batch 32:  800 tiles,  4 warps/block: decode 0.259 ms =   57.0 GB/s of coded slices; with the verbatim copy 0.314 ms =  133.0 GB/s of records; bit-exact 32/32
+kernel only, records resident in VRAM, L2 (96 MiB) flushed before each run (G 128, 460800 coded + 844800 verbatim B per record, median of 20):
+  batch  1:    7 tiles,  4 warps/block: decode 0.861 ms =    0.5 GB/s of coded slices; with the verbatim copy 0.872 ms =    1.5 GB/s of records; bit-exact 1/1
+  batch  8:   56 tiles,  4 warps/block: decode 0.869 ms =    4.2 GB/s of coded slices; with the verbatim copy 0.890 ms =   11.7 GB/s of records; bit-exact 8/8
+  batch 16:  112 tiles,  4 warps/block: decode 0.874 ms =    8.4 GB/s of coded slices; with the verbatim copy 0.906 ms =   23.0 GB/s of records; bit-exact 16/16
+  batch 32:  224 tiles,  4 warps/block: decode 0.875 ms =   16.8 GB/s of coded slices; with the verbatim copy 0.931 ms =   44.9 GB/s of records; bit-exact 32/32
+all GG checks passed
