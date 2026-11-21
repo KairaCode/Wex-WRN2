@@ -1,0 +1,60 @@
+device NVIDIA GeForce RTX 5090, 170 SMs; pack out/packsG/G256/q38nv.pack: 64 records, kind NV, G 256, raw 2764800 B
+stored/raw: WNR4 0.92354
+WNR4 GPU bit-exact: 64 of 64 records (1344 jobs)
+WNR4 GPU single-bit flips (one per record, payload bytes; header and offsets are checked on the host): 64 of 64 rejected
+WNR4 kernel only (records in VRAM), row_find, warps/block 4, rows shared, median of 5:
+  batch    1:    1.829 ms      1.5 GB/s  (24 warps)
+  batch    2:    1.843 ms      3.0 GB/s  (48 warps)
+  batch    4:    1.856 ms      6.0 GB/s  (84 warps)
+  batch    8:    1.854 ms     11.9 GB/s  (168 warps)
+  batch   16:    1.925 ms     23.0 GB/s  (336 warps)
+  batch   32:    2.197 ms     40.3 GB/s  (672 warps)
+  batch   64:    4.367 ms     40.5 GB/s  (1344 warps)
+WNR4 kernel only (records in VRAM), LD lookup, warps/block 4, rows shared, median of 5:
+  batch    1:    1.773 ms      1.6 GB/s  (24 warps)
+  batch    2:    1.772 ms      3.1 GB/s  (48 warps)
+  batch    4:    1.781 ms      6.2 GB/s  (84 warps)
+  batch    8:    1.783 ms     12.4 GB/s  (168 warps)
+  batch   16:    1.847 ms     24.0 GB/s  (336 warps)
+  batch   32:    2.139 ms     41.4 GB/s  (672 warps)
+  batch   64:    4.243 ms     41.7 GB/s  (1344 warps)
+WNR4 kernel only (records in VRAM), LD lookup, warps/block 8, rows shared, median of 5:
+  batch    1:    1.858 ms      1.5 GB/s  (24 warps)
+  batch    2:    1.891 ms      2.9 GB/s  (48 warps)
+  batch    4:    1.880 ms      5.9 GB/s  (96 warps)
+  batch    8:    1.885 ms     11.7 GB/s  (168 warps)
+  batch   16:    1.928 ms     22.9 GB/s  (336 warps)
+  batch   32:    2.227 ms     39.7 GB/s  (672 warps)
+  batch   64:    2.239 ms     79.0 GB/s  (1344 warps)
+WNR4 kernel only (records in VRAM), LD lookup, warps/block 16, rows shared, median of 5:
+  batch    1:    1.848 ms      1.5 GB/s  (48 warps)
+  batch    2:    2.112 ms      2.6 GB/s  (48 warps)
+  batch    4:    2.150 ms      5.1 GB/s  (96 warps)
+  batch    8:    2.158 ms     10.2 GB/s  (192 warps)
+  batch   16:    2.184 ms     20.3 GB/s  (336 warps)
+  batch   32:    2.421 ms     36.5 GB/s  (672 warps)
+  batch   64:    2.426 ms     72.9 GB/s  (1344 warps)
+WNR4 kernel only (records in VRAM), LD lookup, warps/block 16, rows L1, median of 5:
+  batch    1:    1.858 ms      1.5 GB/s  (48 warps)
+  batch    2:    2.162 ms      2.6 GB/s  (48 warps)
+  batch    4:    2.215 ms      5.0 GB/s  (96 warps)
+  batch    8:    2.248 ms      9.8 GB/s  (192 warps)
+  batch   16:    2.252 ms     19.6 GB/s  (336 warps)
+  batch   32:    2.484 ms     35.6 GB/s  (672 warps)
+  batch   64:    2.481 ms     71.3 GB/s  (1344 warps)
+WNR4 kernel only (records in VRAM), LD lookup, warps/block auto, rows auto, median of 5:
+  batch    1:    1.788 ms      1.5 GB/s  (24 warps)
+  batch    2:    1.792 ms      3.1 GB/s  (48 warps)
+  batch    4:    1.783 ms      6.2 GB/s  (84 warps)
+  batch    8:    1.779 ms     12.4 GB/s  (168 warps)
+  batch   16:    1.846 ms     24.0 GB/s  (336 warps)
+  batch   32:    2.158 ms     41.0 GB/s  (672 warps)
+  batch   64:    2.229 ms     79.4 GB/s  (1344 warps)
+WNR4 GPU bit-exact (defaults: LD, auto block size): 64 of 64 records
+WNR4 end to end from page-locked host (plan + upload + decode), whole pack:
+  batch   1:    69.48 ms for 64 records      2.5 GB/s decoded (2.4 GB/s read)
+  batch   4:    19.67 ms for 64 records      9.0 GB/s decoded (8.3 GB/s read)
+  batch   8:    11.09 ms for 64 records     16.0 GB/s decoded (14.7 GB/s read)
+  batch  16:     6.91 ms for 64 records     25.6 GB/s decoded (23.7 GB/s read)
+  batch  32:     6.00 ms for 64 records     29.5 GB/s decoded (27.2 GB/s read)
+done

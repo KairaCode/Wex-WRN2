@@ -1,0 +1,68 @@
+device NVIDIA GeForce RTX 5090, 170 SMs; pack out/packs3/v41.pack: 32 records, kind MX, G 128, raw 18800640 B
+stored/raw: WNR4 0.84843, WNR3 0.85359
+WNR4 GPU bit-exact: 32 of 32 records (8640 jobs)
+WNR4 GPU single-bit flips (one per record, payload bytes; header and offsets are checked on the host): 32 of 32 rejected
+WNR4 kernel only (records in VRAM), row_find, warps/block 4, rows shared, median of 5:
+  batch    1:    0.779 ms     24.1 GB/s  (276 warps)
+  batch    2:    1.031 ms     36.5 GB/s  (540 warps)
+  batch    4:    1.009 ms     74.5 GB/s  (1080 warps)
+  batch    8:    1.941 ms     77.5 GB/s  (2160 warps)
+  batch   16:    4.119 ms     73.0 GB/s  (4320 warps)
+  batch   32:    7.814 ms     77.0 GB/s  (8640 warps)
+WNR4 kernel only (records in VRAM), LD lookup, warps/block 4, rows shared, median of 5:
+  batch    1:    0.740 ms     25.4 GB/s  (276 warps)
+  batch    2:    0.768 ms     49.0 GB/s  (540 warps)
+  batch    4:    0.929 ms     81.0 GB/s  (1080 warps)
+  batch    8:    1.823 ms     82.5 GB/s  (2160 warps)
+  batch   16:    3.599 ms     83.6 GB/s  (4320 warps)
+  batch   32:    6.241 ms     96.4 GB/s  (8640 warps)
+WNR4 kernel only (records in VRAM), LD lookup, warps/block 8, rows shared, median of 5:
+  batch    1:    0.770 ms     24.4 GB/s  (288 warps)
+  batch    2:    0.772 ms     48.7 GB/s  (552 warps)
+  batch    4:    0.919 ms     81.8 GB/s  (1080 warps)
+  batch    8:    1.052 ms    142.9 GB/s  (2160 warps)
+  batch   16:    2.373 ms    126.8 GB/s  (4320 warps)
+  batch   32:    4.290 ms    140.2 GB/s  (8640 warps)
+WNR4 kernel only (records in VRAM), LD lookup, warps/block 16, rows shared, median of 5:
+  batch    1:    0.938 ms     20.0 GB/s  (288 warps)
+  batch    2:    1.174 ms     32.0 GB/s  (576 warps)
+  batch    4:    1.017 ms     74.0 GB/s  (1104 warps)
+  batch    8:    1.031 ms    145.9 GB/s  (2160 warps)
+  batch   16:    1.592 ms    188.9 GB/s  (4320 warps)
+  batch   32:    3.247 ms    185.3 GB/s  (8640 warps)
+WNR4 kernel only (records in VRAM), LD lookup, warps/block 16, rows L1, median of 5:
+  batch    1:    0.988 ms     19.0 GB/s  (288 warps)
+  batch    2:    0.964 ms     39.0 GB/s  (576 warps)
+  batch    4:    1.061 ms     70.9 GB/s  (1104 warps)
+  batch    8:    1.076 ms    139.7 GB/s  (2160 warps)
+  batch   16:    1.656 ms    181.7 GB/s  (4320 warps)
+  batch   32:    3.364 ms    178.8 GB/s  (8640 warps)
+WNR4 kernel only (records in VRAM), LD lookup, warps/block auto, rows auto, median of 5:
+  batch    1:    0.749 ms     25.1 GB/s  (276 warps)
+  batch    2:    0.734 ms     51.2 GB/s  (540 warps)
+  batch    4:    0.916 ms     82.1 GB/s  (1080 warps)
+  batch    8:    1.048 ms    143.6 GB/s  (2160 warps)
+  batch   16:    1.600 ms    188.0 GB/s  (4320 warps)
+  batch   32:    3.256 ms    184.8 GB/s  (8640 warps)
+WNR4 GPU bit-exact (defaults: LD, auto block size): 32 of 32 records
+WNR4 end to end from page-locked host (plan + upload + decode), whole pack:
+  batch   1:    23.23 ms for 32 records     25.9 GB/s decoded (22.0 GB/s read)
+  batch   4:    12.63 ms for 32 records     47.6 GB/s decoded (40.4 GB/s read)
+  batch   8:    12.41 ms for 32 records     48.5 GB/s decoded (41.1 GB/s read)
+  batch  16:    12.61 ms for 32 records     47.7 GB/s decoded (40.5 GB/s read)
+  batch  32:    15.62 ms for 32 records     38.5 GB/s decoded (32.7 GB/s read)
+WNR3 production batch: 32 of 32 records bit-exact (failures reported 0)
+WNR3 production helper batch (upload included), whole pack:
+  batch   1:    27.22 ms     22.1 GB/s decoded
+  batch   4:    17.50 ms     34.4 GB/s decoded
+  batch   8:    15.72 ms     38.3 GB/s decoded
+  batch  16:    14.72 ms     40.9 GB/s decoded
+  batch  32:    14.43 ms     41.7 GB/s decoded
+WNR3 kernels only (records in VRAM; scales + weights kernels per record, 8 streams), median of 5:
+  batch    1:    0.664 ms     28.3 GB/s
+  batch    2:    0.784 ms     48.0 GB/s
+  batch    4:    1.235 ms     60.9 GB/s
+  batch    8:    1.677 ms     89.7 GB/s
+  batch   16:    2.912 ms    103.3 GB/s
+  batch   32:    5.337 ms    112.7 GB/s
+done

@@ -1,0 +1,22 @@
+{
+ "dataset": "q38mx",
+ "cz": true,
+ "pb": 5,
+ "train": 256,
+ "test": 128,
+ "raw_bytes": 334233600,
+ "wnm4_id": "c9ccfd2e",
+ "fails": [],
+ "wnr4": {
+  "128": {
+   "stored": 292630528,
+   "ratio": 0.8755269607843137,
+   "max_record": 2355200
+  }
+ },
+ "wnr3_same_train": {
+  "stored": 294518784,
+  "ratio": 0.8811764705882353
+ },
+ "seconds": 15.507962226867676
+}

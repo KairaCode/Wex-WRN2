@@ -1,0 +1,26 @@
+{
+ "model": "Edge0/Edge0-145B-NVFP4",
+ "format": "nvfp4",
+ "experts": 64,
+ "raw_bytes": 1935360,
+ "folds": 2,
+ "pb": 5,
+ "configs": {
+  "byte-exact G=32": {
+   "ratio": 0.931553911205074,
+   "fails": 0
+  },
+  "byte-exact G=128": {
+   "ratio": 0.9291094080338267,
+   "fails": 0
+  },
+  "CZ G=32": {
+   "ratio": 0.9162592494714588,
+   "fails": 0
+  },
+  "CZ G=128": {
+   "ratio": 0.9139468816067653,
+   "fails": 0
+  }
+ }
+}

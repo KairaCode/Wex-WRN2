@@ -1,0 +1,10 @@
+  mx-plain fuzz: 3000 trials, 3000 refused, 0 no-op, 0 accepted (all identical)
+mx-plain: kind MX pb 1 cz 0 ceil mask 0, 7 G values OK
+  mx-cz-ceil fuzz: 3000 trials, 3000 refused, 0 no-op, 0 accepted (all identical)
+mx-cz-ceil: kind MX pb 5 cz 1 ceil mask 7, 7 G values OK
+  nv-plain fuzz: 3000 trials, 3000 refused, 0 no-op, 0 accepted (all identical)
+nv-plain: kind NV pb 1 cz 0 ceil mask 0, 7 G values OK
+  nv-cz-pb5 fuzz: 3000 trials, 3000 refused, 0 no-op, 0 accepted (all identical)
+nv-cz-pb5: kind NV pb 5 cz 1 ceil mask 0, 7 G values OK
+negative cases done
+ALL OK

@@ -1,0 +1,23 @@
+helper on out/packs3/q38mx.pack: 128 records, 2611200 B each
+  batch   1:  170.10 ms for 128 records,    2.0 GB/s decoded, bit-exact 128/128
+  batch   2:   93.53 ms for 128 records,    3.6 GB/s decoded, bit-exact 128/128
+  batch   4:   50.40 ms for 128 records,    6.6 GB/s decoded, bit-exact 128/128
+  batch   8:   27.94 ms for 128 records,   12.0 GB/s decoded, bit-exact 128/128
+  batch  16:   16.77 ms for 128 records,   19.9 GB/s decoded, bit-exact 128/128
+  batch  32:   11.15 ms for 128 records,   30.0 GB/s decoded, bit-exact 128/128
+  batch  64:    8.47 ms for 128 records,   39.5 GB/s decoded, bit-exact 128/128
+  batch 128:   11.85 ms for 128 records,   28.2 GB/s decoded, bit-exact 128/128
+  async batch   4 (2 in flight):   50.50 ms for 128 records,    6.6 GB/s decoded, failures 0, bit-exact 128/128
+  async batch   8 (2 in flight):   27.85 ms for 128 records,   12.0 GB/s decoded, failures 0, bit-exact 128/128
+  async batch  16 (2 in flight):   16.75 ms for 128 records,   19.9 GB/s decoded, failures 0, bit-exact 128/128
+  async batch  32 (2 in flight):   11.19 ms for 128 records,   29.9 GB/s decoded, failures 0, bit-exact 128/128
+corrupted record 3 of a batch of 8: failures 1
+  status[0] = 0
+  status[1] = 0
+  status[2] = 0
+  status[3] = -1
+  status[4] = 0
+  status[5] = 0
+  status[6] = 0
+  status[7] = 0
+unknown model -> 1, wrong owner -> -1: OK

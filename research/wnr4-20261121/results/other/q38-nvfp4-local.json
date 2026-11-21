@@ -1,0 +1,26 @@
+{
+ "model": "q38-nvfp4-local",
+ "format": "nvfp4",
+ "experts": 64,
+ "raw_bytes": 2764800,
+ "folds": 2,
+ "pb": 5,
+ "configs": {
+  "byte-exact G=32": {
+   "ratio": 0.9272685185185185,
+   "fails": 0
+  },
+  "byte-exact G=128": {
+   "ratio": 0.925,
+   "fails": 0
+  },
+  "CZ G=32": {
+   "ratio": 0.909537037037037,
+   "fails": 0
+  },
+  "CZ G=128": {
+   "ratio": 0.9072916666666667,
+   "fails": 0
+  }
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "model": "inclusionAI/Ling-3.0-flash-fp4",
+ "format": "mxfp4",
+ "experts": 64,
+ "raw_bytes": 3133440,
+ "folds": 2,
+ "pb": 5,
+ "configs": {
+  "byte-exact G=32": {
+   "ratio": 0.8910743464052288,
+   "fails": 0
+  },
+  "byte-exact G=128": {
+   "ratio": 0.889031862745098,
+   "fails": 0
+  },
+  "CZ G=32": {
+   "ratio": 0.8658700980392157,
+   "fails": 0
+  },
+  "CZ G=128": {
+   "ratio": 0.8637254901960785,
+   "fails": 0
+  }
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "model": "q38-mxfp4-local",
+ "format": "mxfp4",
+ "experts": 64,
+ "raw_bytes": 2611200,
+ "folds": 2,
+ "pb": 5,
+ "configs": {
+  "byte-exact G=32": {
+   "ratio": 0.8766163793103449,
+   "fails": 0
+  },
+  "byte-exact G=128": {
+   "ratio": 0.874657131661442,
+   "fails": 0
+  },
+  "CZ G=32": {
+   "ratio": 0.8766163793103449,
+   "fails": 0
+  },
+  "CZ G=128": {
+   "ratio": 0.874657131661442,
+   "fails": 0
+  }
+ }
+}

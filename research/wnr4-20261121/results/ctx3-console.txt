@@ -1,0 +1,94 @@
+# Console output of stats/ctx2.py (run 1) and stats/ctx3.py (runs 2-8), 2026-11-21, in run order (UTC).
+# Both print to stdout only; these lines were copied from the terminal.
+# Run 1 (ctx2.py) is in-sample: the model is counted on the records it codes, so it is a bound, not a
+# held-out number. Runs 2-8 (ctx3.py) are held out: 256 training records, other records as the test set.
+# ctx3.py grew between runs (candidates added, the NV test set changed after run 2), so a candidate can
+# differ slightly between runs: compare candidates within one run.
+# Fraction of raw = cross-entropy under 14-bit tables / raw bytes.
+# q38mx cz1 = Qwen3.8 MXFP4, canonical zero; q38nv cz0 = Qwen3.8 NVFP4, byte-exact.
+
+## run 1 (00:42, ctx2.py)
+q38nv cz0 W wnr3                   3.8929 bits/nib  0.86509 of raw
+q38nv cz0 W wnr3+pos               3.8546 bits/nib  0.85657 of raw
+q38nv cz0 W wnr3+lastpos4(mx<7)    3.8835 bits/nib  0.86300 of raw
+q38nv cz0 W M-first                3.8941 bits/nib  0.86536 of raw
+q38nv cz0 W M-first+pos            3.8586 bits/nib  0.85746 of raw
+q38nv cz0 S order0                 3.8197 bits/scale  0.05305 of raw
+q38nv cz0 S left                   3.8121 bits/scale  0.05295 of raw
+q38nv cz0 S left+dup7              3.7949 bits/scale  0.05271 of raw
+q38nv cz0 S left+up                3.7455 bits/scale  0.05202 of raw
+
+## run 2 (00:43, ctx3.py)
+q38nv cz0 W wnr3         0.86683 of raw
+q38nv cz0 W wnr3+pos     0.86590 of raw
+q38nv cz0 W wnr3+pos8    0.86684 of raw
+q38nv cz0 W wnr3+col16   0.86590 of raw
+q38nv cz0 W cls+pos      0.86808 of raw
+q38nv cz0 S order0       0.06542 of raw
+q38nv cz0 S left         0.05844 of raw
+q38nv cz0 S left+up      0.05677 of raw
+q38nv cz0 S left+dup7    0.05697 of raw
+
+## run 3 (00:45, ctx3.py)
+q38mx cz1 W wnr3         0.86691 of raw
+q38mx cz1 W wnr3+pos     0.86604 of raw
+q38mx cz1 W wnr3+pos8    0.86691 of raw
+q38mx cz1 W wnr3+col16   0.86686 of raw
+q38mx cz1 W cls+pos      0.86786 of raw
+q38mx cz1 W wnr3/layer   0.86688 of raw
+q38mx cz1 W wnr3/lgroup6 0.86684 of raw
+q38mx cz1 S left/lgroup6 0.00723 of raw
+q38mx cz1 S order0       0.00730 of raw
+q38mx cz1 S left         0.00727 of raw
+q38mx cz1 S left+up      0.00726 of raw
+q38mx cz1 S left+dup7    0.00726 of raw
+
+## run 4 (00:48, ctx3.py)
+q38nv cz0 W wnr3         0.86690 of raw
+q38nv cz0 W wnr3+pos     0.86556 of raw
+q38nv cz0 W wnr3+pos8    0.86686 of raw
+q38nv cz0 W wnr3+col16   0.86587 of raw
+q38nv cz0 W cls+pos      0.86813 of raw
+q38nv cz0 W wnr3/layer   0.86714 of raw
+q38nv cz0 W wnr3+last4   0.86598 of raw
+q38nv cz0 W wnr3+first2last2 0.86616 of raw
+q38nv cz0 W wnr3+last2(mx) 0.86617 of raw
+q38nv cz0 W wnr3/lgroup6 0.86691 of raw
+
+## run 5 (00:52, ctx3.py)
+q38nv cz0 S left/lgroup6 0.05823 of raw
+q38nv cz0 S order0       0.06527 of raw
+q38nv cz0 S up           0.05811 of raw
+q38nv cz0 S up+dul7      0.05693 of raw
+q38nv cz0 S up+dur7      0.05687 of raw
+q38nv cz0 S up+dul+dur   0.05605 of raw
+q38nv cz0 S left+dup+dul 0.05582 of raw
+q38nv cz0 S left         0.05805 of raw
+q38nv cz0 S left+up      0.05611 of raw
+q38nv cz0 S left+dup7    0.05666 of raw
+
+## run 6 (00:54, ctx3.py)
+q38nv cz0 S up           0.05830 of raw
+q38nv cz0 S up+dul7      0.05685 of raw
+q38nv cz0 S up+dur7      0.05679 of raw
+q38nv cz0 S up+dul+dur   0.05607 of raw
+q38nv cz0 S up+dul5+dur5 0.05616 of raw
+q38nv cz0 S uprel+dul+dur 0.06493 of raw
+q38nv cz0 S uprel+dul5+dur5 0.06495 of raw
+
+## run 7 (00:56, ctx3.py)
+q38nv cz0 S up+dul7      0.05695 of raw
+q38nv cz0 S up+dul+dur   0.05607 of raw
+q38nv cz0 S up+dul5+dur5 0.05628 of raw
+q38nv cz0 S delta|dul,dur,up>>3 0.05648 of raw
+q38nv cz0 S delta|dul,dur,up>>4 0.05663 of raw
+
+## run 8 (01:05, ctx3.py)
+q38nv cz0 W wnr3         0.86690 of raw
+q38nv cz0 W wnr3 R+4     0.86673 of raw
+q38nv cz0 W wnr3 R+8     0.86672 of raw
+q38nv cz0 S up+dul+dur   0.05618 of raw
+q38nv cz0 S delta|dul,dur,up>>1 0.05622 of raw
+q38nv cz0 S delta|dul,dur,up>>2 0.05620 of raw
+q38nv cz0 S delta|dul,dur,up>>3 0.05645 of raw
+q38nv cz0 S delta|dul,dur,up>>4 0.05662 of raw

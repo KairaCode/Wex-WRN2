@@ -1,0 +1,13 @@
+pack out/packs3/v41.pack: 8 records of 18800640 B, kind MX, G 128; 16 CPUs
+WNR4 CPU  1 threads:   317.1 ms/record    0.059 GB/s
+WNR4 CPU  2 threads:   163.0 ms/record    0.115 GB/s
+WNR4 CPU  4 threads:    83.5 ms/record    0.225 GB/s
+WNR4 CPU  8 threads:    47.9 ms/record    0.393 GB/s
+WNR4 CPU 16 threads:    33.5 ms/record    0.561 GB/s
+WNR4 CPU batch of 8,  1 threads:   0.060 GB/s
+WNR4 CPU batch of 8,  2 threads:   0.117 GB/s
+WNR4 CPU batch of 8,  4 threads:   0.217 GB/s
+WNR4 CPU batch of 8,  8 threads:   0.414 GB/s
+WNR4 CPU batch of 8, 16 threads:   0.545 GB/s
+WNR4 CPU batch of 8, 32 threads:   0.632 GB/s
+WNR3 CPU reference, 1 thread:   699.5 ms/record    0.027 GB/s
