@@ -20,27 +20,44 @@ import chartstyle as cs  # noqa: E402
 GB = 1e9
 
 
+# Routed-expert bytes of the published safetensors, summed from their headers by scripts/expert_bytes.py:
+# patrickbdevaney/DeepSeek-V4.1-Flash-1017-REAP192-MXFP4 @ 4ab649b2 (7,680 experts in 40 layers; the 384 MTP experts
+# have other names and are not counted) and amd/Qwen3.8-Flash-Next-Quark-MXFP4 @ b71e28af (24,576 experts).
+V41_ORIGINAL, Q38_ORIGINAL = 144_388_915_200, 64_172_851_200
+# WNR4 is not built as a whole container: the WNR3 container scaled by WNR4 / WNR3 on 2,048 held-out records
+# (research/wnr4-20261121/README.md, "Results": V4.1 0.8488 / 0.8539, Qwen3.8 MXFP4 0.8753 / 0.8809).
+V41_WNR4_EST, Q38_WNR4_EST = round(123_306_192_896 * 0.8488 / 0.8539), round(56_532_672_512 * 0.8753 / 0.8809)
+
+
 def chart_sizes(t):
-    # docs/BENCHMARKS.md, "DeepSeek V4.1 REAP-192: container sizes" and "Qwen3.8-Flash-Next MXFP4" (container row)
-    v41 = [('raw (WEX1)', 144_389_472_256, 'gray'), ('WNR2', 129_905_360_896, 'orange'),
-           ('WNR3-CZ', 123_306_192_896, 'blue')]
-    q38 = [('raw (WEX1)', 64_224_956_416, 'gray'), ('WNR3', 56_532_672_512, 'blue')]
-    h = 4.3
+    # docs/BENCHMARKS.md, "DeepSeek V4.1 REAP-192: container sizes" and "Qwen3.8-Flash-Next MXFP4" (container row);
+    # the Qwen3.8 WEX4 file size is in README.md ("Sizes of the real files").
+    v41 = [('original MXFP4 files', V41_ORIGINAL, 'muted', 'published safetensors'),
+           ('raw WEX1', 144_389_472_256, 'gray', '+557,056 B header and table'),
+           ('WNR2', 129_905_360_896, 'orange', None), ('WNR3-CZ', 123_306_192_896, 'blue', None),
+           ('WNR4 (estimate)', V41_WNR4_EST, 'aqua', None)]
+    q38 = [('original MXFP4 files', Q38_ORIGINAL, 'muted', 'published safetensors'),
+           ('raw WEX4', 64_251_047_936, 'gray', '+78.2 MB index and 4 KiB alignment'),
+           ('WNR3', 56_532_672_512, 'blue', None), ('WNR4 (estimate)', Q38_WNR4_EST, 'aqua', None)]
+    h = 5.6
     fig = cs.figure(t, h)
     cs.header(fig, t, 'Same experts, fewer bytes',
-              'Routed-expert records on disk. Every record decodes back to the original bytes\n'
-              '(WNR3-CZ: to the same values; -0 becomes +0).', h)
-    ax1 = cs.axes(fig, t, [0.20, 0.45, 0.74, 0.17], 'DeepSeek V4.1 REAP-192 · 7,680 experts')
-    ax2 = cs.axes(fig, t, [0.20, 0.19, 0.74, 0.115], 'Qwen3.8-Flash-Next MXFP4 · 24,576 experts')
+              'Routed-expert bytes: as published on Hugging Face, then in the containers. Every record decodes back\n'
+              'to the published bytes (WNR3-CZ: to the same values; -0 becomes +0).', h)
+    ax1 = cs.axes(fig, t, [0.25, 0.505, 0.69, 0.235], 'DeepSeek V4.1 REAP-192 MXFP4 · 7,680 experts')
+    ax2 = cs.axes(fig, t, [0.25, 0.195, 0.69, 0.19], 'Qwen3.8-Flash-Next MXFP4 · 24,576 experts')
     for ax, rows in ((ax1, v41), (ax2, q38)):
-        raw = rows[0][1]
-        cs.hbars(ax, [r[0] for r in rows], [r[1] / GB for r in rows], [t[r[2]] for r in rows], t, 165,
-                 lambda v: f'{v:.1f} GB', notes=[None] + [f'{r[1] / raw:.3f} of raw' for r in rows[1:]])
+        orig = rows[0][1]
+        cs.hbars(ax, [r[0] for r in rows], [r[1] / GB for r in rows], [t[r[2]] for r in rows], t, 240,
+                 lambda v: f'{v:.1f} GB',
+                 notes=[r[3] or f'{r[1] / orig:.3f} of original' for r in rows])
         ax.set_xticks(range(0, 161, 40))
     ax1.set_xticklabels([])
     ax2.set_xticklabels([f'{x} GB' for x in range(0, 161, 40)])
-    cs.footer(fig, t, 'Source: docs/BENCHMARKS.md, sections "DeepSeek V4.1 REAP-192: container sizes" and '
-              '"Qwen3.8-Flash-Next MXFP4". GB = 10^9 bytes.', h)
+    cs.footer(fig, t, 'Original: the expert tensors in the safetensors headers of patrickbdevaney/DeepSeek-V4.1-Flash-'
+              '1017-REAP192-MXFP4 @ 4ab649b2 and\namd/Qwen3.8-Flash-Next-Quark-MXFP4 @ b71e28af, summed by '
+              'scripts/expert_bytes.py. Containers: docs/BENCHMARKS.md and README.md. WNR4 estimate:\nthe WNR3 '
+              'container x WNR4/WNR3 on 2,048 held-out records (research/wnr4-20261121). GB = 10^9 bytes.', h)
     return fig
 
 
@@ -51,19 +68,15 @@ def chart_codecs(t):
     ratios = {'DeepSeek V4.1 Flash': [0.8796, 0.9222, 0.9268, 0.9297, 0.9306, 0.9557],
               'Qwen3-235B MXFP4': [0.8919, 0.8951, 0.8966, 0.8999, 0.9043, 0.9527],
               'MiniMax-M2.1 MXFP4': [0.8856, 0.9043, 0.9055, 0.9083, 0.9117, 0.9556]}
-    h = 4.2
+    record = {'DeepSeek V4.1 Flash': 18_800_640, 'Qwen3-235B MXFP4': 10_027_008, 'MiniMax-M2.1 MXFP4': 7_520_256}
+    h = 6.7
     fig = cs.figure(t, h)
     cs.header(fig, t, 'WNR3 saves more than general-purpose compressors',
-              'Space saved on 8 real MXFP4 expert records per checkpoint (1 - stored/raw, higher is better).', h)
-    x0, w, gap = 0.15, 0.245, 0.03
-    for k, (name, rs) in enumerate(ratios.items()):
-        ax = cs.axes(fig, t, [x0 + k * (w + gap), 0.20, w, 0.53], name)
-        cs.hbars(ax, codecs, [100 * (1 - r) for r in rs], [t['blue']] + [t['gray']] * 5, t, 16.5,
-                 lambda v: f'{v:.1f}%', height=0.6)
-        ax.set_xticks([0, 5, 10, 15])
-        ax.set_xticklabels(['0', '5', '10', '15%'])
-        if k:
-            ax.set_yticklabels([])
+              '8 real MXFP4 expert records per checkpoint: their bytes as published, then stored by each codec '
+              '(shorter is better).', h)
+    cs.size_panels(fig, t, [(f'{name} · 8 records of {record[name]:,} B', [('original MXFP4 files', 8 * record[name],
+                    'muted')] + [(c, 8 * record[name] * r, 'blue' if c == 'WNR3' else 'gray') for c, r in zip(codecs, rs)])
+                            for name, rs in ratios.items()], 1.3, h)
     cs.footer(fig, t, 'Source: docs/BENCHMARKS.md, "WNR3 against general-purpose codecs on real expert records" '
               '(2026-11-15). WNR3 byte-exact, with a model\ntrained on the same 8 records; brotli at level 11 (9 on '
               'MiniMax), the best general codec measured. The ratios do not depend on the machine.\nDecode speed, '

@@ -153,12 +153,12 @@ The V4.1 switch report's own reading of its numbers: on this machine the second 
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/charts/sizes-dark.png">
-  <img alt="Bar chart: routed-expert records on disk. DeepSeek V4.1 REAP-192: raw 144.4 GB, WNR2 129.9 GB, WNR3-CZ 123.3 GB (0.854 of raw). Qwen3.8-Flash-Next MXFP4: raw 64.2 GB, WNR3 56.5 GB (0.880 of raw)." src="assets/charts/sizes-light.png" width="800">
+  <img alt="Bar chart: routed-expert bytes as published and in the containers. DeepSeek V4.1 REAP-192 MXFP4: original MXFP4 safetensors 144.4 GB, raw WEX1 144.4 GB (+557,056 B header and table), WNR2 129.9 GB (0.900 of original), WNR3-CZ 123.3 GB (0.854), WNR4 estimate 122.6 GB (0.849). Qwen3.8-Flash-Next MXFP4: original 64.2 GB, raw WEX4 64.3 GB (+78.2 MB index and alignment), WNR3 56.5 GB (0.881), WNR4 estimate 56.2 GB (0.875)." src="assets/charts/sizes-light.png" width="800">
 </picture>
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/charts/codecs-dark.png">
-  <img alt="Bar chart: space saved on 8 real MXFP4 expert records per checkpoint. DeepSeek V4.1 Flash: WNR3 12.0%, brotli 7.8%, zstd 19 7.3%. Qwen3-235B: WNR3 10.8%, brotli 10.5%. MiniMax-M2.1: WNR3 11.4%, brotli 9.6%." src="assets/charts/codecs-light.png" width="800">
+  <img alt="Bar chart: 8 real MXFP4 expert records per checkpoint, as published and stored by each codec. DeepSeek V4.1 Flash: original 150.4 MB, WNR3 132.3 MB (-12.0%), brotli 138.7 MB (-7.8%), zstd 19 139.4 MB (-7.3%). Qwen3-235B: original 80.2 MB, WNR3 71.5 MB (-10.8%), brotli 71.8 MB (-10.5%). MiniMax-M2.1: original 60.2 MB, WNR3 53.3 MB (-11.4%), brotli 54.4 MB (-9.6%)." src="assets/charts/codecs-light.png" width="800">
 </picture>
 
 <picture>
@@ -171,7 +171,7 @@ The V4.1 switch report's own reading of its numbers: on this machine the second 
   <img alt="Bar charts: 136 conformance vectors (16 accepted, 120 refused, by error class) and 14 CI jobs per pull request (Linux x86-64 7, Linux arm64 3, macOS arm64 3, Windows 1)." src="assets/charts/tests-light.png" width="800">
 </picture>
 
-Each chart names its source in its footnote; `python scripts/make_charts.py` draws them again (matplotlib), in a light and a dark version.
+Each chart names its source in its footnote; `python scripts/make_charts.py` draws them again (matplotlib), in a light and a dark version. The "original" bars are the expert bytes of the published safetensors: `python -I scripts/expert_bytes.py REPO PROFILE` sums them from the shard headers on Hugging Face (two range requests per shard, no tensor data).
 
 ## What runs today
 
@@ -234,7 +234,7 @@ wex4/          WEX4, repo-only: Python reference, converter, C tools, tests, rev
 impl/          readers written from the specifications alone, not from the code here
   go-wex4/        WEX4 reader, verifier and writer in Go, with WBP1 and WNR3 codecs and a WNM2 trainer; SPEC-NOTES.md: what the specs left open
   rust-wex4/      WEX4 reader and verifier in Rust, with WBP1 and WNR3 decoders and its own SHA-256; SPEC-NOTES.md, and differential.py against the C and Python readers
-scripts/       repo-only checks: check_all.sh (the CPU checks that need only gcc and Python), build_cpu_check.sh, build_wnr4_check.sh, sanitize_c.sh and sanitize_libs.c, verify_wex1.py and its test; make_charts.py and chartstyle.py (the README charts)
+scripts/       repo-only checks: check_all.sh (the CPU checks that need only gcc and Python), build_cpu_check.sh, build_wnr4_check.sh, sanitize_c.sh and sanitize_libs.c, verify_wex1.py and its test; make_charts.py, chartstyle.py and expert_bytes.py (the README charts)
 bench/         hardware benchmark for testers (bench.py, Linux and Windows) and the Linux and macOS read paths for expert records (wex_io.py)
 archive/       the WNR2 lab code (encoder, trainer, checks) and its benches, kept for the record
 models/        trained WNM2 models: DeepSeek V4 Flash 0731 and V4.1 REAP-192
