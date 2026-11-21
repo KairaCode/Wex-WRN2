@@ -592,7 +592,8 @@ class Record:
     """One record to write. tensors tile its decoded bytes in order ([] = continuation part of a split tensor,
     in which case the previous Record with one tensor carries parts = number of records of that tensor).
     read() returns the decoded bytes. codec 'raw', ('bp', planes, transform) or ('pre', codec_id, stored_bytes_fn):
-    'pre' stores bytes encoded elsewhere (WNR3 records). owner None = the record's index."""
+    'pre' stores bytes encoded elsewhere (WNR3 records, codec-8 WNR4 records of wnr4gg.py); blob = 1 + index of
+    their model blob. owner None = the record's index."""
 
     def __init__(self, tensors, decoded, read, codec='raw', flags=0, owner=None, blob=0, parts=1):
         self.tensors, self.decoded, self.read, self.codec = tensors, decoded, read, codec
@@ -635,7 +636,7 @@ def write(path, records, blobs=(), empty=(), meta=b'', layers=0, experts=0, requ
                     if coded is not None and len(coded) < len(raw):
                         codec, stored = rec.codec[1], coded
                 flags = rec.flags if codec == CODEC_WNR3 else rec.flags & ~REC_VALUE_EXACT
-                blob = rec.blob if codec == CODEC_WNR3 else 0
+                blob = rec.blob if codec not in (CODEC_RAW, CODEC_WBP1) else 0   # WNR3 and other 'pre' codecs name their model
                 first = t if rec.tensors else last_split
                 if rec.tensors and rec.parts > 1:
                     last_split = t

@@ -3,7 +3,7 @@
 """GGUF <-> WEX4, lossless (docs/WEX4-SPEC.md section 14.1). Standard library only.
 
     python -I gguf2wex4.py info MODEL.gguf
-    python -I gguf2wex4.py pack OUT.wex4 MODEL.gguf [--part-mib 64]
+    python -I gguf2wex4.py pack OUT.wex4 MODEL.gguf [--part-mib 64] [--experts-only]
     python -I gguf2wex4.py unpack IN.wex4 OUT_DIR        # rebuilds every GGUF part, SHA-256 checked
     python -I gguf2wex4.py unpack IN.wex4 --check        # the same, hashed only, nothing written
 
@@ -19,7 +19,9 @@ Mapping:
   - dtype: F32 F16 BF16 I8 I16 I32 I64 F64 as the WEX4 codes, any other ggml type t as the opaque
     code 128 + t; shape = ne reversed (outermost first), an expert slice without the expert axis;
   - metadata {"wex4_meta":1,"gguf_sources":[{"name","bytes","sha256","blob","data","alignment"}]},
-    optional feature bit 1 (GGUF_SOURCES).
+    optional feature bit 1 (GGUF_SOURCES);
+  - --experts-only: the routed-expert records alone (the trunk and every other tensor stay in the GGUF) and
+    "experts_only":true in the metadata; unpack refuses such a container, it cannot rebuild the GGUF.
 Records are not EXPERT-flagged (section 5.5 reserves that for the MXFP4 slab), so the expert grid of
 the header is 0 x 0; the engine finds a layer's experts by name. Pack refuses a part whose bytes
 between or after the tensors are not zero: unpack could not rebuild them.
@@ -190,8 +192,9 @@ def scan(model):
     return parsed, dense, layers
 
 
-def pack(out_path, model, part_bytes=64 << 20, log=sys.stderr):
+def pack(out_path, model, part_bytes=64 << 20, log=sys.stderr, experts_only=False):
     parsed, dense, layers = scan(model)
+    need(layers or not experts_only, 'no routed-expert tensor to pack')
     files = {}
 
     def reader(part, start, n):
@@ -211,7 +214,10 @@ def pack(out_path, model, part_bytes=64 << 20, log=sys.stderr):
             _zero_gaps(f, data, tensors, size)
             print(f'[gguf2wex4] {os.path.basename(path)}: hashing {size / 1e9:.1f} GB', file=log, flush=True)
             f.seek(0)
-            digest = hashlib.file_digest(f, 'sha256').hexdigest()
+            h = hashlib.sha256()
+            for block in iter(lambda: f.read(1 << 20), b''):   # hashlib.file_digest needs Python 3.11
+                h.update(block)
+            digest = h.hexdigest()
         blobs.append((BLOB_GGUF_HEADER, i, header))
         sources.append({'name': os.path.basename(path), 'bytes': size, 'sha256': digest, 'blob': i,
                         'data': data, 'alignment': alignment})
@@ -222,6 +228,8 @@ def pack(out_path, model, part_bytes=64 << 20, log=sys.stderr):
                    [(k[0], k[1], 'expert', layer) for layer, kinds in layers.items() for k in kinds.values()])
     for _, _, what, item in items:
         if what == 'dense':
+            if experts_only:   # the trunk and the other tensors stay in the GGUF
+                continue
             part, start, nbytes, ne, ggml_type, name = item
             spec = wex4.Tensor(name, dtype_code(ggml_type), shape(ne), nbytes)
             n = (nbytes + part_bytes - 1) // part_bytes
@@ -243,7 +251,8 @@ def pack(out_path, model, part_bytes=64 << 20, log=sys.stderr):
             records.append(wex4.Record(specs, sum(s.nbytes for s in specs), lambda reads=reads: b''.join(r() for r in reads)))
     print(f'[gguf2wex4] {len(records)} records ({sum(len(layers[k]) for k in layers) and len(layers)} expert layers), writing',
           file=log, flush=True)
-    meta = json.dumps({'wex4_meta': 1, 'gguf_sources': sources}, ensure_ascii=False, separators=(',', ':')).encode()
+    meta = json.dumps({'wex4_meta': 1, 'gguf_sources': sources, **({'experts_only': True} if experts_only else {})},
+                      ensure_ascii=False, separators=(',', ':')).encode()
     try:
         return wex4.write(out_path, records, blobs, (), meta, optional=OPT_GGUF_SOURCES)
     finally:
@@ -251,17 +260,20 @@ def pack(out_path, model, part_bytes=64 << 20, log=sys.stderr):
             f.close()
 
 
-def unpack(in_path, out_dir=None, log=sys.stderr):
-    """Rebuild every GGUF part (out_dir None: hash only). Returns [(name, sha256)]; raises on a mismatch."""
+def unpack(in_path, out_dir=None, log=sys.stderr, reader=wex4.Reader):
+    """Rebuild every GGUF part (out_dir None: hash only). Returns [(name, sha256)]; raises on a mismatch.
+    reader(f) opens the container (wnr4gg.py passes one that also decodes codec-8 records)."""
     results = []
     with open(in_path, 'rb') as f:
-        rd = wex4.Reader(f)
+        rd = reader(f)
         need(rd.optional & OPT_GGUF_SOURCES, 'container holds no GGUF sources')
         try:
-            sources = json.loads(rd.meta.decode('utf-8'))['gguf_sources']
-            sources = [(s['name'], int(s['bytes']), s['sha256'], int(s['blob'])) for s in sources]
+            meta = json.loads(rd.meta.decode('utf-8'))
+            sources = [(s['name'], int(s['bytes']), s['sha256'], int(s['blob'])) for s in meta['gguf_sources']]
         except (ValueError, KeyError, TypeError) as error:
             raise wex4.FormatError(f'metadata: {error!r}') from None
+        need(not meta.get('experts_only'), 'an experts-only container (pack --experts-only) holds the routed experts '
+             'alone, the rest stayed in the GGUF: unpack cannot rebuild the GGUF from it')
         for name, size, recorded, blob in sources:
             need(name and name == os.path.basename(name) and name not in ('.', '..') and 0 <= blob < len(rd.blobs) and
                  rd.blobs[blob][0] == BLOB_GGUF_HEADER, 'metadata: source entry')
@@ -353,7 +365,8 @@ def main(argv):
         if len(argv) >= 3 and argv[1] == 'info':
             info(pos[0])
         elif len(argv) >= 4 and argv[1] == 'pack':
-            print('root', pack(pos[0], pos[1], int(option('--part-mib', '64')) << 20).hex())
+            print('root', pack(pos[0], pos[1], int(option('--part-mib', '64')) << 20,
+                               experts_only='--experts-only' in argv).hex())
         elif len(argv) >= 4 and argv[1] == 'unpack':
             if '--check' not in argv:
                 os.makedirs(pos[1], exist_ok=True)

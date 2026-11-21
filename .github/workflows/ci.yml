@@ -285,7 +285,7 @@ jobs:
   # macOS again, with the compiler of Xcode: Apple clang, which refuses -fopenmp and ships no OpenMP runtime.
   # WEX_OPENMP gives the scripts the flags that turn OpenMP on in the compiler and the libomp of Homebrew to
   # link (the first step installs it when the runner image has none, as on 2026-11-15). The CPU checks fail
-  # unless the three scripts that build C name Apple clang and the fast decoder's harness is NEON with OpenMP.
+  # unless the four scripts that build C name Apple clang and the fast decoder's harness is NEON with OpenMP.
   # Then the sanitizers on macOS, with Apple clang: the fuzz replay and every CPU check under ASan and UBSan
   macos-clang:
     runs-on: macos-15
@@ -313,7 +313,7 @@ jobs:
           bash scripts/check_all.sh | tee "$RUNNER_TEMP/check.log"
           grep -q '^fast WNR3 decoder of wex4_tools.dll: NEON kernels$' "$RUNNER_TEMP/check.log"
           grep -q '^build: NEON kernels, OpenMP;' "$RUNNER_TEMP/check.log"
-          test "$(grep -c '^compiler: Apple clang' "$RUNNER_TEMP/check.log")" = 3
+          test "$(grep -c '^compiler: Apple clang' "$RUNNER_TEMP/check.log")" = 4
       - name: Fuzz harnesses, seeds and mutators replayed (Apple clang)
         run: |
           set -o pipefail
@@ -470,7 +470,7 @@ jobs:
   # tests in Python with the runtime preloaded (scripts/sanitize_c.sh lists what runs).
   # Then the smoke run of bench/wex_io.c, which has its own pread threads, under ThreadSanitizer.
 # The last step is not a sanitizer run: every CPU check built with clang, so that CC=clang keeps working.
-# The three scripts that build C print their compiler, and the step fails unless all three name a clang
+# The four scripts that build C print their compiler, and the step fails unless all four name a clang
   linux-tsan:
     runs-on: ubuntu-24.04
     timeout-minutes: 15   # a green run took 8.6 minutes (run 43812551602, 2026-11-16, after the second merges)
@@ -495,8 +495,8 @@ jobs:
           set -o pipefail
           CC=clang bash scripts/check_all.sh | tee "$RUNNER_TEMP/clang.log"
           grep '^compiler: ' "$RUNNER_TEMP/clang.log"
-          test "$(grep -c '^compiler: ' "$RUNNER_TEMP/clang.log")" = 3
-          test "$(grep -c '^compiler: .*clang' "$RUNNER_TEMP/clang.log")" = 3
+          test "$(grep -c '^compiler: ' "$RUNNER_TEMP/clang.log")" = 4
+          test "$(grep -c '^compiler: .*clang' "$RUNNER_TEMP/clang.log")" = 4
 
   # the same executables, and the libraries of the Python tests called from scripts/sanitize_libs.c, under
   # MemorySanitizer (clang), built without OpenMP, so that no library that is not instrumented is in the process

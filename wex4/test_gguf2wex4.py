@@ -7,6 +7,7 @@ refusals. Standard library only.
 
 --verify (or WEX4_VERIFY) also runs the C checker on every container."""
 import hashlib
+import json
 import os
 import random
 import struct
@@ -74,7 +75,10 @@ def layer(L, n_exp, merged=False, t=16, td=20):
 
 def sha(path):
     with open(path, 'rb') as f:
-        return hashlib.file_digest(f, 'sha256').hexdigest()
+        h = hashlib.sha256()
+        for block in iter(lambda: f.read(1 << 20), b''):   # hashlib.file_digest needs Python 3.11
+            h.update(block)
+        return h.hexdigest()
 
 
 class GgufToWex4(unittest.TestCase):
@@ -157,6 +161,40 @@ class GgufToWex4(unittest.TestCase):
             write_gguf(f'{stem}-0000{k}-of-00002.gguf', layer(0, 2)[:3])
         with self.assertRaises(wex4.FormatError):
             g2w.pack(os.path.join(self.d, 'x.wex4'), f'{stem}-00001-of-00002.gguf', log=NULL)
+
+    def test_experts_only(self):
+        """pack --experts-only: the expert records of a full pack, nothing else; unpack refuses the container."""
+        model = os.path.join(self.d, 'tiny.gguf')
+        write_gguf(model, [('token_embd.weight', (64, 30), 8)] + layer(0, 3) + layer(1, 2, merged=True, td=8))
+        full, eo = os.path.join(self.d, 'full.wex4'), os.path.join(self.d, 'eo.wex4')
+        g2w.pack(full, model, log=NULL)
+        self.assertEqual(g2w.main(['', 'pack', eo, model, '--experts-only']), 0)
+        with open(full, 'rb') as f, open(eo, 'rb') as g:
+            src, rd = wex4.Reader(f), wex4.Reader(g)
+            rd.content_digest(True)
+            names = [t[0].decode() for t in rd.tensors]
+            self.assertEqual(len(rd.records), 5)
+            self.assertTrue(all(g2w.EXPERT.match(n.rpartition('#')[0]) for n in names), names)
+            self.assertEqual(json.loads(rd.meta), dict(json.loads(src.meta), experts_only=True))
+            self.assertEqual([b[:2] + b[3:] for b in rd.blobs], [b[:2] + b[3:] for b in src.blobs])
+            for r, rec in enumerate(rd.records):
+                t = rd.tensors[rec[7]]
+                self.assertEqual(rd.record(r), src.record(src.tensors[src.by_name[t[0]]][4]), t[0])
+        if VERIFY:
+            p = subprocess.run([VERIFY, eo], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            self.assertEqual(p.returncode, 0, p.stdout.decode(errors='replace'))
+        back = os.path.join(self.d, 'back')
+        os.makedirs(back)
+        for out_dir in (None, back):
+            with self.assertRaisesRegex(wex4.FormatError, 'experts-only container'):
+                g2w.unpack(eo, out_dir, log=NULL)
+        self.assertEqual(os.listdir(back), [])
+        self.assertEqual(g2w.main(['', 'unpack', eo, '--check']), 1)
+        plain = os.path.join(self.d, 'plain.gguf')   # no routed expert: nothing to pack
+        write_gguf(plain, [('token_embd.weight', (64, 30), 8)])
+        with self.assertRaisesRegex(wex4.FormatError, 'no routed-expert tensor'):
+            g2w.pack(os.path.join(self.d, 'x.wex4'), plain, log=NULL, experts_only=True)
+        self.assertFalse(os.path.exists(os.path.join(self.d, 'x.wex4')))
 
     def test_tampered_record_refused(self):
         model = os.path.join(self.d, 'tiny.gguf')

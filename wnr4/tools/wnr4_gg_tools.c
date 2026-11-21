@@ -22,7 +22,8 @@ API int wnr4gg_count(uint32_t nseg, const uint32_t *types, const uint32_t *bytes
     wnr4_gg_count(&g, slab, counts);
     return 0;
 }
-API void wnr4gg_build(const uint64_t *counts, unsigned char *blob) { wnr4_gg_model_build(counts, blob); }
+/* 0, or -1 when out of memory */
+API int wnr4gg_build(const uint64_t *counts, unsigned char *blob) { return wnr4_gg_model_build(counts, blob); }
 
 API void *wnr4gg_model_open(const unsigned char *blob, uint64_t bytes) {
     Wnr4GgModel *m = (Wnr4GgModel *)calloc(1, sizeof(*m));

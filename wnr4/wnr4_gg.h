@@ -165,36 +165,40 @@ static inline void wnr4_gg_classes(const uint64_t *hi_counts, unsigned char map[
     }
 }
 
-static inline void wnr4_gg_model_build(const uint64_t *counts, unsigned char *blob) {
+/* writes the WNR4_GG_MODEL_BYTES blob; returns 0, or -1 (out of memory: nothing usable written) */
+static inline int wnr4_gg_model_build(const uint64_t *counts, unsigned char *blob) {
     uint32_t hdr[8] = {WNM4_MAGIC, 1u, WNR4_KIND_GG, WNR4_PREC, WNR4_GG_CLASSES, WNR4_GG_SUBTYPES, 0, 0};
     uint32_t s, i, c, b;
     uint16_t cdf[257];
     unsigned char *p = blob + 32;
+    uint64_t *lo = (uint64_t *)malloc((size_t)WNR4_GG_CLASSES * 256u * 8u);
+    if (!lo) return -1;
     for (i = 0; i < 8u; i++) wnr4_put32(blob + 4 * i, hdr[i]);
     for (s = 0; s < WNR4_GG_SUBTYPES; s++) {
         const uint64_t *k = counts + (size_t)s * WNR4_GG_COUNTS_SUB;
         unsigned char map[256];
-        uint64_t *lo = (uint64_t *)calloc((size_t)WNR4_GG_CLASSES * 256u, 8u), nib[WNR4_GG_CLASSES * 16u];
+        uint64_t nib[WNR4_GG_CLASSES * 16u];
         wnr4_gg_classes(k, map);
+        memset(lo, 0, (size_t)WNR4_GG_CLASSES * 256u * 8u);
         memset(nib, 0, sizeof(nib));
         for (b = 0; b < 256u; b++) {
-            for (i = 0; i < 256u && lo; i++) lo[map[b] * 256u + i] += k[256u + b * 256u + i];
+            for (i = 0; i < 256u; i++) lo[map[b] * 256u + i] += k[256u + b * 256u + i];
             for (i = 0; i < 16u; i++) nib[map[b] * 16u + i] += k[256u + 65536u + b * 16u + i];
         }
         memcpy(p, map, 256); p += 256;
         wnr4_quantize(k, 256u, cdf);
         for (i = 0; i < 257u; i++) { *p++ = (unsigned char)cdf[i]; *p++ = (unsigned char)(cdf[i] >> 8); }
         for (c = 0; c < WNR4_GG_CLASSES; c++) {
-            static const uint64_t none[256];
-            wnr4_quantize(lo ? lo + c * 256u : none, 256u, cdf);
+            wnr4_quantize(lo + c * 256u, 256u, cdf);
             for (i = 0; i < 257u; i++) { *p++ = (unsigned char)cdf[i]; *p++ = (unsigned char)(cdf[i] >> 8); }
         }
         for (c = 0; c < WNR4_GG_CLASSES; c++) {
             wnr4_quantize(nib + c * 16u, 16u, cdf);
             for (i = 0; i < 17u; i++) { *p++ = (unsigned char)cdf[i]; *p++ = (unsigned char)(cdf[i] >> 8); }
         }
-        free(lo);
     }
+    free(lo);
+    return 0;
 }
 
 /* ---- record ------------------------------------------------------------------- */
