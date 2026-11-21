@@ -66,7 +66,7 @@ def chart_codecs(t):
             ax.set_yticklabels([])
     cs.footer(fig, t, 'Source: docs/BENCHMARKS.md, "WNR3 against general-purpose codecs on real expert records" '
               '(2026-11-15). WNR3 byte-exact, with a model\ntrained on the same 8 records; brotli at level 11 (9 on '
-              'MiniMax), the best general codec measured. On the CPU the general codecs decode faster.', h)
+              'MiniMax), the best general codec measured.\nOn the CPU zstd, zlib and lz4 decode faster than WNR3; lzma, and brotli 11 on one thread, decode slower.', h)
     return fig
 
 
@@ -88,7 +88,7 @@ def chart_speed(t):
     ax1.set_xticks([0, 1, 2, 3])
     ax2.set_xticks([0, 3, 6, 9, 12])
     cs.footer(fig, t, 'Source: docs/BENCHMARKS.md. V4.1: one pair, 3 prompts x 64 tokens, logits bit-identical. '
-              'Qwen3.8: 258-token prompt, one run each.\nNot comparable across the two models (different sizes, '
+              'Qwen3.8: WEX1 containers, engine of 2026-11-11, 258-token\nprompt, one run each (later builds are faster). Not comparable across the two models (different sizes, '
               'RAM budgets and prompts).', h)
     return fig
 
@@ -134,8 +134,8 @@ def chart_tests(t):
     ax2.tick_params(axis='y', labelsize=8.5)
     detail = '\n'.join(f'{k}: ' + ', '.join(sorted(jobs[k])) for k in order)
     fig.text(0.535, 0.39, detail, fontsize=7.2, color=t['ink2'], va='top', linespacing=1.6, wrap=True)
-    cs.footer(fig, t, 'Source: wex4/vectors/MANIFEST.tsv (the reason a refused file is refused, as the reference '
-              'reader reports it) and .github/workflows/ci.yml, fuzz.yml\n(jobs without a manual-run condition).', h)
+    cs.footer(fig, t, 'Source: wex4/vectors/MANIFEST.tsv (for a refused file, the first rule it breaks, as the C '
+              'reader c/wex4.h reports it) and .github/workflows/ci.yml, fuzz.yml\n(jobs without a manual-run condition).', h)
     return fig
 
 
