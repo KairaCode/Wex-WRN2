@@ -50,6 +50,13 @@ concurrency:
   group: ci-${{ github.ref }}-${{ github.event_name }}-${{ github.event.inputs.linux_io_bench }}-${{ github.event.inputs.arm_speed }}-${{ github.event.inputs.macos_io_bench }}-${{ github.event.inputs.vulkan_newmesa }}
   cancel-in-progress: true
 
+# linux-sanitizers, linux-tsan and linux-msan run on the maintainer's self-hosted x86-64 runner (labels self-hosted,
+# pcnuovo) for a push to main and a run started by hand in this repository, and on ubuntu-24.04 for everything else,
+# pull requests from forks included: code from outside never reaches that machine. There each of them takes the
+# machine's lock right after the checkout (scripts/ci_lock.sh; at most an hour of waiting, then the job fails) and
+# gives it back in a last step that runs on failure and cancel too. The jobs, their steps and what they check are the
+# same on both runners; only the libomp install step is skipped on the self-hosted one, which has that package and
+# no sudo
 jobs:
   linux:
     runs-on: ubuntu-24.04
@@ -404,8 +411,8 @@ jobs:
   # instrumented, so the ASan runtime is preloaded; leak detection is off (the Python interpreter and gcc itself
   # do not free everything at exit)
   linux-sanitizers:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 30   # a green run took 5.2 and 7.3 minutes (runs 43811647711 and 43812551602, 2026-11-16, after the second merges: the job was green in both, though 43811647711's own rollup was failure (its linux-tsan, linux-msan and rust-reader jobs failed))
+    runs-on: ${{ github.repository == 'KairaCode/Wex-WRN2' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && fromJSON('["self-hosted", "pcnuovo"]') || 'ubuntu-24.04' }}
+    timeout-minutes: ${{ github.repository == 'KairaCode/Wex-WRN2' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && 90 || 30 }}   # a green run took 5.2 and 7.3 minutes (runs 43811647711 and 43812551602, 2026-11-16, after the second merges: the job was green in both, though 43811647711's own rollup was failure (its linux-tsan, linux-msan and rust-reader jobs failed))
     env:
       PYTHON: python3
       USER: ""
@@ -417,6 +424,10 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
         with:
           persist-credentials: false
+      - name: Machine lock of the self-hosted runner, taken
+        if: runner.environment == 'self-hosted'
+        timeout-minutes: 60   # the owner's own run may hold the machine: wait at most an hour, then fail the job
+        run: bash scripts/ci_lock.sh take
       - name: All CPU checks under ASan and UBSan
         run: |
           LD_PRELOAD=$(gcc -print-file-name=libasan.so)
@@ -428,6 +439,9 @@ jobs:
       # bench/wex_io.py appends WEX_CFLAGS too: its pread and io_uring paths under the sanitizers
       - name: Linux read-path benchmark, smoke run under ASan and UBSan
         run: python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --smoke --strict
+      - name: Machine lock of the self-hosted runner, released
+        if: always() && runner.environment == 'self-hosted'
+        run: bash scripts/ci_lock.sh release
 
   # linux-sanitizers on a 64-bit ARM CPU: the same flags, options and preload, so the NEON kernel of the fast WNR3
   # decoder runs under ASan and UBSan, in the library the tests load into Python, in its own harness and in the
@@ -472,8 +486,8 @@ jobs:
 # The last step is not a sanitizer run: every CPU check built with clang, so that CC=clang keeps working.
 # The four scripts that build C print their compiler, and the step fails unless all four name a clang
   linux-tsan:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 30   # a green run took 8.6 minutes (run 43812551602, 2026-11-16, after the second merges); raised from 15 because on the head of pull request 51 the job ran to the limit and was cut there (run 44202436823, job 134459690635, 2026-11-18, killed at 15m17s with fuzz_wnr3_cuda-replay the last live process): the WNR3 fast decoder is in that harness's libraries now, so the replay under TSan is longer than it was
+    runs-on: ${{ github.repository == 'KairaCode/Wex-WRN2' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && fromJSON('["self-hosted", "pcnuovo"]') || 'ubuntu-24.04' }}
+    timeout-minutes: ${{ github.repository == 'KairaCode/Wex-WRN2' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && 90 || 30 }}   # a green run took 8.6 minutes (run 43812551602, 2026-11-16, after the second merges); raised from 15 because on the head of pull request 51 the job ran to the limit and was cut there (run 44202436823, job 134459690635, 2026-11-18, killed at 15m17s with fuzz_wnr3_cuda-replay the last live process): the WNR3 fast decoder is in that harness's libraries now, so the replay under TSan is longer than it was
     env:
       PYTHON: python3
       USER: ""
@@ -482,7 +496,12 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
         with:
           persist-credentials: false
+      - name: Machine lock of the self-hosted runner, taken
+        if: runner.environment == 'self-hosted'
+        timeout-minutes: 60   # the owner's own run may hold the machine: wait at most an hour, then fail the job
+        run: bash scripts/ci_lock.sh take
       - name: OpenMP runtime of the installed clang
+        if: runner.environment != 'self-hosted'   # the self-hosted runner has it installed and has no sudo
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends "libomp-$(clang -dumpversion | cut -d. -f1)-dev"
@@ -497,21 +516,31 @@ jobs:
           grep '^compiler: ' "$RUNNER_TEMP/clang.log"
           test "$(grep -c '^compiler: ' "$RUNNER_TEMP/clang.log")" = 4
           test "$(grep -c '^compiler: .*clang' "$RUNNER_TEMP/clang.log")" = 4
+      - name: Machine lock of the self-hosted runner, released
+        if: always() && runner.environment == 'self-hosted'
+        run: bash scripts/ci_lock.sh release
 
   # the same executables, and the libraries of the Python tests called from scripts/sanitize_libs.c, under
   # MemorySanitizer (clang), built without OpenMP, so that no library that is not instrumented is in the process
   # (nor Python): a branch, a pointer or a system call that depends on a byte nobody wrote stops the run
   linux-msan:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15   # a green run took 3.7 minutes (run 43812551602, 2026-11-16, after the second merges)
+    runs-on: ${{ github.repository == 'KairaCode/Wex-WRN2' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && fromJSON('["self-hosted", "pcnuovo"]') || 'ubuntu-24.04' }}
+    timeout-minutes: ${{ github.repository == 'KairaCode/Wex-WRN2' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && 75 || 15 }}   # a green run took 3.7 minutes (run 43812551602, 2026-11-16, after the second merges)
     env:
       PYTHON: python3
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
         with:
           persist-credentials: false
+      - name: Machine lock of the self-hosted runner, taken
+        if: runner.environment == 'self-hosted'
+        timeout-minutes: 60   # the owner's own run may hold the machine: wait at most an hour, then fail the job
+        run: bash scripts/ci_lock.sh take
       - name: C tests and the libraries of the Python tests under MemorySanitizer
         run: bash scripts/sanitize_c.sh msan
+      - name: Machine lock of the self-hosted runner, released
+        if: always() && runner.environment == 'self-hosted'
+        run: bash scripts/ci_lock.sh release
 
   # the Go reader and writer of WEX4 (impl/go-wex4: Go, standard library only, written from the specifications
   # and not from the reference code): gofmt, go vet, its tests, and every row of wex4/vectors/MANIFEST.tsv,
