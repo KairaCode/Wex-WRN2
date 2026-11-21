@@ -151,6 +151,28 @@ Field names and offsets are those of [WEX4-SPEC](docs/WEX4-SPEC.md) sections 3 t
 
 The V4.1 switch report's own reading of its numbers: on this machine the second drive is the lever, not the format.
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/charts/sizes-dark.png">
+  <img alt="Bar chart: routed-expert records on disk. DeepSeek V4.1 REAP-192: raw 144.4 GB, WNR2 129.9 GB, WNR3-CZ 123.3 GB (0.854 of raw). Qwen3.8-Flash-Next MXFP4: raw 64.2 GB, WNR3 56.5 GB (0.880 of raw)." src="assets/charts/sizes-light.png" width="800">
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/charts/codecs-dark.png">
+  <img alt="Bar chart: space saved on 8 real MXFP4 expert records per checkpoint. DeepSeek V4.1 Flash: WNR3 12.0%, brotli 7.8%, zstd 19 7.3%. Qwen3-235B: WNR3 10.8%, brotli 10.5%. MiniMax-M2.1: WNR3 11.4%, brotli 9.6%." src="assets/charts/codecs-light.png" width="800">
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/charts/speed-dark.png">
+  <img alt="Bar chart: tokens per second on an RTX 5090. DeepSeek V4.1: one drive 2.26, two drives 3.01. Qwen3.8-Flash-Next: FP8 experts 4.39, MXFP4 WNR3 one drive 9.48, MXFP4 raw one drive 11.48, MXFP4 raw two drives 12.45." src="assets/charts/speed-light.png" width="800">
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/charts/tests-dark.png">
+  <img alt="Bar charts: 136 conformance vectors (16 accepted, 120 refused, by error class) and 14 CI jobs per pull request (Linux x86-64 7, Linux arm64 3, macOS arm64 3, Windows 1)." src="assets/charts/tests-light.png" width="800">
+</picture>
+
+Each chart names its source in its footnote; `python scripts/make_charts.py` draws them again (matplotlib), in a light and a dark version.
+
 ## What runs today
 
 Summary of 2026-11-13; [STATUS.md](STATUS.md) is the page of record, with the roots, the switches, the engine builds and what is switched off.
@@ -200,7 +222,8 @@ README.md  STATUS.md  CHANGELOG.md  CONTRIBUTING.md   front page, what runs toda
 SECURITY.md  CITATION.cff  CODE_OF_CONDUCT.md   how to report a vulnerability, how to cite, conduct
 LICENSE  NOTICE  THIRD_PARTY_NOTICES.md              Apache-2.0 text, attribution notices, third-party material
 check_repo.py  sync-map.tsv    self-check (links, c/ file map, licence headers, privacy) and the map of c/ files to the maintainer's tree
-assets/        the logo (light and dark), the mark, and the source image of the social preview (set in the repository settings)
+assets/        the logo (light and dark), the mark, and the source image of the social preview (set in the repository settings);
+               charts/ the README charts (light and dark PNG), drawn by scripts/make_charts.py
 .github/       CI workflows (Linux, macOS and Windows CPU checks, macOS also with Apple clang; ASan and UBSan on x86-64 Linux, ARM64 Linux and macOS, TSan and MSan on x86-64 Linux; the Go reader and writer on the vectors and against the reference readers, the Rust reader on the vectors and against the C and Python readers, opt-in Vulkan jobs on a CPU device (lavapipe, also on a newer Mesa in containers), opt-in speed runs of the fast WNR3 decoder on ARM64 Linux and macOS, opt-in Linux and macOS read-path benchmarks, an opt-in build of the engine harnesses against colibri's headers; the libFuzzer harnesses of wex4/fuzz/ on x86-64 Linux, ARM64 Linux and macOS), issue forms, pull-request checklist
 c/             engine-side WEX code in the colibri c/ layout; pull requests may change it
   *.h *.c *.cuh   format, codecs, CPU and CUDA decoders, the standalone store, wex4.h, qwen38_wex.h
@@ -211,7 +234,7 @@ wex4/          WEX4, repo-only: Python reference, converter, C tools, tests, rev
 impl/          readers written from the specifications alone, not from the code here
   go-wex4/        WEX4 reader, verifier and writer in Go, with WBP1 and WNR3 codecs and a WNM2 trainer; SPEC-NOTES.md: what the specs left open
   rust-wex4/      WEX4 reader and verifier in Rust, with WBP1 and WNR3 decoders and its own SHA-256; SPEC-NOTES.md, and differential.py against the C and Python readers
-scripts/       repo-only checks: check_all.sh (the CPU checks that need only gcc and Python), build_cpu_check.sh, sanitize_c.sh and sanitize_libs.c, verify_wex1.py and its test
+scripts/       repo-only checks: check_all.sh (the CPU checks that need only gcc and Python), build_cpu_check.sh, sanitize_c.sh and sanitize_libs.c, verify_wex1.py and its test; make_charts.py and chartstyle.py (the README charts)
 bench/         hardware benchmark for testers (bench.py, Linux and Windows) and the Linux and macOS read paths for expert records (wex_io.py)
 archive/       the WNR2 lab code (encoder, trainer, checks) and its benches, kept for the record
 models/        trained WNM2 models: DeepSeek V4 Flash 0731 and V4.1 REAP-192
