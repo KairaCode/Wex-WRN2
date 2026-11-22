@@ -214,7 +214,8 @@ fn cmd_manifest(args: &[String]) -> ExitCode {
         "rust reader: {} rows, {} disagree in verdict, root or content digest; root as the manifest's on {} of {} accepted rows; content digest as the manifest's on {} of {} rows that give one; class as the manifest's on {} of {} rejected rows",
         rows, bad, roots, accepts, digests, with_digest, classes, rejects
     );
-    if bad == 0 && classes == rejects {
+    // a manifest with no rows checks nothing: refused, as the Go reader does
+    if rows != 0 && bad == 0 && classes == rejects {
         ExitCode::SUCCESS
     } else {
         ExitCode::from(1)

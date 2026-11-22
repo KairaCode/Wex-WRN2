@@ -933,6 +933,7 @@ pub fn check_file(path: &str, opt: &Options) -> Res<Report> {
             Ok(None) => {
                 undecodable.push(r);
                 digest = None;
+                part = None; // a split tensor with an undecodable part has no hash to list
                 continue;
             }
             Err(why) => {

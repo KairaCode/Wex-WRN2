@@ -211,6 +211,42 @@ class GgufToWex4(unittest.TestCase):
         with self.assertRaises(wex4.FormatError):
             g2w.unpack(out, None, log=NULL)
 
+    def test_tensor_name_not_utf8_refused(self):
+        """a tensor name that is not UTF-8 is a FormatError (REFUSED, exit 1), not a UnicodeDecodeError traceback"""
+        model = os.path.join(self.d, 'bad.gguf')
+        write_gguf(model, [('zz.weight', (3,), 0)])
+        with open(model, 'rb') as f:
+            data = f.read()
+        with open(model, 'wb') as f:
+            f.write(data.replace(b'zz.weight', b'\xff\xfe.weight', 1))
+        with open(model, 'rb') as f, self.assertRaisesRegex(wex4.FormatError, 'not UTF-8'):
+            g2w.parse(f, os.path.getsize(model))
+        self.assertEqual(g2w.main(['', 'info', model]), 1)
+
+    def test_source_size_of_another_type_refused(self):
+        """unpack takes each GGUF's size from the container's metadata: a size that is not a JSON integer >= 0
+        (inf, 1e3, '32544', True, -1) is refused before anything is built"""
+        model = os.path.join(self.d, 'tiny.gguf')
+        write_gguf(model, layer(0, 2))
+        dumps = g2w.json.dumps
+        for size in (float('inf'), 1e3, '32544', True, -1):
+            out = os.path.join(self.d, 'm.wex4')
+
+            def patched(obj, *a, **k):
+                obj['gguf_sources'][0]['bytes'] = size
+                return dumps(obj, *a, **k)
+            g2w.json.dumps = patched
+            try:
+                g2w.pack(out, model, log=NULL)
+            finally:
+                g2w.json.dumps = dumps
+            with open(out, 'rb') as f:
+                wex4.Reader(f)   # the container itself is valid: only the metadata lies
+            with self.assertRaises(wex4.FormatError, msg=repr(size)):
+                g2w.unpack(out, None, log=NULL)
+            self.assertEqual(g2w.main(['', 'unpack', out, '--check']), 1, repr(size))
+            os.remove(out)
+
 
 if __name__ == '__main__':
     argv = [sys.argv[0]] + [a for i, a in enumerate(sys.argv[1:], 1) if a != '--verify' and sys.argv[i - 1] != '--verify']

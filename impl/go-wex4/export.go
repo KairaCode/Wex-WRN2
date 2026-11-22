@@ -31,8 +31,12 @@ func Export(path, dir string) (*Result, error) {
 	}
 	// the whole file is verified before a byte is written, so that a refused file leaves nothing in dir;
 	// the second pass below decodes every record again and writes it
-	if _, e := Verify(f, uint64(st.Size()), nil, nil); e != nil {
+	pre, e := Verify(f, uint64(st.Size()), nil, nil)
+	if e != nil {
 		return nil, e
+	}
+	if pre.Undecoded != 0 {
+		return nil, fmt.Errorf("%d records of a codec this reader does not know: the file cannot be exported", pre.Undecoded)
 	}
 	if err := os.MkdirAll(dir, 0o777); err != nil {
 		return nil, err
