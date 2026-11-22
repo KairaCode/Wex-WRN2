@@ -210,7 +210,8 @@ measured; it is not known to fail.
   yet, each with its `MANIFEST.tsv` row and the expected verdict from both reference readers; the
   `go-reader` and `rust-reader` jobs of CI then run the Go and the Rust reader on the new rows too.
   Valid files are wanted as well. A new vector goes through an issue first.
-  - **Today:** 136 rows since 2026-11-15. The 24 files added that day cover the two lists of what
+  - **Today:** 139 rows since 2026-11-22, when 3 files with a damaged blob that no record uses
+    were added ([issue 57](https://github.com/KairaCode/Wex-WRN2/issues/57)); 136 since 2026-11-15. The 24 files added that day cover the two lists of what
     the 112 rows did not exercise (finding 17 of the
     [spec review](../research/spec-review-20261114/README.md) and part D of the Go reader's
     [SPEC-NOTES.md](../impl/go-wex4/SPEC-NOTES.md)): the byte 255 in rANS-coded data, WNR3

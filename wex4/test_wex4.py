@@ -638,6 +638,16 @@ def test_hostile(base):
     return attacks, accepted
 
 
+def store_opens(data):
+    """The engine store of wex4_store.h opens data and reads every record as a first read (WEX4-SPEC 6, step 3:
+    it checks a blob when it first uses it and never reads one that no record names)."""
+    work = os.path.join(WORK, 'store_probe.tmp')
+    with open(work, 'wb') as f:
+        f.write(data)
+    table, info = ctypes.create_string_buffer(1 << 20), (ctypes.c_uint32 * 5)()
+    return C.lib.wex4_store_probe(work.encode(), None, table, len(table), info) == 0
+
+
 def test_hostile_experts(base):
     """Hand-made attacks on a container with a model blob and WNR3 expert records (the upgraded 2-expert file)."""
     rd = wex4.Reader(io.BytesIO(base), C)
@@ -646,6 +656,8 @@ def test_hostile_experts(base):
     ten0 = rec0 + len(rd.records) * 72
     rec, model = rd.records, rd.blobs[0]
     assert model[0] == wex4.BLOB_WNM2 and len(rd.blobs) == 3 and [r[3] for r in rec] == [5, 5], 'base file changed'
+    table17, page16 = rd.blobs[1], rd.blobs[2]
+    assert table17[0] == 17 and page16[0] == 16 and table17[3] % wex4.PAGE and {r[5] for r in rec} == {1}
 
     def patch(edits, seal=True, record=None):
         blob = bytearray(base)
@@ -664,6 +676,11 @@ def test_hostile_experts(base):
         'non-zero reserved bytes after a blob hash': patch([(blob0 + 56, '<Q', 1)]),
         'blob bit flip, hash not fixed': patch([(model[2] + 100, '<B', base[model[2] + 100] ^ 1)], False),
         'non-zero byte in the padding of a blob': patch([(model[2] + model[3], '<B', 1)], False),
+        # blobs that no record names (WEX4-SPEC 6, step 3): the old header page (kind 16) and the old entry table
+        # (kind 17) the upgrade keeps; a whole-file check refuses the file, an engine store may open it
+        'unused blob of kind 16, bit flip, hash not fixed': patch([(page16[2] + 100, '<B', base[page16[2] + 100] ^ 1)],
+                                                                  False),
+        'non-zero byte in the padding of an unused blob of kind 17': patch([(table17[2] + table17[3], '<B', 1)], False),
         # WNR3 record entries
         'WNR3 record without a model blob': patch([(rec0 + 20, '<I', 0)]),
         'WNR3 record whose blob is not a WNM2 model': patch([(rec0 + 20, '<I', 2)]),
@@ -688,8 +705,12 @@ def test_hostile_experts(base):
         c_status = C.check(blob, 3, True)[0]
         assert c_status != 0 and CREF.check(blob, 3, True)[0] == c_status and py_verdict(blob)[0] != 0, \
             f'{label}: C {c_status}, Python {py_verdict(blob)[0]}'
+    for label in ('unused blob of kind 16, bit flip, hash not fixed',
+                  'non-zero byte in the padding of an unused blob of kind 17'):
+        assert store_opens(attacks[label]), f'{label}: the engine store read a blob that no record uses'
     print(f'hostile expert files: {len(attacks)} hand-made attacks on blobs, WNR3 records and the expert grid '
-          f'rejected by C (fast and reference decoder) and Python')
+          f'rejected by C (fast and reference decoder) and Python; the engine store opens the 2 whose damaged blob '
+          f'no record uses')
     return attacks
 
 
@@ -1098,6 +1119,13 @@ def test_spec_cases():
         [expert_record('expert', small_shapes, nr3_slab(source), 0, under_broken)],
         blobs=[(wex4.BLOB_WNM2, broken_id, broken)], layers=1, experts=1)
     assert C.check(attacks['WNM2 blob with a table that is not increasing'], 3, True)[0] == -8
+    #    The same broken model as a second WNM2 blob that no record names, next to the good one the record uses:
+    #    a whole-file check opens every kind-1 blob as a model and refuses the file (WEX4-SPEC 6, step 3); an
+    #    engine store, which loads only the model its records name, opens it
+    unused = attacks['unused WNM2 blob with a table that is not increasing'] = written(
+        [expert_record('expert', small_shapes, nr3_slab(source), 0, nr3_encode(small_model, good, 7, 0))],
+        blobs=[(wex4.BLOB_WNM2, small_id, small_model), (wex4.BLOB_WNM2, broken_id, broken)], layers=1, experts=1)
+    assert C.check(unused, 3, True)[0] == -8 and store_opens(unused)
 
     digests = set()
     for label, blob in accepted.items():

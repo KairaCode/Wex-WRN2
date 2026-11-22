@@ -4,7 +4,7 @@
 # CPU check of the WNR3 sync, no GPU and no real model needed:
 #   1. c/tests/test_wex_format.c (codec 5: hash vectors, round trips, mutations, corruption audit, container rules)
 #      and c/tests/test_wex4_verify.c (c/tools/wex4_verify.c on small WEX4 files; c/tools/wex4_verify.c also alone,
-#      compile only), then c/tests/test_wex_fast_decode.c (the fast WNR3 decoder c/wex_fast_decode.h, and
+#      run on 6 vectors), then c/tests/test_wex_fast_decode.c (the fast WNR3 decoder c/wex_fast_decode.h, and
 #      coli_wex_decode_record of c/wex_decode.c with COLI_WEX_FAST_DECODE unset, 1 and 0, against the reference
 #      decoder on synthetic records). On x86-64 in three builds: -march=haswell (the AVX2 kernel compiled for the
 #      target), the x86-64 baseline (the AVX2 kernel behind a target attribute, chosen at run time by CPUID) and
@@ -56,6 +56,18 @@ W="-O2 -Wall -Wextra -Wno-unused-parameter -Wno-unused-function ${WEX_CFLAGS-}"
 ./test_wex4_verify.exe > test_wex4_verify.log 2>&1 || { cat test_wex4_verify.log; exit 1; }
 tail -1 test_wex4_verify.log
 "$CC" $W $OMP -c "$C/tools/wex4_verify.c" -o wex4_verify.o
+"$CC" $W $OMP wex4_verify.o -o wex4_verify.exe
+# a whole-file check checks every blob, used by a record or not, and opens every WNM2 blob as a model (WEX4-SPEC
+# section 6, step 3): exit 0 on a valid vector, 1 on the vectors damaged in a blob under a valid index
+V=$ROOT/wex4/vectors
+./wex4_verify.exe "$V/valid/tiny2-cz-upgraded.wex4" 1 > wex4_verify_vectors.log
+for f in unused-blob-of-kind-16-bit-flip-hash-not-fixed non-zero-byte-in-the-padding-of-an-unused-blob-of-kind-17 \
+         unused-wnm2-blob-with-a-table-that-is-not-increasing wnm2-blob-with-a-table-that-is-not-increasing \
+         wnm2-blob-id-differs-from-its-model; do
+  s=0; ./wex4_verify.exe "$V/invalid/$f.wex4" 1 >> wex4_verify_vectors.log || s=$?
+  [ "$s" = 1 ] || { cat wex4_verify_vectors.log; echo "wex4_verify: exit $s on invalid/$f.wex4, expected 1" >&2; exit 1; }
+done
+echo "wex4_verify: a valid vector passes, 5 vectors with a damaged blob (3 of them unused) refused"
 # test_wex_fast_decode.c includes the engine's compat.h (for setenv and unsetenv on Windows), which is not in this
 # repository: a stand-in, found as "../compat.h" through -I stand-in/tests. On Windows _putenv_s(name, "") removes
 # the variable, as unsetenv does
