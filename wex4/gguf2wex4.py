@@ -51,6 +51,7 @@ EXPERT = re.compile(r'blk\.(0|[1-9]\d*)\.ffn_(gate|gate_up|up|down)_exps\.weight
 KIND_ORDER = ('gate', 'gate_up', 'up', 'down')
 SCALAR = {0: 1, 1: 1, 2: 2, 3: 2, 4: 4, 5: 4, 6: 4, 7: 1, 10: 8, 11: 8, 12: 8}
 MAX_HEADER = 1 << 30   # a blob's cap
+ZEROS = memoryview(bytes(1 << 20))   # unpack writes the zero gaps of a GGUF in pieces of this, never as one object
 
 
 def dtype_code(ggml_type):
@@ -117,7 +118,10 @@ def parse(f, size):
     need(0 < alignment <= 1 << 20 and not alignment & (alignment - 1), f'GGUF alignment {alignment}')
     tensors, names = [], set()
     for _ in range(n_tensors):
-        name = r.string().decode('utf-8')
+        try:
+            name = r.string().decode('utf-8')
+        except UnicodeDecodeError:
+            raise wex4.FormatError('GGUF tensor name is not UTF-8') from None
         need(name not in names, f'tensor {name} twice')
         names.add(name)
         n_dims = r.u32()
@@ -269,9 +273,12 @@ def unpack(in_path, out_dir=None, log=sys.stderr, reader=wex4.Reader):
         need(rd.optional & OPT_GGUF_SOURCES, 'container holds no GGUF sources')
         try:
             meta = json.loads(rd.meta.decode('utf-8'))
-            sources = [(s['name'], int(s['bytes']), s['sha256'], int(s['blob'])) for s in meta['gguf_sources']]
+            sources = [(s['name'], s['bytes'], s['sha256'], s['blob']) for s in meta['gguf_sources']]
         except (ValueError, KeyError, TypeError) as error:
             raise wex4.FormatError(f'metadata: {error!r}') from None
+        # pack writes JSON integers and strings; anything else (a float, Infinity, true, a string of digits) is refused
+        need(all(type(n) is str and type(b) is int and b >= 0 and type(h) is str and type(i) is int
+                 for n, b, h, i in sources), 'metadata: source field types')
         need(not meta.get('experts_only'), 'an experts-only container (pack --experts-only) holds the routed experts '
              'alone, the rest stayed in the GGUF: unpack cannot rebuild the GGUF from it')
         for name, size, recorded, blob in sources:
@@ -305,9 +312,14 @@ def unpack(in_path, out_dir=None, log=sys.stderr, reader=wex4.Reader):
                     if out:
                         out.write(piece)
                     pos += len(piece)
+
+                def zeros(n):   # a gap of n zero bytes, 1 MiB at a time: the size comes from the container
+                    while n > 0:
+                        emit(ZEROS[:min(n, len(ZEROS))])
+                        n -= len(ZEROS)
                 emit(header)
                 for tname, ne, _, offset, nbytes in sorted(tensors, key=lambda t: t[3]):
-                    emit(bytes(data + offset - pos))
+                    zeros(data + offset - pos)
                     if tname.encode() in rd.by_name:
                         need(rd.tensors[rd.by_name[tname.encode()]][7] == nbytes, f'{tname}: size differs')
                         pieces = tensor_bytes(tname)
@@ -321,7 +333,7 @@ def unpack(in_path, out_dir=None, log=sys.stderr, reader=wex4.Reader):
                     for piece in pieces:
                         emit(piece)
                     need(pos == data + offset + nbytes, f'{tname}: rebuilt size')
-                emit(bytes(size - pos))
+                zeros(size - pos)
                 ok = digest.hexdigest() == recorded
                 need(ok, f'{name}: the rebuilt file does not match its SHA-256')
             except BaseException:

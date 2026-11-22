@@ -723,7 +723,7 @@ int main(int argc, char **argv) {
 
     before = failures;
     {   /* a record whose model is not the one given, a record changed in one bit: refused by both, slab untouched */
-        uint64_t raw_b, aligned;
+        uint64_t raw_b = 0, aligned = 0;   /* set by wex_entry_raw_sizes; 0 if it fails (gcc -Wmaybe-uninitialized) */
         static const WexFastOptions def = {1, 1, WEX_FAST_LANES, 1};
         CHECK(!wex_entry_raw_sizes(&synth[0].entry, &raw_b, &aligned));
         unsigned char *a = malloc((size_t)aligned), *b = malloc((size_t)aligned), *keep = malloc((size_t)aligned);
@@ -763,7 +763,7 @@ int main(int argc, char **argv) {
     {   /* coli_wex_decode_record: the fast decoder where the CPU has its kernel, the reference with
          * COLI_WEX_FAST_DECODE=0; the reference's bytes and verdicts either way */
         uint32_t id = 0;
-        uint64_t raw_b, aligned;
+        uint64_t raw_b = 0, aligned = 0;   /* set by wex_entry_raw_sizes; 0 if it fails (gcc -Wmaybe-uninitialized) */
         CHECK(!coli_wex_register_model(blob, WEX_NR2_MODEL_BYTES, &id) && id == model.id);
         CHECK(!coli_wex_register_model(blob_cz, WEX_NR2_MODEL_BYTES, &id) && id == model_cz.id);
         CHECK(!wex_entry_raw_sizes(&synth[0].entry, &raw_b, &aligned));

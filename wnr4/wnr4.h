@@ -617,7 +617,10 @@ static inline size_t wnr4_encode(const Wnr4Model *model, const Wnr4Geo *g, const
             if (x[ln] >= (f << (32u - WNR4_PREC))) { stack[sp++] = (uint16_t)x[ln]; x[ln] >>= 16; }
             x[ln] = ((x[ln] / f) << WNR4_PREC) + x[ln] % f + s0;
         }
-        if (at + WNR4_TILE_STATE_BYTES + 2u * sp > cap) { free(stack); free(sym); return 0; }
+        /* the tile offsets and P are u32: a payload past 4 GiB is refused, as wnr4_i4.h does */
+        if (at + WNR4_TILE_STATE_BYTES + 2u * sp > cap || at + WNR4_TILE_STATE_BYTES + 2u * sp - payload0 > 0xffffffffu) {
+            free(stack); free(sym); return 0;
+        }
         for (l = 0; l < 32u; l++) wnr4_put32(rec + at + 4u * l, x[l]);
         for (p = 0; p < sp; p++) {   /* reversed: the last word pushed is read first */
             uint16_t w = stack[sp - 1u - p];

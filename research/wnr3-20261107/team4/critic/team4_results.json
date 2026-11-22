@@ -1079,7 +1079,7 @@
     },
     {
      "claim": "This PC's drive letters are not the KAIRA machine's",
-     "evidence": "Get-PSDrive on this PC: C..Z drives. This PC's U: shows 607.9 GB free and E: 1102.9 GB free, vs the reference's KAIRA U: 122.6 GB and E: 105.9 GB. The reference's drive table (ref:106-119) is the KAIRA machine's M0 probe; the reference's paths are under <HOME>, while this PC's user is SHC",
+     "evidence": "Get-PSDrive on this PC: C..Z drives. This PC's U: shows 607.9 GB free and E: 1102.9 GB free, vs the reference's KAIRA U: 122.6 GB and E: 105.9 GB. The reference's drive table (ref:106-119) is the KAIRA machine's M0 probe; the reference's paths are under <HOME>, while this PC's user is another one",
      "kind": "measured",
      "impact": "No free-space or drive-speed number here was measured on the KAIRA drives; all come from the reference",
      "confidence": "high"

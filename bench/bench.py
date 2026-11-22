@@ -253,7 +253,14 @@ def disk(test_dir, existing, size_gb, quick):
         path = os.path.join(test_dir, 'wex-bench.tmp')
         made = path
         t = time.perf_counter()
-        make_file(path, size_gb << 30)
+        try:
+            make_file(path, size_gb << 30)
+        except BaseException:   # a full disk or Ctrl-C while writing: do not leave gigabytes behind
+            try:
+                os.remove(path)
+            except OSError:
+                pass
+            raise
         write_s = time.perf_counter() - t
     size = os.path.getsize(path)
     res = {'file_gib': round(size / (1 << 30), 2), 'existing_file': bool(existing)}
