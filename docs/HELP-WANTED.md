@@ -627,10 +627,11 @@ measured; it is not known to fail.
     - conformance vectors for codec 8, which wait until the WEX4 draft is adopted;
     - a container writer for kinds MX and NV (`wex4/wnr4gg.py` writes kind GG only; the MX and NV records
       of the research are bench packs), with the required feature bit that kinds MX and NV need in
-      EXPERT records (WNR4-SPEC section 7);
-    - an int4 kind with its GPU kernel: a CPU prototype for int4-g64 exports, not in this repository,
-      stores 1.4-2.5 points less than zstd -19 and has no per-tile hash, tail in the state, GPU kernel or
-      container writer yet (report, section 8.3);
+      EXPERT records (WNR4-SPEC section 8);
+    - int4 exports that kind 3 (I4, WNR4-SPEC section 6) codes badly: its scale model is the lattice of an
+      FP8 block-scaled source, and the scales of an int4 export of an NVFP4 checkpoint (Inkling-2-Mini)
+      escape, 0.881 of raw against 0.841 for zstd -19; a palette or NVFP4-lattice scale mode would fix it
+      (report, section 8.3);
     - kinds for the IQ2 slices of GGUF experts (IQ2_XXS, IQ2_S, IQ2_XS), which kind GG stores verbatim: a
       pre-study estimates about 1.1 GB more saved on Qwen3.8-Flash-Next UD-IQ1_M (report, section 8.2);
     - a G = 16 point, latency of one record and ratio: the sweep of the report's section 5 starts at

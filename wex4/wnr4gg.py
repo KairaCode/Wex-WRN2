@@ -129,8 +129,8 @@ class Reader(wex4.Reader):
 
 
 class Progress:
-    def __init__(self, what, total, log, every=5.0):
-        self.what, self.total, self.log, self.every = what, total, log, every
+    def __init__(self, what, total, log, every=5.0, tag='wnr4gg'):
+        self.what, self.total, self.log, self.every, self.tag = what, total, log, every, tag
         self.n = self.bytes = 0
         self.t0 = self.shown = time.time()
 
@@ -140,7 +140,7 @@ class Progress:
         now = time.time()
         if now - self.shown >= self.every or self.n == self.total:
             self.shown = now
-            print(f'[wnr4gg] {self.what} {self.n}/{self.total} records  {self.bytes / 1e9:.2f} GB  '
+            print(f'[{self.tag}] {self.what} {self.n}/{self.total} records  {self.bytes / 1e9:.2f} GB  '
                   f'{self.bytes / 1e6 / max(now - self.t0, 1e-6):.0f} MB/s{extra}', file=self.log, flush=True)
 
 

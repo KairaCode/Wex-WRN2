@@ -15,9 +15,14 @@
  * Kind GG (GGUF Q2_0 / IQ4_NL slices, wnr4/wnr4_gg.h): wnr4_cuda_gg_register_model(), then
  * wnr4_cuda_gg_batch_submit() (waited for with wnr4_cuda_batch_wait(), same slots) or the synchronous
  * wnr4_cuda_gg_decode_batch(). The geometry (nseg, types[], bytes[]) is the same for every record of a batch;
- * each record decodes to its whole slab at dst[i] (device, any alignment), verbatim slices copied there too. */
+ * each record decodes to its whole slab at dst[i] (device, any alignment), verbatim slices copied there too.
+ * Kind I4 (int4-g64 experts, wnr4/wnr4_i4.h): wnr4_cuda_i4_register_model(), then wnr4_cuda_i4_batch_submit()
+ * (waited for with wnr4_cuda_batch_wait()) or wnr4_cuda_i4_decode_batch(). The geometry (nmat, rows[], cols[],
+ * pairs) is the same for every record of a batch; each record decodes to its whole record bytes at dst[i] (device,
+ * 4-byte aligned); records with G above 64 are refused (status -1: decode them on the CPU). */
 #include "../wnr4_cuda.cuh"
 #include "../wnr4_gg_cuda.cuh"
+#include "../wnr4_i4_cuda.cuh"
 #include <mutex>
 #include <vector>
 
@@ -36,6 +41,7 @@
 namespace {
 struct Model { Wnr4Model host; int device; unsigned char *dev; Wnr4CudaTables tab; };
 struct GgModel { Wnr4GgModel host; int device; unsigned char *dev; };
+struct I4Model { Wnr4I4Model host; int device; unsigned char *dev; };
 template<typename T> bool grow_dev(T *&p, size_t &cap, size_t n) {
     if (n <= cap) return true;
     if (p) cudaFree(p);
@@ -57,6 +63,7 @@ struct Slot {
     uint32_t *derr = nullptr, *herr = nullptr; size_t derr_cap = 0, herr_cap = 0;
     Wnr4GgCudaJob *dgjob = nullptr, *hgjob = nullptr; size_t dgjob_cap = 0, hgjob_cap = 0;   /* kind GG */
     Wnr4GgCudaCopy *dcopy = nullptr, *hcopy = nullptr; size_t dcopy_cap = 0, hcopy_cap = 0;
+    Wnr4I4CudaJob *dijob = nullptr, *hijob = nullptr; size_t dijob_cap = 0, hijob_cap = 0;   /* kind I4 */
     cudaEvent_t done = nullptr;
     cudaStream_t own = nullptr;   /* this slot's stream when the caller gives none: batches in flight overlap */
     std::vector<int> status;      /* host-side verdicts before the GPU (0 = queued) */
@@ -75,6 +82,8 @@ struct Slot {
         if (dcopy) cudaFree(dcopy);
         if (hgjob) cudaFreeHost(hgjob);
         if (hcopy) cudaFreeHost(hcopy);
+        if (dijob) cudaFree(dijob);
+        if (hijob) cudaFreeHost(hijob);
         if (done) cudaEventDestroy(done);
         if (own) cudaStreamDestroy(own);
         (void)cudaGetLastError();
@@ -110,6 +119,7 @@ struct DeviceGuard {   /* restores the caller's current device */
 std::mutex lock_models;
 std::vector<Model *> models;
 std::vector<GgModel *> gg_models;
+std::vector<I4Model *> i4_models;
 thread_local Rings rings;
 
 template<typename M> M *find_locked(const std::vector<M *> &list, uint32_t id, int device) {
@@ -157,7 +167,7 @@ int finish(Slot &s, int *status) {   /* waits for the slot's batch and writes th
 }
 }
 
-WNR4_API unsigned int wnr4_cuda_abi(void) { return 5u; }   /* 5: kind GG entry points */
+WNR4_API unsigned int wnr4_cuda_abi(void) { return 6u; }   /* 5: kind GG entry points; 6: kind I4 entry points */
 
 /* Validates the WNM4 blob and uploads its tables to `device`. 0 ok (also when already registered),
  * -1 invalid blob, 1 CUDA error. */
@@ -349,6 +359,90 @@ WNR4_API int wnr4_cuda_gg_decode_batch(int n, uint32_t nseg, const uint32_t *typ
     if (n <= 0) return 0;
     if (!status) return n;
     int t = wnr4_cuda_gg_batch_submit(n, nseg, types, bytes, records, totals, owners, model_id, device, dst, nullptr);
+    if (t < 0) {
+        const int v = t == WNR4_E_ARGS ? -1 : 1;
+        for (int i = 0; i < n; i++) status[i] = v;
+        return n;
+    }
+    return wnr4_cuda_batch_wait(t, status);
+}
+
+/* ---- kind I4 ------------------------------------------------------------------ */
+/* Validates the WNM4 kind-3 blob and uploads its tables to `device`, as wnr4_cuda_gg_register_model(): 0 ok (also
+ * when already registered) and *id = the model id, -1 invalid blob, 1 CUDA error (*id = 0 on -1 and 1). */
+WNR4_API int wnr4_cuda_i4_register_model(const unsigned char *blob, size_t bytes, int device, uint32_t *id) {
+    DeviceGuard guard;
+    if (id) *id = 0;   /* never a valid model id */
+    I4Model *m = new I4Model();
+    if (wnr4_i4_model_open(blob, bytes, &m->host)) { delete m; return -1; }
+    const uint32_t mid = m->host.id;
+    std::lock_guard<std::mutex> g(lock_models);   /* find and insert under one lock */
+    if (find_locked(i4_models, mid, device)) { wnr4_i4_model_free(&m->host); delete m; if (id) *id = mid; return 0; }
+    std::vector<unsigned char> img(wnr4_i4_cuda_table_bytes());
+    wnr4_i4_cuda_table_image(&m->host, img.data());
+    m->device = device; m->dev = nullptr;
+    if (cudaSetDevice(device) != cudaSuccess || cudaMalloc(&m->dev, img.size()) != cudaSuccess ||
+        cudaMemcpy(m->dev, img.data(), img.size(), cudaMemcpyHostToDevice) != cudaSuccess) {
+        (void)cudaGetLastError();
+        if (m->dev) cudaFree(m->dev);
+        wnr4_i4_model_free(&m->host); delete m; return 1;
+    }
+    i4_models.push_back(m);
+    if (id) *id = mid;
+    return 0;
+}
+
+/* Enqueues n records of one geometry (nmat matrices of rows[] x cols[], packing pairs; records[i]: totals[i] bytes
+ * of page-locked host memory) for decoding into dst[i] (device, the record's decoded bytes, 4-byte aligned) on
+ * `stream` (NULL = the slot's own non-blocking stream). A record with G above 64, an unaligned destination or an
+ * invalid header gets status -1. Returns a ticket for wnr4_cuda_batch_wait(), or WNR4_E_ARGS, WNR4_E_MODEL,
+ * WNR4_E_CUDA (nothing queued) or WNR4_E_BUSY, as wnr4_cuda_batch_submit(). */
+WNR4_API int wnr4_cuda_i4_batch_submit(int n, uint32_t nmat, const uint32_t *rows, const uint32_t *cols, uint32_t pairs,
+                                       const unsigned char *const *records, const size_t *totals, const uint32_t *owners,
+                                       uint32_t model_id, int device, unsigned char *const *dst, void *stream) {
+    Wnr4I4Geo g;
+    if (n <= 0 || !rows || !cols || !records || !totals || !owners || !dst || wnr4_i4_geo(&g, nmat, rows, cols, pairs))
+        return WNR4_E_ARGS;
+    I4Model *m = find(i4_models, model_id, device);
+    if (!m) return WNR4_E_MODEL;
+    DeviceGuard guard;
+    if (cudaSetDevice(device) != cudaSuccess) { (void)cudaGetLastError(); return WNR4_E_CUDA; }
+    Slot *sp = nullptr;
+    int ticket = 0, busy = take_slot(device, &sp, &ticket);
+    if (busy) return busy;
+    Slot &s = *sp;
+    cudaStream_t st = stream ? (cudaStream_t)stream : s.own;
+    size_t all = 0;
+    std::vector<size_t> at((size_t)n);
+    for (int i = 0; i < n; i++) { at[(size_t)i] = all; all += (totals[i] + 255u) & ~(size_t)255u; }
+    if (!grow_dev(s.drec, s.drec_cap, all) || !grow_dev(s.derr, s.derr_cap, (size_t)n) ||
+        !grow_host(s.herr, s.herr_cap, (size_t)n)) return WNR4_E_CUDA;
+    s.status.assign((size_t)n, -1);
+    std::vector<Wnr4I4CudaJob> by_m[3], jobs;
+    for (int i = 0; i < n; i++)
+        if (records[i] && dst[i] && !((uintptr_t)dst[i] & 3u) &&
+            !wnr4_i4_cuda_plan(&g, &m->host, records[i], totals[i], owners[i], s.drec + at[(size_t)i], (uint32_t)i, dst[i], by_m))
+            s.status[(size_t)i] = 0;
+    const uint32_t W = wnr4_i4_cuda_jobs(by_m, jobs);
+    if (!grow_dev(s.dijob, s.dijob_cap, jobs.size() + 1u) || !grow_host(s.hijob, s.hijob_cap, jobs.size() + 1u))
+        return WNR4_E_CUDA;
+    if (!jobs.empty()) memcpy(s.hijob, jobs.data(), sizeof(Wnr4I4CudaJob) * jobs.size());
+    cudaError_t e = cudaSuccess;
+    for (int i = 0; i < n && e == cudaSuccess; i++)
+        if (!s.status[(size_t)i]) e = cudaMemcpyAsync(s.drec + at[(size_t)i], records[i], totals[i], cudaMemcpyHostToDevice, st);
+    if (e == cudaSuccess && !jobs.empty()) e = cudaMemcpyAsync(s.dijob, s.hijob, sizeof(Wnr4I4CudaJob) * jobs.size(), cudaMemcpyHostToDevice, st);
+    if (e == cudaSuccess) e = cudaMemsetAsync(s.derr, 0, 4u * (size_t)n, st);
+    if (e == cudaSuccess) e = wnr4_i4_cuda_launch(m->dev, m->host.id, s.dijob, (uint32_t)jobs.size(), W, s.derr, st);
+    return close_slot(s, e, n, st, ticket);
+}
+
+/* Synchronous I4 batch: status[i] and the return value as wnr4_cuda_gg_decode_batch(). */
+WNR4_API int wnr4_cuda_i4_decode_batch(int n, uint32_t nmat, const uint32_t *rows, const uint32_t *cols, uint32_t pairs,
+                                       const unsigned char *const *records, const size_t *totals, const uint32_t *owners,
+                                       uint32_t model_id, int device, unsigned char *const *dst, int *status) {
+    if (n <= 0) return 0;
+    if (!status) return n;
+    int t = wnr4_cuda_i4_batch_submit(n, nmat, rows, cols, pairs, records, totals, owners, model_id, device, dst, nullptr);
     if (t < 0) {
         const int v = t == WNR4_E_ARGS ? -1 : 1;
         for (int i = 0; i < n; i++) status[i] = v;

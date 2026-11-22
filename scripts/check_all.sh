@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 Ludovico Zanichelli
 # The CPU checks that need only a C compiler and Python (no GPU, no model, no engine tree), in one command: the
-# repository check, five standard-library tests (two of them the GGUF converter and the WNR4-GG tool, which builds its
-# library with CC), the WEX1-3/WNR3 CPU check, the WNR4 CPU tests, the WEX4 tests with the conformance vectors, and the
+# repository check, six standard-library tests (three of them the GGUF converter and the WNR4-GG and WNR4-I4 tools, the
+# last two build their library with CC), the WEX1-3/WNR3 CPU check, the WNR4 CPU tests, the WEX4 tests with the conformance vectors, and the
 # fast WNR3 decoder's own harness; the entry point of README, CONTRIBUTING and CI.
 # Not here: the fuzz replay (wex4/fuzz/run.sh --replay, which also needs g++), the smoke run of bench/wex_io.py, the
 # Go and the Rust reader, the sanitizer runs and the benchmarks; CI runs them as steps and jobs of their own
@@ -18,7 +18,7 @@ PY=${PYTHON:-python}
 "$PY" -I check_repo.py --self-test
 "$PY" -I check_repo.py
 for t in scripts/test_verify_wex1.py c/tests/test_repack_v4_wex.py c/tests/test_build_nr3_picks.py \
-         wex4/test_gguf2wex4.py wex4/test_wnr4gg.py; do
+         wex4/test_gguf2wex4.py wex4/test_wnr4gg.py wex4/test_wnr4i4.py; do
   echo "== $t"; "$PY" -I "$t"
 done
 bash scripts/build_cpu_check.sh

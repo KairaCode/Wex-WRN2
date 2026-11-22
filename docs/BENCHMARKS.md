@@ -301,7 +301,7 @@ All 11 paths read records whose SHA-256 matched the index. On these virtual mach
 
 ## WNR4 record codec: ratio and decode speed (2026-11-21, research, no engine)
 
-WNR4 is a draft ([WNR4-SPEC.md](WNR4-SPEC.md)): no production container or engine uses it, so these are numbers of the codec alone, with no tok/s. Kinds MX and NV: section 5 of the dated report [wnr4-research-20261121.md](reports/wnr4-research-20261121.md), on the machine of the other tables (RTX 5090 with 170 SMs, CUDA 13.4, `sm_120`; Ryzen 9 7950X3D), raw output in [research/wnr4-20261121](../research/wnr4-20261121/README.md). Kind GG: [research/wnr4-gg-20261121](../research/wnr4-gg-20261121/README.md). The code and its build lines: [wnr4/README.md](../wnr4/README.md).
+WNR4 is a draft ([WNR4-SPEC.md](WNR4-SPEC.md)): no production container or engine uses it, so these are numbers of the codec alone, with no tok/s. Kinds MX and NV: section 5 of the dated report [wnr4-research-20261121.md](reports/wnr4-research-20261121.md), on the machine of the other tables (RTX 5090 with 170 SMs, CUDA 13.4, `sm_120`; Ryzen 9 7950X3D), raw output in [research/wnr4-20261121](../research/wnr4-20261121/README.md). Kind GG: [research/wnr4-gg-20261121](../research/wnr4-gg-20261121/README.md). Kind I4: [research/wnr4-i4-20261122](../research/wnr4-i4-20261122/README.md). The code and its build lines: [wnr4/README.md](../wnr4/README.md).
 
 Ratio, for scale (stored / raw, 2048 held-out records per container, G = 128, report section 4): Qwen3.8-Flash-Next MXFP4 0.8753 against WNR3 0.8809, Qwen3.8 NVFP4 0.9238 against WNR3-NV 0.9271, DeepSeek V4.1 REAP-192 0.8488 against WNR3 0.8539. The stored/raw in brackets in the next table is that of the smaller speed pack measured, not the 2048-record figure.
 
@@ -355,6 +355,18 @@ At batch 32, G = 32 decodes the coded slices 3.4 times as fast as G = 128 (57.0 
 | a second GGUF quantization of a Qwen3.8-Flash-Next variant with 256 experts per layer, labelled IQ1_M: 288 held-out records (10 experts per layer, 4 of them for training) | 0.9763 (575,422,464 of 589,363,200 B); layers with an IQ4_NL down slice 0.9780, with a Q2_0 one 0.9669; the 192 training records 0.9764 | decode 224 MB/s on 1 thread, 1.69 GB/s on 16; encode 324-330 MB/s on 1 thread | a Ryzen 9 7950X3D (the machine of the other tables), gcc 16.2 `-O3 -march=native -fopenmp`; [measure-t1.log](../research/wnr4-gg-20261121/results/second-pack/measure-t1.log), [measure-t16.log](../research/wnr4-gg-20261121/results/second-pack/measure-t16.log) |
 
 All 480 records of the second pack decoded byte-identical at 1 and 16 threads. An earlier run of the same sample, with the codec at an earlier commit (same format, same ratio 0.9763), measured 218 MB/s and 1.88 GB/s (its log is not in the research folder), so CPU decode on 16 threads is 1.7-1.9 GB/s. The engine that runs this pack reads expert records from NVMe at about 4.7 GB/s on one read thread (an engine measurement, not in this repository): decode on the CPU is slower than the read it would replace, and even with free decode 2.4% fewer bytes give at most about +2% tok/s, below that engine's A/B noise (1.4-2.8% per-arm spread). So kind GG gives no gain when the experts are read from disk, and no engine uses it. Before the WNR4-GG container was packed, every record of the RAW container was checked equal to its GGUF slices and to its SHA-256 (0 bad, 110 s; [check_raw.log](../research/wnr4-gg-20261121/results/full-model/check_raw.log)).
+
+**Kind I4, int4-g64 experts** (2026-11-22; [research/wnr4-i4-20261122](../research/wnr4-i4-20261122/README.md)). 256 held-out records of an int4-g64 export of Qwen3.8-Flash-Next (2,764,800 B each), coded with a model trained on 32 others; every record byte-exact, every group scale on the lattice of WNR4-SPEC 6.1. CPU: the Ryzen 9 7950X3D of the other tables, gcc 16.2 `-O2 -march=haswell`, one run each. GPU: the RTX 5090, kernel only, records resident in VRAM, L2 flushed before each run, median of 20, GB/s of decoded records, test `wnr4/tests/test_wnr4_i4_gpu.cu`.
+
+| G | stored / raw (zstd -19: 0.8074) | CPU decode, 1 / 8 threads | GPU, one record | GPU, batch 32 |
+|---:|---|---|---|---|
+| 16 | 0.78474 | 81 / 406 MB/s | 0.241 ms | 193.2 GB/s |
+| 32 | **0.78333** | 84 / 447 MB/s | 0.474 ms | 156.9 GB/s |
+| 64 | 0.78270 | 87 / 409 MB/s | 1.035 ms | 79.8 GB/s |
+
+**Whole model** (one run): all 24,576 records of that export (48 layers x 512 experts, 67,947,724,800 bytes of records), with a model trained on every 8th record (3,072), packed by `wex4/wnr4i4.py pack` at G = 32: 53,246,078,976 bytes of records (**0.7836** of raw), a 53,294,047,232-byte container against 67,995,492,352 bytes RAW (14.7 GB, 21.6% less), and `wex4/wnr4i4.py verify --source` decoded all 24,576 records on the CPU identical to the RAW container (a Ryzen 7 9700X: pack 64 MB/s, verify 242 MB/s on 4 threads).
+
+On an int4-g64 export of the NVFP4 checkpoint of Inkling-2-Mini, 90% of the scales miss the lattice and escape: 0.88139 of raw, more than zstd -19 (0.8406). No engine reads kind I4 records: an engine that keeps its int4 experts in host memory would have to decode each record read from disk on the CPU (447 MB/s on 8 threads, against an NVMe read of several GB/s) or through a GPU round trip, to save 0.6 MB per 2.76 MB record.
 
 ## Earlier results
 
