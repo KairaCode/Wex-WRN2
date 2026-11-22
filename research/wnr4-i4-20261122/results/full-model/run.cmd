@@ -1,6 +1,6 @@
 @echo off
-cd /d F:\wex\i4full
-set D=F:\wex\i4full\wnr4_i4_tools.dll
+cd /d %~dp0
+set D=%~dp0wnr4_i4_tools.dll
 echo START %DATE% %TIME%
 if not exist q38_i4.wnm4 python -I wnr4i4.py train q38_int4g64.wex q38_i4.wnm4 --dll %D% --every 8 || goto fail
 echo TRAINED %DATE% %TIME%

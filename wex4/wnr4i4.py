@@ -13,7 +13,7 @@ scale per group of 64 codes along the row), with the same rows and cols in the s
 0, each a whole tensor (WNR4-SPEC section 6.1). --pairs: the codes of a group are packed "pairs" (byte j = codes 2j
 and 2j + 1), else "planar" (byte j = codes j and j + 32); the packing changes only the size of the coded record,
 never its bytes, and the record carries it (header byte 13), so verify needs no option. --G is the tile depth,
-1..4096 (the CUDA decoder of wnr4/wnr4_i4_cuda.cuh takes G <= 128). Draft, experimental:
+1..4096 (the CUDA decoder of wnr4/wnr4_i4_cuda.cuh takes G <= 64). Draft, experimental:
   - codec 8 = a WNR4 record of any kind (the record header's kind byte tells them apart; this tool writes and reads
     kind 3, I4); blob kind 3 = a WNM4 model of any kind, id = the model id. A codec-8 record names its model in its
     blob field. Owner = the record's owner field (the records are not EXPERT-flagged), in the index and in the
