@@ -186,7 +186,7 @@ WNR3 and WNR4 columns: the same packs (`results/pack3-*.json`; the 2048-record r
 
 ## 8. Later on 2026-11-21: engine decision, kind GG, int4-g64
 
-Sections 1-7 stay as first written; this section adds what was decided and measured later the same day. Since then [WEX4-SPEC.md](../WEX4-SPEC.md) assigns WNR4, as a draft, codec 8 and blob kind 3 (its section 7.3), for records that are neither EXPERT nor VALUE_EXACT; kinds MX and NV in EXPERT records still need a required feature bit ([WNR4-SPEC.md](../WNR4-SPEC.md) section 7).
+Sections 1-7 stay as first written; this section adds what was decided and measured later the same day. Since then [WEX4-SPEC.md](../WEX4-SPEC.md) assigns WNR4, as a draft, codec 8 and blob kind 3 (its section 7.3), for records that are neither EXPERT nor VALUE_EXACT; kinds MX and NV in EXPERT records still need a required feature bit ([WNR4-SPEC.md](../WNR4-SPEC.md) section 8).
 
 ### 8.1 Engine integration: analysed, not done
 
