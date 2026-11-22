@@ -40,6 +40,7 @@ invalid/non-zero-byte-in-the-index-padding.wex4	reject	WEX4_E_INDEX	-	4a9877d9a8
 invalid/non-zero-byte-in-the-padding-of-a-blob.wex4	reject	WEX4_E_BLOB	-	58921db6dd1c68245aea50a6d39c40cd16c9a62c074ef2b4f3f6da45995a7b81	-	-
 invalid/non-zero-byte-in-the-padding-of-a-raw-record-record-hash-fixed.wex4	reject	WEX4_E_DATA	-	d308457948b8d0acb581322442cbc65f13d77eb96b47b1d71944d1f7a5df0d1e	-	-
 invalid/non-zero-byte-in-the-padding-of-a-wnr3-record-record-hash-fixed.wex4	reject	WEX4_E_DATA	-	d66ac6f4f4f2b6a1dfcfaab8a7d5ce8ba38ce7a55ab15a6299d1158bf4b6d360	-	-
+invalid/non-zero-byte-in-the-padding-of-an-unused-blob-of-kind-17.wex4	reject	WEX4_E_BLOB	-	bbf4b0cfcd54e309d38538bf1b41c7f78e23bca4655afbd93f0bbb6f2c7dd0a2	-	-
 invalid/non-zero-reserved-bytes-after-a-blob-hash.wex4	reject	WEX4_E_BLOB	-	9f88f3e4d2f71bfa97714bf3c195418f80816c9547384dd11e830c00057fdafa	-	-
 invalid/non-zero-reserved-bytes-after-a-record-hash.wex4	reject	WEX4_E_RECORD	-	bd2ad502f287dc1e3fde2a988c456639f21365cb3946275bac981078c3e63055	-	-
 invalid/nul-byte-in-a-tensor-name.wex4	reject	WEX4_E_NAME	-	05269450b81562259a14bb88b565ec42c64682e70ae7277fedc8b2bfdf311cf4	-	-
@@ -85,6 +86,8 @@ invalid/truncated-file.wex4	reject	WEX4_E_HEADER	-	96f9b5274515700f241fb0d1af255
 invalid/unknown-codec-on-a-record-of-raw-size.wex4	reject	WEX4_E_RECORD	-	707424e4cf78e62fad18f56bc7e866a5cf5bff31cc76904276ff5481cb5e467f	-	-
 invalid/unknown-record-flag.wex4	reject	WEX4_E_RECORD	-	939f7424615ac30234f15893311eb570d232083dabdbe3ee7148ad8a154a644a	-	-
 invalid/unknown-required-feature.wex4	reject	WEX4_E_FEATURE	-	175351a76a5a324d388420a472957cfcedabff501e30c71f753afce18efc3af6	-	-
+invalid/unused-blob-of-kind-16-bit-flip-hash-not-fixed.wex4	reject	WEX4_E_HASH	-	1e09d91bab12df81c1f85eb6a0178c94423c0a8f8123882d9650de83b0d8ea69	-	-
+invalid/unused-wnm2-blob-with-a-table-that-is-not-increasing.wex4	reject	WEX4_E_BLOB	-	808ad9e2e624c8222d31f664544926a55109e175a110136f75954bf1a179c761	-	-
 invalid/value-exact-flag-on-a-raw-record.wex4	reject	WEX4_E_RECORD	-	cf26cca71e2144e359e861698eaf129673b3205be6d7b513698003c0c8fff779	-	-
 invalid/value-exact-record-without-the-required-feature.wex4	reject	WEX4_E_RECORD	-	dbd0eae613fca55095ee1db9299146605ba93d5997d020616d3ca216d8a4693b	-	-
 invalid/wbp1-record-header-damaged-record-hash-fixed.wex4	reject	WEX4_E_DATA	-	53d4fa22bc77c78bc9cde92bf0d8d9b1fd5ba16cc28dcf7031a86517a5ebca05	-	-

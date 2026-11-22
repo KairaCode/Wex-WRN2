@@ -6,7 +6,9 @@
  *
  * Checks what the engines check at open (wex4.h: header page hash, index hash and every index
  * rule), then every blob and every record: its stored bytes against the SHA-256 the index holds
- * (blob padding must be zero). Header page, blobs, records and index tile the file, and the root
+ * (blob padding must be zero), and every WNM2 blob (kind 1) opened as a model whose FNV-1a id is
+ * the entry's id, whether or not a record uses it (WEX4-SPEC section 6, step 3: a whole-file check
+ * checks every blob). Header page, blobs, records and index tile the file, and the root
  * (the header page's hash) covers the index, so a pass means every byte of the file is the one
  * the root names. Prints "COLI_WEX_ROOT=<root>" for the engine's environment; exit 0 only then
  * (1: some blob or record does not match, 2: the file does not open as WEX4, 3: out of memory
@@ -61,8 +63,11 @@ static void w4v_free(void *p) { free(p); }
 #define W4V_CHUNK (8u << 20)
 
 /* SHA-256 of `bytes` at `off` (a multiple of 4096 is read; the bytes past `bytes` must be zero).
- * 0 = matches want, 1 = differs, -1 = read failed. */
-static int w4v_item(W4vFile f, unsigned char *buf, uint64_t off, uint64_t bytes, const unsigned char *want) {
+ * model_id != 0: a WNM2 blob, which must also open as a model with that id (wex4_open has checked
+ * its size, so it is in buf whole). 0 = matches want, 1 = differs, 2 = not that WNM2 model,
+ * -1 = read failed. */
+static int w4v_item(W4vFile f, unsigned char *buf, uint64_t off, uint64_t bytes, const unsigned char *want,
+                    uint32_t model_id) {
     Wex4Sha s;
     unsigned char digest[32];
     uint64_t done = 0, span = wex4_align(bytes);
@@ -77,7 +82,12 @@ static int w4v_item(W4vFile f, unsigned char *buf, uint64_t off, uint64_t bytes,
         done += n;
     }
     wex4_sha_final(&s, digest);
-    return memcmp(digest, want, 32u) || !pad_ok ? 1 : 0;
+    if (memcmp(digest, want, 32u) || !pad_ok) return 1;
+    if (model_id) {
+        WexNr2Model m;
+        if (bytes > W4V_CHUNK || wex_nr2_model_open(buf, (size_t)bytes, &m) || m.id != model_id) return 2;
+    }
+    return 0;
 }
 
 /* The whole check; root gets the root's 64 hex digits once the file opens. Returns the exit code. */
@@ -126,19 +136,22 @@ static int wex4_verify_file(const char *path, int threads, char root[65], FILE *
         for (int64_t i = 0; i < items; i++) {
             uint64_t off, bytes;
             const unsigned char *want;
+            uint32_t model_id = 0;
             if (i < (int64_t)h.blobs) {
                 Wex4Blob b; wex4_get_blob(&v, (uint32_t)i, &b); off = b.offset; bytes = b.bytes; want = b.sha;
+                if (b.kind == WEX4_BLOB_WNM2) model_id = b.id;
             } else {
                 Wex4Record r; wex4_get_record(&v, (uint32_t)(i - h.blobs), &r); off = r.offset; bytes = r.stored; want = r.sha;
             }
             if (!buf) continue;   /* not checked (exit 3), not counted as a mismatch */
-            int got = w4v_item(f, buf, off, bytes, want);
+            int got = w4v_item(f, buf, off, bytes, want, model_id);
             if (got) {
                 bad++;
 #pragma omp critical
                 fprintf(log, "  %s %lld at byte %llu (%llu bytes): %s\n", i < (int64_t)h.blobs ? "blob" : "record",
                         (long long)(i < (int64_t)h.blobs ? i : i - h.blobs), (unsigned long long)off,
-                        (unsigned long long)bytes, got < 0 ? "read failed" : "SHA-256 or padding does not match the index");
+                        (unsigned long long)bytes, got < 0 ? "read failed" : got == 2 ? "not a valid WNM2 model with the entry's id"
+                        : "SHA-256 or padding does not match the index");
             } else checked += wex4_align(bytes);
         }
         w4v_free(buf);

@@ -70,7 +70,7 @@ Back to the [documentation index](README.md).
 
 **Root pin (`COLI_WEX_ROOT`).** The expected root of a WEX4 container, 64 hex digits, given to the engine in its environment. A container with another root does not open, and under a pin a container that is not WEX4 is refused too (it has no root). The pin is what turns the hashes into protection against substitution: without it they detect damage only. *Source: `docs/WEX4-SPEC.md` sections 8 and 13.3.*
 
-**`wex4_verify`.** The checker `c/tools/wex4_verify.c`: one read-only pass over a WEX4 file on several threads that checks the header page, the index and every blob and record against its SHA-256, then prints the line to pin, `COLI_WEX_ROOT=<root>`. It hashes and does not decode; `wex4/wex4.py verify` also decodes. *Source: `docs/WEX4-SPEC.md` section 15.1.*
+**`wex4_verify`.** The checker `c/tools/wex4_verify.c`: one read-only pass over a WEX4 file on several threads that checks the header page, the index and every blob and record against its SHA-256, opens every WNM2 blob as a model (used by a record or not), then prints the line to pin, `COLI_WEX_ROOT=<root>`. It decodes no record; `wex4/wex4.py verify` also decodes. *Source: `docs/WEX4-SPEC.md` section 15.1.*
 
 **Conformance vectors.** The files of `wex4/vectors/`, each with the verdict a reader must give (`MANIFEST.tsv`), for testing a reader written from the specification: for an accepted file also its root and content digest, for a refused one the C reader's error class. WNR3-SPEC section 12 names the vector of each check of a WNR3 decoder. *Source: `docs/WEX4-SPEC.md` section 17; `docs/WNR3-SPEC.md` section 12; `wex4/vectors/README.md`.*
 
