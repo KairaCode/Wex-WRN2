@@ -33,11 +33,12 @@ GPU, `wnr4/tests/test_wnr4_i4_gpu.cu`: RTX 5090 (driver 621.24), CUDA 13.4, `nvc
 | 16 | 0.284 ms, 155.8 GB/s | 0.494 ms, 89.5 GB/s | 1.042 ms, 42.5 GB/s |
 | 32 | 0.458 ms, 193.2 GB/s | 0.564 ms, 156.9 GB/s | 1.109 ms, 79.8 GB/s |
 
+Whole model, `wex4/wnr4i4.py` on the RAW container of all 24,576 records (67,995,492,352 bytes), on a second Windows desktop (Ryzen 7 9700X, 16 GB RAM, Python 3.14, the tools DLL built with gcc 16.2 `-O3 -march=haswell -fopenmp -static`): `train --every 8` (3,072 records, 58 s), `pack` at G = 32 (17 min, 64 MB/s; every record decoded back before it was written), `verify --source` (4 min 42 s, 242 MB/s on 4 threads). Result: 53,246,078,976 of 67,947,724,800 bytes of records, **0.7836** of raw; container 53,294,047,232 bytes against 67,995,492,352 RAW, 14.7 GB (21.6%) less; every record decoded identical to the RAW container. Log: [results/full-model/pack-verify.log](results/full-model/pack-verify.log), script [results/full-model/run.cmd](results/full-model/run.cmd). Both containers were deleted after the run.
+
 `wex4/wnr4i4.py` packs at G = 32 by default, as `wex4/wnr4gg.py` does: G = 16 would decode one record twice as fast on the GPU for 0.14 points of ratio.
 
 ## Not done
 
-- The whole Qwen3.8 model was not packed into a WNR4-I4 container (about 53 GB at this ratio, against 68 GB RAW); the ratio above is from 256 records.
 - Sage-S2.1-Flash (pairs packing; 0.7855 in the prototype) was not run with kind I4.
 - No engine run: no engine reads kind I4 records.
 
@@ -46,6 +47,7 @@ GPU, `wnr4/tests/test_wnr4_i4_gpu.cu`: RTX 5090 (driver 621.24), CUDA 13.4, `nvc
 - `bench_i4.c`: the CPU bench (train, code, decode on 1 and N threads, compare, one bit flipped).
 - `results/cpu-qwen38.log`: G 32, 64 and 16 on the Qwen3.8 sample; `results/cpu-inkling.log`: G 32 on the Inkling sample.
 - `results/gpu-test.log`: the output of `wnr4/tests/test_wnr4_i4_gpu.cu` on the 288 Qwen3.8 records.
+- `results/full-model/run.cmd` and `pack-verify.log`: the whole-model train, pack and verify.
 
 All runs used the code of this repository as committed with this folder (branch `wnr4-int4g64`).
 

@@ -364,6 +364,8 @@ All 480 records of the second pack decoded byte-identical at 1 and 16 threads. A
 | 32 | **0.78333** | 84 / 447 MB/s | 0.474 ms | 156.9 GB/s |
 | 64 | 0.78270 | 87 / 409 MB/s | 1.035 ms | 79.8 GB/s |
 
+**Whole model** (one run): all 24,576 records of that export (48 layers x 512 experts, 67,947,724,800 bytes of records), with a model trained on every 8th record (3,072), packed by `wex4/wnr4i4.py pack` at G = 32: 53,246,078,976 bytes of records (**0.7836** of raw), a 53,294,047,232-byte container against 67,995,492,352 bytes RAW (14.7 GB, 21.6% less), and `wex4/wnr4i4.py verify --source` decoded all 24,576 records on the CPU identical to the RAW container (a Ryzen 7 9700X: pack 64 MB/s, verify 242 MB/s on 4 threads).
+
 On an int4-g64 export of the NVFP4 checkpoint of Inkling-2-Mini, 90% of the scales miss the lattice and escape: 0.88139 of raw, more than zstd -19 (0.8406). No engine reads kind I4 records: an engine that keeps its int4 experts in host memory would have to decode each record read from disk on the CPU (447 MB/s on 8 threads, against an NVMe read of several GB/s) or through a GPU round trip, to save 0.6 MB per 2.76 MB record.
 
 ## Earlier results

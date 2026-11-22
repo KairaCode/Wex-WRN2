@@ -1,0 +1,289 @@
+START 22/11/2026  8:25:04,28
+[wnr4i4] train 259/3072 records  0.72 GB  143 MB/s
+[wnr4i4] train 523/3072 records  1.45 GB  144 MB/s
+[wnr4i4] train 785/3072 records  2.17 GB  144 MB/s
+[wnr4i4] train 1055/3072 records  2.92 GB  146 MB/s
+[wnr4i4] train 1326/3072 records  3.67 GB  146 MB/s
+[wnr4i4] train 1600/3072 records  4.42 GB  147 MB/s
+[wnr4i4] train 1875/3072 records  5.18 GB  148 MB/s
+[wnr4i4] train 2147/3072 records  5.94 GB  148 MB/s
+[wnr4i4] train 2411/3072 records  6.67 GB  148 MB/s
+[wnr4i4] train 2677/3072 records  7.40 GB  148 MB/s
+[wnr4i4] train 2933/3072 records  8.11 GB  147 MB/s
+[wnr4i4] train 3072/3072 records  8.49 GB  148 MB/s
+[wnr4i4] model 0x3bb80cf4 (196,688 B) from 3072 records -> q38_i4.wnm4
+TRAINED 22/11/2026  8:26:02,25
+[wnr4i4] pack 110/24576 records  0.30 GB  61 MB/s  coded 110, 0.7735 of raw
+[wnr4i4] pack 240/24576 records  0.66 GB  66 MB/s  coded 240, 0.7727 of raw
+[wnr4i4] pack 370/24576 records  1.02 GB  68 MB/s  coded 370, 0.7728 of raw
+[wnr4i4] pack 492/24576 records  1.36 GB  68 MB/s  coded 492, 0.7729 of raw
+[wnr4i4] pack 625/24576 records  1.73 GB  69 MB/s  coded 625, 0.7742 of raw
+[wnr4i4] pack 758/24576 records  2.10 GB  69 MB/s  coded 758, 0.7751 of raw
+[wnr4i4] pack 889/24576 records  2.46 GB  70 MB/s  coded 889, 0.7758 of raw
+[wnr4i4] pack 1021/24576 records  2.82 GB  70 MB/s  coded 1021, 0.7763 of raw
+[wnr4i4] pack 1134/24576 records  3.14 GB  69 MB/s  coded 1134, 0.7766 of raw
+[wnr4i4] pack 1269/24576 records  3.51 GB  70 MB/s  coded 1269, 0.7768 of raw
+[wnr4i4] pack 1406/24576 records  3.89 GB  70 MB/s  coded 1406, 0.7771 of raw
+[wnr4i4] pack 1543/24576 records  4.27 GB  71 MB/s  coded 1543, 0.7772 of raw
+[wnr4i4] pack 1680/24576 records  4.64 GB  71 MB/s  coded 1680, 0.7775 of raw
+[wnr4i4] pack 1817/24576 records  5.02 GB  71 MB/s  coded 1817, 0.7778 of raw
+[wnr4i4] pack 1954/24576 records  5.40 GB  72 MB/s  coded 1954, 0.7780 of raw
+[wnr4i4] pack 2089/24576 records  5.78 GB  72 MB/s  coded 2089, 0.7782 of raw
+[wnr4i4] pack 2225/24576 records  6.15 GB  72 MB/s  coded 2225, 0.7784 of raw
+[wnr4i4] pack 2361/24576 records  6.53 GB  72 MB/s  coded 2361, 0.7786 of raw
+[wnr4i4] pack 2495/24576 records  6.90 GB  72 MB/s  coded 2495, 0.7787 of raw
+[wnr4i4] pack 2632/24576 records  7.28 GB  72 MB/s  coded 2632, 0.7788 of raw
+[wnr4i4] pack 2768/24576 records  7.65 GB  73 MB/s  coded 2768, 0.7790 of raw
+[wnr4i4] pack 2904/24576 records  8.03 GB  73 MB/s  coded 2904, 0.7791 of raw
+[wnr4i4] pack 3041/24576 records  8.41 GB  73 MB/s  coded 3041, 0.7792 of raw
+[wnr4i4] pack 3177/24576 records  8.78 GB  73 MB/s  coded 3177, 0.7793 of raw
+[wnr4i4] pack 3314/24576 records  9.16 GB  73 MB/s  coded 3314, 0.7795 of raw
+[wnr4i4] pack 3450/24576 records  9.54 GB  73 MB/s  coded 3450, 0.7796 of raw
+[wnr4i4] pack 3584/24576 records  9.91 GB  73 MB/s  coded 3584, 0.7797 of raw
+[wnr4i4] pack 3719/24576 records  10.28 GB  73 MB/s  coded 3719, 0.7798 of raw
+[wnr4i4] pack 3854/24576 records  10.66 GB  73 MB/s  coded 3854, 0.7800 of raw
+[wnr4i4] pack 3990/24576 records  11.03 GB  73 MB/s  coded 3990, 0.7801 of raw
+[wnr4i4] pack 4125/24576 records  11.40 GB  73 MB/s  coded 4125, 0.7802 of raw
+[wnr4i4] pack 4262/24576 records  11.78 GB  73 MB/s  coded 4262, 0.7803 of raw
+[wnr4i4] pack 4397/24576 records  12.16 GB  73 MB/s  coded 4397, 0.7804 of raw
+[wnr4i4] pack 4532/24576 records  12.53 GB  73 MB/s  coded 4532, 0.7806 of raw
+[wnr4i4] pack 4668/24576 records  12.91 GB  73 MB/s  coded 4668, 0.7806 of raw
+[wnr4i4] pack 4805/24576 records  13.28 GB  74 MB/s  coded 4805, 0.7807 of raw
+[wnr4i4] pack 4942/24576 records  13.66 GB  74 MB/s  coded 4942, 0.7807 of raw
+[wnr4i4] pack 5073/24576 records  14.03 GB  73 MB/s  coded 5073, 0.7808 of raw
+[wnr4i4] pack 5211/24576 records  14.41 GB  73 MB/s  coded 5211, 0.7809 of raw
+[wnr4i4] pack 5343/24576 records  14.77 GB  73 MB/s  coded 5343, 0.7810 of raw
+[wnr4i4] pack 5478/24576 records  15.15 GB  73 MB/s  coded 5478, 0.7811 of raw
+[wnr4i4] pack 5609/24576 records  15.51 GB  73 MB/s  coded 5609, 0.7812 of raw
+[wnr4i4] pack 5744/24576 records  15.88 GB  73 MB/s  coded 5744, 0.7813 of raw
+[wnr4i4] pack 5880/24576 records  16.26 GB  73 MB/s  coded 5880, 0.7814 of raw
+[wnr4i4] pack 6016/24576 records  16.63 GB  73 MB/s  coded 6016, 0.7814 of raw
+[wnr4i4] pack 6145/24576 records  16.99 GB  73 MB/s  coded 6145, 0.7815 of raw
+[wnr4i4] pack 6276/24576 records  17.35 GB  73 MB/s  coded 6276, 0.7816 of raw
+[wnr4i4] pack 6411/24576 records  17.73 GB  73 MB/s  coded 6411, 0.7816 of raw
+[wnr4i4] pack 6531/24576 records  18.06 GB  73 MB/s  coded 6531, 0.7817 of raw
+[wnr4i4] pack 6642/24576 records  18.36 GB  73 MB/s  coded 6642, 0.7817 of raw
+[wnr4i4] pack 6768/24576 records  18.71 GB  73 MB/s  coded 6768, 0.7818 of raw
+[wnr4i4] pack 6899/24576 records  19.07 GB  73 MB/s  coded 6899, 0.7819 of raw
+[wnr4i4] pack 7028/24576 records  19.43 GB  73 MB/s  coded 7028, 0.7819 of raw
+[wnr4i4] pack 7163/24576 records  19.80 GB  73 MB/s  coded 7163, 0.7820 of raw
+[wnr4i4] pack 7298/24576 records  20.18 GB  73 MB/s  coded 7298, 0.7820 of raw
+[wnr4i4] pack 7418/24576 records  20.51 GB  73 MB/s  coded 7418, 0.7820 of raw
+[wnr4i4] pack 7540/24576 records  20.85 GB  73 MB/s  coded 7540, 0.7821 of raw
+[wnr4i4] pack 7645/24576 records  21.14 GB  72 MB/s  coded 7645, 0.7821 of raw
+[wnr4i4] pack 7761/24576 records  21.46 GB  72 MB/s  coded 7761, 0.7821 of raw
+[wnr4i4] pack 7873/24576 records  21.77 GB  72 MB/s  coded 7873, 0.7821 of raw
+[wnr4i4] pack 7908/24576 records  21.86 GB  71 MB/s  coded 7908, 0.7821 of raw
+[wnr4i4] pack 8038/24576 records  22.22 GB  71 MB/s  coded 8038, 0.7822 of raw
+[wnr4i4] pack 8175/24576 records  22.60 GB  71 MB/s  coded 8175, 0.7822 of raw
+[wnr4i4] pack 8295/24576 records  22.93 GB  71 MB/s  coded 8295, 0.7822 of raw
+[wnr4i4] pack 8392/24576 records  23.20 GB  71 MB/s  coded 8392, 0.7822 of raw
+[wnr4i4] pack 8409/24576 records  23.25 GB  70 MB/s  coded 8409, 0.7822 of raw
+[wnr4i4] pack 8446/24576 records  23.35 GB  69 MB/s  coded 8446, 0.7822 of raw
+[wnr4i4] pack 8558/24576 records  23.66 GB  69 MB/s  coded 8558, 0.7823 of raw
+[wnr4i4] pack 8694/24576 records  24.04 GB  69 MB/s  coded 8694, 0.7823 of raw
+[wnr4i4] pack 8824/24576 records  24.40 GB  69 MB/s  coded 8824, 0.7823 of raw
+[wnr4i4] pack 8935/24576 records  24.70 GB  69 MB/s  coded 8935, 0.7824 of raw
+[wnr4i4] pack 9058/24576 records  25.04 GB  69 MB/s  coded 9058, 0.7824 of raw
+[wnr4i4] pack 9178/24576 records  25.38 GB  69 MB/s  coded 9178, 0.7824 of raw
+[wnr4i4] pack 9312/24576 records  25.75 GB  69 MB/s  coded 9312, 0.7825 of raw
+[wnr4i4] pack 9383/24576 records  25.94 GB  68 MB/s  coded 9383, 0.7825 of raw
+[wnr4i4] pack 9477/24576 records  26.20 GB  68 MB/s  coded 9477, 0.7825 of raw
+[wnr4i4] pack 9609/24576 records  26.57 GB  68 MB/s  coded 9609, 0.7825 of raw
+[wnr4i4] pack 9742/24576 records  26.93 GB  68 MB/s  coded 9742, 0.7825 of raw
+[wnr4i4] pack 9875/24576 records  27.30 GB  68 MB/s  coded 9875, 0.7826 of raw
+[wnr4i4] pack 10009/24576 records  27.67 GB  68 MB/s  coded 10009, 0.7826 of raw
+[wnr4i4] pack 10145/24576 records  28.05 GB  69 MB/s  coded 10145, 0.7826 of raw
+[wnr4i4] pack 10282/24576 records  28.43 GB  69 MB/s  coded 10282, 0.7827 of raw
+[wnr4i4] pack 10377/24576 records  28.69 GB  68 MB/s  coded 10377, 0.7827 of raw
+[wnr4i4] pack 10462/24576 records  28.93 GB  68 MB/s  coded 10462, 0.7827 of raw
+[wnr4i4] pack 10465/24576 records  28.93 GB  67 MB/s  coded 10465, 0.7827 of raw
+[wnr4i4] pack 10495/24576 records  29.02 GB  66 MB/s  coded 10495, 0.7827 of raw
+[wnr4i4] pack 10611/24576 records  29.34 GB  66 MB/s  coded 10611, 0.7827 of raw
+[wnr4i4] pack 10642/24576 records  29.42 GB  66 MB/s  coded 10642, 0.7827 of raw
+[wnr4i4] pack 10770/24576 records  29.78 GB  66 MB/s  coded 10770, 0.7828 of raw
+[wnr4i4] pack 10868/24576 records  30.05 GB  66 MB/s  coded 10868, 0.7828 of raw
+[wnr4i4] pack 10953/24576 records  30.28 GB  65 MB/s  coded 10953, 0.7828 of raw
+[wnr4i4] pack 11072/24576 records  30.61 GB  65 MB/s  coded 11072, 0.7828 of raw
+[wnr4i4] pack 11152/24576 records  30.83 GB  65 MB/s  coded 11152, 0.7829 of raw
+[wnr4i4] pack 11263/24576 records  31.14 GB  65 MB/s  coded 11263, 0.7829 of raw
+[wnr4i4] pack 11352/24576 records  31.39 GB  65 MB/s  coded 11352, 0.7829 of raw
+[wnr4i4] pack 11465/24576 records  31.70 GB  65 MB/s  coded 11465, 0.7829 of raw
+[wnr4i4] pack 11600/24576 records  32.07 GB  65 MB/s  coded 11600, 0.7829 of raw
+[wnr4i4] pack 11734/24576 records  32.44 GB  65 MB/s  coded 11734, 0.7829 of raw
+[wnr4i4] pack 11794/24576 records  32.61 GB  65 MB/s  coded 11794, 0.7829 of raw
+[wnr4i4] pack 11930/24576 records  32.98 GB  65 MB/s  coded 11930, 0.7830 of raw
+[wnr4i4] pack 12065/24576 records  33.36 GB  65 MB/s  coded 12065, 0.7830 of raw
+[wnr4i4] pack 12123/24576 records  33.52 GB  65 MB/s  coded 12123, 0.7830 of raw
+[wnr4i4] pack 12168/24576 records  33.64 GB  64 MB/s  coded 12168, 0.7830 of raw
+[wnr4i4] pack 12301/24576 records  34.01 GB  64 MB/s  coded 12301, 0.7830 of raw
+[wnr4i4] pack 12432/24576 records  34.37 GB  64 MB/s  coded 12432, 0.7830 of raw
+[wnr4i4] pack 12567/24576 records  34.75 GB  65 MB/s  coded 12567, 0.7830 of raw
+[wnr4i4] pack 12700/24576 records  35.11 GB  65 MB/s  coded 12700, 0.7831 of raw
+[wnr4i4] pack 12764/24576 records  35.29 GB  64 MB/s  coded 12764, 0.7831 of raw
+[wnr4i4] pack 12824/24576 records  35.46 GB  64 MB/s  coded 12824, 0.7831 of raw
+[wnr4i4] pack 12959/24576 records  35.83 GB  64 MB/s  coded 12959, 0.7831 of raw
+[wnr4i4] pack 13095/24576 records  36.21 GB  64 MB/s  coded 13095, 0.7831 of raw
+[wnr4i4] pack 13232/24576 records  36.58 GB  64 MB/s  coded 13232, 0.7831 of raw
+[wnr4i4] pack 13369/24576 records  36.96 GB  64 MB/s  coded 13369, 0.7831 of raw
+[wnr4i4] pack 13505/24576 records  37.34 GB  65 MB/s  coded 13505, 0.7831 of raw
+[wnr4i4] pack 13642/24576 records  37.72 GB  65 MB/s  coded 13642, 0.7831 of raw
+[wnr4i4] pack 13779/24576 records  38.10 GB  65 MB/s  coded 13779, 0.7831 of raw
+[wnr4i4] pack 13914/24576 records  38.47 GB  65 MB/s  coded 13914, 0.7832 of raw
+[wnr4i4] pack 14051/24576 records  38.85 GB  65 MB/s  coded 14051, 0.7832 of raw
+[wnr4i4] pack 14188/24576 records  39.23 GB  65 MB/s  coded 14188, 0.7832 of raw
+[wnr4i4] pack 14316/24576 records  39.58 GB  65 MB/s  coded 14316, 0.7832 of raw
+[wnr4i4] pack 14430/24576 records  39.90 GB  65 MB/s  coded 14430, 0.7832 of raw
+[wnr4i4] pack 14544/24576 records  40.21 GB  65 MB/s  coded 14544, 0.7832 of raw
+[wnr4i4] pack 14677/24576 records  40.58 GB  65 MB/s  coded 14677, 0.7832 of raw
+[wnr4i4] pack 14809/24576 records  40.94 GB  65 MB/s  coded 14809, 0.7832 of raw
+[wnr4i4] pack 14943/24576 records  41.31 GB  65 MB/s  coded 14943, 0.7832 of raw
+[wnr4i4] pack 15078/24576 records  41.69 GB  65 MB/s  coded 15078, 0.7833 of raw
+[wnr4i4] pack 15213/24576 records  42.06 GB  65 MB/s  coded 15213, 0.7833 of raw
+[wnr4i4] pack 15346/24576 records  42.43 GB  65 MB/s  coded 15346, 0.7833 of raw
+[wnr4i4] pack 15482/24576 records  42.80 GB  65 MB/s  coded 15482, 0.7833 of raw
+[wnr4i4] pack 15616/24576 records  43.18 GB  66 MB/s  coded 15616, 0.7833 of raw
+[wnr4i4] pack 15751/24576 records  43.55 GB  66 MB/s  coded 15751, 0.7833 of raw
+[wnr4i4] pack 15885/24576 records  43.92 GB  66 MB/s  coded 15885, 0.7833 of raw
+[wnr4i4] pack 16019/24576 records  44.29 GB  66 MB/s  coded 16019, 0.7833 of raw
+[wnr4i4] pack 16154/24576 records  44.66 GB  66 MB/s  coded 16154, 0.7833 of raw
+[wnr4i4] pack 16291/24576 records  45.04 GB  66 MB/s  coded 16291, 0.7833 of raw
+[wnr4i4] pack 16425/24576 records  45.41 GB  66 MB/s  coded 16425, 0.7833 of raw
+[wnr4i4] pack 16562/24576 records  45.79 GB  66 MB/s  coded 16562, 0.7834 of raw
+[wnr4i4] pack 16699/24576 records  46.17 GB  66 MB/s  coded 16699, 0.7834 of raw
+[wnr4i4] pack 16833/24576 records  46.54 GB  66 MB/s  coded 16833, 0.7834 of raw
+[wnr4i4] pack 16969/24576 records  46.92 GB  66 MB/s  coded 16969, 0.7834 of raw
+[wnr4i4] pack 17105/24576 records  47.29 GB  66 MB/s  coded 17105, 0.7834 of raw
+[wnr4i4] pack 17239/24576 records  47.66 GB  66 MB/s  coded 17239, 0.7834 of raw
+[wnr4i4] pack 17375/24576 records  48.04 GB  66 MB/s  coded 17375, 0.7834 of raw
+[wnr4i4] pack 17510/24576 records  48.41 GB  66 MB/s  coded 17510, 0.7834 of raw
+[wnr4i4] pack 17646/24576 records  48.79 GB  66 MB/s  coded 17646, 0.7834 of raw
+[wnr4i4] pack 17782/24576 records  49.16 GB  67 MB/s  coded 17782, 0.7834 of raw
+[wnr4i4] pack 17917/24576 records  49.54 GB  67 MB/s  coded 17917, 0.7834 of raw
+[wnr4i4] pack 18052/24576 records  49.91 GB  67 MB/s  coded 18052, 0.7834 of raw
+[wnr4i4] pack 18187/24576 records  50.28 GB  67 MB/s  coded 18187, 0.7834 of raw
+[wnr4i4] pack 18323/24576 records  50.66 GB  67 MB/s  coded 18323, 0.7835 of raw
+[wnr4i4] pack 18456/24576 records  51.03 GB  67 MB/s  coded 18456, 0.7835 of raw
+[wnr4i4] pack 18589/24576 records  51.39 GB  67 MB/s  coded 18589, 0.7835 of raw
+[wnr4i4] pack 18725/24576 records  51.77 GB  67 MB/s  coded 18725, 0.7835 of raw
+[wnr4i4] pack 18862/24576 records  52.15 GB  67 MB/s  coded 18862, 0.7835 of raw
+[wnr4i4] pack 18994/24576 records  52.51 GB  67 MB/s  coded 18994, 0.7835 of raw
+[wnr4i4] pack 19115/24576 records  52.85 GB  67 MB/s  coded 19115, 0.7835 of raw
+[wnr4i4] pack 19168/24576 records  53.00 GB  67 MB/s  coded 19168, 0.7835 of raw
+[wnr4i4] pack 19305/24576 records  53.37 GB  67 MB/s  coded 19305, 0.7835 of raw
+[wnr4i4] pack 19435/24576 records  53.73 GB  67 MB/s  coded 19435, 0.7835 of raw
+[wnr4i4] pack 19568/24576 records  54.10 GB  67 MB/s  coded 19568, 0.7835 of raw
+[wnr4i4] pack 19702/24576 records  54.47 GB  67 MB/s  coded 19702, 0.7835 of raw
+[wnr4i4] pack 19835/24576 records  54.84 GB  67 MB/s  coded 19835, 0.7835 of raw
+[wnr4i4] pack 19970/24576 records  55.21 GB  67 MB/s  coded 19970, 0.7835 of raw
+[wnr4i4] pack 20103/24576 records  55.58 GB  67 MB/s  coded 20103, 0.7835 of raw
+[wnr4i4] pack 20239/24576 records  55.96 GB  67 MB/s  coded 20239, 0.7835 of raw
+[wnr4i4] pack 20376/24576 records  56.34 GB  67 MB/s  coded 20376, 0.7835 of raw
+[wnr4i4] pack 20510/24576 records  56.71 GB  67 MB/s  coded 20510, 0.7835 of raw
+[wnr4i4] pack 20646/24576 records  57.08 GB  67 MB/s  coded 20646, 0.7835 of raw
+[wnr4i4] pack 20781/24576 records  57.46 GB  67 MB/s  coded 20781, 0.7835 of raw
+[wnr4i4] pack 20917/24576 records  57.83 GB  67 MB/s  coded 20917, 0.7836 of raw
+[wnr4i4] pack 21049/24576 records  58.20 GB  67 MB/s  coded 21049, 0.7836 of raw
+[wnr4i4] pack 21182/24576 records  58.56 GB  67 MB/s  coded 21182, 0.7836 of raw
+[wnr4i4] pack 21318/24576 records  58.94 GB  67 MB/s  coded 21318, 0.7836 of raw
+[wnr4i4] pack 21454/24576 records  59.32 GB  67 MB/s  coded 21454, 0.7836 of raw
+[wnr4i4] pack 21588/24576 records  59.69 GB  67 MB/s  coded 21588, 0.7836 of raw
+[wnr4i4] pack 21722/24576 records  60.06 GB  67 MB/s  coded 21722, 0.7836 of raw
+[wnr4i4] pack 21857/24576 records  60.43 GB  68 MB/s  coded 21857, 0.7836 of raw
+[wnr4i4] pack 21986/24576 records  60.79 GB  68 MB/s  coded 21986, 0.7836 of raw
+[wnr4i4] pack 22119/24576 records  61.15 GB  68 MB/s  coded 22119, 0.7836 of raw
+[wnr4i4] pack 22251/24576 records  61.52 GB  68 MB/s  coded 22251, 0.7836 of raw
+[wnr4i4] pack 22385/24576 records  61.89 GB  68 MB/s  coded 22385, 0.7836 of raw
+[wnr4i4] pack 22520/24576 records  62.26 GB  68 MB/s  coded 22520, 0.7837 of raw
+[wnr4i4] pack 22654/24576 records  62.63 GB  68 MB/s  coded 22654, 0.7837 of raw
+[wnr4i4] pack 22786/24576 records  63.00 GB  68 MB/s  coded 22786, 0.7837 of raw
+[wnr4i4] pack 22921/24576 records  63.37 GB  68 MB/s  coded 22921, 0.7837 of raw
+[wnr4i4] pack 23023/24576 records  63.65 GB  68 MB/s  coded 23023, 0.7837 of raw
+[wnr4i4] pack 23148/24576 records  64.00 GB  68 MB/s  coded 23148, 0.7837 of raw
+[wnr4i4] pack 23206/24576 records  64.16 GB  67 MB/s  coded 23206, 0.7837 of raw
+[wnr4i4] pack 23340/24576 records  64.53 GB  68 MB/s  coded 23340, 0.7837 of raw
+[wnr4i4] pack 23457/24576 records  64.85 GB  67 MB/s  coded 23457, 0.7837 of raw
+[wnr4i4] pack 23559/24576 records  65.14 GB  67 MB/s  coded 23559, 0.7837 of raw
+[wnr4i4] pack 23653/24576 records  65.40 GB  67 MB/s  coded 23653, 0.7837 of raw
+[wnr4i4] pack 23712/24576 records  65.56 GB  67 MB/s  coded 23712, 0.7837 of raw
+[wnr4i4] pack 23841/24576 records  65.92 GB  67 MB/s  coded 23841, 0.7837 of raw
+[wnr4i4] pack 23974/24576 records  66.28 GB  67 MB/s  coded 23974, 0.7837 of raw
+[wnr4i4] pack 24104/24576 records  66.64 GB  67 MB/s  coded 24104, 0.7837 of raw
+[wnr4i4] pack 24234/24576 records  67.00 GB  67 MB/s  coded 24234, 0.7837 of raw
+[wnr4i4] pack 24364/24576 records  67.36 GB  67 MB/s  coded 24364, 0.7836 of raw
+[wnr4i4] pack 24496/24576 records  67.73 GB  67 MB/s  coded 24496, 0.7836 of raw
+[wnr4i4] pack 24576/24576 records  67.95 GB  67 MB/s  coded 24576, 0.7836 of raw
+[wnr4i4] q38_int4g64_wnr4i4.wex: 24576 records coded, 53,246,078,976 of 67,947,724,800 B (0.7836); root 6545bff2dd755ed1660a18feff75406829dc9b25b1bed2f4f6a0ee2532b1098f
+PACKED 22/11/2026  8:43:07,53
+[wnr4i4] verify 443/24576 records  1.22 GB  245 MB/s
+[wnr4i4] verify 883/24576 records  2.44 GB  244 MB/s
+[wnr4i4] verify 1323/24576 records  3.66 GB  244 MB/s
+[wnr4i4] verify 1764/24576 records  4.88 GB  244 MB/s
+[wnr4i4] verify 2206/24576 records  6.10 GB  244 MB/s
+[wnr4i4] verify 2646/24576 records  7.32 GB  244 MB/s
+[wnr4i4] verify 3090/24576 records  8.54 GB  244 MB/s
+[wnr4i4] verify 3530/24576 records  9.76 GB  244 MB/s
+[wnr4i4] verify 3972/24576 records  10.98 GB  244 MB/s
+[wnr4i4] verify 4414/24576 records  12.20 GB  244 MB/s
+[wnr4i4] verify 4856/24576 records  13.43 GB  244 MB/s
+[wnr4i4] verify 5297/24576 records  14.65 GB  244 MB/s
+[wnr4i4] verify 5739/24576 records  15.87 GB  244 MB/s
+[wnr4i4] verify 6177/24576 records  17.08 GB  244 MB/s
+[wnr4i4] verify 6618/24576 records  18.30 GB  244 MB/s
+[wnr4i4] verify 7055/24576 records  19.51 GB  244 MB/s
+[wnr4i4] verify 7489/24576 records  20.71 GB  243 MB/s
+[wnr4i4] verify 7927/24576 records  21.92 GB  243 MB/s
+[wnr4i4] verify 8365/24576 records  23.13 GB  243 MB/s
+[wnr4i4] verify 8800/24576 records  24.33 GB  243 MB/s
+[wnr4i4] verify 9237/24576 records  25.54 GB  243 MB/s
+[wnr4i4] verify 9673/24576 records  26.74 GB  243 MB/s
+[wnr4i4] verify 10110/24576 records  27.95 GB  243 MB/s
+[wnr4i4] verify 10548/24576 records  29.16 GB  243 MB/s
+[wnr4i4] verify 10983/24576 records  30.37 GB  243 MB/s
+[wnr4i4] verify 11418/24576 records  31.57 GB  243 MB/s
+[wnr4i4] verify 11856/24576 records  32.78 GB  243 MB/s
+[wnr4i4] verify 12288/24576 records  33.97 GB  242 MB/s
+[wnr4i4] verify 12724/24576 records  35.18 GB  242 MB/s
+[wnr4i4] verify 13162/24576 records  36.39 GB  242 MB/s
+[wnr4i4] verify 13602/24576 records  37.61 GB  242 MB/s
+[wnr4i4] verify 14039/24576 records  38.82 GB  242 MB/s
+[wnr4i4] verify 14478/24576 records  40.03 GB  242 MB/s
+[wnr4i4] verify 14912/24576 records  41.23 GB  242 MB/s
+[wnr4i4] verify 15350/24576 records  42.44 GB  242 MB/s
+[wnr4i4] verify 15788/24576 records  43.65 GB  242 MB/s
+[wnr4i4] verify 16223/24576 records  44.85 GB  242 MB/s
+[wnr4i4] verify 16658/24576 records  46.06 GB  242 MB/s
+[wnr4i4] verify 17095/24576 records  47.26 GB  242 MB/s
+[wnr4i4] verify 17530/24576 records  48.47 GB  242 MB/s
+[wnr4i4] verify 17967/24576 records  49.68 GB  242 MB/s
+[wnr4i4] verify 18404/24576 records  50.88 GB  242 MB/s
+[wnr4i4] verify 18839/24576 records  52.09 GB  242 MB/s
+[wnr4i4] verify 19277/24576 records  53.30 GB  242 MB/s
+[wnr4i4] verify 19714/24576 records  54.51 GB  242 MB/s
+[wnr4i4] verify 20149/24576 records  55.71 GB  242 MB/s
+[wnr4i4] verify 20586/24576 records  56.92 GB  242 MB/s
+[wnr4i4] verify 21022/24576 records  58.12 GB  242 MB/s
+[wnr4i4] verify 21458/24576 records  59.33 GB  242 MB/s
+[wnr4i4] verify 21895/24576 records  60.54 GB  242 MB/s
+[wnr4i4] verify 22333/24576 records  61.75 GB  242 MB/s
+[wnr4i4] verify 22765/24576 records  62.94 GB  242 MB/s
+[wnr4i4] verify 23202/24576 records  64.15 GB  242 MB/s
+[wnr4i4] verify 23638/24576 records  65.35 GB  242 MB/s
+[wnr4i4] verify 24074/24576 records  66.56 GB  242 MB/s
+[wnr4i4] verify 24511/24576 records  67.77 GB  242 MB/s
+[wnr4i4] verify 24576/24576 records  67.95 GB  242 MB/s
+[wnr4i4] q38_int4g64_wnr4i4.wex: OK, 24576 records (24576 codec 8) decoded, identical to the source; stored 53,246,078,976 B of 67,947,724,800 decoded
+VERIFIED 22/11/2026  8:47:49,45
+ Il volume nell'unit… F Š Storage
+ Numero di serie del volume: 96F1-E570
+
+ Directory di F:\wex\i4full
+
+22/11/2026  08:24    67.995.492.352 q38_int4g64.wex
+
+ Directory di F:\wex\i4full
+
+22/11/2026  08:42    53.294.047.232 q38_int4g64_wnr4i4.wex
+               2 File 121.289.539.584 byte
+               0 Directory  29.564.055.552 byte disponibili
+DONE
