@@ -15,9 +15,12 @@ import (
 type Result struct {
 	H *Header
 	X *Index
-	// Undecoded counts the records whose codec this reader does not know (section 10, rule 6): their
-	// SHA-256 was checked, their content was not decoded, so the file is not verified in full.
+	// Undecoded counts the records whose codec this reader does not know (section 10, rule 6) and the
+	// codec-8 records that did not decode (section 7.3: such a record is undecodable, the file is not
+	// refused for it): their SHA-256 was checked, their content was not decoded, so the file is not verified
+	// in full. Why says, for each of them, "record N: " and the reason.
 	Undecoded uint32
+	Why       []string
 	// Digest is the content digest of section 5. It is defined only when Undecoded is 0.
 	Digest [32]byte
 }
@@ -51,8 +54,10 @@ func Verify(f io.ReaderAt, size uint64, pin []byte, visit func(i uint32, r Recor
 		return nil, e
 	}
 
-	// step 3, blobs: SHA-256, zero padding; a WNM2 model is opened and its id compared
+	// step 3, blobs: SHA-256, zero padding; a WNM2 model is opened and its id compared; a WNM4 model (kind
+	// 3) named by a codec-8 record is kept and opened when the first such record is decoded (section 7.3)
 	models := map[uint32]*Model{}
+	wnr4 := newWNR4Container(x)
 	for i := uint32(0); i < h.Blobs; i++ {
 		b := x.Blob(i)
 		data, e := readAt(f, b.Offset, align(b.Bytes))
@@ -75,9 +80,14 @@ func Verify(f io.ReaderAt, size uint64, pin []byte, visit func(i uint32, r Recor
 			}
 			models[i] = m
 		}
+		if b.Kind == blobKindWNM4 {
+			wnr4.keep(i, data[:b.Bytes])
+		}
 	}
 
-	// step 3, records: SHA-256 of the stored bytes, then the decoder
+	// step 3, records: SHA-256 of the stored bytes, then the decoder. The SHA-256 is checked for every
+	// record before it is decoded: for a codec-8 record that is the only check of the verbatim slices of
+	// kind GG, which no tile hash covers (section 7.3, "Integrity")
 	res := &Result{H: h, X: x}
 	out := make([]byte, h.MaxDecoded)
 	dig := newDigest()
@@ -105,8 +115,16 @@ func Verify(f io.ReaderAt, size uint64, pin []byte, visit func(i uint32, r Recor
 				return nil, ge
 			}
 			e = decodeWNR3(rec, models[r.Blob-1], g, r.Owner, r.Flags&flagValueExact != 0, dec)
+		case codecWNR4:
+			if we := wnr4.decode(r, rec, dec); we != nil {
+				// section 7.3: the record is undecodable (fail closed), the file is not invalid
+				res.Undecoded++
+				res.Why = append(res.Why, "record "+utoa(i)+": "+we.Msg)
+				continue
+			}
 		default:
 			res.Undecoded++
+			res.Why = append(res.Why, "record "+utoa(i)+": codec "+utoa(uint32(r.Codec))+", which this reader does not know")
 			continue
 		}
 		if e != nil {

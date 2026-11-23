@@ -4,6 +4,8 @@
 
 Since 2026-11-15 the same program also computes the content digest of WEX4-SPEC section 5, writes WEX4 files (`wex4check write`), with RAW, WBP1 and WNR3 records, and trains the WNM2 model that WNR3 records need (`wex4check train`). The writer was made the same way: from the three pages, with the reference code closed (the files named above, and `wex4/wex4_convert.py`), and with the reference readers run as black boxes, from the command line only (`verify`, `info` and `--help` of `wex4/wex4.py`; the C tools were built and run). The trainer too, with the reference builder and its encoder library (`c/tools/build_nr3.py`, `c/tools/wex_nr3_tools.c`) not opened either. What the pages left open for a writer is part E of [SPEC-NOTES.md](SPEC-NOTES.md).
 
+Since 2026-11-23 it also decodes codec 8 (WNR4, DRAFT; [WEX4-SPEC](../../docs/WEX4-SPEC.md) 7.3), kinds GG (2) and I4 (3), the only kinds a WEX4 record may carry. The decoders (`wnr4.go`, `wnr4_gg.go`, `wnr4_i4.go`) were written from [WNR4-SPEC](../../docs/WNR4-SPEC.md) sections 1 to 6 and WEX4-SPEC 7.3 with the reference code of WNR4 closed (`wnr4/`, `wex4/wnr4gg.py`, `wex4/wnr4i4.py` and their tests, and the Rust reader); `wnr4_wex4.go` binds them to the container; that binding is not independent of the Rust reader's (SPEC-NOTES part F, "In the container"). A codec-8 record that fails a check, or is of kind 0 or 1, is undecodable (exit code 3): the file is not refused for it (WEX4-SPEC 7.3). What the pages left open is part F of [SPEC-NOTES.md](SPEC-NOTES.md).
+
 It is not used by any engine.
 
 ## Build and run
@@ -11,7 +13,7 @@ It is not used by any engine.
 Go and nothing else. The code uses the `min` and `max` builtins, which came with Go 1.21; `run.sh` was run with Go 1.24.13 (CI, Linux) and 1.27.4 (Windows), and with no other version. The reader of 2026-11-14 alone was also run once with Go 1.21.13 (Windows, 2026-11-14); the code of 2026-11-15 (the writer, the trainer, the content digest, one class in `wex4.go`) was not. With the MSYS2 package `mingw-w64-ucrt-x86_64-go`, run `export GOROOT=/ucrt64/lib/go` first.
 
 ```sh
-bash impl/go-wex4/run.sh                 # gofmt, go vet, go test, then every row of wex4/vectors/MANIFEST.tsv
+bash impl/go-wex4/run.sh                 # gofmt, go vet, go test, every row of wex4/vectors/MANIFEST.tsv and of testdata/wnr4-MANIFEST.tsv
 bash impl/go-wex4/run.sh FILE.wex4 ...   # the same, then these files
 ```
 
@@ -25,7 +27,7 @@ wex4check train MANIFEST.txt N OUT.wnm2  # train the WNM2 model of blob line N o
 wex4check export FILE.wex4 DIR           # take a file apart: DIR/manifest.txt and the source files
 ```
 
-One line per file: `FILE: root <64 hex>, ..., content digest <64 hex>: accept`, or `FILE: reject WEX4_E_<CLASS>: <what was found>`. Exit code for files: 0 every file verified; 1 a file was refused; 3 a file opened and holds records of a codec this reader does not know (their SHA-256 was checked, they were not decoded, and no content digest is printed: WEX4-SPEC section 10, rule 6); 2 usage or a read error. Exit code for a manifest: 0 when every row is as the manifest says, else 1. `write`, `train` and `export`: 0 done, 1 refused (the reason is on stderr), 2 usage. `scripts/check_all.sh` does not call this folder, so Go is not needed for the repository's checks; CI runs `run.sh` in its `go-reader` job.
+One line per file: `FILE: root <64 hex>, ..., content digest <64 hex>: accept`, or `FILE: reject WEX4_E_<CLASS>: <what was found>`. Exit code for files: 0 every file verified; 1 a file was refused; 3 a file opened and holds undecodable records (their SHA-256 was checked, they were not decoded, and no content digest is printed; the line names the first one and why, `-v` the others): records of a codec this reader does not know (WEX4-SPEC section 10, rule 6), and since 2026-11-23 codec-8 records that fail a check of WEX4-SPEC 7.3 or of their decoder, or are of kind 0 or 1 (7.3: undecodable, the file not invalid); 2 usage or a read error. Exit code for a manifest: 0 when every row is as the manifest says, else 1. `write`, `train` and `export`: 0 done, 1 refused (the reason is on stderr), 2 usage. `scripts/check_all.sh` does not call this folder, so Go is not needed for the repository's checks; CI runs `run.sh` in its `go-reader` job.
 
 ## The writer
 
@@ -101,8 +103,8 @@ Everything of WEX4-SPEC section 6, on the whole file, in the order of that secti
 |---|---|
 | 1, header page | magic, `header_sha256` (the root), major version, required feature bits, exact file size, every cap, the expert grid, `max_decoded` and `total_decoded` 0 when there is no record, `index_bytes` against the counts, the place of the index |
 | 2, index | `index_sha256`, zero padding, every tensor entry (name range, UTF-8, rank, shape, size against the dtype), the name-order table, every blob entry, every record entry with its codec rules, the tensors that tile each record, split tensors and their parts, expert records and their six tensors, `max_decoded` and `total_decoded`, the tiling of the file by its extents. In place: the tables are not copied |
-| 3, blobs | SHA-256, zero padding; a WNM2 model is opened (header, every CDF) and its FNV-1a id compared with the entry |
-| 3, records | SHA-256 of the stored bytes, then the decoder: RAW (zero padding), WBP1 (codec 6, WEX4-SPEC 7.2), WNR3 (codec 5, WNR3-SPEC sections 3 and 4: stream hashes, owner, canonical-zero rule, inverse of the ceil form). A record is given to the caller only after its decoder returned without an error. Since 2026-11-15 also the content digest of WEX4-SPEC section 5 over the decoded tensors, which `-manifest` compares with the manifest's `content` column |
+| 3, blobs | SHA-256, zero padding; a WNM2 model is opened (header, every CDF) and its FNV-1a id compared with the entry. A WNM4 model (kind 3) that a codec-8 record names is kept and opened when the first such record is decoded, as the model of that record's kind; an unused kind-3 blob gets the SHA-256 and padding checks only (WEX4-SPEC 5.1) |
+| 3, records | SHA-256 of the stored bytes, then the decoder: RAW (zero padding), WBP1 (codec 6, WEX4-SPEC 7.2), WNR3 (codec 5, WNR3-SPEC sections 3 and 4: stream hashes, owner, canonical-zero rule, inverse of the ceil form), WNR4 kinds GG and I4 (codec 8, since 2026-11-23: the bindings of WEX4-SPEC 7.3, the geometry from the record's tensors, WNR4-SPEC sections 5 and 6; a failure makes the record undecodable). A record is given to the caller only after its decoder returned without an error. Since 2026-11-15 also the content digest of WEX4-SPEC section 5 over the decoded tensors, which `-manifest` compares with the manifest's `content` column |
 
 The reject classes are the names the manifest uses for the C reader (`WEX4_E_HEADER`, `WEX4_E_RECORD`, ...). The specification says they are informative (WEX4-SPEC section 17, since 2026-11-15); here a class is the kind of rule that is broken.
 
@@ -151,6 +153,19 @@ Local: the same Windows 10 desktop, Go 1.27.4, gcc 16.2 and Python 3.14 from MSY
 
 **What the canonical test does and does not show.** The source tensors of the vectors are not in the repository, so they were taken from the vectors with the Go reader, and the choices (grouping, codec and parameters of every record, order of the extents) were read from the same files. The test therefore shows that the specification, with WNR2-REFERENCE section 7 for the quantiser, determines every byte of these 9 files once those choices are known. It does not show that the pages say which choices the reference writers make. For the converter they do since the revision of 2026-11-15: WEX4-SPEC section 7 gives its plane count, `chunk_log2` and rotation (12 gives `planes.wex4` again; 10 and 11 are in the other files), and section 14 how it groups tensors and orders its records. The test took the grouping from the files, not from section 14. Until the revision of 2026-11-21 the sentence of section 5 listed only "the layout, the grouping of tensors into records, the codecs and their parameters, and the metadata" as the choices; the test needed more of them, and that revision names them ([SPEC-NOTES.md](SPEC-NOTES.md), E1).
 
+### Codec 8 (2026-11-23)
+
+Local: the same Windows 10 desktop, Go 1.27.4 from MSYS2 UCRT64, one run each. The files are the 23 codec-8 files of `testdata/` (its [README](testdata/README.md)), made with the repository's codec-8 tools (`wex4/wnr4gg.py`, `wex4/wnr4i4.py`) used as black boxes. Their manifest says accept or refuse, the verdicts of those tools; for this reader a refused copy has an undecodable record, except `wnr4-gg-bad-sha.wex4`, whose record SHA-256 does not match.
+
+| Check | Result |
+|---|---|
+| The 23 rows of `testdata/wnr4-MANIFEST.tsv` (`TestWNR4ContainerManifest`, and `run.sh` through the command line) | the 6 valid files accepted with the manifest's root and content digest (the 4 RAW sources' digests, the other digest of `mut-verbatim`, the digest of `wnr4-i4-one` for `mut-base`); `bad-sha` refused as `WEX4_E_HASH` (exit code 1); the other 16 opened with the manifest's root and record 0 undecodable (exit code 3), each for the check its change aims at: a word, kind 0, flags, reserved bytes, ntiles, owner, model id, the verbatim padding, a base, the packing, an anchor, and the two index changes (blob 0, a blob id + 1) that only the bindings of 7.3 find. The first run gave all of these |
+| The SHA-256 of every decoded record of the four valid files against `wnr4-records.tsv` (`TestWNR4ContainerRecords`) | 17 of 17 (13 codec-8, 4 RAW) |
+| Single-bit flips of the codec-8 record of `wnr4-gg-one` and `wnr4-i4-one`, record SHA-256, index and header hashes recomputed: every bit of the first 512 bytes and 2,000 random bits after them (`TestWNR4ContainerFlips`) | no file refused and no panic. GG: accepted only inside the verbatim slices, with another content digest; I4: accepted only inside the bases, with the same content digest (the base of the block whose scales all escape); every other flip undecodable. A run with the first 1,024 bytes: 1,872 of 11,192 GG flips and 8 of 11,192 I4 flips accepted |
+| Kind 1 (NV), kind 3 in a GG record, a blob entry of kind 4, a changed byte of the WNM4 model (its SHA-256 recomputed), G = 0 (`TestWNR4ContainerBindings`) | each makes record 0 undecodable; the file opens |
+| `export` of a codec-8 file (`TestWNR4ContainerExport`, `run.sh`) | refused before anything is written: the writer has no codec 8 |
+| `impl/rust-wex4/differential.py --go` ([impl/rust-wex4](../rust-wex4/README.md)), default seeds, on a second Windows PC (MSYS2 UCRT64, the C library built there, the two readers built here) | the 23 rows as above for both readers; 1,937 mutated copies of the four valid codec-8 files: 1,332 refused by the C reader with hashes only, and by both readers; of the 605 it opens, 111 accepted, 487 with an undecodable record and 7 refused as `WEX4_E_DATA` (a RAW record) by both readers. The Go and the Rust reader gave the same verdict on all 1,960 codec-8 files, and the same content digest on every one both accepted |
+
 ## Limits
 
 - **No upgrade or downgrade of a WEX1 or WEX3 container, no safetensors pack or unpack.** The writer takes raw tensor files and a manifest.
@@ -174,6 +189,9 @@ Local: the same Windows 10 desktop, Go 1.27.4, gcc 16.2 and Python 3.14 from MSY
 | `rans.go` | the rANS stream reader and the MurmurHash3 stream hash shared by WBP1 and WNR3 |
 | `wbp1.go` | codec 6 decoder |
 | `wnr3.go` | codec 5 decoder and the WNM2 model |
+| `wnr4.go` | codec 8 (WNR4, DRAFT): the record header and tile offsets, the 32 rANS lanes of a tile, the lane hashes, the tail in the state and the end states, the WNM4 header and tables |
+| `wnr4_gg.go`, `wnr4_i4.go` | the WNR4 decoders of kinds GG (2) and I4 (3) and their WNM4 models (SPEC-NOTES part F) |
+| `wnr4_wex4.go` | codec 8 in the container (WEX4-SPEC 7.3): the WNM4 blob, its kind and id, record kinds 2 and 3, the GG and I4 geometry from the tensors (dtype 170 -> ggml type 42, 148 -> 20), the undecodable verdict |
 | `digest.go` | the content digest of WEX4-SPEC section 5 |
 | `encode.go` | the rANS stream writer, the count quantiser, the WBP1 and the WNR3 encoder |
 | `train.go` | the WNM2 trainer |
@@ -183,6 +201,8 @@ Local: the same Windows 10 desktop, Go 1.27.4, gcc 16.2 and Python 3.14 from MSY
 | `main.go` | the command line and the manifest check |
 | `wex4_test.go` | the reader's tests (the first table above) |
 | `write_test.go` | the tests of the digest, the writer and the trainer (the second table), with the calls of the reference readers |
+| `wnr4_core_test.go`, `wnr4_gg_test.go`, `wnr4_i4_test.go`, `wnr4enc_test.go` | the WNR4 tests (`go test -run WNR4`): a test-only tile encoder and record builder, round trips, every end-state and record check, single-bit flips, the I4 lattice against exact rational rounding |
+| `wnr4_container_test.go` | codec 8 in whole files (`go test -run WNR4Container`): the rows of `testdata/wnr4-MANIFEST.tsv` and `wnr4-records.tsv`, bit flips of the codec-8 records with the hashes recomputed, the bindings of 7.3, `export` |
 | `run.sh` | builds, tests, checks the vectors and their content digests; builds the reference readers when it can |
-| `testdata/` | four WEX4 files for what the vectors did not cover before 2026-11-15, and the scripts that make them or their sources ([README](testdata/README.md)) |
-| `SPEC-NOTES.md` | what the specifications left open and what the vectors did not exercise on 2026-11-14, and where each point went since; part E, the notes of the writer |
+| `testdata/` | four WEX4 files for what the vectors did not cover before 2026-11-15, the 23 codec-8 files of 2026-11-23 with their two tables, and the scripts that make them or their sources ([README](testdata/README.md)) |
+| `SPEC-NOTES.md` | what the specifications left open and what the vectors did not exercise on 2026-11-14, and where each point went since; part E, the notes of the writer; part F, the notes of the WNR4 decoders |

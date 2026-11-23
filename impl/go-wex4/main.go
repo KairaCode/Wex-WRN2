@@ -2,7 +2,8 @@
 // Copyright 2026 Ludovico Zanichelli
 
 // wex4check: a WEX4 reader, verifier and writer written from docs/WEX4-SPEC.md, docs/WNR3-SPEC.md and
-// docs/WNR2-REFERENCE.md only. Standard library only.
+// docs/WNR2-REFERENCE.md only, and for codec 8 (WNR4 kinds GG and I4, draft) from docs/WNR4-SPEC.md.
+// Standard library only.
 //
 //	wex4check [-v] [-root HEX] FILE... verify files: header page, index, every blob and record, decode
 //	wex4check -manifest MANIFEST.tsv   check the conformance vectors against their manifest
@@ -10,8 +11,9 @@
 //	wex4check train MANIFEST.txt N OUT train the WNM2 model of blob line N on the manifest's experts
 //	wex4check export FILE DIR          take a WEX4 file apart into source files and a manifest (exit 0 or 1)
 //
-// Exit code, files: 0 every file verified, 1 a file was refused, 3 a file opened and holds records of a
-// codec this reader does not know (hashes checked, not decoded), 2 usage or a read error.
+// Exit code, files: 0 every file verified, 1 a file was refused, 3 a file opened and holds undecodable
+// records (hashes checked, not decoded): records of a codec this reader does not know, or codec-8 records
+// that fail a check of WEX4-SPEC 7.3 or of their decoder, or are of kind 0 or 1; 2 usage or a read error.
 // Exit code, manifest: 0 every row as the manifest says, 1 otherwise.
 
 package main
@@ -207,7 +209,7 @@ func main() {
 			os.Exit(2)
 		}
 		if *verbose {
-			fmt.Printf("the decoders met: %+v\n", Seen)
+			fmt.Printf("the decoders met: %+v, WNR4 %+v\n", Seen, SeenWNR4)
 		}
 		fmt.Printf("%d rows, %d as the manifest says, %d wrong\n", rows, rows-wrong, wrong)
 		if wrong != 0 || rows == 0 {
@@ -250,7 +252,13 @@ func main() {
 			fmt.Printf("%s: root %x, %d blobs, %d records (%d expert), %d tensors, %d decoded bytes",
 				path, h.Root, h.Blobs, h.Records, res.X.ExpertRecords, h.Tensors, h.TotalDecoded)
 			if res.Undecoded != 0 {
-				fmt.Printf(": hashes pass, %d records of an unknown codec were not decoded\n", res.Undecoded)
+				// a record of an unknown codec, or a codec-8 record that did not decode (WEX4-SPEC 7.3)
+				fmt.Printf(": hashes pass, %d records undecodable (%s)\n", res.Undecoded, res.Why[0])
+				if *verbose {
+					for _, w := range res.Why[1:] {
+						fmt.Printf("  %s\n", w)
+					}
+				}
 				worse(3)
 			} else {
 				fmt.Printf(", content digest %x: accept\n", res.Digest)
@@ -258,7 +266,7 @@ func main() {
 		}
 	}
 	if *verbose {
-		fmt.Printf("the decoders met: %+v\n", Seen)
+		fmt.Printf("the decoders met: %+v, WNR4 %+v\n", Seen, SeenWNR4)
 	}
 	os.Exit(code)
 }

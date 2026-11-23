@@ -12,6 +12,12 @@ code and notes were not opened until this reader gave the manifest's verdict, cl
 112 rows. What the text did not decide is in [SPEC-NOTES.md](SPEC-NOTES.md); its part E is the
 comparison with the other readers that came after, with [differential.py](differential.py).
 
+Since 2026-11-23 it also decodes codec 8 (WNR4, DRAFT; WEX4-SPEC 7.3), kinds GG (2) and I4 (3), with
+the decoders of `src/wnr4/`, written from [WNR4-SPEC](../../docs/WNR4-SPEC.md) sections 1 to 6 and
+WEX4-SPEC 7.3 with the reference code of WNR4 (`wnr4/`, `wex4/wnr4gg.py`, `wex4/wnr4i4.py`, their
+tests) and the Go reader's WNR4 code closed (SPEC-NOTES part G). The binding to the container in
+`src/wex4.rs` is not independent of the Go reader's (SPEC-NOTES G3).
+
 ## What it checks
 
 `wex4r check FILE` runs the three steps of WEX4-SPEC section 6 on the whole file:
@@ -24,14 +30,17 @@ comparison with the other readers that came after, with [differential.py](differ
   id) and every record: its SHA-256, then a decode into scratch memory with its codec. RAW: zero
   padding. WBP1: section 7.2 with every stream and chunk hash. WNR3: the cross-checks of section 7.1,
   then WNR3-SPEC sections 3 and 4 with errata 9 to 11 (stream hashes, canonical zero, the inverse of
-  ceil form).
+  ceil form). WNR4 kinds GG and I4 (codec 8, since 2026-11-23): the WNM4 blob the record names, opened
+  at first use as the model of the record's kind with its FNV-1a id, record kind 2 or 3, the geometry
+  from the record's tensors, then WNR4-SPEC sections 5 and 6. A codec-8 record that fails any of
+  these, or is of kind 0 or 1, is undecodable: the file is not refused for it (WEX4-SPEC 7.3).
 
 When every record decodes it also prints the content digest of section 5. One line per file:
 
 ```text
 accept FILE root <64 hex> digest <64 hex> records R (D decoded, E expert) tensors T blobs B
 reject FILE WEX4_E_<CLASS>: <the rule>
-undecodable FILE root <64 hex>: records [...] have a codec this reader does not know
+undecodable FILE root <64 hex>: records [...] not decoded (record N: <why>; ...)
 ```
 
 The classes carry the `WEX4_E_*` names of the manifest. The specifications do not define them; part B
@@ -52,7 +61,9 @@ checks the formatting when `rustfmt` is installed, runs the unit tests and every
 column on an accepted row). Then three files of [impl/go-wex4/testdata](../go-wex4/testdata/README.md)
 (ceil form, 4 and 8 planes, sizes that are not a multiple of the plane count), which have no row in the
 manifest, must be accepted with the content digest that the Python reader with the C codec printed for
-them, and `extra-page.wex4` of that folder must be refused. It is not
+them, and `extra-page.wex4` of that folder must be refused; and every row of its `wnr4-MANIFEST.tsv`
+(codec 8) must give the expected verdict: a valid file accepted with the content digest of its RAW
+source, `wnr4-gg-bad-sha.wex4` refused, every other changed copy `undecodable`. It is not
 part of `scripts/check_all.sh`, so that Rust is not needed for the repository's checks; the
 `rust-reader` job of `.github/workflows/ci.yml` runs it on ubuntu-24.04 with the runner's own cargo,
 then the differential run below. Other commands:
@@ -64,7 +75,8 @@ wex4r dump FILE                           # header page and index tables as read
 ```
 
 Exit status: 0 all accepted, or every row as the manifest says; 1 a refusal or a row that disagrees;
-2 usage; 3 a file with a record of an unknown codec.
+2 usage; 3 a file with an undecodable record: of a codec it does not know, or (since 2026-11-23) a
+codec-8 record that fails a check of WEX4-SPEC 7.3 or of its decoder, or is of kind 0 or 1.
 
 The differential run compares this reader's verdicts with those of the C and the Python reader (and of
 the Go reader with `--go`) on 35 hand-made files and on as many mutated ones as `--count` asks for
@@ -81,6 +93,13 @@ It fails when a verdict differs, when the C and the Python reader disagree, when
 or when this reader (or the Go reader) prints no line for a file or ends with an exit status other
 than 0, 1 or 3.
 It counts the classes that differ and does not fail on them.
+
+The C and the Python reader do not decode codec 8, so for it (`--wnr4-count`, 2,000 by default) the
+run checks the 23 rows of `impl/go-wex4/testdata/wnr4-MANIFEST.tsv` (verdicts and the RAW sources'
+content digests), and mutated copies of the four valid codec-8 files against the C reader's verdict with
+hashes only: a file it refuses must be refused; a file it opens may be accepted, `undecodable` or refused
+as `WEX4_E_DATA` (a RAW record). With `--go` the Go and this reader must also agree on every codec-8 file,
+the content digest included.
 
 ## Results
 
@@ -101,6 +120,14 @@ It counts the classes that differ and does not fail on them.
   of seven valid files (seed 20261115), the verdict is the C reader's on every file, as is the Go
   reader's; the class differs from the C reader's on 3 of the 27 and 15 of the 18,378 files that both
   refuse. No panic.
+- **Codec 8** (2026-11-23, one run each): `cargo test` reads the 23 codec-8 files through
+  `wex4::check` (every manifest row, the decoded size and SHA-256 of the 17 records of
+  `wnr4-records.tsv` (since the review of 2026-11-23), the bindings of 7.3, every bit of the first
+  256 bytes of both codec-8 records); `run.sh` checks the rows through `wex4r check`. The differential run with `--go`,
+  default seeds, on a second Windows PC (MSYS2 UCRT64): the 23 rows as the manifest; 1,937 mutated
+  codec-8 files, of which the C reader refuses 1,332 with hashes only and so do both readers; of the 605
+  it opens, 111 accepted, 487 `undecodable`, 7 refused as `WEX4_E_DATA`; the Go reader's verdict and
+  content digest on all 1,960. The first run gave all of these.
 - **Where it ran:** Windows 10 (Intel Core i7-7700K) with MSYS2 UCRT64 and Rust 1.99.1; ubuntu-24.04
   x86-64 in CI with the runner's Rust, also 1.99.1. In GitHub Actions run 43740748837 (2026-11-15, commit
   fda816d) the `rust-reader` job passed `run.sh` and gave the C reader's verdict on 35 hand-made and 6,866
@@ -112,8 +139,9 @@ It counts the classes that differ and does not fail on them.
   for checking, not for speed. No time was measured, and no real container was read.
 - It reads; it does not write, convert or upgrade. The `upgrade_of` column of the manifest is not
   checked, and there is no option to compare the root with a pinned one.
-- A record of a codec it does not know makes the file `undecodable` (section 10, rule 6), neither
-  accepted nor refused.
+- A record of a codec it does not know, or a codec-8 record that does not decode, makes the file
+  `undecodable` (section 10, rule 6; 7.3), neither accepted nor refused. Kinds 0 and 1 (MX, NV) of WNR4
+  are not decoded: no WEX4 file may hold them.
 - The test encoders of `src/testenc.rs` are not canonical: their records show that this encoder and
   this decoder agree, not that they agree with the reference.
 - The reject classes are this reader's choice where the text does not decide (SPEC-NOTES, parts B and

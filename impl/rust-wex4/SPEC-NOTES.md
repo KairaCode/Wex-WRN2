@@ -279,3 +279,91 @@ except as the vectors README and WNR3-SPEC section 12 now say: the ceil form, re
 zero and other chunk pairs are vectors since 2026-11-15; the four gaps of the index of part C are not.
 The sentences of WEX4-SPEC revision 2026-11-15 and WNR3-SPEC erratum 14 answer items 1, 2, 3 and 6 of
 E5 and five rows of the table of E4 (brackets there).
+
+## G. WNR4 kinds GG and I4 (2026-11-23)
+
+Written with the WNR4 decoders of `src/wnr4/` (kinds 2 and 3, and what they share), from
+[WNR4-SPEC](../../docs/WNR4-SPEC.md) sections 1 to 6 and WEX4-SPEC section 7.3 only: the reference
+codec under `wnr4/`, its tools and tests, the Python packers of `wex4/` and the Go reader's WNR4 code
+were not opened. When this part was written the decoders were not called by `check_file`; since the
+integration of the same day they are (G3); they are tested by their own unit tests, with a test-only encoder written from the same
+pages (`src/wnr4/testenc.rs` and the `tests` modules of `gg.rs` and `i4.rs`), so those tests show that
+this encoder and this decoder agree, not that they agree with the reference.
+
+### G1. What the text leaves open, and what these decoders do
+
+1. **Validity of a WNM4 blob** is not listed as a set of checks. These decoders require: the exact size
+   (36,644 or 196,688 bytes), magic, version 1, the kind, word 3 = 14, words 4 to 7 exactly as the
+   kind's header gives them (32, 2, 0, 0 for kind 2; 900, 68, 0, 0 for kind 3), every table a 14-bit
+   cumulative table (first entry 0, last 16384, strictly increasing) and, for kind 2, every class map
+   value below 32. The id is FNV-1a of the blob, 0 replaced by 1.
+2. **Record bytes 16..19 of kind 2 and 3** replace the anchors and byte 19 of section 3: both kinds
+   require them zero (5.3 and 6.3 say "0"; the record checks of 5.5 and 6.5 say so too).
+3. **"Flags equal to the packing of the geometry"** (6.5). Inside WEX4 the packing is given only by
+   record byte 13 (WEX4-SPEC 7.3), so the check is circular there. `i4::decode` takes the packing as an
+   option: when the caller knows it, flags must equal it; when it does not (WEX4), only bits 1-7 must be
+   0 and bit 0 is the packing. A record read with the other packing fails its tile hashes anyway,
+   because the code bytes are hashed in the record's packing.
+4. **The ggml type of a verbatim slice** (5.1) does not enter the record, and a WEX4 tensor of dtype
+   20 or 42 (not 148 or 170) is a verbatim slice (7.3). `gg::Slice` holds a ggml type and treats exactly
+   42 and 20 as coded, so whoever maps a WEX4 record to slices must give a verbatim tensor a type other
+   than 42 and 20, not its dtype.
+5. **A dtype-170/148 tensor whose size is not a multiple of 18**, or of 2^27 blocks or more, and slices
+   above 2^32 - 1 bytes (2^31 - 1 verbatim): refused when the record is decoded (5.1), since WEX4 has no
+   open-time rule for them.
+6. **Sizes.** Every sum of section 3 and 6.1 is computed in 64 bits (the release build stops on an
+   overflow), so `64 + 4 (ntiles + 1) + V + P` cannot wrap; an I4 geometry is checked against the
+   2^32 - 1 byte limit matrix by matrix, so no product of rows and column groups overflows either.
+7. **Escapes and bases.** The text lets an encoder escape a scale that lies on the lattice, and under a
+   base of 0 every index k gives +0; these decoders accept both (the scale's bits are what is hashed and
+   written). A base whose block has only escaped scales is never read and is still checked (0 or a
+   positive normal finite f32), as 6.3 says.
+8. **Order of the checks** is not normative (only valid / invalid is). These decoders check the
+   geometry, the header fields, the model id and owner, the offset table, the size and the padding
+   before any tile, then per tile: initial states, every symbol (a read past the tile's words and an I4
+   index above 127 fail at once), the tails, the hash, the end states and the word count.
+
+### G2. Against the reference's files
+
+On the codec-8 test files made from the reference tools for both readers (`impl/go-wex4/testdata`,
+`wnr4-*.wex4`, on their own branch at the time), with a throwaway harness that maps each codec-8 record
+to its geometry as WEX4-SPEC 7.3 says and calls these decoders: all 17 records of the table of
+decoded SHA-256 values (13 codec-8 records and 4 RAW ones, in the four valid files; G 1, 7, 32, 64 and
+100, planar and pairs) decode to the listed SHA-256; the record of `wnr4-i4-mut-base.wex4` decodes to the bytes of `wnr4-i4-one.wex4`; the
+verbatim byte change of `wnr4-gg-mut-verbatim.wex4` decodes, to other bytes; every other changed copy
+is refused (kind 0, flags, reserved bytes, ntiles, owner, model id, padding, a word, a base, an anchor,
+the packing). The harness is not in the repository; since G3 the same files are read by `check_file`,
+in `cargo test` and in `run.sh`.
+
+### G3. In `check_file` (2026-11-23)
+
+Codec 8 is wired into `check_file` (`src/wex4.rs`: `decode_wnr4`, `gg_slices`, `i4_matrices`). Unlike
+the decoders of `src/wnr4/`, this binding is not independent of the Go reader's: it and
+`impl/go-wex4/wnr4_wex4.go` were written in the same integration and share their checks, their order and
+their messages word for word, so where the two readers agree on a container check of 7.3 (the blob and its
+kind, the model id, the record kind, the geometry from the tensors) that is one reading of the text, not
+two. What the text left to the container, and what this reader does:
+
+1. **The verdict of a codec-8 record that fails** (7.3: "a failure makes that record undecodable (fail
+   closed), not the file invalid") was the owner's to decide for the whole file, since a WNR3 failure
+   refuses it: such a record is `undecodable`, as a record of an unknown codec is (exit status 3, the root
+   and the reason printed, no content digest). The same holds for a codec-8 record of kind 0 or 1, for a
+   missing blob, a blob of another kind, a WNM4 model that does not open as the record's kind, and a model
+   whose FNV-1a is not the entry's id. WEX4-SPEC 7.3 now says it in so many words.
+2. **The record SHA-256** is checked before every decode, as for every codec; a mismatch refuses the file
+   (`WEX4_E_HASH`): the stored bytes are not the ones the index names. For a GG record it is the only
+   check of the verbatim slices (7.3, "Integrity").
+3. **A WNM4 blob** is kept after the checks of step 3 only when a codec-8 record names it, and opened at
+   first use, once per kind (WEX4-SPEC 5.1). An unused kind-3 blob gets the SHA-256 and padding checks
+   only.
+4. **The I4 packing** is record byte 13: `i4::decode` gets `pairs = None` (G1 item 3).
+5. **A verbatim GG slice** gets the type `0x100 + dtype` (G1 item 4): never 42 or 20.
+6. **The I4 geometry:** cols is twice the codes' second dimension, which must be a multiple of 32 and
+   equal 64 times the scales' second dimension, with equal rows; rows and cols must fit `u32`
+   (`i4::Matrix`). The index rules of 5.3 already tie every size to its shape and every offset to the
+   tensor before it.
+
+On the 23 codec-8 files of `impl/go-wex4/testdata`, the first run gave the verdict that the files'
+manifest implies on every row: the 6 valid files accepted with the manifest's content digests, `bad-sha`
+refused, the other 16 with record 0 `undecodable`, each for the check its change aims at (the two index
+changes `bad-modelid` and `bad-blob0` by the bindings of 3 above).
