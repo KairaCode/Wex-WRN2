@@ -4,7 +4,7 @@
 """Differential run: hand-made and mutated WEX4 files through the C reader, the Python reader and the Rust
 reader (and the Go reader when its binary is given), each used as a black box. Standard library only.
 
-    python -I impl/rust-wex4/differential.py [--count N] [--seed S] [--go WEX4CHECK] WEX4R OUTDIR
+    python -I impl/rust-wex4/differential.py [--count N] [--wnr4-count M] [--seed S] [--go WEX4CHECK] WEX4R OUTDIR
 
 Needs wex4/out/wex4_tools.dll, which `bash wex4/build_and_test.sh` builds (under that name on every OS): the C
 reader is `CLib.check(data, 3, True)` and the Python reader `wex4.check(data, True, C)`, as wex4/test_wex4.py
@@ -20,11 +20,22 @@ swapped; one byte of a record or of a blob changed with its SHA-256 recomputed; 
 changed. Except for the bit flips, the index and header hashes are recomputed so that the change reaches the
 validators.
 
+Then codec 8 (WNR4, draft), which neither the C nor the Python reader decodes (WEX4-SPEC 7.3): the 23 codec-8
+files of impl/go-wex4/testdata must get the verdict their wnr4-MANIFEST.tsv gives (a valid file accepted with
+the content digest of its RAW source, wnr4-gg-bad-sha refused, every other changed copy opened with an
+undecodable record: a codec-8 record that does not decode makes that record undecodable, not the file
+invalid), and M mutated copies of the four valid codec-8 files, made as above, are checked against what the C
+reader can still say: its verdict with hashes only (`CLib.check(data, 1)`, no record decoded), which is the
+open-time verdict of every reader, codec 8 known or not. A file the C reader refuses must be refused; a file it
+opens may be accepted, have an undecodable record, or be refused as WEX4_E_DATA (a RAW record that fails at
+decode) only. With --go, the Go and the Rust reader, written apart from each other, must also give every
+codec-8 file the same verdict, and the same content digest when both accept it.
+
 Prints the counts, and the hand-made files whose class differs. Exit status 1 when the Rust reader's verdict
 differs from the C reader's on any file, when the C and the Python reader disagree, when the Rust reader
 panicked, or when the Rust (or the Go) reader printed no line for a file or ended with an exit status other
-than 0, 1 or 3. A different reject class is counted, not failed: the specifications do not define the classes
-(SPEC-NOTES.md, part B).
+than 0, 1 or 3, or when a codec-8 check above fails. A different reject class is counted, not failed: the
+specifications do not define the classes (SPEC-NOTES.md, part B).
 """
 import argparse, collections, hashlib, os, random, struct, subprocess, sys
 
@@ -37,6 +48,9 @@ GENERIC, TINY2 = 'wex4/vectors/valid/generic.wex4', 'wex4/vectors/valid/tiny2-cz
 BASES = [GENERIC, 'wex4/vectors/valid/generic-index-last.wex4', TINY2, 'wex4/vectors/valid/tiny-raw-upgraded.wex4',
          'impl/go-wex4/testdata/ceil-form.wex4', 'impl/go-wex4/testdata/planes.wex4',
          'impl/go-wex4/testdata/ragged.wex4']
+TESTDATA = 'impl/go-wex4/testdata'
+WNR4_BASES = [TESTDATA + '/wnr4-gg-mix.wex4', TESTDATA + '/wnr4-gg-one.wex4', TESTDATA + '/wnr4-i4-mix.wex4',
+              TESTDATA + '/wnr4-i4-one.wex4']
 C_NAMES = {0: 'accept', -2: 'WEX4_E_MAGIC', -3: 'WEX4_E_HASH', -4: 'WEX4_E_VERSION', -5: 'WEX4_E_FEATURE',
            -6: 'WEX4_E_HEADER', -7: 'WEX4_E_INDEX', -8: 'WEX4_E_BLOB', -9: 'WEX4_E_RECORD', -10: 'WEX4_E_TENSOR',
            -11: 'WEX4_E_NAME', -12: 'WEX4_E_LAYOUT', -13: 'WEX4_E_EXPERT', -14: 'WEX4_E_DATA',
@@ -235,22 +249,105 @@ def run_reader(argv, files, parse):
 
 
 def rust_line(line):
+    """(path, verdict or class, the content digest of an accepted file or the reason)."""
     w = line.split(' ', 3)
     if len(w) < 3:
         return None
     if w[0] == 'FAULT':
         return w[1].rstrip(':'), 'FAULT', line
-    return {'accept': (w[1], 'accept', ''), 'reject': (w[1], w[2].rstrip(':'), w[3] if len(w) > 3 else ''),
-            'undecodable': (w[1], 'unsupported', '')}.get(w[0])
+    if w[0] == 'accept':
+        f = w[3].split() if len(w) > 3 else []   # root, then: <root> digest <digest> records ...
+        return w[1], 'accept', f[2] if len(f) > 2 and f[1] == 'digest' else ''
+    return {'reject': (w[1], w[2].rstrip(':'), w[3] if len(w) > 3 else ''),
+            'undecodable': (w[1], 'unsupported', w[3] if len(w) > 3 else '')}.get(w[0])
 
 
 def go_line(line):
+    """(path, verdict or class, the content digest of an accepted file or the line)."""
     if ': ' not in line:
         return None
     path, rest = line.split(': ', 1)
     if rest.startswith('reject '):
         return path, rest.split()[1].rstrip(':'), rest
+    if rest.endswith(': accept') and 'content digest ' in rest:
+        return path, 'accept', rest.rsplit('content digest ', 1)[1][:64]
     return path, 'accept' if rest.endswith('accept') else 'unsupported', rest
+
+
+def wnr4_rows():
+    """(path, expected verdict, expected content digest) of every row of wnr4-MANIFEST.tsv: accept with the
+    digest of the RAW source; reject for the copy whose record SHA-256 does not match; else unsupported (an
+    undecodable record, WEX4-SPEC 7.3)."""
+    rows = []
+    with open(os.path.join(REPO, TESTDATA, 'wnr4-MANIFEST.tsv'), encoding='utf-8') as f:
+        for line in f:
+            if not line.strip() or line.startswith('#'):
+                continue
+            c = line.rstrip('\n').split('\t')
+            path = os.path.join(REPO, TESTDATA, c[0])
+            if c[3] == 'accept':
+                rows.append((path, 'accept', c[4].split()[0]))
+            else:
+                rows.append((path, 'reject' if c[4] == 'record hash mismatch' else 'unsupported', ''))
+    return rows
+
+
+def wnr4_part(a, c, s):
+    """The codec-8 files: the manifest rows and the mutated copies, through the Rust (and the Go) reader.
+    Adds its counts to s and returns the lines to print."""
+    files, meta, lines = [], {}, []
+    for path, want, digest in wnr4_rows():
+        files.append(path)
+        meta[path] = ('row', want, digest)
+    s['codec 8: manifest rows'] = len(files)
+    sources = {p: open(os.path.join(REPO, p), 'rb').read() for p in WNR4_BASES}
+    m = Mutator(a.seed + 8)   # its own sequence: the files of the part above do not change
+    for n in range(a.wnr4_count):
+        base = WNR4_BASES[n % len(WNR4_BASES)]
+        mode, data = m.mutate(sources[base])
+        if bytes(data) == sources[base]:
+            continue
+        path = os.path.join(a.outdir, 'wnr4-%06d.wex4' % n)
+        with open(path, 'wb') as f:
+            f.write(data)
+        files.append(path)
+        meta[path] = (mode, C_NAMES.get(c.check(bytes(data), 1)[0], 'other'), '')
+    s['codec 8: mutated files'] = len(files) - s['codec 8: manifest rows']
+    readers = [('Rust', [os.path.abspath(a.wex4r), 'check'], rust_line)]
+    if a.go:
+        readers.append(('Go', [os.path.abspath(a.go)], go_line))
+    out = {}
+    for who, argv, parse in readers:
+        out[who], s['codec 8: %s exit status not 0, 1 or 3' % who] = run_reader(argv, files, parse)
+    for path in files:
+        mode, want, digest = meta[path]
+        name, got = os.path.basename(path), {}
+        for who, _, _ in readers:
+            v, why = out[who].get(path, ('missing', ''))
+            got[who] = (verdict(v), why if v == 'accept' else '')
+            if v == 'FAULT':
+                s['codec 8: %s panicked' % who] += 1
+            if v == 'missing':
+                s['codec 8: %s printed no line' % who] += 1
+            if mode == 'row':
+                if verdict(v) != want or (want == 'accept' and why != digest):
+                    s['codec 8: %s NOT as the manifest' % who] += 1
+                    lines.append(f'codec 8: {name}: {who} {v} {why}, the manifest says {want} {digest}')
+                continue
+            s['codec 8: mutated, C %s, %s %s' % (verdict(want), who, verdict(v))] += 1
+            if verdict(want) == 'reject' and verdict(v) != 'reject':
+                s['codec 8: %s opens a file the C reader refuses' % who] += 1
+                lines.append(f'codec 8: {name} ({mode}): C {want}, {who} {v}')
+            if verdict(want) == 'accept' and verdict(v) == 'reject' and v != 'WEX4_E_DATA':
+                s['codec 8: %s refuses a file the C reader opens' % who] += 1
+                lines.append(f'codec 8: {name} ({mode}): C {want}, {who} {v} {why}')
+        if a.go and got['Rust'] != got['Go']:
+            s['codec 8: Go and Rust disagree'] += 1
+            lines.append(f'codec 8: {name} ({mode}): Rust {got["Rust"]}, Go {got["Go"]}')
+    return lines
+
+
+WNR4_FAILS = (' NOT ', ' panicked', ' no line', ' exit status', ' opens a file', ' refuses a file', ' disagree')
 
 
 def reference(c, data):
@@ -273,6 +370,7 @@ def main():
     ap.add_argument('outdir')
     ap.add_argument('--count', type=int, default=7000)
     ap.add_argument('--seed', type=int, default=20261115)
+    ap.add_argument('--wnr4-count', type=int, default=2000, help='mutated copies of the codec-8 files')
     ap.add_argument('--go', help='the Go reader binary (impl/go-wex4/out/wex4check), compared too')
     ap.add_argument('--list-edges', action='store_true', help='print every hand-made file, not only those whose '
                     'Rust class is not the C class')
@@ -331,15 +429,19 @@ def main():
         if mode == 'edge' and (a.list_edges or rv != cv):
             edges.append(f'{os.path.basename(path)}: C {cv}, Python {pv}, Rust {rv} ({rwhy})'
                          + (f', Go {gv} ({gwhy})' if a.go else ''))
+    wnr4_lines = wnr4_part(a, c, s)
     for k in sorted(s):
         print(f'{k}: {s[k]}')
     for (mode, cv, rv), n in classes.most_common():
         print(f'class: {n} {mode} files, C {cv}, Rust {rv}')
     for e in edges:
         print('hand-made: ' + e)
+    for e in wnr4_lines[:50]:
+        print(e)
     bad = s['hand-made, Rust verdict NOT as C'] + s['mutated, Rust verdict NOT as C'] + s['C and Python disagree'] \
         + s['Rust panicked'] + s['Rust printed no line'] + s['Rust exit status not 0, 1 or 3'] \
-        + s['Go printed no line'] + s['Go exit status not 0, 1 or 3']
+        + s['Go printed no line'] + s['Go exit status not 0, 1 or 3'] \
+        + sum(n for k, n in s.items() if k.startswith('codec 8: ') and any(f in k for f in WNR4_FAILS))
     print('differential: ' + ('verdicts as the C reader on every file' if not bad else 'DISAGREEMENT'))
     return 1 if bad else 0
 

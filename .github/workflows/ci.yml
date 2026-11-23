@@ -515,7 +515,8 @@ jobs:
 
   # the Go reader and writer of WEX4 (impl/go-wex4: Go, standard library only, written from the specifications
   # and not from the reference code): gofmt, go vet, its tests, and every row of wex4/vectors/MANIFEST.tsv,
-  # content digests included. The
+  # content digests included, then every row of impl/go-wex4/testdata/wnr4-MANIFEST.tsv (codec 8, WNR4 kinds GG
+  # and I4: the content digest of the RAW source, or the verdict of WEX4-SPEC 7.3). The
   # tests give the files of the Go writer to the reference readers, which run.sh builds with the runner's gcc
   # and python3; WEX4_NEED_REFERENCE=1 makes a missing one a failure. It is not part of scripts/check_all.sh,
   # so that Go is not needed for the repository's checks. The runner's own Go is used (the code needs the min
@@ -534,10 +535,13 @@ jobs:
 
   # the Rust reader of WEX4 (impl/rust-wex4: Rust, standard library only, written from the specifications and not
   # from the reference code or the Go reader): rustfmt, its tests, every row of wex4/vectors/MANIFEST.tsv and the
-  # files of impl/go-wex4/testdata. Then a differential run: wex4/build_and_test.sh builds the library of the C
-  # reader (and runs the WEX4 tests once more, with a short fuzz), and differential.py must find the verdict of
-  # the C and of the Python reader on every hand-made and mutated file. The runner's own cargo is used. Not part
-  # of scripts/check_all.sh, so that Rust is not needed for the repository's checks
+  # files of impl/go-wex4/testdata, the codec-8 ones by their wnr4-MANIFEST.tsv. Then a differential run:
+  # wex4/build_and_test.sh builds the library of the C reader (and runs the WEX4 tests once more, with a short
+  # fuzz), and differential.py must find the verdict of the C and of the Python reader on every hand-made and
+  # mutated file. Neither of them decodes codec 8, so for the codec-8 files it checks the manifest's verdicts and
+  # RAW-source digests, the C reader's verdict with hashes only on 2,000 mutated copies, and that the Go reader
+  # (built here with the runner's Go) and this one agree on every codec-8 file. The runner's own cargo is used.
+  # Not part of scripts/check_all.sh, so that Rust is not needed for the repository's checks
   rust-reader:
     runs-on: ubuntu-24.04
     timeout-minutes: 15   # the job took 1m20 and 1m29 seconds (runs 44202436823 and 44202443775, 2026-11-18); the default lets a hung reader hold the runner for 6 hours
@@ -553,8 +557,10 @@ jobs:
         run: bash impl/rust-wex4/run.sh
       - name: The C and the Python reader (wex4/out)
         run: bash wex4/build_and_test.sh --fuzz 10
-      - name: Rust reader against the C and the Python reader, hand-made and 7,000 mutated files
-        run: python3 -I impl/rust-wex4/differential.py --count 7000 impl/rust-wex4/out/target/release/wex4r "$RUNNER_TEMP/differential"
+      - name: The Go reader, for the codec-8 comparison
+        run: cd impl/go-wex4 && go build -o out/wex4check .
+      - name: Rust reader against the C and the Python reader, hand-made and 7,000 mutated files; codec 8 against the manifest, the C reader's hashes and the Go reader, 2,000 mutated files
+        run: python3 -I impl/rust-wex4/differential.py --count 7000 --wnr4-count 2000 --go impl/go-wex4/out/wex4check impl/rust-wex4/out/target/release/wex4r "$RUNNER_TEMP/differential"
 
   # A measurement, not a check: the full bench/wex_io.py, only when a manual run asks for it
   # (gh workflow run ci.yml --ref <branch> -f linux_io_bench=true). The runner is a shared cloud VM with a
