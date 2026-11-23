@@ -593,7 +593,7 @@ func (x *Index) checkRecords() *Error {
 			}
 			x.ExpertRecords++
 		}
-		if r.Codec != codecRAW && r.Codec != codecWNR3 && r.Codec != codecWBP1 {
+		if r.Codec != codecRAW && r.Codec != codecWNR3 && r.Codec != codecWBP1 && r.Codec != codecWNR4 {
 			x.UnknownCodec++
 		}
 		cur += r.TensorCount

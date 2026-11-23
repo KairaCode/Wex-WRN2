@@ -36,7 +36,13 @@ func Export(path, dir string) (*Result, error) {
 		return nil, e
 	}
 	if pre.Undecoded != 0 {
-		return nil, fmt.Errorf("%d records of a codec this reader does not know: the file cannot be exported", pre.Undecoded)
+		return nil, fmt.Errorf("%d undecodable records (%s): the file cannot be exported", pre.Undecoded, pre.Why[0])
+	}
+	// the writer has no codec 8: the manifest of a file with a codec-8 record could not give the file again
+	for i := uint32(0); i < pre.H.Records; i++ {
+		if pre.X.Record(i).Codec == codecWNR4 {
+			return nil, fmt.Errorf("record %d is a codec-8 (WNR4, draft) record, which the writer cannot write: the file cannot be exported", i)
+		}
 	}
 	if err := os.MkdirAll(dir, 0o777); err != nil {
 		return nil, err
@@ -111,7 +117,7 @@ func Export(path, dir string) (*Result, error) {
 		return nil, failed
 	}
 	if res.Undecoded != 0 {
-		return nil, fmt.Errorf("%d records of a codec this reader does not know: the file cannot be exported", res.Undecoded)
+		return nil, fmt.Errorf("%d undecodable records (%s): the file cannot be exported", res.Undecoded, res.Why[0])
 	}
 	x, h := res.X, res.H
 	for i := uint32(0); i < h.Blobs; i++ {

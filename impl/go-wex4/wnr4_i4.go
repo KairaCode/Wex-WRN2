@@ -4,7 +4,7 @@
 // WNR4 kind 3, I4: int4-g64 expert records (1 to 3 matrices of int4 codes with one f32 scale per 64 inputs)
 // in WNR4 tiles, the scales as indices into the lattice of an FP8 block-scaled source or escaped
 // (docs/WNR4-SPEC.md section 6), and its WNM4 model (6.2). Decoder only, CPU, one thread, on the core of
-// wnr4.go. Not called by Verify yet.
+// wnr4.go. Verify calls it through wnr4_wex4.go.
 
 package main
 

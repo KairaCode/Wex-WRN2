@@ -8,7 +8,7 @@
 // give the symbol schedule, the tables and what each lane hashes. Decoder only, CPU, one thread. Written
 // from the specification pages; what they left open is part F of SPEC-NOTES.md.
 //
-// Not called by Verify yet: what a failed codec-8 record makes of the whole file is the owner's decision.
+// Verify calls the kinds through wnr4_wex4.go, which adds the container's checks of WEX4-SPEC 7.3.
 
 package main
 

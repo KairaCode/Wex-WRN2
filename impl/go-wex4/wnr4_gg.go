@@ -3,7 +3,7 @@
 
 // WNR4 kind 2, GG: the 18-byte blocks of the Q2_0 and IQ4_NL slices of a GGUF routed-expert record in WNR4
 // tiles, every other slice verbatim (docs/WNR4-SPEC.md section 5), and its WNM4 model (5.2). Decoder only,
-// CPU, one thread, on the core of wnr4.go. Not called by Verify yet.
+// CPU, one thread, on the core of wnr4.go. Verify calls it through wnr4_wex4.go.
 
 package main
 
