@@ -174,6 +174,8 @@ Local: the same Windows 10 desktop, Go 1.27.4, gcc 16.2 and Python 3.14 from MSY
 | `rans.go` | the rANS stream reader and the MurmurHash3 stream hash shared by WBP1 and WNR3 |
 | `wbp1.go` | codec 6 decoder |
 | `wnr3.go` | codec 5 decoder and the WNM2 model |
+| `wnr4.go` | codec 8 (WNR4, DRAFT): the record header and tile offsets, the 32 rANS lanes of a tile, the lane hashes, the tail in the state and the end states, the WNM4 header and tables. Not called by `verify.go` yet (since 2026-11-23) |
+| `wnr4_gg.go`, `wnr4_i4.go` | the WNR4 decoders of kinds GG (2) and I4 (3) and their WNM4 models (SPEC-NOTES part F) |
 | `digest.go` | the content digest of WEX4-SPEC section 5 |
 | `encode.go` | the rANS stream writer, the count quantiser, the WBP1 and the WNR3 encoder |
 | `train.go` | the WNM2 trainer |
@@ -183,6 +185,7 @@ Local: the same Windows 10 desktop, Go 1.27.4, gcc 16.2 and Python 3.14 from MSY
 | `main.go` | the command line and the manifest check |
 | `wex4_test.go` | the reader's tests (the first table above) |
 | `write_test.go` | the tests of the digest, the writer and the trainer (the second table), with the calls of the reference readers |
+| `wnr4_core_test.go`, `wnr4_gg_test.go`, `wnr4_i4_test.go`, `wnr4enc_test.go` | the WNR4 tests (`go test -run WNR4`): a test-only tile encoder and record builder, round trips, every end-state and record check, single-bit flips, the I4 lattice against exact rational rounding |
 | `run.sh` | builds, tests, checks the vectors and their content digests; builds the reference readers when it can |
 | `testdata/` | four WEX4 files for what the vectors did not cover before 2026-11-15, and the scripts that make them or their sources ([README](testdata/README.md)) |
-| `SPEC-NOTES.md` | what the specifications left open and what the vectors did not exercise on 2026-11-14, and where each point went since; part E, the notes of the writer |
+| `SPEC-NOTES.md` | what the specifications left open and what the vectors did not exercise on 2026-11-14, and where each point went since; part E, the notes of the writer; part F, the notes of the WNR4 decoders |
