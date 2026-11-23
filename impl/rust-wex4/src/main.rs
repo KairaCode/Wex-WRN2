@@ -14,6 +14,7 @@ mod testenc;
 mod wbp1;
 mod wex4;
 mod wnr3;
+mod wnr4;
 
 use sha256::{hex, sha256};
 use std::panic;
