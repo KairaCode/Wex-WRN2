@@ -274,11 +274,6 @@ impl<'a> Tile<'a> {
         Ok(s)
     }
 
-    /// The state of a lane (after its last symbol, its final state).
-    pub fn state(&self, lane: usize) -> u32 {
-        self.x[lane]
-    }
-
     /// The 16 tail bits of a tail lane: x_final - L, with L <= x_final < L + 2^16 required.
     pub fn tail(&self, lane: usize) -> Result<u16, String> {
         let x = self.x[lane];

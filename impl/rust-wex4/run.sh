@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 Ludovico Zanichelli
 # Builds the Rust reader, runs its tests and checks every row of wex4/vectors/MANIFEST.tsv with it, then the
-# files of impl/go-wex4/testdata. Needs cargo and rustc on PATH and nothing else: the crate has no dependency,
+# files of impl/go-wex4/testdata, the codec-8 ones by their wnr4-MANIFEST.tsv. Needs cargo and rustc on PATH and nothing else: the crate has no dependency,
 # so nothing is downloaded. Warnings fail the build unless RUSTFLAGS is set; rustfmt is run when it is installed.
 # Usage: bash impl/rust-wex4/run.sh     (last line on success: rust reader: all checks passed)
 #        bash impl/rust-wex4/run.sh FILE...   also checks these WEX4 files at the end
@@ -48,5 +48,27 @@ out=$("$bin" check ../go-wex4/testdata/extra-page.wex4) || status=$?
 echo "$out"
 [ "$status" -eq 1 ] && echo "$out" | grep -q '^reject [^ ]*extra-page.wex4 WEX4_E_DATA:' ||
   { echo "extra-page.wex4: not refused as WEX4_E_DATA (exit status $status)"; exit 1; }
+# the codec-8 (WNR4) files of impl/go-wex4/testdata, row by row of its wnr4-MANIFEST.tsv (WEX4-SPEC 7.3): a valid
+# file is accepted (exit status 0) with the manifest's root and the content digest of its RAW source;
+# wnr4-gg-bad-sha, whose record SHA-256 does not match, is refused as WEX4_E_HASH (exit status 1); every other
+# changed copy opens with the manifest's root and record 0 undecodable (exit status 3), since a codec-8 record
+# that does not decode makes that record undecodable, not the file invalid
+rows=0
+while IFS=$'\t' read -r name _ root verdict what _; do
+  case $name in '#'*|'') continue ;; esac
+  rows=$((rows + 1))
+  status=0
+  out=$("$bin" check "../go-wex4/testdata/$name") || status=$?
+  case $verdict:$what in
+    accept:*) want=0; text="^accept [^ ]*/$name root $root digest ${what%% *} " ;;
+    'refuse:record hash mismatch') want=1; text="^reject [^ ]*/$name WEX4_E_HASH: record 0: SHA-256 does not match\$" ;;
+    *) want=3; text="^undecodable [^ ]*/$name root $root: records \[0\] not decoded (record 0: " ;;
+  esac
+  if [ "$status" -ne "$want" ] || ! printf '%s\n' "$out" | grep -q -- "$text"; then
+    echo "$name: exit status $status and '$out', expected $want and '$text'"; exit 1
+  fi
+done < ../go-wex4/testdata/wnr4-MANIFEST.tsv
+[ "$rows" -eq 23 ] || { echo "wnr4-MANIFEST.tsv: $rows rows, 23 expected"; exit 1; }
+echo "the codec-8 files of impl/go-wex4/testdata: $rows rows of wnr4-MANIFEST.tsv as expected (6 accepted, 1 refused, 16 with an undecodable record)"
 if [ ${#files[@]} -gt 0 ]; then "$bin" check "${files[@]}"; fi
 echo "rust reader: all checks passed"

@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 Ludovico Zanichelli
 //! wex4r: a WEX4 reader and verifier written from docs/WEX4-SPEC.md, docs/WNR3-SPEC.md and
-//! docs/WNR2-REFERENCE.md, standard library only.
+//! docs/WNR2-REFERENCE.md, and for codec 8 (WNR4 kinds GG and I4, draft) from docs/WNR4-SPEC.md, standard
+//! library only.
 
 // the code keeps to old Rust (by reading, nothing newer than 1.61): no `is_multiple_of`, no `div_ceil`
 #![allow(clippy::manual_is_multiple_of, clippy::manual_div_ceil)]
@@ -27,7 +28,8 @@ const USAGE: &str = "usage:
   wex4r manifest [-v] MANIFEST.tsv    every row: file SHA-256, verdict, class, root and content digest
   wex4r dump FILE                     the header page and the index tables, as read
 exit status: 0 every file accepted (check) or every row as the manifest says (manifest);
-             1 a file refused or a row that disagrees; 2 usage; 3 a file whose records are not all decodable";
+             1 a file refused or a row that disagrees; 2 usage; 3 a file whose records are not all decodable
+             (a codec this reader does not know, or a codec-8 record that fails WEX4-SPEC 7.3)";
 
 /// The verdict on one file: accepted (with the report), refused, or a fault of this reader.
 enum Verdict {
@@ -66,11 +68,14 @@ fn line(path: &str, v: &Verdict) -> String {
                 r.blobs
             );
             if !r.undecodable.is_empty() {
+                // a codec this reader does not know, or a codec-8 record that failed a check of
+                // WEX4-SPEC 7.3 (the record is undecodable, the file is not invalid)
                 s = format!(
-                    "undecodable {} root {}: records {:?} have a codec this reader does not know",
+                    "undecodable {} root {}: records {:?} not decoded ({})",
                     path,
                     hex(&r.header.root),
-                    r.undecodable
+                    r.undecodable,
+                    r.why.join("; ")
                 );
             }
             s

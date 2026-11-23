@@ -5,10 +5,8 @@
 //! (section 5), `i4` kind 3 (section 6). Kinds 0 (MX) and 1 (NV) have no decoder here: no WEX4 container may
 //! hold them (WEX4-SPEC section 7.3). `testenc` is a test-only encoder.
 //!
-//! Nothing outside this module calls it yet: WEX4 codec 8 is not wired into `check_file`, so a codec-8
-//! record still makes a file `undecodable`. Until it is, the module allows dead code, since `run.sh` builds
-//! with `-D warnings`.
-#![allow(dead_code)]
+//! `check_file` (wex4.rs) calls `gg::decode` and `i4::decode` for WEX4 codec 8, after the container's
+//! checks of WEX4-SPEC 7.3 (blob kind, model id, kind 2 or 3, the geometry from the tensors).
 
 pub mod core;
 pub mod gg;

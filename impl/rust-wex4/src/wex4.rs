@@ -4,6 +4,7 @@
 //! steps of validation (section 6), with the record codecs of section 7.
 
 use crate::sha256::{hex, sha256, Sha256};
+use crate::wnr4::{gg, i4};
 use crate::{wbp1, wnr3};
 use std::fs::File;
 use std::io::{Read, Seek, SeekFrom};
@@ -134,10 +135,15 @@ pub const DTYPE_NAMES: [&str; 22] = [
 const DT_U8: u8 = 2;
 const DT_I8: u8 = 3;
 const DT_F8_E8M0: u8 = 6;
+const DT_F32: u8 = 13;
 
 pub const CODEC_RAW: u16 = 0;
 pub const CODEC_WNR3: u16 = 5;
 pub const CODEC_WBP1: u16 = 6;
+/// WNR4 records (draft, section 7.3), kinds GG and I4.
+pub const CODEC_WNR4: u16 = 8;
+/// A WNM4 model blob (section 5.1).
+const BLOB_WNM4: u32 = 3;
 pub const FLAG_VALUE_EXACT: u16 = 1;
 pub const FLAG_EXPERT: u16 = 2;
 
@@ -851,7 +857,7 @@ fn check_tiling(h: &Header, ix: &Index) -> Res<()> {
     Ok(())
 }
 
-fn read_at(f: &mut File, offset: u64, len: u64) -> Res<Vec<u8>> {
+fn read_at<R: Read + Seek>(f: &mut R, offset: u64, len: u64) -> Res<Vec<u8>> {
     let mut buf = vec![0u8; len as usize];
     f.seek(SeekFrom::Start(offset))
         .and_then(|_| f.read_exact(&mut buf))
@@ -867,7 +873,11 @@ pub struct Report {
     pub blobs: usize,
     pub expert_records: usize,
     pub decoded: usize,
+    /// The records not decoded: of a codec this reader does not know, or codec-8 records that failed a
+    /// check of section 7.3 (undecodable, not the file invalid).
     pub undecodable: Vec<usize>,
+    /// For each of them, `record N: ` and the reason.
+    pub why: Vec<String>,
     /// The content digest of section 5, when every record was decoded.
     pub digest: Option<[u8; 32]>,
     /// With `Options::list`: the SHA-256 of every decoded record and tensor.
@@ -884,18 +894,26 @@ pub struct Options {
 pub fn check_file(path: &str, opt: &Options) -> Res<Report> {
     let mut f = File::open(path).map_err(|e| Reject { class: Class::Io, why: format!("{}: {}", path, e) })?;
     let real = f.metadata().map_err(|e| Reject { class: Class::Io, why: e.to_string() })?.len();
-    let page = read_at(&mut f, 0, real.min(PAGE))?;
+    check(&mut f, real, opt)
+}
+
+/// `check_file` on any seekable reader of `real` bytes.
+pub fn check<R: Read + Seek>(f: &mut R, real: u64, opt: &Options) -> Res<Report> {
+    let page = read_at(f, 0, real.min(PAGE))?;
     let h = parse_header(&page, real)?;
-    let raw = read_at(&mut f, h.index_offset, align(h.index_bytes))?;
+    let raw = read_at(f, h.index_offset, align(h.index_bytes))?;
     let ix = Index::new(raw[..h.index_bytes as usize].to_vec(), &h);
     let checked = check_index(&h, &ix, &raw)?;
     drop(raw);
 
-    // step 3: blobs (SHA-256, zero padding, the WNM2 model and its id), then records
+    // step 3: blobs (SHA-256, zero padding, the WNM2 model and its id), then records. The bytes of a WNM4
+    // blob (kind 3) that a codec-8 record names are kept: it is opened as a model when such a record is
+    // first decoded (sections 5.1 and 7.3); any other kind-3 blob gets the SHA-256 and padding checks only
     let mut models: Vec<Option<wnr3::Model>> = Vec::with_capacity(ix.nb);
+    let mut wnr4 = Wnr4Blobs::new(&ix);
     for i in 0..ix.nb {
         let b = ix.blob(i);
-        let bytes = read_at(&mut f, b.offset, align(b.bytes))?;
+        let bytes = read_at(f, b.offset, align(b.bytes))?;
         let n = b.bytes as usize;
         ensure!(sha256(&bytes[..n]) == b.sha, Hash, "blob {}: SHA-256 does not match", i);
         ensure!(bytes[n..].iter().all(|&v| v == 0), Blob, "blob {}: a non-zero byte in its padding", i);
@@ -914,24 +932,31 @@ pub fn check_file(path: &str, opt: &Options) -> Res<Report> {
         } else {
             models.push(None);
         }
+        if wnr4.named[i] {
+            wnr4.bytes[i] = Some(bytes[..n].to_vec());
+        }
     }
     let mut digest = Some(Sha256::new());
     let mut undecodable = Vec::new();
+    let mut why = Vec::new();
     let mut decoded = 0usize;
     let mut listing = Vec::new();
     let mut part: Option<(usize, u32, Sha256)> = None; // a split tensor: its index, parts to come, its hash
     for r in 0..ix.nr {
         let e = ix.record(r);
-        let stored = read_at(&mut f, e.offset, e.stored as u64)?;
+        let stored = read_at(f, e.offset, e.stored as u64)?;
+        // checked for every record before it is decoded: for a codec-8 record of kind GG the only check of
+        // its verbatim slices, which no tile hash covers (section 7.3, "Integrity")
         ensure!(sha256(&stored) == e.sha, Hash, "record {}: SHA-256 does not match", r);
         if !opt.decode {
             digest = None;
             continue;
         }
-        let out = match decode_record(&ix, r, &e, &stored, &models) {
-            Ok(Some(out)) => out,
-            Ok(None) => {
+        let out = match decode_record(&ix, r, &e, &stored, &models, &mut wnr4) {
+            Ok(Decoded::Out(out)) => out,
+            Ok(Decoded::Undecodable(reason)) => {
                 undecodable.push(r);
+                why.push(format!("record {}: {}", r, reason));
                 digest = None;
                 part = None; // a split tensor with an undecodable part has no hash to list
                 continue;
@@ -1004,6 +1029,7 @@ pub fn check_file(path: &str, opt: &Options) -> Res<Report> {
         expert_records: checked.expert_records,
         decoded,
         undecodable,
+        why,
         digest,
         listing,
     })
@@ -1026,27 +1052,40 @@ fn digest_fields(d: &mut Sha256, ix: &Index, t: &Ten) {
     d.update(&t.nbytes.to_le_bytes());
 }
 
-/// Decodes one record into scratch: Ok(None) for a codec this reader does not know.
+/// What decoding a record gave, when it did not refuse the file.
+enum Decoded {
+    Out(Vec<u8>),
+    /// A codec this reader does not know, or a codec-8 record that failed a check of section 7.3: the
+    /// record is undecodable, the file is not invalid.
+    Undecodable(String),
+}
+
+/// Decodes one record into scratch; an Err refuses the file.
 fn decode_record(
     ix: &Index,
     r: usize,
     e: &Rec,
     stored: &[u8],
     models: &[Option<wnr3::Model>],
-) -> Result<Option<Vec<u8>>, String> {
+    wnr4: &mut Wnr4Blobs,
+) -> Result<Decoded, String> {
     let n = e.decoded as usize;
     match e.codec {
         CODEC_RAW => {
             if stored[n..].iter().any(|&b| b != 0) {
                 return Err("a non-zero byte in the padding of a RAW record".into());
             }
-            Ok(Some(stored[..n].to_vec()))
+            Ok(Decoded::Out(stored[..n].to_vec()))
         }
         CODEC_WBP1 => {
             let mut out = vec![0u8; n];
             wbp1::decode(stored, r as u32, e.decoded, &mut out)?;
-            Ok(Some(out))
+            Ok(Decoded::Out(out))
         }
+        CODEC_WNR4 => Ok(match decode_wnr4(ix, e, stored, wnr4) {
+            Ok(out) => Decoded::Out(out),
+            Err(why) => Decoded::Undecodable(why),
+        }),
         CODEC_WNR3 => {
             let model = models[e.blob as usize - 1].as_ref().ok_or("the record's blob is not a WNM2 model")?;
             // 7.1: owner, CZ bit and model id repeated by the index
@@ -1066,10 +1105,152 @@ fn decode_record(
             }
             let mut out = vec![0u8; n];
             wnr3::decode(stored, model, expert_scales(ix, e), &mut out)?;
-            Ok(Some(out))
+            Ok(Decoded::Out(out))
         }
-        _ => Ok(None),
+        c => Ok(Decoded::Undecodable(format!("codec {}, which this reader does not know", c))),
     }
+}
+
+/// The WNM4 blobs that codec-8 records name (0-based): their bytes, kept by step 3 after the SHA-256 and
+/// padding checks, and the models opened from them, each at most once per kind, at first use.
+struct Wnr4Blobs {
+    named: Vec<bool>,
+    bytes: Vec<Option<Vec<u8>>>,
+    gg: Vec<Option<Result<gg::Model, String>>>,
+    i4: Vec<Option<Result<i4::Model, String>>>,
+}
+
+impl Wnr4Blobs {
+    fn new(ix: &Index) -> Wnr4Blobs {
+        let mut named = vec![false; ix.nb];
+        for r in 0..ix.nr {
+            let e = ix.record(r);
+            if e.codec == CODEC_WNR4 && e.blob != 0 && ix.blob(e.blob as usize - 1).kind == BLOB_WNM4 {
+                named[e.blob as usize - 1] = true;
+            }
+        }
+        let nb = ix.nb;
+        Wnr4Blobs {
+            named,
+            bytes: vec![None; nb],
+            gg: (0..nb).map(|_| None).collect(),
+            i4: (0..nb).map(|_| None).collect(),
+        }
+    }
+}
+
+/// The ggml type a GG slice of WEX4 dtype `d` has in the record's geometry (7.3; SPEC-NOTES G1 item 4):
+/// 42 for dtype 170, 20 for dtype 148, and for any other dtype a type that is neither, so that a tensor of
+/// WEX4 dtype 42 or 20 is a verbatim slice.
+fn ggml_type(d: u8) -> u32 {
+    match d {
+        170 => gg::TYPE_Q2_0,
+        148 => gg::TYPE_IQ4_NL,
+        _ => 0x100 | d as u32,
+    }
+}
+
+/// The geometry of a GG record (7.3): `tensor_count` 1 to 4, each tensor inside this record only; slice s
+/// is the record's s-th tensor.
+fn gg_slices(ix: &Index, e: &Rec) -> Result<Vec<gg::Slice>, String> {
+    if e.tensor_count < 1 || e.tensor_count > 4 {
+        return Err(format!("GG: a record of {} tensors, 1 to 4 allowed", e.tensor_count));
+    }
+    let mut slices = Vec::with_capacity(e.tensor_count as usize);
+    for j in e.first_tensor..e.first_tensor + e.tensor_count {
+        let t = ix.tensor(j as usize);
+        if t.record_count != 1 {
+            return Err(format!("GG: tensor {} is split over {} records", j, t.record_count));
+        }
+        slices.push(gg::Slice { ggml_type: ggml_type(t.dtype), bytes: t.nbytes });
+    }
+    Ok(slices)
+}
+
+/// The geometry of an I4 record (7.3): `tensor_count` 2, 4 or 6, each tensor inside this record only and
+/// of rank 2; with n = `tensor_count / 2`, tensor m < n is U8 [rows, cols / 2] and tensor n + m is F32
+/// [rows, cols / 64], cols a multiple of 64. The tiling of section 5.3 already puts each tensor where the
+/// one before it ends. The packing is record byte 13, which `i4::decode` reads (pairs = None).
+fn i4_matrices(ix: &Index, e: &Rec) -> Result<Vec<i4::Matrix>, String> {
+    if !matches!(e.tensor_count, 2 | 4 | 6) {
+        return Err(format!("I4: a record of {} tensors, 2, 4 or 6 allowed", e.tensor_count));
+    }
+    let n = e.tensor_count / 2;
+    let mut mats = Vec::with_capacity(n as usize);
+    for m in 0..n {
+        let (ci, si) = (e.first_tensor + m, e.first_tensor + n + m);
+        let (c, s) = (ix.tensor(ci as usize), ix.tensor(si as usize));
+        if c.record_count != 1 || s.record_count != 1 || c.rank != 2 || s.rank != 2 {
+            return Err(format!("I4: tensors {} and {} are not two tensors of rank 2 inside the record", ci, si));
+        }
+        if c.dtype != DT_U8 || s.dtype != DT_F32 {
+            return Err(format!(
+                "I4: matrix {} has codes of dtype {} and scales of dtype {} (U8 and F32 expected)",
+                m, c.dtype, s.dtype
+            ));
+        }
+        let (rows, half) = (c.shape[0], c.shape[1]);
+        let ok = rows <= u32::MAX as u64
+            && half <= (u32::MAX / 2) as u64
+            && half % 32 == 0
+            && s.shape[0] == rows
+            && s.shape[1] <= u32::MAX as u64
+            && 2 * half == 64 * s.shape[1];
+        if !ok {
+            return Err(format!(
+                "I4: matrix {} has codes [{}, {}] and scales [{}, {}]",
+                m, rows, half, s.shape[0], s.shape[1]
+            ));
+        }
+        mats.push(i4::Matrix { rows: rows as u32, cols: 2 * half as u32 });
+    }
+    Ok(mats)
+}
+
+/// A codec-8 record (section 7.3, "At decode"): record kind 2 or 3, a blob of kind 3 that is a valid WNM4
+/// model of that kind whose id is the blob entry's, then the decoder of the kind, which compares the
+/// record's model id and owner. Every Err makes the record undecodable.
+fn decode_wnr4(ix: &Index, e: &Rec, stored: &[u8], w: &mut Wnr4Blobs) -> Result<Vec<u8>, String> {
+    let kind = stored[12]; // stored_bytes is at least 4096: the 64-byte header is there
+    if kind != gg::KIND && kind != i4::KIND {
+        return Err(format!(
+            "WNR4 kind {}: a WEX4 record that is not EXPERT may be of kind 2 (GG) or 3 (I4) only",
+            kind
+        ));
+    }
+    if e.blob == 0 {
+        return Err("codec 8 without a WNM4 blob".into());
+    }
+    let b = e.blob as usize - 1;
+    let be = ix.blob(b);
+    if be.kind != BLOB_WNM4 {
+        return Err(format!("codec 8 with blob {} of kind {}, not a WNM4 model (kind 3)", b, be.kind));
+    }
+    let bytes = w.bytes[b].as_deref().unwrap_or(&[]);
+    let bad_id = |id: u32| {
+        format!("blob {}: a WNM4 model of id {:#010x} in the index, the model's FNV-1a is {:#010x}", b, be.id, id)
+    };
+    let mut out = vec![0u8; e.decoded as usize];
+    if kind == gg::KIND {
+        let m = w.gg[b]
+            .get_or_insert_with(|| gg::model_open(bytes))
+            .as_ref()
+            .map_err(|why| format!("blob {}: {}", b, why))?;
+        if m.id != be.id {
+            return Err(bad_id(m.id));
+        }
+        gg::decode(stored, m, e.owner, &gg_slices(ix, e)?, &mut out)?;
+    } else {
+        let m = w.i4[b]
+            .get_or_insert_with(|| i4::model_open(bytes))
+            .as_ref()
+            .map_err(|why| format!("blob {}: {}", b, why))?;
+        if m.id != be.id {
+            return Err(bad_id(m.id));
+        }
+        i4::decode(stored, m, e.owner, &i4_matrices(ix, e)?, None, &mut out)?;
+    }
+    Ok(out)
 }
 
 /// Prints the header page and the tables of a file that passed step 1 (for `dump`).
@@ -1129,4 +1310,161 @@ pub fn dump(path: &str) -> Res<()> {
     println!("name order {:?}", order);
     println!("metadata {} bytes", ix.metadata().len());
     Ok(())
+}
+
+/// Codec 8 in whole files: the codec-8 files of impl/go-wex4/testdata (made with the repository's codec-8
+/// tools) by their wnr4-MANIFEST.tsv, and changed copies of them with every hash recomputed, which must never
+/// be refused as files (WEX4-SPEC 7.3).
+#[cfg(test)]
+mod wnr4_container_tests {
+    use super::*;
+    use std::io::Cursor;
+
+    fn testdata(name: &str) -> Vec<u8> {
+        let p = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../go-wex4/testdata").join(name);
+        std::fs::read(&p).unwrap_or_else(|e| panic!("{}: {}", p.display(), e))
+    }
+
+    fn check_bytes(b: &[u8]) -> Res<Report> {
+        check(&mut Cursor::new(b), b.len() as u64, &Options { decode: true, list: false })
+    }
+
+    /// The record SHA-256 of record `rec` and the SHA-256 of blob `blob` (when given), then the index and the
+    /// header hashes.
+    fn rehash(b: &mut [u8], rec: Option<usize>, blob: Option<usize>) {
+        let (io, ib, nb) = (u64le(b, 32) as usize, u64le(b, 40) as usize, u32le(b, 48) as usize);
+        if let Some(i) = blob {
+            let at = io + 64 * i;
+            let (off, n) = (u64le(b, at + 8) as usize, u64le(b, at + 16) as usize);
+            let s = sha256(&b[off..off + n]);
+            b[at + 24..at + 56].copy_from_slice(&s);
+        }
+        if let Some(r) = rec {
+            let at = io + 64 * nb + 72 * r;
+            let (off, n) = (u64le(b, at) as usize, u32le(b, at + 8) as usize);
+            let s = sha256(&b[off..off + n]);
+            b[at + 36..at + 68].copy_from_slice(&s);
+        }
+        let s = sha256(&b[io..io + ib]);
+        b[96..128].copy_from_slice(&s);
+        let s = sha256(&b[..4064]);
+        b[4064..4096].copy_from_slice(&s);
+    }
+
+    /// Every row: accept with the manifest's root and content digest; bad-sha refused (WEX4_E_HASH); every
+    /// other changed copy opens with its record 0 undecodable.
+    #[test]
+    fn wnr4_manifest_rows() {
+        let text = String::from_utf8(testdata("wnr4-MANIFEST.tsv")).unwrap();
+        let mut rows = 0;
+        for line in text.lines().filter(|l| !l.is_empty() && !l.starts_with('#')) {
+            let c: Vec<&str> = line.split('\t').collect();
+            let (name, root, verdict, what) = (c[0], c[2], c[3], c[4]);
+            rows += 1;
+            let res = check_bytes(&testdata(name));
+            match (verdict, res) {
+                ("accept", Ok(r)) => {
+                    assert!(r.undecodable.is_empty(), "{}: {:?}", name, r.why);
+                    assert_eq!(hex(&r.header.root), root, "{}", name);
+                    assert_eq!(hex(&r.digest.unwrap()), what.split(' ').next().unwrap(), "{}", name);
+                }
+                ("refuse", Err(e)) if what == "record hash mismatch" => assert_eq!(e.class, Class::Hash, "{}", name),
+                ("refuse", Ok(r)) if what != "record hash mismatch" => {
+                    assert_eq!(hex(&r.header.root), root, "{}", name);
+                    assert_eq!(r.undecodable, vec![0], "{}: {:?}", name, r.why);
+                    assert!(r.digest.is_none(), "{}", name);
+                }
+                (_, res) => panic!("{}: {:?}, the manifest says {} ({})", name, res.err(), verdict, what),
+            }
+        }
+        assert_eq!(rows, 23);
+    }
+
+    /// Kind 1 (NV), a GG record read as kind 3, a blob of another kind, a changed model byte and G 0: the
+    /// record is undecodable, the file opens.
+    #[test]
+    fn wnr4_bindings() {
+        let orig = testdata("wnr4-gg-one.wex4");
+        let io = u64le(&orig, 32) as usize;
+        let nb = u32le(&orig, 48) as usize;
+        let rat = io + 64 * nb;
+        let (off, blob) = (u64le(&orig, rat) as usize, u32le(&orig, rat + 20) as usize - 1);
+        let boff = u64le(&orig, io + 64 * blob + 8) as usize;
+        type Edit = Box<dyn Fn(&mut Vec<u8>) -> (Option<usize>, Option<usize>)>;
+        let cases: Vec<(&str, Edit)> = vec![
+            (
+                "WNR4 kind 1",
+                Box::new(move |b| {
+                    b[off + 12] = 1;
+                    (Some(0), None)
+                }),
+            ),
+            (
+                "blob 0",
+                Box::new(move |b| {
+                    b[off + 12] = 3;
+                    (Some(0), None)
+                }),
+            ),
+            (
+                "not a WNM4 model",
+                Box::new(move |b| {
+                    b[io + 64 * blob] = 4;
+                    (None, None)
+                }),
+            ),
+            (
+                "blob 0",
+                Box::new(move |b| {
+                    b[boff + 100] ^= 1;
+                    (None, Some(blob))
+                }),
+            ),
+            (
+                "G",
+                Box::new(move |b| {
+                    b[off + 14] = 0;
+                    b[off + 15] = 0;
+                    (Some(0), None)
+                }),
+            ),
+        ];
+        for (want, edit) in cases {
+            let mut b = orig.clone();
+            let (r, bl) = edit(&mut b);
+            rehash(&mut b, r, bl);
+            let rep = check_bytes(&b).unwrap_or_else(|e| panic!("{}: refused: {:?}", want, e));
+            assert_eq!(rep.undecodable, vec![0], "{}", want);
+            assert!(rep.why[0].contains(want), "{}: {:?}", want, rep.why);
+        }
+    }
+
+    /// Every bit of the first 256 bytes of the codec-8 record of wnr4-gg-one and wnr4-i4-one, the hashes
+    /// recomputed: never refused; accepted only inside the GG verbatim slices (another digest) or an I4 base
+    /// that no scale reads (the same digest).
+    #[test]
+    fn wnr4_flips() {
+        for name in ["wnr4-gg-one.wex4", "wnr4-i4-one.wex4"] {
+            let orig = testdata(name);
+            let d0 = check_bytes(&orig).unwrap().digest.unwrap();
+            let io = u64le(&orig, 32) as usize;
+            let rat = io + 64 * u32le(&orig, 48) as usize;
+            let off = u64le(&orig, rat) as usize;
+            let gg = orig[off + 12] == gg::KIND;
+            let area = 64 + 4 * (u32le(&orig, off + 20) as usize + 1);
+            let mut accepted = 0;
+            for k in 0..256 * 8 {
+                let mut b = orig.clone();
+                b[off + k / 8] ^= 1 << (k % 8);
+                rehash(&mut b, Some(0), None);
+                let rep = check_bytes(&b).unwrap_or_else(|e| panic!("{}: bit {} refused: {:?}", name, k, e));
+                if rep.undecodable.is_empty() {
+                    accepted += 1;
+                    let same = rep.digest.unwrap() == d0;
+                    assert!(k / 8 >= area && same != gg, "{}: bit {} accepted, same digest {}", name, k, same);
+                }
+            }
+            assert!(accepted > 0 || !gg, "{}: no verbatim flip accepted", name);
+        }
+    }
 }
