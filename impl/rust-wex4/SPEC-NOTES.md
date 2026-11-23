@@ -328,9 +328,8 @@ this encoder and this decoder agree, not that they agree with the reference.
 On the codec-8 test files made from the reference tools for both readers (`impl/go-wex4/testdata`,
 `wnr4-*.wex4`, on their own branch at the time), with a throwaway harness that maps each codec-8 record
 to its geometry as WEX4-SPEC 7.3 says and calls these decoders: all 17 records of the table of
-decoded SHA-256 values (13 codec-8 records and 4 RAW ones, in the four valid files; G 1, 7, 32, 64 and 100, planar and
-pairs) decode to the
-listed SHA-256; the record of `wnr4-i4-mut-base.wex4` decodes to the bytes of `wnr4-i4-one.wex4`; the
+decoded SHA-256 values (13 codec-8 records and 4 RAW ones, in the four valid files; G 1, 7, 32, 64 and
+100, planar and pairs) decode to the listed SHA-256; the record of `wnr4-i4-mut-base.wex4` decodes to the bytes of `wnr4-i4-one.wex4`; the
 verbatim byte change of `wnr4-gg-mut-verbatim.wex4` decodes, to other bytes; every other changed copy
 is refused (kind 0, flags, reserved bytes, ntiles, owner, model id, padding, a word, a base, an anchor,
 the packing). The harness is not in the repository: wiring codec 8 into `check_file` comes next.
