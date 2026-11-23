@@ -6,7 +6,7 @@
 // shared stream of 16-bit words, the lane hashes, the tail in the state and the end states (sections 1 and
 // 4), and the common header and tables of a WNM4 model blob (section 2). The kinds (wnr4_gg.go, wnr4_i4.go)
 // give the symbol schedule, the tables and what each lane hashes. Decoder only, CPU, one thread. Written
-// from the specification pages; what they left open is part G of SPEC-NOTES.md.
+// from the specification pages; what they left open is part F of SPEC-NOTES.md.
 //
 // Not called by Verify yet: what a failed codec-8 record makes of the whole file is the owner's decision.
 
