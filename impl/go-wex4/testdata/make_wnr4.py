@@ -346,6 +346,7 @@ def main(argv):
     vpad = area + verb                     # V = 236: 2 zero bytes after them
     tile = area + verb + 2                 # payload: tile 0 (32 initial states, then its words)
     words = tile + 128
+    assert rec[vpad:tile] == b"\0\0" and (verb + 2) % 4 == 0, "verbatim area is not where the script expects it"
 
     def blob_id_plus_1(data, rd, entry):
         at = rd.index_offset + (len(rd.blobs) - 1) * 64 + 4
@@ -361,6 +362,9 @@ def main(argv):
         ("wnr4-gg-bad-ntiles.wex4", dict(at=20, value=list(struct.pack("<I", nt + 1))),
          f"record header bytes 20..23 (ntiles) {nt} -> {nt + 1}"),
         ("wnr4-gg-bad-owner.wex4", dict(at=8, xor=[1]), "record header bytes 8..11 (owner) 0 -> 1"),
+        ("wnr4-gg-bad-model.wex4", dict(at=4, xor=[1]),
+         "record header bytes 4..7 (model id) xor 1: not the id of the WNM4 blob, which is unchanged"),
+        ("wnr4-gg-bad-zero16.wex4", dict(at=16, value=[1]), "record header byte 16 (of the zero bytes 16..19) set to 1"),
         ("wnr4-gg-bad-pad.wex4", dict(at=vpad + 1, value=[1]), "last zero byte after the verbatim slices set to 1"),
         ("wnr4-gg-mut-verbatim.wex4", dict(at=area + 5, xor=[0x40]), "byte 5 of the verbatim gate slice changed"),
         ("wnr4-gg-bad-sha.wex4", dict(at=words + 10, xor=[1], reseal=False),
@@ -382,6 +386,7 @@ def main(argv):
          f"base of block 0 {bases[0]:#010x} -> 0x7f800000 (+inf, not a valid base)"),
         ("wnr4-i4-bad-flags.wex4", dict(at=13, value=[1]), "record header byte 13 (packing) 0 -> 1: pairs, while the tile hashes were made with planar packing"),
         ("wnr4-i4-bad-anchor.wex4", dict(at=30, value=[1]), "anchor[1] (bytes 30..31) set to 1 in a record of 1 matrix"),
+        ("wnr4-i4-bad-owner.wex4", dict(at=8, xor=[1]), "record header bytes 8..11 (owner) 0 -> 1 (the index says 0)"),
         ("wnr4-i4-mut-base.wex4", dict(at=area + 4, value=list(struct.pack("<I", other))),
          f"base of block 1 {bases[1]:#010x} -> {other:#010x}; every scale of block 1 escapes, so it is never read"),
     ]
@@ -406,9 +411,16 @@ def main(argv):
             assert (v2, info2) == ("accept", digest(W(src))), (name, v2, info2)
             assert info == info2
             info = f"{info} (= RAW source)"
-        elif verdict == "accept":
+        else:
+            # what each changed copy is for: a bad-* copy must be refused, a mut-* copy accepted (a change of the
+            # tools that moved a field would otherwise end in a manifest row that silently says the other thing)
+            assert verdict == ("refuse" if "-bad-" in name else "accept"), (name, verdict, info)
+        if not src and verdict == "accept":
             base = "wnr4-gg-one.wex4" if name.startswith("wnr4-gg") else "wnr4-i4-one.wex4"
             same = info == oracle(module, lib, O(base))[1]
+            assert same == name.startswith("wnr4-i4"), (name, info)   # mut-base: same digest; mut-verbatim: another
+            bsrc = W("src-gg-one.wex4" if name.startswith("wnr4-gg") else "src-i4-one.wex4")
+            assert oracle(module, lib, O(name), bsrc)[0] == ("accept" if same else "refuse"), name   # verify --source
             info = f"{info} ({'same as' if same else 'differs from'} {base})"
         rows.append((name, len(data), data[4064:4096].hex(), verdict, info, what))
         print(f"{name:28} {len(data):>8,} B  {verdict:6} {info}")
