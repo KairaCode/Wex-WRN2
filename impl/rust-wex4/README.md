@@ -15,7 +15,8 @@ comparison with the other readers that came after, with [differential.py](differ
 Since 2026-11-23 it also decodes codec 8 (WNR4, DRAFT; WEX4-SPEC 7.3), kinds GG (2) and I4 (3), with
 the decoders of `src/wnr4/`, written from [WNR4-SPEC](../../docs/WNR4-SPEC.md) sections 1 to 6 and
 WEX4-SPEC 7.3 with the reference code of WNR4 (`wnr4/`, `wex4/wnr4gg.py`, `wex4/wnr4i4.py`, their
-tests) and the Go reader's WNR4 code closed (SPEC-NOTES part G).
+tests) and the Go reader's WNR4 code closed (SPEC-NOTES part G). The binding to the container in
+`src/wex4.rs` is not independent of the Go reader's (SPEC-NOTES G3).
 
 ## What it checks
 
@@ -120,8 +121,9 @@ the content digest included.
   reader's; the class differs from the C reader's on 3 of the 27 and 15 of the 18,378 files that both
   refuse. No panic.
 - **Codec 8** (2026-11-23, one run each): `cargo test` reads the 23 codec-8 files through
-  `wex4::check` (every manifest row, the bindings of 7.3, every bit of the first 256 bytes of both
-  codec-8 records); `run.sh` checks the rows through `wex4r check`. The differential run with `--go`,
+  `wex4::check` (every manifest row, the decoded size and SHA-256 of the 17 records of
+  `wnr4-records.tsv` (since the review of 2026-11-23), the bindings of 7.3, every bit of the first
+  256 bytes of both codec-8 records); `run.sh` checks the rows through `wex4r check`. The differential run with `--go`,
   default seeds, on a second Windows PC (MSYS2 UCRT64): the 23 rows as the manifest; 1,937 mutated
   codec-8 files, of which the C reader refuses 1,332 with hashes only and so do both readers; of the 605
   it opens, 111 accepted, 487 `undecodable`, 7 refused as `WEX4_E_DATA`; the Go reader's verdict and

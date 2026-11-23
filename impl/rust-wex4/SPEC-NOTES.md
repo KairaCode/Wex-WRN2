@@ -337,8 +337,12 @@ in `cargo test` and in `run.sh`.
 
 ### G3. In `check_file` (2026-11-23)
 
-Codec 8 is wired into `check_file` (`src/wex4.rs`: `decode_wnr4`, `gg_slices`, `i4_matrices`), with the
-Go reader's code still closed. What the text left to the container, and what this reader does:
+Codec 8 is wired into `check_file` (`src/wex4.rs`: `decode_wnr4`, `gg_slices`, `i4_matrices`). Unlike
+the decoders of `src/wnr4/`, this binding is not independent of the Go reader's: it and
+`impl/go-wex4/wnr4_wex4.go` were written in the same integration and share their checks, their order and
+their messages word for word, so where the two readers agree on a container check of 7.3 (the blob and its
+kind, the model id, the record kind, the geometry from the tensors) that is one reading of the text, not
+two. What the text left to the container, and what this reader does:
 
 1. **The verdict of a codec-8 record that fails** (7.3: "a failure makes that record undecodable (fail
    closed), not the file invalid") was the owner's to decide for the whole file, since a WNR3 failure

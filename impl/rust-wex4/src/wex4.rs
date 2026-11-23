@@ -1351,6 +1351,35 @@ mod wnr4_container_tests {
         b[4064..4096].copy_from_slice(&s);
     }
 
+    /// The decoded size and SHA-256 of every record of the four valid files, against wnr4-records.tsv (so that
+    /// a wrong record is named, not only a wrong content digest).
+    #[test]
+    fn wnr4_records() {
+        let text = String::from_utf8(testdata("wnr4-records.tsv")).unwrap();
+        let mut want: Vec<(String, Vec<String>)> = Vec::new();
+        for line in text.lines().filter(|l| !l.is_empty() && !l.starts_with('#')) {
+            let c: Vec<&str> = line.split('\t').collect();
+            let row = format!("  record {} codec {} decoded {} sha256 {}", c[1], &c[2][6..7], c[3], c[4]);
+            match want.iter_mut().find(|(n, _)| n == c[0]) {
+                Some((_, rows)) => rows.push(row),
+                None => want.push((c[0].to_string(), vec![row])),
+            }
+        }
+        assert_eq!(want.len(), 4);
+        let mut records = 0;
+        for (name, rows) in &want {
+            let b = testdata(name);
+            let r = check(&mut Cursor::new(&b), b.len() as u64, &Options { decode: true, list: true }).unwrap();
+            let got: Vec<&String> = r.listing.iter().filter(|l| l.starts_with("  record ")).collect();
+            assert_eq!(got.len(), rows.len(), "{}", name);
+            for (g, w) in got.iter().zip(rows) {
+                assert_eq!(*g, w, "{}", name);
+            }
+            records += rows.len();
+        }
+        assert_eq!(records, 17);
+    }
+
     /// Every row: accept with the manifest's root and content digest; bad-sha refused (WEX4_E_HASH); every
     /// other changed copy opens with its record 0 undecodable.
     #[test]

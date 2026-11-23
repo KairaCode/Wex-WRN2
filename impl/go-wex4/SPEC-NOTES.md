@@ -159,7 +159,7 @@ Written while `wnr4.go` (the record header, the tile offsets, the 32 lanes, the 
 
 ### In the container (2026-11-23)
 
-Written when `Verify` was given codec 8 (`wnr4_wex4.go`), on the branch that holds the files, with the Rust reader still closed. The owner decided the verdict that F14 and the files' README left open: a codec-8 record that fails any check of WEX4-SPEC 7.3 "At decode" or of its decoder, or whose kind is 0 or 1, makes that record undecodable, as 7.3 says; the file stays valid. WEX4-SPEC 7.3 now says it in so many words.
+Written when `Verify` was given codec 8 (`wnr4_wex4.go`), on the branch that holds the files. Unlike the decoders, this binding is not independent of the Rust reader's: it and `decode_wnr4`, `gg_slices` and `i4_matrices` of `impl/rust-wex4/src/wex4.rs` were written in the same integration and share their checks, their order and their messages word for word. Where the two readers agree on a container check of 7.3 (the blob and its kind, the model id, the record kind, the geometry from the tensors), that is one reading of the text, not two; only the decoders behind it were written apart. The owner decided the verdict that F14 and the files' README left open: a codec-8 record that fails any check of WEX4-SPEC 7.3 "At decode" or of its decoder, or whose kind is 0 or 1, makes that record undecodable, as 7.3 says; the file stays valid. WEX4-SPEC 7.3 now says it in so many words.
 
 | # | Where | What the text says | What cannot be decided | Resolution | Settled by |
 |---|---|---|---|---|---|
