@@ -612,8 +612,11 @@ measured; it is not known to fail.
     (`bash scripts/build_wnr4_check.sh`, which `scripts/check_all.sh` runs in CI) include a mutation fuzz
     for each kind. The measurements are in the
     [report](reports/wnr4-research-20261121.md), sections 5 to 8; the GPU code has run on one GPU only
-    (an RTX 5090, `sm_120`).
+    (an RTX 5090, `sm_120`). Since 2026-11-23 the Go and the Rust readers of `impl/` decode kinds GG and I4
+    in WEX4 files, written from the specification with the reference code closed (WNR4-SPEC section 7).
   - **Still open:**
+    - independent decoders of kinds MX and NV (no WEX4 file may hold them yet, so they would be record
+      decoders of their own; WNR4-SPEC sections 2 to 4 have no list of record checks like 5.5 and 6.5);
     - a SIMD lane-parallel CPU decoder (8 lanes per AVX2 register): the reference decoder is scalar with
       an AVX2 16-symbol search, 0.057-0.060 GB/s per thread and 0.71 GB/s with 16-32 threads on Qwen3.8
       MXFP4 (report, section 5);

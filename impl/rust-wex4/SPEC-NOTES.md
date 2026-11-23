@@ -285,8 +285,8 @@ E5 and five rows of the table of E4 (brackets there).
 Written with the WNR4 decoders of `src/wnr4/` (kinds 2 and 3, and what they share), from
 [WNR4-SPEC](../../docs/WNR4-SPEC.md) sections 1 to 6 and WEX4-SPEC section 7.3 only: the reference
 codec under `wnr4/`, its tools and tests, the Python packers of `wex4/` and the Go reader's WNR4 code
-were not opened. The decoders are not yet called by `check_file` (codec 8 still makes a file
-`undecodable`); they are tested by their own unit tests, with a test-only encoder written from the same
+were not opened. When this part was written the decoders were not called by `check_file`; since the
+integration of the same day they are (G3); they are tested by their own unit tests, with a test-only encoder written from the same
 pages (`src/wnr4/testenc.rs` and the `tests` modules of `gg.rs` and `i4.rs`), so those tests show that
 this encoder and this decoder agree, not that they agree with the reference.
 
@@ -332,4 +332,34 @@ decoded SHA-256 values (13 codec-8 records and 4 RAW ones, in the four valid fil
 100, planar and pairs) decode to the listed SHA-256; the record of `wnr4-i4-mut-base.wex4` decodes to the bytes of `wnr4-i4-one.wex4`; the
 verbatim byte change of `wnr4-gg-mut-verbatim.wex4` decodes, to other bytes; every other changed copy
 is refused (kind 0, flags, reserved bytes, ntiles, owner, model id, padding, a word, a base, an anchor,
-the packing). The harness is not in the repository: wiring codec 8 into `check_file` comes next.
+the packing). The harness is not in the repository; since G3 the same files are read by `check_file`,
+in `cargo test` and in `run.sh`.
+
+### G3. In `check_file` (2026-11-23)
+
+Codec 8 is wired into `check_file` (`src/wex4.rs`: `decode_wnr4`, `gg_slices`, `i4_matrices`), with the
+Go reader's code still closed. What the text left to the container, and what this reader does:
+
+1. **The verdict of a codec-8 record that fails** (7.3: "a failure makes that record undecodable (fail
+   closed), not the file invalid") was the owner's to decide for the whole file, since a WNR3 failure
+   refuses it: such a record is `undecodable`, as a record of an unknown codec is (exit status 3, the root
+   and the reason printed, no content digest). The same holds for a codec-8 record of kind 0 or 1, for a
+   missing blob, a blob of another kind, a WNM4 model that does not open as the record's kind, and a model
+   whose FNV-1a is not the entry's id. WEX4-SPEC 7.3 now says it in so many words.
+2. **The record SHA-256** is checked before every decode, as for every codec; a mismatch refuses the file
+   (`WEX4_E_HASH`): the stored bytes are not the ones the index names. For a GG record it is the only
+   check of the verbatim slices (7.3, "Integrity").
+3. **A WNM4 blob** is kept after the checks of step 3 only when a codec-8 record names it, and opened at
+   first use, once per kind (WEX4-SPEC 5.1). An unused kind-3 blob gets the SHA-256 and padding checks
+   only.
+4. **The I4 packing** is record byte 13: `i4::decode` gets `pairs = None` (G1 item 3).
+5. **A verbatim GG slice** gets the type `0x100 + dtype` (G1 item 4): never 42 or 20.
+6. **The I4 geometry:** cols is twice the codes' second dimension, which must be a multiple of 32 and
+   equal 64 times the scales' second dimension, with equal rows; rows and cols must fit `u32`
+   (`i4::Matrix`). The index rules of 5.3 already tie every size to its shape and every offset to the
+   tensor before it.
+
+On the 23 codec-8 files of `impl/go-wex4/testdata`, the first run gave the verdict that the files'
+manifest implies on every row: the 6 valid files accepted with the manifest's content digests, `bad-sha`
+refused, the other 16 with record 0 `undecodable`, each for the check its change aims at (the two index
+changes `bad-modelid` and `bad-blob0` by the bindings of 3 above).
