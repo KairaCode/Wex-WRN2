@@ -175,7 +175,7 @@ The V4.1 switch report's own reading of its numbers: on this machine the second 
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/charts/tests-dark.png">
-  <img alt="Bar charts: 136 conformance vectors (16 accepted, 120 refused, by error class) and 14 CI jobs per pull request (Linux x86-64 7, Linux arm64 3, macOS arm64 3, Windows 1)." src="assets/charts/tests-light.png" width="800">
+  <img alt="Bar charts: 139 conformance vectors (16 accepted, 123 refused, by error class) and 14 CI jobs per pull request (Linux x86-64 7, Linux arm64 3, macOS arm64 3, Windows 1)." src="assets/charts/tests-light.png" width="800">
 </picture>
 
 Each chart names its source in its footnote. The speed chart was measured on one desktop (RTX 5090 32 GB, Ryzen 9 7950X3D, 32 GB DDR5-6200, Windows 11; drive U: NVMe PCIe 4.0, C: NVMe PCIe 5.0) and gives, per model, the RAM budget of the engine (16 GB for V4.1, 13 GB for Qwen3.8) and, per bar, the drive or drives the experts were read from ([docs/BENCHMARKS.md](docs/BENCHMARKS.md), "Machine"); the size and codec charts do not depend on the machine. `python scripts/make_charts.py` draws them again (matplotlib), in a light and a dark version. The "original" bars are the expert bytes of the published safetensors: `python -I scripts/expert_bytes.py REPO PROFILE` sums them from the shard headers on Hugging Face (two range requests per shard, no tensor data).
