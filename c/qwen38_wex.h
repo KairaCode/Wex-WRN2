@@ -54,6 +54,8 @@
 #include "wex_decode.c"
 #endif
 
+static void q38_bind_int4_record(Model *m,Slot *slot,uint8_t *record);   /* qwen38_core.h */
+
 /* gate, up, down (the Slot's order) -> the record's matrix w1, w3, w2 */
 static const int q38_mx4_matrix[3]={0,2,1};
 
@@ -174,27 +176,33 @@ static int64_t q38_wex_stripe_cut(const int *wex_cut,int r,int s,int64_t n) {
  * header page with the legacy fields (for WNR3 also the WNMD descriptor of the model blob, whose
  * SHA-256 is checked here). The page keeps the root at byte 4064, so equal pages <=> same
  * container. Record bytes and offsets are those of the old container. */
+static int q38_wex4_int4_entries(const Wex4View *v,const Cfg *c,const char *prefix,WexEntry *table,unsigned char *shas);
+/* int4 = the tensor-name prefix of int4-g64 experts (q38_int4_attach_wex), NULL = MXFP4 expert records */
 static int q38_wex4_manifest(int fd,const Cfg *c,unsigned char *page,unsigned char **table,
-                             size_t *table_bytes,int64_t file_bytes) {
+                             size_t *table_bytes,int64_t file_bytes,const char *int4) {
     Wex4Header h;Wex4View v;Wex4Record rec;Wex4Blob blob;
     void *index=NULL,*t=NULL,*model=NULL;
     uint64_t span,slab=0;uint32_t r,flags=0,model_blob=0;
     const char *pin=getenv("COLI_WEX_ROOT");
     int bad=1;
-    if(wex4_parse_header(page,(uint64_t)file_bytes,&h)||h.layers!=(uint32_t)c->layers||h.experts!=(uint32_t)c->experts)return -1;
+    /* int4 records are plain RAW records (no EXPERT flag, so no expert grid in the header) */
+    if(wex4_parse_header(page,(uint64_t)file_bytes,&h)||
+       (int4?h.layers!=0u:h.layers!=(uint32_t)c->layers||h.experts!=(uint32_t)c->experts))return -1;
     if(pin&&*pin){
         char hex[65];
         for(r=0;r<32u;r++)snprintf(hex+r*2u,3,"%02x",h.root[r]);
         if(strcasecmp(pin,hex)){fprintf(stderr,"[qwen38] WEX4 root %s is not the pinned COLI_WEX_ROOT\n",hex);return -1;}
     }
-    span=wex4_align((uint64_t)h.layers*h.experts*sizeof(WexEntry));
+    uint32_t L=int4?(uint32_t)c->layers:h.layers,E=int4?(uint32_t)c->experts:h.experts;   /* the table's grid */
+    span=wex4_align((uint64_t)L*E*sizeof(WexEntry));
     /* the record hashes sit right behind the table (span bytes), 32 per slot (COLI_WEX_VERIFY) */
-    uint64_t shas=wex4_align((uint64_t)h.layers*h.experts*32u);
+    uint64_t shas=wex4_align((uint64_t)L*E*32u);
     if(posix_memalign(&index,WEX_ALIGN,(size_t)wex4_align(h.index_bytes)+WEX_ALIGN)||posix_memalign(&t,WEX_ALIGN,(size_t)(span+shas)))goto done;
     if(q38_wex_read(fd,index,(int64_t)wex4_align(h.index_bytes),(int64_t)h.index_offset)||
        wex4_open(&h,(const unsigned char*)index,(size_t)wex4_align(h.index_bytes),&v))goto done;
     memset(t,0,(size_t)(span+shas));
-    for(r=0;r<h.records;r++){
+    if(int4&&q38_wex4_int4_entries(&v,c,int4,(WexEntry*)t,(unsigned char*)t+span))goto done;
+    for(r=0;!int4&&r<h.records;r++){
         wex4_get_record(&v,r,&rec);
         if(!(rec.flags&WEX4_REC_EXPERT))continue;
         size_t slot=(size_t)(rec.owner>>16)*h.experts+(rec.owner&0xffffu);
@@ -223,7 +231,7 @@ static int q38_wex4_manifest(int fd,const Cfg *c,unsigned char *page,unsigned ch
         for(at=blob.bytes;at<wex4_align(blob.bytes);at++)if(((const unsigned char*)model)[at])goto done;
     }
     {
-        WexHeader legacy={model_blob?WEX_MAGIC_V3:WEX_MAGIC_V1,model_blob?3u:1u,h.layers,h.experts,slab,
+        WexHeader legacy={model_blob?WEX_MAGIC_V3:WEX_MAGIC_V1,model_blob?3u:1u,L,E,slab,
                           model_blob?blob.offset+wex4_align(blob.bytes):WEX_ALIGN,flags,0u};
         memset(page,0,WEX_ALIGN);
         memcpy(page,&legacy,sizeof legacy);
@@ -232,11 +240,11 @@ static int q38_wex4_manifest(int fd,const Cfg *c,unsigned char *page,unsigned ch
             memcpy(page+WEX_NR2_DESCRIPTOR_OFFSET,words,sizeof words);
         }
         uint32_t marker=WEX4_MAGIC;
-        memcpy(page+56u,&marker,4u);   /* sets the rewritten page apart from a legacy mirror's (not read as a flag) */
+        memcpy(page+56u,&marker,4u);   /* tells the caller the hashes are behind the table */
         memcpy(page+WEX4_HEADER_HASHED,h.root,32u);
     }
     fprintf(stderr,"[qwen38] WEX4 container (hashed header and index)\n");
-    *table=(unsigned char*)t;*table_bytes=(size_t)h.layers*h.experts*sizeof(WexEntry);t=NULL;bad=0;
+    *table=(unsigned char*)t;*table_bytes=(size_t)L*E*sizeof(WexEntry);t=NULL;bad=0;
 done:
     if(index)compat_aligned_free(index);
     if(model)compat_aligned_free(model);
@@ -244,11 +252,58 @@ done:
     return bad?-1:0;
 }
 
+/* int4-g64 experts in a WEX4 container (wex4_convert.py pack --experts int4): one RAW record per
+ * expert holding exactly the sidecar's six tensors, by name, in its record order (gate, up, down
+ * codes, then their f32 scales; qwen38_core.h's int4 sidecar). Each present expert's entry gets
+ * the record's place and size (codec 0, flags 0) and its SHA-256; an expert with no gate codes
+ * stays absent (total_bytes 0, the attach refuses it inside the loaded range). -1 on anything
+ * else: a part missing, another dtype, shape, order, codec or record. */
+static int q38_wex4_int4_entries(const Wex4View *v,const Cfg *c,const char *prefix,WexEntry *table,unsigned char *shas) {
+    static const char *proj[3]={"gate_proj","up_proj","down_proj"};
+    int64_t rows[3]={c->inter,c->inter,c->hidden},cols[3]={c->hidden,c->hidden,c->inter},record=0;
+    /* the sidecar's index.json (pack --extra) names the code layout: same-shape codes of another encoding
+     * would pass the checks below, so its format and layout strings must be in the metadata
+     * shortcut: substring match in the meta JSON, not a parse; enough while one int4 format exists */
+    static const char *need[3]={Q38_INT4_FORMAT,"planar64-v8","f32-per-64"};
+    for(int k=0;k<3;k++){
+        size_t n=strlen(need[k]),i=0;
+        while(i+n<=v->h.meta_bytes&&memcmp(v->meta+i,need[k],n))i++;
+        if(i+n>v->h.meta_bytes){fprintf(stderr,"[qwen38] WEX4 int4 container: no %s in its metadata "
+                                                "(pack it with --extra experts-int4g64/index.json)\n",need[k]);return -1;}
+    }
+    for(int k=0;k<3;k++)record+=rows[k]*(q38_int4_row_bytes((int)cols[k])+q38_int4_groups((int)cols[k])*(int64_t)sizeof(float));
+    for(int layer=0;layer<c->layers;layer++)
+        for(int expert=0;expert<c->experts;expert++){
+            Wex4Record rec;Wex4Tensor t;int64_t first=-1;uint64_t at=0;uint32_t rix=0;
+            for(int part=0;part<6;part++){
+                int k=part%3,scale=part>=3;char name[384];
+                int n=snprintf(name,sizeof name,"%s.layers.%d.mlp.experts.%d.%s.weight%s",prefix,layer,expert,proj[k],scale?".qs":"");
+                int64_t ti=n>0&&(size_t)n<sizeof name?wex4_find(v,(const unsigned char*)name,(size_t)n):-1;
+                if(ti<0){ if(!part)break; return -1; }
+                wex4_get_tensor(v,(uint32_t)ti,&t);
+                int64_t width=scale?q38_int4_groups((int)cols[k]):q38_int4_row_bytes((int)cols[k]);
+                if(!part){first=ti;rix=t.record;wex4_get_record(v,rix,&rec);}
+                if(t.dtype!=(scale?13u:WEX4_DT_U8)||t.rank!=2||t.shape[0]!=(uint64_t)rows[k]||t.shape[1]!=(uint64_t)width||
+                   t.record_count!=1||t.record!=rix||
+                   ti!=first+part||t.offset!=at)return -1;
+                at+=t.nbytes;
+            }
+            if(first<0)continue;
+            if(rec.codec!=WEX4_CODEC_RAW||rec.flags||rec.tensor_count!=6u||rec.first_tensor!=(uint32_t)first||
+               rec.decoded!=(uint64_t)record||at!=(uint64_t)record)return -1;
+            size_t slot=(size_t)layer*c->experts+expert;
+            memset(&table[slot],0,sizeof table[slot]);
+            table[slot].file_offset=rec.offset;table[slot].total_bytes=rec.stored;
+            memcpy(shas+slot*32u,rec.sha,32u);
+        }
+    return 0;
+}
+
 /* The header page and the table of one container (aligned buffers, the caller frees
  * both with compat_aligned_free); 0 when they are this model's WEX1. *wex4 (when not NULL)
  * is 1 for a WEX4 file, whose page comes back rewritten in the WEX1/WNR3 shape. */
 static int q38_wex_manifest(int fd,const Cfg *c,unsigned char **page,unsigned char **table,
-                            size_t *table_bytes,int64_t *file_bytes,int *wex4) {
+                            size_t *table_bytes,int64_t *file_bytes,int *wex4,const char *int4) {
     size_t bytes=0,span=0;void *p=NULL,*t=NULL;
     *page=*table=NULL;*file_bytes=q38_wex_fsize(fd);
     if(wex4)*wex4=0;
@@ -257,8 +312,9 @@ static int q38_wex_manifest(int fd,const Cfg *c,unsigned char **page,unsigned ch
     if(q38_wex_read(fd,p,WEX_ALIGN,0))return -1;
     if(wex_read_u32_le((const unsigned char*)p)==WEX4_MAGIC){
         if(wex4)*wex4=1;
-        return q38_wex4_manifest(fd,c,(unsigned char*)p,table,table_bytes,*file_bytes);
+        return q38_wex4_manifest(fd,c,(unsigned char*)p,table,table_bytes,*file_bytes,int4);
     }
+    if(int4)return -1;   /* int4-g64 records are read from WEX4 containers only */
     if(q38_mx4_env("COLI_WEX_ROOT")){   /* a pinned root refuses a legacy file: it has no root (W06) */
         fprintf(stderr,"[qwen38] a container that is not WEX4 is not the pinned COLI_WEX_ROOT\n");
         return -1;
@@ -306,9 +362,11 @@ static void q38_mx4_attach_wex(Model *m,Q38Int4Experts *x,const char *path) {
     int fd=q38_wex_open(path);
     if(fd<0)q38_mx4_refuse(path,"cannot be opened");
     unsigned char *page,*table;size_t table_bytes;int64_t file_bytes;
-    if(q38_wex_manifest(fd,c,&page,&table,&table_bytes,&file_bytes,&x->wex4))
-        q38_mx4_refuse(path,"is not a WEX1 or WNR3 container of this model's layers and experts "
-                            "(WEX2, palette and WNR/WNR2 records are not read here)");
+    if(q38_wex_manifest(fd,c,&page,&table,&table_bytes,&file_bytes,&x->wex4,x->mx?NULL:m->prefix))
+        q38_mx4_refuse(path,x->mx?"is not a WEX1 or WNR3 container of this model's layers and experts "
+                                  "(WEX2, palette and WNR/WNR2 records are not read here)":
+                                  "is not a WEX4 container of this model's int4-g64 experts (Q38_EXPERT_INT4=1: "
+                                  "one RAW record of the sidecar's six tensors per expert, wex4_convert.py --experts int4)");
     const WexHeader *h=(const WexHeader*)page;
     x->wex_flags=h->flags;x->nr3=!!(h->flags&WEX_HEADER_NEURAL_RANS3);
     if(x->nr3){
@@ -321,18 +379,21 @@ static void q38_mx4_attach_wex(Model *m,Q38Int4Experts *x,const char *path) {
     const WexEntry *entries=(const WexEntry*)table;
     for(int layer=m->range_begin;layer<m->range_end;layer++)
         for(int expert=0;expert<c->experts;expert++)
-            if(!q38_wex_entry_ok(&entries[(int64_t)layer*c->experts+expert],c,x->mx_scale_off,x->mx_weight_off,
-                                 x->mx_raw,x->record_bytes,x->nr3)){
+            if(x->mx?!q38_wex_entry_ok(&entries[(int64_t)layer*c->experts+expert],c,x->mx_scale_off,x->mx_weight_off,
+                                       x->mx_raw,x->record_bytes,x->nr3):
+                     !entries[(int64_t)layer*c->experts+expert].total_bytes){   /* int4: the manifest checked the rest */
                 char why[200];
-                snprintf(why,sizeof why,"layer %d expert %d is missing or is not one MXFP4 record of %lld bytes "
-                         "(codec 0, or codec 5 in a WNR3 container)",layer,expert,(long long)x->mx_raw);
+                snprintf(why,sizeof why,"layer %d expert %d is missing or is not one %s record of %lld bytes%s",
+                         layer,expert,x->mx?"MXFP4":"int4-g64",(long long)(x->mx?x->mx_raw:x->record_bytes),
+                         x->mx?" (codec 0, or codec 5 in a WNR3 container)":"");
                 q38_mx4_refuse(path,why);
             }
     x->wex_fd[0]=fd;x->wex_n=1;
     {   /* COLI_WEX_VERIFY=1: each record's stored bytes are hashed at their first read (per layout) */
-        const char *verify=q38_mx4_env("COLI_WEX_VERIFY");
+        uint32_t marker;const char *verify=q38_mx4_env("COLI_WEX_VERIFY");
+        memcpy(&marker,page+56u,4u);
         if(verify&&atoi(verify)){
-            if(x->wex4){   /* not page bytes 56..59: a legacy file's are never validated */
+            if(marker==WEX4_MAGIC){
                 x->wex_seen=(unsigned char*)calloc((size_t)c->layers*c->experts,1u);
                 if(!x->wex_seen){fprintf(stderr,"OOM WEX4 first-read marks\n");exit(1);}
                 x->wex_sha=table+wex4_align(table_bytes);
@@ -355,7 +416,7 @@ static void q38_mx4_attach_wex(Model *m,Q38Int4Experts *x,const char *path) {
         int mfd=q38_wex_open(mirror);
         if(mfd<0){fprintf(stderr,"[qwen38] WEX mirror %s cannot be opened; ignored\n",mirror);continue;}
         unsigned char *mpage,*mtable;size_t mbytes;int64_t msize;
-        int same=!q38_wex_manifest(mfd,c,&mpage,&mtable,&mbytes,&msize,NULL)&&msize==file_bytes&&
+        int same=!q38_wex_manifest(mfd,c,&mpage,&mtable,&mbytes,&msize,NULL,x->mx?NULL:m->prefix)&&msize==file_bytes&&
                  mbytes==table_bytes&&!memcmp(mpage,page,WEX_ALIGN)&&!memcmp(mtable,table,table_bytes);
         compat_aligned_free(mpage);compat_aligned_free(mtable);
         if(!same){fprintf(stderr,"[qwen38] WEX mirror %s differs from %s; ignored\n",mirror,path);close(mfd);continue;}
@@ -385,7 +446,7 @@ static void q38_mx4_attach_wex(Model *m,Q38Int4Experts *x,const char *path) {
     x->wex_cut[x->wex_n-1]=256;
     const char *stripe=q38_mx4_env("COLI_WEX_STRIPE");
     x->wex_stripe=x->wex_n>1&&stripe&&stripe[0]=='1';
-    fprintf(stderr,"[qwen38] MXFP4 experts from %s %s: %lld-byte records, direct reads, %d drive(s)",
+    fprintf(stderr,"[qwen38] %s experts from %s %s: %lld-byte records, direct reads, %d drive(s)",x->mx?"MXFP4":"int4-g64",
             x->wex4?(x->nr3?"WEX4 (WNR3 records)":"WEX4"):x->nr3?"WNR3":"WEX1",path,(long long)x->record_bytes,x->wex_n);
     for(int r=0;r<x->wex_n&&x->wex_n>1;r++)fprintf(stderr,"%s%.0f%%",r?" ":" split ",100.0*w[r]/sum);
     if(x->wex_stripe)fprintf(stderr,", a lone miss striped over two drives (COLI_WEX_STRIPE=1)");
@@ -422,13 +483,29 @@ static void q38_mx4_attach_quark(Model *m,Q38Int4Experts *x,const char *dir) {
                    "(no container: six reads per expert)\n",dir,(long long)x->record_bytes);
 }
 
-/* COLI_WEX_PATH or Q38_MXFP4_DIR: the routed experts of the model's layers as MXFP4 records. */
+/* COLI_WEX_PATH or Q38_MXFP4_DIR: the routed experts of the model's layers as MXFP4 records.
+ * COLI_WEX_PATH with Q38_EXPERT_INT4=1: the int4-g64 sidecar's records from a WEX4 container
+ * instead (wex4_convert.py pack --experts int4), read like the MXFP4 ones (direct reads, mirrors,
+ * COLI_WEX_ROOT, COLI_WEX_VERIFY) and computed like the sidecar's; the sidecar folder is not read. */
 static void q38_expert_mx4_attach(Model *m) {
     const char *path=q38_mx4_env("COLI_WEX_PATH"),*dir=q38_mx4_env("Q38_MXFP4_DIR");
     if(!path&&!dir)return;
     if(path&&dir)q38_mx4_refuse(path,"COLI_WEX_PATH and Q38_MXFP4_DIR are both set; pick one");
     Q38Int4Experts *x=(Q38Int4Experts*)calloc(1,sizeof(*x));
     if(!x){fprintf(stderr,"OOM MXFP4 expert index\n");exit(1);}
+    if(path&&q38_expert_int4_wanted()==1){
+        Cfg *c=&m->c;int rows[3]={c->inter,c->inter,c->hidden},cols[3]={c->hidden,c->hidden,c->inter};
+        for(int k=0;k<3;k++){   /* the sidecar's record geometry (q38_expert_int4_attach) */
+            x->code_bytes[k]=(int64_t)rows[k]*q38_int4_row_bytes(cols[k]);
+            x->scale_count[k]=(int64_t)rows[k]*q38_int4_groups(cols[k]);
+            x->scale_off+=x->code_bytes[k];
+        }
+        x->record_bytes=x->scale_off+(x->scale_count[0]+x->scale_count[1]+x->scale_count[2])*(int64_t)sizeof(float);
+        if(x->record_bytes>UINT32_MAX/2)q38_mx4_refuse(path,"an expert of this geometry exceeds a WEX record");
+        q38_mx4_attach_wex(m,x,path);
+        m->x4=x;
+        return;
+    }
     x->mx=1;
     x->record_bytes=q38_mx4_layout(&m->c,x->mx_scale_off,x->mx_weight_off,&x->mx_raw);
     if(x->record_bytes>UINT32_MAX)q38_mx4_refuse(path?path:dir,"an expert of this geometry exceeds a WEX record");
@@ -478,12 +555,13 @@ static void q38_mx4_load(Model *m,int layer,int expert,Slot *slot,int defer,int 
     Q38Int4Experts *x=m->x4;
     if(!slot->int4_slab||slot->int4_slab_bytes!=x->record_bytes){
         q38_slab_unpin(slot);
-        void *replacement=realloc(slot->int4_slab,(size_t)x->record_bytes+WEX_ALIGN);
+        /* aligned: an int4 record's stored bytes run to its next page */
+        void *replacement=realloc(slot->int4_slab,(size_t)wex4_align((uint64_t)x->record_bytes)+WEX_ALIGN);
         if(!replacement){fprintf(stderr,"OOM MXFP4 expert record\n");exit(1);}
         slot->int4_slab=replacement;slot->int4_slab_bytes=x->record_bytes;
     }
     uint8_t *record=q38_mx4_record(slot);
-    q38_mx4_bind(m,slot,record);
+    if(x->mx)q38_mx4_bind(m,slot,record); else q38_bind_int4_record(m,slot,record);
     if(x->wex_n){
         int64_t at=(int64_t)layer*m->c.experts+expert;
         const WexEntry *e=q38_mx4_entry(m,layer,expert);
@@ -568,5 +646,77 @@ static void q38_mx4_free(Q38Int4Experts *x) {
     for(int r=0;r<x->wex_n;r++)close(x->wex_fd[r]);
     if(x->wex_entry)compat_aligned_free(x->wex_entry);
     free(x->wex_seen);
+}
+
+/* Q38_FP8_WEX (Q38Fp8Wex in qwen38_core.h): the header page and the index are validated (wex4.h:
+ * hashes, tiling, every range inside the file), then every expert of the model's layers is looked
+ * up by its gate weight's name: one RAW record of exactly its six tensors in the converter's
+ * order and this geometry, the scales one float dtype for the whole file. Anything else is
+ * refused, never a quiet fall back to the snapshot. */
+static void q38_fp8_wex_refuse(const char *path,const char *why) {
+    fprintf(stderr,"[qwen38] FP8 experts from %s: %s -- refusing (unset Q38_FP8_WEX for the snapshot's "
+                   "own experts)\n",path,why);
+    exit(1);
+}
+static void q38_fp8_wex_attach(Model *m) {
+    const char *path=q38_mx4_env("Q38_FP8_WEX");
+    if(!path)return;
+    if(m->x4)q38_fp8_wex_refuse(path,"MXFP4 or int4-g64 experts are attached too (COLI_WEX_PATH, Q38_MXFP4_DIR, "
+                                     "or the sidecar: Q38_EXPERT_INT4=0)");
+    if(!m->native_fp8)q38_fp8_wex_refuse(path,"it needs the native FP8 path (Q38_NATIVE_FP8=1)");
+    Cfg *c=&m->c;
+    static const char *proj[3]={"gate_proj","up_proj","down_proj"};
+    const int64_t rows[3]={c->inter,c->inter,c->hidden},cols[3]={c->hidden,c->hidden,c->inter};
+    Q38Fp8Wex *w=(Q38Fp8Wex*)calloc(1,sizeof(*w));
+    void *page=NULL,*index=NULL;Wex4Header h;Wex4View v;
+    if(!w||!(w->off=(int64_t*)malloc((size_t)c->layers*c->experts*sizeof(int64_t)))){fprintf(stderr,"OOM FP8 WEX4 index\n");exit(1);}
+    w->fd=open(path,O_RDONLY|O_BINARY);w->dfd=q38_wex_open(path);w->scale_dtype=-1;
+    if(w->fd<0)q38_fp8_wex_refuse(path,"cannot be opened");
+    w->size=q38_wex_fsize(w->fd);
+    if(posix_memalign(&page,WEX_ALIGN,WEX_ALIGN)||w->size<WEX_ALIGN||pread(w->fd,page,WEX_ALIGN,0)!=WEX_ALIGN||
+       wex4_parse_header((const unsigned char*)page,(uint64_t)w->size,&h))
+        q38_fp8_wex_refuse(path,"is not a WEX4 container (header page refused)");
+    size_t index_len=(size_t)wex4_align(h.index_bytes);
+    if(posix_memalign(&index,WEX_ALIGN,index_len+WEX_ALIGN)||
+       pread(w->fd,index,index_len,(off_t)h.index_offset)!=(ssize_t)index_len||
+       wex4_open(&h,(const unsigned char*)index,index_len,&v))
+        q38_fp8_wex_refuse(path,"its index is refused (hash, layout or a range outside the file)");
+    for(int64_t i=0;i<(int64_t)c->layers*c->experts;i++)w->off[i]=-1;
+    for(int layer=m->range_begin;layer<m->range_end&&layer<c->layers;layer++)
+        for(int expert=0;expert<c->experts;expert++){
+            char why[200],suffix[192],name[320];
+            Wex4Tensor t;Wex4Record rec;int64_t first=-1,at=0;
+            snprintf(why,sizeof why,"layer %d expert %d is not one RAW record of its gate/up/down F8_E4M3 weights "
+                     "then their float block scales, of this geometry",layer,expert);
+            for(int k=0;k<6;k++){
+                snprintf(suffix,sizeof suffix,"mlp.experts.%d.%s.%s",expert,proj[k%3],k<3?"weight":"weight_scale_inv");
+                q38_name(m,name,sizeof name,layer,suffix);
+                size_t len=strlen(name);
+                if(!k){
+                    first=wex4_find(&v,(const unsigned char*)name,len);
+                    if(first<0||first+6>(int64_t)h.tensors)q38_fp8_wex_refuse(path,why);
+                    wex4_get_tensor(&v,(uint32_t)first,&t);
+                    wex4_get_record(&v,t.record,&rec);
+                    if(rec.codec!=WEX4_CODEC_RAW||rec.tensor_count!=6u||rec.first_tensor!=(uint32_t)first)q38_fp8_wex_refuse(path,why);
+                }
+                wex4_get_tensor(&v,(uint32_t)(first+k),&t);
+                int dtype=k<3?(t.dtype==5u?4:-1):t.dtype==10u?0:t.dtype==9u?1:t.dtype==13u?2:-1;   /* wex4 codes -> st.h */
+                int64_t r=k<3?rows[k%3]:fp8_nblk(rows[k%3]),cl=k<3?cols[k%3]:fp8_nblk(cols[k%3]);
+                if(k==3&&w->scale_dtype<0)w->scale_dtype=dtype;
+                if(dtype<0||(k>=3&&dtype!=w->scale_dtype)||t.name_len!=len||memcmp(t.name,name,len)||t.rank!=2u||
+                   t.shape[0]!=(uint64_t)r||t.shape[1]!=(uint64_t)cl||t.record_count!=1u||(int64_t)t.offset!=at||
+                   (int64_t)t.nbytes!=r*cl*st_dtype_esz(dtype))
+                    q38_fp8_wex_refuse(path,why);
+                at+=(int64_t)t.nbytes;
+            }
+            if((int64_t)rec.decoded!=at)q38_fp8_wex_refuse(path,why);
+            w->off[(int64_t)layer*c->experts+expert]=(int64_t)rec.offset;
+        }
+    char root[65];
+    for(int i=0;i<32;i++)snprintf(root+i*2,3,"%02x",h.root[i]);
+    compat_aligned_free(page);compat_aligned_free(index);
+    m->fw=w;
+    fprintf(stderr,"[qwen38] FP8 experts from WEX4 %s (root %s): one read per miss, %s scales from the records; "
+                   "the MTP head keeps the snapshot's\n",path,root,w->scale_dtype==0?"BF16":w->scale_dtype==1?"F16":"F32");
 }
 #endif /* COLI_QWEN38_WEX_H */
