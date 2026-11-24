@@ -30,6 +30,7 @@ int main(void) {
 #include <direct.h>
 #include "../wex_decode.h"
 #include "../wex4.h"
+#include "../v4_wex_crc_policy.h"   /* V4_WEX_CRC_DEMAND and its kinds: the Windows build of this unit does not see them through the engine's include */
 
 int coli_v4_test_wex_active(ColiExpertStore *store);
 int coli_v4_test_wex_seen(ColiExpertStore *store, ColiExpertKey key);
@@ -38,7 +39,7 @@ int coli_v4_gpu_expert_peek(ColiExpertStore *store, ColiExpertView *view);
 /* deepseek_v4_internal.h declares these only for the GPU unit */
 const WexEntry *coli_v4_expert_store_wex_entry(ColiExpertStore *store, ColiExpertKey key, size_t capacity);
 int coli_v4_wex_crc_get(ColiExpertStore *store, ColiExpertKey key, const WexEntry *entry,
-                        unsigned char **record, int *hit);
+                        unsigned char **record, int *hit, int kind);
 void coli_v4_wex_crc_done(ColiExpertStore *store, int slot, int filled);
 int coli_v4_expert_store_wex_read(ColiExpertStore *store, ColiExpertKey key, const WexEntry *entry,
                                   unsigned char *dst);
@@ -57,6 +58,8 @@ HANDLE coli_v4_test_wex_mirror(ColiExpertStore *store, int r, HANDLE file);
 uint64_t coli_v4_test_wex_sub_reads(void);
 int coli_v4_test_sha_defer(ColiExpertStore *store, int on);
 void coli_v4_test_sha_busy(int on);
+int coli_v4_wex_turn_report(const char *at);
+void coli_v4_test_wex_io_stats(uint64_t bytes[4], uint64_t reads[4], uint64_t host[3]);
 
 enum { EXPERTS = 4, ROWS = 64, SCALE_COLS = 64, WEIGHT_COLS = 1024 };
 #define SCALE_M ((size_t)ROWS * SCALE_COLS)
@@ -732,7 +735,7 @@ static void check_sha_async(int bad) {
             ColiExpertKey key = {0, i};
             const WexEntry *entry = coli_v4_expert_store_wex_entry(store, key, RAW);
             unsigned char *r = NULL;
-            int hit = 0, slot = entry ? coli_v4_wex_crc_get(store, key, entry, &r, &hit) : -1;
+            int hit = 0, slot = entry ? coli_v4_wex_crc_get(store, key, entry, &r, &hit, V4_WEX_CRC_DEMAND) : -1;
             assert(slot >= 0 && !hit);
             coli_v4_wex_crc_done(store, slot, !coli_v4_expert_store_wex_read(store, key, entry, r));
             assert(cached(store, i, NULL));
@@ -869,7 +872,7 @@ static int cached(ColiExpertStore *store, int expert, unsigned char **record) {
     unsigned char *r = NULL;
     int hit = 0, slot;
     assert(entry);
-    slot = coli_v4_wex_crc_get(store, key, entry, &r, &hit);
+    slot = coli_v4_wex_crc_get(store, key, entry, &r, &hit, V4_WEX_CRC_DEMAND);
     assert(slot >= 0);
     if (record) *record = r;
     coli_v4_wex_crc_done(store, slot, hit);   /* a miss's claim is released unfilled */
@@ -1076,6 +1079,34 @@ static void prewarm_compare(int batch, const int want_bytes[EXPERTS], const int 
     assert(a.host_decodes == b.host_decodes + b.device_decodes);
 }
 
+/* wexprof per request (DSV4_DECODE_PROF) on an intact mirror, COLI_WEX_WEIGHTS 1,1: the routing hash
+ * (v4_wex_drive) sends records 0, 1, 2 to the primary, 3 to the mirror. Each prewarm arm reads every
+ * record once from its drive, the default loop as a timed host load. The report prints nothing when
+ * off, its six lines when on. */
+static void check_wexprof(const Container *c) {
+    int all[EXPERTS] = {1, 1, 1, 1};
+    uint64_t b0[4], r0[4], h0[3], b1[4], r1[4], h1[3];
+    coli_v4_test_wex_io_stats(b0, r0, h0);
+    prewarm_compare(2, all, all, EXPERTS);
+    coli_v4_test_wex_io_stats(b1, r1, h1);
+    printf("wexprof check: reads d0 %llu d1 %llu, bytes d0 %llu d1 %llu, host loads %llu\n",
+           (unsigned long long)(r1[0] - r0[0]), (unsigned long long)(r1[1] - r0[1]),
+           (unsigned long long)(b1[0] - b0[0]), (unsigned long long)(b1[1] - b0[1]),
+           (unsigned long long)(h1[0] - h0[0]));
+    assert(r1[0] - r0[0] == 6 && r1[1] - r0[1] == 2 && r1[2] == r0[2] && r1[3] == r0[3]);
+    assert(b1[0] - b0[0] == 2u * ((uint64_t)c->entries[0].total_bytes + c->entries[1].total_bytes +
+                                  c->entries[2].total_bytes));
+    assert(b1[1] - b0[1] == 2u * (uint64_t)c->entries[3].total_bytes);
+    assert(h1[0] - h0[0] == EXPERTS && h1[1] > h0[1] && h1[2] > h0[2]);
+    unsetenv("DSV4_DECODE_PROF");
+    assert(coli_v4_wex_turn_report("end") == 0);
+    setenv("DSV4_DECODE_PROF", "1", 1);
+    assert(coli_v4_wex_turn_report("end") == 6);   /* turn, demand, prefetch, sha, drives, host */
+    unsetenv("DSV4_DECODE_PROF");
+    puts("wexprof per request: bytes and reads per drive and the host loads' split counted, printed "
+         "under DSV4_DECODE_PROF only.");
+}
+
 static void check_prewarm(const Container *c) {
     int all[EXPERTS] = {1, 1, 1, 1}, passed[EXPERTS] = {1, 1, 1, 1};
     int one_bad[EXPERTS] = {1, 0, 1, 1}, one_refused[EXPERTS] = {1, 4, 1, 1};
@@ -1101,12 +1132,14 @@ static void check_prewarm(const Container *c) {
     prewarm_compare(8, one_bad, one_refused, EXPERTS - 1);
     w4[c->entries[1].file_offset + c->used[1] / 2] ^= 0x10u;
     write_file(wex_path, w4, bytes);
-    /* a mirror drive (COLI_WEX_WEIGHTS 1,1: records 2 and 3 read from it) with record 3 damaged */
+    /* a mirror drive (COLI_WEX_WEIGHTS 1,1: record 3 read from it, check_wexprof) with record 3 damaged */
     snprintf(m1, sizeof m1, "%s\\mirror", directory);
     assert(!_mkdir(m1));
-    write_mirror(m1, w4, bytes, c, 1u << 3);
+    write_mirror(m1, w4, bytes, c, 0);
     setenv("COLI_WEX_EXTRA_MIRRORS", m1, 1);
     setenv("COLI_WEX_WEIGHTS", "1,1", 1);
+    check_wexprof(c);
+    write_mirror(m1, w4, bytes, c, 1u << 3);
     prewarm_compare(2, three_bad, three_refused, EXPERTS - 1);
     unsetenv("COLI_WEX_EXTRA_MIRRORS");
     unsetenv("COLI_WEX_WEIGHTS");

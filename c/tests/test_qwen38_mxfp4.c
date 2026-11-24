@@ -22,15 +22,16 @@
  *  - a container for another geometry, or both sources at once, is refused (child process);
  *  - the WEX4 form of the WEX1 container (tests/wex4_fixture.h) gives the same records; a pinned
  *    COLI_WEX_ROOT refuses another root and the WEX1 form; COLI_WEX_VERIFY=1 stops the engine on
- *    a changed record byte, which loads without it; under it a WEX1 file whose header page holds
- *    the WEX4 magic at byte 56 gets no record hashes (wex4_checks; also run under --nr3, whose
+ *    a changed record byte, which loads without it (wex4_checks; also run under --nr3, whose
  *    multi-page records check a striped read's own hash against a differing mirror).
  * With a fixture holding experts-mxfp4.nr3.wex (make_qwen38_tiny_mxfp4.py --inter 512, then
  * tools/build_nr3.py container): the WNR3 records decode to the WEX1 container's bytes on the
  * single path, on the batch path (one helper call per wave when the helper has feature 32:
  * tests/fake_wex_cuda.dll next to the test unless COLI_WEX_CUDA_LIB says otherwise; =0 is the
  * CPU decoder) and when the helper fails a wave record; a record naming another expert stops
- * the engine (child process). */
+ * the engine (child process). The WEX4 form of that container (the in-place upgrade's layout,
+ * tests/wex4_fixture.h) passes the same checks as WNR3 records, and a WNM2 model byte that no
+ * longer matches its blob hash is refused. */
 #define _GNU_SOURCE
 #define QWEN38_NO_MAIN
 #include "../qwen38.c"
@@ -298,6 +299,8 @@ static void stripe_records(const char *snap,const char *wex_path,uint8_t **want)
     free(bytes);remove(mpath);rmdir(mdir);
 }
 
+static int child(const char *self,const char *mode,const char *snap,const char *path);
+static void put_file(const char *path,const unsigned char *data,size_t bytes);
 static void nr3_checks(const char *self,const char *snap){
     char wex_path[2100],nr3_path[2100];
     snprintf(wex_path,sizeof wex_path,"%s/experts-mxfp4.wex",snap);
@@ -314,8 +317,26 @@ static void nr3_checks(const char *self,const char *snap){
     printf("the WNR3 records of %s (helper: %s)\n",snap,lib?lib:"next to the test");
     uint8_t **want=wex1_records(snap,wex_path);
     stripe_records(snap,wex_path,want);
-    setenv("COLI_WEX_PATH",nr3_path,1);
+    /* form 1: the WEX4 form of the same file (the in-place upgrade's layout, tests/wex4_fixture.h),
+     * left next to it for tests/test_qwen38_mxfp4.py's end-to-end runs */
+    char w4_path[2200],w4_bad[2300];snprintf(w4_path,sizeof w4_path,"%s4",nr3_path);   /* experts-mxfp4.nr3.wex4 */
+    snprintf(w4_bad,sizeof w4_bad,"%s/model_bad.nr3.wex4",snap);
+    {
+        FILE *in=fopen(nr3_path,"rb");long size=0;unsigned char *old=NULL;
+        if(in){fseek(in,0,SEEK_END);size=ftell(in);fseek(in,0,SEEK_SET);old=malloc((size_t)size);
+               if(old&&fread(old,1,(size_t)size,in)!=(size_t)size){free(old);old=NULL;}fclose(in);}
+        if(old){
+            char root[65];size_t bytes;unsigned char *w4=wex4_fixture_from_wex1(old,(size_t)size,&bytes,root);
+            uint64_t model_offset;memcpy(&model_offset,old+WEX_NR2_DESCRIPTOR_OFFSET+8,8);
+            put_file(w4_path,w4,bytes);
+            w4[model_offset+100]^=1;   /* a WNM2 model byte: the index (and root) unchanged */
+            put_file(w4_bad,w4,bytes);free(w4);free(old);
+        }else ck(0,"WEX4 form: read the WNR3 container");
+    }
     int ok=1,L=0,E=0,codec5=0,fake=lib&&strstr(lib,"fake_wex_cuda")!=NULL;
+    for(int form=0;form<2;form++){
+    printf("%s\n",form?"the WEX4 form of the WNR3 container (same checks)":"the WNR3 container");
+    setenv("COLI_WEX_PATH",form?w4_path:nr3_path,1);
     /* run 0: cap 1, the single path; 1: cap E, one batch per layer; 2: the same, the fake
      * helper failing record 1 of every wave (it is read and decoded again alone); 3: the batch
      * on the loader thread with Q38_ASYNC_MISS's done flags, each record compared the moment
@@ -325,7 +346,8 @@ static void nr3_checks(const char *self,const char *snap){
         if(run==2)setenv("FAKE_WEX_BATCH_FAIL","1",1);
         Model b;model_init(&b,snap,1,8);L=b.c.layers;E=b.c.experts;q38_model_free(&b);
         model_init(&b,snap,run?E:1,8);q38_expert_mx4_attach(&b);
-        ck(b.x4&&b.x4->mx&&b.x4->nr3&&b.x4->wex_n==1,"COLI_WEX_PATH attaches the WNR3 container");
+        ck(b.x4&&b.x4->mx&&b.x4->nr3&&b.x4->wex_n==1&&b.x4->wex4==form,
+           form?"COLI_WEX_PATH attaches the WEX4 form as WNR3 records":"COLI_WEX_PATH attaches the WNR3 container");
         if(!b.x4){q38_model_free(&b);continue;}
         codec5=0;
         for(int i=0;i<L*E;i++)codec5+=b.x4->wex_entry[i].flags==WEX_ENTRY_NEURAL_RANS3;
@@ -364,7 +386,10 @@ static void nr3_checks(const char *self,const char *snap){
         unsetenv("FAKE_WEX_BATCH_FAIL");
     }
     ck(codec5==L*E,"the fixture's container holds WNR3 (codec 5) records only");
+    }
     unsetenv("COLI_WEX_PATH");
+    ck(child(self,"--refuse",snap,w4_bad)!=0,"WEX4 form: a WNM2 model that does not match its blob SHA-256 is refused");
+    remove(w4_bad);
     for(int i=0;i<L*E;i++)free(want[i]);
     free(want);
     /* a record that names another expert stops the engine */
@@ -462,6 +487,16 @@ static void wex4_checks(const char *self,const char *snap){
     size_t bytes;unsigned char *w4=wex4_fixture_from_wex1(old,(size_t)size,&bytes,root);
     const WexEntry *e0=(const WexEntry*)(old+((const WexHeader*)old)->table_offset);   /* layer 0 expert 0 */
     put_file(w4_path,w4,bytes);
+    {   /* st.h takes COLI_WEX_PATH as the checkpoint only when it is not an expert store */
+        uint64_t index_offset;uint32_t n_blobs;char other[65];
+        memcpy(&index_offset,w4+32,8);memcpy(&n_blobs,w4+48,4);
+        unsigned char *flags=w4+index_offset+(uint64_t)n_blobs*WEX4_BLOB_BYTES+18u;   /* record 0's flags */
+        ck(!st_wex4_looks_like(w4_path),"st.h: an expert-only WEX4 file is no checkpoint (the snapshot's tensors stay)");
+        flags[0]&=(unsigned char)~WEX4_REC_EXPERT;wex4_fixture_reseal(w4,other);put_file(bad_path,w4,bytes);
+        ck(st_wex4_looks_like(bad_path),"st.h: a WEX4 file with a non-expert record is taken as the checkpoint");
+        flags[0]|=WEX4_REC_EXPERT;wex4_fixture_reseal(w4,other);
+        ck(!strcmp(other,root),"the fixture reseals to its own root");
+    }
     uint8_t **want=wex1_records(snap,wex_path);
     Model a;model_init(&a,snap,1,8);int L=a.c.layers,E=a.c.experts,ok=1;q38_model_free(&a);
     setenv("COLI_WEX_PATH",w4_path,1);
@@ -502,17 +537,6 @@ static void wex4_checks(const char *self,const char *snap){
     ck(child(self,"--refuse",snap,wex_path)!=0,"W06: under a pinned root the WEX1 form (no root) is refused");
     unsetenv("COLI_WEX_ROOT");
     ck(child(self,"--refuse",snap,wex_path)==0,"no pin: the WEX1 form still attaches");
-    {   /* a WEX1 file with the WEX4 magic at header byte 56, which no legacy check reads */
-        uint32_t magic=WEX4_MAGIC;unsigned char saved[4];
-        memcpy(saved,old+56,4);memcpy(old+56,&magic,4);
-        put_file(bad_path,old,(size_t)size);
-        memcpy(old+56,saved,4);
-        setenv("COLI_WEX_PATH",bad_path,1);setenv("COLI_WEX_VERIFY","1",1);
-        Model b;model_init(&b,snap,1,8);q38_expert_mx4_attach(&b);
-        ck(b.x4&&!b.x4->wex4&&!b.x4->wex_sha,"COLI_WEX_VERIFY=1, a WEX1 file with the WEX4 magic at byte 56: no record hashes");
-        q38_model_free(&b);
-        unsetenv("COLI_WEX_VERIFY");setenv("COLI_WEX_PATH",w4_path,1);
-    }
     if(e0->total_bytes>=2*WEX_ALIGN){
         /* a mirror whose layer 0 expert 0 differs in its last page: a lone miss of it takes its tail
          * from the mirror (drive 0 hashed, cut 25/75), which the striped layout's own hash catches */

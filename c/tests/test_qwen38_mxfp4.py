@@ -21,7 +21,9 @@ transformers by make qwen38-tiny-fp8-check). Gates:
 When the model holds experts-mxfp4.nr3.wex (make qwen38-tiny-mxfp4-nr3-generate) its WNR3
 records join as two more sources: decoded on the CPU (COLI_WEX_CUDA_LIB=0) and, with --helper,
 through that kaira_wex_cuda.dll (tests/fake_wex_cuda.dll, or the real one on a CUDA box: then
-the load waves decode on the GPU); both must give the same tokens and last-logit bits.
+the load waves decode on the GPU); both must give the same tokens and last-logit bits. The WEX4
+form of that container (experts-mxfp4.nr3.wex4, written by tests/test_qwen38_mxfp4 --nr3) is
+one more source, decoded on the CPU, under the same gates.
 
   python tests/test_qwen38_mxfp4.py --model ./qwen38_tiny_mxfp4 --source ./qwen38_tiny_fp8 --engine ./qwen38
           [--helper ./kaira_wex_cuda.dll] [--env NAME=VALUE ...]
@@ -196,6 +198,9 @@ def main():
         sources["wnr3-cpu"] = {"COLI_WEX_PATH": str(nr3), "COLI_WEX_CUDA_LIB": "0"}
         if args.helper:
             sources["wnr3-helper"] = {"COLI_WEX_PATH": str(nr3), "COLI_WEX_CUDA_LIB": str(args.helper.resolve())}
+        nr3_wex4 = model / "experts-mxfp4.nr3.wex4"   # written by tests/test_qwen38_mxfp4 --nr3
+        if nr3_wex4.exists():
+            sources["wnr3-wex4-cpu"] = {"COLI_WEX_PATH": str(nr3_wex4), "COLI_WEX_CUDA_LIB": "0"}
     modes = {"single": {"Q38_PREFILL_BATCH": "0", "Q38_EXPERT_PARALLEL_READS": "0"},
              "batched": {"Q38_PREFILL_BATCH": "0"}, "prefill": {"Q38_PREFILL_BATCH": "1"}}
     first, n = None, 0
@@ -209,8 +214,9 @@ def main():
                     sys.exit(f"FAIL {label}: tokens {tokens} != FP8 {fp8_tokens}\n{proc.stdout}\n{proc.stderr}")
                 if "MXFP4 experts from" not in proc.stderr:
                     sys.exit(f"FAIL {label}: the log does not say the MXFP4 experts ran\n{proc.stderr}")
-                if name.startswith("wnr3") and "MXFP4 experts from WNR3" not in proc.stderr:
-                    sys.exit(f"FAIL {label}: the log does not say the WNR3 container ran\n{proc.stderr}")
+                want_log = "MXFP4 experts from WEX4 (WNR3 records)" if "wex4" in name else "MXFP4 experts from WNR3"
+                if name.startswith("wnr3") and want_log not in proc.stderr:
+                    sys.exit(f"FAIL {label}: the log does not say '{want_log}'\n{proc.stderr}")
                 if name == "wex" and "MXFP4 experts from WEX1" not in proc.stderr:
                     sys.exit(f"FAIL {label}: the log does not name the WEX1 container\n{proc.stderr}")
                 if (name == "wnr3-helper" and cap == 4 and mode != "single" and "COLI_CUDA" not in common   # the tier serves them all
@@ -232,6 +238,36 @@ def main():
     if verify.returncode:
         sys.exit(f"FAIL manifest verify\n{verify.stdout}\n{verify.stderr}")
     print("ok   the container matches its manifest")
+
+    # A dense-only copy (tools/q38_dense_snapshot.py: the model layers' experts left to the container):
+    # the WEX source gives the same bits with the RAM plan on (it once went off, "expert size unknown",
+    # and the cache grew to --cap), and without a container the engine stops instead of computing.
+    dense = work / "dense"
+    made = subprocess.run([sys.executable, str(TOOLS / "q38_dense_snapshot.py"), str(model), str(dense)],
+                          capture_output=True, text=True)
+    kept, total = (int(x) for x in made.stdout.split()[0:5:4]) if not made.returncode else (0, 0)   # "K dense tensors of N"
+    if made.returncode or not 0 < kept < total:
+        sys.exit(f"FAIL q38_dense_snapshot.py kept {kept} of {total} tensors\n{made.stdout}\n{made.stderr}")
+    wex_env = {**common, **sources["wex"]}
+    plans = {}
+    for name, snap in (("full", model), ("dense", dense)):
+        tokens, logits, proc = run(args.engine, snap, ref, 2, wex_env, work / f"plan-{name}.f32")
+        plan = [line for line in proc.stderr.splitlines() if "RAM plan:" in line]
+        if proc.returncode or tokens != fp8_tokens or not np.array_equal(logits.view(np.uint32), first.view(np.uint32)):
+            sys.exit(f"FAIL {name} snapshot + WEX: tokens {tokens} or last logits differ\n{proc.stderr}")
+        if not plan or any("RAM plan: off" in line for line in plan):
+            sys.exit(f"FAIL {name} snapshot + WEX: the RAM plan is off\n{proc.stderr}")
+        plans[name] = [line.split(" a slot over")[0].rsplit("(", 1)[-1] for line in plan if " a slot over" in line]
+    if plans["full"] != plans["dense"] or not plans["full"]:
+        sys.exit(f"FAIL the RAM plan's slot differs: full {plans['full']}, dense {plans['dense']}")
+    alone = subprocess.run([str(args.engine), "2", "8", str(ref)], capture_output=True, text=True,
+                           env={**{k: v for k, v in os.environ.items() if not k.startswith(("COLI_WEX", "Q38_MXFP4"))},
+                                **common, "SNAP": str(dense), "OMP_NUM_THREADS": "2"})
+    if alone.returncode == 0 or "missing" not in alone.stderr:
+        sys.exit(f"FAIL the dense copy without a container did not stop at a missing expert (rc {alone.returncode})\n"
+                 f"{alone.stdout}\n{alone.stderr}")
+    print(f"ok   dense-only copy ({kept} of {total} tensors) + WEX: FP8 tokens, the same last-logit bits, "
+          f"RAM plan on with the full snapshot's slot ({plans['dense'][0]}); without WEX it stops at a missing expert")
     print("test_qwen38_mxfp4.py: ok")
 
 
