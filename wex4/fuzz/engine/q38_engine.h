@@ -128,6 +128,9 @@ static inline int compat_open_direct(const char *path){
 #ifndef compat_aligned_free
 #define compat_aligned_free free
 #endif
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
 
 /* ---- COPIED from colibri c/st.h (dev 98327913) ---- */
 /* st.h:30 and 32-41 */
