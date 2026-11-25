@@ -16,7 +16,7 @@ A Mixture-of-Experts model is split into hundreds of small blocks of weights cal
 **Think of a ZIP file.** When you zip a document and unzip it later, you get the same document back, every letter in place; the ZIP was only a smaller way to keep it. WEX works the same way for expert weights:
 
 - **WEX4** is the file layout: one slot per expert, and a fingerprint (SHA-256) of every slot. An uncompressed ("RAW") slot holds the expert's original bytes, unchanged.
-- **WNR3** is optional compression inside it, like ZIP: it makes a 4-bit expert 12-15% smaller (0.880 of its uncompressed size for Qwen3.8-Flash-Next, 0.854 for DeepSeek V4.1 REAP-192, over whole files), and unpacking gives back the same weights. In one optional mode, *canonical zero*, a zero written as "-0" comes back written as "+0": the same number, like writing 0 or -0 on paper (details below).
+- **WNR3 / WNR4** are optional lossless codecs inside it, like ZIP: they make a 4-bit expert 12-22% smaller (0.851 of original for DeepSeek V4.1 REAP-192 in WNR4, 0.880 in WNR3 / 0.886 in WNR4 for Qwen3.8-Flash-Next MXFP4, and 0.784 for Qwen3.8-Flash-Next INT4-g64 in WNR4-I4), and unpacking gives back the same weights. In one optional mode, *canonical zero*, a zero written as "-0" comes back written as "+0": the same number, like writing 0 or -0 on paper (details below).
 
 **Where precision is lost: before WEX.** To *quantize* is to round numbers to fewer bits so that they take less space; the rounding cannot be undone. The published expert files hold 4-bit weights (MXFP4; int4 for one Sage-S2.1-Flash file). Turning a model's 16-bit or 8-bit weights into 4-bit numbers is a quantization, and it does lose some precision, but it happens before WEX: DeepSeek publishes the experts of DeepSeek V4.1 in MXFP4, and the Qwen3.8-Flash-Next experts used here were quantized by AMD with AMD-Quark. The DeepSeek V4.1 model used here is also pruned by a third party (REAP-192: 192 of the 384 experts of each layer kept), which is lossy too. The Sage-S2.1-Flash files published next to the WEX files were requantized by us from the official FP8 release; that step is lossy and its quality was not measured. WEX then stores those weights as they are.
 
@@ -25,7 +25,7 @@ A Mixture-of-Experts model is split into hundreds of small blocks of weights cal
 | quantizing the weights to 4 bits | yes | before WEX: the model's publisher, a third party, or the person converting (we requantized Sage-S2.1-Flash ourselves for the published files) |
 | pruning experts (REAP), when used | yes | before WEX: a third party |
 | storing in a WEX4 file, RAW records | no: the same bytes | this repository |
-| WNR3 compression of an MXFP4 expert | no: the same bytes, or with canonical zero the same numbers (see below) | this repository |
+| WNR3 / WNR4 compression of an MXFP4 or int4-g64 expert | no: the same bytes, or with canonical zero the same numbers (see below) | this repository |
 | WBP1 compression of a BF16, FP8, F32 or integer tensor | no: the same bytes | this repository |
 
 The published files are on Hugging Face, with a table of who made each lossy step: [Kaira666/Kaira-WEX4-Experts](https://huggingface.co/Kaira666/Kaira-WEX4-Experts).
@@ -60,7 +60,7 @@ The repository slug says `Wex-WRN2` for historical reasons; the codec is spelled
 
 Short summaries of this page in other languages, each dated, with this page as the reference: [Italiano](#in-breve-italiano) (at the end of this page), [Español](docs/i18n/README.es.md), [Français](docs/i18n/README.fr.md), [Deutsch](docs/i18n/README.de.md), [简体中文](docs/i18n/README.zh-CN.md).
 
-**Status.** WEX4 (format version 4.0) and the WNR3 record codec (v1) are frozen and in production since 2026-11-10/11, on one machine, for two models. The code here is the reference implementation and the research behind it: research-grade and Windows-first (CI also runs the CPU checks on Linux and macOS), one maintainer, no packages, no release yet, and no stability promise for the tools' command lines; the specifications are the stable part. [![CI](https://github.com/KairaCode/Wex-WRN2/actions/workflows/ci.yml/badge.svg)](https://github.com/KairaCode/Wex-WRN2/actions/workflows/ci.yml)
+**Status.** WEX4 (format version 4.0) with WNR3 (codec 5) and WNR4 (codec 8) is in production on one machine for DeepSeek V4.1 REAP-192 (WEX4+WNR4) and Qwen3.8-Flash-Next (WEX4 RAW, WNR4 MXFP4, and WNR4-I4 int4-g64). The code here is the reference implementation and the research behind it: research-grade and Windows-first (CI also runs the CPU checks on Linux and macOS), one maintainer, no packages, no release yet, and no stability promise for the tools' command lines; the specifications are the stable part. [![CI](https://github.com/KairaCode/Wex-WRN2/actions/workflows/ci.yml/badge.svg)](https://github.com/KairaCode/Wex-WRN2/actions/workflows/ci.yml)
 
 ## What WEX is
 
@@ -100,11 +100,11 @@ Two things are numbered separately. The **container** version (WEX1 to WEX4) is 
 | 4 | WNR2 | `WNR2` | 16 | rANS with the container's WNM2 model: 567 contexts per matrix, 14-bit CDFs, u16 stream lengths | yes | structure only: 1.8-1.9% of random bit flips accepted | CPU, CUDA (helper feature 4) | superseded on 2026-11-10; decoder kept |
 | 5 | WNR3 | `WNR3` | 32, plus 64 for canonical zero | the WNR2 skeleton plus ceil form, rule-g anchors, optional canonical zero (FP4 -0 stored as +0) and the record's owner | yes; with canonical zero value-exact, not byte-exact | 23-bit MurmurHash3 per stream, owner | CPU, CUDA (helper feature 16) | **production** (V4.1, canonical zero) |
 | 6 | WBP1, WEX4 only | `WBP1` | not applicable | byte-plane order-0 rANS for FP8, BF16, F32 and integers | yes | hash per stream or chunk, owner | CPU | written and fuzzed; no production file, no engine loader |
-| 8 | WNR4, WEX4 only | `WNR4` | not applicable | tiles of 32 rANS lanes that share one 16-bit word stream, with the container's WNM4 model (blob kind 3); kinds MX (MXFP4), NV (NVFP4), GG (the Q2_0 and IQ4_NL slices of a GGUF routed-expert record; its other slices verbatim) and I4 (int4-g64 experts: the codes, and the group scales as indices into the lattice of an FP8 block-scaled source). In WEX4 only GG and I4 so far | yes; byte-exact in WEX4 | 32-bit hash per tile, checked end states and word count, owner, model id; the verbatim slices of a GG record: none (only the record's SHA-256 in the WEX4 index, checked at its first read) | CPU, CUDA (prototype helper) | **draft, research** ([WNR4-SPEC](docs/WNR4-SPEC.md)) |
+| 8 | WNR4, WEX4 only | `WNR4` | not applicable | tiles of 32 rANS lanes that share one 16-bit word stream, with the container's WNM4 model (blob kind 3); kinds MX (MXFP4), NV (NVFP4), GG (the Q2_0 and IQ4_NL slices of a GGUF routed-expert record; its other slices verbatim) and I4 (int4-g64 experts: the codes, and the group scales as indices into the lattice of an FP8 block-scaled source) | yes; byte-exact (or canonical zero on V4.1 MXFP4) | 32-bit hash per tile, checked end states and word count, owner, model id; the verbatim slices of a GG record: none (only the record's SHA-256 in the WEX4 index, checked at its first read) | CPU, CUDA | **production** (V4.1 MXFP4, Qwen3.8 MXFP4 & INT4-g64; [WNR4-SPEC](docs/WNR4-SPEC.md)) |
 
 Container magics are little-endian integers, so a WEX4 file starts with the bytes `34 58 45 57`; record magics read forward. The WNM2 model is a 59,408-byte table of CDFs built from symbol counts; no neural network is involved, although the constants say `NEURAL_RANS` ([WNR2-REFERENCE](docs/WNR2-REFERENCE.md)). The CUDA helper `kaira_wex_cuda.dll` (source `c/tools/wex_cuda_bridge.cu`) reports feature bits 1 decode into VRAM, 2 host register, 4 WNR2, 8 batched decode into VRAM, 16 WNR3, 32 batched decode into host memory. Cells checked against `c/wex_format.h`, `c/wex4.h`, `c/wex_neural_rans.h` and `c/wex_palette.h`; the Status and Decoders cells of WEX2 and of codecs 1 to 3 come from [WNR2-REFERENCE](docs/WNR2-REFERENCE.md) and the integration guide and were not re-verified.
 
-Codec 8, WNR4, is a draft of 2026-11-21: no production container and no engine uses it, and its integration into the maintainer's engines was analysed on that day and not done (the estimated gain was below what an A/B run of those engines can resolve). Its row is checked against [WNR4-SPEC](docs/WNR4-SPEC.md) sections 1 to 7 and [WEX4-SPEC](docs/WEX4-SPEC.md) section 7.3.
+Codec 8, WNR4, is now built and running in WEX4 containers for DeepSeek V4.1 REAP-192 (MXFP4, 122.9 GB, 0.851 of original) and Qwen3.8-Flash-Next (MXFP4 56.8 GB, and INT4-g64 WNR4-I4 53.3 GB, 0.784 of raw). Its row is checked against [WNR4-SPEC](docs/WNR4-SPEC.md) sections 1 to 7 and [WEX4-SPEC](docs/WEX4-SPEC.md) section 7.3.
 
 ## File layout
 
@@ -160,12 +160,12 @@ The V4.1 switch report's own reading of its numbers: on this machine the second 
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/charts/sizes-dark.png">
-  <img alt="Bar chart: routed-expert bytes as published and in the containers. DeepSeek V4.1 REAP-192 MXFP4: original MXFP4 safetensors 144.4 GB, raw WEX1 144.4 GB (+557,056 B header and table), WNR2 129.9 GB (0.900 of original), WNR3-CZ 123.3 GB (0.854), WNR4 estimate 122.6 GB (0.849). Qwen3.8-Flash-Next MXFP4: original 64.2 GB, raw WEX4 64.3 GB (+78.2 MB index and alignment), WNR3 56.5 GB (0.881), WNR4 estimate 56.2 GB (0.875)." src="assets/charts/sizes-light.png" width="800">
+  <img alt="Bar chart: routed-expert bytes as published and in the containers. DeepSeek V4.1 REAP-192 MXFP4: original MXFP4 safetensors 144.4 GB, raw WEX1 144.4 GB, WNR2 129.9 GB (0.900), WNR3-CZ 123.3 GB (0.854), WNR4 122.9 GB (0.851). Qwen3.8-Flash-Next MXFP4: original 64.2 GB, raw WEX4 64.3 GB, WNR3 56.5 GB (0.881), WNR4 56.8 GB (0.886). Qwen3.8-Flash-Next INT4-g64: raw 68.0 GB, WNR4-I4 53.3 GB (0.784)." src="assets/charts/sizes-light.png" width="800">
 </picture>
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/charts/codecs-dark.png">
-  <img alt="Bar chart: 8 real MXFP4 expert records per checkpoint, as published and stored by each codec. DeepSeek V4.1 Flash: original 150.4 MB, WNR3 132.3 MB (-12.0%), brotli 138.7 MB (-7.8%), zstd 19 139.4 MB (-7.3%). Qwen3-235B: original 80.2 MB, WNR3 71.5 MB (-10.8%), brotli 71.8 MB (-10.5%). MiniMax-M2.1: original 60.2 MB, WNR3 53.3 MB (-11.4%), brotli 54.4 MB (-9.6%)." src="assets/charts/codecs-light.png" width="800">
+  <img alt="Bar chart: real expert records per checkpoint, as published and stored by each codec. DeepSeek V4.1 Flash: original 150.4 MB, WNR4 127.7 MB (-15.1%), WNR3 132.3 MB (-12.0%), brotli 138.7 MB (-7.8%), zstd 19 139.4 MB (-7.3%). Qwen3-235B: original 80.2 MB, WNR3 71.5 MB (-10.8%), brotli 71.8 MB (-10.5%). MiniMax-M2.1: original 60.2 MB, WNR3 53.3 MB (-11.4%), brotli 54.4 MB (-9.6%). Qwen3.8-Flash-Next INT4-g64: original 708.5 MB, WNR4-I4 555.0 MB (-21.7%), zstd 19 572.0 MB (-19.3%)." src="assets/charts/codecs-light.png" width="800">
 </picture>
 
 <picture>
@@ -182,12 +182,13 @@ Each chart names its source in its footnote. The speed chart was measured on one
 
 ## What runs today
 
-Summary of 2026-11-13; [STATUS.md](STATUS.md) is the page of record, with the roots, the switches, the engine builds and what is switched off.
+Summary of 2026-11-25; [STATUS.md](STATUS.md) is the page of record, with the roots, the switches, the engine builds and what is switched off.
 
 | Model | Container | Records | Bytes per copy | Drives | Integrity |
 |---|---|---|---|---|---|
-| DeepSeek V4.1 REAP-192 (MXFP4) | WEX4 since 2026-11-11 (WNR3 since 2026-11-10) | 7,680 WNR3 with canonical zero | 123,312,910,336 | two NVMe drives, a full copy on each, reads split 38/62 | root pinned; SHA-256 of each record at its first read |
-| Qwen3.8-Flash-Next (MXFP4 routed experts) | WEX4 since 2026-11-11 | 24,576 RAW | 64,251,047,936 | two NVMe drives, a full copy on each, reads split 38/62 | both copies verified on 2026-11-13; root recorded, not pinned; header and index checked at open |
+| DeepSeek V4.1 REAP-192 (MXFP4) | WEX4 + WNR4 (codec 8) | 7,680 WNR4 | 122,872,295,424 | two NVMe drives, a full copy on each, reads split 38/62 | root pinned; SHA-256 of each record at its first read |
+| Qwen3.8-Flash-Next (MXFP4 routed experts) | WEX4 (RAW + WNR4 sidecar) | 24,576 RAW (`64.25 GB`) / WNR4 (`56.85 GB`) | 64,251,047,936 / 56,847,855,616 | two NVMe drives (50/50 mirror) | header and index checked at open |
+| Qwen3.8-Flash-Next (INT4-g64 routed experts) | WEX4 + WNR4-I4 (codec 8, kind I4) | 24,576 WNR4-I4 | 53,294,047,232 | one NVMe drive | byte-exact verified; header and index checked at open |
 
 Every measurement table: [docs/BENCHMARKS.md](docs/BENCHMARKS.md). Format changes by date: [CHANGELOG.md](CHANGELOG.md).
 
@@ -301,11 +302,11 @@ Contributions are welcome under the Apache License 2.0, inbound = outbound; a co
 
 ## In breve (italiano)
 
-Sintesi del 2026-11-21 di questa pagina; dove i due testi differiscono, vale quello inglese.
+Sintesi del 2026-11-25 di questa pagina; dove i due testi differiscono, vale quello inglese.
 
-- **Cos'è.** WEX è un formato di file, senza perdita, per gli expert dei modelli Mixture-of-Experts: un file di record allineati a 4096 byte, uno per expert, che il motore legge da NVMe con una sola lettura mentre genera. WEX4 aggiunge un header e un indice con lo SHA-256 di ogni record; WNR3 è la codifica rANS senza perdita dei record. WEX4 (versione di formato 4.0) e WNR3 (v1) sono congelati; il codice è l'implementazione di riferimento, di livello ricerca e pensata anzitutto per Windows.
+- **Cos'è.** WEX è un formato di file, senza perdita, per gli expert dei modelli Mixture-of-Experts: un file di record allineati a 4096 byte, uno per expert, che il motore legge da NVMe con una sola lettura mentre genera. WEX4 aggiunge un header e un indice con lo SHA-256 di ogni record; WNR3 (codec 5) e WNR4 (codec 8) sono le codifiche rANS senza perdita dei record. WEX4 (versione di formato 4.0) con WNR3/WNR4 è in produzione; il codice è l'implementazione di riferimento, di livello ricerca e pensata anzitutto per Windows.
 - **Senza perdita, non è una quantizzazione.** Come con uno ZIP, si riottengono gli stessi pesi che sono stati salvati: gli stessi byte, oppure, con lo zero canonico, gli stessi numeri (uno zero scritto "-0" torna scritto "+0"). WEX non arrotonda, non quantizza e non pota niente. La precisione dei pesi a 4 bit si perde prima di WEX: nella quantizzazione fatta dall'editore del modello o da terzi (AMD per Qwen3.8), nella potatura REAP di DeepSeek V4.1 fatta da terzi, e nella nostra riquantizzazione dei file Sage-S2.1-Flash pubblicati. Come verificarlo: [Check it yourself](#check-it-yourself).
-- **Cosa gira oggi** (sintesi del 2026-11-13). DeepSeek V4.1 REAP-192 legge un WEX4 con record WNR3 (0,854 del formato grezzo), Qwen3.8-Flash-Next un WEX4 con record MXFP4 grezzi; entrambi da due drive NVMe con una copia completa ciascuno, letture divise 38/62. Stato aggiornato: [STATUS.md](STATUS.md).
+- **Cosa gira oggi** (sintesi del 2026-11-25). DeepSeek V4.1 REAP-192 usa WEX4 + WNR4 (122,9 GB, 0,851 dell'originale) su due NVMe (split 38/62); Qwen3.8-Flash-Next usa WEX4 MXFP4 (RAW 64,3 GB in mirror 50/50 + WNR4 56,8 GB) e WEX4 + WNR4-I4 int4-g64 (53,3 GB, 0,784 del RAW). Stato aggiornato: [STATUS.md](STATUS.md).
 - **Come provarlo.** `bash scripts/check_all.sh` compila e lancia i controlli su CPU (test dei formati, lettori e convertitori WEX4, vettori di conformità, decoder WNR3 veloce) e il controllo del repository, senza GPU e senza modelli; se tutto va bene l'ultima riga è `all checks passed`, con codice di uscita 0. I prerequisiti sono nella sezione [Try it in ten minutes](#try-it-in-ten-minutes). La CI lo esegue su Linux (x86-64 e ARM64), macOS (Apple silicon, con GNU gcc e con Apple clang) e Windows; i sanitizer, il fuzzing e i lettori in Go e in Rust sono job a parte.
 - **Da dove cominciare.** [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) per l'insieme, [docs/WEX4-SPEC.md](docs/WEX4-SPEC.md) e [docs/WNR3-SPEC.md](docs/WNR3-SPEC.md) per i byte, [impl/go-wex4/](impl/go-wex4/README.md) per l'implementazione in Go scritta dalle sole specifiche, [docs/COLIBRI-INTEGRATION.md](docs/COLIBRI-INTEGRATION.md) per collegare un motore, [docs/HELP-WANTED.md](docs/HELP-WANTED.md) per i compiti aperti, [CONTRIBUTING.md](CONTRIBUTING.md) per contribuire, [SECURITY.md](SECURITY.md) per segnalare una vulnerabilità.
 - **Licenza.** Apache 2.0 ([LICENSE](LICENSE), [NOTICE](NOTICE)). Il repository non contiene pesi di modelli. Alcuni report datati in `docs/reports/` sono in italiano.
