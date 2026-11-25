@@ -173,7 +173,7 @@ static void fuzz_q38_paths(Model *m, const char *primary, const unsigned char *f
 
     /* the regions a mirror is compared on, and the extents of the records, from the manifest itself */
     fd = q38_wex_open(primary);
-    if (fd < 0 || q38_wex_manifest(fd, &m->c, &page, &table, &table_bytes, &file_bytes, &wex4)) abort();
+    if (fd < 0 || q38_wex_manifest(fd, &m->c, &page, &table, &table_bytes, &file_bytes, &wex4, NULL)) abort();
     close(fd);
     n = m->c.layers * m->c.experts;
     memset(keep, 0, sizeof keep);
@@ -375,7 +375,7 @@ static int fuzz_q38_manifest_rc(int fd, const Cfg *c) {
     unsigned char *page = NULL, *table = NULL;
     size_t table_bytes = 0;
     int64_t file_bytes = 0;
-    int wex4 = 0, rc = q38_wex_manifest(fd, c, &page, &table, &table_bytes, &file_bytes, &wex4);
+    int wex4 = 0, rc = q38_wex_manifest(fd, c, &page, &table, &table_bytes, &file_bytes, &wex4, NULL);
     if (page) compat_aligned_free(page);
     if (table) compat_aligned_free(table);
     return rc;
@@ -404,7 +404,7 @@ static void fuzz_q38_faults(Model *m, const char *primary, const unsigned char *
 
     /* the manifest's reads, then the manifest with one of them failed */
     reads = fuzz_fault_reads;
-    FUZZ_REQUIRE(!q38_wex_manifest(fd, &m->c, &page, &table, &table_bytes, &file_bytes, &wex4),
+    FUZZ_REQUIRE(!q38_wex_manifest(fd, &m->c, &page, &table, &table_bytes, &file_bytes, &wex4, NULL),
                  "the manifest of a container that attached fails when it is read again");
     reads = fuzz_fault_reads - reads;
     FUZZ_REQUIRE(reads >= 2u, "the manifest takes a container without reading its header page and its table or index");

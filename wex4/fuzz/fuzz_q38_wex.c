@@ -152,7 +152,7 @@ static int fuzz_attaches(const unsigned char *file, size_t size, Cfg *c, WexNr2M
     int64_t file_bytes = 0, scale_off[3], weight_off[3], raw = 0, record;
     int fd = q38_wex_open(temp_path), wex4 = 0, ok = 0, nr3, i, n = c->layers * c->experts;
     if (fd < 0) { fprintf(stderr, "%s: cannot be opened\n", temp_path); exit(2); }
-    if (!q38_wex_manifest(fd, c, &page, &table, &table_bytes, &file_bytes, &wex4)) {
+    if (!q38_wex_manifest(fd, c, &page, &table, &table_bytes, &file_bytes, &wex4, NULL)) {
         const WexHeader *h = (const WexHeader *)page;
         const WexEntry *entries = (const WexEntry *)table;
         nr3 = !!(h->flags & WEX_HEADER_NEURAL_RANS3);

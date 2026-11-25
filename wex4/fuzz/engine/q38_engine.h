@@ -128,6 +128,9 @@ static inline int compat_open_direct(const char *path){
 #ifndef compat_aligned_free
 #define compat_aligned_free free
 #endif
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
 
 /* ---- COPIED from colibri c/st.h (dev 98327913) ---- */
 /* st.h:30 and 32-41 */
@@ -154,6 +157,7 @@ static void st_read_range_raw_cap(shards *S, int fd, int64_t off, int64_t nbytes
     (void)S; (void)fd; (void)off; (void)nbytes; (void)out; (void)cap; (void)drop; (void)tag;
     abort();
 }
+static int64_t st_dtype_esz(int d) { return d == 2 ? 4 : (d == 0 || d == 1) ? 2 : 1; }
 #endif /* WEX_FUZZ_COLIBRI */
 
 /* ---- ALIGNED with colibri c/qwen38_core.h (dev 98327913) ---- */
@@ -212,6 +216,7 @@ typedef struct {
 typedef struct {
     shards S;
     int64_t record_bytes;
+    int64_t code_bytes[3], scale_count[3], scale_off;
     int mx;                                   /* 1: MXFP4 records; any integer type would do */
     int64_t mx_raw, mx_scale_off[3], mx_weight_off[3];   /* int64_t: passed as int64_t * to q38_mx4_layout */
     int wex4;                                 /* int: passed as int * to q38_wex_manifest */
@@ -224,15 +229,33 @@ typedef struct {
     unsigned char *wex_sha;                   /* points into the table; a const would do too */
 } Q38Int4Experts;
 
+typedef struct {
+    int fd, dfd, scale_dtype;
+    int64_t size;
+    int64_t *off;
+} Q38Fp8Wex;
+
 /* qwen38_core.h:241-335: c (line 242), prefix (244), x4 (253), range_begin and range_end (276), mtp_prefix
  * (307); colibri's Model has many more members */
 typedef struct {
     Cfg c;
     char prefix[32];
+    int native_fp8;
     Q38Int4Experts *x4;
+    Q38Fp8Wex *fw;
     int range_begin, range_end;
     char mtp_prefix[32];
 } Model;
+
+#define Q38_INT4_FORMAT "colibri.qwen38.experts-int4g64"
+static int q38_expert_int4_wanted(void) {
+    const char *e = getenv("Q38_EXPERT_INT4");
+    return (e && !strcmp(e, "1")) ? 1 : 0;
+}
+static int64_t q38_int4_row_bytes(int cols) { return ((int64_t)cols + 1) / 2; }
+static int64_t q38_int4_groups(int cols) { return ((int64_t)cols + 63) / 64; }
+static int64_t fp8_nblk(int64_t n) { return (n + 127) / 128; }
+static void q38_bind_int4_record(Model *m, Slot *slot, uint8_t *record) { (void)m; (void)slot; (void)record; }
 
 /* qwen38_core.h:396-407, for the members declared here: what the weight owns is freed, then it is cleared.
  * The MXFP4 weights c/qwen38_wex.h binds own nothing */
