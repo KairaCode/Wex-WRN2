@@ -24,46 +24,50 @@ GB = 1e9
 # patrickbdevaney/DeepSeek-V4.1-Flash-1017-REAP192-MXFP4 @ 4ab649b2 (7,680 experts in 40 layers; the 384 MTP experts
 # have other names and are not counted) and amd/Qwen3.8-Flash-Next-Quark-MXFP4 @ b71e28af (24,576 experts).
 V41_ORIGINAL, Q38_ORIGINAL = 144_388_915_200, 64_172_851_200
-# Whole built WEX4 + WNR4 containers on disk (2026-11-25):
-# DeepSeek V4.1 REAP-192 WNR4 (7,680 records), Qwen3.8 MXFP4 WNR4 (24,576 records),
-# and Qwen3.8 INT4-g64 WNR4-I4 (24,576 records vs 68.0 GB RAW, research/wnr4-i4-20261122).
+# Whole built WEX4 + WNR4 containers (2026-11-21 to 2026-11-25, docs/BENCHMARKS.md):
+# DeepSeek V4.1 REAP-192 WNR4-MX (7,680 records), Qwen3.8 MXFP4 WNR4-MX (24,576 records),
+# Qwen3.8 INT4-g64 WNR4-I4 (24,576 records, research/wnr4-i4-20261122),
+# and Qwen3.8 UD-IQ1_M WNR4-GG (24,576 records, research/wnr4-gg-20261121).
 V41_WNR4, Q38_WNR4 = 122_872_295_424, 56_847_855_616
-Q38_I4_RAW, Q38_WNR4_I4 = 68_013_391_872, 53_294_047_232
+Q38_I4_RAW, Q38_WNR4_I4 = 67_995_492_352, 53_294_047_232
+Q38_GG_RAW, Q38_WNR4_GG = 34_862_370_816, 33_377_181_696
 
 
 def chart_sizes(t):
-    # docs/BENCHMARKS.md, "DeepSeek V4.1 REAP-192: container sizes" and "Qwen3.8-Flash-Next MXFP4" (container row);
-    # the Qwen3.8 WEX4 and WNR4 file sizes are in README.md ("What runs today") and research/wnr4-i4-20261122.
+    # docs/BENCHMARKS.md: "DeepSeek V4.1 REAP-192: container sizes", "Qwen3.8-Flash-Next MXFP4",
+    # and "WNR4 record codec: container sizes, ratio and decode speed".
     v41 = [('original MXFP4 files', V41_ORIGINAL, 'muted', 'published safetensors'),
            ('raw WEX1', 144_389_472_256, 'gray', '+557,056 B header and table'),
            ('WNR2', 129_905_360_896, 'orange', None), ('WNR3-CZ', 123_306_192_896, 'blue', None),
-           ('WNR4', V41_WNR4, 'aqua', None)]
+           ('WNR4-MX', V41_WNR4, 'aqua', None)]
     q38 = [('original MXFP4 files', Q38_ORIGINAL, 'muted', 'published safetensors'),
            ('raw WEX4', 64_251_047_936, 'gray', '+78.2 MB index and 4 KiB alignment'),
-           ('WNR3', 56_532_672_512, 'blue', None), ('WNR4', Q38_WNR4, 'aqua', None)]
-    q38i4 = [('raw int4-g64', Q38_I4_RAW, 'muted', 'uncompressed int4-g64 container'),
+           ('WNR3', 56_532_672_512, 'blue', None), ('WNR4-MX', Q38_WNR4, 'aqua', None)]
+    q38i4 = [('raw int4-g64', Q38_I4_RAW, 'muted', 'uncompressed WEX4 RAW'),
              ('WNR4-I4', Q38_WNR4_I4, 'aqua', None)]
-    h = 6.9
+    q38gg = [('raw GGUF 2-bit', Q38_GG_RAW, 'muted', 'experts-only WEX4 RAW'),
+             ('WNR4-GG', Q38_WNR4_GG, 'aqua', None)]
+    h = 8.1
     fig = cs.figure(t, h)
     cs.header(fig, t, 'Same experts, fewer bytes',
               'Routed-expert bytes: as published on Hugging Face, then in the containers. Every record decodes back\n'
-              'to the published bytes (WNR3-CZ / V4.1 WNR4: to the same values; -0 becomes +0).', h)
-    ax1 = cs.axes(fig, t, [0.25, 0.575, 0.69, 0.195], 'DeepSeek V4.1 REAP-192 MXFP4 · 7,680 experts')
-    ax2 = cs.axes(fig, t, [0.25, 0.32, 0.69, 0.16], 'Qwen3.8-Flash-Next MXFP4 · 24,576 experts')
-    ax3 = cs.axes(fig, t, [0.25, 0.145, 0.69, 0.085], 'Qwen3.8-Flash-Next INT4-g64 · 24,576 experts')
-    for ax, rows in ((ax1, v41), (ax2, q38), (ax3, q38i4)):
+              'to the published bytes (WNR3-CZ / V4.1 WNR4-MX: to the same values; -0 becomes +0).', h)
+    ax1 = cs.axes(fig, t, [0.25, 0.650, 0.69, 0.168], 'DeepSeek V4.1 REAP-192 MXFP4 · 7,680 experts')
+    ax2 = cs.axes(fig, t, [0.25, 0.438, 0.69, 0.140], 'Qwen3.8-Flash-Next MXFP4 · 24,576 experts')
+    ax3 = cs.axes(fig, t, [0.25, 0.282, 0.69, 0.078], 'Qwen3.8-Flash-Next INT4-g64 · 24,576 experts')
+    ax4 = cs.axes(fig, t, [0.25, 0.132, 0.69, 0.078], 'Qwen3.8-Flash-Next UD-IQ1_M (2-bit GGUF) · 24,576 experts')
+    for ax, rows in ((ax1, v41), (ax2, q38), (ax3, q38i4), (ax4, q38gg)):
         orig = rows[0][1]
         cs.hbars(ax, [r[0] for r in rows], [r[1] / GB for r in rows], [t[r[2]] for r in rows], t, 240,
                  lambda v: f'{v:.1f} GB',
                  notes=[r[3] or f'{r[1] / orig:.3f} of original' for r in rows])
         ax.set_xticks(range(0, 161, 40))
-    ax1.set_xticklabels([])
-    ax2.set_xticklabels([])
-    ax3.set_xticklabels([f'{x} GB' for x in range(0, 161, 40)])
-    cs.footer(fig, t, 'Original: the expert tensors in the safetensors headers of patrickbdevaney/DeepSeek-V4.1-Flash-'
-              '1017-REAP192-MXFP4 @ 4ab649b2 and\namd/Qwen3.8-Flash-Next-Quark-MXFP4 @ b71e28af, summed by '
-              'scripts/expert_bytes.py. Containers: docs/BENCHMARKS.md, README.md\nand research/wnr4-i4-20261122 '
-              '(whole built WEX4+WNR4 files). GB = 10^9 bytes.', h)
+    for ax in (ax1, ax2, ax3):
+        ax.set_xticklabels([])
+    ax4.set_xticklabels([f'{x} GB' for x in range(0, 161, 40)])
+    cs.footer(fig, t, 'Original: safetensors expert tensors of patrickbdevaney/DeepSeek-V4.1-Flash-1017-REAP192-MXFP4 @ 4ab649b2\n'
+              'and amd/Qwen3.8-Flash-Next-Quark-MXFP4 @ b71e28af (scripts/expert_bytes.py). Containers: docs/BENCHMARKS.md,\n'
+              'research/wnr4-i4-20261122 and research/wnr4-gg-20261121 (whole built WEX4+WNR4 files). GB = 10^9 bytes.', h)
     return fig
 
 
@@ -79,11 +83,11 @@ def chart_codecs(t):
     v41_rec = 18_800_640
     q3_rec = 10_027_008
     mm_rec = 7_520_256
-    i4_total = 708_472_832   # 256 held-out int4-g64 records (2,767,472 B each)
+    i4_total = 256 * 2_764_800   # 256 held-out int4-g64 records (2,764,800 B each)
     panels = [
         (f'DeepSeek V4.1 Flash · 8 records of {v41_rec:,} B',
          [('original MXFP4 files', 8 * v41_rec, 'muted'),
-          ('WNR4', 8 * v41_rec * 0.8488, 'aqua'),
+          ('WNR4-MX', 8 * v41_rec * 0.8488, 'aqua'),
           ('WNR3', 8 * v41_rec * 0.8796, 'blue'),
           ('brotli', 8 * v41_rec * 0.9222, 'gray'),
           ('zstd 19', 8 * v41_rec * 0.9268, 'gray'),
@@ -113,46 +117,101 @@ def chart_codecs(t):
     ]
     cs.size_panels(fig, t, panels, 1.25, h, row_in=0.16, gap_in=0.45)
     cs.footer(fig, t, 'Sources: docs/BENCHMARKS.md (2026-11-15, WNR3 byte-exact vs general codecs), '
-              'research/wnr4-20261121 (V4.1 WNR4 G=128, CZ),\nand research/wnr4-i4-20261122 (Qwen3.8 INT4-g64 '
+              'research/wnr4-20261121 (V4.1 WNR4-MX G=128, CZ),\nand research/wnr4-i4-20261122 (Qwen3.8 INT4-g64 '
               'WNR4-I4 byte-exact vs zstd 19). Ratios do not depend on the machine.', h)
+    return fig
+
+
+def chart_wnr4_decode(t):
+    # docs/BENCHMARKS.md, "WNR4 record codec: container sizes, ratio and decode speed":
+    # RTX 5090 (CUDA 13.4, sm_120), records resident in VRAM, kernel only.
+    peak = [
+        ('WNR4-MX · Qwen3.8', 209.0, 'aqua'),
+        ('WNR4-I4 · Qwen3.8 (G=16)', 193.2, 'aqua'),
+        ('WNR4-MX · V4.1', 188.0, 'aqua'),
+        ('WNR4-I4 · Qwen3.8 (G=32)', 156.9, 'aqua'),
+        ('WNR4-NV · Qwen3.8', 149.0, 'aqua'),
+        ('WNR4-GG · Qwen3.8 whole', 133.0, 'aqua'),
+        ('WNR3 · V4.1 (ref)', 105.0, 'blue'),
+        ('WNR3 · Qwen3.8 (ref)', 91.0, 'blue'),
+    ]
+    h = 5.65
+    fig = cs.figure(t, h)
+    cs.header(fig, t, 'WNR4 GPU decode: throughput and single-record latency',
+              '32-lane warp-parallel rANS on RTX 5090 (CUDA 13.4, sm_120, kernel only, records in VRAM).\n'
+              'End-to-end PCIe 5 upload + decode from page-locked host memory: 48–60 GB/s.', h)
+    ax1 = cs.axes(fig, t, [0.265, 0.185, 0.30, 0.53], 'Peak kernel decode (GB/s)')
+    cs.hbars(ax1, [r[0] for r in peak], [r[1] for r in peak], [t[r[2]] for r in peak], t, 285,
+             lambda v: f'{v:.0f}' if v == int(v) else f'{v:.1f}', height=0.58)
+    ax1.tick_params(axis='y', labelsize=8.3)
+    ax1.set_xticks([0, 100, 200])
+    ax1.set_xticklabels(['0', '100', '200 GB/s'])
+
+    ax2 = cs.axes(fig, t, [0.645, 0.185, 0.30, 0.53], '1-record latency vs G (ms)')
+    ax2.grid(axis='y', color=t['grid'], linewidth=0.8)
+    ax2.grid(axis='x', color=t['grid'], linewidth=0.5, linestyle=':')
+    series = [
+        ('MX (Qwen3.8)', [32, 64, 128, 256], [0.19, 0.37, 0.75, 1.44], t['aqua'], 'o'),
+        ('I4 (Qwen3.8)', [16, 32, 64], [0.241, 0.474, 1.035], t['orange'], 's'),
+        ('NV (Qwen3.8)', [32, 64, 128, 256], [0.25, 0.47, 0.90, 1.79], t['blue'], '^'),
+        ('GG (whole)', [32, 128], [0.234, 0.872], t['muted'], 'D'),
+    ]
+    for name, gs, ms, col, mk in series:
+        ax2.plot(gs, ms, marker=mk, linewidth=2.0, markersize=5.0, color=col, label=name, zorder=4)
+    ax2.set_xscale('log', base=2)
+    ax2.set_xticks([16, 32, 64, 128, 256])
+    ax2.set_xticklabels(['16', '32', '64', '128', '256'])
+    ax2.set_xlim(12, 320)
+    ax2.set_ylim(0, 2.0)
+    ax2.set_yticks([0, 0.5, 1.0, 1.5, 2.0])
+    ax2.set_yticklabels(['0', '0.5', '1.0', '1.5', '2.0 ms'])
+    ax2.set_xlabel('tile group size G (cells/lane)', fontsize=8, color=t['muted'], labelpad=4)
+    ax2.tick_params(axis='y', labelsize=8.3, labelcolor=t['muted'], pad=4)
+    leg = ax2.legend(loc='upper left', frameon=True, facecolor=t['surface'], edgecolor=t['border'],
+                     fontsize=7.6, handlelength=1.6, borderpad=0.5)
+    for txt in leg.get_texts():
+        txt.set_color(t['ink2'])
+    cs.footer(fig, t, 'Sources: docs/BENCHMARKS.md ("WNR4 record codec"), research/wnr4-20261121 (MX/NV/V4.1, bench8/bench9),\n'
+              'research/wnr4-gg-20261121 (GG, batch 32), and research/wnr4-i4-20261122 (I4, batch 32). Kernel only; no RAM or drive.', h)
     return fig
 
 
 MACHINE = ('Machine: RTX 5090 (32 GB VRAM), AMD Ryzen 9 7950X3D, 32 GB DDR5-6200, Windows 11; engines built with gcc '
            '16.2 and CUDA 13.4.\nDrives: U: = NVMe PCIe 4.0 (Gen4), C: = NVMe PCIe 5.0 (Gen5), a full copy of the '
            'container on each; "U: + C:" splits the expert reads 38/62.\nRAM budget: the cap the engine is given for '
-           'its RAM use (16 GB in the V4.1 runs, 13 GB in the Qwen3.8 runs), not the 32 GB of the machine.')
+           'its RAM use (15–16 GB in the V4.1 runs, 13 GB in the Qwen3.8 runs), not the 32 GB of the machine.')
 
 
 def chart_speed(t):
-    # V4.1: research/wnr2-fastbench-20261109/NOTE-5-mirror-ab-20261110.md (docs/BENCHMARKS.md "containers, drives
-    # and decode speed", first row): RAM_GB 16 in both arms, ctx 32768, 7 prompts x 64 tokens, one pair, 971 (A) and
-    # 970 (B) experts in VRAM; A read U: only, B U: + C: split 38/62 (OS read bytes C: 61%, U: 39%).
-    # Qwen3.8: docs/reports/QWEN38-MXFP4-20261111.md "Speed": RAM 13 GB ("ram_gb": 13 in every speed-*.json),
-    # 258-token prompt, 200 tokens, one run each. The FP8 snapshot is on U: (docs/reports/WNR3-VERIFY.md, disk table;
-    # the --snap path in research/qwen38-mxfp4-20261111/q_ab.py).
-    v41 = [('raw WEX1, U: Gen4', 2.02, 'gray'), ('WNR2, U: Gen4 + C: Gen5', 2.99, 'blue')]
-    q38 = [('FP8 experts, U: Gen4', 4.39, 'gray'), ('MXFP4 WNR3, U: Gen4', 9.48, 'blue'),
-           ('MXFP4 raw, U: Gen4', 11.48, 'blue'), ('MXFP4 raw, U: Gen4 + C: Gen5', 12.45, 'blue')]
-    h = 5.6
+    # V4.1: NOTE-5 (2026-11-10, RAM 16 GB: WEX1 U: 2.02, WNR2 U:+C: 2.99) and r4-r9combo.log (2026-11-13,
+    # RAM 15 GB, WEX4+WNR3 U:+C: + V4_WEX_SUBREADS=4 + V4_PREWARM_BATCH=1 + V41_PREFILL_SUFFIX=1: 3.83/3.84 -> 3.84).
+    # Qwen3.8 (258-token prompt, RAM 13 GB): QWEN38-MXFP4-20261111.md (FP8 4.39, WNR3 9.48, RAW U: 11.48, RAW U:+C: 12.45)
+    # and rdq38dma.cmp.txt (2026-11-12, WEX4 U:+C: + QT_ARENA=1 + QT_GPU_MISS=2: mean of 18.76 / 19.24 = 19.00).
+    v41 = [('raw WEX1, U: Gen4', 2.02, 'gray'),
+           ('WNR2, U: Gen4 + C: Gen5', 2.99, 'blue'),
+           ('WEX4+WNR3, U:+C: + sub-reads', 3.84, 'aqua')]
+    q38 = [('FP8 experts, U: Gen4', 4.39, 'gray'),
+           ('MXFP4 WNR3, U: Gen4', 9.48, 'blue'),
+           ('MXFP4 raw, U: Gen4', 11.48, 'blue'),
+           ('MXFP4 raw, U: Gen4 + C: Gen5', 12.45, 'blue'),
+           ('MXFP4 WEX4, U:+C: + arena/GPU-miss', 19.00, 'aqua')]
+    h = 6.3
     fig = cs.figure(t, h)
-    cs.header(fig, t, 'Generation speed in the engine', 'Tokens per second while generating. A second drive '
-              'with a copy of the container splits the expert reads.', h)
-    fig.text(0.045, 1 - 0.98 / h, MACHINE, fontsize=8, color=t['ink2'], va='top', linespacing=1.5)
-    ax1 = cs.axes(fig, t, [0.27, 0.545, 0.67, 0.09],
-                  'DeepSeek V4.1 REAP-192 · RAM budget 16 GB · 970-971 experts in VRAM')
-    ax2 = cs.axes(fig, t, [0.27, 0.2, 0.67, 0.2],
-                  'Qwen3.8-Flash-Next · RAM budget 13 GB · ~25.5 GB of experts in VRAM')
-    for ax, rows, xmax in ((ax1, v41, 3.6), (ax2, q38, 14.5)):
+    cs.header(fig, t, 'Generation speed in the engine', 'Tokens per second while generating: dual-NVMe mirror '
+              'splits, WEX4 sub-reads, and VRAM arena / GPU-miss path.', h)
+    fig.text(0.045, 1 - 0.96 / h, MACHINE, fontsize=8, color=t['ink2'], va='top', linespacing=1.5)
+    ax1 = cs.axes(fig, t, [0.31, 0.545, 0.63, 0.135],
+                  'DeepSeek V4.1 REAP-192 · RAM budget 15–16 GB · ~960–971 experts in VRAM')
+    ax2 = cs.axes(fig, t, [0.31, 0.18, 0.63, 0.24],
+                  'Qwen3.8-Flash-Next · RAM budget 13 GB · 258-token prompt')
+    for ax, rows, xmax in ((ax1, v41, 4.7), (ax2, q38, 23.0)):
         cs.hbars(ax, [r[0] for r in rows], [r[1] for r in rows], [t[r[2]] for r in rows], t, xmax,
                  lambda v: f'{v:.2f} tok/s')
-    ax1.set_xticks([0, 1, 2, 3])
-    ax2.set_xticks([0, 3, 6, 9, 12])
-    cs.footer(fig, t, 'Sources: docs/BENCHMARKS.md ("Machine"). V4.1: research/wnr2-fastbench-20261109 NOTE-5, one '
-              'pair (2026-11-10), 7 prompts x 64 tokens, ctx 32768,\ntoken ids and logits bit-identical; format and '
-              'drive split change together. Qwen3.8: docs/reports/QWEN38-MXFP4-20261111.md, 258-token prompt,\n200 '
-              'tokens, one run each, engine of 2026-11-11 (later builds are faster). Not comparable across the two '
-              'models (different sizes, budgets, prompts).', h)
+    ax1.set_xticks([0, 1, 2, 3, 4])
+    ax2.set_xticks([0, 5, 10, 15, 20])
+    cs.footer(fig, t, 'Sources: docs/BENCHMARKS.md ("Machine"). V4.1: NOTE-5 (2026-11-10, 7x64 tok, bit-identical) and '
+              'r4-r9combo.log (2026-11-13,\n657-tok prompt, 75 tok, ABBA mean 3.84). Qwen3.8: QWEN38-MXFP4-20261111.md '
+              'and rdq38dma.cmp.txt (2026-11-12, ABBA mean 19.00).\nNot comparable across the two models (different sizes, budgets, prompts).', h)
     return fig
 
 
@@ -202,7 +261,13 @@ def chart_tests(t):
     return fig
 
 
-CHARTS = {'sizes': chart_sizes, 'codecs': chart_codecs, 'speed': chart_speed, 'tests': chart_tests}
+CHARTS = {
+    'sizes': chart_sizes,
+    'codecs': chart_codecs,
+    'wnr4-decode': chart_wnr4_decode,
+    'speed': chart_speed,
+    'tests': chart_tests,
+}
 
 
 def main(argv):

@@ -724,9 +724,7 @@ listed above as well.
   records is in (smaller files, slower CPU decode), and since 2026-11-21 nvCOMP and NVDEC against WNR3
   and WNR4 on one GPU (nvCOMP-ANS: larger files, much faster decode); whole checkpoints, other CPUs and
   other GPUs are open *(open to you, section 8)*.
-- **WNR4:** a research draft of a successor of WNR3 (kinds MX, NV and GG; WEX4 codec 8 as a draft), in
-  no production container and no engine. Its engine integration was analysed on 2026-11-21 and not done
-  ([report, section 8](reports/wnr4-research-20261121.md#8-later-on-2026-11-21-engine-decision-kind-gg-int4-g64));
+- **WNR4:** GPU-parallel successor of WNR3 (codec 8, blob kind 3: kinds MX, NV, GG and I4 implemented in `wnr4/` with CUDA helper ABI 6; Go and Rust decode GG and I4; DeepSeek engine tree decodes MX with helper feature 64). Still open: formal `required_features` bit and conformance vectors for codec 8, Go/Rust decoders for MX and NV, SIMD lane-parallel CPU decoder, Vulkan/non-NVIDIA decoder, and libFuzzer harnesses for `wnr4/` ([WNR4-SPEC.md](WNR4-SPEC.md) section 8);
   the codec work left is open *(open to you, section 8)*.
 - **A first tagged release** of the specifications (WEX4 4.0, WNR3 v1) with the conformance vectors, so
   other implementations can name the version they pass.

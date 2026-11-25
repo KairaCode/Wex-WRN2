@@ -35,7 +35,7 @@ The published files are on Hugging Face, with a table of who made each lossy ste
 - **Does WEX reduce the precision of the weights?** No. Quantization rounds every weight to a number with fewer bits, so the numbers change. WEX rounds nothing: unpack a stored expert and you have the weights that were put in.
 - **Then why is a WNR3 record smaller?** For the same reason a ZIP is smaller. In real weights some 4-bit values occur much more often than others; WNR3 gives the common ones short codes and the rare ones long codes. It uses a table that says how common each value usually is; if the table guesses wrong, the record only gets bigger, never different. Nothing is generated or predicted by an AI (the method is context-modelled rANS entropy coding, and the table is a count table, not a neural network). A record that would not get smaller is stored uncompressed ([WEX4-SPEC](docs/WEX4-SPEC.md) section 5.2).
 - **What does "value-exact, not byte-exact" mean?** In 4-bit floating point, zero can be written two ways, +0 and -0, and both are the same number. With *canonical zero*, WNR3 writes every -0 as +0, which saves space (0.8545 of raw instead of 0.8818 on 40 held-out DeepSeek V4.1 experts, [WNR3-VERIFY](docs/reports/WNR3-VERIFY.md)). Every weight unpacks to the same number; only the way some zeros are written differs from the source. On DeepSeek V4.1 the model's output scores were exactly the same as with a byte-exact file, on 7 prompts of 64 tokens ([WNR3-PRODUCTION](docs/reports/WNR3-PRODUCTION-20261110.md)). Without canonical zero, WNR3 is byte-exact.
-- **The codec table below has a row that says "lossy".** That row, palette3 (codec 2), is an old experiment, never used in production. No file uses it and it is not part of WEX4: WEX4 allows only codecs 0, 5 and 6, all lossless (5 with canonical zero is value-exact), and, as a draft that no production file uses, the lossless codec 8 (WNR4).
+- **The codec table below has a row that says "lossy".** That row, palette3 (codec 2), is an old experiment, never used in production. No file uses it and it is not part of WEX4: WEX4 allows codecs 0 (RAW), 5 (WNR3, byte-exact or value-exact with canonical zero), 6 (WBP1) and 8 (WNR4, lossless; byte-exact, or value-exact with canonical zero on MXFP4), all lossless.
 - **What do the words mean?** *Lossless*: unpacking gives back exactly what was packed. *Byte-exact*: every byte is the same, and a byte-by-byte comparison finds zero differences. *Value-exact*: every weight unpacks to the same number; only the way zero is written may differ. *SHA-256 per record*: each stored expert has a fingerprint in the file's table of contents; if even one bit of the stored data changes, the fingerprint no longer matches, so a damaged file is caught (this proves the file is intact, not that unpacking is exact). *Root*: one fingerprint for the whole file. *Content digest*: one fingerprint of all the unpacked weights, the same for two files that unpack to the same weights, compressed or not.
 
 ## Check it yourself
@@ -82,14 +82,14 @@ What they do better: they are public standards with many readers, and a tensor c
 
 ## Format family
 
-Two things are numbered separately. The **container** version (WEX1 to WEX4) is the file layout. The **record codec** (0 to 6, and 8 as a draft; 7 is reserved) is how one record is coded. "A WNR3 container" means a WEX3 or WEX4 file whose records use codec 5.
+Two things are numbered separately. The **container** version (WEX1 to WEX4) is the file layout. The **record codec** (0 to 6, and 8 for WNR4; 7 is reserved) is how one record is coded. "A WNR3 container" means a WEX3 or WEX4 file whose records use codec 5; "a WNR4 container" means a WEX4 file whose records use codec 8.
 
-| Container | Magic (u32 LE), version | What it adds | Header flags | Record codecs | Status (2026-11-13; live page: [STATUS.md](STATUS.md)) | Specified in | Implemented in |
+| Container | Magic (u32 LE), version | What it adds | Header flags | Record codecs | Status (2026-11-25; live page: [STATUS.md](STATUS.md)) | Specified in | Implemented in |
 |---|---|---|---|---|---|---|---|
 | **WEX1** | `0x57455831`, 1 | a 4096-byte header page with the 40-byte `WexHeader`, one 72-byte `WexEntry` per (layer, expert), raw aligned records | must be 0 | 0 | no production file left: the V4.1 file was deleted on 2026-11-10 and the Qwen3.8 files were upgraded in place to WEX4. Still the input of `build_nr3.py` and of `upgrade` | `c/wex_format.h`; [WNR2-REFERENCE](docs/WNR2-REFERENCE.md) | `c/wex_format.h`, `c/expert_store_wex.c`, `c/qwen38_wex.h`; writers `c/tools/repack_v4_wex.py`, `c/tools/repack_q38_mxfp4_wex.py`; checker `scripts/verify_wex1.py` |
 | **WEX2** | `0x57455832`, 2 | E8M0 scales packed in tiles of 256 values; weights unchanged | 1 only | 0, 1 | written and tested; measured on 2 experts on 2026-10-18, never built for a whole model | [wex2-scale-tiles](docs/reports/wex2-scale-tiles-20261018.it.md) (Italian) | `c/wex_format.h`; writer `repack_v4_wex.py --format-version 2` |
 | **WEX3** | `0x57455833`, 3 | coded records, aliased records (flag 4), one WNM2 model found through the `WNMD` descriptor at header byte 64 | any of 1, 2, 4, 8, 16, 32, 64; 32 excludes 4, 8 and 16; 64 needs 32 | 0 to 5 | read path kept; no production file left (the V4.1 WNR3 file became WEX4 in place, `downgrade` gives it back) | [WNR2-REFERENCE](docs/WNR2-REFERENCE.md); [WNR3-SPEC](docs/WNR3-SPEC.md) section 2 | `c/wex_format.h`, `c/wex_decode.c`, `c/wex_cuda.cuh`; writers `repack_v4_wex.py` (codecs 1 to 3), `archive/nr2/build_nr2_full.py` (4), `c/tools/build_nr3.py` (5) |
-| **WEX4** | `0x57455834`, 4.0 | a SHA-256-hashed header page and index (blob, record and tensor tables, names, metadata), a SHA-256 per record and blob, exact tiling of the file, any tensor and dtype, in-place upgrade and downgrade of WEX1 and WEX3/WNR3 files | `required_features` bit 0 VALUE_EXACT; `optional_features` bit 0 ST_SOURCES | 0, 5, 6; 8 as a draft | **in production** for both models | [WEX4-SPEC](docs/WEX4-SPEC.md) | reader `c/wex4.h`; `c/qwen38_wex.h`; the DeepSeek loader is in the engine build and shown here as patches in `integration/`; reference `wex4/wex4.py`; converter `wex4/wex4_convert.py`. Not read by `c/expert_store_wex.c` |
+| **WEX4** | `0x57455834`, 4.0 | a SHA-256-hashed header page and index (blob, record and tensor tables, names, metadata), a SHA-256 per record and blob, exact tiling of the file, any tensor and dtype, in-place upgrade and downgrade of WEX1 and WEX3/WNR3 files | `required_features` bit 0 VALUE_EXACT; `optional_features` bit 0 ST_SOURCES | 0, 5, 6, 8 | **in production** (RAW, WNR3, and WNR4 containers) | [WEX4-SPEC](docs/WEX4-SPEC.md) | reader `c/wex4.h`; `c/qwen38_wex.h`; the DeepSeek loader is in the engine build and shown here as patches in `integration/`; reference `wex4/wex4.py`; converter `wex4/wex4_convert.py`; Go & Rust readers in `impl/`. Not read by `c/expert_store_wex.c` |
 
 | Id | Record codec | Magic on disk | WEX3 header flag | Payload | Lossless | Check inside the record | Decoders | Status |
 |---|---|---|---|---|---|---|---|---|
@@ -120,12 +120,15 @@ offset 0             HEADER PAGE (4096 B)
                        72 names_bytes          80 meta_bytes           88 total_decoded
                        96 index_sha256 [32]   128 reserved, zero
                      4064 header_sha256 [32] = SHA-256 of bytes [0, 4064) = the ROOT
-offset 4096          BLOB kind 1    WNM2 model, 59,408 B (only in files with WNR3 records)
-                     BLOB kind 17   the old WEX1/WEX3 entry table, 72 B per (layer, expert)
+offset 4096          BLOB kind 1    WNM2 model, 59,408 B (files with WNR3 records)
+                     BLOB kind 3    WNM4 model (files with WNR4 records: MX 59/291 KB, NV 6.5/7.0 MB, GG 37 KB, I4 197 KB)
+                     BLOB kind 17   the old WEX1/WEX3 entry table, 72 B per (layer, expert) (upgraded files)
                      RECORD 0 .. record_count-1   stored_bytes each (a multiple of 4096), one read
-                        codec 0 RAW    the MXFP4 slab: scales w1 w2 w3, FP4 weights w1 w2 w3, zero padding
+                        codec 0 RAW    the MXFP4 / int4 / GGUF slab, zero-padded to 4096
                         codec 5 WNR3   32 B header (magic, model_id, SP, WP, Cw, Cs, anchor[3], flags, owner),
                                        u16 stream lengths, scale payload, weight payload, zero padding
+                        codec 8 WNR4   64 B header (magic, model_id, owner, kind MX/NV/GG/I4, flags, G, anchors, ntiles, P),
+                                       u32 tile offsets, [verbatim/base area], 32-lane interleaved rANS tiles, zero padding
                      BLOB kind 16   the old header page, 4096 B (what downgrade restores)
 offset index_offset  INDEX (index_bytes = 64*blob_count + 72*record_count + 100*tensor_count
                             + names_bytes + meta_bytes)
@@ -137,7 +140,7 @@ offset index_offset  INDEX (index_bytes = 64*blob_count + 72*record_count + 100*
                         name order (4 B per tensor), name pool, metadata
 offset file_bytes    end of file: nothing may follow
 
-hash tree:  ROOT -> index_sha256 -> sha256 of each record and blob -> 23-bit hash of each WNR3 stream
+hash tree:  ROOT -> index_sha256 -> sha256 of each record and blob -> per-stream (WNR3, 23-bit) or per-tile (WNR4, 32-bit) hash
 ```
 
 Field names and offsets are those of [WEX4-SPEC](docs/WEX4-SPEC.md) sections 3 to 5 and of `wex4_parse_header` in `c/wex4.h`. Sizes of the real files, from the reports (the files were not opened for this page): V4.1 has 7,680 WNR3 records, 46,080 tensors, an index of 6,712,992 B and 123,312,910,336 B in all; Qwen3.8 has 24,576 RAW records, an index of 26,086,592 B, no model blob and 64,251,047,936 B in all. A file written from scratch (`wex4.py`, `wex4_convert.py pack`) puts the index right after the header page. WEX1 to WEX3 are the header page, the entry table and the records, with the WNM2 model before the table when the records are WNR2 or WNR3; an all-zero entry means that expert is served from the safetensors.
@@ -151,26 +154,31 @@ Field names and offsets are those of [WEX4-SPEC](docs/WEX4-SPEC.md) sections 3 t
 | DeepSeek V4.1 REAP-192, RTX 5090 | second drive: 2.02 -> **2.99 tok/s** (+49%), token ids and logits bit-identical | one pair, 7 prompts x 64 tokens; A is WEX1 on one drive, B is WNR2 on two drives split 38/62, so format and split are not isolated | [NOTE-5](research/wnr2-fastbench-20261109/NOTE-5-mirror-ab-20261110.md) |
 | DeepSeek V4.1 REAP-192, RTX 5090 | WEX4 around the same records: +6,717,440 B, 2.077 against 2.070 tok/s (**+0.32%**, inside the run-to-run noise), same tokens and logits | one drive, 7 prompts x 64 tokens, 2 + 2 runs one after the other, not interleaved | [wex4-m3 RESULT](research/wex4-m3-20261111/RESULT.md) |
 | Qwen3.8-Flash-Next MXFP4, RTX 5090 | WNR3 is **0.880** of WEX1 on disk but slower to read: 9.48 against 11.48 tok/s (258-token prompt), 5.27 against 7.18 (2k prompt). These containers keep RAW records | one run per arm, one drive, RAM 13 GB; no canonical zero (the export has no FP4 -0) | [QWEN38-MXFP4](docs/reports/QWEN38-MXFP4-20261111.md) |
-| Qwen3.8-Flash-Next MXFP4 and NVFP4, DeepSeek V4.1 REAP-192 | draft WNR4 at G = 128: **0.8753** of raw against 0.8809 for WNR3 (Qwen3.8 MXFP4), **0.9238** against 0.9271 for WNR3-NV (Qwen3.8 NVFP4, byte-exact), **0.8488** against 0.8539 for WNR3 (V4.1) | 2048 held-out records per container, models trained on 256 others, every record decoded back and compared (V4.1 in the canonical-zero domain of its production records); no MX or NV container written, no engine run | [wnr4-research](docs/reports/wnr4-research-20261121.md); [research/wnr4-20261121](research/wnr4-20261121/README.md) |
-| the same, RTX 5090 | the WNR4 CUDA kernel decodes **206-209 GB/s** of slab (Qwen3.8 MXFP4), 140-149 GB/s (NVFP4) and 187-188 GB/s (V4.1), against 90-91 GB/s (Qwen3.8) and 105 GB/s (V4.1) for WNR3's kernels on the same records; from page-locked host memory, upload included, 49-54, 41-51 and 48-60 GB/s: the PCIe 5 upload is the limit, not the decoder | kernel only: records resident in VRAM, best batch, G = 32 or 128; end to end: plan, upload and decode of a whole pack on two streams | [wnr4-research](docs/reports/wnr4-research-20261121.md) section 5 |
-| Qwen3.8-Flash-Next UD-IQ1_M (GGUF, 2-bit) | WNR4 kind GG on all 24,576 routed-expert records: 33,354,760,192 of 34,839,986,176 B, **0.9574** of the RAW records, 1.49 GB (4.3%) less on disk; every record decoded on the CPU identical to the RAW container | G = 32, model trained on every 8th record (3,072); only the down slices (Q2_0, IQ4_NL) are coded, the IQ2 gate and up slices are stored verbatim; no engine reads it | [research/wnr4-gg-20261121](research/wnr4-gg-20261121/README.md) |
-| Qwen3.8-Flash-Next, int4-g64 export | WNR4 kind I4 on 256 held-out expert records: **0.78333** of raw at G = 32, against 0.8074 for zstd -19; every record byte-exact; the CUDA decoder 156.9 GB/s of decoded records (batch 32, RTX 5090, kernel only) | model trained on 32 other records; every group scale lay on the lattice; the whole model (24,576 records) packs to **0.7836**, 14.7 GB less than its 68.0 GB RAW container, every record verified identical; no engine reads it | [research/wnr4-i4-20261122](research/wnr4-i4-20261122/README.md) |
+| Qwen3.8-Flash-Next MXFP4 and NVFP4, DeepSeek V4.1 REAP-192 | WNR4 (codec 8) at G = 128: **0.8753** of raw against 0.8809 for WNR3 (Qwen3.8 MXFP4), **0.9238** against 0.9271 for WNR3-NV (Qwen3.8 NVFP4, byte-exact), **0.8488** against 0.8539 for WNR3 (V4.1); whole-model WEX4+WNR4 containers built at **122.87 GB** (V4.1, 0.851) and **56.85 GB** (Qwen3.8 MX, 0.886) | 2,048 held-out records per container, models trained on 256 others, every record decoded back and compared (V4.1 in the canonical-zero domain); CPU/CUDA decode wired in the DeepSeek engine tree (helper feature 64) | [wnr4-research](docs/reports/wnr4-research-20261121.md); [research/wnr4-20261121](research/wnr4-20261121/README.md) |
+| the same, RTX 5090 | the WNR4 CUDA kernel decodes **206-209 GB/s** of slab (Qwen3.8 MXFP4), **140-149 GB/s** (NVFP4) and **187-188 GB/s** (V4.1), against 90-91 GB/s (Qwen3.8) and 105 GB/s (V4.1) for WNR3's kernels on the same records; single-record latency **0.19 ms** at G = 32; from page-locked host memory, upload included, 49-54, 41-51 and 48-60 GB/s (PCIe 5 upload is the limit, not the decoder) | kernel only: records resident in VRAM, best batch, G = 32 or 128; end to end: plan, upload and decode of a whole pack on two streams | [wnr4-research](docs/reports/wnr4-research-20261121.md) section 5 |
+| Qwen3.8-Flash-Next UD-IQ1_M (GGUF, 2-bit) | WNR4 kind GG on all 24,576 routed-expert records: 33,354,760,192 of 34,839,986,176 B, **0.9574** of RAW (container 33.38 vs 34.86 GB, 1.49 GB less); CUDA kernel **133.0 GB/s** whole-record (57.0 GB/s coded slices) at G = 32, batch 32 | G = 32, model trained on every 8th record (3,072); down slices (Q2_0, IQ4_NL) coded, IQ2 gate/up verbatim; every record verified identical on CPU; decoded by Go & Rust readers | [research/wnr4-gg-20261121](research/wnr4-gg-20261121/README.md) |
+| Qwen3.8-Flash-Next, int4-g64 export | WNR4 kind I4 on 256 held-out expert records: **0.78333** of raw at G = 32, against 0.8074 for zstd -19; every record byte-exact; CUDA decoder **156.9 GB/s** (G = 32) / **193.2 GB/s** (G = 16) at batch 32 | whole model (24,576 records) packs to **0.7836** (**53.29 GB** vs 68.00 GB RAW, **14.70 GB** / 21.6% less), verified 24,576/24,576 byte-exact; decoded by Go & Rust readers | [research/wnr4-i4-20261122](research/wnr4-i4-20261122/README.md) |
 
 The V4.1 switch report's own reading of its numbers: on this machine the second drive is the lever, not the format.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/charts/sizes-dark.png">
-  <img alt="Bar chart: routed-expert bytes as published and in the containers. DeepSeek V4.1 REAP-192 MXFP4: original MXFP4 safetensors 144.4 GB, raw WEX1 144.4 GB, WNR2 129.9 GB (0.900), WNR3-CZ 123.3 GB (0.854), WNR4 122.9 GB (0.851). Qwen3.8-Flash-Next MXFP4: original 64.2 GB, raw WEX4 64.3 GB, WNR3 56.5 GB (0.881), WNR4 56.8 GB (0.886). Qwen3.8-Flash-Next INT4-g64: raw 68.0 GB, WNR4-I4 53.3 GB (0.784)." src="assets/charts/sizes-light.png" width="800">
+  <img alt="Bar chart: routed-expert bytes as published and in the containers. DeepSeek V4.1 REAP-192 MXFP4: original MXFP4 safetensors 144.4 GB, raw WEX1 144.4 GB, WNR2 129.9 GB (0.900), WNR3-CZ 123.3 GB (0.854), WNR4-MX 122.9 GB (0.851). Qwen3.8-Flash-Next MXFP4: original 64.2 GB, raw WEX4 64.3 GB, WNR3 56.5 GB (0.881), WNR4-MX 56.8 GB (0.886). Qwen3.8-Flash-Next INT4-g64: raw 68.0 GB, WNR4-I4 53.3 GB (0.784). Qwen3.8-Flash-Next UD-IQ1_M (2-bit GGUF): raw 34.9 GB, WNR4-GG 33.4 GB (0.957)." src="assets/charts/sizes-light.png" width="800">
 </picture>
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/charts/codecs-dark.png">
-  <img alt="Bar chart: real expert records per checkpoint, as published and stored by each codec. DeepSeek V4.1 Flash: original 150.4 MB, WNR4 127.7 MB (-15.1%), WNR3 132.3 MB (-12.0%), brotli 138.7 MB (-7.8%), zstd 19 139.4 MB (-7.3%). Qwen3-235B: original 80.2 MB, WNR3 71.5 MB (-10.8%), brotli 71.8 MB (-10.5%). MiniMax-M2.1: original 60.2 MB, WNR3 53.3 MB (-11.4%), brotli 54.4 MB (-9.6%). Qwen3.8-Flash-Next INT4-g64: original 708.5 MB, WNR4-I4 555.0 MB (-21.7%), zstd 19 572.0 MB (-19.3%)." src="assets/charts/codecs-light.png" width="800">
+  <img alt="Bar chart: real expert records per checkpoint, as published and stored by each codec. DeepSeek V4.1 Flash: original 150.4 MB, WNR4-MX 127.7 MB (-15.1%), WNR3 132.3 MB (-12.0%), brotli 138.7 MB (-7.8%), zstd 19 139.4 MB (-7.3%). Qwen3-235B: original 80.2 MB, WNR3 71.5 MB (-10.8%), brotli 71.8 MB (-10.5%). MiniMax-M2.1: original 60.2 MB, WNR3 53.3 MB (-11.4%), brotli 54.4 MB (-9.6%). Qwen3.8-Flash-Next INT4-g64: original 707.8 MB, WNR4-I4 554.4 MB (-21.7%), zstd 19 571.5 MB (-19.3%)." src="assets/charts/codecs-light.png" width="800">
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/charts/wnr4-decode-dark.png">
+  <img alt="Two-panel chart: WNR4 GPU decode throughput and single-record latency on an RTX 5090 (CUDA 13.4, sm_120, kernel only). Left panel, peak GB/s: WNR4-MX Qwen3.8 209 GB/s, WNR4-I4 Qwen3.8 (G=16) 193.2 GB/s, WNR4-MX V4.1 188 GB/s, WNR4-I4 Qwen3.8 (G=32) 156.9 GB/s, WNR4-NV Qwen3.8 149 GB/s, WNR4-GG Qwen3.8 whole 133.0 GB/s, WNR3 V4.1 105 GB/s, WNR3 Qwen3.8 91 GB/s. Right panel, single-record latency by group size G: Qwen3.8 MX 0.19 ms at G=32 to 1.44 ms at G=256; NV 0.25 ms to 1.79 ms; I4 0.24 ms at G=16 to 1.04 ms at G=64; GG 0.23 ms at G=32 to 0.87 ms at G=128." src="assets/charts/wnr4-decode-light.png" width="800">
 </picture>
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/charts/speed-dark.png">
-  <img alt="Bar chart: tokens per second on an RTX 5090 (32 GB VRAM) with a Ryzen 9 7950X3D and 32 GB of DDR5-6200, Windows 11, engines built with gcc 16.2 and CUDA 13.4; drive U: is NVMe PCIe 4.0 (Gen4), C: NVMe PCIe 5.0 (Gen5), and U: + C: splits the expert reads 38/62. DeepSeek V4.1, engine RAM budget 16 GB: raw WEX1 on U: 2.02, WNR2 on U: + C: 2.99. Qwen3.8-Flash-Next, engine RAM budget 13 GB: FP8 experts on U: 4.39, MXFP4 WNR3 on U: 9.48, MXFP4 raw on U: 11.48, MXFP4 raw on U: + C: 12.45." src="assets/charts/speed-light.png" width="800">
+  <img alt="Bar chart: tokens per second on an RTX 5090 (32 GB VRAM) with a Ryzen 9 7950X3D and 32 GB of DDR5-6200, Windows 11, engines built with gcc 16.2 and CUDA 13.4; drive U: is NVMe PCIe 4.0 (Gen4), C: NVMe PCIe 5.0 (Gen5), and U: + C: splits the expert reads 38/62. DeepSeek V4.1: raw WEX1 on U: 2.02, WNR2 on U: + C: 2.99, WEX4+WNR3 on U: + C: with sub-reads 3.84. Qwen3.8-Flash-Next, engine RAM budget 13 GB: FP8 experts on U: 4.39, MXFP4 WNR3 on U: 9.48, MXFP4 raw on U: 11.48, MXFP4 raw on U: + C: 12.45, MXFP4 WEX4 on U: + C: with arena and GPU-miss 19.00." src="assets/charts/speed-light.png" width="800">
 </picture>
 
 <picture>
@@ -184,11 +192,12 @@ Each chart names its source in its footnote. The speed chart was measured on one
 
 Summary of 2026-11-25; [STATUS.md](STATUS.md) is the page of record, with the roots, the switches, the engine builds and what is switched off.
 
-| Model | Container | Records | Bytes per copy | Drives | Integrity |
+| Model | Container | Records | Bytes per copy | Drives / status | Integrity |
 |---|---|---|---|---|---|
-| DeepSeek V4.1 REAP-192 (MXFP4) | WEX4 + WNR4 (codec 8) | 7,680 WNR4 | 122,872,295,424 | two NVMe drives, a full copy on each, reads split 38/62 | root pinned; SHA-256 of each record at its first read |
-| Qwen3.8-Flash-Next (MXFP4 routed experts) | WEX4 (RAW + WNR4 sidecar) | 24,576 RAW (`64.25 GB`) / WNR4 (`56.85 GB`) | 64,251,047,936 / 56,847,855,616 | two NVMe drives (50/50 mirror) | header and index checked at open |
-| Qwen3.8-Flash-Next (INT4-g64 routed experts) | WEX4 + WNR4-I4 (codec 8, kind I4) | 24,576 WNR4-I4 | 53,294,047,232 | one NVMe drive | byte-exact verified; header and index checked at open |
+| DeepSeek V4.1 REAP-192 (MXFP4) | WEX4 + WNR3-CZ (codec 5) / WNR4-MX (codec 8) | 7,680 WNR3-CZ (`123.31 GB`) / WNR4-MX (`122.87 GB`, 0.851) | 123,312,910,336 / 122,872,295,424 | two NVMe drives, a full copy on each, reads split 38/62; WNR4-MX CPU/CUDA decode wired in engine (helper feature 64) | root pinned; SHA-256 of each record at its first read |
+| Qwen3.8-Flash-Next (MXFP4 routed experts) | WEX4 RAW + WNR4-MX (codec 8) | 24,576 RAW (`64.25 GB`) / WNR4-MX (`56.85 GB`, 0.886) | 64,251,047,936 / 56,847,855,616 | two NVMe drives (mirror) | header and index checked at open |
+| Qwen3.8-Flash-Next (INT4-g64 routed experts) | WEX4 + WNR4-I4 (codec 8, kind 3) | 24,576 WNR4-I4 (`0.784` of RAW) | 53,294,047,232 | built and verified 24,576/24,576 byte-exact; decoded by C, CUDA, Go & Rust | SHA-256 + 32-bit per-tile hash |
+| Qwen3.8-Flash-Next (UD-IQ1_M, 2-bit GGUF) | WEX4 + WNR4-GG (codec 8, kind 2) | 24,576 WNR4-GG (`0.957` of RAW) | 33,377,181,696 | built and verified 24,576/24,576 byte-exact; decoded by C, CUDA, Go & Rust | SHA-256 + 32-bit per-tile hash (coded slices) |
 
 Every measurement table: [docs/BENCHMARKS.md](docs/BENCHMARKS.md). Format changes by date: [CHANGELOG.md](CHANGELOG.md).
 
@@ -219,7 +228,7 @@ python -I wex4/wex4_convert.py downgrade wex4/out/tiny_cz.wex    # the same byte
 The index of every page, with its kind, language and state, is [docs/README.md](docs/README.md); the terms are in [docs/GLOSSARY.md](docs/GLOSSARY.md).
 
 - **Integrate the formats into a colibri tree and run them:** [docs/COLIBRI-INTEGRATION.md](docs/COLIBRI-INTEGRATION.md). `integration/` holds the engine, backend and host excerpts, the read-path patch for stock colibri at 561966ec (`upstream-561966ec-levelA.patch`: WEX1 and WNR2) and the three WEX4 loader patches. `integration\build\build_wex_windows.cmd` builds the CUDA helper and the checkers (MSVC and CUDA needed).
-- **Implement a reader or a writer:** [docs/WEX4-SPEC.md](docs/WEX4-SPEC.md) for the container, [docs/WNR3-SPEC.md](docs/WNR3-SPEC.md) for the record codec, [docs/WNR2-REFERENCE.md](docs/WNR2-REFERENCE.md) for WEX1 to WEX3 and WNR2, [docs/WNR4-SPEC.md](docs/WNR4-SPEC.md) for the draft WNR4 record codec (codec 8, not in production). Reference code: `c/wex4.h` and `wex4/wex4.py` (written independently of each other), `c/wex_format.h`, `c/wex_neural_rans.h`. Written from those pages alone, each with what they left open: the Go reader and writer, [impl/go-wex4/](impl/go-wex4/README.md), and the Rust reader, [impl/rust-wex4/](impl/rust-wex4/README.md).
+- **Implement a reader or a writer:** [docs/WEX4-SPEC.md](docs/WEX4-SPEC.md) for the container, [docs/WNR3-SPEC.md](docs/WNR3-SPEC.md) for WNR3 (codec 5), [docs/WNR4-SPEC.md](docs/WNR4-SPEC.md) for WNR4 (codec 8: kinds MX, NV, GG and I4), [docs/WNR2-REFERENCE.md](docs/WNR2-REFERENCE.md) for WEX1 to WEX3 and WNR2. Reference code: `c/wex4.h` and `wex4/wex4.py` (written independently of each other), `c/wex_format.h`, `c/wex_neural_rans.h`, `wnr4/`. Written from those pages alone, each with what they left open: the Go reader and writer, [impl/go-wex4/](impl/go-wex4/README.md), and the Rust reader, [impl/rust-wex4/](impl/rust-wex4/README.md) (both also decode WNR4 kinds GG and I4).
 - **Decode WNR3 on a GPU that is not NVIDIA:** today only the CUDA helper decodes on a GPU. [docs/WNR3-VULKAN.md](docs/WNR3-VULKAN.md) is the design note for a Vulkan compute decoder, with a prototype in `wex4/research/vulkan-decode/` that matches the CPU reference on a CPU Vulkan device (Mesa lavapipe) and on one GPU, an NVIDIA RTX 3070, where it decoded synthetic records of the size of a V4.1 expert in 1/20 of the time of the fast CPU decoder on all threads of the same desktop ([research/vulkan-gpu-20261115](research/vulkan-gpu-20261115/README.md)). On the same GPU, the prototype of before its driver fix gave other bytes than the reference for the WNR3 records with many ceil-form blocks among 32 made from real experts ([research/real-experts-20261115](research/real-experts-20261115/README.md)); the shader of today was not run on those records. On 2026-11-16 the shader of today gave the reference's bytes on that GPU for every record of the published DeepSeek V4.1 container (7,680 WNR3-CZ records in ceil form), and decoded its records in 1/23 of the time of the fast CPU decoder on all threads ([research/vulkan-real-20261116](research/vulkan-real-20261116/README.md)). It is not in any engine.
 - **Check a result:** [docs/BENCHMARKS.md](docs/BENCHMARKS.md) for the measurement tables, `docs/reports/` for the dated reports behind them, [research/README.md](research/README.md) for the runs with their scripts and raw output.
 
@@ -239,12 +248,12 @@ c/             engine-side WEX code in the colibri c/ layout; pull requests may 
   tests/          format, store, repack, WNR3 and Qwen3.8 tests; several build only inside a full engine tree
 wex4/          WEX4, repo-only: Python reference, converter, C tools, tests, reviews, research
   vectors/        conformance vectors: valid and invalid files with the verdict a reader must give
-wnr4/          the draft WNR4 codec, repo-only: wnr4.h, wnr4_gg.h and wnr4_i4.h (CPU), wnr4_cuda.cuh, wnr4_gg_cuda.cuh and wnr4_i4_cuda.cuh (CUDA)
-  tools/          tool APIs for Python (wnr4_tools.c, wnr4_gg_tools.c) and the prototype CUDA helper (wnr4_cuda_bridge.cu)
-  tests/          CPU tests (test_wnr4.c, test_wnr4_gg.c), the GG GPU test (not in CI) and the GG expert sampler
+wnr4/          the WNR4 codec (codec 8): wnr4.h (MX/NV), wnr4_gg.h (GG) and wnr4_i4.h (I4) on CPU; wnr4_cuda.cuh, wnr4_gg_cuda.cuh and wnr4_i4_cuda.cuh on CUDA
+  tools/          tool APIs for Python (wnr4_tools.c, wnr4_gg_tools.c, wnr4_i4_tools.c) and the CUDA helper (wnr4_cuda_bridge.cu, ABI 6)
+  tests/          CPU tests (test_wnr4.c, test_wnr4_gg.c, test_wnr4_i4.c), GPU tests (not in CI) and the GG expert sampler
 impl/          readers written from the specifications alone, not from the code here
-  go-wex4/        WEX4 reader, verifier and writer in Go, with WBP1 and WNR3 codecs and a WNM2 trainer; SPEC-NOTES.md: what the specs left open
-  rust-wex4/      WEX4 reader and verifier in Rust, with WBP1 and WNR3 decoders and its own SHA-256; SPEC-NOTES.md, and differential.py against the C and Python readers
+  go-wex4/        WEX4 reader, verifier and writer in Go, with WBP1, WNR3, and WNR4 (GG/I4) decoders and a WNM2 trainer; SPEC-NOTES.md: what the specs left open
+  rust-wex4/      WEX4 reader and verifier in Rust, with WBP1, WNR3, and WNR4 (GG/I4) decoders and its own SHA-256; SPEC-NOTES.md, and differential.py against the C and Python readers
 scripts/       repo-only checks: check_all.sh (the CPU checks that need only gcc and Python), build_cpu_check.sh, build_wnr4_check.sh, sanitize_c.sh and sanitize_libs.c, verify_wex1.py and its test; make_charts.py, chartstyle.py and expert_bytes.py (the README charts)
 bench/         hardware benchmark for testers (bench.py, Linux and Windows) and the Linux and macOS read paths for expert records (wex_io.py)
 archive/       the WNR2 lab code (encoder, trainer, checks) and its benches, kept for the record
@@ -260,7 +269,7 @@ docs/NEXT-FORMAT-SPEC.md         stub: a comment in c/wex4.h still names this pa
 
 ## Where the code lives
 
-The 40 files under `c/` are this repository's engine-side code, and pull requests may change them. The same files are also carried in the maintainer's application tree (under `src/colibri/c/`, same relative paths) and are being integrated into colibri's `dev` branch; the maintainer keeps the copies in step, and `sync-map.tsv` maps each file to its path there. `archive/` came from the maintainer's lab folder, `integration/` quotes engine code that is not in this repository, `research/`, `models/` and `fixtures/v41-tiny` are copies of lab results, the rest was written here. To check the links, the file map, the licence headers and the privacy patterns:
+The 41 files under `c/` are this repository's engine-side code, and pull requests may change them. The same files are also carried in the maintainer's application tree (under `src/colibri/c/`, same relative paths) and are being integrated into colibri's `dev` branch; the maintainer keeps the copies in step, and `sync-map.tsv` maps each file to its path there. `archive/` came from the maintainer's lab folder, `integration/` quotes engine code that is not in this repository, `research/`, `models/` and `fixtures/v41-tiny` are copies of lab results, the rest was written here. To check the links, the file map, the licence headers and the privacy patterns:
 
 ```sh
 python -I check_repo.py
@@ -279,7 +288,7 @@ Copyright 2026 Ludovico Zanichelli. Everything in this repository (code, specifi
 
 ```text
 Ludovico Zanichelli. WEX: expert-container formats for streamed Mixture-of-Experts inference
-(WEX1-WEX4 containers, WNR2/WNR3 record codecs). 2026. https://github.com/KairaCode/Wex-WRN2, commit <sha>.
+(WEX1-WEX4 containers, WNR2/WNR3/WNR4 record codecs). 2026. https://github.com/KairaCode/Wex-WRN2, commit <sha>.
 ```
 
 ## Security

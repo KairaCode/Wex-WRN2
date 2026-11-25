@@ -7,23 +7,25 @@ Every page under `docs/`, what kind of page it is and which question it answers.
 Two things have names here, and they are numbered separately.
 
 - A **container** is the layout of the file: WEX1, WEX2, WEX3 or WEX4. It holds one record per routed expert, each on a 4096-byte boundary so that the engine fetches it with one unbuffered read.
-- A **record codec** is how one record is coded inside the container: raw (codec 0), WNR2 (codec 4), WNR3 (codec 5) and a few others.
+- A **record codec** is how one record is coded inside the container: raw (codec 0), WNR2 (codec 4), WNR3 (codec 5), WBP1 (codec 6), WNR4 (codec 8: kinds MX, NV, GG, I4), and earlier experiments.
 
 | Container | What it is | State |
 |---|---|---|
 | WEX1 | raw aligned records behind a header page and an entry table | no production file left; still the input of the WNR3 builder and of the WEX4 upgrade |
 | WEX2 | WEX1 with the scales packed in tiles | written and tested, never built for a whole model |
 | WEX3 | the same layout with coded records: WNR1 (retired), WNR2 (superseded), WNR3 | read path kept; no production file left |
-| WEX4 | a SHA-256-hashed header page and record index around unchanged raw or WNR3 records | in production |
+| WEX4 | a SHA-256-hashed header page and record index around RAW, WNR3, WBP1, or WNR4 records | in production |
 
-So "WNR3" alone names a record codec, and "a WNR3 container" means a WEX3 or WEX4 file whose records are WNR3. The complete table of containers, codecs, magics and flags is in the root [README](../README.md), section "Format family". The repository name spells the older codec "WRN2"; every constant and page says WNR2.
+So "WNR3" and "WNR4" name record codecs, and "a WNR4 container" means a WEX4 file whose records use codec 8. The complete table of containers, codecs, magics and flags is in the root [README](../README.md), section "Format family". The repository name spells the older codec "WRN2"; every constant and page says WNR2.
 
-Summary of 2026-11-13; the page of record for what runs is [STATUS.md](../STATUS.md):
+Summary of 2026-11-25; the page of record for what runs is [STATUS.md](../STATUS.md):
 
-| Model | Container | Record codec | Drives |
+| Model | Container | Record codec | Drives / status |
 |---|---|---|---|
-| DeepSeek V4.1 REAP-192 | WEX4, root pinned | WNR3 with canonical zero ("WNR3-CZ", codec 5) | U: with a full mirror on C: |
-| Qwen3.8-Flash-Next, MXFP4 experts | WEX4, root verified and not pinned | raw (codec 0) | U: with a full mirror on C: |
+| DeepSeek V4.1 REAP-192 | WEX4, root pinned | WNR3-CZ (codec 5, 123.31 GB) / WNR4-MX (codec 8, 122.87 GB, 0.851) | U: with a full mirror on C: (38/62 split); WNR4-MX decode wired in engine |
+| Qwen3.8-Flash-Next, MXFP4 experts | WEX4 | RAW (codec 0, 64.25 GB) / WNR4-MX (codec 8, 56.85 GB, 0.886) | U: with a full mirror on C: |
+| Qwen3.8-Flash-Next, INT4-g64 experts | WEX4 | WNR4-I4 (codec 8 kind 3, 53.29 GB, 0.784 of RAW) | built and verified 24,576/24,576 byte-exact; Go/Rust/C/CUDA decoders |
+| Qwen3.8-Flash-Next, UD-IQ1_M (2-bit GGUF) | WEX4 | WNR4-GG (codec 8 kind 2, 33.38 GB, 0.957 of RAW) | built and verified 24,576/24,576 byte-exact; Go/Rust/C/CUDA decoders |
 
 ## I want to...
 
@@ -56,13 +58,13 @@ Summary of 2026-11-13; the page of record for what runs is [STATUS.md](../STATUS
 | [README.md](README.md) | EN | index | current | Which page do I need? |
 | [GLOSSARY.md](GLOSSARY.md) | EN | reference | current | What does this word mean, and which file defines it? |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | EN | overview | current | How do the pieces fit together, where does a record go from the checkpoint to the GPU, and what is not in this repository? |
-| [BENCHMARKS.md](BENCHMARKS.md) | EN | measurements | current: every table, newest rows of 2026-11-16 | What was measured, under which conditions, how many runs stand behind it, and where is the raw output? |
+| [BENCHMARKS.md](BENCHMARKS.md) | EN | measurements | current: every table, updated 2026-11-25 (including WNR4 MX/NV/GG/I4) | What was measured, under which conditions, how many runs stand behind it, and where is the raw output? |
 | [COLIBRI-INTEGRATION.md](COLIBRI-INTEGRATION.md) | EN | guide | current: WEX4 with RAW or WNR3 records | What do I copy and build, how do I make, verify and pin a container, which variables does the engine read, and what does an error line mean? |
 | [HELP-WANTED.md](HELP-WANTED.md) | EN | task list | current | What can an outside contributor pick up, and how is each task known to be done? |
 | [WEX4-SPEC.md](WEX4-SPEC.md) | EN | spec | current: format version 4.0, in production | What are the bytes of a WEX4 file, how is it validated and hashed, and how is a WEX1 or WNR3 container upgraded in place? |
 | [WNR3-SPEC.md](WNR3-SPEC.md) | EN | spec | current: FINAL v1, in production. Sections 0 to 8 with the errata at the top are the format; sections 9 to 11 are the implementation plan, historical | What are the bytes of a WNR3 record, and how are ceil-form, rule g, canonical zero and the stream hash encoded and checked? |
 | [WNR3-VULKAN.md](WNR3-VULKAN.md) | EN | design note | current: a design with a prototype checked on a CPU Vulkan device and on one GPU (an RTX 3070), with speed numbers on synthetic and on real records there; on that GPU every record of the published V4.1 container gave the reference's bytes; no engine hook | How does the WNR3 decode map to a Vulkan compute shader (streams and workgroups, buffers, model tables, batching), what was verified, and what is open? |
-| [WNR4-SPEC.md](WNR4-SPEC.md) | EN | spec | current: DRAFT 0.1, a research prototype; WEX4 codec 8 and blob kind 3 assigned as a draft (WEX4-SPEC 7.3), for GGUF expert records (kind 2, GG) and int4-g64 expert records (kind 3, I4); not in any production container or engine | What would a WNR4 record be: tiles of 32 rANS lanes decoded by one GPU warp, WNR3's weight model, NVFP4 scales coded from the row above, a 32-bit tile hash? And kind GG: the same tiles over the Q2_0 and IQ4_NL blocks of GGUF expert slices? And kind I4: over int4-g64 experts, their scales coded as lattice indices? |
+| [WNR4-SPEC.md](WNR4-SPEC.md) | EN | spec | current: v0.1 (updated 2026-11-25); WEX4 codec 8 and blob kind 3; kinds MX, NV, GG and I4 implemented in `wnr4/` (CPU + CUDA ABI 6), whole-model containers built, Go & Rust decode GG/I4, DeepSeek engine tree decodes MX (helper feature 64) | What is a WNR4 record: 32-lane interleaved rANS tiles decoded by one GPU warp, 32-bit tile hash, and the four kinds MX (MXFP4), NV (NVFP4), GG (GGUF Q2_0/IQ4_NL), and I4 (int4-g64 lattice)? |
 | [WNR2-REFERENCE.md](WNR2-REFERENCE.md) | EN | reference | current as the description of the WEX1 / WEX2 / WEX3 layout, the WNR2 record, the WNM2 model, the encoder and the helper API (sections 4 to 10); WNR2 itself is superseded and no WNR2 container exists. Sections 1 to 3 and 11 to 15 point to the history report | What is in a WEX1 / WEX2 / WEX3 container, a WNR2 record and a WNM2 model, and what does the CUDA helper offer? |
 | [NEXT-FORMAT-SPEC.md](NEXT-FORMAT-SPEC.md) | EN | stub | current | Nothing. It is the old path of WEX4-SPEC.md, kept because a comment in the mirrored `c/wex4.h` names it |
 
@@ -95,10 +97,10 @@ Each is a summary of the root [README](../README.md), about the size of its Ital
 
 | File | Lang. | Kind | State | Question it answers |
 |---|---|---|---|---|
-| [README.es.md](i18n/README.es.md) | ES | translation | follows the README of 2026-11-21 | What is WEX, what runs today, how do I try it, and where do I start? |
-| [README.fr.md](i18n/README.fr.md) | FR | translation | follows the README of 2026-11-21 | the same |
-| [README.de.md](i18n/README.de.md) | DE | translation | follows the README of 2026-11-21 | the same |
-| [README.zh-CN.md](i18n/README.zh-CN.md) | ZH | translation | follows the README of 2026-11-21 | the same |
+| [README.es.md](i18n/README.es.md) | ES | translation | follows the README of 2026-11-25 | What is WEX, what runs today, how do I try it, and where do I start? |
+| [README.fr.md](i18n/README.fr.md) | FR | translation | follows the README of 2026-11-25 | the same |
+| [README.de.md](i18n/README.de.md) | DE | translation | follows the README of 2026-11-25 | the same |
+| [README.zh-CN.md](i18n/README.zh-CN.md) | ZH | translation | follows the README of 2026-11-25 | the same |
 
 ## Outside `docs/`
 
