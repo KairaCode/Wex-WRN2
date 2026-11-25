@@ -605,32 +605,34 @@ measured; it is not known to fail.
     (scales and weights apart); zstd with a trained dictionary or long-distance matching; byte-shuffle
     filters (Blosc2) and OpenZL.
 - **WNR4, what is left** (help wanted; several items need an NVIDIA GPU):
-  - **Today (2026-11-21):** [WNR4-SPEC](WNR4-SPEC.md) is a research draft (DRAFT 0.1) of a successor of
-    WNR3 with kinds MX, NV and GG, to which WEX4 assigns codec 8 as a draft; no production container
-    holds it and no engine reads it ([STATUS.md](../STATUS.md), "Planned"). The code is in `wnr4/`: a CPU
-    reference codec, CUDA decoders and a prototype helper DLL. The CPU tests
-    (`bash scripts/build_wnr4_check.sh`, which `scripts/check_all.sh` runs in CI) include a mutation fuzz
-    for each kind. The measurements are in the
-    [report](reports/wnr4-research-20261121.md), sections 5 to 8; the GPU code has run on one GPU only
-    (an RTX 5090, `sm_120`). Since 2026-11-23 the Go and the Rust readers of `impl/` decode kinds GG and I4
-    in WEX4 files, written from the specification with the reference code closed (WNR4-SPEC section 7).
+  - **Today (2026-11-25):** [WNR4-SPEC](WNR4-SPEC.md) defines all four kinds (**MX**, **NV**, **GG**, **I4**)
+    under WEX4 codec 8 and blob kind 3. The code is in `wnr4/`: C99 CPU reference codecs (`wnr4.h`,
+    `wnr4_gg.h`, `wnr4_i4.h`), CUDA decoders (`wnr4_cuda.cuh`, `wnr4_gg_cuda.cuh`, `wnr4_i4_cuda.cuh`),
+    and the ABI-6 CUDA helper DLL. Whole-model WEX4+WNR4 containers have been built for DeepSeek V4.1
+    REAP-192 (MX, 122.87 GB), Qwen3.8 MXFP4 (MX, 56.85 GB), Qwen3.8 INT4-g64 (I4, 53.29 GB, verified
+    byte-exact) and Qwen3.8 UD-IQ1_M (GG, 33.38 GB, verified byte-exact). Engine-side CPU/CUDA decode for
+    kind MX (helper feature 64) is wired in the DeepSeek engine tree ([STATUS.md](../STATUS.md)); the
+    independent Go and Rust readers of `impl/` decode kinds GG and I4 (written from the specification).
+    The CPU tests (`bash scripts/build_wnr4_check.sh`, run in CI) include a mutation fuzz for each kind;
+    the GPU code has run on one GPU only (an RTX 5090, `sm_120`).
   - **Still open:**
-    - independent decoders of kinds MX and NV (no WEX4 file may hold them yet, so they would be record
-      decoders of their own; WNR4-SPEC sections 2 to 4 have no list of record checks like 5.5 and 6.5);
+    - independent decoders of kinds MX and NV (WNR4-SPEC sections 2 to 4 have no list of record checks
+      like 5.5 and 6.5);
     - a SIMD lane-parallel CPU decoder (8 lanes per AVX2 register): the reference decoder is scalar with
       an AVX2 16-symbol search, 0.057-0.060 GB/s per thread and 0.71 GB/s with 16-32 threads on Qwen3.8
       MXFP4 (report, section 5);
     - a decoder for non-NVIDIA GPUs, Vulkan first (as section 6 asks for WNR3): the GPU decoders are CUDA
-      only (`wnr4/wnr4_cuda.cuh`, `wnr4/wnr4_gg_cuda.cuh`);
+      only (`wnr4/wnr4_cuda.cuh`, `wnr4/wnr4_gg_cuda.cuh`, `wnr4/wnr4_i4_cuda.cuh`);
     - runs on other NVIDIA GPUs and on more than one GPU;
-    - the GPU tests in CI (`wnr4/tests/test_wnr4_gg_gpu.cu` and the GPU bench of
-      [research/wnr4-20261121](../research/wnr4-20261121/README.md)), which needs a GPU runner;
+    - the GPU tests in CI (`wnr4/tests/test_wnr4_gg_gpu.cu`, `wnr4/tests/test_wnr4_i4_gpu.cu`, and the GPU
+      bench of [research/wnr4-20261121](../research/wnr4-20261121/README.md)), which need a GPU runner;
     - fuzzing of the WNR4 record parser beyond the existing mutation fuzz of `wnr4/tests` (random flips of
       1 to 3 bits): no harness of [wex4/fuzz](../wex4/fuzz/README.md) reads WNR4 records;
-    - conformance vectors for codec 8, which wait until the WEX4 draft is adopted;
-    - a container writer for kinds MX and NV (`wex4/wnr4gg.py` writes kind GG only; the MX and NV records
-      of the research are bench packs), with the required feature bit that kinds MX and NV need in
-      EXPERT records (WNR4-SPEC section 8);
+    - conformance vectors for codec 8, which wait until the `required_features` bit for EXPERT codec-8
+      records is frozen;
+    - a public container writer for kinds MX and NV (`wex4/wnr4gg.py` writes kind GG and `wex4/wnr4i4.py`
+      writes kind I4), together with the formal `required_features` bit for EXPERT records (WNR4-SPEC
+      section 8);
     - int4 exports that kind 3 (I4, WNR4-SPEC section 6) codes badly: its scale model is the lattice of an
       FP8 block-scaled source, and the scales of an int4 export of an NVFP4 checkpoint (Inkling-2-Mini)
       escape, 0.881 of raw against 0.841 for zstd -19; a palette or NVFP4-lattice scale mode would fix it
