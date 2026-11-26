@@ -41,14 +41,14 @@ gcc -O3 -march=haswell -fopenmp -static -shared -o wnr4_gg_tools.dll wnr4/tools/
 gcc -O3 -march=haswell -fopenmp -static -shared -o wnr4_i4_tools.dll wnr4/tools/wnr4_i4_tools.c
 ```
 
-The helper and the GPU tests of GG and I4 (CUDA 13, built for `sm_120` and run on an RTX 5090 only). On Windows nvcc needs the MSVC host compiler: [research/wnr4-20261121/nvcc.cmd](../research/wnr4-20261121/nvcc.cmd) runs `vcvars64.bat` first, and the research runs added `-Xcompiler /O2,/EHsc`.
+The helper and the GPU tests of GG and I4 (CUDA 13, built for `sm_120` and run on an RTX 5090 only). On Windows nvcc needs the MSVC host compiler: [research/wnr4-20261121/nvcc.cmd](../research/wnr4-20261121/nvcc.cmd) runs `vcvars64.bat` first. Always pass `-Xcompiler=/O2,/EHsc` on Windows MSVC hosts so host-side record parsing and C++ containers are optimised alongside device code (plain `nvcc -O3` defaults MSVC to `/Od`).
 
 ```
-nvcc -O3 -std=c++17 -arch=sm_120 -shared wnr4/tools/wnr4_cuda_bridge.cu -o wnr4_cuda.dll
-nvcc -O3 -std=c++17 -arch=sm_120 wnr4/tests/test_wnr4_gg_gpu.cu -o test_wnr4_gg_gpu
+nvcc -O3 -std=c++17 -arch=sm_120 -Xcompiler=/O2,/EHsc -shared wnr4/tools/wnr4_cuda_bridge.cu -o wnr4_cuda.dll
+nvcc -O3 -std=c++17 -arch=sm_120 -Xcompiler=/O2,/EHsc wnr4/tests/test_wnr4_gg_gpu.cu -o test_wnr4_gg_gpu
 python -I wnr4/tests/sample_gg_experts.py PART.gguf SAMPLE_DIR 0,6,12,24,36,47 0-15
 ./test_wnr4_gg_gpu SAMPLE_DIR [G]         # last line on success: all GG checks passed
-nvcc -O3 -std=c++17 -arch=sm_120 wnr4/tests/test_wnr4_i4_gpu.cu -o test_wnr4_i4_gpu
+nvcc -O3 -std=c++17 -arch=sm_120 -Xcompiler=/O2,/EHsc wnr4/tests/test_wnr4_i4_gpu.cu -o test_wnr4_i4_gpu
 ./test_wnr4_i4_gpu 640x2560,640x2560,2560x640 planar SAMPLE_DIR [G]   # *.rec int4-g64 records; last line: ALL OK
 ```
 
