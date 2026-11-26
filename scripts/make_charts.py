@@ -24,12 +24,12 @@ GB = 1e9
 # patrickbdevaney/DeepSeek-V4.1-Flash-1017-REAP192-MXFP4 @ 4ab649b2 (7,680 experts in 40 layers; the 384 MTP experts
 # have other names and are not counted) and amd/Qwen3.8-Flash-Next-Quark-MXFP4 @ b71e28af (24,576 experts).
 V41_ORIGINAL, Q38_ORIGINAL = 144_388_915_200, 64_172_851_200
-# Whole built WEX4 + WNR4 containers (2026-11-21 to 2026-11-25, docs/BENCHMARKS.md):
+# Whole built WEX4 + WNR4 containers (2026-11-21 to 2026-11-26, docs/BENCHMARKS.md):
 # DeepSeek V4.1 REAP-192 WNR4-MX (7,680 records), Qwen3.8 MXFP4 WNR4-MX (24,576 records),
-# Qwen3.8 INT4-g64 WNR4-I4 (24,576 records, research/wnr4-i4-20261122),
+# Qwen3.8 INT4-g64 WNR4-I4 (24,576 records: G=4 production & G=32 archive, research/wnr4-i4-20261122),
 # and Qwen3.8 UD-IQ1_M WNR4-GG (24,576 records, research/wnr4-gg-20261121).
 V41_WNR4, Q38_WNR4 = 122_872_295_424, 56_847_855_616
-Q38_I4_RAW, Q38_WNR4_I4 = 67_995_492_352, 53_294_047_232
+Q38_I4_RAW, Q38_WNR4_I4_G4, Q38_WNR4_I4_G32 = 67_995_492_352, 53_961_261_056, 53_294_047_232
 Q38_GG_RAW, Q38_WNR4_GG = 34_862_370_816, 33_377_181_696
 
 
@@ -44,18 +44,19 @@ def chart_sizes(t):
            ('raw WEX4', 64_251_047_936, 'gray', '+78.2 MB index and 4 KiB alignment'),
            ('WNR3', 56_532_672_512, 'blue', None), ('WNR4-MX', Q38_WNR4, 'aqua', None)]
     q38i4 = [('raw int4-g64', Q38_I4_RAW, 'muted', 'uncompressed WEX4 RAW'),
-             ('WNR4-I4', Q38_WNR4_I4, 'aqua', None)]
+             ('WNR4-I4 (G=4 prod)', Q38_WNR4_I4_G4, 'aqua', '0.794 of original · 0.027 ms GPU'),
+             ('WNR4-I4 (G=32 archive)', Q38_WNR4_I4_G32, 'aqua', None)]
     q38gg = [('raw GGUF 2-bit', Q38_GG_RAW, 'muted', 'experts-only WEX4 RAW'),
              ('WNR4-GG', Q38_WNR4_GG, 'aqua', None)]
-    h = 8.1
+    h = 8.65
     fig = cs.figure(t, h)
     cs.header(fig, t, 'Same experts, fewer bytes',
               'Routed-expert bytes: as published on Hugging Face, then in the containers. Every record decodes back\n'
               'to the published bytes (WNR3-CZ / V4.1 WNR4-MX: to the same values; -0 becomes +0).', h)
-    ax1 = cs.axes(fig, t, [0.25, 0.650, 0.69, 0.168], 'DeepSeek V4.1 REAP-192 MXFP4 · 7,680 experts')
-    ax2 = cs.axes(fig, t, [0.25, 0.438, 0.69, 0.140], 'Qwen3.8-Flash-Next MXFP4 · 24,576 experts')
-    ax3 = cs.axes(fig, t, [0.25, 0.282, 0.69, 0.078], 'Qwen3.8-Flash-Next INT4-g64 · 24,576 experts')
-    ax4 = cs.axes(fig, t, [0.25, 0.132, 0.69, 0.078], 'Qwen3.8-Flash-Next UD-IQ1_M (2-bit GGUF) · 24,576 experts')
+    ax1 = cs.axes(fig, t, [0.26, 0.665, 0.68, 0.165], 'DeepSeek V4.1 REAP-192 MXFP4 · 7,680 experts')
+    ax2 = cs.axes(fig, t, [0.26, 0.455, 0.68, 0.140], 'Qwen3.8-Flash-Next MXFP4 · 24,576 experts')
+    ax3 = cs.axes(fig, t, [0.26, 0.275, 0.68, 0.110], 'Qwen3.8-Flash-Next INT4-g64 · 24,576 experts')
+    ax4 = cs.axes(fig, t, [0.26, 0.125, 0.68, 0.078], 'Qwen3.8-Flash-Next UD-IQ1_M (2-bit GGUF) · 24,576 experts')
     for ax, rows in ((ax1, v41), (ax2, q38), (ax3, q38i4), (ax4, q38gg)):
         orig = rows[0][1]
         cs.hbars(ax, [r[0] for r in rows], [r[1] / GB for r in rows], [t[r[2]] for r in rows], t, 240,
@@ -159,6 +160,9 @@ def chart_wnr4_decode(t):
     ]
     for name, gs, ms, col, mk in series:
         ax2.plot(gs, ms, marker=mk, linewidth=2.0, markersize=5.0, color=col, label=name, zorder=4)
+    ax2.annotate('0.027 ms\n(G=4 prod)', xy=(4, 0.027), xytext=(4.8, 0.50),
+                 fontsize=7.6, fontweight='bold', color=t['orange'],
+                 arrowprops={'arrowstyle': '->', 'color': t['orange'], 'lw': 1.1, 'shrinkA': 2, 'shrinkB': 4})
     ax2.set_xscale('log', base=2)
     ax2.set_xticks([4, 8, 16, 32, 64, 128, 256])
     ax2.set_xticklabels(['4', '8', '16', '32', '64', '128', '256'])

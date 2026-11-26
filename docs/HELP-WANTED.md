@@ -605,14 +605,16 @@ measured; it is not known to fail.
     (scales and weights apart); zstd with a trained dictionary or long-distance matching; byte-shuffle
     filters (Blosc2) and OpenZL.
 - **WNR4, what is left** (help wanted; several items need an NVIDIA GPU):
-  - **Today (2026-11-25):** [WNR4-SPEC](WNR4-SPEC.md) defines all four kinds (**MX**, **NV**, **GG**, **I4**)
+  - **Today (2026-11-26):** [WNR4-SPEC](WNR4-SPEC.md) defines all four kinds (**MX**, **NV**, **GG**, **I4**)
     under WEX4 codec 8 and blob kind 3. The code is in `wnr4/`: C99 CPU reference codecs (`wnr4.h`,
     `wnr4_gg.h`, `wnr4_i4.h`), CUDA decoders (`wnr4_cuda.cuh`, `wnr4_gg_cuda.cuh`, `wnr4_i4_cuda.cuh`),
     and the ABI-6 CUDA helper DLL. Whole-model WEX4+WNR4 containers have been built for DeepSeek V4.1
-    REAP-192 (MX, 122.87 GB), Qwen3.8 MXFP4 (MX, 56.85 GB), Qwen3.8 INT4-g64 (I4, 53.29 GB, verified
-    byte-exact) and Qwen3.8 UD-IQ1_M (GG, 33.38 GB, verified byte-exact). Engine-side CPU/CUDA decode for
-    kind MX (helper feature 64) is wired in the DeepSeek engine tree ([STATUS.md](../STATUS.md)); the
-    independent Go and Rust readers of `impl/` decode kinds GG and I4 (written from the specification).
+    REAP-192 (MX, 122.87 GB), Qwen3.8 MXFP4 (MX, 56.85 GB), Qwen3.8 INT4-g64 (I4: `G=4` production
+    53.96 GB and `G=32` archive 53.29 GB, both verified byte-exact) and Qwen3.8 UD-IQ1_M (GG, 33.38 GB,
+    verified byte-exact). Engine-side CPU/CUDA decode is wired in the maintainer's engine tree for kind MX
+    (DeepSeek, helper feature 64) and kind I4 (`qwen38`, helper feature 128, live-verified on RTX 5090;
+    [STATUS.md](../STATUS.md)); the independent Go and Rust readers of `impl/` decode kinds GG and I4
+    (written from the specification).
     The CPU tests (`bash scripts/build_wnr4_check.sh`, run in CI) include a mutation fuzz for each kind;
     the GPU code has run on one GPU only (an RTX 5090, `sm_120`).
   - **Still open:**
@@ -726,7 +728,7 @@ listed above as well.
   records is in (smaller files, slower CPU decode), and since 2026-11-21 nvCOMP and NVDEC against WNR3
   and WNR4 on one GPU (nvCOMP-ANS: larger files, much faster decode); whole checkpoints, other CPUs and
   other GPUs are open *(open to you, section 8)*.
-- **WNR4:** GPU-parallel successor of WNR3 (codec 8, blob kind 3: kinds MX, NV, GG and I4 implemented in `wnr4/` with CUDA helper ABI 6; Go and Rust decode GG and I4; DeepSeek engine tree decodes MX with helper feature 64). Still open: formal `required_features` bit and conformance vectors for codec 8, Go/Rust decoders for MX and NV, SIMD lane-parallel CPU decoder, Vulkan/non-NVIDIA decoder, and libFuzzer harnesses for `wnr4/` ([WNR4-SPEC.md](WNR4-SPEC.md) section 8);
+- **WNR4:** GPU-parallel successor of WNR3 (codec 8, blob kind 3: kinds MX, NV, GG and I4 implemented in `wnr4/` with CUDA helper ABI 6; Go and Rust decode GG and I4; maintainer's engine tree decodes MX with helper feature 64 and I4 with helper feature 128). Still open: formal `required_features` bit and conformance vectors for codec 8, Go/Rust decoders for MX and NV, SIMD lane-parallel CPU decoder, Vulkan/non-NVIDIA decoder, and libFuzzer harnesses for `wnr4/` ([WNR4-SPEC.md](WNR4-SPEC.md) section 8);
   the codec work left is open *(open to you, section 8)*.
 - **A first tagged release** of the specifications (WEX4 4.0, WNR3 v1) with the conformance vectors, so
   other implementations can name the version they pass.
