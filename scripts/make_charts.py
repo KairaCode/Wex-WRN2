@@ -126,10 +126,10 @@ def chart_wnr4_decode(t):
     # docs/BENCHMARKS.md, "WNR4 record codec: container sizes, ratio and decode speed":
     # RTX 5090 (CUDA 13.4, sm_120), records resident in VRAM, kernel only.
     peak = [
+        ('WNR4-I4 · Qwen3.8 (G=32)', 319.1, 'aqua'),
+        ('WNR4-I4 · Qwen3.8 (G=16)', 316.7, 'aqua'),
         ('WNR4-MX · Qwen3.8', 209.0, 'aqua'),
-        ('WNR4-I4 · Qwen3.8 (G=16)', 193.2, 'aqua'),
         ('WNR4-MX · V4.1', 188.0, 'aqua'),
-        ('WNR4-I4 · Qwen3.8 (G=32)', 156.9, 'aqua'),
         ('WNR4-NV · Qwen3.8', 149.0, 'aqua'),
         ('WNR4-GG · Qwen3.8 whole', 133.0, 'aqua'),
         ('WNR3 · V4.1 (ref)', 105.0, 'blue'),
@@ -141,27 +141,27 @@ def chart_wnr4_decode(t):
               '32-lane warp-parallel rANS on RTX 5090 (CUDA 13.4, sm_120, kernel only, records in VRAM).\n'
               'End-to-end PCIe 5 upload + decode from page-locked host memory: 48–60 GB/s.', h)
     ax1 = cs.axes(fig, t, [0.265, 0.185, 0.30, 0.53], 'Peak kernel decode (GB/s)')
-    cs.hbars(ax1, [r[0] for r in peak], [r[1] for r in peak], [t[r[2]] for r in peak], t, 285,
+    cs.hbars(ax1, [r[0] for r in peak], [r[1] for r in peak], [t[r[2]] for r in peak], t, 415,
              lambda v: f'{v:.0f}' if v == int(v) else f'{v:.1f}', height=0.58)
     ax1.tick_params(axis='y', labelsize=8.3)
-    ax1.set_xticks([0, 100, 200])
-    ax1.set_xticklabels(['0', '100', '200 GB/s'])
+    ax1.set_xticks([0, 100, 200, 300])
+    ax1.set_xticklabels(['0', '100', '200', '300 GB/s'])
 
     ax2 = cs.axes(fig, t, [0.645, 0.185, 0.30, 0.53], '1-record latency vs G (ms)')
     ax2.grid(axis='y', color=t['grid'], linewidth=0.8)
     ax2.grid(axis='x', color=t['grid'], linewidth=0.5, linestyle=':')
     series = [
+        ('I4 (Qwen3.8)', [8, 16, 32, 64], [0.050, 0.089, 0.167, 0.320], t['orange'], 's'),
         ('MX (Qwen3.8)', [32, 64, 128, 256], [0.19, 0.37, 0.75, 1.44], t['aqua'], 'o'),
-        ('I4 (Qwen3.8)', [16, 32, 64], [0.241, 0.474, 1.035], t['orange'], 's'),
         ('NV (Qwen3.8)', [32, 64, 128, 256], [0.25, 0.47, 0.90, 1.79], t['blue'], '^'),
         ('GG (whole)', [32, 128], [0.234, 0.872], t['muted'], 'D'),
     ]
     for name, gs, ms, col, mk in series:
         ax2.plot(gs, ms, marker=mk, linewidth=2.0, markersize=5.0, color=col, label=name, zorder=4)
     ax2.set_xscale('log', base=2)
-    ax2.set_xticks([16, 32, 64, 128, 256])
-    ax2.set_xticklabels(['16', '32', '64', '128', '256'])
-    ax2.set_xlim(12, 320)
+    ax2.set_xticks([8, 16, 32, 64, 128, 256])
+    ax2.set_xticklabels(['8', '16', '32', '64', '128', '256'])
+    ax2.set_xlim(6, 320)
     ax2.set_ylim(0, 2.0)
     ax2.set_yticks([0, 0.5, 1.0, 1.5, 2.0])
     ax2.set_yticklabels(['0', '0.5', '1.0', '1.5', '2.0 ms'])
@@ -172,7 +172,7 @@ def chart_wnr4_decode(t):
     for txt in leg.get_texts():
         txt.set_color(t['ink2'])
     cs.footer(fig, t, 'Sources: docs/BENCHMARKS.md ("WNR4 record codec"), research/wnr4-20261121 (MX/NV/V4.1, bench8/bench9),\n'
-              'research/wnr4-gg-20261121 (GG, batch 32), and research/wnr4-i4-20261122 (I4, batch 32). Kernel only; no RAM or drive.', h)
+              'research/wnr4-gg-20261121 (GG, batch 32), and 2026-11-26 I4 kernel (batch 32). Kernel only; no RAM or drive.', h)
     return fig
 
 
