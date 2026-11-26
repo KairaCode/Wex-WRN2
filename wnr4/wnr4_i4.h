@@ -368,6 +368,12 @@ static inline int wnr4_i4_parse(const unsigned char *rec, size_t total, const Wn
         prev = o;
     }
     if (prev != r->payload) return -1;
+    while (used < total && (used & 7u)) { if (rec[used++]) return -1; }
+    for (; used + 8u <= total; used += 8u) {
+        uint64_t z;
+        memcpy(&z, rec + used, 8u);
+        if (z) return -1;
+    }
     for (; used < total; used++) if (rec[used]) return -1;
     return 0;
 }

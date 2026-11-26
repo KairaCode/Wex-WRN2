@@ -96,7 +96,9 @@ static int wex_read_exact(WexFile file, void *buffer, size_t bytes, uint64_t off
     HANDLE event = CreateEventA(NULL, TRUE, FALSE, NULL);
     if (!event) return -1;
     while (bytes) {
-        DWORD chunk = bytes > 0x7ffff000U ? 0x7ffff000U : (DWORD)bytes;
+        /* Cap each OVERLAPPED ReadFile to 16 MiB (4 KiB-aligned for NO_BUFFERING): single >256 MiB
+         * reads on chipset NVMe drives can wedge Realtek 2.5GbE RTL8125B RX DMA on shared PCIe switches. */
+        DWORD chunk = bytes > (16u << 20) ? (16u << 20) : (DWORD)bytes;
         OVERLAPPED ov = {0};
         ov.Offset = (DWORD)offset;
         ov.OffsetHigh = (DWORD)(offset >> 32);
