@@ -46,6 +46,7 @@ static inline int wex4_store_open(FILE *f, uint64_t file_bytes, const unsigned c
     memset(s, 0, sizeof(*s));
     if (wex4_store_read(f, 0, page, sizeof(page))) return WEX4_E_HEADER;
     if ((status = wex4_parse_header(page, file_bytes, &h)) != 0) return status;
+    if (h.required & WEX4_REQ_WNR4_EXPERT) return WEX4_E_RECORD;
     if (expected_root && memcmp(expected_root, h.root, 32u)) return WEX4_E_HASH;
     slots = (uint64_t)h.layers * h.experts;
     if (!slots || slots * sizeof(WexEntry) > max_table_bytes) return WEX4_E_EXPERT;
@@ -64,6 +65,7 @@ static inline int wex4_store_open(FILE *f, uint64_t file_bytes, const unsigned c
         size_t slot;
         wex4_get_record(&v, r, &rec);
         if (!(rec.flags & WEX4_REC_EXPERT)) continue;
+        if (rec.codec != WEX4_CODEC_RAW && rec.codec != WEX4_CODEC_WNR3) { status = WEX4_E_RECORD; goto fail; }
         slot = (size_t)(rec.owner >> 16) * h.experts + (rec.owner & 0xffffu);
         if ((status = wex4_expert_entry(&v, r, &s->entries[slot])) != 0) goto fail;
         memcpy(s->hashes + slot * 32u, rec.sha, 32u);

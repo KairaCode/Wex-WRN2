@@ -342,8 +342,78 @@ static inline int wnr4_parse(const unsigned char *rec, size_t total, const Wnr4G
         prev = o;
     }
     if (prev != r->payload) return -1;
+    while (used < total && (used & 7u)) { if (rec[used++]) return -1; }
+    for (; used + 8u <= total; used += 8u) {
+        uint64_t z;
+        memcpy(&z, rec + used, 8u);
+        if (z) return -1;
+    }
     for (; used < total; used++) if (rec[used]) return -1;
     return 0;
+}
+
+/* Prepare a raw slab into the WNR4 coded domain (src and coded may alias):
+ * when cz != 0, maps every FP4 -0 nibble (8) to +0 (0); for MX (kind 0), applies the
+ * WNR3 section 4.2 ceil-form per matrix (gate: no block of max magnitude 5; even max-7
+ * blocks halved and scale incremented when scale <= 254). Returns the record flags
+ * (ceil_mask | (cz ? WNR4_FLAG_CZ : 0)). If cz_mapped is non-NULL, stores the number of
+ * -0 nibbles mapped to +0. */
+static inline uint32_t wnr4_prepare(const Wnr4Geo *g, const unsigned char *src, unsigned char *coded,
+                                    int cz, uint64_t *cz_mapped) {
+    uint32_t m, c, i, mask = 0;
+    uint64_t mapped = 0;
+    if (coded != src) memcpy(coded, src, (size_t)g->raw);
+    if (cz) {
+        for (m = 0; m < 3u; m++) {
+            unsigned char *w = coded + g->woff[m];
+            const size_t nb = (size_t)g->cells[m] * 16u;
+            size_t b;
+            for (b = 0; b < nb; b++) {
+                uint32_t lo = w[b] & 15u, hi = w[b] >> 4;
+                if (lo == 8u) { lo = 0; mapped++; }
+                if (hi == 8u) { hi = 0; mapped++; }
+                w[b] = (unsigned char)(lo | (hi << 4));
+            }
+        }
+    }
+    if (cz_mapped) *cz_mapped = mapped;
+    if (g->kind == WNR4_KIND_MX) {
+        static const unsigned char H[8] = {0, 0, 1, 0, 2, 3, 4, 5};
+        for (m = 0; m < 3u; m++) {
+            int ok = 1;
+            for (c = 0; c < g->cells[m] && ok; c++) {
+                const unsigned char *w = coded + g->woff[m] + (size_t)c * 16u;
+                uint32_t mx = 0;
+                for (i = 0; i < 16u; i++) {
+                    uint32_t a0 = w[i] & 7u, a1 = (w[i] >> 4) & 7u;
+                    if (a0 > mx) mx = a0;
+                    if (a1 > mx) mx = a1;
+                }
+                if (mx == 5u) ok = 0;
+            }
+            if (!ok) continue;
+            mask |= 1u << m;
+            for (c = 0; c < g->cells[m]; c++) {
+                unsigned char *w = coded + g->woff[m] + (size_t)c * 16u;
+                unsigned char *s = coded + g->soff[m] + c;
+                uint32_t mx = 0, odd = 0;
+                for (i = 0; i < 16u; i++) {
+                    uint32_t a0 = w[i] & 7u, a1 = (w[i] >> 4) & 7u;
+                    if (a0 > mx) mx = a0;
+                    if (a1 > mx) mx = a1;
+                    if (a0 == 1u || a0 == 3u || a1 == 1u || a1 == 3u) odd = 1;
+                }
+                if (mx == 7u && !odd && *s <= 254u) {
+                    for (i = 0; i < 16u; i++) {
+                        uint32_t lo = w[i] & 15u, hi = w[i] >> 4;
+                        w[i] = (unsigned char)(((lo & 8u) | H[lo & 7u]) | (((hi & 8u) | H[hi & 7u]) << 4));
+                    }
+                    (*s)++;
+                }
+            }
+        }
+    }
+    return mask | (cz ? WNR4_FLAG_CZ : 0u);
 }
 
 /* tile t -> matrix, first cell, cells of the tile */

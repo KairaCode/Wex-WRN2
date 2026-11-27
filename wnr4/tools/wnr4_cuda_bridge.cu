@@ -2,8 +2,9 @@
  * Copyright 2026 Ludovico Zanichelli */
 /* WNR4 CUDA helper (prototype, separate from c/tools/wex_cuda_bridge.cu): model registry and batched decode
  * straight into caller-owned device buffers. Per batch: one coalesced upload of contiguous valid records, one
- * kernel launch for every tile of every record (kind I4 uniform-G batches pass record metadata directly with no
- * per-tile job upload; kind GG adds one launch that copies verbatim slices), one copy of the error words back.
+ * kernel launch for every tile of every record (uniform-G MX/NV and I4 batches pass record metadata directly
+ * with no per-tile job upload; kind GG adds one launch that copies verbatim slices), one copy of the error
+ * words back.
  *   nvcc -O3 -std=c++17 -arch=sm_120 -shared wnr4/tools/wnr4_cuda_bridge.cu -o wnr4_cuda.dll
  * On Windows MSVC hosts, pass -Xcompiler=/O2,/EHsc so host C++ is optimised alongside device code.
  * geo = u32[13]: kind, scount[3], scols[3], soff[3], woff[3] (wnr4_geo).
@@ -59,8 +60,9 @@ template<typename T> bool grow_host(T *&p, size_t &cap, size_t n) {   /* page-lo
 }
 struct Slot {
     unsigned char *drec = nullptr; size_t drec_cap = 0;
-    Wnr4CudaJob *djob = nullptr, *hjob = nullptr; size_t djob_cap = 0, hjob_cap = 0;
+    Wnr4CudaJob *djob = nullptr, *hjob = nullptr; size_t djob_cap = 0, hjob_cap = 0;          /* kind MX/NV mixed-G */
     Wnr4CudaRec *dinfo = nullptr, *hinfo = nullptr; size_t dinfo_cap = 0, hinfo_cap = 0;
+    Wnr4CudaDirectRec *dmrec = nullptr, *hmrec = nullptr; size_t dmrec_cap = 0, hmrec_cap = 0; /* kind MX/NV >32 recs */
     uint32_t *derr = nullptr, *herr = nullptr; size_t derr_cap = 0, herr_cap = 0;
     Wnr4GgCudaJob *dgjob = nullptr, *hgjob = nullptr; size_t dgjob_cap = 0, hgjob_cap = 0;   /* kind GG */
     Wnr4GgCudaCopy *dcopy = nullptr, *hcopy = nullptr; size_t dcopy_cap = 0, hcopy_cap = 0;
@@ -70,6 +72,8 @@ struct Slot {
     cudaStream_t own = nullptr;   /* this slot's stream when the caller gives none: batches in flight overlap */
     std::vector<int> status;      /* host-side verdicts before the GPU (0 = queued) */
     std::vector<size_t> at;       /* reusable per-record device offset scratch */
+    std::vector<Wnr4CudaDirectRec> mrecs;
+    std::vector<Wnr4CudaJob> mby_m[3];
     std::vector<Wnr4I4CudaRec> irecs;
     std::vector<Wnr4I4CudaJob> iby_m[3], ijobs;
     bool busy = false, broken = false, err_dirty = true, has_gpu_work = false;
@@ -79,9 +83,11 @@ struct Slot {
         if (drec) cudaFree(drec);
         if (djob) cudaFree(djob);
         if (dinfo) cudaFree(dinfo);
+        if (dmrec) cudaFree(dmrec);
         if (derr) cudaFree(derr);
         if (hjob) cudaFreeHost(hjob);
         if (hinfo) cudaFreeHost(hinfo);
+        if (hmrec) cudaFreeHost(hmrec);
         if (herr) cudaFreeHost(herr);
         if (dgjob) cudaFree(dgjob);
         if (dcopy) cudaFree(dcopy);
@@ -106,6 +112,7 @@ struct Rings {   /* one ring per device used by this thread; released when the t
         Ring *r = new Ring(); r->device = device; rings.push_back(r); return r;
     }
     void release() {
+        if (rings.empty()) return;
         int cur = 0;
         if (cudaGetDevice(&cur) != cudaSuccess) { (void)cudaGetLastError(); cur = -1; }
         for (Ring *r : rings) {
@@ -277,33 +284,100 @@ WNR4_API int wnr4_cuda_batch_submit(int n, const uint32_t *geo, const unsigned c
     size_t bytes = 0;
     s.at.resize((size_t)n);
     for (int i = 0; i < n; i++) { s.at[(size_t)i] = bytes; bytes += (totals[i] + 255u) & ~(size_t)255u; }
-    if (!grow_dev(s.drec, s.drec_cap, bytes) || !grow_dev(s.dinfo, s.dinfo_cap, (size_t)n) ||
-        !grow_host(s.hinfo, s.hinfo_cap, (size_t)n) || !grow_derr(s, (size_t)n) ||
+    if (!grow_dev(s.drec, s.drec_cap, bytes) || !grow_derr(s, (size_t)n) ||
         !grow_host(s.herr, s.herr_cap, (size_t)n)) return WNR4_E_CUDA;
     s.status.assign((size_t)n, -1);
-    std::vector<Wnr4CudaJob> by_m[3];
-    bool any_valid = false;
+    s.mrecs.clear();
+    uint32_t batch_G = 0u, ntiles_rec = 0u, tile_base[4] = {};
+    bool uniform_G = true;
     for (int i = 0; i < n; i++) {
         unsigned char *ds[3] = {dst_scale[3 * i], dst_scale[3 * i + 1], dst_scale[3 * i + 2]};
         unsigned char *dw[3] = {dst_weight[3 * i], dst_weight[3 * i + 1], dst_weight[3 * i + 2]};
-        bool ok = records[i] && ds[0] && ds[1] && ds[2] && dw[0] && dw[1] && dw[2] &&
-                  !(((uintptr_t)dw[0] | (uintptr_t)dw[1] | (uintptr_t)dw[2]) & 15u);
-        std::vector<Wnr4CudaJob> mine[3];
-        if (ok && !wnr4_cuda_plan(&g, &m->host, records[i], totals[i], owners[i], s.drec + s.at[(size_t)i], (uint32_t)i,
-                                  ds, dw, &s.hinfo[i], mine)) {
-            for (int k = 0; k < 3; k++) by_m[k].insert(by_m[k].end(), mine[k].begin(), mine[k].end());
-            s.status[(size_t)i] = 0;
-            any_valid = true;
+        Wnr4Record r;
+        if (!records[i] || !ds[0] || !ds[1] || !ds[2] || !dw[0] || !dw[1] || !dw[2] ||
+            (((uintptr_t)dw[0] | (uintptr_t)dw[1] | (uintptr_t)dw[2]) & 15u) ||
+            m->host.kind != g.kind || wnr4_parse(records[i], totals[i], &g, &r) ||
+            r.model_id != m->host.id || r.owner != owners[i])
+            continue;
+        s.status[(size_t)i] = 0;
+        if (s.mrecs.empty()) {
+            batch_G = r.G;
+            ntiles_rec = r.ntiles;
+            for (uint32_t k = 0; k < 4u; k++) tile_base[k] = r.tile_base[k];
+        } else if (r.G != batch_G) {
+            uniform_G = false;
         }
+        Wnr4CudaDirectRec rec = {};
+        rec.rec = s.drec + s.at[(size_t)i];
+        for (uint32_t k = 0; k < 3u; k++) { rec.dst_s[k] = ds[k]; rec.dst_w[k] = dw[k]; }
+        rec.owner = r.owner;
+        rec.flags = r.flags;
+        rec.anchors = (uint32_t)r.anchor[0] | (uint32_t)r.anchor[1] << 8 | (uint32_t)r.anchor[2] << 16;
+        rec.rec_idx = (uint32_t)i;
+        rec.data_at = (uint32_t)(r.data - records[i]);
+        rec.payload = r.payload;
+        s.mrecs.push_back(rec);
     }
-    if (!any_valid) return close_slot(s, cudaSuccess, n, st, ticket, false);
-    const size_t njobs_cap = wnr4_cuda_jobs_cap(by_m, nullptr);
-    if (!grow_dev(s.djob, s.djob_cap, njobs_cap + 1u) || !grow_host(s.hjob, s.hjob_cap, njobs_cap + 1u)) return WNR4_E_CUDA;
+    const size_t nvalid = s.mrecs.size();
+    if (!nvalid) return close_slot(s, cudaSuccess, n, st, ticket, false);
+
+    if (uniform_G) {
+        const uint32_t W = wnr4_cuda_choose_warps((size_t)ntiles_rec * nvalid);
+        if (W != 1u && W != 2u && W != 4u && W != 8u && W != 16u)
+            return close_slot(s, cudaErrorInvalidValue, n, st, ticket, true);
+        Wnr4CudaBatchGeo bg = {};
+        bg.kind = g.kind; bg.G = batch_G; bg.nrecs = (uint32_t)nvalid;
+        for (uint32_t k = 0; k < 3u; k++) { bg.cells[k] = g.cells[k]; bg.scols[k] = g.scols[k]; }
+        for (uint32_t k = 0; k < 4u; k++) bg.tile_base[k] = tile_base[k];
+        uint32_t blk = 0u;
+        for (uint32_t k = 0; k < 3u; k++) {
+            bg.mat_blocks[k] = blk;
+            const uint32_t mt = (bg.tile_base[k + 1u] - bg.tile_base[k]) * (uint32_t)nvalid;
+            blk += (mt + W - 1u) / W;
+        }
+        bg.mat_blocks[3] = blk;
+        if (nvalid > WNR4_CUDA_INLINE_RECS) {
+            if (!grow_dev(s.dmrec, s.dmrec_cap, nvalid) || !grow_host(s.hmrec, s.hmrec_cap, nvalid))
+                return WNR4_E_CUDA;
+            memcpy(s.hmrec, s.mrecs.data(), sizeof(Wnr4CudaDirectRec) * nvalid);
+        }
+        cudaError_t e = copy_records_coalesced(s, n, records, totals, st);
+        if (e == cudaSuccess && nvalid > WNR4_CUDA_INLINE_RECS)
+            e = cudaMemcpyAsync(s.dmrec, s.hmrec, sizeof(Wnr4CudaDirectRec) * nvalid, cudaMemcpyHostToDevice, st);
+        if (e == cudaSuccess) e = clear_derr_if_dirty(s, st);
+        if (e == cudaSuccess) {
+            if (nvalid <= WNR4_CUDA_INLINE_RECS) {
+                Wnr4InlineRecs irecs = {};
+                memcpy(irecs.r, s.mrecs.data(), sizeof(Wnr4CudaDirectRec) * nvalid);
+                e = wnr4_cuda_launch_recs(m->tab, bg, irecs, W, s.derr, st);
+            } else {
+                e = wnr4_cuda_launch_recs_ptr(m->tab, bg, s.dmrec, W, s.derr, st);
+            }
+        }
+        return close_slot(s, e, n, st, ticket, true);
+    }
+
+    /* Mixed-G fallback: zero-copy job packing directly into pinned s.hjob + explicit-W launch. */
+    for (uint32_t k = 0; k < 3u; k++) s.mby_m[k].clear();
+    if (!grow_dev(s.dinfo, s.dinfo_cap, (size_t)n) || !grow_host(s.hinfo, s.hinfo_cap, (size_t)n))
+        return WNR4_E_CUDA;
+    for (int i = 0; i < n; i++) {
+        if (s.status[(size_t)i]) continue;
+        unsigned char *ds[3] = {dst_scale[3 * i], dst_scale[3 * i + 1], dst_scale[3 * i + 2]};
+        unsigned char *dw[3] = {dst_weight[3 * i], dst_weight[3 * i + 1], dst_weight[3 * i + 2]};
+        if (wnr4_cuda_plan(&g, &m->host, records[i], totals[i], owners[i], s.drec + s.at[(size_t)i], (uint32_t)i,
+                           ds, dw, &s.hinfo[i], s.mby_m))
+            s.status[(size_t)i] = -1;
+    }
+    const size_t njobs_cap = wnr4_cuda_jobs_cap(s.mby_m, nullptr);
+    if (!grow_dev(s.djob, s.djob_cap, njobs_cap + 1u) || !grow_host(s.hjob, s.hjob_cap, njobs_cap + 1u))
+        return WNR4_E_CUDA;
     size_t njobs = 0;
-    const uint32_t W = njobs_cap ? wnr4_cuda_jobs_into(by_m, s.hjob, &njobs) : 16u;
+    const uint32_t W = njobs_cap ? wnr4_cuda_jobs_into(s.mby_m, s.hjob, &njobs) : 16u;
     cudaError_t e = copy_records_coalesced(s, n, records, totals, st);
     if (e == cudaSuccess) e = cudaMemcpyAsync(s.dinfo, s.hinfo, sizeof(Wnr4CudaRec) * (size_t)n, cudaMemcpyHostToDevice, st);
-    if (e == cudaSuccess && njobs) e = cudaMemcpyAsync(s.djob, s.hjob, sizeof(Wnr4CudaJob) * njobs, cudaMemcpyHostToDevice, st);
+    if (e == cudaSuccess && njobs)
+        e = cudaMemcpyAsync(s.djob, s.hjob, sizeof(Wnr4CudaJob) * njobs, cudaMemcpyHostToDevice, st);
     if (e == cudaSuccess) e = clear_derr_if_dirty(s, st);
     if (e == cudaSuccess) e = wnr4_cuda_launch_w(m->tab, s.djob, (uint32_t)njobs, s.dinfo, s.derr, W, st);
     return close_slot(s, e, n, st, ticket, true);

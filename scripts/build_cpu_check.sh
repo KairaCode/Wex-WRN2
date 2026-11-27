@@ -61,13 +61,14 @@ tail -1 test_wex4_verify.log
 # section 6, step 3): exit 0 on a valid vector, 1 on the vectors damaged in a blob under a valid index
 V=$ROOT/wex4/vectors
 ./wex4_verify.exe "$V/valid/tiny2-cz-upgraded.wex4" 1 > wex4_verify_vectors.log
+./wex4_verify.exe "$V/valid/wnr4-mx-pb1.wex4" 1 >> wex4_verify_vectors.log
 for f in unused-blob-of-kind-16-bit-flip-hash-not-fixed non-zero-byte-in-the-padding-of-an-unused-blob-of-kind-17 \
          unused-wnm2-blob-with-a-table-that-is-not-increasing wnm2-blob-with-a-table-that-is-not-increasing \
-         wnm2-blob-id-differs-from-its-model; do
+         wnm2-blob-id-differs-from-its-model wnr4-wnm4-blob-id-mismatch wnr4-unused-corrupt-wnm4-blob; do
   s=0; ./wex4_verify.exe "$V/invalid/$f.wex4" 1 >> wex4_verify_vectors.log || s=$?
   [ "$s" = 1 ] || { cat wex4_verify_vectors.log; echo "wex4_verify: exit $s on invalid/$f.wex4, expected 1" >&2; exit 1; }
 done
-echo "wex4_verify: a valid vector passes, 5 vectors with a damaged blob (3 of them unused) refused"
+echo "wex4_verify: 2 valid vectors pass, 7 vectors with a damaged blob (4 of them unused) refused"
 # test_wex_fast_decode.c includes the engine's compat.h (for setenv and unsetenv on Windows), which is not in this
 # repository: a stand-in, found as "../compat.h" through -I stand-in/tests. On Windows _putenv_s(name, "") removes
 # the variable, as unsetenv does

@@ -34,11 +34,17 @@ const (
 	codecWNR3 = 5
 	codecWBP1 = 6
 
+	reqValueExact = 1
+	reqWNR4Expert = 4
+	requiredKnown = reqValueExact | reqWNR4Expert
+
 	flagValueExact = 1
 	flagExpert     = 2
 
 	blobKindWNM2 = 1
 	wnm2Bytes    = 59408
+
+	dtypeF8E4M3 = 5
 )
 
 // The reject classes. The names are the ones the manifest of wex4/vectors uses for the C reader
@@ -143,8 +149,8 @@ func ParseHeader(page []byte, realSize uint64) (*Header, *Error) {
 		Root:         root,
 	}
 	copy(h.IndexSHA[:], page[96:128])
-	if h.Required&^1 != 0 {
-		return nil, fail(EFeature, "unknown required feature bits 0x%x", h.Required&^1)
+	if h.Required&^requiredKnown != 0 {
+		return nil, fail(EFeature, "unknown required feature bits 0x%x", h.Required&^requiredKnown)
 	}
 	if h.FileBytes != realSize {
 		return nil, fail(EHeader, "file_bytes %d, the file has %d bytes", h.FileBytes, realSize)
@@ -261,13 +267,15 @@ func (x *Index) Metadata() []byte { return x.B[x.md:] }
 // bits per element of the dtype codes 1..22 (section 5.4); 0 = opaque
 var dtypeBits = [23]uint64{0, 8, 8, 8, 8, 8, 8, 16, 16, 16, 16, 32, 32, 32, 64, 64, 64, 64, 4, 6, 6, 8, 8}
 
-// Geo is the geometry of an expert record: rows and columns of the three scale matrices.
+// Geo is the geometry of an expert record: kind (0 = MXFP4, 1 = NVFP4) and rows/columns of the three scale matrices.
 type Geo struct {
+	Kind       uint32
 	Rows, Cols [3]uint64
 }
 
 func (g Geo) scales(m int) uint64  { return g.Rows[m] * g.Cols[m] }
-func (g Geo) nibbles(m int) uint64 { return g.Rows[m] * g.Cols[m] * 32 }
+func (g Geo) cells(m int) uint64   { return g.scales(m) / (1 + uint64(g.Kind)) }
+func (g Geo) nibbles(m int) uint64 { return g.cells(m) * 32 }
 
 func ceilDiv(a, b uint64) uint64 { return (a + b - 1) / b }
 
@@ -412,6 +420,9 @@ func (x *Index) checkBlobs() *Error {
 		if b.Kind == blobKindWNM2 && (b.Bytes != wnm2Bytes || b.ID == 0) {
 			return fail(EBlob, "blob %d: a WNM2 model of %d bytes with id 0x%08x", i, b.Bytes, b.ID)
 		}
+		if b.Kind == blobKindWNM4 && x.H.Required&reqWNR4Expert != 0 && (!wnm4SizeOK(b.Bytes) || b.ID == 0) {
+			return fail(EBlob, "blob %d: a WNM4 model of %d bytes with id 0x%08x", i, b.Bytes, b.ID)
+		}
 	}
 	return nil
 }
@@ -438,6 +449,7 @@ func (x *Index) checkRecordEntry(i uint32, r Record) *Error {
 		return fail(ERecord, "record %d: blob %d of %d", i, r.Blob, x.H.Blobs)
 	}
 	expert, exact := r.Flags&flagExpert != 0, r.Flags&flagValueExact != 0
+	wnr4ExpertOK := x.H.Required&reqWNR4Expert != 0
 	if r.Codec == codecRAW {
 		if uint64(r.Stored) != raw || r.Blob != 0 {
 			return fail(ERecord, "record %d: a RAW record of %d stored bytes (raw %d) with blob %d", i, r.Stored, raw, r.Blob)
@@ -461,12 +473,28 @@ func (x *Index) checkRecordEntry(i uint32, r Record) *Error {
 		if uint64(r.Stored) < align(16+6*ceilDiv(uint64(r.Decoded), 32768)) {
 			return fail(ERecord, "record %d: %d stored bytes cannot hold a WBP1 record of %d decoded bytes", i, r.Stored, r.Decoded)
 		}
+	case codecWNR4:
+		if exact && (x.H.Required&reqValueExact == 0 || !expert || !wnr4ExpertOK) {
+			return fail(ERecord, "record %d: VALUE_EXACT on codec 8, flags 0x%x, required 0x%x", i, r.Flags, x.H.Required)
+		}
+		if expert {
+			if !wnr4ExpertOK {
+				return fail(EExpert, "record %d: codec 8 on an EXPERT record without REQ_WNR4_EXPERT", i)
+			}
+			if r.Blob == 0 {
+				return fail(ERecord, "record %d: an EXPERT WNR4 record without a WNM4 model blob", i)
+			}
+			be := x.Blob(r.Blob - 1)
+			if be.Kind != blobKindWNM4 || (!wnm4KindSizeOK(mxnvKindMX, be.Bytes) && !wnm4KindSizeOK(mxnvKindNV, be.Bytes)) {
+				return fail(ERecord, "record %d: an EXPERT WNR4 record whose blob is not an MX/NV WNM4 model", i)
+			}
+		}
 	default:
 		if expert || exact {
 			return fail(ERecord, "record %d: codec %d on an EXPERT or VALUE_EXACT record", i, r.Codec)
 		}
 	}
-	if exact && (r.Codec != codecWNR3 || x.H.Required&1 == 0) {
+	if exact && (x.H.Required&reqValueExact == 0 || (r.Codec != codecWNR3 && !(r.Codec == codecWNR4 && expert && wnr4ExpertOK))) {
 		return fail(ERecord, "record %d: VALUE_EXACT on codec %d, required features 0x%x", i, r.Codec, x.H.Required)
 	}
 	if !expert && r.Owner != i {
@@ -475,24 +503,41 @@ func (x *Index) checkRecordEntry(i uint32, r Record) *Error {
 	return nil
 }
 
-// ExpertGeo checks the six tensors of an EXPERT record (section 5.5) and returns its geometry.
+// ExpertGeo checks the six tensors of an EXPERT record (MXFP4, or NVFP4 when REQ_WNR4_EXPERT is set) and returns its geometry.
 func (x *Index) ExpertGeo(i uint32, r Record) (Geo, *Error) {
 	var g Geo
 	if r.TensorCount != 6 {
 		return g, fail(EExpert, "record %d: an EXPERT record with %d tensors", i, r.TensorCount)
 	}
+	allowNV := x.H.Required&reqWNR4Expert != 0
 	for m := 0; m < 3; m++ {
 		s := x.Tensor(r.FirstTensor + uint32(m))
 		w := x.Tensor(r.FirstTensor + 3 + uint32(m))
 		if s.Rank != 2 || w.Rank != 2 || s.RecordCount != 1 || w.RecordCount != 1 {
 			return g, fail(EExpert, "record %d: matrix %d is not two rank-2 tensors inside the record", i, m)
 		}
-		if (s.Dtype != 2 && s.Dtype != 6) || (w.Dtype != 2 && w.Dtype != 3) {
-			return g, fail(EExpert, "record %d: matrix %d has scale dtype %d and weight dtype %d", i, m, s.Dtype, w.Dtype)
+		if w.Dtype != 2 && w.Dtype != 3 {
+			return g, fail(EExpert, "record %d: matrix %d has weight dtype %d", i, m, w.Dtype)
 		}
 		rows, cols := s.Shape[0], s.Shape[1]
-		if rows < 1 || rows > 65535 || cols < 1 || cols > 65535 || w.Shape[0] != rows || w.Shape[1] != 16*cols || 16*cols > 65535 {
+		if rows < 1 || rows > 65535 || cols < 1 || cols > 65535 || w.Shape[0] != rows || w.Shape[1] < 1 || w.Shape[1] > 65535 {
 			return g, fail(EExpert, "record %d: matrix %d has scales %d x %d and weights %d x %d", i, m, rows, cols, w.Shape[0], w.Shape[1])
+		}
+		var mk uint32
+		if (s.Dtype == 2 || s.Dtype == 6) && w.Shape[1] == 16*cols {
+			mk = mxnvKindMX
+		} else if allowNV && (s.Dtype == 2 || s.Dtype == dtypeF8E4M3) && w.Shape[1] == 8*cols {
+			mk = mxnvKindNV
+		} else {
+			return g, fail(EExpert, "record %d: matrix %d has scale dtype %d (%d x %d) and weights %d x %d", i, m, s.Dtype, rows, cols, w.Shape[0], w.Shape[1])
+		}
+		if m == 0 {
+			g.Kind = mk
+		} else if mk != g.Kind {
+			return g, fail(EExpert, "record %d: mixed MX/NV matrices", i)
+		}
+		if mk == mxnvKindNV && (rows*cols)%2 != 0 {
+			return g, fail(EExpert, "record %d: NVFP4 matrix %d has odd scale count %d", i, m, rows*cols)
 		}
 		g.Rows[m], g.Cols[m] = rows, cols
 	}
@@ -580,6 +625,9 @@ func (x *Index) checkRecords() *Error {
 				return e
 			}
 			if r.Codec == codecWNR3 {
+				if g.Kind != mxnvKindMX {
+					return fail(EExpert, "record %d: WNR3 requires MXFP4 expert geometry", i)
+				}
 				// the smallest record: a 32-byte header and 6 bytes per stream at the longest chunk, 16384.
 				// Class EXPERT, the manifest's class for this check (the vector of 2026-11-15); until then
 				// this reader said RECORD, and no vector had the case
@@ -589,6 +637,17 @@ func (x *Index) checkRecords() *Error {
 				}
 				if uint64(r.Stored) < align(32+6*streams) {
 					return fail(EExpert, "record %d: %d stored bytes cannot hold a WNR3 record of %d streams", i, r.Stored, streams)
+				}
+			} else if r.Codec == codecWNR4 {
+				if !wnm4KindSizeOK(g.Kind, x.Blob(r.Blob-1).Bytes) {
+					return fail(EExpert, "record %d: EXPERT WNR4 model size %d does not match kind %d", i, x.Blob(r.Blob-1).Bytes, g.Kind)
+				}
+				var ntiles uint64
+				for m := 0; m < 3; m++ {
+					ntiles += ceilDiv(g.cells(m), 131072)
+				}
+				if uint64(r.Stored) < align(68+132*ntiles) {
+					return fail(EExpert, "record %d: %d stored bytes cannot hold a WNR4 record of %d tiles", i, r.Stored, ntiles)
 				}
 			}
 			x.ExpertRecords++

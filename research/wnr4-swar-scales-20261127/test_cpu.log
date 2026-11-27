@@ -1,0 +1,18 @@
+unit find8 SWAR: 200 random CDFs x 16,384 slots = 3,276,800 exact
+unit s_rec16 edge cases (K=1, boundaries 0/255, negative parse): OK
+  sign-stream single-bit flips: 320/320 caught (hash=307, struct/pad=13, missed=0)
+  mx-normal-ceil fuzz: 2000 trials, 2000 refused, 0 no-op, 0 accepted (identical)
+mx-normal-ceil: mode=0 flags=0x0f anchors=(121,121,121) 6 G values OK
+  sign-stream single-bit flips: 352/352 caught (hash=321, struct/pad=31, missed=0)
+  mx-l39-e120-shifted fuzz: 2000 trials, 2000 refused, 0 no-op, 0 accepted (identical)
+mx-l39-e120-shifted: mode=1 flags=0x0f anchors=(122,123,122) 6 G values OK
+  sign-stream single-bit flips: 320/320 caught (hash=306, struct/pad=14, missed=0)
+  mx-all256-escapes fuzz: 2000 trials, 2000 refused, 0 no-op, 0 accepted (identical)
+mx-all256-escapes: mode=2 flags=0x08 anchors=(4,254,120) 6 G values OK
+  mx-constK1-sparseMAGT fuzz: 2000 trials, 2000 refused, 0 no-op, 0 accepted (identical)
+mx-constK1-sparseMAGT: mode=3 flags=0x08 anchors=(0,254,120) 6 G values OK
+  sign-stream single-bit flips: 32/32 caught (hash=23, struct/pad=9, missed=0)
+  mx-tiny-subwarp fuzz: 500 trials, 500 refused, 0 no-op, 0 accepted (identical)
+mx-tiny-subwarp: mode=2 flags=0x0b anchors=(0,0,0) 6 G values OK
+negative cases: OK
+ALL OK

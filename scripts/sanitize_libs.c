@@ -405,9 +405,19 @@ static unsigned char *expert_tables(const Tools *fast, const Tools *ref, const F
     free(b);
     return a;
 }
+static int has_nv_expert(const Opened *o) {
+    uint32_t r;
+    for (r = 0; r < o->h.records; r++) {
+        Wex4Record rec;
+        Wex4ExpertGeo g;
+        wex4_get_record(&o->v, r, &rec);
+        if ((rec.flags & WEX4_REC_EXPERT) && !wex4_expert_geometry(&o->v, r, &g) && g.kind != 0u) return 1;
+    }
+    return 0;
+}
 static int part_reader(const Tools *fast, const Tools *ref, const File *file) {
     Opened o;
-    unsigned char *a, *b, *table;
+    unsigned char *a, *b, *table = NULL;
     uint32_t r;
     open_file(file, &o);
     CHECK(!fast->validate(file->data, file->size, o.index, o.index_len) &&
@@ -424,7 +434,7 @@ static int part_reader(const Tools *fast, const Tools *ref, const File *file) {
         CHECK(!sa && !sb && !memcmp(a, b, rec.decoded), "%s record %u: status %d and %d, or other bytes", file->path,
               r, sa, sb);
     }
-    table = expert_tables(fast, ref, file, &o);
+    if (!has_nv_expert(&o)) table = expert_tables(fast, ref, file, &o);
     free(table); free(a); free(b);
     return (int)o.h.records;
 }
@@ -626,7 +636,7 @@ int main(int argc, char **argv) {
     Tools fast, ref;
     Nr3 nr3;
     Legacy wex1, wnr3;
-    File valid[64], wex4;
+    File valid[128], wex4;
     const File *corpus[3] = {NULL, NULL, NULL};
     Opened o4;
     Encode *w;
@@ -653,7 +663,7 @@ int main(int argc, char **argv) {
     part_sha(&fast, &ref);
     part_bp(&fast, &ref);
 
-    nvalid = part_vectors(&fast, &ref, argv[7], valid, 64, &rows);
+    nvalid = part_vectors(&fast, &ref, argv[7], valid, 128, &rows);
     snprintf(wex4.path, sizeof wex4.path, "%s", argv[6]);
     wex4.data = read_file(wex4.path, &wex4.size);
     CHECK(four_checks(&fast, &ref, wex4.data, wex4.size, wex4.path) == 0, "%s: refused", wex4.path);

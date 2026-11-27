@@ -4,7 +4,7 @@
 //! steps of validation (section 6), with the record codecs of section 7.
 
 use crate::sha256::{hex, sha256, Sha256};
-use crate::wnr4::{gg, i4};
+use crate::wnr4::{core as wnr4_core, gg, i4, mxnv};
 use crate::{wbp1, wnr3};
 use std::fs::File;
 use std::io::{Read, Seek, SeekFrom};
@@ -134,13 +134,18 @@ pub const DTYPE_NAMES: [&str; 22] = [
 
 const DT_U8: u8 = 2;
 const DT_I8: u8 = 3;
+const DT_F8_E4M3: u8 = 5;
 const DT_F8_E8M0: u8 = 6;
 const DT_F32: u8 = 13;
+
+pub const REQ_VALUE_EXACT: u64 = 1;
+pub const REQ_WNR4_EXPERT: u64 = 4;
+const REQUIRED_KNOWN: u64 = REQ_VALUE_EXACT | REQ_WNR4_EXPERT;
 
 pub const CODEC_RAW: u16 = 0;
 pub const CODEC_WNR3: u16 = 5;
 pub const CODEC_WBP1: u16 = 6;
-/// WNR4 records (draft, section 7.3), kinds GG and I4.
+/// WNR4 records (codec 8): kinds MX/NV (EXPERT, under REQ_WNR4_EXPERT) and GG/I4 (non-EXPERT).
 pub const CODEC_WNR4: u16 = 8;
 /// A WNM4 model blob (section 5.1).
 const BLOB_WNM4: u32 = 3;
@@ -196,7 +201,12 @@ pub fn parse_header(page: &[u8], real_size: u64) -> Res<Header> {
         root: sha_at(page, 4064),
     };
     ensure!(h.major == 4, Version, "version_major {} is not 4", h.major);
-    ensure!(h.required & !1 == 0, Feature, "unknown required feature bits {:#x}", h.required & !1);
+    ensure!(
+        h.required & !REQUIRED_KNOWN == 0,
+        Feature,
+        "unknown required feature bits {:#x}",
+        h.required & !REQUIRED_KNOWN
+    );
     ensure!(h.file_bytes == real_size, Header, "file_bytes {} but the file has {} bytes", h.file_bytes, real_size);
     ensure!(h.file_bytes % PAGE == 0, Header, "file_bytes {} is not a multiple of 4096", h.file_bytes);
     ensure!(h.blob_count <= 1 << 16, Header, "blob_count {} above 2^16", h.blob_count);
@@ -517,6 +527,7 @@ pub fn check_index(h: &Header, ix: &Index, raw_padded: &[u8]) -> Res<Checked> {
     }
 
     // 5.1, every blob entry
+    let wnr4_expert_ok = h.required & REQ_WNR4_EXPERT != 0;
     for i in 0..nb {
         let b = ix.blob(i);
         ensure!(b.bytes >= 1 && b.bytes <= GIB, Blob, "blob {}: {} bytes", i, b.bytes);
@@ -525,10 +536,20 @@ pub fn check_index(h: &Header, ix: &Index, raw_padded: &[u8]) -> Res<Checked> {
             ensure!(b.bytes == wnr3::WNM2_BYTES as u64, Blob, "blob {}: a WNM2 model of {} bytes", i, b.bytes);
             ensure!(b.id != 0, Blob, "blob {}: WNM2 model with id 0", i);
         }
+        if b.kind == BLOB_WNM4 && wnr4_expert_ok {
+            ensure!(
+                mxnv::is_valid_wnm4_size(b.bytes) && b.id != 0,
+                Blob,
+                "blob {}: a WNM4 model of {} bytes with id {:#010x}",
+                i,
+                b.bytes,
+                b.id
+            );
+        }
     }
 
     // 5.2 and 5.5, every record entry, in table order
-    let vexact_ok = h.required & 1 != 0;
+    let vexact_ok = h.required & REQ_VALUE_EXACT != 0;
     let mut next_tensor = 0usize;
     let mut split: Option<(usize, u32, u64)> = None; // tensor, parts still to come, bytes so far
     let mut prev_owner: Option<u32> = None;
@@ -593,7 +614,23 @@ pub fn check_index(h: &Header, ix: &Index, raw_padded: &[u8]) -> Res<Checked> {
                 min
             );
         }
-        ensure!(!vexact || (e.codec == CODEC_WNR3 && vexact_ok), Record, "record {}: VALUE_EXACT not allowed here", r);
+        ensure!(
+            !vexact || (vexact_ok && (e.codec == CODEC_WNR3 || (e.codec == CODEC_WNR4 && expert && wnr4_expert_ok))),
+            Record,
+            "record {}: VALUE_EXACT not allowed here",
+            r
+        );
+        if e.codec == CODEC_WNR4 && expert && wnr4_expert_ok {
+            ensure!(e.blob != 0, Record, "record {}: EXPERT WNR4 without a model blob", r);
+            let be = ix.blob(e.blob as usize - 1);
+            ensure!(
+                be.kind == BLOB_WNM4
+                    && (mxnv::is_kind_size(mxnv::KIND_MX, be.bytes) || mxnv::is_kind_size(mxnv::KIND_NV, be.bytes)),
+                Record,
+                "record {}: EXPERT WNR4 whose blob is not an MX/NV WNM4 model",
+                r
+            );
+        }
         if !expert {
             ensure!(e.owner as usize == r, Record, "record {}: owner {} is not its index", r, e.owner);
         }
@@ -699,7 +736,7 @@ pub fn check_index(h: &Header, ix: &Index, raw_padded: &[u8]) -> Res<Checked> {
         }
 
         if expert {
-            check_expert(ix, h, r, &e)?;
+            let g = check_expert(ix, h, r, &e)?;
             if let Some(p) = prev_owner {
                 ensure!(
                     e.owner > p,
@@ -713,6 +750,7 @@ pub fn check_index(h: &Header, ix: &Index, raw_padded: &[u8]) -> Res<Checked> {
             prev_owner = Some(e.owner);
             experts += 1;
             if e.codec == CODEC_WNR3 {
+                ensure!(g.kind == mxnv::KIND_MX, Expert, "record {}: WNR3 requires MXFP4 expert", r);
                 let streams: u64 =
                     expert_scales(ix, &e).iter().map(|&s| div_ceil(s, 16384) + div_ceil(32 * s, 16384)).sum();
                 let min = align(32 + 6 * streams);
@@ -722,6 +760,26 @@ pub fn check_index(h: &Header, ix: &Index, raw_padded: &[u8]) -> Res<Checked> {
                     e.stored as u64 >= min,
                     Expert,
                     "record {}: WNR3 of {} bytes below its minimum {}",
+                    r,
+                    e.stored,
+                    min
+                );
+            } else if e.codec == CODEC_WNR4 {
+                let be = ix.blob(e.blob as usize - 1);
+                ensure!(
+                    mxnv::is_kind_size(g.kind, be.bytes),
+                    Expert,
+                    "record {}: EXPERT WNR4 model size {} does not match kind {}",
+                    r,
+                    be.bytes,
+                    g.kind
+                );
+                let ntiles: u64 = g.cells.iter().map(|&c| div_ceil(c as u64, 131_072)).sum();
+                let min = align(68 + 132 * ntiles);
+                ensure!(
+                    e.stored as u64 >= min,
+                    Expert,
+                    "record {}: WNR4 of {} bytes below its minimum {}",
                     r,
                     e.stored,
                     min
@@ -765,23 +823,24 @@ pub fn check_index(h: &Header, ix: &Index, raw_padded: &[u8]) -> Res<Checked> {
     Ok(Checked { data_tensors, expert_records: experts })
 }
 
-/// 5.5 on an EXPERT record, and its owner inside the grid.
-fn check_expert(ix: &Index, h: &Header, r: usize, e: &Rec) -> Res<()> {
-    ensure!(e.codec == CODEC_RAW || e.codec == CODEC_WNR3, Expert, "record {}: EXPERT with codec {}", r, e.codec);
+/// 5.5 on an EXPERT record (MXFP4, or NVFP4 when REQ_WNR4_EXPERT is set), and its owner inside the grid.
+fn check_expert(ix: &Index, h: &Header, r: usize, e: &Rec) -> Res<mxnv::Geo> {
+    let allow_wnr4 = h.required & REQ_WNR4_EXPERT != 0;
+    ensure!(
+        e.codec == CODEC_RAW || e.codec == CODEC_WNR3 || (e.codec == CODEC_WNR4 && allow_wnr4),
+        Expert,
+        "record {}: EXPERT with codec {}",
+        r,
+        e.codec
+    );
     ensure!(e.tensor_count == 6, Expert, "record {}: an expert record with {} tensors", r, e.tensor_count);
     let f = e.first_tensor as usize;
     let dim_ok = |d: u64| (1..=65535).contains(&d);
+    let mut kind: Option<u8> = None;
     for m in 0..3 {
         let s = ix.tensor(f + m);
         let w = ix.tensor(f + 3 + m);
-        ensure!(
-            s.dtype == DT_U8 || s.dtype == DT_F8_E8M0,
-            Expert,
-            "record {}: scale tensor {} has dtype {}",
-            r,
-            f + m,
-            s.dtype
-        );
+        ensure!(s.rank == 2 && w.rank == 2, Expert, "record {}: matrix {} has ranks {} and {}", r, m, s.rank, w.rank);
         ensure!(
             w.dtype == DT_U8 || w.dtype == DT_I8,
             Expert,
@@ -790,20 +849,73 @@ fn check_expert(ix: &Index, h: &Header, r: usize, e: &Rec) -> Res<()> {
             f + 3 + m,
             w.dtype
         );
-        ensure!(s.rank == 2 && w.rank == 2, Expert, "record {}: matrix {} has ranks {} and {}", r, m, s.rank, w.rank);
         let (rows, cols) = (s.shape[0], s.shape[1]);
-        ensure!(dim_ok(rows) && dim_ok(cols), Expert, "record {}: scale shape [{}, {}]", r, rows, cols);
         ensure!(
-            w.shape[0] == rows && w.shape[1] == 16 * cols && dim_ok(w.shape[1]),
+            dim_ok(rows) && dim_ok(cols) && w.shape[0] == rows && dim_ok(w.shape[1]),
             Expert,
-            "record {}: weight shape [{}, {}] for scales [{}, {}]",
-            r,
-            w.shape[0],
-            w.shape[1],
-            rows,
-            cols
+            "record {}: shape",
+            r
         );
+        let mk = if (s.dtype == DT_U8 || s.dtype == DT_F8_E8M0) && w.shape[1] == 16 * cols {
+            mxnv::KIND_MX
+        } else if allow_wnr4 && (s.dtype == DT_U8 || s.dtype == DT_F8_E4M3) && w.shape[1] == 8 * cols {
+            mxnv::KIND_NV
+        } else {
+            return Err(Reject {
+                class: Class::Expert,
+                why: format!(
+                    "record {}: matrix {} has scales dtype {} [{}, {}] and weights [{}, {}]",
+                    r, m, s.dtype, rows, cols, w.shape[0], w.shape[1]
+                ),
+            });
+        };
+        if let Some(prev) = kind {
+            ensure!(mk == prev, Expert, "record {}: mixed MX/NV matrices", r);
+        } else {
+            kind = Some(mk);
+        }
     }
+    let kind = kind.unwrap();
+    let spc = if kind == mxnv::KIND_NV { 2u64 } else { 1u64 };
+    let wmult = if kind == mxnv::KIND_NV { 8u64 } else { 16u64 };
+    let mut g = mxnv::Geo {
+        kind,
+        rows: [0; 3],
+        scols: [0; 3],
+        scount: [0; 3],
+        soff: [0; 3],
+        woff: [0; 3],
+        cells: [0; 3],
+        raw: 0,
+    };
+    let mut cursor = 0u64;
+    for m in 0..3 {
+        let s = ix.tensor(f + m);
+        let cnt = s.shape[0] * s.shape[1];
+        ensure!(
+            s.offset == cursor && cnt % spc == 0 && cnt / spc < (1 << 27),
+            Expert,
+            "record {}: matrix {} scale layout (count {}, spc {})",
+            r,
+            m,
+            cnt,
+            spc
+        );
+        g.rows[m] = s.shape[0] as u32;
+        g.scols[m] = s.shape[1] as u32;
+        g.scount[m] = cnt as u32;
+        g.soff[m] = cursor as usize;
+        g.cells[m] = (cnt / spc) as u32;
+        cursor += cnt;
+    }
+    for m in 0..3 {
+        let w = ix.tensor(f + 3 + m);
+        ensure!(w.offset == cursor, Expert, "record {}: matrix {} weight offset {}", r, m, w.offset);
+        g.woff[m] = cursor as usize;
+        cursor += g.scount[m] as u64 * wmult;
+    }
+    ensure!(cursor == e.decoded as u64 && cursor <= u32::MAX as u64, Expert, "record {}: slab size {}", r, cursor);
+    g.raw = cursor as usize;
     let (layer, expert) = (e.owner >> 16, e.owner & 0xffff);
     ensure!(
         layer < h.num_layers && expert < h.num_experts,
@@ -815,7 +927,7 @@ fn check_expert(ix: &Index, h: &Header, r: usize, e: &Rec) -> Res<()> {
         h.num_layers,
         h.num_experts
     );
-    Ok(())
+    Ok(g)
 }
 
 /// Section 3: the header page, the blobs in table order, the records in table order and the index
@@ -906,11 +1018,11 @@ pub fn check<R: Read + Seek>(f: &mut R, real: u64, opt: &Options) -> Res<Report>
     let checked = check_index(&h, &ix, &raw)?;
     drop(raw);
 
-    // step 3: blobs (SHA-256, zero padding, the WNM2 model and its id), then records. The bytes of a WNM4
-    // blob (kind 3) that a codec-8 record names are kept: it is opened as a model when such a record is
-    // first decoded (sections 5.1 and 7.3); any other kind-3 blob gets the SHA-256 and padding checks only
+    // step 3: blobs (SHA-256, zero padding, the WNM2 model and its id; under REQ_WNR4_EXPERT also every
+    // WNM4 blob, used or unused), then records.
     let mut models: Vec<Option<wnr3::Model>> = Vec::with_capacity(ix.nb);
     let mut wnr4 = Wnr4Blobs::new(&ix);
+    let strict_wnm4 = h.required & REQ_WNR4_EXPERT != 0;
     for i in 0..ix.nb {
         let b = ix.blob(i);
         let bytes = read_at(f, b.offset, align(b.bytes))?;
@@ -932,7 +1044,54 @@ pub fn check<R: Read + Seek>(f: &mut R, real: u64, opt: &Options) -> Res<Report>
         } else {
             models.push(None);
         }
-        if wnr4.named[i] {
+        if b.kind == BLOB_WNM4 && strict_wnm4 {
+            ensure!(n >= 32, Blob, "blob {}: WNM4 shorter than header", i);
+            let kind = wnr4_core::le32(&bytes[..n], 8);
+            match kind {
+                0 | 1 => {
+                    let m = mxnv::model_open(&bytes[..n])
+                        .map_err(|e| Reject { class: Class::Blob, why: format!("blob {}: {}", i, e) })?;
+                    ensure!(
+                        m.id == b.id,
+                        Blob,
+                        "blob {}: the entry says id {:#010x}, the WNM4 model's FNV-1a is {:#010x}",
+                        i,
+                        b.id,
+                        m.id
+                    );
+                    wnr4.mxnv[i] = Some(m);
+                }
+                2 => {
+                    let m = gg::model_open(&bytes[..n])
+                        .map_err(|e| Reject { class: Class::Blob, why: format!("blob {}: {}", i, e) })?;
+                    ensure!(
+                        m.id == b.id,
+                        Blob,
+                        "blob {}: the entry says id {:#010x}, the WNM4 model's FNV-1a is {:#010x}",
+                        i,
+                        b.id,
+                        m.id
+                    );
+                    wnr4.gg[i] = Some(Ok(m));
+                }
+                3 => {
+                    let m = i4::model_open(&bytes[..n])
+                        .map_err(|e| Reject { class: Class::Blob, why: format!("blob {}: {}", i, e) })?;
+                    ensure!(
+                        m.id == b.id,
+                        Blob,
+                        "blob {}: the entry says id {:#010x}, the WNM4 model's FNV-1a is {:#010x}",
+                        i,
+                        b.id,
+                        m.id
+                    );
+                    wnr4.i4[i] = Some(Ok(m));
+                }
+                _ => {
+                    return Err(Reject { class: Class::Blob, why: format!("blob {}: unknown WNM4 kind {}", i, kind) });
+                }
+            }
+        } else if wnr4.named[i] {
             wnr4.bytes[i] = Some(bytes[..n].to_vec());
         }
     }
@@ -952,7 +1111,7 @@ pub fn check<R: Read + Seek>(f: &mut R, real: u64, opt: &Options) -> Res<Report>
             digest = None;
             continue;
         }
-        let out = match decode_record(&ix, r, &e, &stored, &models, &mut wnr4) {
+        let out = match decode_record(&h, &ix, r, &e, &stored, &models, &mut wnr4) {
             Ok(Decoded::Out(out)) => out,
             Ok(Decoded::Undecodable(reason)) => {
                 undecodable.push(r);
@@ -1062,6 +1221,7 @@ enum Decoded {
 
 /// Decodes one record into scratch; an Err refuses the file.
 fn decode_record(
+    h: &Header,
     ix: &Index,
     r: usize,
     e: &Rec,
@@ -1080,6 +1240,15 @@ fn decode_record(
         CODEC_WBP1 => {
             let mut out = vec![0u8; n];
             wbp1::decode(stored, r as u32, e.decoded, &mut out)?;
+            Ok(Decoded::Out(out))
+        }
+        CODEC_WNR4 if e.flags & FLAG_EXPERT != 0 => {
+            let geo = check_expert(ix, h, r, e).map_err(|rej| rej.why)?;
+            let model = wnr4.mxnv[e.blob as usize - 1]
+                .as_ref()
+                .ok_or_else(|| "the record's blob is not an MX/NV WNM4 model".to_string())?;
+            let mut out = vec![0u8; n];
+            mxnv::decode(stored, model, e.owner, e.flags & FLAG_VALUE_EXACT != 0, &geo, &mut out)?;
             Ok(Decoded::Out(out))
         }
         CODEC_WNR4 => Ok(match decode_wnr4(ix, e, stored, wnr4) {
@@ -1116,6 +1285,7 @@ fn decode_record(
 struct Wnr4Blobs {
     named: Vec<bool>,
     bytes: Vec<Option<Vec<u8>>>,
+    mxnv: Vec<Option<mxnv::Model>>,
     gg: Vec<Option<Result<gg::Model, String>>>,
     i4: Vec<Option<Result<i4::Model, String>>>,
 }
@@ -1133,6 +1303,7 @@ impl Wnr4Blobs {
         Wnr4Blobs {
             named,
             bytes: vec![None; nb],
+            mxnv: (0..nb).map(|_| None).collect(),
             gg: (0..nb).map(|_| None).collect(),
             i4: (0..nb).map(|_| None).collect(),
         }
@@ -1495,5 +1666,199 @@ mod wnr4_container_tests {
             }
             assert!(accepted > 0 || !gg, "{}: no verbatim flip accepted", name);
         }
+    }
+
+    /// Dynamic in-memory NVFP4 EXPERT WEX4 container (no 6.5 MB file committed): verifies codec-8 NVFP4
+    /// under `REQ_WNR4_EXPERT` through `check()`, and checks hard-reject classes on NV mutations.
+    #[test]
+    fn wnr4_nv_container_dynamic() {
+        use crate::wnr4::testenc;
+
+        let shapes = [(6u32, 36u32), (6, 36), (4, 12)];
+        let wctx = 1053usize;
+        let sctx = 4160usize;
+        let mut sk16 = [1u64; 16];
+        sk16[0] = 4000;
+        let mut sk256 = [1u64; 256];
+        sk256[0] = 8000;
+        let sk16_cdf = testenc::cdf_from(&sk16);
+        let sk256_cdf = testenc::cdf_from(&sk256);
+        let sk16_b = testenc::table_bytes(&sk16_cdf);
+        let sk256_b = testenc::table_bytes(&sk256_cdf);
+        let mut blob = Vec::with_capacity(mxnv::MODEL_NV_PB1);
+        for w in [wnr4_core::WNM4_MAGIC, 1, 1, wnr4_core::PREC, wctx as u32, sctx as u32, 1, 0] {
+            blob.extend_from_slice(&w.to_le_bytes());
+        }
+        for _ in 0..3 * wctx {
+            blob.extend_from_slice(&sk16_b);
+        }
+        for _ in 0..3 * sctx {
+            blob.extend_from_slice(&sk256_b);
+        }
+        let model = mxnv::model_open(&blob).unwrap();
+
+        let mut geo = mxnv::Geo {
+            kind: mxnv::KIND_NV,
+            rows: [0; 3],
+            scols: [0; 3],
+            scount: [0; 3],
+            soff: [0; 3],
+            woff: [0; 3],
+            cells: [0; 3],
+            raw: 0,
+        };
+        let mut at = 0usize;
+        for m in 0..3 {
+            geo.rows[m] = shapes[m].0;
+            geo.scols[m] = shapes[m].1;
+            geo.scount[m] = shapes[m].0 * shapes[m].1;
+            geo.cells[m] = geo.scount[m] / 2;
+            geo.soff[m] = at;
+            at += geo.scount[m] as usize;
+        }
+        for m in 0..3 {
+            geo.woff[m] = at;
+            at += geo.scount[m] as usize * 8;
+        }
+        geo.raw = at;
+
+        let flags = mxnv::FLAG_CZ;
+        let g_val = 32u32;
+        let w4 = mxnv::KIND_NV as u32 | (flags as u32) << 8 | g_val << 16;
+        let counts = [geo.cells[0] as u64, geo.cells[1] as u64, geo.cells[2] as u64];
+        let spans = wnr4_core::tile_spans(&counts, g_val);
+        let mut tiles = Vec::new();
+        for (t, &(_m, _c0_u64, n_u32)) in spans.iter().enumerate() {
+            let n = n_u32 as usize;
+            let ns = n * 2;
+            let mut hash: Vec<crate::hash::Murmur> =
+                (0..wnr4_core::LANES).map(|l| wnr4_core::lane_hash(model.id, 0, t as u32, l as u32, w4, 0)).collect();
+            let mut ev: Vec<(usize, &[u16], usize)> = Vec::new();
+            for k in 0..(ns + 31) / 32 {
+                for l in 0..32 {
+                    if 32 * k + l >= ns {
+                        break;
+                    }
+                    ev.push((l, &sk256_cdf, 0));
+                    hash[l].word(0);
+                }
+            }
+            let mut tails = [None; 32];
+            for j in 0..(n + 31) / 32 {
+                let act = (n - 32 * j).min(32);
+                for k in 0..32 {
+                    for l in 0..act {
+                        if k >= 28 && wnr4_core::is_tail_item(n, 32 * j + l) {
+                            continue;
+                        }
+                        ev.push((l, &sk16_cdf, 0));
+                    }
+                }
+                for l in 0..act {
+                    if wnr4_core::is_tail_item(n, 32 * j + l) {
+                        tails[l] = Some(0);
+                    }
+                    for _ in 0..4 {
+                        hash[l].word(0);
+                    }
+                }
+            }
+            let mut h_xor = 0u32;
+            for mh in hash {
+                h_xor ^= mh.finish();
+            }
+            tiles.push(testenc::encode_tile(&ev, &testenc::end_states(h_xor, &tails)));
+        }
+        let mut rhdr = [0u8; wnr4_core::HEADER_BYTES];
+        rhdr[0..4].copy_from_slice(&wnr4_core::WNR4_MAGIC.to_le_bytes());
+        rhdr[4..8].copy_from_slice(&model.id.to_le_bytes());
+        rhdr[12] = mxnv::KIND_NV;
+        rhdr[13] = flags;
+        rhdr[14..16].copy_from_slice(&(g_val as u16).to_le_bytes());
+        let rec0 = testenc::record(&rhdr, &[], &tiles);
+        assert!(rec0.len() < align(geo.raw as u64) as usize);
+
+        let tnames = ["e0.s0", "e0.s1", "e0.s2", "e0.w0", "e0.w1", "e0.w2"];
+        let name_bytes: usize = tnames.iter().map(|s| s.len()).sum();
+        let idx_bytes = 64 + 72 + 6 * 100 + name_bytes;
+        let idx_span = align(idx_bytes as u64) as usize;
+        let blob_off = PAGE as usize + idx_span;
+        let blob_span = align(blob.len() as u64) as usize;
+        let rec_off = blob_off + blob_span;
+        let file_bytes = rec_off + rec0.len();
+        let mut f = vec![0u8; file_bytes];
+        f[blob_off..blob_off + blob.len()].copy_from_slice(&blob);
+        f[rec_off..rec_off + rec0.len()].copy_from_slice(&rec0);
+        let mut p = PAGE as usize;
+        f[p..p + 4].copy_from_slice(&BLOB_WNM4.to_le_bytes());
+        f[p + 4..p + 8].copy_from_slice(&model.id.to_le_bytes());
+        f[p + 8..p + 16].copy_from_slice(&(blob_off as u64).to_le_bytes());
+        f[p + 16..p + 24].copy_from_slice(&(blob.len() as u64).to_le_bytes());
+        f[p + 24..p + 56].copy_from_slice(&sha256(&blob));
+        p += 64;
+        f[p..p + 8].copy_from_slice(&(rec_off as u64).to_le_bytes());
+        f[p + 8..p + 12].copy_from_slice(&(rec0.len() as u32).to_le_bytes());
+        f[p + 12..p + 16].copy_from_slice(&(geo.raw as u32).to_le_bytes());
+        f[p + 16..p + 18].copy_from_slice(&CODEC_WNR4.to_le_bytes());
+        f[p + 18..p + 20].copy_from_slice(&(FLAG_EXPERT | FLAG_VALUE_EXACT).to_le_bytes());
+        f[p + 20..p + 24].copy_from_slice(&1u32.to_le_bytes());
+        f[p + 32..p + 36].copy_from_slice(&6u32.to_le_bytes());
+        f[p + 36..p + 68].copy_from_slice(&sha256(&rec0));
+        p += 72;
+        let mut noff = 0u32;
+        for m in 0..6usize {
+            let (dt, r, c, off) = if m < 3 {
+                (DT_F8_E4M3, shapes[m].0 as u64, shapes[m].1 as u64, geo.soff[m] as u64)
+            } else {
+                (DT_U8, shapes[m - 3].0 as u64, shapes[m - 3].1 as u64 * 8, geo.woff[m - 3] as u64)
+            };
+            f[p..p + 4].copy_from_slice(&noff.to_le_bytes());
+            f[p + 4..p + 6].copy_from_slice(&(tnames[m].len() as u16).to_le_bytes());
+            f[p + 6] = dt;
+            f[p + 7] = 2;
+            f[p + 8..p + 16].copy_from_slice(&r.to_le_bytes());
+            f[p + 16..p + 24].copy_from_slice(&c.to_le_bytes());
+            f[p + 76..p + 80].copy_from_slice(&1u32.to_le_bytes());
+            f[p + 80..p + 88].copy_from_slice(&off.to_le_bytes());
+            f[p + 88..p + 96].copy_from_slice(&(r * c).to_le_bytes());
+            noff += tnames[m].len() as u32;
+            p += 96;
+        }
+        for m in 0..6u32 {
+            f[p..p + 4].copy_from_slice(&m.to_le_bytes());
+            p += 4;
+        }
+        for s in tnames {
+            f[p..p + s.len()].copy_from_slice(s.as_bytes());
+            p += s.len();
+        }
+        assert_eq!(p - PAGE as usize, idx_bytes);
+        f[0..4].copy_from_slice(&MAGIC.to_le_bytes());
+        f[4..6].copy_from_slice(&4u16.to_le_bytes());
+        f[8..16].copy_from_slice(&(REQ_VALUE_EXACT | REQ_WNR4_EXPERT).to_le_bytes());
+        f[24..32].copy_from_slice(&(file_bytes as u64).to_le_bytes());
+        f[32..40].copy_from_slice(&PAGE.to_le_bytes());
+        f[40..48].copy_from_slice(&(idx_bytes as u64).to_le_bytes());
+        f[48..52].copy_from_slice(&1u32.to_le_bytes());
+        f[52..56].copy_from_slice(&1u32.to_le_bytes());
+        f[56..60].copy_from_slice(&6u32.to_le_bytes());
+        f[60..64].copy_from_slice(&1u32.to_le_bytes());
+        f[64..68].copy_from_slice(&1u32.to_le_bytes());
+        f[68..72].copy_from_slice(&(geo.raw as u32).to_le_bytes());
+        f[72..80].copy_from_slice(&(name_bytes as u64).to_le_bytes());
+        f[88..96].copy_from_slice(&(geo.raw as u64).to_le_bytes());
+        rehash(&mut f, None, None);
+
+        let rep = check_bytes(&f).expect("valid dynamic NV container must pass");
+        assert!(rep.undecodable.is_empty() && rep.decoded == 1 && rep.digest.is_some());
+        let mut bad = f.clone();
+        bad[rec_off + 200] ^= 1;
+        rehash(&mut bad, Some(0), None);
+        assert_eq!(check_bytes(&bad).err().expect("expected Data error").class, Class::Data);
+        let mut bad_req = f.clone();
+        bad_req[8..16].copy_from_slice(&0u64.to_le_bytes());
+        bad_req[PAGE as usize + 64 + 18..PAGE as usize + 64 + 20].copy_from_slice(&FLAG_EXPERT.to_le_bytes());
+        rehash(&mut bad_req, None, None);
+        assert_eq!(check_bytes(&bad_req).err().expect("expected Expert error").class, Class::Expert);
     }
 }

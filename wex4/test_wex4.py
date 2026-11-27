@@ -1208,7 +1208,8 @@ def test_vectors(where=VECTORS):
         assert verdict == 'reject' or data[4064:4096].hex() == root == hashlib.sha256(data[:4064]).hexdigest(), path
         assert content == (digest.hex() if verdict == 'accept' else '-'), f'{path}: content digest'
         assert verdict == 'reject' or digest == python[1] == CREF.check(data, 3, True)[1], f'{path}: content digest'
-        if verdict == 'accept' and wex4.CODEC_WNR3 not in [rec[3] for rec in wex4.Reader(io.BytesIO(data)).records]:
+        if verdict == 'accept' and not any(rec[3] in (wex4.CODEC_WNR3, wex4.CODEC_WNR4)
+                                           for rec in wex4.Reader(io.BytesIO(data)).records):
             assert wex4.check(data, True) == digest, f'{path}: content digest of the Python decoders'
             pure += 1
         if source != '-':   # the in-place upgrade of the source gives this file byte for byte
@@ -1293,6 +1294,56 @@ def test_fuzz(corpora):
           f'verdicts), 0 silent corruptions; {time.time() - t0:.0f} s')
 
 
+def test_wnr4_dynamic():
+    """Dynamic NVFP4 (kind 1) container tests through C (fast & ref) and Python without committing a 6.5 MB blob."""
+    import wnr4mx
+    import test_wnr4mx as tmx
+    dll = os.path.join(WORK, 'wnr4_tools.dll')
+    if not os.path.exists(dll):
+        cc = os.environ.get('CC', 'gcc')
+        flags = ['-static', '-shared'] if os.name == 'nt' else ['-shared', '-fPIC']
+        env = dict(os.environ, TMP=WORK, TEMP=WORK)
+        subprocess.run([cc, '-O2', *os.environ.get('WEX_OPENMP', '-fopenmp').split(),
+                        *os.environ.get('WEX_CFLAGS', '').split(), *flags, '-o', dll,
+                        os.path.join(HERE, '..', 'wnr4', 'tools', 'wnr4_tools.c')], check=True, env=env)
+    mlib = wnr4mx.Lib(dll)
+    null = open(os.devnull, 'w')
+    shapes = ((20, 36), (20, 36), (12, 24))
+    raw_p = os.path.join(WORK, 'nv_dyn.raw.wex4')
+    mdl_p = os.path.join(WORK, 'nv_dyn.wnm4')
+    out_p = os.path.join(WORK, 'nv_dyn.wex4')
+    out_cz = os.path.join(WORK, 'nv_dyn_cz.wex4')
+    tmx.build_raw_container(raw_p, 1, shapes, seed=20261140)
+    wnr4mx.train(raw_p, mdl_p, mlib, pb=1, cz=False, log=null)
+    wnr4mx.pack(raw_p, out_p, mdl_p, mlib, G=32, cz=False, log=null)
+    wnr4mx.pack(raw_p, out_cz, mdl_p, mlib, G=32, cz=True, log=null)
+    raw_b, nv_b, nv_cz_b = [open(p, 'rb').read() for p in (raw_p, out_p, out_cz)]
+    for label, data in (('NV RAW', raw_b), ('NV codec 8 plain', nv_b), ('NV codec 8 CZ', nv_cz_b)):
+        sf, df = C.check(data, 3, True)
+        sr, dr = CREF.check(data, 3, True)
+        sp, dp = py_verdict(data)
+        assert sf == sr == sp == 0 and df == dr == dp, f'{label}: {sf} {sr} {sp}'
+    # plain NV codec-8 container has the exact same content digest as its RAW source; CZ differs on -0 nibbles
+    assert C.check(nv_b, 3, True)[1] == C.check(raw_b, 3, True)[1]
+    assert C.check(nv_cz_b, 3, True)[1] != C.check(raw_b, 3, True)[1]
+    # stripping REQ_WNR4_EXPERT from NV RAW or NV codec 8 must fail with WEX4_E_EXPERT (-13)
+    for data in (raw_b, nv_b):
+        bad = bytearray(data)
+        struct.pack_into('<Q', bad, 8, 0)
+        bad = bytes(reseal(bad))
+        assert C.check(bad, 3, True)[0] == CREF.check(bad, 3, True)[0] == -13 and py_verdict(bad)[0] != 0
+    # flipping a bit in NV codec 8 record with resealed SHA-256 fails with WEX4_E_DATA (-14)
+    rd = wex4.Reader(io.BytesIO(nv_b), C)
+    r0_off, r0_len = rd.records[0][:2]
+    r0_ent = rd.index_offset + len(rd.blobs) * 64
+    bad = bytearray(nv_b)
+    bad[r0_off + 200] ^= 1
+    bad[r0_ent + 36:r0_ent + 68] = wex4.sha256(bad[r0_off:r0_off + r0_len])
+    bad = bytes(reseal(bad))
+    assert C.check(bad, 3, True)[0] == CREF.check(bad, 3, True)[0] == -14 and py_verdict(bad)[0] != 0
+    print('WNR4 NVFP4 dynamic: RAW, codec 8 plain (digest == RAW), codec 8 CZ, and refusals passed in C (fast/ref) and Python')
+
+
 def main():
     load_wex1_slabs()
     test_sha()
@@ -1304,6 +1355,7 @@ def main():
     test_wnr3_exact()
     test_profiles()
     test_store()
+    test_wnr4_dynamic()
     hostile = test_hostile(generic)
     expert_attacks = test_hostile_experts(upgraded)
     assert not set(expert_attacks) & set(hostile[0])

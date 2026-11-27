@@ -81,7 +81,13 @@ func Verify(f io.ReaderAt, size uint64, pin []byte, visit func(i uint32, r Recor
 			models[i] = m
 		}
 		if b.Kind == blobKindWNM4 {
-			wnr4.keep(i, data[:b.Bytes])
+			if h.Required&reqWNR4Expert != 0 {
+				if e := wnr4.validateStrict(i, b, data[:b.Bytes]); e != nil {
+					return nil, e
+				}
+			} else {
+				wnr4.keep(i, data[:b.Bytes])
+			}
 		}
 	}
 
@@ -116,7 +122,9 @@ func Verify(f io.ReaderAt, size uint64, pin []byte, visit func(i uint32, r Recor
 			}
 			e = decodeWNR3(rec, models[r.Blob-1], g, r.Owner, r.Flags&flagValueExact != 0, dec)
 		case codecWNR4:
-			if we := wnr4.decode(r, rec, dec); we != nil {
+			if r.Flags&flagExpert != 0 {
+				e = wnr4.decodeExpert(i, r, rec, dec)
+			} else if we := wnr4.decode(r, rec, dec); we != nil {
 				// section 7.3: the record is undecodable (fail closed), the file is not invalid
 				res.Undecoded++
 				res.Why = append(res.Why, "record "+utoa(i)+": "+we.Msg)
