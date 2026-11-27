@@ -210,7 +210,8 @@ measured; it is not known to fail.
   yet, each with its `MANIFEST.tsv` row and the expected verdict from both reference readers; the
   `go-reader` and `rust-reader` jobs of CI then run the Go and the Rust reader on the new rows too.
   Valid files are wanted as well. A new vector goes through an issue first.
-  - **Today:** 139 rows since 2026-11-22, when 3 files with a damaged blob that no record uses
+  - **Today:** 157 rows since 2026-11-27, when 18 codec-8 files were added (4 accepted, 14 refused:
+    [wex4/vectors/README.md](../wex4/vectors/README.md)); 139 since 2026-11-22, when 3 files with a damaged blob that no record uses
     were added ([issue 57](https://github.com/KairaCode/Wex-WRN2/issues/57)); 136 since 2026-11-15. The 24 files added that day cover the two lists of what
     the 112 rows did not exercise (finding 17 of the
     [spec review](../research/spec-review-20261114/README.md) and part D of the Go reader's
@@ -484,7 +485,7 @@ measured; it is not known to fail.
     report the last lines and the device line: that is the test that counts, and so far it has passed on
     one GPU only. The RTX 3070 showed that a driver can get this shader wrong, and only `run.sh` tells.
     The container of the run above is public
-    ([Kaira666/Kaira-WEX4-Experts](https://huggingface.co/Kaira666/Kaira-WEX4-Experts), 123 GB); the
+    ([KairaCode/Kaira-WEX4-Experts](https://huggingface.co/KairaCode/Kaira-WEX4-Experts), 123 GB); the
     records of `research/real-experts-20261115` (made by its `run.sh` from tensors its
     `fetch_experts.py` fetches) are a small test that needs no download of that size. The host program
     reads the file record by record and cuts its batches to the device's buffer limit, so the file size
