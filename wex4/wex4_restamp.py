@@ -5,7 +5,7 @@
     python -I wex4_restamp.py FILE [--out COPY] [--dry-run]
 
 A pre-bit file was written before required_features bit 2 (REQ_WNR4_EXPERT = 0x4) existed: it holds EXPERT records
-of codec 8 (WNR4 kind MX) under a required_features word without that bit, no record of it has REC_VALUE_EXACT,
+of codec 8 (WNR4 kind MX) under a required_features word of 0, no record of it has REC_VALUE_EXACT,
 and whether a record is in canonical-zero form is only in the record's own flag byte. Strict readers refuse it.
 
 This rewrites the header page and, when a record is in canonical-zero form, the index: it sets bit 2, sets
@@ -87,6 +87,7 @@ def plan(f):
     if not coded:   # nothing of codec 8 on an expert: strict as it is, or not a file this tool knows
         wex4.Reader(f)
         return None
+    need(not required, 'required_features of a pre-bit file is 0 (bit 0 set without bit 2)')
     exact = 0
     for at, (offset, _, _, _, flags, blob, owner, *_) in coded:
         need(flags == wex4.REC_EXPERT, 'an EXPERT record of codec 8 whose flags are not EXPERT alone')
@@ -113,8 +114,9 @@ def plan(f):
                 root=rd.root, required=(required, head[3]), coded=len(coded), exact=exact)
 
 
-def restamp(path, out=None, dry_run=False, log=sys.stdout):
+def restamp(path, out=None, dry_run=False, log=None):
     """Re-stamp path in place, or into the copy `out`. Returns the new root, or None when nothing had to change."""
+    log = log or sys.stdout   # looked up per call, so that a redirected stdout is honoured
     need(not out or os.path.abspath(out) != os.path.abspath(path), '--out names the file itself')
     with open(path, 'rb' if dry_run or out else 'r+b') as f:
         p = plan(f)

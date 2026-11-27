@@ -1426,7 +1426,8 @@ def test_restamp():
         bad[at] = value
         assert left_alone(bytes(bad)), what
     sealed = {'VALUE_EXACT already on a record': (entry0 + 18, '<H', 3), 'an unknown required feature': (8, '<Q', 2),
-              'another blob id in the index': (rd.index_offset + 4, '<I', rd.blobs[0][1] ^ 1)}
+              'another blob id in the index': (rd.index_offset + 4, '<I', rd.blobs[0][1] ^ 1),
+              'required bit 0 without bit 2': (8, '<Q', wex4.REQ_VALUE_EXACT)}
     for what, (at, fmt, value) in sealed.items():
         bad = bytearray(legacy)
         struct.pack_into(fmt, bad, at, value)
