@@ -4,7 +4,7 @@
 # CPU check of the WNR3 sync, no GPU and no real model needed:
 #   1. c/tests/test_wex_format.c (codec 5: hash vectors, round trips, mutations, corruption audit, container rules)
 #      and c/tests/test_wex4_verify.c (c/tools/wex4_verify.c on small WEX4 files; c/tools/wex4_verify.c also alone,
-#      run on 6 vectors), then c/tests/test_wex_fast_decode.c (the fast WNR3 decoder c/wex_fast_decode.h, and
+#      run on 13 vectors), then c/tests/test_wex_fast_decode.c (the fast WNR3 decoder c/wex_fast_decode.h, and
 #      coli_wex_decode_record of c/wex_decode.c with COLI_WEX_FAST_DECODE unset, 1 and 0, against the reference
 #      decoder on synthetic records). On x86-64 in three builds: -march=haswell (the AVX2 kernel compiled for the
 #      target), the x86-64 baseline (the AVX2 kernel behind a target attribute, chosen at run time by CPUID) and
@@ -62,13 +62,21 @@ tail -1 test_wex4_verify.log
 V=$ROOT/wex4/vectors
 ./wex4_verify.exe "$V/valid/tiny2-cz-upgraded.wex4" 1 > wex4_verify_vectors.log
 ./wex4_verify.exe "$V/valid/wnr4-mx-pb1.wex4" 1 >> wex4_verify_vectors.log
+./wex4_verify.exe "$V/valid/wnr4-mx-pb1-cz.wex4" 1 >> wex4_verify_vectors.log
+./wex4_verify.exe "$V/valid/wnr4-nv-pb1.wex4" 1 >> wex4_verify_vectors.log
 for f in unused-blob-of-kind-16-bit-flip-hash-not-fixed non-zero-byte-in-the-padding-of-an-unused-blob-of-kind-17 \
          unused-wnm2-blob-with-a-table-that-is-not-increasing wnm2-blob-with-a-table-that-is-not-increasing \
          wnm2-blob-id-differs-from-its-model wnr4-wnm4-blob-id-mismatch wnr4-unused-corrupt-wnm4-blob; do
   s=0; ./wex4_verify.exe "$V/invalid/$f.wex4" 1 >> wex4_verify_vectors.log || s=$?
   [ "$s" = 1 ] || { cat wex4_verify_vectors.log; echo "wex4_verify: exit $s on invalid/$f.wex4, expected 1" >&2; exit 1; }
 done
-echo "wex4_verify: 2 valid vectors pass, 7 vectors with a damaged blob (4 of them unused) refused"
+# a pre-bit file (WEX4-SPEC 7.3.1) does not open: exit 2. wex4/wex4_restamp.py makes each of the two the valid
+# MXFP4 vector that passed above, byte for byte (wex4/test_wex4.py checks that)
+for f in wnr4-expert-without-required-feature wnr4-expert-pre-bit-canonical-zero; do
+  s=0; ./wex4_verify.exe "$V/invalid/$f.wex4" 1 >> wex4_verify_vectors.log || s=$?
+  [ "$s" = 2 ] || { cat wex4_verify_vectors.log; echo "wex4_verify: exit $s on invalid/$f.wex4, expected 2" >&2; exit 1; }
+done
+echo "wex4_verify: 4 valid vectors pass, 7 vectors with a damaged blob (4 of them unused) refused, 2 pre-bit files do not open"
 # test_wex_fast_decode.c includes the engine's compat.h (for setenv and unsetenv on Windows), which is not in this
 # repository: a stand-in, found as "../compat.h" through -I stand-in/tests. On Windows _putenv_s(name, "") removes
 # the variable, as unsetenv does
