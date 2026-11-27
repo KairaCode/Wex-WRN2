@@ -281,7 +281,7 @@ WNR4_API int wnr4_cuda_batch_submit(int n, const uint32_t *geo, const unsigned c
         !grow_host(s.hinfo, s.hinfo_cap, (size_t)n) || !grow_derr(s, (size_t)n) ||
         !grow_host(s.herr, s.herr_cap, (size_t)n)) return WNR4_E_CUDA;
     s.status.assign((size_t)n, -1);
-    std::vector<Wnr4CudaJob> by_m[3], jobs;
+    std::vector<Wnr4CudaJob> by_m[3];
     bool any_valid = false;
     for (int i = 0; i < n; i++) {
         unsigned char *ds[3] = {dst_scale[3 * i], dst_scale[3 * i + 1], dst_scale[3 * i + 2]};
@@ -297,14 +297,15 @@ WNR4_API int wnr4_cuda_batch_submit(int n, const uint32_t *geo, const unsigned c
         }
     }
     if (!any_valid) return close_slot(s, cudaSuccess, n, st, ticket, false);
-    wnr4_cuda_jobs(by_m, jobs);
-    if (!grow_dev(s.djob, s.djob_cap, jobs.size() + 1u) || !grow_host(s.hjob, s.hjob_cap, jobs.size() + 1u)) return WNR4_E_CUDA;
-    if (!jobs.empty()) memcpy(s.hjob, jobs.data(), sizeof(Wnr4CudaJob) * jobs.size());
+    const size_t njobs_cap = wnr4_cuda_jobs_cap(by_m, nullptr);
+    if (!grow_dev(s.djob, s.djob_cap, njobs_cap + 1u) || !grow_host(s.hjob, s.hjob_cap, njobs_cap + 1u)) return WNR4_E_CUDA;
+    size_t njobs = 0;
+    const uint32_t W = njobs_cap ? wnr4_cuda_jobs_into(by_m, s.hjob, &njobs) : 16u;
     cudaError_t e = copy_records_coalesced(s, n, records, totals, st);
     if (e == cudaSuccess) e = cudaMemcpyAsync(s.dinfo, s.hinfo, sizeof(Wnr4CudaRec) * (size_t)n, cudaMemcpyHostToDevice, st);
-    if (e == cudaSuccess && !jobs.empty()) e = cudaMemcpyAsync(s.djob, s.hjob, sizeof(Wnr4CudaJob) * jobs.size(), cudaMemcpyHostToDevice, st);
+    if (e == cudaSuccess && njobs) e = cudaMemcpyAsync(s.djob, s.hjob, sizeof(Wnr4CudaJob) * njobs, cudaMemcpyHostToDevice, st);
     if (e == cudaSuccess) e = clear_derr_if_dirty(s, st);
-    if (e == cudaSuccess) e = wnr4_cuda_launch(m->tab, s.djob, (uint32_t)jobs.size(), s.dinfo, s.derr, st);
+    if (e == cudaSuccess) e = wnr4_cuda_launch_w(m->tab, s.djob, (uint32_t)njobs, s.dinfo, s.derr, W, st);
     return close_slot(s, e, n, st, ticket, true);
 }
 

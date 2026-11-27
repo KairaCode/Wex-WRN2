@@ -12,6 +12,8 @@
 #define WNR4_CUDA_CUH
 
 #include <cuda_runtime.h>
+#include <atomic>
+#include <cstring>
 #include <vector>
 #include "wnr4.h"
 
@@ -347,35 +349,73 @@ static thread_local uint32_t wnr4_cuda_planned_warps = 16u;   /* block size of t
 /* Concatenates the per-matrix lists, padding each to a multiple of the block size (padding jobs have n = 0).
  * Block size: wnr4_cuda_warps, or by the number of tiles (few tiles: small blocks, lower latency; many:
  * 16 warps share one table copy, more resident warps per SM). Returns it; wnr4_cuda_launch uses it. */
-static inline uint32_t wnr4_cuda_jobs(std::vector<Wnr4CudaJob> by_m[3], std::vector<Wnr4CudaJob> &jobs) {
+static inline uint32_t wnr4_cuda_choose_warps(size_t tiles) {
+    /* 1 V4.1 record = 1080 tiles: W=4 -> 270 blocks (fills all 170 SMs on RTX 5090),
+     * 2 records = 2160 tiles -> W=8 (270 blocks), >=3 records -> W=16. */
+    return wnr4_cuda_warps ? wnr4_cuda_warps : tiles < 1200u ? 4u : tiles < 2400u ? 8u : 16u;
+}
+static inline size_t wnr4_cuda_jobs_cap(const std::vector<Wnr4CudaJob> by_m[3], uint32_t *w_out) {
     const size_t tiles = by_m[0].size() + by_m[1].size() + by_m[2].size();
-    const uint32_t W = wnr4_cuda_warps ? wnr4_cuda_warps : tiles < 1000u ? 4u : tiles < 2000u ? 8u : 16u;
-    jobs.clear();
+    const uint32_t W = wnr4_cuda_choose_warps(tiles);
+    if (w_out) *w_out = W;
+    size_t n = 0;
+    for (uint32_t m = 0; m < 3u; m++) n += ((by_m[m].size() + W - 1u) / W) * W;
+    return n;
+}
+static inline uint32_t wnr4_cuda_jobs_into(const std::vector<Wnr4CudaJob> by_m[3], Wnr4CudaJob *out, size_t *njobs_out) {
+    uint32_t W = 16u;
+    (void)wnr4_cuda_jobs_cap(by_m, &W);
+    size_t pos = 0;
     for (uint32_t m = 0; m < 3u; m++) {
-        for (auto &j : by_m[m]) jobs.push_back(j);
+        const size_t sz = by_m[m].size();
+        if (sz) { std::memcpy(out + pos, by_m[m].data(), sz * sizeof(Wnr4CudaJob)); pos += sz; }
         Wnr4CudaJob pad = {};
         pad.m = m;
-        while (jobs.size() % W) jobs.push_back(pad);
+        while (pos % W) out[pos++] = pad;
     }
+    if (njobs_out) *njobs_out = pos;
     wnr4_cuda_planned_warps = W;
     return W;
 }
-static inline cudaError_t wnr4_cuda_launch(const Wnr4CudaTables &tab, const Wnr4CudaJob *jobs_dev, uint32_t njobs,
-                                           const Wnr4CudaRec *recs_dev, uint32_t *errors_dev, cudaStream_t stream) {
-    const uint32_t W = wnr4_cuda_planned_warps, blocks = (njobs + W - 1u) / W;
+static inline uint32_t wnr4_cuda_jobs(std::vector<Wnr4CudaJob> by_m[3], std::vector<Wnr4CudaJob> &jobs) {
+    uint32_t W = 16u;
+    const size_t cap = wnr4_cuda_jobs_cap(by_m, &W);
+    jobs.resize(cap);
+    size_t nj = 0;
+    if (cap) wnr4_cuda_jobs_into(by_m, jobs.data(), &nj);
+    else wnr4_cuda_planned_warps = W;
+    jobs.resize(nj);
+    return W;
+}
+static inline cudaError_t wnr4_cuda_launch_w(const Wnr4CudaTables &tab, const Wnr4CudaJob *jobs_dev, uint32_t njobs,
+                                             const Wnr4CudaRec *recs_dev, uint32_t *errors_dev, uint32_t W,
+                                             cudaStream_t stream) {
+    if (W != 4u && W != 8u && W != 16u) return cudaErrorInvalidValue;
+    const uint32_t blocks = (njobs + W - 1u) / W;
     const bool rg = wnr4_cuda_rows_global < 0 ? (tab.kind == 1u && W == 16u) : wnr4_cuda_rows_global != 0;
     const int smem = rg ? 0 : (int)(tab.rows * 32u);
     if (!blocks) return cudaSuccess;
-#define WNR4_LAUNCH3(K_, I_, W_, G_, L_) do { cudaError_t e_ = cudaFuncSetAttribute(wnr4_cuda_kernel<K_, I_, W_, G_, L_>, \
-        cudaFuncAttributeMaxDynamicSharedMemorySize, smem); if (e_ != cudaSuccess) return e_; \
-        wnr4_cuda_kernel<K_, I_, W_, G_, L_><<<blocks, W_ * 32u, smem, stream>>>(jobs_dev, njobs, recs_dev, tab, errors_dev); } while (0)
+    int dev_id = 0;
+    if (smem && cudaGetDevice(&dev_id) != cudaSuccess) { (void)cudaGetLastError(); dev_id = -1; }
+#define WNR4_LAUNCH3(K_, I_, W_, G_, L_) do { \
+        if (smem) { \
+            static std::atomic<int> smem_done_[64]; \
+            const bool cached_ = dev_id >= 0 && dev_id < 64 && smem_done_[dev_id].load(std::memory_order_relaxed) >= smem; \
+            if (!cached_) { \
+                cudaError_t e_ = cudaFuncSetAttribute(wnr4_cuda_kernel<K_, I_, W_, G_, L_>, \
+                    cudaFuncAttributeMaxDynamicSharedMemorySize, smem); \
+                if (e_ != cudaSuccess) return e_; \
+                if (dev_id >= 0 && dev_id < 64) smem_done_[dev_id].store(smem, std::memory_order_relaxed); \
+            } \
+        } \
+        wnr4_cuda_kernel<K_, I_, W_, G_, L_><<<blocks, W_ * 32u, smem, stream>>>(jobs_dev, njobs, recs_dev, tab, errors_dev); \
+    } while (0)
 #define WNR4_LAUNCH2(K_, I_, W_, G_) do { if (wnr4_cuda_lds) WNR4_LAUNCH3(K_, I_, W_, G_, true); \
         else WNR4_LAUNCH3(K_, I_, W_, G_, false); } while (0)
 #define WNR4_LAUNCH1(K_, I_, W_) do { if (rg) WNR4_LAUNCH2(K_, I_, W_, true); \
         else WNR4_LAUNCH2(K_, I_, W_, false); } while (0)
 #define WNR4_LAUNCH(K_, I_) do { if (W == 4u) WNR4_LAUNCH1(K_, I_, 4u); else if (W == 8u) WNR4_LAUNCH1(K_, I_, 8u); \
         else WNR4_LAUNCH1(K_, I_, 16u); } while (0)
-    if (W != 4u && W != 8u && W != 16u) return cudaErrorInvalidValue;
     if (tab.kind) WNR4_LAUNCH(1, true);   /* the word window is always on (A/B of 2026-11-21: +7..+19%) */
     else WNR4_LAUNCH(0, true);
 #undef WNR4_LAUNCH
@@ -383,6 +423,10 @@ static inline cudaError_t wnr4_cuda_launch(const Wnr4CudaTables &tab, const Wnr4
 #undef WNR4_LAUNCH2
 #undef WNR4_LAUNCH3
     return cudaGetLastError();
+}
+static inline cudaError_t wnr4_cuda_launch(const Wnr4CudaTables &tab, const Wnr4CudaJob *jobs_dev, uint32_t njobs,
+                                           const Wnr4CudaRec *recs_dev, uint32_t *errors_dev, cudaStream_t stream) {
+    return wnr4_cuda_launch_w(tab, jobs_dev, njobs, recs_dev, errors_dev, wnr4_cuda_planned_warps, stream);
 }
 
 #endif

@@ -46,7 +46,8 @@ typedef unsigned int (*FeatFn)(void);
     fprintf(stderr, "%s:%d %s: %s\n", __FILE__, __LINE__, #x, cudaGetErrorString(e_)); exit(1); } } while (0)
 #define CHECK(c) do { if (!(c)) { fprintf(stderr, "FAIL %s:%d: %s\n", __FILE__, __LINE__, #c); exit(1); } } while (0)
 
-static RegFn reg; static HostFn host_fn; static DevFn dev; static BatchFn batch; static BatchHostFn batch_host;
+static RegFn reg; static HostFn host_fn; static DevFn dev; static BatchFn batch;
+static BatchHostFn batch_host; static BatchHostFn batch_host_scratch;
 
 struct Rec { WexEntry e; std::vector<unsigned char> expected, record; };
 
@@ -135,6 +136,20 @@ static void gpu_batch_host(const std::vector<const Rec *> &rs, const std::vector
     CHECK(bad == (int)std::count_if(st.begin(), st.end(), [](int v) { return v != 0; }));
 }
 
+/* GPU batch decode of n records into host scratch buffers (feature 256); out[i] = raw slab */
+static void gpu_batch_host_scratch(const std::vector<const Rec *> &rs, const std::vector<unsigned char *> &pinned,
+                                   std::vector<int> &st, std::vector<std::vector<unsigned char>> &out) {
+    int n = (int)rs.size();
+    std::vector<const WexEntry *> es(n); std::vector<const unsigned char *> ps(n); std::vector<unsigned char *> ds(n);
+    st.assign(n, 7); out.resize(n);
+    for (int i = 0; i < n; i++) {
+        out[i].assign((size_t)rs[i]->e.scale_bytes + rs[i]->e.weight_bytes, 0xA5);
+        es[i] = &rs[i]->e; ps[i] = pinned[i]; ds[i] = out[i].data();
+    }
+    int bad = batch_host_scratch(n, es.data(), ps.data(), 0, ds.data(), st.data());
+    CHECK(bad == (int)std::count_if(st.begin(), st.end(), [](int v) { return v != 0; }));
+}
+
 /* ---- synthetic experts (same generator as tests/test_wex_format.c) ---- */
 static uint32_t rnd(uint32_t *s) { *s ^= *s << 13; *s ^= *s >> 17; *s ^= *s << 5; return *s; }
 static WexEntry synth_entry(uint32_t rows, uint32_t cols_bytes) {
@@ -192,6 +207,11 @@ static void compare_all_paths(Arena &a, const Rec &r, const WexNr2Model &model, 
       gpu_batch_host({&r}, pin, hs, ho);
       CHECK(hs[0] == cs);
       if (!cs) CHECK(ho[0] == r.expected); else CHECK(host_untouched(ho[0])); }
+    /* batch to host scratch (feature 256): single-sync; dst may be overwritten on failure */
+    { std::vector<int> hs; std::vector<std::vector<unsigned char>> ho;
+      gpu_batch_host_scratch({&r}, pin, hs, ho);
+      CHECK(hs[0] == cs);
+      if (!cs) CHECK(ho[0] == r.expected); }
     /* single to device */
     unsigned char *s3[3] = {a.ds[0], a.ds[1], a.ds[2]}, *w3[3] = {a.dw[0], a.dw[1], a.dw[2]};
     CK(cudaMemset(a.base, 0xA5, a.per));
@@ -314,7 +334,44 @@ static void synthetic(Arena &a) {
             r.expected = src;
             compare_all_paths(a, r, model, -1);
         }
-        printf("synthetic cz=%d: 4 chunk pairs x 3 entry points equal to the CPU decode, crafted records rejected\n", cz);
+        /* multi-record mixed batch (> 8 lanes) for batch_host (untouched on error) and batch_host_scratch */
+        {
+            Rec bad_host = recs[1]; bad_host.e.flags = WEX_ENTRY_NEURAL_RANS2;
+            Rec bad_dev = recs[2];
+            {
+                WexNr2Record v;
+                CHECK(!wex_nr3_parse(bad_dev.record.data(), bad_dev.record.size(), &layout, model.id, &v));
+                bad_dev.record[v.metadata_bytes + v.scale_payload_bytes + 16u] ^= 0x01u;
+                CHECK(!wex_nr3_parse(bad_dev.record.data(), bad_dev.record.size(), &layout, model.id, &v));
+            }
+            std::vector<unsigned char> dummy;
+            CHECK(cpu_decode(bad_dev, model, dummy) == -1);
+            std::vector<const Rec *> mix = {&recs[0], &bad_host, &recs[1], &bad_dev, &recs[2],
+                                            &recs[3], &bad_dev, &recs[0], &recs[1], &recs[2]};
+            std::vector<unsigned char *> pin(mix.size(), nullptr);
+            for (size_t i = 0; i < mix.size(); i++) {
+                CK(cudaMallocHost((void **)&pin[i], mix[i]->record.size()));
+                memcpy(pin[i], mix[i]->record.data(), mix[i]->record.size());
+            }
+            std::vector<int> hs, ss;
+            std::vector<std::vector<unsigned char>> ho, so;
+            gpu_batch_host(mix, pin, hs, ho);
+            gpu_batch_host_scratch(mix, pin, ss, so);
+            CHECK(hs == ss);
+            for (size_t i = 0; i < mix.size(); i++) {
+                bool expect_bad = (i == 1u || i == 3u || i == 6u);
+                CHECK(hs[i] == (expect_bad ? -1 : 0));
+                if (!expect_bad) { CHECK(ho[i] == mix[i]->expected); CHECK(so[i] == mix[i]->expected); }
+                else CHECK(host_untouched(ho[i]));
+            }
+            /* NULL dst guard on batch_host_scratch */
+            int null_st[2] = {7, 7};
+            const WexEntry *es2[2] = {&recs[0].e, &recs[1].e};
+            const unsigned char *ps2[2] = {pin[0], pin[2]};
+            CHECK(batch_host_scratch(2, es2, ps2, 0, nullptr, null_st) == 2 && null_st[0] == -1 && null_st[1] == -1);
+            for (auto p : pin) cudaFreeHost(p);
+        }
+        printf("synthetic cz=%d: 4 chunk pairs x 5 entry points equal to the CPU decode, crafted records rejected\n", cz);
     }
 }
 
@@ -374,6 +431,8 @@ static void thread_churn() {
             unsigned char *hd[1] = {host.data()};
             int st[1] = {7};
             if (batch_host(1, es, ps, 0, hd, st) || st[0] || host != r.expected) fails++;
+            std::fill(host.begin(), host.end(), 0xA5);
+            if (batch_host_scratch(1, es, ps, 0, hd, st) || st[0] || host != r.expected) fails++;
             if (batch(1, es, ps, 0, ds, dw, st) || st[0]) fails++;
             bad[(size_t)t] = fails;
         });
@@ -394,7 +453,7 @@ static void thread_churn() {
     const double grew = free_before > free_after ? (double)(free_before - free_after) / 1048576.0 : 0.0;
     /* one round's workspaces (THREADS x a host, a device and a batch workspace of this record) are
      * about 26 MiB; kept per thread, the other ROUNDS-1 rounds' threads held 1.6 GiB more */
-    printf("thread churn: %d rounds x %d fresh threads x 4 entry points decoded, device memory held grew %.0f MiB\n",
+    printf("thread churn: %d rounds x %d fresh threads x 5 entry points decoded, device memory held grew %.0f MiB\n",
            ROUNDS, THREADS, grew);
     CHECK(grew <= 64.0);
 }
@@ -426,6 +485,8 @@ static void bin_test(Arena &a, const char *path, int mutations) {
         for (size_t k = 0; k < rs.size(); k++) { CHECK(st[k] == 0); CHECK(a.fetch((int)k, rs[k]->e) == rs[k]->expected); }
         std::vector<std::vector<unsigned char>> ho;
         gpu_batch_host(rs, pin, st, ho);
+        for (size_t k = 0; k < rs.size(); k++) { CHECK(st[k] == 0); CHECK(ho[k] == rs[k]->expected); }
+        gpu_batch_host_scratch(rs, pin, st, ho);
         for (size_t k = 0; k < rs.size(); k++) { CHECK(st[k] == 0); CHECK(ho[k] == rs[k]->expected); }
     }
     /* mutations: CPU (8 threads) and GPU batch of 8 */
@@ -474,6 +535,12 @@ static void bin_test(Arena &a, const char *path, int mutations) {
             if (st[k] != c) { fprintf(stderr, "mutation %d (to host): cpu %d gpu %d\n", i + (int)k, c, st[k]); exit(1); }
             if (!c) CHECK(ho[k] == cpu_out[(size_t)i + k]); else CHECK(host_untouched(ho[k]));
         }
+        gpu_batch_host_scratch(rs, pin, st, ho);
+        for (size_t k = 0; k < rs.size(); k++) {
+            int c = cpu_status[(size_t)i + k];
+            if (st[k] != c) { fprintf(stderr, "mutation %d (to host scratch): cpu %d gpu %d\n", i + (int)k, c, st[k]); exit(1); }
+            if (!c) CHECK(ho[k] == cpu_out[(size_t)i + k]);
+        }
     }
     for (auto p : pin) if (p) cudaFreeHost(p);
     printf("{\"bin\":\"%s\",\"records\":%u,\"clean_ok\":%u,\"mutations\":%d,\"cpu_gpu_same_status\":%ld,\"accepted\":%ld}\n",
@@ -491,7 +558,8 @@ int main(int argc, char **argv) {
     dev = (DevFn)GetProcAddress(h, "wex_cuda_decode_to_device");
     batch = (BatchFn)GetProcAddress(h, "wex_cuda_decode_batch_to_device");
     batch_host = (BatchHostFn)GetProcAddress(h, "wex_cuda_decode_batch_to_host");
-    CHECK(feat && feat() == 63u && reg && host_fn && dev && batch && batch_host);
+    batch_host_scratch = (BatchHostFn)GetProcAddress(h, "wex_cuda_decode_batch_to_host_scratch");
+    CHECK(feat && feat() == (63u | 256u) && reg && host_fn && dev && batch && batch_host && batch_host_scratch);
     CK(cudaSetDevice(0));
     Arena a;
     synthetic(a);

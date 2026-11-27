@@ -2,8 +2,9 @@
  * Copyright 2026 Ludovico Zanichelli */
 /* CPU stand-in for kaira_wex_cuda.dll (tests/test_v4_wex_nr3.c, tests/test_qwen38_mxfp4.py):
  * helper ABI 1, features 1 (direct decode), 4 (WNR2 models), 16 (WNR3), 8 (batch decode
- * to device, with FAKE_WEX_BATCH_DEVICE=1) and 32 (batch decode to host;
- * FAKE_WEX_BATCH_FAIL=<i> reports record i unavailable after scribbling over its dst, as a real half-written slab would). Its "device"
+ * to device, with FAKE_WEX_BATCH_DEVICE=1), 32 (batch decode to host) and 256 (batch decode
+ * to host scratch; bits 64 and 128 reserved for WNR4; FAKE_WEX_BATCH_FAIL=<i> reports record
+ * i unavailable after scribbling over its dst, as a real half-written slab would). Its "device"
  * pointers are host memory. FAKE_WEX_UNAVAILABLE=1 makes the direct decode
  * report 1 (CUDA unavailable), as the real helper does without a device.
  * Built only for tests and the fuzz replay; never shipped. */
@@ -11,7 +12,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef _WIN32
 #define FAKE_EXPORT __declspec(dllexport)
+#else
+#define FAKE_EXPORT __attribute__((visibility("default")))
+#endif
 
 #define FAKE_MAX_MODELS 16   /* as the helper's WEX_CUDA_NR2_MAX_MODELS */
 static WexNr2Model models[FAKE_MAX_MODELS];
@@ -27,7 +32,7 @@ FAKE_EXPORT unsigned int wex_cuda_helper_abi(void) { return 1u; }
 /* FAKE_WEX_BATCH_DEVICE=1 adds feature 8 (batch decode to "device") */
 FAKE_EXPORT unsigned int wex_cuda_helper_features(void) {
     const char *batch = getenv("FAKE_WEX_BATCH_DEVICE");
-    return 1u | 4u | 16u | 32u | (batch && *batch == '1' ? 8u : 0u);
+    return 1u | 4u | 16u | 32u | 256u | (batch && *batch == '1' ? 8u : 0u);
 }
 
 /* The contract of the helper's wex_cuda_register_model (tools/wex_cuda_bridge.cu): 0 when registered, or
@@ -105,7 +110,42 @@ FAKE_EXPORT int wex_cuda_decode_batch_to_host(int n, const WexEntry *const *entr
         status[i] = wex_decode_nr2_record(entries[i], slab, (size_t)aligned, model) ? -1 : 0;
         if (!status[i]) memcpy(dst[i], slab, (size_t)raw);
         free(slab);
-        if (fail && atoi(fail) == i) { memset(dst[i], 0x5a, (size_t)raw); status[i] = 1; }
+        if (fail && *fail && atoi(fail) == i) { memset(dst[i], 0x5a, (size_t)raw); status[i] = 1; }
+        if (status[i]) failed++;
+    }
+    return failed;
+}
+
+FAKE_EXPORT int wex_cuda_decode_batch_to_host_scratch(int n, const WexEntry *const *entries,
+                                                      const unsigned char *const *records, int device,
+                                                      unsigned char *const *dst, int *status) {
+    const char *fail = getenv("FAKE_WEX_BATCH_FAIL");
+    int failed = 0;
+    (void)device;
+    if (n <= 0) return 0;
+    if (!status) return n;
+    for (int i = 0; i < n; i++) {
+        const WexNr2Model *model = entries && records && records[i] ? fake_model(records[i]) : NULL;
+        uint64_t raw = 0, aligned = 0;
+        unsigned char *slab;
+        status[i] = -1;
+        if (!entries || !records || !dst || !entries[i] || !records[i] || !dst[i] ||
+            wex_entry_raw_sizes(entries[i], &raw, &aligned) || entries[i]->total_bytes >= aligned) {
+            failed++;
+            continue;
+        }
+        if (!model || !(slab = malloc((size_t)aligned))) {
+            memset(dst[i], 0x5a, (size_t)raw);
+            status[i] = 1;
+            failed++;
+            continue;
+        }
+        memcpy(slab + (aligned - entries[i]->total_bytes), records[i], entries[i]->total_bytes);
+        status[i] = wex_decode_nr2_record(entries[i], slab, (size_t)aligned, model) ? -1 : 0;
+        if (!status[i]) memcpy(dst[i], slab, (size_t)raw);
+        else memset(dst[i], 0x5a, (size_t)raw);   /* scratch contract: dst[i] may be overwritten on error */
+        free(slab);
+        if (fail && *fail && atoi(fail) == i) { memset(dst[i], 0x5a, (size_t)raw); status[i] = 1; }
         if (status[i]) failed++;
     }
     return failed;
