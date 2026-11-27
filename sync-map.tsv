@@ -40,3 +40,6 @@ c/wex_format.h	src/colibri/c/wex_format.h
 c/wex_neural_rans.h	src/colibri/c/wex_neural_rans.h
 c/wex_palette.h	src/colibri/c/wex_palette.h
 c/v4_wex_crc_policy.h	src/colibri/c/v4_wex_crc_policy.h
+# 2026-11-27, ahead of the source tree: c/wex4.h and c/tests/test_wex4_verify.c (WEX4_LEGACY_WNR4_EXPERT, the
+# switch for pre-bit files of docs/WEX4-SPEC.md 7.3.1). The source tree takes them unchanged; line 1 is not updated
+# by this change (STATUS.md, "Other copies of c/")
