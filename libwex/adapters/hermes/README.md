@@ -54,8 +54,10 @@ If your Hermes setup uses MCP servers over stdio, register [`libwex/cli/wex_mcp.
   "mcpServers": {
     "libwex": {
       "command": "python",
-      "args": ["libwex/cli/wex_mcp.py"]
+      "args": ["libwex/cli/wex_mcp.py", "--root-dir", "/path/to/models"]
     }
   }
 }
 ```
+
+The tools open containers only under `--root-dir` (default: the server's working directory); see [MCP Server](../../README.md#mcp-server).

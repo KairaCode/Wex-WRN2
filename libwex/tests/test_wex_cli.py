@@ -8,6 +8,7 @@ import http.client
 import http.server
 import json
 import os
+import shutil
 import struct
 import subprocess
 import sys
@@ -17,6 +18,7 @@ import time
 import unittest
 import urllib.error
 import urllib.request
+from unittest import mock
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 LIBWEX_DIR = os.path.dirname(TESTS_DIR)
@@ -28,6 +30,7 @@ if CLI_DIR not in sys.path:
     sys.path.insert(0, CLI_DIR)
 
 import wex_cli  # noqa: E402
+import wex_mcp  # noqa: E402
 
 WEX4_MAGIC = 0x57455834
 WEX4_PAGE = 4096
@@ -604,7 +607,7 @@ class TestWexCliAndMcp(unittest.TestCase):
                 },
             ]
             proc = subprocess.Popen(
-                [sys.executable, "-B", "-I", MCP_SCRIPT],
+                [sys.executable, "-B", "-I", MCP_SCRIPT, "--root-dir", self.tmpdir.name],
                 env=self.env,
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
@@ -666,6 +669,74 @@ class TestWexCliAndMcp(unittest.TestCase):
             srv.shutdown()
             srv.server_close()
             store.close()
+
+    @staticmethod
+    def _mcp_call(server, name, arguments):
+        reply = server.handle_message({
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "tools/call",
+            "params": {"name": name, "arguments": arguments},
+        })
+        return reply["result"]
+
+    def test_mcp_rejects_library_path_argument(self):
+        for tool in wex_mcp.TOOLS:
+            for prop in tool["inputSchema"]["properties"]:
+                self.assertNotIn("lib", prop, tool["name"])
+                self.assertNotIn("cuda", prop, tool["name"])
+
+        server = wex_mcp.WexMcpServer(root_dirs=[self.tmpdir.name])
+        evil = os.path.join(self.tmpdir.name, "evil.dll")
+        for name in ("wex_inspect", "wex_verify", "wex_bench"):
+            for extra in ("lib_path", "cuda_path"):
+                with mock.patch.object(wex_cli.ctypes, "CDLL") as cdll:
+                    res = self._mcp_call(server, name, {"path": self.wex_path, "cpu_only": True, extra: evil})
+                self.assertTrue(res["isError"], (name, extra))
+                self.assertIn(extra, res["structuredContent"]["error"])
+                cdll.assert_not_called()
+
+    def test_mcp_path_outside_roots_refused(self):
+        allowed = os.path.join(self.tmpdir.name, "mcp_allowed")
+        outside = os.path.join(self.tmpdir.name, "mcp_outside")
+        os.makedirs(allowed)
+        os.makedirs(outside)
+        inside_path = os.path.join(allowed, "in.wex4")
+        outside_path = os.path.join(outside, "out.wex4")
+        shutil.copyfile(self.wex_path, inside_path)
+        shutil.copyfile(self.wex_path, outside_path)
+        link = os.path.join(allowed, "link")
+        try:
+            os.symlink(outside, link, target_is_directory=True)
+        except (OSError, NotImplementedError):
+            # Windows without the symlink privilege: a directory junction needs none
+            import _winapi
+
+            _winapi.CreateJunction(outside, link)
+
+        server = wex_mcp.WexMcpServer(root_dirs=[allowed])
+        res = self._mcp_call(server, "wex_inspect", {"path": inside_path, "cpu_only": True})
+        self.assertFalse(res["isError"], res)
+        self.assertEqual(res["structuredContent"]["root_hex"], self.root_hex)
+
+        escapes = (
+            outside_path,
+            os.path.join(allowed, "..", "mcp_outside", "out.wex4"),
+            os.path.join(link, "out.wex4"),
+        )
+        for path in escapes:
+            for name in ("wex_inspect", "wex_verify", "wex_bench"):
+                with mock.patch.object(wex_cli, "WexLib") as lib:
+                    res = self._mcp_call(server, name, {"path": path, "cpu_only": True})
+                self.assertTrue(res["isError"], (name, path))
+                self.assertIn("outside the allowed root", res["structuredContent"]["error"])
+                lib.assert_not_called()
+
+        # With no --root-dir the only root is the server's working directory
+        self.assertEqual(
+            wex_mcp.WexMcpServer().root_dirs,
+            [os.path.normcase(os.path.realpath(os.getcwd()))],
+        )
 
     def test_pull_resumable_and_verify(self):
         with open(self.wex_path, "rb") as fh:
