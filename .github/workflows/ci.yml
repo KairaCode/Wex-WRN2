@@ -119,7 +119,8 @@ jobs:
           echo "rust=$rust" >> "$GITHUB_OUTPUT"
           echo "Selected: core=$core libwex=$libwex go=$go rust=$rust"
 
-  # Runs on every PR/push (~15s): validates all Markdown links, anchors, sync-map, SPDX headers, and privacy patterns.
+  # Runs on every PR/push (~15s): validates all Markdown links, anchors, sync-map, SPDX headers, and privacy patterns,
+  # and the author and committer addresses of the commits.
   repo-check:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
@@ -131,10 +132,22 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
         with:
           persist-credentials: false
+          fetch-depth: 0   # the commit check below reads the commits of the pull request, not only its merge
       - name: Repository checks (links, mirror, licence, privacy)
         run: |
           python3 -I check_repo.py --self-test
           python3 -I check_repo.py
+      # A pull request fails when one of its commits has an author or committer address that is not a GitHub noreply
+      # one, or another address in its message (HEAD is the merge of the pull request: ^1 the base, ^2 its head).
+      # A push to main checks what it added, the web merge commit included: that commit is public by then, so there
+      # the check can only report it (the fix is the account setting named in CONTRIBUTING.md).
+      - name: Commit addresses (GitHub noreply only)
+        if: github.event_name == 'pull_request' || (github.event_name == 'push' && !github.event.forced)
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          if [ "${{ github.event_name }}" = pull_request ]; then range='HEAD^1..HEAD^2'; else range="$BEFORE..HEAD"; fi
+          python3 -I check_repo.py --commits "$range"
 
   linux:
     needs: changes
