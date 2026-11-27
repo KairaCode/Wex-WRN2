@@ -51,9 +51,96 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  linux:
+  # Fast path classification (~6s, pure git, zero third-party actions): push to main and manual runs always run the
+  # full matrix; pull requests that touch only docs, libwex, Go or Rust skip unrelated heavy sanitizer/QEMU jobs.
+  changes:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15   # a green run took 5.1 and 3.8 minutes (runs 43811647711 and 43812551602, 2026-11-16, after the second merges: the job was green in both, though 43811647711's own rollup was failure (its linux-tsan, linux-msan and rust-reader jobs failed)); the default lets a hung test hold the runner for 6 hours
+    timeout-minutes: 5
+    outputs:
+      core: ${{ steps.filter.outputs.core }}
+      libwex: ${{ steps.filter.outputs.libwex }}
+      go: ${{ steps.filter.outputs.go }}
+      rust: ${{ steps.filter.outputs.rust }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - id: filter
+        name: Classify changed paths
+        run: |
+          has_libwex=false
+          [ -f libwex/scripts/test_libwex.sh ] && has_libwex=true
+          if [ "${{ github.event_name }}" != "pull_request" ]; then
+            echo "core=true" >> "$GITHUB_OUTPUT"
+            echo "libwex=$has_libwex" >> "$GITHUB_OUTPUT"
+            echo "go=true" >> "$GITHUB_OUTPUT"
+            echo "rust=true" >> "$GITHUB_OUTPUT"
+            echo "event=${{ github.event_name }}: full matrix (libwex=$has_libwex)"
+            exit 0
+          fi
+          if ! git rev-parse --verify -q HEAD^2 > /dev/null; then
+            echo "core=true" >> "$GITHUB_OUTPUT"
+            echo "libwex=$has_libwex" >> "$GITHUB_OUTPUT"
+            echo "go=true" >> "$GITHUB_OUTPUT"
+            echo "rust=true" >> "$GITHUB_OUTPUT"
+            echo "non-merge PR checkout: full matrix (fail-open)"
+            exit 0
+          fi
+          changed=$(git diff --name-only HEAD^1 HEAD)
+          echo "Changed files:"
+          echo "$changed"
+          core=false; libwex=false; go=false; rust=false
+          while IFS= read -r f; do
+            [ -n "$f" ] || continue
+            case "$f" in
+              docs/*|charts/*|research/*|*.md|LICENSE|NOTICE|THIRD_PARTY_NOTICES.md)
+                ;;
+              libwex/*)
+                libwex=$has_libwex
+                ;;
+              impl/go-wex4/testdata/*)
+                core=true; go=true; rust=true
+                ;;
+              impl/go-wex4/*)
+                go=true
+                ;;
+              impl/rust-wex4/*)
+                rust=true
+                ;;
+              *)
+                core=true; go=true; rust=true; libwex=$has_libwex
+                ;;
+            esac
+          done <<< "$changed"
+          echo "core=$core" >> "$GITHUB_OUTPUT"
+          echo "libwex=$libwex" >> "$GITHUB_OUTPUT"
+          echo "go=$go" >> "$GITHUB_OUTPUT"
+          echo "rust=$rust" >> "$GITHUB_OUTPUT"
+          echo "Selected: core=$core libwex=$libwex go=$go rust=$rust"
+
+  # Runs on every PR/push (~15s): validates all Markdown links, anchors, sync-map, SPDX headers, and privacy patterns.
+  repo-check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      PYTHON: python3
+      USER: ""
+      USERNAME: ""
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
+      - name: Repository checks (links, mirror, licence, privacy)
+        run: |
+          python3 -I check_repo.py --self-test
+          python3 -I check_repo.py
+
+  linux:
+    needs: changes
+    if: needs.changes.outputs.core == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
     env:
       PYTHON: python3
       USER: ""        # check_repo.py's user-name pattern reads USERNAME/USER; "runner" would match prose
@@ -89,15 +176,12 @@ jobs:
           python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --smoke --strict --keep
           python3 -I bench/wex_io.py --file "$RUNNER_TEMP/wex-io-bench.wex4" --smoke --strict
 
-  # the same checks on a 64-bit ARM CPU: the fast WNR3 decoder builds its NEON kernel there (the step fails if it
-  # built another one), and plain char is unsigned. Then the WEX4 tests once more with the scalar kernel forced,
-  # so both kernels are compared with the reference decoder on ARM, and the speed of both (printed, never judged:
-  # a shared runner is not a benchmark machine). The smoke run builds bench/wex_io.c for ARM and runs its 27 read
-  # paths once (the full benchmark was not run on ARM). Then the same checks for a build with SVE, which adds the
-  # SVE kernel 2
+  # 64-bit ARM CPU checks (NEON + scalar + clang). Split from linux-arm-sve so NEON and SVE/QEMU run in parallel.
   linux-arm:
+    needs: changes
+    if: needs.changes.outputs.core == 'true'
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 20   # a green run took 11.8 and 11.7 minutes (runs 43811647711 and 43812551602, 2026-11-16, after the second merges: the job was green in both, though 43811647711's own rollup was failure (its linux-tsan, linux-msan and rust-reader jobs failed)), about 6 of them in the SVE steps
+    timeout-minutes: 15
     env:
       PYTHON: python3
       USER: ""
@@ -146,27 +230,37 @@ jobs:
           ./t_clang.exe equal model.wnm2 L0_E0.rec L0_E1.rec L0_E2.rec L0_E3.rec | tee "$RUNNER_TEMP/clang.log"
           grep -q '^build: NEON kernels' "$RUNNER_TEMP/clang.log"
           ./t_clang.exe mutate model.wnm2 600 20261114 L0_E0.rec L0_E1.rec L0_E2.rec L0_E3.rec
-      # the SVE kernel 2 (gathers) of the fast decoder is built only with an SVE flag, here -march=armv8-a+sve; the
-      # runner's CPU has SVE and SVE2 with 128-bit vectors. The checks of the NEON build again with that flag (they
-      # fail if the build has no SVE kernel), the negative controls with three more for kernel 2, then kernel 2 at
-      # three other vector lengths under emulation. The WEX4 tests and the fuzz replay call the default entry
-      # point, kernel 1, so only the harness runs kernel 2
+
+  # SVE kernel 2 (gathers) on ARM64 + QEMU user-mode emulation at 256-, 512- and 2048-bit vector lengths.
+  linux-arm-sve:
+    needs: changes
+    if: needs.changes.outputs.core == 'true'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    env:
+      PYTHON: python3
+      USER: ""
+      USERNAME: ""
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
+      - name: SVE build, WEX4 tests and fuzz replay (kernel 1)
+        run: |
+          set -o pipefail
+          grep -m1 '^Features' /proc/cpuinfo | grep -o -w -E 'sve|sve2' | tr '\n' ' '; echo
+          WEX4_MARCH=-march=armv8-a+sve bash wex4/build_and_test.sh | tee "$RUNNER_TEMP/sve-wex4.log"
+          grep -q '^fast WNR3 decoder of wex4_tools.dll: NEON+SVE kernels$' "$RUNNER_TEMP/sve-wex4.log"
+          WEX_CFLAGS=-march=armv8-a+sve bash wex4/fuzz/run.sh --replay | tee "$RUNNER_TEMP/sve-replay.log"
+          grep -q '^fast WNR3 decoder of fuzz_wnr3_record: NEON+SVE kernels$' "$RUNNER_TEMP/sve-replay.log"
       - name: SVE build, harness on the synthetic records (kernel 2 with gathers)
         env:
           WEX4_MARCH: -march=armv8-a+sve
         run: |
           set -o pipefail
-          grep -m1 '^Features' /proc/cpuinfo | grep -o -w -E 'sve|sve2' | tr '\n' ' '; echo
           bash wex4/research/fast-cpu-decode/synth.sh check | tee "$RUNNER_TEMP/sve.log"
           grep -q '^build: NEON+SVE kernels' "$RUNNER_TEMP/sve.log"
           grep '^SVE vector length' "$RUNNER_TEMP/sve.log"
-      - name: SVE build, WEX4 tests and fuzz replay (kernel 1)
-        run: |
-          set -o pipefail
-          WEX4_MARCH=-march=armv8-a+sve bash wex4/build_and_test.sh | tee "$RUNNER_TEMP/sve-wex4.log"
-          grep -q '^fast WNR3 decoder of wex4_tools.dll: NEON+SVE kernels$' "$RUNNER_TEMP/sve-wex4.log"
-          WEX_CFLAGS=-march=armv8-a+sve bash wex4/fuzz/run.sh --replay | tee "$RUNNER_TEMP/sve-replay.log"
-          grep -q '^fast WNR3 decoder of fuzz_wnr3_record: NEON+SVE kernels$' "$RUNNER_TEMP/sve-replay.log"
       - name: Speed of the SVE build, kernels 0, 1 and 2 (printed only)
         env:
           WEX4_MARCH: -march=armv8-a+sve
@@ -174,7 +268,6 @@ jobs:
           bash wex4/research/fast-cpu-decode/synth.sh speed 21
           cd wex4/research/fast-cpu-decode/out/synth
           ./t_simd.exe bench model.wnm2 15 L0_E0.rec L0_E1.rec L0_E2.rec L0_E3.rec
-      # the three steps below use the SVE build, the records and the model that synth.sh left in out/synth
       - name: Negative controls of the mutation test (SVE build)
         env:
           WEX4_MARCH: -march=armv8-a+sve
@@ -191,11 +284,10 @@ jobs:
           ./t_clang_sve.exe equal model.wnm2 L0_E0.rec L0_E1.rec L0_E2.rec L0_E3.rec | tee "$RUNNER_TEMP/clang-sve.log"
           grep -q '^build: NEON+SVE kernels' "$RUNNER_TEMP/clang-sve.log"
           ./t_clang_sve.exe mutate model.wnm2 600 20261114 L0_E0.rec L0_E1.rec L0_E2.rec L0_E3.rec
-      # the hardware has 128-bit vectors only; QEMU's user-mode emulator runs the same SVE build (gcc) with 256-,
-      # 512- and 2048-bit vectors (sve-default-vector-length is in bytes). A check of the bytes, not of speed
       - name: SVE build at other vector lengths (QEMU user-mode emulation)
         run: |
           set -o pipefail
+          sudo rm -f /etc/apt/sources.list.d/microsoft*.list /etc/apt/sources.list.d/azure*.list
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends qemu-user
           qemu-aarch64 --version | head -1
@@ -206,11 +298,6 @@ jobs:
             grep -q "^SVE vector length: $((bytes * 8)) bits" "$RUNNER_TEMP/qemu.log"
             $Q ./t_simd.exe mutate model.wnm2 200 20261115 L0_E0.rec L0_E1.rec L0_E2.rec L0_E3.rec
           done
-      # a check passes trivially when no group of kernel 2 forms (the streams of a group are of one matrix, with
-      # one count). Three copies of the header return -1 where the SVE kernel 2 takes a group of 1, 2 or 3 vectors;
-      # a copy is reached when `equal` or `mutate` reports a mismatch. At 2048 bits (64 streams per vector) the
-      # synthetic records (64 weight streams per matrix) reach the 1-vector groups only, and the mini-records of
-      # `mutate` (at most 157 weight streams per matrix) the 1- and 2-vector groups only: those are not required
       - name: SVE build, which kernel 2 groups the checks reach (128 bits on the CPU, 3 lengths under QEMU)
         run: |
           set -o pipefail
@@ -223,8 +310,9 @@ jobs:
                 -e "s/^        $f: return wexf_weights_sve(J, s, $g, 1);/        $f: return -1;/" ../../wex_fast_decode.h > "$R/g$g/wex_fast_decode.h"
             [ "$(grep -c -E '^        (case [0-9]+|default): return -1;$' "$R/g$g/wex_fast_decode.h")" = 2 ]
             cp ../../test_fast_decode.c "$R/g$g/"
-            gcc -std=c11 -O3 -march=armv8-a+sve -fopenmp -I../../../../../c "$R/g$g/test_fast_decode.c" -o "$R/g$g/t.exe"
+            gcc -std=c11 -O3 -march=armv8-a+sve -fopenmp -I../../../../../c "$R/g$g/test_fast_decode.c" -o "$R/g$g/t.exe" &
           done
+          wait
           fail=0
           for bytes in 16 32 64 256; do
             if [ $bytes = 16 ]; then Q=; else Q="qemu-aarch64 -cpu max,sve-default-vector-length=$bytes"; fi
@@ -241,13 +329,11 @@ jobs:
           done
           exit $fail
 
-  # the same checks on macOS, Apple silicon: ARM64 again (the NEON kernel of the fast WNR3 decoder, built by
-  # GNU gcc here; both steps fail if they built another one), with 16 KiB memory pages and the Mach-O
-  # linker. The gcc of Xcode is Apple clang, which has no OpenMP runtime, so CC names a GNU gcc of Homebrew: the
-  # runner image ships several (gcc-13, gcc-14, ...) and the step takes the newest, so no package is downloaded
   macos:
+    needs: changes
+    if: needs.changes.outputs.core == 'true'
     runs-on: macos-15
-    timeout-minutes: 15   # a green run took 4.0 minutes in both runs 43811647711 and 43812551602 (2026-11-16, after the second merges: the job was green in both, though 43811647711's own rollup was failure: its linux-tsan, linux-msan and rust-reader jobs failed)
+    timeout-minutes: 15
     env:
       PYTHON: python3
       USER: ""
@@ -266,11 +352,6 @@ jobs:
           bash scripts/check_all.sh | tee "$RUNNER_TEMP/check.log"
           grep -q '^fast WNR3 decoder of wex4_tools.dll: NEON kernels$' "$RUNNER_TEMP/check.log"
           grep -q '^build: NEON kernels' "$RUNNER_TEMP/check.log"
-      # seconds: the smoke run of bench/wex_io.c on macOS (its blocks __APPLE__: F_NOCACHE, fcntl hints, msync
-      # to drop the file's pages), built with the GNU gcc of CC, then with Apple clang on the container the
-      # first call left. Both builds are C99 (-std=c99 -pedantic); wex_io.py stops on any warning. --strict: the
-      # 17 paths that macOS has must run and match the index; the 10 io_uring, POSIX_FADV_SEQUENTIAL and
-      # readahead(2) paths print "skipped", which --strict does not count on macOS
       - name: macOS read-path benchmark, smoke run (GNU gcc, then Apple clang)
         run: |
           "$CC" --version | head -1; clang --version | head -1
@@ -282,14 +363,12 @@ jobs:
           bash wex4/fuzz/run.sh --replay | tee "$RUNNER_TEMP/replay.log"
           grep -q '^fast WNR3 decoder of fuzz_wnr3_record: NEON kernels$' "$RUNNER_TEMP/replay.log"
 
-  # macOS again, with the compiler of Xcode: Apple clang, which refuses -fopenmp and ships no OpenMP runtime.
-  # WEX_OPENMP gives the scripts the flags that turn OpenMP on in the compiler and the libomp of Homebrew to
-  # link (the first step installs it when the runner image has none, as on 2026-11-15). The CPU checks fail
-  # unless the four scripts that build C name Apple clang and the fast decoder's harness is NEON with OpenMP.
-  # Then the sanitizers on macOS, with Apple clang: the fuzz replay and every CPU check under ASan and UBSan
+  # Apple clang + libomp normal checks (split from macos-clang-sanitizers so normal & ASan/UBSan run in parallel).
   macos-clang:
+    needs: changes
+    if: needs.changes.outputs.core == 'true'
     runs-on: macos-15
-    timeout-minutes: 20   # a green run took 12.8 and 10.0 minutes (runs 43811647711 and 43812551602, 2026-11-16, after the second merges: the job was green in both, though 43811647711's own rollup was failure (its linux-tsan, linux-msan and rust-reader jobs failed))
+    timeout-minutes: 15
     env:
       PYTHON: python3
       USER: ""
@@ -303,8 +382,6 @@ jobs:
         run: |
           brew list libomp > /dev/null 2>&1 || HOMEBREW_NO_AUTO_UPDATE=1 brew install libomp
           P=$(brew --prefix libomp)
-          # the last flag only keeps the log clean: without it every compile-only and preprocessor call warns
-          # that -L and -lomp were not used
           echo "WEX_OPENMP=-Xclang -fopenmp -I$P/include -L$P/lib -lomp -Wno-unused-command-line-argument" >> "$GITHUB_ENV"
           uname -sm; clang --version | head -1; brew list --versions libomp; "$PYTHON" --version
       - name: All CPU checks (Apple clang, libomp, NEON kernel of the fast decoder)
@@ -320,27 +397,38 @@ jobs:
           bash wex4/fuzz/run.sh --replay | tee "$RUNNER_TEMP/replay.log"
           grep -q '^compiler: Apple clang' "$RUNNER_TEMP/replay.log"
           grep -q '^fast WNR3 decoder of fuzz_wnr3_record: NEON kernels$' "$RUNNER_TEMP/replay.log"
-      # the harnesses are executables built with WEX_CFLAGS, so they carry the sanitizer runtime themselves
+
+  macos-clang-sanitizers:
+    needs: changes
+    if: needs.changes.outputs.core == 'true'
+    runs-on: macos-15
+    timeout-minutes: 20
+    env:
+      PYTHON: python3
+      USER: ""
+      USERNAME: ""
+      CC: clang
+      WEX_CFLAGS: -g -fno-omit-frame-pointer -fsanitize=address,undefined -fno-sanitize-recover=undefined
+      UBSAN_OPTIONS: print_stacktrace=1
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
+      - name: OpenMP runtime for Apple clang (libomp of Homebrew)
+        run: |
+          brew list libomp > /dev/null 2>&1 || HOMEBREW_NO_AUTO_UPDATE=1 brew install libomp
+          P=$(brew --prefix libomp)
+          echo "WEX_OPENMP=-Xclang -fopenmp -I$P/include -L$P/lib -lomp -Wno-unused-command-line-argument" >> "$GITHUB_ENV"
       - name: Fuzz harnesses, seeds and mutators replayed under ASan and UBSan (NEON kernel of the fast decoder)
         env:
-          WEX_CFLAGS: -g -fno-omit-frame-pointer -fsanitize=address,undefined -fno-sanitize-recover=undefined
-          ASAN_OPTIONS: detect_leaks=0:abort_on_error=1
-          UBSAN_OPTIONS: print_stacktrace=1
+          ASAN_OPTIONS: detect_leaks=0:abort_on_error=1:fast_unwind_on_malloc=1:malloc_context_size=5
         run: |
           set -o pipefail
           bash wex4/fuzz/run.sh --replay | tee "$RUNNER_TEMP/replay-asan.log"
           grep -q '^fast WNR3 decoder of fuzz_wnr3_record: NEON kernels$' "$RUNNER_TEMP/replay-asan.log"
-      # the tests load the instrumented libraries into Python, so the ASan runtime must be in the interpreter
-      # from its start (loaded later, with the first library, it stops: "Interceptors are not working").
-      # PYTHON names a two-line script that starts python3 with DYLD_INSERT_LIBRARIES. strip_env=0 keeps that
-      # variable for the processes Python starts, which the runtime would otherwise remove: the python3 of
-      # Homebrew is a launcher that starts the interpreter of its framework as a new program, and
-      # wex4/test_wex4.py runs wex4_convert.py in a child Python that loads wex4_tools.dll
       - name: All CPU checks under ASan and UBSan (NEON kernel of the fast decoder)
         env:
-          WEX_CFLAGS: -g -fno-omit-frame-pointer -fsanitize=address,undefined -fno-sanitize-recover=undefined
-          ASAN_OPTIONS: detect_leaks=0:abort_on_error=1:strip_env=0
-          UBSAN_OPTIONS: print_stacktrace=1
+          ASAN_OPTIONS: detect_leaks=0:abort_on_error=1:strip_env=0:fast_unwind_on_malloc=1:malloc_context_size=5
         run: |
           ASAN_LIB=$(clang -print-resource-dir)/lib/darwin/libclang_rt.asan_osx_dynamic.dylib
           test -f "$ASAN_LIB"
@@ -352,8 +440,10 @@ jobs:
           grep -q '^build: NEON kernels, OpenMP;' "$RUNNER_TEMP/asan.log"
 
   windows:
+    needs: changes
+    if: needs.changes.outputs.core == 'true'
     runs-on: windows-2022
-    timeout-minutes: 15   # a green run took 5.5 and 4.1 minutes (runs 43811647711 and 43812551602, 2026-11-16, after the second merges: the job was green in both, though 43811647711's own rollup was failure (its linux-tsan, linux-msan and rust-reader jobs failed)), about 1 of them in the bench.py step
+    timeout-minutes: 15
     env:
       USER: ""
       USERNAME: ""
@@ -368,25 +458,13 @@ jobs:
         with:
           msystem: UCRT64
           update: false
-          # the action already caches the downloaded packages (cache: true is its default); the time left is
-          # unpacking them, so the list is short. no MSYS2 git: it brings perl and openssh, 41 packages of 79
-          # libgomp.a ships in its own package in current MSYS2; without it -fopenmp links fail
           install: mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-libgomp mingw-w64-ucrt-x86_64-python
       - name: All CPU checks
-        # check_repo.py calls git: the runner's Git for Windows, which made the checkout. only its folder is
-        # appended, so nothing else of the Windows PATH reaches the MSYS2 shell (path-type stays minimal)
         run: |
           export PATH="$PATH:/c/Program Files/Git/cmd"
           bash scripts/check_all.sh
       - name: Fuzz harnesses, seeds and mutators replayed
         run: bash wex4/fuzz/run.sh --replay
-      # the Windows code of bench/bench.py: a --quick run (a 4 GiB file in RUNNER_TEMP, about a minute) without h2d
-      # (no CUDA here) and wex_check (the step above ran the same checks). Its numbers are not judged (a shared
-      # runner), only that every section gave them through the Windows calls: CPU name, AVX2 and RAM from the
-      # Windows API, both passes of every read with FILE_FLAG_NO_BUFFERING. wex_check, with its command line
-      # caught instead of run and System32 put first on PATH: it must start the full path of the MSYS2 bash, not
-      # the WSL launcher of System32 (this runner has one), which a bare "bash" would give. A --file that does not
-      # exist: its error must reach results.json with <FILE> in place of the path and no user-profile folder
       - name: Hardware benchmark (bench.py), quick run
         run: |
           set -e
@@ -398,20 +476,17 @@ jobs:
           grep -q '<FILE>' bench/out/results.json
           ! grep -n -i -e 'users[\\/]' -e 'runneradmin' bench/out/results.json
 
-  # the same checks with every C file they build compiled under AddressSanitizer and UndefinedBehaviorSanitizer: an out-of-bounds
-  # read or write, a use after free or undefined behaviour in a reader, a decoder or the in-process fuzzer stops
-  # the run with a report. The tests load the instrumented libraries into Python (ctypes), which is not
-  # instrumented, so the ASan runtime is preloaded; leak detection is off (the Python interpreter and gcc itself
-  # do not free everything at exit)
   linux-sanitizers:
+    needs: changes
+    if: needs.changes.outputs.core == 'true'
     runs-on: ubuntu-24.04
-    timeout-minutes: 30   # a green run took 5.2 and 7.3 minutes (runs 43811647711 and 43812551602, 2026-11-16, after the second merges: the job was green in both, though 43811647711's own rollup was failure (its linux-tsan, linux-msan and rust-reader jobs failed))
+    timeout-minutes: 25
     env:
       PYTHON: python3
       USER: ""
       USERNAME: ""
       WEX_CFLAGS: -g -fno-omit-frame-pointer -fsanitize=address,undefined -fno-sanitize-recover=undefined
-      ASAN_OPTIONS: detect_leaks=0:abort_on_error=1
+      ASAN_OPTIONS: detect_leaks=0:abort_on_error=1:fast_unwind_on_malloc=1:malloc_context_size=5
       UBSAN_OPTIONS: print_stacktrace=1
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
@@ -422,26 +497,23 @@ jobs:
           LD_PRELOAD=$(gcc -print-file-name=libasan.so)
           export LD_PRELOAD
           bash scripts/check_all.sh
-      # the harnesses are executables built with WEX_CFLAGS, so they carry the sanitizer runtimes themselves
       - name: Fuzz harnesses, seeds and mutators replayed under ASan and UBSan
         run: bash wex4/fuzz/run.sh --replay
-      # bench/wex_io.py appends WEX_CFLAGS too: its pread and io_uring paths under the sanitizers
       - name: Linux read-path benchmark, smoke run under ASan and UBSan
         run: python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --smoke --strict
 
-  # linux-sanitizers on a 64-bit ARM CPU: the same flags, options and preload, so the NEON kernel of the fast WNR3
-  # decoder runs under ASan and UBSan, in the library the tests load into Python, in its own harness and in the
-  # fuzz replay. Two steps fail unless the kernel they built is NEON
+  # ARM64 ASan+UBSan split into two parallel jobs (checks vs fuzz replay) with fast frame-pointer malloc unwind.
   linux-arm-sanitizers:
+    needs: changes
+    if: needs.changes.outputs.core == 'true'
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 45   # a green run took 26.0 and 26.3 minutes (runs 43811647711 and 43812551602, 2026-11-16, after the second merges: the job was green in both, though 43811647711's own rollup was failure (its linux-tsan, linux-msan and rust-reader jobs failed)), about 18 of them in the replay of
-                          # fuzz_wnr3_cuda under ASan and UBSan; 8.4 to 8.7 minutes before that harness was merged
+    timeout-minutes: 25
     env:
       PYTHON: python3
       USER: ""
       USERNAME: ""
       WEX_CFLAGS: -g -fno-omit-frame-pointer -fsanitize=address,undefined -fno-sanitize-recover=undefined
-      ASAN_OPTIONS: detect_leaks=0:abort_on_error=1
+      ASAN_OPTIONS: detect_leaks=0:abort_on_error=1:fast_unwind_on_malloc=1:malloc_context_size=5
       UBSAN_OPTIONS: print_stacktrace=1
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
@@ -455,25 +527,36 @@ jobs:
           bash scripts/check_all.sh | tee "$RUNNER_TEMP/check.log"
           grep -q '^fast WNR3 decoder of wex4_tools.dll: NEON kernels$' "$RUNNER_TEMP/check.log"
           grep -q '^build: NEON kernels' "$RUNNER_TEMP/check.log"
+      - name: Linux read-path benchmark, smoke run under ASan and UBSan
+        run: python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --smoke --strict
+
+  linux-arm-sanitizers-replay:
+    needs: changes
+    if: needs.changes.outputs.core == 'true'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 25
+    env:
+      PYTHON: python3
+      USER: ""
+      USERNAME: ""
+      WEX_CFLAGS: -g -fno-omit-frame-pointer -fsanitize=address,undefined -fno-sanitize-recover=undefined
+      ASAN_OPTIONS: detect_leaks=0:abort_on_error=1:fast_unwind_on_malloc=1:malloc_context_size=5
+      UBSAN_OPTIONS: print_stacktrace=1
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
       - name: Fuzz harnesses, seeds and mutators replayed under ASan and UBSan (NEON kernel of the fast decoder)
         run: |
           set -o pipefail
           bash wex4/fuzz/run.sh --replay | tee "$RUNNER_TEMP/replay.log"
           grep -q '^fast WNR3 decoder of fuzz_wnr3_record: NEON kernels$' "$RUNNER_TEMP/replay.log"
-      - name: Linux read-path benchmark, smoke run under ASan and UBSan
-        run: python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --smoke --strict
 
-  # the C test executables under ThreadSanitizer: clang with its own OpenMP runtime and Archer, the tool of that
-  # runtime that tells ThreadSanitizer what OpenMP synchronizes. A data race in the OpenMP loops of
-  # c/tools/wex4_verify.c or of the fast WNR3 decoder stops the run. Then the three libraries that the Python
-  # tests load, built under ThreadSanitizer: called from a C program (scripts/sanitize_libs.c), then by the WEX4
-  # tests in Python with the runtime preloaded (scripts/sanitize_c.sh lists what runs).
-  # Then the smoke run of bench/wex_io.c, which has its own pread threads, under ThreadSanitizer.
-# The last step is not a sanitizer run: every CPU check built with clang, so that CC=clang keeps working.
-# The four scripts that build C print their compiler, and the step fails unless all four name a clang
   linux-tsan:
+    needs: changes
+    if: needs.changes.outputs.core == 'true'
     runs-on: ubuntu-24.04
-    timeout-minutes: 30   # a green run took 8.6 minutes (run 43812551602, 2026-11-16, after the second merges); raised from 15 because on the head of pull request 51 the job ran to the limit and was cut there (run 44202436823, job 134459690635, 2026-11-18, killed at 15m17s with fuzz_wnr3_cuda-replay the last live process): the WNR3 fast decoder is in that harness's libraries now, so the replay under TSan is longer than it was
+    timeout-minutes: 25
     env:
       PYTHON: python3
       USER: ""
@@ -484,12 +567,32 @@ jobs:
           persist-credentials: false
       - name: OpenMP runtime of the installed clang
         run: |
+          sudo rm -f /etc/apt/sources.list.d/microsoft*.list /etc/apt/sources.list.d/azure*.list
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends "libomp-$(clang -dumpversion | cut -d. -f1)-dev"
       - name: C tests and the libraries of the Python tests under ThreadSanitizer
         run: bash scripts/sanitize_c.sh tsan
       - name: Linux read-path benchmark, smoke run under ThreadSanitizer
         run: CC=clang WEX_CFLAGS="-g -fsanitize=thread" python3 -I bench/wex_io.py --dir "$RUNNER_TEMP" --smoke --strict
+
+  linux-clang:
+    needs: changes
+    if: needs.changes.outputs.core == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHON: python3
+      USER: ""
+      USERNAME: ""
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
+      - name: OpenMP runtime of the installed clang
+        run: |
+          sudo rm -f /etc/apt/sources.list.d/microsoft*.list /etc/apt/sources.list.d/azure*.list
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends "libomp-$(clang -dumpversion | cut -d. -f1)-dev"
       - name: All CPU checks built with clang
         run: |
           set -o pipefail
@@ -498,12 +601,11 @@ jobs:
           test "$(grep -c '^compiler: ' "$RUNNER_TEMP/clang.log")" = 4
           test "$(grep -c '^compiler: .*clang' "$RUNNER_TEMP/clang.log")" = 4
 
-  # the same executables, and the libraries of the Python tests called from scripts/sanitize_libs.c, under
-  # MemorySanitizer (clang), built without OpenMP, so that no library that is not instrumented is in the process
-  # (nor Python): a branch, a pointer or a system call that depends on a byte nobody wrote stops the run
   linux-msan:
+    needs: changes
+    if: needs.changes.outputs.core == 'true'
     runs-on: ubuntu-24.04
-    timeout-minutes: 15   # a green run took 3.7 minutes (run 43812551602, 2026-11-16, after the second merges)
+    timeout-minutes: 15
     env:
       PYTHON: python3
     steps:
@@ -513,17 +615,11 @@ jobs:
       - name: C tests and the libraries of the Python tests under MemorySanitizer
         run: bash scripts/sanitize_c.sh msan
 
-  # the Go reader and writer of WEX4 (impl/go-wex4: Go, standard library only, written from the specifications
-  # and not from the reference code): gofmt, go vet, its tests, and every row of wex4/vectors/MANIFEST.tsv,
-  # content digests included, then every row of impl/go-wex4/testdata/wnr4-MANIFEST.tsv (codec 8, WNR4 kinds GG
-  # and I4: the content digest of the RAW source, or the verdict of WEX4-SPEC 7.3). The
-  # tests give the files of the Go writer to the reference readers, which run.sh builds with the runner's gcc
-  # and python3; WEX4_NEED_REFERENCE=1 makes a missing one a failure. It is not part of scripts/check_all.sh,
-  # so that Go is not needed for the repository's checks. The runner's own Go is used (the code needs the min
-  # and max builtins of Go 1.21 and no module)
   go-reader:
+    needs: changes
+    if: needs.changes.outputs.go == 'true'
     runs-on: ubuntu-24.04
-    timeout-minutes: 15   # the job took 36 and 40 seconds (runs 44202443775 and 44202436823, 2026-11-18); the default lets a hung reader hold the runner for 6 hours
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
         with:
@@ -533,18 +629,11 @@ jobs:
           WEX4_NEED_REFERENCE: "1"
         run: bash impl/go-wex4/run.sh
 
-  # the Rust reader of WEX4 (impl/rust-wex4: Rust, standard library only, written from the specifications and not
-  # from the reference code or the Go reader): rustfmt, its tests, every row of wex4/vectors/MANIFEST.tsv and the
-  # files of impl/go-wex4/testdata, the codec-8 ones by their wnr4-MANIFEST.tsv. Then a differential run:
-  # wex4/build_and_test.sh builds the library of the C reader (and runs the WEX4 tests once more, with a short
-  # fuzz), and differential.py must find the verdict of the C and of the Python reader on every hand-made and
-  # mutated file. Neither of them decodes codec 8, so for the codec-8 files it checks the manifest's verdicts and
-  # RAW-source digests, the C reader's verdict with hashes only on 2,000 mutated copies, and that the Go reader
-  # (built here with the runner's Go) and this one agree on every codec-8 file. The runner's own cargo is used.
-  # Not part of scripts/check_all.sh, so that Rust is not needed for the repository's checks
   rust-reader:
+    needs: changes
+    if: needs.changes.outputs.rust == 'true'
     runs-on: ubuntu-24.04
-    timeout-minutes: 15   # the job took 1m20 and 1m29 seconds (runs 44202436823 and 44202443775, 2026-11-18); the default lets a hung reader hold the runner for 6 hours
+    timeout-minutes: 15
     env:
       PYTHON: python3
       USER: ""
@@ -561,6 +650,44 @@ jobs:
         run: cd impl/go-wex4 && go build -o out/wex4check .
       - name: Rust reader against the C and the Python reader, hand-made and 7,000 mutated files; codec 8 against the manifest, the C reader's hashes and the Go reader, 2,000 mutated files
         run: python3 -I impl/rust-wex4/differential.py --count 7000 --wnr4-count 2000 --go impl/go-wex4/out/wex4check impl/rust-wex4/out/target/release/wex4r "$RUNNER_TEMP/differential"
+
+  # Dedicated fast cross-platform libwex SDK matrix (runs when libwex/scripts/test_libwex.sh is present and touched).
+  libwex:
+    needs: changes
+    if: needs.changes.outputs.libwex == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-24.04-arm, macos-15, windows-2022]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    env:
+      USER: ""
+      USERNAME: ""
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803  # v6.1.0
+        with:
+          persist-credentials: false
+      - if: matrix.os == 'windows-2022'
+        uses: msys2/setup-msys2@ec48f7c5447b3140e2b088413ae3a55687bccb6e  # v2.33.0
+        with:
+          msystem: UCRT64
+          update: false
+          install: mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-python
+      - if: matrix.os == 'windows-2022'
+        name: libwex SDK tests (Windows MSYS2 UCRT64)
+        shell: msys2 {0}
+        run: bash libwex/scripts/test_libwex.sh
+      - if: matrix.os != 'windows-2022'
+        name: libwex SDK tests (POSIX)
+        env:
+          PYTHON: python3
+        run: |
+          if [ "$(uname -s)" = Darwin ]; then
+            CC=$(ls "$(brew --prefix)"/bin/gcc-[0-9]* | sort -t- -k2 -n | tail -1)
+            export CC
+          fi
+          bash libwex/scripts/test_libwex.sh
 
   # A measurement, not a check: the full bench/wex_io.py, only when a manual run asks for it
   # (gh workflow run ci.yml --ref <branch> -f linux_io_bench=true). The runner is a shared cloud VM with a
@@ -700,6 +827,7 @@ jobs:
       # spirv-tools and gdb only for the crash probe below
       - name: Vulkan headers, loader, shader compiler, lavapipe and the validation layer
         run: |
+          sudo rm -f /etc/apt/sources.list.d/microsoft*.list /etc/apt/sources.list.d/azure*.list
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends libvulkan-dev glslang-tools mesa-vulkan-drivers vulkan-validationlayers \
               spirv-tools gdb

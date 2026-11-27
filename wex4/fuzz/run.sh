@@ -181,27 +181,117 @@ engine_extras() {   # --replay, after the runs
   done
 }
 
+wex_jobs() {
+  if [ -n "${WEX_NO_PARALLEL-}" ]; then echo 1; return; fi
+  if [ -n "${WEX_JOBS-}" ]; then echo "$WEX_JOBS"; return; fi
+  local n=4
+  if command -v nproc >/dev/null 2>&1; then n=$(nproc)
+  elif command -v sysctl >/dev/null 2>&1; then n=$(sysctl -n hw.ncpu 2>/dev/null || echo 4)
+  elif command -v getconf >/dev/null 2>&1; then n=$(getconf _NPROCESSORS_ONLN 2>/dev/null || echo 4)
+  fi
+  case $n in ''|*[!0-9]*|0) n=1 ;; esac
+  echo "$n"
+}
+
 if [ "${1-}" = --replay ]; then
   # the compiler, and which kernels of the fast WNR3 decoder fuzz_wnr3_record compares with the reference under
   # these flags (WEXF_KERNELS of wex_fast_decode.h): AVX2, NEON, NEON+SVE (WEX_CFLAGS=-march=armv8-a+sve) or scalar
   CC_USED=${CC:-gcc}
   CXX_USED=${CXX:-$(cxx_of "$CC_USED")}
+  JOBS=$(wex_jobs)
   echo "compiler: $("$CC_USED" --version | sed -n 1p)"
   echo "C++ compiler of fuzz_wnr3_cuda: $("$CXX_USED" --version | sed -n 1p)"
   KERNELS=$(printf '#include "wex_fast_decode.h"\nkernels WEXF_KERNELS\n' |
             "$CC_USED" ${WEX_CFLAGS-} $MARCH -E -P $INC -x c - | sed -n 's/^kernels "\(.*\)"$/\1/p')
   echo "fast WNR3 decoder of fuzz_wnr3_record: $KERNELS kernels"
-  for h in $HARNESSES; do
-    build "$h" "$O/$h-replay$EXE" -O2 $W ${WEX_CFLAGS-} $MARCH -DWEX_FUZZ_STANDALONE $INC
-  done
-  for run in $RUNS; do
-    harness_of "$run"
-    echo "== $run"
-    seeds_of "$run"
-    files=()
-    for d in "${SEEDS[@]}"; do files+=("$d"/*); done
-    "$O/$H-replay$EXE" "${files[@]}"
-  done
+  if [ "$JOBS" -le 1 ]; then
+    for h in $HARNESSES; do
+      build "$h" "$O/$h-replay$EXE" -O2 $W ${WEX_CFLAGS-} $MARCH -DWEX_FUZZ_STANDALONE $INC
+    done
+    for run in $RUNS; do
+      harness_of "$run"
+      echo "== $run"
+      seeds_of "$run"
+      files=()
+      for d in "${SEEDS[@]}"; do files+=("$d"/*); done
+      "$O/$H-replay$EXE" "${files[@]}"
+    done
+  else
+    # Compile all 6 harnesses in parallel
+    bpids=()
+    bnames=()
+    for h in $HARNESSES; do
+      bnames+=("$h")
+      build "$h" "$O/$h-replay$EXE" -O2 $W ${WEX_CFLAGS-} $MARCH -DWEX_FUZZ_STANDALONE $INC > "$O/$h-build.log" 2>&1 &
+      bpids+=($!)
+    done
+    brc=0
+    for i in "${!bnames[@]}"; do
+      s=0; wait "${bpids[$i]}" || s=$?
+      if [ -s "$O/${bnames[$i]}-build.log" ]; then cat "$O/${bnames[$i]}-build.log"; fi
+      if [ "$s" != 0 ]; then brc=$s; fi
+    done
+    [ "$brc" = 0 ] || exit "$brc"
+
+    # Run the 6 fast replay suites in parallel; shard fuzz_wnr3_cuda across min(JOBS, 4) processes
+    CUDA_SHARDS=$JOBS
+    if [ "$CUDA_SHARDS" -gt 4 ]; then CUDA_SHARDS=4; fi
+    rpids=()
+    rnames=()
+    for run in $RUNS; do
+      [ "$run" = fuzz_wnr3_cuda ] && continue
+      harness_of "$run"
+      rnames+=("$run")
+      (
+        seeds_of "$run"
+        files=()
+        for d in "${SEEDS[@]}"; do files+=("$d"/*); done
+        "$O/$H-replay$EXE" "${files[@]}"
+      ) > "$O/$run-replay.log" 2>&1 &
+      rpids+=($!)
+    done
+    seeds_of fuzz_wnr3_cuda
+    cuda_files=()
+    for d in "${SEEDS[@]}"; do cuda_files+=("$d"/*); done
+    cpids=()
+    if [ "${#cuda_files[@]}" -ge $((CUDA_SHARDS * 2)) ] && [ "$CUDA_SHARDS" -gt 1 ]; then
+      sh=0
+      while [ "$sh" -lt "$CUDA_SHARDS" ]; do
+        shard_files=()
+        idx=0
+        for f in "${cuda_files[@]}"; do
+          if [ $((idx % CUDA_SHARDS)) -eq "$sh" ]; then shard_files+=("$f"); fi
+          idx=$((idx + 1))
+        done
+        if [ "$sh" -eq 0 ]; then
+          "$O/fuzz_wnr3_cuda-replay$EXE" "${shard_files[@]}" > "$O/fuzz_wnr3_cuda-s$sh.log" 2>&1 &
+        else
+          WEX_FUZZ_NO_SELFTEST=1 "$O/fuzz_wnr3_cuda-replay$EXE" "${shard_files[@]}" > "$O/fuzz_wnr3_cuda-s$sh.log" 2>&1 &
+        fi
+        cpids+=($!)
+        sh=$((sh + 1))
+      done
+    else
+      "$O/fuzz_wnr3_cuda-replay$EXE" "${cuda_files[@]}" > "$O/fuzz_wnr3_cuda-s0.log" 2>&1 &
+      cpids+=($!)
+    fi
+
+    rrc=0
+    for i in "${!rnames[@]}"; do
+      run=${rnames[$i]}
+      s=0; wait "${rpids[$i]}" || s=$?
+      echo "== $run"
+      cat "$O/$run-replay.log"
+      if [ "$s" != 0 ]; then rrc=$s; fi
+    done
+    echo "== fuzz_wnr3_cuda"
+    for i in "${!cpids[@]}"; do
+      s=0; wait "${cpids[$i]}" || s=$?
+      cat "$O/fuzz_wnr3_cuda-s$i.log"
+      if [ "$s" != 0 ]; then rrc=$s; fi
+    done
+    [ "$rrc" = 0 ] || exit "$rrc"
+  fi
   engine_extras
   echo "fuzz replay passed"
   exit 0
@@ -256,25 +346,62 @@ KERNELS=$(printf '#include "wex_fast_decode.h"\nkernels WEXF_KERNELS\n' |
           "$CC_USED" $MARCH -E -P $INC -x c - | sed -n 's/^kernels "\(.*\)"$/\1/p')
 echo "fast WNR3 decoder of fuzz_wnr3_record: $KERNELS kernels"
 SAN="-g -O1 -fno-omit-frame-pointer -fsanitize=fuzzer,address,undefined -fno-sanitize-recover=undefined"
-for h in $HARNESSES; do
-  build "$h" "$O/$h$EXE" $W $SAN $MARCH $INC
-done
+JOBS=$(wex_jobs)
+if [ "$JOBS" -le 1 ]; then
+  for h in $HARNESSES; do
+    build "$h" "$O/$h$EXE" $W $SAN $MARCH $INC
+  done
+else
+  bpids=()
+  bnames=()
+  for h in $HARNESSES; do
+    bnames+=("$h")
+    build "$h" "$O/$h$EXE" $W $SAN $MARCH $INC > "$O/$h-fuzzbuild.log" 2>&1 &
+    bpids+=($!)
+  done
+  brc=0
+  for i in "${!bnames[@]}"; do
+    s=0; wait "${bpids[$i]}" || s=$?
+    if [ -s "$O/${bnames[$i]}-fuzzbuild.log" ]; then cat "$O/${bnames[$i]}-fuzzbuild.log"; fi
+    if [ "$s" != 0 ]; then brc=$s; fi
+  done
+  [ "$brc" = 0 ] || exit "$brc"
+fi
+# Run libFuzzer harnesses in parallel waves of up to min(JOBS, 4) so fixed-time runs overlap across runner cores
+FUZZ_CONC=$JOBS
+if [ "$FUZZ_CONC" -gt 4 ]; then FUZZ_CONC=4; fi
+RSS_LIMIT=4096
+if [ "$FUZZ_CONC" -gt 1 ]; then RSS_LIMIT=2048; fi
+RUN_ARR=($RUNS)
 failed=""
-for run in $RUNS; do
-  harness_of "$run"
-  # the largest seed file is 843,776 B; a WNR3 record of the base file decodes to 13,056 B (16,384 aligned)
-  if [ "$H" = fuzz_wnr3_record ]; then max_len=16384; else max_len=1048576; fi
-  # the magic numbers of the containers and records, for the harnesses whose input is a whole file
-  if [ "$H" = fuzz_wnr3_record ]; then dict=(); else dict=("-dict=$ROOT/wex4/fuzz/wex.dict"); fi
-  seeds_of "$run"
-  mkdir -p "$O/corpus/$run"
-  echo "== $run: $SECONDS_EACH s"
-  "$O/$H$EXE" -max_total_time="$SECONDS_EACH" -max_len=$max_len -timeout=60 -rss_limit_mb=4096 ${dict[@]+"${dict[@]}"} \
-      -artifact_prefix="$O/crashes/$run-" -print_final_stats=1 "$O/corpus/$run" "${SEEDS[@]}" \
-      > "$O/$run.log" 2>&1 || failed="$failed $run"
-  # the last progress line (cov: the instrumented edges reached), libFuzzer's counters, the harness's own summary
-  grep -E '^#[0-9]+.* cov: ' "$O/$run.log" | tail -1 | sed -E 's/^#[0-9]+[[:space:]]+[A-Za-z]+[[:space:]]+(cov: [0-9]+ ft: [0-9]+ corp: [^ ]+).*/\1/' || true
-  grep -E '^(stat::number_of_executed_units|stat::new_units_added|stat::peak_rss_mb|fuzz_[a-z0-9_]+( other paths| failing reads)?: )' "$O/$run.log" || true
+idx=0
+while [ "$idx" -lt "${#RUN_ARR[@]}" ]; do
+  wpids=()
+  wnames=()
+  slot=0
+  while [ "$slot" -lt "$FUZZ_CONC" ] && [ "$idx" -lt "${#RUN_ARR[@]}" ]; do
+    run=${RUN_ARR[$idx]}
+    harness_of "$run"
+    if [ "$H" = fuzz_wnr3_record ]; then max_len=16384; else max_len=1048576; fi
+    if [ "$H" = fuzz_wnr3_record ]; then dict=(); else dict=("-dict=$ROOT/wex4/fuzz/wex.dict"); fi
+    seeds_of "$run"
+    mkdir -p "$O/corpus/$run"
+    wnames+=("$run")
+    "$O/$H$EXE" -max_total_time="$SECONDS_EACH" -max_len=$max_len -timeout=60 -rss_limit_mb=$RSS_LIMIT ${dict[@]+"${dict[@]}"} \
+        -artifact_prefix="$O/crashes/$run-" -print_final_stats=1 "$O/corpus/$run" "${SEEDS[@]}" \
+        > "$O/$run.log" 2>&1 &
+    wpids+=($!)
+    slot=$((slot + 1))
+    idx=$((idx + 1))
+  done
+  for i in "${!wnames[@]}"; do
+    run=${wnames[$i]}
+    echo "== $run: $SECONDS_EACH s"
+    wait "${wpids[$i]}" || failed="$failed $run"
+    # the last progress line (cov: the instrumented edges reached), libFuzzer's counters, the harness's own summary
+    grep -E '^#[0-9]+.* cov: ' "$O/$run.log" | tail -1 | sed -E 's/^#[0-9]+[[:space:]]+[A-Za-z]+[[:space:]]+(cov: [0-9]+ ft: [0-9]+ corp: [^ ]+).*/\1/' || true
+    grep -E '^(stat::number_of_executed_units|stat::new_units_added|stat::peak_rss_mb|fuzz_[a-z0-9_]+( other paths| failing reads)?: )' "$O/$run.log" || true
+  done
 done
 if [ -n "$failed" ]; then
   for run in $failed; do echo "== $run stopped; the end of its log:"; tail -40 "$O/$run.log"; done

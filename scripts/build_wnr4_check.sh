@@ -14,7 +14,7 @@ ROOT=$(cd "$(dirname "$0")/.." && pwd)
 O=$ROOT/out/wnr4-check
 rm -rf "$O" && mkdir -p "$O"
 # gcc from Git Bash cannot create temporary files under C:\WINDOWS
-export TMP="$ROOT/out" TEMP="$ROOT/out"
+export TMP="$O" TEMP="$O"
 CC=${CC:-gcc}
 OMP=${WEX_OPENMP:--fopenmp}
 case $(uname -m) in
@@ -24,9 +24,32 @@ esac
 echo "compiler: $("$CC" --version | sed -n 1p), -O2 $MARCH $OMP"
 W="-O2 -Wall -Wextra -Wno-unused-parameter -Wno-unused-function $MARCH $OMP ${WEX_CFLAGS-}"
 cd "$O"
-for t in test_wnr4 test_wnr4_gg test_wnr4_i4; do
-  echo "== wnr4/tests/$t.c"
-  "$CC" $W "$ROOT/wnr4/tests/$t.c" -o "$t.exe"
-  "./$t.exe"
-done
+TESTS="test_wnr4 test_wnr4_gg test_wnr4_i4"
+if [ -n "${WEX_NO_PARALLEL-}" ]; then
+  for t in $TESTS; do
+    echo "== wnr4/tests/$t.c"
+    "$CC" $W "$ROOT/wnr4/tests/$t.c" -o "$t.exe"
+    "./$t.exe"
+  done
+else
+  pids=()
+  for t in $TESTS; do
+    (
+      "$CC" $W "$ROOT/wnr4/tests/$t.c" -o "$t.exe"
+      "./$t.exe"
+    ) > "$t.log" 2>&1 &
+    pids+=($!)
+  done
+  rc=0
+  i=0
+  for t in $TESTS; do
+    s=0
+    wait "${pids[$i]}" || s=$?
+    echo "== wnr4/tests/$t.c"
+    cat "$t.log"
+    if [ "$s" != 0 ]; then rc=$s; fi
+    i=$((i + 1))
+  done
+  [ "$rc" = 0 ] || exit "$rc"
+fi
 echo "WNR4 CPU check passed"

@@ -16,10 +16,19 @@
 #include <stdio.h>
 
 static int failures = 0;
+#ifdef _OPENMP
+#define CHECK(c, ...) do { if (!(c)) { \
+    _Pragma("omp critical(wnr4_i4_check)") { \
+        failures++; printf("FAIL %s:%d: ", __FILE__, __LINE__); printf(__VA_ARGS__); printf("\n"); \
+    } \
+} } while (0)
+#else
 #define CHECK(c, ...) do { if (!(c)) { failures++; printf("FAIL %s:%d: ", __FILE__, __LINE__); printf(__VA_ARGS__); printf("\n"); } } while (0)
+#endif
 
 static uint64_t rs = 0x9E3779B97F4A7C15ull;
 static uint32_t rnd(void) { rs ^= rs << 13; rs ^= rs >> 7; rs ^= rs << 17; return (uint32_t)(rs >> 16); }
+static uint32_t rnd_local(uint64_t *s) { *s ^= *s << 13; *s ^= *s >> 7; *s ^= *s << 17; return (uint32_t)(*s >> 16); }
 static uint32_t get16(const unsigned char *p) { return (uint32_t)p[0] | (uint32_t)p[1] << 8; }
 static void put16(unsigned char *p, uint32_t v) { p[0] = (unsigned char)v; p[1] = (unsigned char)(v >> 8); }
 
@@ -69,23 +78,50 @@ static void train(uint32_t skew, unsigned char *blob, Wnr4I4Model *m) {
 static void flips(const char *name, uint32_t G, const Wnr4I4Model *m, const Wnr4I4Geo *g, const unsigned char *rec,
                   size_t n, uint32_t owner, const unsigned char *src, unsigned char *bad, unsigned char *out) {
     Wnr4I4Record r;
-    size_t end[5], b;
-    int tried[5] = {0}, refused[5] = {0}, same = 0, k = 0;
+    size_t end[5];
+    int tried[5] = {0}, refused[5] = {0}, same = 0;
+    (void)bad; (void)out;
     if (wnr4_i4_parse(rec, n, g, &r)) { CHECK(0, "%s G=%u: parse", name, G); return; }
     end[0] = WNR4_HEADER_BYTES; end[1] = (size_t)(r.bases - rec); end[2] = (size_t)(r.data - rec);
     end[3] = end[2] + r.payload; end[4] = n;
-    memcpy(bad, rec, n);
-    for (b = 0; b < 8u * n; b++) {
-        while (b / 8u >= end[k]) k++;
-        bad[b / 8u] ^= (unsigned char)(1u << (b % 8u));
-        tried[k]++;
-        if (wnr4_i4_decode(m, g, bad, n, owner, out, 1)) refused[k]++;
+#ifdef _OPENMP
+#pragma omp parallel
+#endif
+    {
+        unsigned char *tbad = malloc(n);
+        unsigned char *tout = malloc(g->raw);
+        int ltried[5] = {0}, lrefused[5] = {0}, lsame = 0;
+        size_t b;
+        if (!tbad || !tout) { CHECK(0, "%s G=%u: oom in flips", name, G); }
         else {
-            same++;
-            CHECK(!memcmp(out, src, g->raw) && (k == 2 || (k == 0 && b / 8u >= 28u && b / 8u < 34u)),
-                  "%s G=%u: flip of record bit %u accepted (region %d)", name, G, (unsigned)b, k);
+            memcpy(tbad, rec, n);
+#ifdef _OPENMP
+#pragma omp for schedule(static)
+#endif
+            for (b = 0; b < 8u * n; b++) {
+                size_t byte = b / 8u;
+                int k = 0;
+                while (k < 4 && byte >= end[k]) k++;
+                tbad[byte] ^= (unsigned char)(1u << (b % 8u));
+                ltried[k]++;
+                if (wnr4_i4_decode(m, g, tbad, n, owner, tout, 1)) lrefused[k]++;
+                else {
+                    lsame++;
+                    CHECK(!memcmp(tout, src, g->raw) && (k == 2 || (k == 0 && byte >= 28u && byte < 34u)),
+                          "%s G=%u: flip of record bit %u accepted (region %d)", name, G, (unsigned)b, k);
+                }
+                tbad[byte] ^= (unsigned char)(1u << (b % 8u));
+            }
         }
-        bad[b / 8u] ^= (unsigned char)(1u << (b % 8u));
+        free(tbad); free(tout);
+#ifdef _OPENMP
+#pragma omp critical(wnr4_i4_flips)
+#endif
+        {
+            int j;
+            for (j = 0; j < 5; j++) { tried[j] += ltried[j]; refused[j] += lrefused[j]; }
+            same += lsame;
+        }
     }
     printf("  %s G=%u single-bit flips: header %d, offsets %d, bases %d, tiles %d, padding %d: %d refused, %d (a base"
            " or an anchor that is not used) decoded to the same bytes\n", name, G, tried[0], tried[1], tried[2], tried[3],
@@ -135,16 +171,34 @@ static void roundtrip(const Case *cs, const Wnr4I4Model *m, const Wnr4I4Model *o
         if (gi == 0 && fuzz) {   /* random flips in the used bytes and a little of the padding, 1..3 per trial */
             int refused = 0, noop = 0, ident = 0;
             size_t used = n;
+            uint64_t base_seed;
             while (used && !rec[used - 1]) used--;
             used = used + 16u < n ? used + 16u : n;
-            for (it = 0; it < fuzz; it++) {
-                int k, f = 1 + (int)(rnd() % 3u);
-                memcpy(bad, rec, n);
-                for (k = 0; k < f; k++) bad[rnd() % used] ^= (unsigned char)(1u << (rnd() % 8u));
-                if (!memcmp(bad, rec, n)) { noop++; continue; }
-                if (wnr4_i4_decode(m, &g, bad, n, owner, out, 1)) { refused++; continue; }
-                ident++;
-                CHECK(!memcmp(out, src, g.raw), "%s: fuzz trial %d accepted with other bytes", cs->name, it);
+            base_seed = ((uint64_t)rnd() << 32) | (uint64_t)rnd();
+#ifdef _OPENMP
+#pragma omp parallel reduction(+:refused,noop,ident)
+#endif
+            {
+                unsigned char *tbad = malloc(n);
+                unsigned char *tout = malloc(g.raw);
+                int ti;
+                if (!tbad || !tout) { CHECK(0, "%s: oom in fuzz", cs->name); }
+                else {
+#ifdef _OPENMP
+#pragma omp for schedule(dynamic, 16)
+#endif
+                    for (ti = 0; ti < fuzz; ti++) {
+                        uint64_t ts = base_seed ^ ((uint64_t)(unsigned)ti * 0x9E3779B97F4A7C15ull + 1u);
+                        int k, f = 1 + (int)(rnd_local(&ts) % 3u);
+                        memcpy(tbad, rec, n);
+                        for (k = 0; k < f; k++) tbad[rnd_local(&ts) % used] ^= (unsigned char)(1u << (rnd_local(&ts) % 8u));
+                        if (!memcmp(tbad, rec, n)) { noop++; continue; }
+                        if (wnr4_i4_decode(m, &g, tbad, n, owner, tout, 1)) { refused++; continue; }
+                        ident++;
+                        CHECK(!memcmp(tout, src, g.raw), "%s: fuzz trial %d accepted with other bytes", cs->name, ti);
+                    }
+                }
+                free(tbad); free(tout);
             }
             printf("  %s fuzz: %d trials, %d refused, %d no-op, %d accepted with the same bytes\n", cs->name, fuzz,
                    refused, noop, ident);
