@@ -235,19 +235,28 @@ def _http_request(port, method, path, body=None, headers=None):
 
 class MockUpstreamHandler(http.server.BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
-    get_paths = []
+    gets = []  # (path, Authorization header) of every GET
 
     def log_message(self, fmt, *args):
         return
 
     def do_GET(self):
-        # Every GET redirects, so a client that follows redirects shows up as "/landed"
-        MockUpstreamHandler.get_paths.append(self.path)
-        self.send_response(302)
-        self.send_header("Location", "/landed")
-        self.send_header("Content-Length", "0")
+        # "/hop/<port>" redirects on this server to "/to/<port>", which redirects to "/landed" on
+        # that port (another origin). Any other path redirects to "/landed" here, which answers.
+        MockUpstreamHandler.gets.append((self.path, self.headers.get("Authorization")))
+        kind, _, port = self.path.strip("/").partition("/")
+        if kind == "landed":
+            self.send_response(200)
+            self.send_header("Content-Length", "2")
+        else:
+            location = {"hop": f"/to/{port}", "to": f"http://127.0.0.1:{port}/landed"}.get(kind, "/landed")
+            self.send_response(302)
+            self.send_header("Location", location)
+            self.send_header("Content-Length", "0")
         self.send_header("Connection", "close")
         self.end_headers()
+        if kind == "landed":
+            self.wfile.write(b"{}")
 
     def do_POST(self):
         clen = int(self.headers.get("Content-Length", "0"))
@@ -832,6 +841,7 @@ class TestWexCliAndMcp(unittest.TestCase):
 
             # The MCP telemetry tool takes the token from the server's environment only,
             # and never follows a redirect that could carry it elsewhere
+            MockUpstreamHandler.gets.clear()
             redirector = http.server.ThreadingHTTPServer(("127.0.0.1", 0), MockUpstreamHandler)
             threading.Thread(target=redirector.serve_forever, kwargs={"poll_interval": 0.05}, daemon=True).start()
             try:
@@ -844,7 +854,7 @@ class TestWexCliAndMcp(unittest.TestCase):
                     with self.assertRaisesRegex(RuntimeError, "HTTP 302"):
                         wex_mcp.query_server_telemetry(port=redirector.server_address[1])
                 self.assertEqual(tel["store"]["root_hex"], self.root_hex)
-                self.assertEqual(MockUpstreamHandler.get_paths, ["/v1/telemetry"])
+                self.assertEqual(MockUpstreamHandler.gets, [("/v1/telemetry", "Bearer s3cret")])
             finally:
                 redirector.shutdown()
                 redirector.server_close()
@@ -893,9 +903,8 @@ class TestWexCliAndMcp(unittest.TestCase):
         with open(part_path, "wb") as fh:
             fh.write(full_bytes[:split_at])
 
-        orig_urlopen = wex_cli.urllib.request.urlopen
-        wex_cli.urllib.request.urlopen = fake_urlopen
-        try:
+        with mock.patch.object(wex_cli.urllib.request, "build_opener") as build_opener:
+            build_opener.return_value.open = fake_urlopen
             res = wex_cli.run_pull(
                 "example-org/example-model",
                 "weights/model.wex4",
@@ -905,8 +914,7 @@ class TestWexCliAndMcp(unittest.TestCase):
                 cpu_only=True,
                 quiet=True,
             )
-        finally:
-            wex_cli.urllib.request.urlopen = orig_urlopen
+        build_opener.assert_called_once_with(wex_cli._SameOriginAuthRedirectHandler)
 
         self.assertTrue(res["resumed"])
         self.assertEqual(res["total_bytes"], len(full_bytes))
@@ -915,6 +923,30 @@ class TestWexCliAndMcp(unittest.TestCase):
         self.assertTrue(res["verify"]["ok"])
         self.assertFalse(os.path.exists(part_path))
         self.assertTrue(os.path.isfile(os.path.join(out_dir, "model.wex4")))
+
+    def test_pull_sends_token_to_first_origin_only(self):
+        servers = [http.server.ThreadingHTTPServer(("127.0.0.1", 0), MockUpstreamHandler) for _ in range(2)]
+        for srv in servers:
+            threading.Thread(target=srv.serve_forever, kwargs={"poll_interval": 0.05}, daemon=True).start()
+        first, other = (srv.server_address[1] for srv in servers)
+        MockUpstreamHandler.gets.clear()
+        try:
+            req = urllib.request.Request(
+                f"http://127.0.0.1:{first}/hop/{other}",
+                headers={"Authorization": "Bearer pull-secret"},
+            )
+            opener = urllib.request.build_opener(wex_cli._SameOriginAuthRedirectHandler)
+            with opener.open(req, timeout=10) as resp:
+                self.assertEqual(resp.read(), b"{}")
+        finally:
+            for srv in servers:
+                srv.shutdown()
+                srv.server_close()
+        # Kept across a redirect on the same origin, dropped when the redirect leaves it
+        self.assertEqual(
+            MockUpstreamHandler.gets,
+            [(f"/hop/{other}", "Bearer pull-secret"), (f"/to/{other}", "Bearer pull-secret"), ("/landed", None)],
+        )
 
 
 if __name__ == "__main__":

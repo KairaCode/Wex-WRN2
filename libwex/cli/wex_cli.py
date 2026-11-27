@@ -849,6 +849,16 @@ def run_bench(
     }
 
 
+class _SameOriginAuthRedirectHandler(urllib.request.HTTPRedirectHandler):
+    """Follow redirects, but send Authorization only to the origin it was meant for."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        new = super().redirect_request(req, fp, code, msg, headers, newurl)
+        if new is not None and (new.type, new.host) != (req.type, req.host):
+            new.remove_header("Authorization")
+        return new
+
+
 def run_pull(
     repo_id,
     filename,
@@ -893,7 +903,9 @@ def run_pull(
     downloaded = 0
 
     try:
-        with urllib.request.urlopen(req, timeout=60) as resp:
+        # The download is redirected to a CDN host, which must not receive HF_TOKEN
+        opener = urllib.request.build_opener(_SameOriginAuthRedirectHandler)
+        with opener.open(req, timeout=60) as resp:
             status = getattr(resp, "status", 200)
             if status == 206 and existing > 0:
                 mode = "ab"

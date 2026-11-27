@@ -76,6 +76,7 @@ python libwex/cli/wex_cli.py verify model.wex --root <64-hex-sha256>
 python libwex/cli/wex_cli.py bench model.wex --l2-mb 0,256,1024 --waves 64 --batch 4 --pattern zipf
 
 # Resumable HuggingFace download + immediate SHA-256 verification
+# (HF_TOKEN, when set, goes to huggingface.co only, not to the host a download is redirected to)
 python libwex/cli/wex_cli.py pull <org>/<repo> model.wex --out ./weights --verify
 
 # Threaded HTTP telemetry, prefetch & optional upstream inference proxy server
