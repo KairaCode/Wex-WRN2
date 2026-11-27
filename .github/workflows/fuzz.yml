@@ -9,6 +9,13 @@ on:
   push:
     branches: [main]
   pull_request:
+    paths:
+      - 'c/**'
+      - 'wnr4/**'
+      - 'wex4/**'
+      - 'fixtures/**'
+      - 'impl/go-wex4/testdata/**'
+      - '.github/workflows/fuzz.yml'
   workflow_dispatch:   # a longer run, by hand
     inputs:
       seconds:

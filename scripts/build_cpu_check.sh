@@ -31,7 +31,7 @@ O=$ROOT/out/cpu-check
 if [ $# -ge 1 ]; then K=$(cd "$1" && pwd); fi
 rm -rf "$O" && mkdir -p "$O"
 # gcc from Git Bash cannot create temporary files under C:\WINDOWS
-export TMP="$ROOT/out" TEMP="$ROOT/out"
+export TMP="$O" TEMP="$O"
 PY=${PYTHON:-python}
 CC=${CC:-gcc}   # the C compiler of every build below
 OMP=${WEX_OPENMP:--fopenmp}   # the OpenMP flags of the builds that use it
@@ -89,13 +89,39 @@ case $(uname -m) in
   x86_64|amd64) FAST_BUILDS="haswell:-march=haswell baseline: scalar:-DWEX_FAST_SCALAR" ;;
   *) FAST_BUILDS="default: scalar:-DWEX_FAST_SCALAR" ;;
 esac
-for b in $FAST_BUILDS; do
-  n=test_wex_fast_decode_${b%%:*}
-  "$CC" $W $OMP ${b#*:} -I stand-in/tests "$C/tests/test_wex_fast_decode.c" -o "$n.exe" -pthread
-  # one line per build (its kernel and its verdict); the whole output when it fails
-  "./$n.exe" > "$n.log" 2>&1 || { cat "$n.log"; exit 1; }
-  echo "$n: $(sed -n 's/^ *fast decoder: //p' "$n.log"); $(tail -1 "$n.log")"
-done
+if [ -n "${WEX_NO_PARALLEL-}" ]; then
+  for b in $FAST_BUILDS; do
+    n=test_wex_fast_decode_${b%%:*}
+    "$CC" $W $OMP ${b#*:} -I stand-in/tests "$C/tests/test_wex_fast_decode.c" -o "$n.exe" -pthread
+    "./$n.exe" > "$n.log" 2>&1 || { cat "$n.log"; exit 1; }
+    echo "$n: $(sed -n 's/^ *fast decoder: //p' "$n.log"); $(tail -1 "$n.log")"
+  done
+else
+  fast_pids=()
+  fast_names=()
+  for b in $FAST_BUILDS; do
+    n=test_wex_fast_decode_${b%%:*}
+    fast_names+=("$n")
+    (
+      "$CC" $W $OMP ${b#*:} -I stand-in/tests "$C/tests/test_wex_fast_decode.c" -o "$n.exe" -pthread
+      "./$n.exe"
+    ) > "$n.log" 2>&1 &
+    fast_pids+=($!)
+  done
+  fast_rc=0
+  for i in "${!fast_names[@]}"; do
+    n=${fast_names[$i]}
+    s=0
+    wait "${fast_pids[$i]}" || s=$?
+    if [ "$s" != 0 ]; then
+      cat "$n.log"
+      fast_rc=$s
+    else
+      echo "$n: $(sed -n 's/^ *fast decoder: //p' "$n.log"); $(tail -1 "$n.log")"
+    fi
+  done
+  [ "$fast_rc" = 0 ] || exit "$fast_rc"
+fi
 "$CC" $W $SO "$C/tools/wex_nr3_tools.c" -o wex_nr3_tools.dll
 "$CC" $W $SO $STATIC_GCC $FAKE_EXPORT "$C/tests/fake_wex_cuda.c" -o fake_wex_cuda.dll
 "$PY" -I "$C/tools/repack_v4_wex.py" --model-dir "$ROOT/fixtures/v41-tiny" --output tiny.wex > tiny.wex.log

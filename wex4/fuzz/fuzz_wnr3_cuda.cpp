@@ -320,7 +320,7 @@ static void fuzz_setup(void) {
         exit(2);
     }
     atexit(fuzz_report);
-    selftest();
+    if (!getenv("WEX_FUZZ_NO_SELFTEST")) selftest();
 }
 
 /* ---- one record through every path -------------------------------------------------------------- */

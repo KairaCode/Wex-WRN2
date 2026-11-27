@@ -17,12 +17,55 @@ cd "$(dirname "$0")/.."
 PY=${PYTHON:-python}
 "$PY" -I check_repo.py --self-test
 "$PY" -I check_repo.py
-for t in scripts/test_verify_wex1.py c/tests/test_repack_v4_wex.py c/tests/test_build_nr3_picks.py \
-         wex4/test_gguf2wex4.py wex4/test_wnr4gg.py wex4/test_wnr4i4.py; do
-  echo "== $t"; "$PY" -I "$t"
-done
-bash scripts/build_cpu_check.sh
-bash scripts/build_wnr4_check.sh
-bash wex4/build_and_test.sh
-bash wex4/research/fast-cpu-decode/synth.sh check
+PY_TESTS=(
+  scripts/test_verify_wex1.py
+  c/tests/test_repack_v4_wex.py
+  c/tests/test_build_nr3_picks.py
+  wex4/test_gguf2wex4.py
+  wex4/test_wnr4gg.py
+  wex4/test_wnr4i4.py
+)
+if [ -n "${WEX_NO_PARALLEL-}" ]; then
+  for t in "${PY_TESTS[@]}"; do
+    echo "== $t"; "$PY" -I "$t"
+  done
+  bash scripts/build_cpu_check.sh
+  bash scripts/build_wnr4_check.sh
+  bash wex4/build_and_test.sh
+  bash wex4/research/fast-cpu-decode/synth.sh check
+else
+  LOGDIR=$(mktemp -d 2>/dev/null || mktemp -d -t wex-check-all)
+  trap 'rm -rf "$LOGDIR"' EXIT
+  (
+    py_pids=()
+    for i in "${!PY_TESTS[@]}"; do
+      t=${PY_TESTS[$i]}
+      (echo "== $t"; "$PY" -I "$t") > "$LOGDIR/py_$i.log" 2>&1 &
+      py_pids+=($!)
+    done
+    prc=0
+    for i in "${!PY_TESTS[@]}"; do
+      s=0; wait "${py_pids[$i]}" || s=$?
+      cat "$LOGDIR/py_$i.log"
+      if [ "$s" != 0 ]; then prc=$s; fi
+    done
+    exit "$prc"
+  ) > "$LOGDIR/0_py.log" 2>&1 & p0=$!
+  bash scripts/build_cpu_check.sh > "$LOGDIR/1_cpu.log" 2>&1 & p1=$!
+  bash scripts/build_wnr4_check.sh > "$LOGDIR/2_wnr4.log" 2>&1 & p2=$!
+  (
+    bash wex4/build_and_test.sh
+    bash wex4/research/fast-cpu-decode/synth.sh check
+  ) > "$LOGDIR/3_wex4.log" 2>&1 & p3=$!
+
+  rc=0
+  for pair in "$p0:0_py.log" "$p1:1_cpu.log" "$p2:2_wnr4.log" "$p3:3_wex4.log"; do
+    pid=${pair%%:*}
+    lf=${pair#*:}
+    s=0; wait "$pid" || s=$?
+    cat "$LOGDIR/$lf"
+    if [ "$s" != 0 ]; then rc=$s; fi
+  done
+  [ "$rc" = 0 ] || exit "$rc"
+fi
 echo "all checks passed"
