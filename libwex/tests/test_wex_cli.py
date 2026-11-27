@@ -3,9 +3,11 @@
 # Copyright 2026 Ludovico Zanichelli
 """End-to-end stdlib unittest suite for wex_cli.py and wex_mcp.py."""
 
+import contextlib
 import hashlib
 import http.client
 import http.server
+import io
 import json
 import os
 import shutil
@@ -233,9 +235,19 @@ def _http_request(port, method, path, body=None, headers=None):
 
 class MockUpstreamHandler(http.server.BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
+    get_paths = []
 
     def log_message(self, fmt, *args):
         return
+
+    def do_GET(self):
+        # Every GET redirects, so a client that follows redirects shows up as "/landed"
+        MockUpstreamHandler.get_paths.append(self.path)
+        self.send_response(302)
+        self.send_header("Location", "/landed")
+        self.send_header("Content-Length", "0")
+        self.send_header("Connection", "close")
+        self.end_headers()
 
     def do_POST(self):
         clen = int(self.headers.get("Content-Length", "0"))
@@ -262,6 +274,7 @@ class MockUpstreamHandler(http.server.BaseHTTPRequestHandler):
             "path": self.path,
             "echo_model": req.get("model", ""),
             "content": "proxied-ok",
+            "headers": {k.lower(): v for k, v in self.headers.items()},
         }).encode("utf-8")
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
@@ -506,6 +519,18 @@ class TestWexCliAndMcp(unittest.TestCase):
             self.assertEqual(tel["store"]["num_records"], 8)
             self.assertGreaterEqual(tel["l2"]["entries"], 3)
 
+            # A request sent by a web page of another site (foreign Origin) is refused
+            foreign = {"Origin": "https://evil.example"}
+            st, _, _ = _http_request(port, "POST", "/v1/prefetch", {"layer": 0, "eids": [0]}, headers=foreign)
+            self.assertEqual(st, 403)
+            st, _, _ = _http_request(port, "GET", "/status", headers=foreign)
+            self.assertEqual(st, 403)
+            st, _, _ = _http_request(
+                port, "POST", "/v1/prefetch", {"layer": 0, "eids": [0]},
+                headers={"Origin": f"http://127.0.0.1:{port}"},
+            )
+            self.assertEqual(st, 200)
+
             # Without --upstream, inference endpoints return 503 with instructions
             for endpoint in ("/v1/chat/completions", "/v1/responses", "/v1/messages"):
                 st, hdrs, body = _http_request(port, "POST", endpoint, {"model": "synth_raw"})
@@ -536,13 +561,21 @@ class TestWexCliAndMcp(unittest.TestCase):
         proxy_th = threading.Thread(target=proxy_srv.serve_forever, kwargs={"poll_interval": 0.05}, daemon=True)
         proxy_th.start()
         try:
+            client_creds = {"Authorization": "Bearer client-key", "X-Api-Key": "client-key", "Cookie": "sid=1"}
             for ep in ("/v1/chat/completions", "/v1/responses", "/v1/messages"):
-                st, hdrs, body = _http_request(proxy_port, "POST", ep, {"model": "synth_raw", "stream": False})
+                st, hdrs, body = _http_request(
+                    proxy_port, "POST", ep, {"model": "synth_raw", "stream": False},
+                    headers={**client_creds, "X-Trace": "keep"},
+                )
                 self.assertEqual(st, 200)
                 self.assertIn("x-wex-l2-hit-rate", hdrs)
                 resp_obj = json.loads(body)
                 self.assertEqual(resp_obj["path"], ep)
                 self.assertEqual(resp_obj["content"], "proxied-ok")
+                # The client's credentials stay at the proxy; other headers pass through
+                for cred in client_creds:
+                    self.assertNotIn(cred.lower(), resp_obj["headers"])
+                self.assertEqual(resp_obj["headers"].get("x-trace"), "keep")
 
             # SSE streaming pass-through
             st, hdrs, body = _http_request(
@@ -737,6 +770,88 @@ class TestWexCliAndMcp(unittest.TestCase):
             wex_mcp.WexMcpServer().root_dirs,
             [os.path.normcase(os.path.realpath(os.getcwd()))],
         )
+
+    def test_serve_requires_token_for_non_loopback_bind(self):
+        # The server class is stubbed so that a regression cannot open a public socket here
+        with mock.patch.object(wex_cli, "WexHTTPServer") as server_cls:
+            for host in ("0.0.0.0", "", "::", "192.0.2.1", "example.org"):
+                with self.assertRaisesRegex(wex_cli.WexError, "--token"):
+                    wex_cli.create_wex_http_server(self.wex_path, host=host, port=0, cpu_only=True)
+            server_cls.assert_not_called()
+
+            err = io.StringIO()
+            with mock.patch.dict(os.environ), contextlib.redirect_stderr(err):
+                os.environ.pop("WEX_SERVE_TOKEN", None)
+                rc = wex_cli.main(["serve", self.wex_path, "--host", "0.0.0.0", "--port", "0", "--cpu-only"])
+            self.assertEqual(rc, 1)
+            self.assertIn("--token", err.getvalue())
+            server_cls.assert_not_called()
+
+            # With a token the same bind is allowed
+            _, store = wex_cli.create_wex_http_server(
+                self.wex_path, host="0.0.0.0", port=0, cpu_only=True, token="s3cret"
+            )
+            store.close()
+            self.assertEqual(server_cls.call_args.kwargs["token"], "s3cret")
+
+        with mock.patch.dict(os.environ, {"WEX_SERVE_TOKEN": "from-env"}):
+            args = wex_cli.build_parser().parse_args(["serve", self.wex_path])
+        self.assertEqual(args.token, "from-env")
+
+    def test_serve_token_on_loopback(self):
+        srv, store = wex_cli.create_wex_http_server(
+            self.wex_path, host="127.0.0.1", port=0, l2_mb="16", cpu_only=True, token="s3cret"
+        )
+        port = srv.server_address[1]
+        th = threading.Thread(target=srv.serve_forever, kwargs={"poll_interval": 0.05}, daemon=True)
+        th.start()
+        try:
+            routes = (
+                ("GET", "/health"),
+                ("GET", "/v1/telemetry"),
+                ("POST", "/v1/prefetch"),
+                ("POST", "/v1/chat/completions"),
+            )
+            for method, route in routes:
+                body = {"layer": 0, "eids": [0]} if method == "POST" else None
+                for bad in ({}, {"Authorization": "Bearer wrong"}, {"Authorization": "s3cret"}):
+                    st, hdrs, _ = _http_request(port, method, route, body, headers=bad)
+                    self.assertEqual(st, 401, (method, route, bad))
+                    self.assertEqual(hdrs.get("www-authenticate"), "Bearer")
+
+            auth = {"Authorization": "Bearer s3cret"}
+            st, _, body = _http_request(port, "GET", "/health", headers=auth)
+            self.assertEqual(st, 200)
+            self.assertEqual(json.loads(body)["status"], "ok")
+            # A caller that knows the token is trusted whatever page it runs in
+            st, _, body = _http_request(
+                port, "POST", "/v1/prefetch", {"layer": 0, "eids": [0]},
+                headers={**auth, "Origin": "https://dashboard.example"},
+            )
+            self.assertEqual(st, 200)
+
+            # The MCP telemetry tool takes the token from the server's environment only,
+            # and never follows a redirect that could carry it elsewhere
+            redirector = http.server.ThreadingHTTPServer(("127.0.0.1", 0), MockUpstreamHandler)
+            threading.Thread(target=redirector.serve_forever, kwargs={"poll_interval": 0.05}, daemon=True).start()
+            try:
+                with mock.patch.dict(os.environ):
+                    os.environ.pop("WEX_SERVE_TOKEN", None)
+                    with self.assertRaisesRegex(RuntimeError, "HTTP 401"):
+                        wex_mcp.query_server_telemetry(port=port)
+                    os.environ["WEX_SERVE_TOKEN"] = "s3cret"
+                    tel = wex_mcp.query_server_telemetry(port=port)
+                    with self.assertRaisesRegex(RuntimeError, "HTTP 302"):
+                        wex_mcp.query_server_telemetry(port=redirector.server_address[1])
+                self.assertEqual(tel["store"]["root_hex"], self.root_hex)
+                self.assertEqual(MockUpstreamHandler.get_paths, ["/v1/telemetry"])
+            finally:
+                redirector.shutdown()
+                redirector.server_close()
+        finally:
+            srv.shutdown()
+            srv.server_close()
+            store.close()
 
     def test_pull_resumable_and_verify(self):
         with open(self.wex_path, "rb") as fh:

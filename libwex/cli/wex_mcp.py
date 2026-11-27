@@ -95,6 +95,13 @@ ENDPOINT_PATHS = {
 }
 
 
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    """wex serve never redirects; following one could carry the token to another host."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
 def query_server_telemetry(port=8080, host="127.0.0.1", endpoint="telemetry", timeout=5.0):
     if host not in ("127.0.0.1", "localhost", "::1"):
         raise ValueError("host must be a loopback address (127.0.0.1, localhost, or ::1)")
@@ -107,12 +114,18 @@ def query_server_telemetry(port=8080, host="127.0.0.1", endpoint="telemetry", ti
 
     host_fmt = f"[{host}]" if ":" in host else host
     url = f"http://{host_fmt}:{port_num}{route}"
-    req = urllib.request.Request(url, headers={"Accept": "application/json"})
+    headers = {"Accept": "application/json"}
+    # The token of a protected wex serve comes from this server's environment, never from a tool argument.
+    token = os.environ.get("WEX_SERVE_TOKEN")
+    if token:
+        headers["Authorization"] = "Bearer " + token
+    req = urllib.request.Request(url, headers=headers)
     try:
-        with urllib.request.urlopen(req, timeout=float(timeout)) as resp:
+        with urllib.request.build_opener(_NoRedirect).open(req, timeout=float(timeout)) as resp:
             raw = resp.read().decode("utf-8", errors="replace")
             return json.loads(raw)
     except urllib.error.HTTPError as exc:
+        exc.close()
         raise RuntimeError(f"HTTP {exc.code} from {url}") from exc
     except urllib.error.URLError as exc:
         raise RuntimeError(f"Unable to connect to {url}: {exc.reason}") from exc

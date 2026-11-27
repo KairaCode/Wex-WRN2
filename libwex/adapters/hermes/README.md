@@ -22,6 +22,8 @@ base_url = "http://127.0.0.1:8080/v1"
 api_key = "local"
 ```
 
+If `wex serve` runs with a token (`WEX_SERVE_TOKEN` / `--token`, mandatory on a non-loopback `--host`), set `api_key` to that token. `wex serve` does not forward the key to `--upstream`; see [`serve` Access Control](../../README.md#serve-access-control).
+
 ## 2. Register WEX Python Tools in Hermes
 
 Use `get_hermes_tools()` and `dispatch_tool()` from [`wex_provider.py`](wex_provider.py) to let local Hermes workflows inspect container geometry, check L2 Compressed-RAM hit rates, verify individual experts via SHA-256, and trigger asynchronous prefetching:

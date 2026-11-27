@@ -9,8 +9,10 @@ urllib.request, json, argparse). Loads libwex ABI v1 directly.
 
 import argparse
 import ctypes
+import hmac
 import http.client
 import http.server
+import ipaddress
 import json
 import os
 import random
@@ -98,6 +100,9 @@ HOP_BY_HOP_HEADERS = frozenset({
     "transfer-encoding",
     "upgrade",
 })
+
+# Credentials a client sends to this server; the proxy never passes them upstream.
+CLIENT_CREDENTIAL_HEADERS = frozenset({"authorization", "cookie", "x-api-key"})
 
 
 class WexOpenOpts(ctypes.Structure):
@@ -993,14 +998,25 @@ def format_prometheus_metrics(info, stats):
     return "\n".join(lines)
 
 
+def is_loopback_host(host):
+    """True for 'localhost' and loopback IP literals; False for anything else."""
+    if host == "localhost":
+        return True
+    try:
+        return ipaddress.ip_address(host).is_loopback
+    except ValueError:
+        return False
+
+
 class WexHTTPServer(http.server.ThreadingHTTPServer):
     allow_reuse_address = True
     daemon_threads = True
 
-    def __init__(self, server_address, handler_cls, *, store, model_id, upstream=None):
+    def __init__(self, server_address, handler_cls, *, store, model_id, upstream=None, token=None):
         self.wex_store = store
         self.wex_model_id = model_id
         self.wex_upstream = upstream
+        self.wex_token = token
         self.wex_started_at = time.time()
         self.wex_version = store.lib.version_string()
         super().__init__(server_address, handler_cls)
@@ -1048,7 +1064,43 @@ class WexRequestHandler(http.server.BaseHTTPRequestHandler):
         st = self.server.wex_store.stats()
         return {"X-Wex-L2-Hit-Rate": f"{st['l2_hit_ratio']:.4f}"}
 
+    def _authorized(self):
+        """Answer 401/403 and return False unless this request may be served."""
+        refusal = None
+        token = self.server.wex_token
+        origin = self.headers.get("Origin")
+        if token:
+            scheme, _, cred = self.headers.get("Authorization", "").partition(" ")
+            if scheme.lower() != "bearer" or not hmac.compare_digest(cred.strip().encode(), token.encode()):
+                refusal = (401, "unauthorized", "Missing or invalid bearer token", {"WWW-Authenticate": "Bearer"})
+        elif origin:
+            # No token (loopback bind only): browsers attach Origin to cross-site
+            # requests, so refuse the ones sent by pages of other sites.
+            try:
+                origin_host = urllib.parse.urlsplit(origin).hostname or ""
+            except ValueError:
+                origin_host = ""
+            if not is_loopback_host(origin_host):
+                refusal = (403, "forbidden", "Cross-origin request refused", None)
+
+        if refusal is None:
+            return True
+        # Consume the body first: closing a socket with unread data resets the
+        # connection, and the client may then never see this reply.
+        clen = self.headers.get("Content-Length", "")
+        left = min(int(clen), 64 << 20) if clen.isdigit() else 0
+        while left > 0:
+            chunk = self.rfile.read(min(left, 65536))
+            if not chunk:
+                break
+            left -= len(chunk)
+        status, kind, message, extra_headers = refusal
+        self._send_json(status, {"error": {"type": kind, "message": message}}, extra_headers=extra_headers)
+        return False
+
     def do_GET(self):
+        if not self._authorized():
+            return
         parsed = urllib.parse.urlsplit(self.path)
         route = parsed.path
         store = self.server.wex_store
@@ -1160,6 +1212,8 @@ class WexRequestHandler(http.server.BaseHTTPRequestHandler):
         self._send_json(404, {"error": {"type": "not_found", "message": f"Unknown path: {route}"}})
 
     def do_POST(self):
+        if not self._authorized():
+            return
         parsed = urllib.parse.urlsplit(self.path)
         route = parsed.path
 
@@ -1236,7 +1290,7 @@ class WexRequestHandler(http.server.BaseHTTPRequestHandler):
         fwd_headers = {}
         for k, v in self.headers.items():
             lk = k.lower()
-            if lk in HOP_BY_HOP_HEADERS or lk == "host":
+            if lk in HOP_BY_HOP_HEADERS or lk in CLIENT_CREDENTIAL_HEADERS or lk == "host":
                 continue
             fwd_headers[k] = v
         fwd_headers["Content-Length"] = str(len(body))
@@ -1301,9 +1355,15 @@ def create_wex_http_server(
     mirrors=None,
     cpu_only=False,
     upstream=None,
+    token=None,
     lib_path=None,
     cuda_path=None,
 ):
+    if not token and not is_loopback_host(host):
+        raise WexError(
+            f"Refusing to serve on non-loopback host {host!r} without a token "
+            "(pass --token or set WEX_SERVE_TOKEN)"
+        )
     lib = WexLib(lib_path)
     l2_bytes, _ = parse_l2_mb_value(l2_mb)
     verify_mode = VERIFY_MODE_MAP[verify]
@@ -1327,6 +1387,7 @@ def create_wex_http_server(
             store=store,
             model_id=model_id,
             upstream=upstream,
+            token=token,
         )
     except Exception:
         store.close()
@@ -1543,6 +1604,9 @@ def build_parser():
     p_srv.add_argument("--mirror", action="append", default=[], help="Optional replica path (repeatable)")
     p_srv.add_argument("--cpu-only", action="store_true", help="Force CPU-only decode")
     p_srv.add_argument("--upstream", default=None, help="Optional upstream inference URL (e.g. http://127.0.0.1:8081)")
+    p_srv.add_argument("--token", default=os.environ.get("WEX_SERVE_TOKEN"),
+                       help="Bearer token clients must send (default: $WEX_SERVE_TOKEN); "
+                            "required when --host is not loopback")
 
     # ipc
     p_ipc = sub.add_parser("ipc", parents=[common], help="Run newline-delimited JSON control loop on stdin/stdout")
@@ -1650,6 +1714,7 @@ def main(argv=None):
                 mirrors=args.mirror,
                 cpu_only=args.cpu_only,
                 upstream=args.upstream,
+                token=args.token,
                 lib_path=args.lib_path,
                 cuda_path=args.cuda_path,
             )
