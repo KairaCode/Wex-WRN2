@@ -29,6 +29,7 @@ static WexCudaBatchFn wex_cuda_batch_fn;     /* optional feature: a layer's WNR2
 typedef int (*WexCudaBatchHostFn)(int, const WexEntry *const *, const unsigned char *const *, int,
                                   unsigned char *const *, int *);
 static WexCudaBatchHostFn wex_cuda_batch_host_fn;   /* feature 32: a wave's records to host slabs */
+static WexCudaBatchHostFn wex_cuda_batch_host_scratch_fn;   /* feature 256: wave records to host scratch slabs */
 static WexCudaUnregisterFn wex_cuda_unregister_fn;
 static WexCudaDecodeFn wex_cuda_decode_fn;
 static WexCudaModelFn wex_cuda_model_fn;     /* optional feature: WNR2 records */
@@ -99,6 +100,10 @@ static void wex_cuda_initialize(void) {
         if (features && (features() & 32u)) {
             symbol = GetProcAddress(library, "wex_cuda_decode_batch_to_host");
             if (symbol) memcpy(&wex_cuda_batch_host_fn, &symbol, sizeof(wex_cuda_batch_host_fn));
+        }
+        if (features && (features() & COLI_WEX_CUDA_BATCH_HOST_SCRATCH)) {
+            symbol = GetProcAddress(library, "wex_cuda_decode_batch_to_host_scratch");
+            if (symbol) memcpy(&wex_cuda_batch_host_scratch_fn, &symbol, sizeof(wex_cuda_batch_host_scratch_fn));
         }
     }
     /* The helper's pools own CUDA buffers for the life of the process; retain it until exit. */
@@ -272,6 +277,43 @@ int coli_wex_cuda_decode_batch_to_host(int n, const WexEntry *const *entries,
     }
 #else
     (void)entries; (void)records; (void)device; (void)dst;
+#endif
+    for (i = 0; i < n; i++) status[i] = 1;
+    failed = n;
+    return failed;
+}
+
+int coli_wex_cuda_batch_host_scratch_available(void) {
+#ifdef _WIN32
+    pthread_once(&wex_cuda_once, wex_cuda_initialize);
+    return wex_cuda_batch_host_scratch_fn != NULL && wex_cuda_model_fn != NULL;
+#else
+    return 0;
+#endif
+}
+
+int coli_wex_cuda_decode_batch_to_host_scratch(int n, const WexEntry *const *entries,
+                                               const unsigned char *const *records, int device,
+                                               unsigned char *const *dst, int *status) {
+    int i, failed;
+    if (n <= 0) return 0;
+    if (!status) return n;
+    if (!dst) {
+        for (i = 0; i < n; i++) status[i] = -1;
+        return n;
+    }
+#ifdef _WIN32
+    pthread_once(&wex_cuda_once, wex_cuda_initialize);
+    if (wex_cuda_batch_host_scratch_fn && wex_cuda_model_fn) {
+        failed = wex_cuda_batch_host_scratch_fn(n, entries, records, device, dst, status);
+        for (i = 0; i < n; i++)
+            if (!status[i]) InterlockedIncrement64(&wex_cuda_successes);
+        return failed;
+    }
+    if (wex_cuda_batch_host_fn && wex_cuda_model_fn)
+        return coli_wex_cuda_decode_batch_to_host(n, entries, records, device, dst, status);
+#else
+    (void)entries; (void)records; (void)device;
 #endif
     for (i = 0; i < n; i++) status[i] = 1;
     failed = n;

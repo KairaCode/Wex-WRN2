@@ -89,6 +89,17 @@ int coli_wex_cuda_decode_batch_to_host(int n, const WexEntry *const *entries,
                                        const unsigned char *const *records, int device,
                                        unsigned char *const *dst, int *status);
 
+/* Batched decode to host scratch buffers (helper feature 256; bits 64 and 128 are
+ * reserved for WNR4): like coli_wex_cuda_decode_batch_to_host, but on error
+ * (status[i] != 0) dst[i] may be overwritten, and dst[i] must not overlap any
+ * records[j]. Avoids the second host sync when the helper exports feature 256;
+ * gracefully falls back to coli_wex_cuda_decode_batch_to_host on older helpers. */
+#define COLI_WEX_CUDA_BATCH_HOST_SCRATCH 256u
+int coli_wex_cuda_batch_host_scratch_available(void);
+int coli_wex_cuda_decode_batch_to_host_scratch(int n, const WexEntry *const *entries,
+                                               const unsigned char *const *records, int device,
+                                               unsigned char *const *dst, int *status);
+
 #ifdef __cplusplus
 }
 #endif

@@ -23,8 +23,19 @@
  *   WEX_CUDA_FEATURE_BATCH_HOST wex_cuda_decode_batch_to_host: the batch pipeline,
  *                             each WNR2/WNR3 record decoded into a caller host buffer
  *                             (canonical raw slab), for stores that fill RAM slots
+ *   WEX_CUDA_FEATURE_BATCH_HOST_SCRATCH (bit 256; bits 64 and 128 reserved for WNR4)
+ *                             wex_cuda_decode_batch_to_host_scratch: batch to host
+ *                             into caller scratch buffers (on error dst[i] may be
+ *                             overwritten; dst[i] must not overlap any record), single sync
  */
 #include "../wex_cuda.cuh"
+#ifndef WEX_CUDA_EXPORT
+#ifdef _WIN32
+#define WEX_CUDA_EXPORT extern "C" __declspec(dllexport)
+#else
+#define WEX_CUDA_EXPORT extern "C" __attribute__((visibility("default")))
+#endif
+#endif
 #include <atomic>
 #include <cstdio>
 #include <cstring>
@@ -211,7 +222,7 @@ static int wex_cuda_nr2_registered(uint32_t id) {
  * keeps its own copy). 0 when registered, or already registered with the same
  * bytes; -1 for an invalid blob or another blob with the same id; 1 when the
  * table (16 models) is full or memory is short. */
-extern "C" __declspec(dllexport) int wex_cuda_register_model(const unsigned char *blob,size_t bytes) {
+WEX_CUDA_EXPORT int wex_cuda_register_model(const unsigned char *blob,size_t bytes) {
     WexNr2Model probe;
     if(wex_nr2_model_open(blob,bytes,&probe)) return -1;
     std::lock_guard<std::mutex> lock(wex_cuda_nr2_mutex);
@@ -323,9 +334,9 @@ static int wex_cuda_nr2_to_host(const WexEntry *entry,unsigned char *slab,size_t
     return 0;
 }
 
-extern "C" __declspec(dllexport) unsigned int wex_cuda_helper_abi(void) { return 1u; }
+WEX_CUDA_EXPORT unsigned int wex_cuda_helper_abi(void) { return 1u; }
 
-extern "C" __declspec(dllexport) int wex_cuda_decode_to_host(const WexEntry *entry,
+WEX_CUDA_EXPORT int wex_cuda_decode_to_host(const WexEntry *entry,
     unsigned char *slab,size_t slab_capacity) {
     if(entry && slab && wex_entry_nr_model(entry)) return wex_cuda_nr2_to_host(entry,slab,slab_capacity);
     uint64_t raw,aligned;
@@ -368,9 +379,11 @@ extern "C" __declspec(dllexport) int wex_cuda_decode_to_host(const WexEntry *ent
 #define WEX_CUDA_FEATURE_BATCH    8u
 #define WEX_CUDA_FEATURE_NR3      16u
 #define WEX_CUDA_FEATURE_BATCH_HOST 32u
-extern "C" __declspec(dllexport) unsigned int wex_cuda_helper_features(void) {
+/* Bits 64u (WNR4) and 128u (WNR4-I4) are reserved for KAIRA's WNR4 bridge extensions. */
+#define WEX_CUDA_FEATURE_BATCH_HOST_SCRATCH 256u
+WEX_CUDA_EXPORT unsigned int wex_cuda_helper_features(void) {
     return WEX_CUDA_FEATURE_DEVICE | WEX_CUDA_FEATURE_REGISTER | WEX_CUDA_FEATURE_NR2 | WEX_CUDA_FEATURE_BATCH |
-           WEX_CUDA_FEATURE_NR3 | WEX_CUDA_FEATURE_BATCH_HOST;
+           WEX_CUDA_FEATURE_NR3 | WEX_CUDA_FEATURE_BATCH_HOST | WEX_CUDA_FEATURE_BATCH_HOST_SCRATCH;
 }
 
 static int wex_cuda_nr2_to_device(const WexEntry *entry,const unsigned char *record,int device,
@@ -412,7 +425,7 @@ static int wex_cuda_nr2_to_device(const WexEntry *entry,const unsigned char *rec
  * destination is written by a device-side commit that runs only if every
  * stream decoded (so a CUDA failure reported after that commit, returning 1,
  * leaves correct data there, never partial or corrupt data). */
-extern "C" __declspec(dllexport) int wex_cuda_decode_to_device(const WexEntry *entry,
+WEX_CUDA_EXPORT int wex_cuda_decode_to_device(const WexEntry *entry,
     const unsigned char *record,int device,unsigned char *const *dst_scale,unsigned char *const *dst_weight) {
     if(entry && record && dst_scale && dst_weight && wex_entry_nr_model(entry))
         return wex_cuda_nr2_to_device(entry,record,device,dst_scale,dst_weight);
@@ -506,7 +519,8 @@ static WexCudaPool<WexCudaBatchSet> &wex_cuda_batch_pool() { static auto *pool=n
  * With dst_host (and no dst_scale/dst_weight): record i's raw slab goes to the
  * host buffer dst_host[i] instead, copied back only once its error word is 0. */
 static int wex_cuda_batch(int n,const WexEntry *const *entries,const unsigned char *const *records,int device,
-    unsigned char *const *dst_scale,unsigned char *const *dst_weight,unsigned char *const *dst_host,int *status) {
+    unsigned char *const *dst_scale,unsigned char *const *dst_weight,unsigned char *const *dst_host,int *status,
+    bool scratch_dst=false) {
     if(n<=0) return 0;
     if(!entries || !records || !(dst_host || (dst_scale && dst_weight)) || !status) return n;
     const int PENDING=2;
@@ -583,6 +597,7 @@ static int wex_cuda_batch(int n,const WexEntry *const *entries,const unsigned ch
                                                             w.device_raw,w.device_error,work)!=cudaSuccess ||
            cudaEventRecord(w.consumed,work)!=cudaSuccess ||
            (!dst_host && wex_cuda_launch_commit(w.device_raw,&commit,w.device_error,work)!=cudaSuccess) ||
+           (dst_host && scratch_dst && wex_cuda_copy_back(entry,plan,w.device_raw,dst_host[i],work)!=cudaSuccess) ||
            cudaMemcpyAsync(host.errors+i,w.device_error,4u,cudaMemcpyDeviceToHost,work)!=cudaSuccess) {
             (void)cudaGetLastError();
             return -1;
@@ -602,9 +617,9 @@ static int wex_cuda_batch(int n,const WexEntry *const *entries,const unsigned ch
      * wait for what is queued, and report it and the rest as unavailable */
     int broken_at=n;
     bool synced=true;
-    if(!dst_host) {
-        /* device destinations: the commit kernel writes them only after a clean
-         * decode, so every record is queued at once and the host waits once */
+    if(!dst_host || scratch_dst) {
+        /* device destinations (device-side gated commit) or caller-owned host scratch
+         * destinations (overwrite allowed on error): queue everything and wait once */
         for(int i=0,k=0;i<n && broken_at==n;i++)
             if(status[i]==PENDING && queue(i,lane[k++%lanes])) broken_at=i;
         synced=drain(lanes);
@@ -649,11 +664,11 @@ static int wex_cuda_batch(int n,const WexEntry *const *entries,const unsigned ch
     return failures();
 }
 
-extern "C" __declspec(dllexport) int wex_cuda_decode_batch_to_device(int n,const WexEntry *const *entries,
+WEX_CUDA_EXPORT int wex_cuda_decode_batch_to_device(int n,const WexEntry *const *entries,
     const unsigned char *const *records,int device,unsigned char *const *dst_scale,
     unsigned char *const *dst_weight,int *status) {
     if(!dst_scale || !dst_weight) return n>0 ? n : 0;
-    return wex_cuda_batch(n,entries,records,device,dst_scale,dst_weight,nullptr,status);
+    return wex_cuda_batch(n,entries,records,device,dst_scale,dst_weight,nullptr,status,false);
 }
 
 /* WEX_CUDA_FEATURE_BATCH_HOST: n WNR2/WNR3 records (host memory, page-locked for
@@ -670,19 +685,34 @@ extern "C" __declspec(dllexport) int wex_cuda_decode_batch_to_device(int n,const
  * which may leave part of a correct slab there (so a caller treats a slot whose
  * status is not 0 as empty). Every copy has completed when the call returns.
  * Returns the number of records whose status is not 0. */
-extern "C" __declspec(dllexport) int wex_cuda_decode_batch_to_host(int n,const WexEntry *const *entries,
+WEX_CUDA_EXPORT int wex_cuda_decode_batch_to_host(int n,const WexEntry *const *entries,
     const unsigned char *const *records,int device,unsigned char *const *dst,int *status) {
     if(!dst) return n>0 ? n : 0;
-    return wex_cuda_batch(n,entries,records,device,nullptr,nullptr,dst,status);
+    return wex_cuda_batch(n,entries,records,device,nullptr,nullptr,dst,status,false);
+}
+
+/* WEX_CUDA_FEATURE_BATCH_HOST_SCRATCH (bit 256): like wex_cuda_decode_batch_to_host,
+ * but for caller-owned temporary/scratch buffers where dst[i] may be overwritten when
+ * record i fails (status[i] != 0) and dst[i] must not overlap any records[j]. Enqueues
+ * D2H right after the decode kernel on the same stream to eliminate the intermediate
+ * host sync. */
+WEX_CUDA_EXPORT int wex_cuda_decode_batch_to_host_scratch(int n,const WexEntry *const *entries,
+    const unsigned char *const *records,int device,unsigned char *const *dst,int *status) {
+    if(n<=0) return 0;
+    if(!dst) {
+        if(status) for(int i=0;i<n;i++) status[i]=-1;
+        return n;
+    }
+    return wex_cuda_batch(n,entries,records,device,nullptr,nullptr,dst,status,true);
 }
 
 /* Page-lock a caller staging buffer for this helper's uploads (portable). */
-extern "C" __declspec(dllexport) int wex_cuda_host_register(void *pointer,size_t bytes) {
+WEX_CUDA_EXPORT int wex_cuda_host_register(void *pointer,size_t bytes) {
     if(!pointer || !bytes) return -1;
     if(cudaHostRegister(pointer,bytes,cudaHostRegisterPortable)!=cudaSuccess) { (void)cudaGetLastError(); return 1; }
     return 0;
 }
-extern "C" __declspec(dllexport) int wex_cuda_host_unregister(void *pointer) {
+WEX_CUDA_EXPORT int wex_cuda_host_unregister(void *pointer) {
     if(!pointer) return -1;
     if(cudaHostUnregister(pointer)!=cudaSuccess) { (void)cudaGetLastError(); return 1; }
     return 0;

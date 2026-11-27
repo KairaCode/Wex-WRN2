@@ -79,6 +79,7 @@ namespace sm86 {
 #define wex_cuda_decode_to_device sm86_decode_to_device
 #define wex_cuda_decode_batch_to_device sm86_decode_batch_to_device
 #define wex_cuda_decode_batch_to_host sm86_decode_batch_to_host
+#define wex_cuda_decode_batch_to_host_scratch sm86_decode_batch_to_host_scratch
 #define wex_cuda_host_register sm86_host_register
 #define wex_cuda_host_unregister sm86_host_unregister
 #include "wex_cuda_host/tools/wex_cuda_bridge.cu"
@@ -95,6 +96,7 @@ namespace sm86 {
 #undef wex_cuda_decode_to_device
 #undef wex_cuda_decode_batch_to_device
 #undef wex_cuda_decode_batch_to_host
+#undef wex_cuda_decode_batch_to_host_scratch
 #undef wex_cuda_host_register
 #undef wex_cuda_host_unregister
 namespace sm75 {
@@ -107,6 +109,7 @@ namespace sm75 {
 #define wex_cuda_decode_to_device sm75_decode_to_device
 #define wex_cuda_decode_batch_to_device sm75_decode_batch_to_device
 #define wex_cuda_decode_batch_to_host sm75_decode_batch_to_host
+#define wex_cuda_decode_batch_to_host_scratch sm75_decode_batch_to_host_scratch
 #define wex_cuda_host_register sm75_host_register
 #define wex_cuda_host_unregister sm75_host_unregister
 #include "wex_cuda_host/tools/wex_cuda_bridge.cu"
@@ -194,13 +197,16 @@ struct Build {
     DeviceFn to_device;
     BatchFn batch;
     BatchHostFn batch_host;
+    BatchHostFn batch_host_scratch;
     unsigned (*features)(void);
 };
 static const Build builds[2] = {
     {"sm86", 8, 6, 101376u, sm86::sm86_register_model, sm86::sm86_decode_to_host, sm86::sm86_decode_to_device,
-     sm86::sm86_decode_batch_to_device, sm86::sm86_decode_batch_to_host, sm86::sm86_helper_features},
+     sm86::sm86_decode_batch_to_device, sm86::sm86_decode_batch_to_host, sm86::sm86_decode_batch_to_host_scratch,
+     sm86::sm86_helper_features},
     {"sm75", 7, 5, 65536u, sm75::sm75_register_model, sm75::sm75_decode_to_host, sm75::sm75_decode_to_device,
-     sm75::sm75_decode_batch_to_device, sm75::sm75_decode_batch_to_host, sm75::sm75_helper_features},
+     sm75::sm75_decode_batch_to_device, sm75::sm75_decode_batch_to_host, sm75::sm75_decode_batch_to_host_scratch,
+     sm75::sm75_helper_features},
 };
 
 /* ---- the models: registered on the CPU side and with both bridges ------------------------------ */
@@ -249,7 +255,7 @@ static void gpu_report(void);
 
 static void fuzz_report(void) {
     fprintf(stderr, "fuzz_wnr3_cuda: %llu inputs (%llu WEX4 files), %llu WNR3 records (%llu of them synthetic or crafted, "
-            "at start), each through 2 builds x (4 bridge "
+            "at start), each through 2 builds x (5 bridge "
             "calls + 2 kernel lookups) (%llu GPU calls): %llu accepted by the CPU and every GPU path, %llu refused "
             "by the host checks, %llu refused on the device (error bits 1: %llu, 2: %llu, 4: %llu, 8: %llu), %llu "
             "naming a model that is not registered, %llu skipped (layout or size); %llu%s different decoded "
@@ -375,7 +381,7 @@ static int compare(const WexEntry *entry, const unsigned char *stored) {
         int status[2], bad, k, base_at = input_first ? 1 : 0, input_at = input_first ? 0 : 1;
         uint32_t error[2] = {0, 0};
         wex_shim_set_device(g.major, g.minor, g.shared);
-        FUZZ_REQUIRE(g.features() == 63u, "the bridge's feature bits are not 63");
+        FUZZ_REQUIRE(g.features() == (63u | 256u), "the bridge's feature bits are not 319");
         /* to host: the record at the end of the slab, the slab untouched on failure */
         cpu_decode(entry, record, NULL, slab, (size_t)aligned);
         i = g.to_host(entry, slab, (size_t)aligned);
@@ -471,6 +477,18 @@ static int compare(const WexEntry *entry, const unsigned char *stored) {
         for (k = 0; k < 2; k++)
             if (status[k]) FUZZ_REQUIRE(!memcmp(host_dst[k], host_before[k], host_bytes[k]),
                                         "wex_cuda_decode_batch_to_host wrote the destination of a record it refused");
+        /* to host scratch (feature 256): non-overlapping caller scratch buffers, single sync */
+        for (k = 0; k < 2; k++) memset(host_dst[k], 0xc3, host_bytes[k]);
+        bad = g.batch_host_scratch(2, entries, records, 0, host_dst, status);
+        count_calls++;
+        FUZZ_REQUIRE(status[base_at] == 0 && !memcmp(host_dst[base_at], base_expected, (size_t)base_record.decoded),
+                     "wex_cuda_decode_batch_to_host_scratch did not decode the valid record next to another one");
+        FUZZ_REQUIRE(status[input_at] == expect_fail,
+                     "wex_cuda_decode_batch_to_host_scratch and the CPU reference give different verdicts");
+        FUZZ_REQUIRE(bad == (status[0] != 0) + (status[1] != 0),
+                     "wex_cuda_decode_batch_to_host_scratch returns a wrong count");
+        if (!status[input_at]) FUZZ_REQUIRE(!memcmp(host_dst[input_at], expected, (size_t)raw),
+                                            "wex_cuda_decode_batch_to_host_scratch decodes other bytes than the CPU");
         free(host_dst[0]); free(host_dst[1]); free(host_before[0]); free(host_before[1]);
         /* the kernels alone, both lookups: the error word */
         for (k = 0; k < 2; k++) {
