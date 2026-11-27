@@ -25,6 +25,12 @@
 #define WEX4_REQ_VALUE_EXACT UINT64_C(1)       /* some records are value-exact, not byte-exact */
 #define WEX4_REQ_WNR4_EXPERT UINT64_C(4)       /* WNR4 (codec 8) or NVFP4 on EXPERT records */
 #define WEX4_REQUIRED_KNOWN (WEX4_REQ_VALUE_EXACT | WEX4_REQ_WNR4_EXPERT)
+/* Pre-bit files (docs/WEX4-SPEC.md 7.3.1): written before WEX4_REQ_WNR4_EXPERT existed, they hold EXPERT records of
+ * codec 8 (WNR4 kind MX) under a required_features word without that bit, and no WEX4_REC_VALUE_EXACT on them:
+ * only the record's own flag byte (byte 13, bit 3) says that it is in canonical-zero form. Refused by default
+ * (WEX4_E_EXPERT). A caller that must still read one sets h.legacy = WEX4_LEGACY_WNR4_EXPERT between
+ * wex4_parse_header, which clears it, and wex4_open; wex4/wex4_restamp.py rewrites such a file to the strict form. */
+#define WEX4_LEGACY_WNR4_EXPERT 1u
 #define WEX4_OPT_ST_SOURCES UINT64_C(1)        /* meta holds the safetensors sources (tools only) */
 #define WEX4_MAX_BLOBS (1u << 16)
 #define WEX4_MAX_RECORDS (1u << 24)
@@ -347,6 +353,7 @@ typedef struct {
     uint32_t major, minor, blobs, records, tensors, layers, experts, max_decoded;
     uint64_t required, optional, file_bytes, index_offset, index_bytes, names_bytes, meta_bytes, total_decoded;
     unsigned char index_sha[32], root[32];   /* root = header_sha256: the container's identity */
+    uint32_t legacy;                         /* WEX4_LEGACY_* the caller asks for: not in the file, 0 = strict */
 } Wex4Header;
 typedef struct { uint32_t kind, id; uint64_t offset, bytes; const unsigned char *sha; } Wex4Blob;
 typedef struct {
@@ -376,6 +383,7 @@ static inline int wex4_parse_header(const unsigned char *page, uint64_t file_byt
     unsigned char digest[32];
     uint64_t need;
     if (!page || !h) return WEX4_E_ARG;
+    h->legacy = 0u;
     if (wex_nr_u32(page) != WEX4_MAGIC) return WEX4_E_MAGIC;
     wex4_sha256(page, WEX4_HEADER_HASHED, digest);
     if (memcmp(digest, page + WEX4_HEADER_HASHED, 32u)) return WEX4_E_HASH;
@@ -594,11 +602,13 @@ static inline int wex4_open(const Wex4Header *h, const unsigned char *index, siz
     uint64_t pos, total = 0, pending_bytes = 0, name_at = 0, i64;
     uint32_t r, t = 0, pending = 0, maximum = 0, b = 0, i;
     int64_t last_owner = -1;
-    int index_done;
+    int index_done, wnr4_expert;
     Wex4Record rec;
     Wex4Tensor ten;
     Wex4Blob blob;
     if (!h || !v || (!index && h->index_bytes) || index_len != wex4_align(h->index_bytes)) return WEX4_E_ARG;
+    /* EXPERT records of codec 8: the file names the feature, or it is a pre-bit file the caller asked to read */
+    wnr4_expert = (h->required & WEX4_REQ_WNR4_EXPERT) || (h->legacy & WEX4_LEGACY_WNR4_EXPERT);
     wex4_sha256(index, (size_t)h->index_bytes, digest);
     if (memcmp(digest, h->index_sha, 32u)) return WEX4_E_HASH;
     for (i64 = h->index_bytes; i64 < index_len; i64++) if (index[i64]) return WEX4_E_INDEX;
@@ -677,10 +687,11 @@ static inline int wex4_open(const Wex4Header *h, const unsigned char *index, siz
             wex4_get_blob(v, rec.blob - 1u, &blob);
             if (blob.kind != WEX4_BLOB_WNM2) return WEX4_E_RECORD;
         }
-        if (rec.codec == WEX4_CODEC_WNR4 && (rec.flags & WEX4_REC_EXPERT) && (h->required & WEX4_REQ_WNR4_EXPERT)) {
+        if (rec.codec == WEX4_CODEC_WNR4 && (rec.flags & WEX4_REC_EXPERT) && wnr4_expert) {
             if (!rec.blob) return WEX4_E_RECORD;
             wex4_get_blob(v, rec.blob - 1u, &blob);
-            if (blob.kind != WEX4_BLOB_WNM4 ||
+            /* the id: the blob loop above checks it only under the feature bit, which a pre-bit file lacks */
+            if (blob.kind != WEX4_BLOB_WNM4 || !blob.id ||
                 (!wex4_wnm4_kind_size_ok(0u, blob.bytes) && !wex4_wnm4_kind_size_ok(1u, blob.bytes)))
                 return WEX4_E_RECORD;
         }
@@ -711,7 +722,7 @@ static inline int wex4_open(const Wex4Header *h, const unsigned char *index, siz
         if (rec.flags & WEX4_REC_EXPERT) {
             Wex4ExpertGeo g;
             if (rec.codec != WEX4_CODEC_RAW && rec.codec != WEX4_CODEC_WNR3 &&
-                !(rec.codec == WEX4_CODEC_WNR4 && (h->required & WEX4_REQ_WNR4_EXPERT)))
+                !(rec.codec == WEX4_CODEC_WNR4 && wnr4_expert))
                 return WEX4_E_EXPERT;
             if ((rec.owner >> 16) >= h->layers || (rec.owner & 0xffffu) >= h->experts ||
                 (int64_t)rec.owner <= last_owner || wex4_expert_geometry(v, r, &g)) return WEX4_E_EXPERT;

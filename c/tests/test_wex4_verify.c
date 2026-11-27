@@ -11,7 +11,9 @@
  * with the status of the rule it breaks; a record of no expert is accepted. And the parts of
  * wex4.h the engines do not call: wex4_find, wex4_decode_record on a RAW record, and a WBP1
  * (codec 6) record through wex4_bp_encode and wex4_bp_decode, refused under another owner or
- * with a byte changed. */
+ * with a byte changed. Last, the codec-8 rules of wex4.h on its own: WNM4 blobs, the NVFP4 slab, and
+ * a pre-bit file (an EXPERT record of codec 8 without WEX4_REQ_WNR4_EXPERT), which opens only under
+ * WEX4_LEGACY_WNR4_EXPERT. */
 #define WEX4_VERIFY_NO_MAIN
 #include "../tools/wex4_verify.c"
 #include "wex4_fixture.h"
@@ -65,6 +67,15 @@ static int open_in_memory(const unsigned char *w4, size_t bytes, Wex4View *v) {
     Wex4Header h;
     int rc = wex4_parse_header(w4, bytes, &h);
     return rc ? rc : wex4_open(&h, w4 + h.index_offset, (size_t)wex4_align(h.index_bytes), v);
+}
+
+/* the same as a caller that reads pre-bit files: WEX4_LEGACY_WNR4_EXPERT set between the two */
+static int open_pre_bit(const unsigned char *w4, size_t bytes, Wex4View *v) {
+    Wex4Header h;
+    int rc = wex4_parse_header(w4, bytes, &h);
+    if (rc) return rc;
+    h.legacy = WEX4_LEGACY_WNR4_EXPERT;
+    return wex4_open(&h, w4 + h.index_offset, (size_t)wex4_align(h.index_bytes), v);
 }
 
 /* One or two fields of the index or header page changed (little-endian, `width` bytes) and both
@@ -291,6 +302,69 @@ static uint32_t make_uniform_wnm4(uint32_t kind, unsigned char **out_blob, size_
 }
 
 /* WNR4 standalone rules: wex4_wnm4_blob_ok (kinds 0, 2, 3), NVFP4 geometry gating, and wex4_verify_file on WNM4 blobs. */
+/* A minimal container: one MX WNM4 blob, then one EXPERT record of three [rows, 4] scale matrices and their
+ * weights, an NVFP4 slab (nv: F8_E4M3 scales, weights 8 x as wide) or an MXFP4 one (F8_E8M0, 16 x), stored RAW
+ * or as one page of codec 8 that names the blob (the page is zeros: these tests open the index only). Resealed. */
+static unsigned char *wnr4_file(int nv, uint32_t rows, uint32_t codec, uint64_t required, const unsigned char *wnm4,
+                                size_t wnm4_n, uint32_t wnm4_id, size_t *bytes, char root[65]) {
+    const uint32_t scols = 4, wcols = scols * (nv ? 8u : 16u), raw = 3u * rows * (scols + wcols);
+    const size_t blob_span = (size_t)wex4_align(wnm4_n), rec_span = codec ? WEX4_PAGE : (size_t)wex4_align(raw);
+    const char *tnames[6] = {"e.0.s0", "e.0.s1", "e.0.s2", "e.0.w0", "e.0.w1", "e.0.w2"};
+    const size_t name_bytes = 6u * 6u;
+    const size_t idx_bytes = WEX4_BLOB_BYTES + WEX4_RECORD_BYTES + 6u * (WEX4_TENSOR_BYTES + 4u) + name_bytes;
+    const size_t idx_span = (size_t)wex4_align(idx_bytes);
+    const size_t file_n = WEX4_PAGE + idx_span + blob_span + rec_span;
+    unsigned char *f = calloc(1, file_n), *x;
+    size_t at = 0;
+    assert(f);
+    memcpy(f + WEX4_PAGE + idx_span, wnm4, wnm4_n);
+    x = f + WEX4_PAGE;
+#define PUT(val, ty) do { ty t_ = (ty)(val); memcpy(x + at, &t_, sizeof t_); at += sizeof t_; } while (0)
+    /* 1 blob: WNM4 */
+    PUT(WEX4_BLOB_WNM4, uint32_t); PUT(wnm4_id, uint32_t);
+    PUT(WEX4_PAGE + idx_span, uint64_t); PUT(wnm4_n, uint64_t);
+    wex4_sha256(wnm4, wnm4_n, x + at); at += 32u; PUT(0, uint64_t);
+    /* 1 EXPERT record */
+    PUT(WEX4_PAGE + idx_span + blob_span, uint64_t); PUT(rec_span, uint32_t); PUT(raw, uint32_t);
+    PUT(codec, uint16_t); PUT(WEX4_REC_EXPERT, uint16_t); PUT(codec ? 1 : 0, uint32_t);
+    PUT(0, uint32_t); PUT(0, uint32_t); PUT(6, uint32_t);
+    wex4_sha256(f + WEX4_PAGE + idx_span + blob_span, rec_span, x + at); at += 32u; PUT(0, uint32_t);
+    /* 6 tensors: 3 scales [rows, 4], 3 U8 weights [rows, 32 or 64] */
+    uint64_t off = 0;
+    for (uint32_t m = 0; m < 6u; m++) {
+        uint64_t c = m < 3u ? scols : wcols;
+        PUT(m * 6u, uint32_t); PUT(6u, uint16_t);
+        PUT(m >= 3u ? WEX4_DT_U8 : nv ? WEX4_DT_F8_E4M3 : WEX4_DT_F8_E8M0, uint8_t); PUT(2u, uint8_t);
+        PUT(rows, uint64_t); PUT(c, uint64_t);
+        for (int d = 2; d < 8; d++) PUT(0, uint64_t);
+        PUT(0, uint32_t); PUT(1, uint32_t); PUT(off, uint64_t); PUT((uint64_t)rows * c, uint64_t);
+        off += (uint64_t)rows * c;
+    }
+    for (uint32_t m = 0; m < 6u; m++) PUT(m, uint32_t);
+    for (uint32_t m = 0; m < 6u; m++) { memcpy(x + at, tnames[m], 6u); at += 6u; }
+    assert(at == idx_bytes);
+    x = f; at = 0;
+    PUT(WEX4_MAGIC, uint32_t); PUT(4, uint16_t); PUT(0, uint16_t);
+    PUT(required, uint64_t); PUT(0, uint64_t);
+    PUT(file_n, uint64_t); PUT(WEX4_PAGE, uint64_t); PUT(idx_bytes, uint64_t);
+    PUT(1, uint32_t); PUT(1, uint32_t); PUT(6, uint32_t); PUT(1, uint32_t); PUT(1, uint32_t);
+    PUT(raw, uint32_t); PUT(name_bytes, uint64_t); PUT(0, uint64_t); PUT(raw, uint64_t);
+#undef PUT
+    wex4_fixture_reseal(f, root);
+    *bytes = file_n;
+    return f;
+}
+
+/* p resealed, then opened as it is and as a caller that reads pre-bit files opens it */
+static void pre_bit_case(unsigned char *p, size_t n, int strict, int legacy, const char *what) {
+    char root[65];
+    Wex4View v;
+    wex4_fixture_reseal(p, root);
+    int s = open_in_memory(p, n, &v), l = open_pre_bit(p, n, &v);
+    printf("%-4s %s: wex4.h %d, under WEX4_LEGACY_WNR4_EXPERT %d\n", s == strict && l == legacy ? "ok" : "FAIL", what, s, l);
+    assert(s == strict && l == legacy);
+}
+
 static void wnr4_rules(void) {
     static const uint32_t kinds[3] = {0u, 2u, 3u};
     for (int k = 0; k < 3; k++) {
@@ -316,83 +390,68 @@ static void wnr4_rules(void) {
         free(blob);
     }
 
-    /* Minimal container with 1 unused MX WNM4 blob + 1 RAW NVFP4 EXPERT record:
+    /* 1 unused MX WNM4 blob + 1 RAW NVFP4 EXPERT record (432 B, one page):
      * requires WEX4_REQ_WNR4_EXPERT, and wex4_verify_file rejects a corrupt WNM4 blob with exit 1. */
     unsigned char *wnm4 = NULL;
-    size_t wnm4_n = 0;
+    size_t wnm4_n = 0, file_n;
     uint32_t wnm4_id = make_uniform_wnm4(0u, &wnm4, &wnm4_n);
-    const uint32_t rows = 4, scols = 4, wcols = 32;   /* NVFP4: wcols = 8 * scols, rows * scols = 16 (even) */
-    const uint32_t raw = 3u * rows * (scols + wcols); /* 432 B -> 1 page */
-    const size_t blob_span = (size_t)wex4_align(wnm4_n), rec_span = WEX4_PAGE;
-    const char *tnames[6] = {"e.0.s0", "e.0.s1", "e.0.s2", "e.0.w0", "e.0.w1", "e.0.w2"};
-    const size_t name_bytes = 6u * 6u;
-    const size_t idx_bytes = WEX4_BLOB_BYTES + WEX4_RECORD_BYTES + 6u * (WEX4_TENSOR_BYTES + 4u) + name_bytes;
-    const size_t idx_span = (size_t)wex4_align(idx_bytes);
-    const size_t file_n = WEX4_PAGE + idx_span + blob_span + rec_span;
-    unsigned char *f = calloc(1, file_n), *x;
-    size_t at = 0;
-    assert(f);
-    memcpy(f + WEX4_PAGE + idx_span, wnm4, wnm4_n);
-    x = f + WEX4_PAGE;
-#define PUT(val, ty) do { ty t_ = (ty)(val); memcpy(x + at, &t_, sizeof t_); at += sizeof t_; } while (0)
-    /* 1 blob: WNM4 */
-    PUT(WEX4_BLOB_WNM4, uint32_t); PUT(wnm4_id, uint32_t);
-    PUT(WEX4_PAGE + idx_span, uint64_t); PUT(wnm4_n, uint64_t);
-    wex4_sha256(wnm4, wnm4_n, x + at); at += 32u; PUT(0, uint64_t);
-    /* 1 record: RAW NVFP4 EXPERT */
-    PUT(WEX4_PAGE + idx_span + blob_span, uint64_t); PUT(rec_span, uint32_t); PUT(raw, uint32_t);
-    PUT(WEX4_CODEC_RAW, uint16_t); PUT(WEX4_REC_EXPERT, uint16_t); PUT(0, uint32_t);
-    PUT(0, uint32_t); PUT(0, uint32_t); PUT(6, uint32_t);
-    wex4_sha256(f + WEX4_PAGE + idx_span + blob_span, rec_span, x + at); at += 32u; PUT(0, uint32_t);
-    /* 6 tensors: 3 F8_E4M3 scales [4,4], 3 U8 weights [4,32] */
-    uint64_t off = 0;
-    for (uint32_t m = 0; m < 6u; m++) {
-        uint64_t c = m < 3u ? scols : wcols;
-        PUT(m * 6u, uint32_t); PUT(6u, uint16_t); PUT(m < 3u ? WEX4_DT_F8_E4M3 : WEX4_DT_U8, uint8_t); PUT(2u, uint8_t);
-        PUT(rows, uint64_t); PUT(c, uint64_t);
-        for (int d = 2; d < 8; d++) PUT(0, uint64_t);
-        PUT(0, uint32_t); PUT(1, uint32_t); PUT(off, uint64_t); PUT((uint64_t)rows * c, uint64_t);
-        off += (uint64_t)rows * c;
-    }
-    for (uint32_t m = 0; m < 6u; m++) PUT(m, uint32_t);
-    for (uint32_t m = 0; m < 6u; m++) { memcpy(x + at, tnames[m], 6u); at += 6u; }
-    assert(at == idx_bytes);
-    x = f; at = 0;
-    PUT(WEX4_MAGIC, uint32_t); PUT(4, uint16_t); PUT(0, uint16_t);
-    PUT(WEX4_REQ_WNR4_EXPERT, uint64_t); PUT(0, uint64_t);
-    PUT(file_n, uint64_t); PUT(WEX4_PAGE, uint64_t); PUT(idx_bytes, uint64_t);
-    PUT(1, uint32_t); PUT(1, uint32_t); PUT(6, uint32_t); PUT(1, uint32_t); PUT(1, uint32_t);
-    PUT(raw, uint32_t); PUT(name_bytes, uint64_t); PUT(0, uint64_t); PUT(raw, uint64_t);
-#undef PUT
     char root[65], got[65];
-    wex4_fixture_reseal(f, root);
+    unsigned char *f = wnr4_file(1, 4u, WEX4_CODEC_RAW, WEX4_REQ_WNR4_EXPERT, wnm4, wnm4_n, wnm4_id, &file_n, root);
+    const size_t blob_at = (size_t)wex4_u64(f + WEX4_PAGE + 8u);
     {
         Wex4View v;
         Wex4ExpertGeo g;
         WexEntry legacy;
         assert(!open_in_memory(f, file_n, &v));
-        assert(!wex4_expert_geometry(&v, 0, &g) && g.kind == 1u && g.raw == raw);
+        assert(!wex4_expert_geometry(&v, 0, &g) && g.kind == 1u && g.raw == 432u);
         assert(wex4_expert_entry(&v, 0, &legacy) == WEX4_E_EXPERT);   /* legacy WexEntry stays MXFP4-only */
     }
     put(f, file_n);
     assert(run(2, got) == 0 && !strcmp(got, root));
-    /* without WEX4_REQ_WNR4_EXPERT: NVFP4 EXPERT geometry is refused */
+    /* without WEX4_REQ_WNR4_EXPERT: NVFP4 EXPERT geometry is refused, also from a caller that reads pre-bit files */
     {
         uint64_t zero = 0;
         memcpy(f + 8u, &zero, 8u);
         wex4_fixture_reseal(f, got);
         Wex4View v;
-        assert(open_in_memory(f, file_n, &v) == WEX4_E_EXPERT);
+        assert(open_in_memory(f, file_n, &v) == WEX4_E_EXPERT && open_pre_bit(f, file_n, &v) == WEX4_E_EXPERT);
         uint64_t req = WEX4_REQ_WNR4_EXPERT;
         memcpy(f + 8u, &req, 8u);
         wex4_fixture_reseal(f, got);
     }
     /* corrupt the WNM4 blob and reseal its SHA-256 (keeping wrong id / broken CDF): verify must fail (exit 1) */
-    f[WEX4_PAGE + idx_span + 32u] ^= 1u;
-    wex4_sha256(f + WEX4_PAGE + idx_span, wnm4_n, f + WEX4_PAGE + 24u);
+    f[blob_at + 32u] ^= 1u;
+    wex4_sha256(f + blob_at, wnm4_n, f + WEX4_PAGE + 24u);
     wex4_fixture_reseal(f, got);
     put(f, file_n);
     assert(run(2, got) == 1);
+    free(f);
+
+    /* A pre-bit file (WEX4-SPEC 7.3.1): an MXFP4 EXPERT record of codec 8 (4896 B in one stored page) and no
+     * WEX4_REQ_WNR4_EXPERT. wex4.h and wex4_verify refuse it; a caller opens it by setting WEX4_LEGACY_WNR4_EXPERT,
+     * which wex4_parse_header clears, which changes nothing for a file that has the bit, and under which the record
+     * still needs its model blob with an id and still cannot be VALUE_EXACT. */
+    {
+        const size_t R = WEX4_PAGE + WEX4_BLOB_BYTES;   /* the record entry: flags at 18, blob at 20 */
+        const uint16_t expert = WEX4_REC_EXPERT, exact = WEX4_REC_EXPERT | WEX4_REC_VALUE_EXACT;
+        const uint32_t zero = 0, one = 1;
+        uint64_t req = WEX4_REQ_VALUE_EXACT;
+        Wex4Header h;
+        f = wnr4_file(0, 24u, WEX4_CODEC_WNR4, 0, wnm4, wnm4_n, wnm4_id, &file_n, root);
+        h.legacy = WEX4_LEGACY_WNR4_EXPERT;
+        assert(!wex4_parse_header(f, file_n, &h) && !h.legacy);
+        pre_bit_case(f, file_n, WEX4_E_EXPERT, WEX4_OK, "a pre-bit file");
+        put(f, file_n);
+        assert(run(2, got) == 2 && !got[0]);
+        memcpy(f + 8u, &req, 8u); memcpy(f + R + 18u, &exact, 2u);
+        pre_bit_case(f, file_n, WEX4_E_RECORD, WEX4_E_RECORD, "a pre-bit file with a VALUE_EXACT record of codec 8");
+        req |= WEX4_REQ_WNR4_EXPERT; memcpy(f + 8u, &req, 8u);
+        pre_bit_case(f, file_n, WEX4_OK, WEX4_OK, "the same with required bit 2: the strict form");
+        req = 0; memcpy(f + 8u, &req, 8u); memcpy(f + R + 18u, &expert, 2u); memcpy(f + R + 20u, &zero, 4u);
+        pre_bit_case(f, file_n, WEX4_E_EXPERT, WEX4_E_RECORD, "a pre-bit record without a model blob");
+        memcpy(f + R + 20u, &one, 4u); memcpy(f + WEX4_PAGE + 4u, &zero, 4u);
+        pre_bit_case(f, file_n, WEX4_E_EXPERT, WEX4_E_RECORD, "a pre-bit record whose model blob has id 0");
+    }
     remove(path);
     free(f); free(wnm4);
     puts("wnr4_rules: OK");
