@@ -11,6 +11,12 @@
  *
  * Usage: test_colibri_shim [--lib PATH] [--cuda PATH|0] */
 
+#ifndef _WIN32
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+#endif
+
 #include "colibri_wex_shim.h"
 
 #include "../../../c/wex4.h"

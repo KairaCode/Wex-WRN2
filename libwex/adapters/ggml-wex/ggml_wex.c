@@ -1,6 +1,12 @@
 /* SPDX-License-Identifier: Apache-2.0
  * Copyright 2026 Ludovico Zanichelli */
 
+#ifndef _WIN32
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+#endif
+
 #include "ggml_wex.h"
 
 #if defined(__has_include)

@@ -3,6 +3,12 @@
 
 /* Standalone unit + throughput test for libwex async I/O & streaming SHA-256. */
 
+#ifndef _WIN32
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

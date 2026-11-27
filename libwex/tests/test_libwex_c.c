@@ -13,6 +13,12 @@
  *
  * Usage: test_libwex_c [--cuda PATH] [--lib PATH] */
 
+#ifndef _WIN32
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+#endif
+
 #include "../include/wex_store.h"
 #include "../include/wex_loader.h"
 #include "../src/wex_cache.h"

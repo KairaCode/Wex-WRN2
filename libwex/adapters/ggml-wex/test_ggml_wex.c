@@ -14,6 +14,12 @@
  *
  * Usage: test_ggml_wex [--plugin PATH] [--lib PATH] [--cuda PATH|0] */
 
+#ifndef _WIN32
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+#endif
+
 #include "ggml_wex.h"
 
 #include "../../../c/wex4.h"
