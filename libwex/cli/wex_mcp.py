@@ -33,7 +33,6 @@ TOOLS = [
             "properties": {
                 "path": {"type": "string", "description": "Path to the local .wex / .wex4 container file."},
                 "cpu_only": {"type": "boolean", "description": "Disable GPU backend discovery.", "default": False},
-                "lib_path": {"type": "string", "description": "Optional explicit path to libwex shared library."},
             },
             "required": ["path"],
             "additionalProperties": False,
@@ -49,7 +48,6 @@ TOOLS = [
                 "root_hex": {"type": "string", "description": "Optional 64-char hex root SHA-256 to pin."},
                 "l2_mb": {"type": "integer", "description": "L2 cache size in MiB (default 0).", "default": 0, "minimum": 0},
                 "cpu_only": {"type": "boolean", "description": "Force CPU-only decode.", "default": False},
-                "lib_path": {"type": "string", "description": "Optional explicit path to libwex shared library."},
             },
             "required": ["path"],
             "additionalProperties": False,
@@ -69,7 +67,6 @@ TOOLS = [
                 "verify": {"type": "boolean", "description": "Enable first-read SHA-256 verification.", "default": False},
                 "cpu_only": {"type": "boolean", "description": "Force CPU-only decode.", "default": False},
                 "seed": {"type": "integer", "description": "Deterministic PRNG seed.", "default": 42},
-                "lib_path": {"type": "string", "description": "Optional explicit path to libwex shared library."},
             },
             "required": ["path"],
             "additionalProperties": False,
@@ -130,7 +127,7 @@ class WexMcpServer:
 
     def _call_tool(self, name, arguments):
         args = arguments if isinstance(arguments, dict) else {}
-        lib_path = args.get("lib_path") or self.default_lib_path
+        lib_path = self.default_lib_path
 
         if name == "wex_inspect":
             return wex_cli.run_inspect(
