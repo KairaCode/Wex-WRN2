@@ -90,7 +90,8 @@ func testEncodeMXNV(model *MXNVModel, g Geo, coded []byte, flags byte, anchors [
 					i := s0 + idx
 					sc, pred := mxnvScaleCtx(g.Kind, so, i, s0, cols)
 					y := so[i]
-					events = append(events, wnr4Event{l, model.sTable(m, sc), uint32(byte(y - pred))})
+					d := y - pred
+					events = append(events, wnr4Event{l, model.sTable(m, sc), uint32(d)})
 					blocks[l] = append(blocks[l], uint32(y))
 				}
 			}
@@ -107,7 +108,11 @@ func testEncodeMXNV(model *MXNVModel, g Geo, coded []byte, flags byte, anchors [
 					}
 					for l := 0; l < act; l++ {
 						cell := c0 + 32*j + uint64(l)
-						y := uint32((wo[cell*16+uint64(k/2)] >> uint((k&1)*4)) & 15)
+						b := wo[cell*16+uint64(k/2)]
+						if k&1 != 0 {
+							b >>= 4
+						}
+						y := uint32(b) & 15
 						if k >= 28 && l >= 2 && j == (n-uint64(l)-1)/32 {
 							continue
 						}
@@ -177,7 +182,8 @@ func TestWNR4MXNV(t *testing.T) {
 		coded := make([]byte, raw)
 		for m := 0; m < 3; m++ {
 			for i := uint64(0); i < tc.g.scales(m); i++ {
-				coded[soff[m]+i] = byte(100 + rng.Intn(15))
+				s := 100 + rng.Intn(15)
+				coded[soff[m]+i] = byte(s)
 			}
 			for c := uint64(0); c < tc.g.cells(m); c++ {
 				maxA := 7
@@ -185,11 +191,12 @@ func TestWNR4MXNV(t *testing.T) {
 					maxA = 5
 				}
 				for j := 0; j < 32; j++ {
-					a := rng.Intn(maxA + 1)
+					lim := maxA + 1
+					a := rng.Intn(lim)
 					if j == 31 && tc.ceil && c%2 == 0 {
 						a = 5
 					}
-					x := a | ((rng.Intn(2)) << 3)
+					x := a | rng.Intn(2)<<3
 					if tc.cz && x == 8 {
 						x = 0
 					}
@@ -211,8 +218,9 @@ func TestWNR4MXNV(t *testing.T) {
 						if b&7 > mx {
 							mx = b & 7
 						}
-						if (b>>4)&7 > mx {
-							mx = (b >> 4) & 7
+						hi := b >> 4
+						if hi&7 > mx {
+							mx = hi & 7
 						}
 					}
 					if mx == 5 {
@@ -256,7 +264,8 @@ func TestWNR4MXNV(t *testing.T) {
 func TestWNR4NVContainer(t *testing.T) {
 	g := Geo{Kind: mxnvKindNV, Rows: [3]uint64{6, 6, 4}, Cols: [3]uint64{36, 36, 12}}
 	wctx, sctx := 1053, 4160
-	blob := make([]byte, wnr4ModelHdr+3*wctx*2*wnr4CDF16+3*sctx*2*wnr4CDF256)
+	size := wnr4ModelHdr + 3*wctx*2*wnr4CDF16 + 3*sctx*2*wnr4CDF256
+	blob := make([]byte, size)
 	hdr := [8]uint32{magicWNM4, 1, mxnvKindNV, cdfBits, uint32(wctx), uint32(sctx), 1, 0}
 	for i, w := range hdr {
 		le.PutUint32(blob[4*i:], w)
