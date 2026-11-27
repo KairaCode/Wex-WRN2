@@ -137,10 +137,24 @@ class WexMcpServer:
     def __init__(self, default_lib_path=None, default_cuda_path=None, root_dirs=None):
         self.default_lib_path = default_lib_path
         self.default_cuda_path = default_cuda_path
-        self.root_dirs = [os.path.normcase(os.path.realpath(d)) for d in (root_dirs or [os.getcwd()])]
+        roots = root_dirs or [os.getcwd()]
+        self.root_dirs = [os.path.normcase(os.path.realpath(d)) for d in roots]
+        # Windows drives and network shares that hold a root, as the root is spelled and as it resolves
+        self.root_drives = {
+            os.path.splitdrive(os.path.normcase(spelling(d)))[0]
+            for d in roots
+            for spelling in (os.path.abspath, os.path.realpath)
+        }
 
     def _resolve_path(self, path):
         """Return the symlink-free absolute path, refusing one outside the root directories."""
+        # realpath gives a path with a NUL back unresolved, and the C library reads the path up to the NUL
+        if "\0" in path:
+            raise ValueError("path contains a NUL character")
+        # On Windows realpath opens the path, and opening a network (UNC) path logs on to the host it
+        # names: a path on a drive or share that holds no root is refused before anything opens it.
+        if os.path.splitdrive(os.path.normcase(os.path.abspath(path)))[0] not in self.root_drives:
+            raise ValueError(f"path is outside the allowed root directories: {path}")
         real = os.path.realpath(path)
         key = os.path.normcase(real)
         for root in self.root_dirs:

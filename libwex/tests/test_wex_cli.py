@@ -774,6 +774,21 @@ class TestWexCliAndMcp(unittest.TestCase):
                 self.assertIn("outside the allowed root", res["structuredContent"]["error"])
                 lib.assert_not_called()
 
+        # realpath gives a path with a NUL back unresolved, and the C library reads the path up to the NUL
+        with mock.patch.object(wex_cli, "WexLib") as lib:
+            res = self._mcp_call(server, "wex_inspect", {"path": os.path.join(link, "out.wex4") + "\0x", "cpu_only": True})
+        self.assertTrue(res["isError"], res)
+        self.assertIn("NUL", res["structuredContent"]["error"])
+        lib.assert_not_called()
+
+        if os.name == "nt":
+            # Opening a UNC path logs on to that host, so one outside the roots is refused before anything opens it
+            with mock.patch.object(wex_mcp.os.path, "realpath") as realpath:
+                res = self._mcp_call(server, "wex_inspect", {"path": "//192.0.2.1/share/out.wex4", "cpu_only": True})
+            self.assertTrue(res["isError"], res)
+            self.assertIn("outside the allowed root", res["structuredContent"]["error"])
+            realpath.assert_not_called()
+
         # With no --root-dir the only root is the server's working directory
         self.assertEqual(
             wex_mcp.WexMcpServer().root_dirs,

@@ -112,7 +112,7 @@ python libwex/cli/wex_mcp.py --root-dir /path/to/models
 What a tool call can reach is fixed when the server starts, not by the client:
 
 - The `libwex` library is chosen by `--lib` / `--cuda` or `WEX_LIB_PATH`. No tool takes a library path, and a call with an undeclared argument is rejected.
-- Tools open containers only under the `--root-dir` directories (repeatable; default: the current working directory). Paths are resolved (symlinks, `..`) before the check.
+- Tools open containers only under the `--root-dir` directories (repeatable; default: the current working directory). Paths are resolved (symlinks, `..`) before the check. On Windows a path on a drive or network share that holds no root is refused without being opened.
 - `wex_server_telemetry` queries loopback only. For a token-protected `wex serve` it sends `WEX_SERVE_TOKEN` from the MCP server's own environment.
 
 ## Measured Performance (Single NVMe + L2 Compressed RAM)
