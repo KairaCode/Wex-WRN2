@@ -3,7 +3,7 @@
 #ifndef COLI_WEX_NEURAL_RANS_H
 #define COLI_WEX_NEURAL_RANS_H
 /* Exact-symbol conditional rANS using integer CDFs learned by a neural net.
- * Same byte-renormalized state equations as KAIRA's rans.h. Contexts reset
+ * Same byte-renormalized state equations as the rans.h of the maintainer's application tree. Contexts reset
  * every 32 weights, so independent chunks can encode/decode on CUDA.
  * This header contains the portable, strictly checked CPU reference.
  */

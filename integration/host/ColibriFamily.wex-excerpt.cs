@@ -10,7 +10,7 @@
 
     // Engine-side variables the DeepSeek V4.1 engine reads (deepseek_v41.c getenv list, plus the Vulkan switch
     // and the OpenMP names read by the launcher). Everything else in a V4.1 profile env is V4-only (WEX, V4_*,
-    // DSV4_*), or set by KAIRA or the launcher and therefore not taken from the profile:
+    // DSV4_*), or set by the host or the launcher and therefore not taken from the profile:
     // CTX (from --ctx), KV_SLOTS (set by the gateway) and COLI_MODEL_MIRROR (from mirror_dir).
     private static readonly string[] V41EnvNames =
     {

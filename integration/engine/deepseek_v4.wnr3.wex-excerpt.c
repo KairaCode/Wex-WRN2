@@ -90,7 +90,7 @@ static int v4_read_expert_record_io(V4ExpertStoreState *state,
                                     V4ExpertSlot *slot, int rep,
                                     uint64_t *payload_bytes);
 
-/* V4_LAB_CANON_ZERO=1: LAB ONLY (WNR3 gate G7, never set by KAIRA). Every FP4 -0 nibble
+/* V4_LAB_CANON_ZERO=1: LAB ONLY (WNR3 gate G7, never set by the host application). Every FP4 -0 nibble
  * (0x8) of an expert slab becomes +0 right after the read (WEX1, WNR2 or safetensors), so
  * a WEX1 run computes on exactly what a WNR3 canonical-zero container decodes to. Both
  * callers (lease load, read_private) come through here; the GPU-direct fill does not, so

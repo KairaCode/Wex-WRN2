@@ -8,7 +8,7 @@
 // ==== Engine.cs:58-78  ApplyProfileEnv: V4.1 on deepseek_v41.exe gets only IsV41Env names (drops every WEX variable) ====
 
     /// <summary>
-    /// Copies the profile env into the engine env (a copy of KAIRA's own). A V4.1 checkpoint on deepseek_v41.exe gets
+    /// Copies the profile env into the engine env (a copy of the host's own). A V4.1 checkpoint on deepseek_v41.exe gets
     /// only the variables that engine reads (the preflight reports the rest); on deepseek_v4.exe (COLI_FAMILY_ENGINE) it
     /// gets them all. Returns true for deepseek_v4.exe.
     /// </summary>
@@ -23,7 +23,7 @@
                 environment[kv.Key] = kv.Value;
             }
         // coli picks the engine from this variable: it must be the one the host checked and set up, not one inherited
-        // from KAIRA's environment that the profile overrode (with "" or deepseek_v41)
+        // from the host's environment that the profile overrode (with "" or deepseek_v41)
         if (v41OnV4) environment[ColibriFamilies.FamilyEngineEnv] = "deepseek_v4";
         else if (deepSeekV41) environment.Remove(ColibriFamilies.FamilyEngineEnv);
         return v41OnV4;

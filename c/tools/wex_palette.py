@@ -2,7 +2,7 @@
 # Copyright 2026 Ludovico Zanichelli
 """Experimental three-bit palettes over native E2M1 symbols, conditioned on UE8M0.
 
-The packing convention is shared with KAIRA's TurboQuant-QJL. Palettes are
+The packing convention is shared with the TurboQuant-QJL of the maintainer's application tree. Palettes are
 discrete optimal 1-D eight-level quantizers, not QJL/Hadamard or an E8 decoder.
 The original scale bytes and native FP4 kernel layout are preserved. This is
 additional, lossy quantization unless every used symbol is in its palette.

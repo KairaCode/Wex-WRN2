@@ -664,7 +664,7 @@ int main(int argc, char **argv) {
     const char *container = NULL;
     int bench = 0, real_count = 4, before;
     setbuf(stdout, NULL);
-    /* KAIRA's wex_decode.c opens a kaira_wex_cuda.dll found beside the executable when COLI_WEX_CUDA_LIB is
+    /* The engine's wex_decode.c opens a kaira_wex_cuda.dll found beside the executable when COLI_WEX_CUDA_LIB is
      * unset: this test is about the CPU decoders, so no helper */
     setenv("COLI_WEX_CUDA_LIB", "0", 1);
     for (int i = 1; i < argc; i++) {

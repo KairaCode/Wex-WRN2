@@ -7,7 +7,7 @@ and keeps QD unbuffered ReadFile calls in flight at random 4 KiB-aligned offsets
 C: alone, U: alone and both at once. Each setting stops at --cap-gb (default 2) of reads, the whole run
 at --budget-s (default 300). Prints GB/s and the per-request latency (issue -> landed), p50 / p99 / mean.
 
-It refuses to run while KAIRA or an engine (deepseek_v4*, qwen3*, colibri*) runs: the numbers would be
+It refuses to run while the host application or an engine (deepseek_v4*, qwen3*, colibri*) runs: the numbers would be
 wrong and the run would steal the engine's disk.
 
   python -I wexio_probe.py                      # the default containers below
@@ -60,7 +60,7 @@ INVALID = ctypes.c_void_p(-1).value
 
 
 def engine_running(images):
-    """the KAIRA / engine images among process image names"""
+    """the host application / engine images among process image names"""
     return sorted({i for i in images if i.lower().startswith(ENGINE_PREFIXES)})
 
 
@@ -208,7 +208,7 @@ def main():
         return self_test()
     busy = engine_running(running_images())
     if busy:
-        sys.exit("wexio_probe: refused, running now: " + ", ".join(busy) + " (stop KAIRA and the engines first)")
+        sys.exit("wexio_probe: refused, running now: " + ", ".join(busy) + " (stop the host application and the engines first)")
     files = [tuple(f.split("=", 1)) for f in a.file] or DEFAULT_FILES
     targets = [Target(label, path) for label, path in files]
     groups = [[t] for t in targets] + ([targets] if len(targets) > 1 else [])
