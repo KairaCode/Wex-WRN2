@@ -92,7 +92,7 @@ python libwex/cli/wex_cli.py ipc model.wex --l2-mb auto
 
 - `serve` binds to `127.0.0.1` by default and **refuses to start on a non-loopback `--host` without a token**.
 - Set the token with the `WEX_SERVE_TOKEN` environment variable (preferred, it stays out of the process list) or `--token <secret>`. Every route then requires `Authorization: Bearer <secret>` and answers `401` otherwise. OpenAI-compatible clients send their API key this way, so configure the token as the client's API key. On loopback the token is optional.
-- Without a token, a request whose `Origin` header names a non-loopback site is answered with `403`, so a web page of another site open in a browser cannot drive the local server.
+- Without a token, a request whose `Origin` header names a non-loopback site is answered with `403`, so a web page of another site open in a browser cannot drive the local server. This does not stop DNS rebinding, which lets such a page read the `GET` routes; a token does.
 - The proxy routes never forward the client's `Authorization`, `X-Api-Key`, or `Cookie` headers to `--upstream`. An upstream that needs its own credential is not supported through the proxy.
 - The server speaks plain HTTP: on a non-loopback bind the token travels unencrypted, so use a trusted network or a TLS-terminating reverse proxy. Without a token, every local process can reach the server.
 

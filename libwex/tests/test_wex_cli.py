@@ -801,6 +801,9 @@ class TestWexCliAndMcp(unittest.TestCase):
             for host in ("0.0.0.0", "", "::", "192.0.2.1", "example.org"):
                 with self.assertRaisesRegex(wex_cli.WexError, "--token"):
                     wex_cli.create_wex_http_server(self.wex_path, host=host, port=0, cpu_only=True)
+            # A blank token is no token
+            with self.assertRaisesRegex(wex_cli.WexError, "--token"):
+                wex_cli.create_wex_http_server(self.wex_path, host="0.0.0.0", port=0, cpu_only=True, token=" ")
             server_cls.assert_not_called()
 
             err = io.StringIO()
@@ -811,9 +814,10 @@ class TestWexCliAndMcp(unittest.TestCase):
             self.assertIn("--token", err.getvalue())
             server_cls.assert_not_called()
 
-            # With a token the same bind is allowed
+            # With a token the same bind is allowed; blanks around it (a shell's `set X=value &&`) are dropped,
+            # because the value a client sends is stripped before the comparison
             _, store = wex_cli.create_wex_http_server(
-                self.wex_path, host="0.0.0.0", port=0, cpu_only=True, token="s3cret"
+                self.wex_path, host="0.0.0.0", port=0, cpu_only=True, token="s3cret "
             )
             store.close()
             self.assertEqual(server_cls.call_args.kwargs["token"], "s3cret")
@@ -842,6 +846,10 @@ class TestWexCliAndMcp(unittest.TestCase):
                     st, hdrs, _ = _http_request(port, method, route, body, headers=bad)
                     self.assertEqual(st, 401, (method, route, bad))
                     self.assertEqual(hdrs.get("www-authenticate"), "Bearer")
+
+            # A Content-Length that is not a number still gets the 401, not a dropped connection
+            st, _, _ = _http_request(port, "POST", "/v1/prefetch", headers={"Content-Length": chr(0xB2)})
+            self.assertEqual(st, 401)
 
             auth = {"Authorization": "Bearer s3cret"}
             st, _, body = _http_request(port, "GET", "/health", headers=auth)

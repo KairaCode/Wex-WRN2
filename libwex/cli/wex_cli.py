@@ -1099,8 +1099,10 @@ class WexRequestHandler(http.server.BaseHTTPRequestHandler):
             return True
         # Consume the body first: closing a socket with unread data resets the
         # connection, and the client may then never see this reply.
-        clen = self.headers.get("Content-Length", "")
-        left = min(int(clen), 64 << 20) if clen.isdigit() else 0
+        try:
+            left = min(int(self.headers.get("Content-Length") or 0), 64 << 20)
+        except ValueError:
+            left = 0
         while left > 0:
             chunk = self.rfile.read(min(left, 65536))
             if not chunk:
@@ -1371,6 +1373,8 @@ def create_wex_http_server(
     lib_path=None,
     cuda_path=None,
 ):
+    # _authorized strips the value a client sends before comparing, so blanks around the token could never match
+    token = (token or "").strip()
     if not token and not is_loopback_host(host):
         raise WexError(
             f"Refusing to serve on non-loopback host {host!r} without a token "
