@@ -1,0 +1,123 @@
+name, driver_version, memory.used [MiB]
+NVIDIA GeForce RTX 5090, 621.40, 1156 MiB
+GPU: NVIDIA GeForce RTX 5090 (SM 12.0, 170 SMs, L2 96 MiB)
+V4.1 ceil WNM2 loaded: yes
+
+=== Correctness Matrix ===
+  pb=1: MX partial, NV partial (scols>=33), NV scols<33 (ctx-63) x G={1,3,7,32,128} x W={0,1,2,4,8,16}: OK
+  pb=5: MX partial, NV partial (scols>=33), NV scols<33 (ctx-63) x G={1,3,7,32,128} x W={0,1,2,4,8,16}: OK
+  direct-launch boundaries (n=32 inline, n=33/64 ptr) x MX/NV x W={0..16}: OK
+  mixed-G batch (G=32 + G=64 in one submit) + fault isolation (MX & NV): OK
+  negative checks (ceil underflow, CZ -0, unaligned dst_w, wrong kind/owner, unknown model, bad state, unused word, 4-slot overflow -4): OK
+=== Correctness Matrix PASSED ===
+
+pack q38-mx-G32        : kind=0 pb=5 G= 32 n=64 raw= 2611200 B stored/raw=0.85176
+  [kernel-only, L2 96 MiB flushed, median of 20]
+    direct   b=  1 (tiles=  150 W= 1):  0.085 ms =   30.6 GB/s
+    job-list b=  1 (tiles=  150 W= 1):  0.087 ms =   30.1 GB/s
+    direct   b=  8 (tiles= 1200 W= 8):  0.099 ms =  210.8 GB/s
+    job-list b=  8 (tiles= 1200 W= 8):  0.099 ms =  210.7 GB/s
+    direct   b= 16 (tiles= 2400 W=16):  0.128 ms =  326.9 GB/s
+    job-list b= 16 (tiles= 2400 W=16):  0.126 ms =  332.0 GB/s
+    direct   b= 32 (tiles= 4800 W=16):  0.237 ms =  353.1 GB/s
+    job-list b= 32 (tiles= 4800 W=16):  0.236 ms =  353.5 GB/s
+    direct   b= 64 (tiles= 9600 W=16):  0.468 ms =  356.9 GB/s
+    job-list b= 64 (tiles= 9600 W=16):  0.472 ms =  354.2 GB/s
+  [bridge e2e from pinned host, median of 15]
+    bridge   b=  1: sync  0.185 ms ( 14.1 GB/s) | async2  0.099 ms ( 26.4 GB/s)
+    bridge   b=  8: sync  0.508 ms ( 41.1 GB/s) | async2  0.342 ms ( 61.1 GB/s)
+    bridge   b= 16: sync  0.829 ms ( 50.4 GB/s) | async2  0.647 ms ( 64.6 GB/s)
+    bridge   b= 32: sync  1.594 ms ( 52.4 GB/s) | async2  1.290 ms ( 64.8 GB/s)
+    bridge   b= 64: sync  3.188 ms ( 52.4 GB/s) | async2  2.559 ms ( 65.3 GB/s)
+  [fault isolation] 32/32 corrupted refused, 32/32 clean bit-exact OK
+pack q38-mx-G128       : kind=0 pb=5 G=128 n=64 raw= 2611200 B stored/raw=0.85005
+  [kernel-only, L2 96 MiB flushed, median of 20]
+    direct   b=  1 (tiles=   39 W= 1):  0.316 ms =    8.3 GB/s
+    job-list b=  1 (tiles=   39 W= 1):  0.324 ms =    8.1 GB/s
+    direct   b=  8 (tiles=  312 W= 2):  0.321 ms =   65.1 GB/s
+    job-list b=  8 (tiles=  312 W= 2):  0.327 ms =   63.9 GB/s
+    direct   b= 16 (tiles=  624 W= 4):  0.329 ms =  127.2 GB/s
+    job-list b= 16 (tiles=  624 W= 4):  0.333 ms =  125.4 GB/s
+    direct   b= 32 (tiles= 1248 W= 8):  0.382 ms =  218.6 GB/s
+    job-list b= 32 (tiles= 1248 W= 8):  0.382 ms =  218.6 GB/s
+    direct   b= 64 (tiles= 2496 W=16):  0.493 ms =  339.3 GB/s
+    job-list b= 64 (tiles= 2496 W=16):  0.496 ms =  336.6 GB/s
+  [bridge e2e from pinned host, median of 15]
+    bridge   b=  1: sync  0.413 ms (  6.3 GB/s) | async2  0.225 ms ( 11.6 GB/s)
+    bridge   b=  8: sync  0.711 ms ( 29.4 GB/s) | async2  0.425 ms ( 49.1 GB/s)
+    bridge   b= 16: sync  1.018 ms ( 41.0 GB/s) | async2  0.691 ms ( 60.5 GB/s)
+    bridge   b= 32: sync  1.727 ms ( 48.4 GB/s) | async2  1.308 ms ( 63.9 GB/s)
+    bridge   b= 64: sync  3.259 ms ( 51.3 GB/s) | async2  2.575 ms ( 64.9 GB/s)
+  [fault isolation] 32/32 corrupted refused, 32/32 clean bit-exact OK
+pack q38-nv-G32        : kind=1 pb=5 G= 32 n=64 raw= 2764800 B stored/raw=0.89187
+  [kernel-only, L2 96 MiB flushed, median of 20]
+    direct   b=  1 (tiles=  150 W= 1):  0.140 ms =   19.7 GB/s
+    job-list b=  1 (tiles=  150 W= 1):  0.140 ms =   19.7 GB/s
+    direct   b=  8 (tiles= 1200 W= 8):  0.152 ms =  145.1 GB/s
+    job-list b=  8 (tiles= 1200 W= 8):  0.152 ms =  145.1 GB/s
+    direct   b= 16 (tiles= 2400 W=16):  0.173 ms =  255.8 GB/s
+    job-list b= 16 (tiles= 2400 W=16):  0.173 ms =  255.1 GB/s
+    direct   b= 32 (tiles= 4800 W=16):  0.341 ms =  259.6 GB/s
+    job-list b= 32 (tiles= 4800 W=16):  0.341 ms =  259.6 GB/s
+    direct   b= 64 (tiles= 9600 W=16):  0.670 ms =  263.9 GB/s
+    job-list b= 64 (tiles= 9600 W=16):  0.671 ms =  263.7 GB/s
+  [bridge e2e from pinned host, median of 15]
+    bridge   b=  1: sync  0.231 ms ( 12.0 GB/s) | async2  0.137 ms ( 20.2 GB/s)
+    bridge   b=  8: sync  0.563 ms ( 39.3 GB/s) | async2  0.380 ms ( 58.2 GB/s)
+    bridge   b= 16: sync  0.935 ms ( 47.3 GB/s) | async2  0.742 ms ( 59.6 GB/s)
+    bridge   b= 32: sync  1.836 ms ( 48.2 GB/s) | async2  1.477 ms ( 59.9 GB/s)
+    bridge   b= 64: sync  3.722 ms ( 47.5 GB/s) | async2  2.906 ms ( 60.9 GB/s)
+  [fault isolation] 32/32 corrupted refused, 32/32 clean bit-exact OK
+pack q38-nv-G128       : kind=1 pb=5 G=128 n=64 raw= 2764800 B stored/raw=0.88479
+  [kernel-only, L2 96 MiB flushed, median of 20]
+    direct   b=  1 (tiles=   39 W= 1):  0.517 ms =    5.3 GB/s
+    job-list b=  1 (tiles=   39 W= 1):  0.517 ms =    5.3 GB/s
+    direct   b=  8 (tiles=  312 W= 2):  0.521 ms =   42.4 GB/s
+    job-list b=  8 (tiles=  312 W= 2):  0.522 ms =   42.4 GB/s
+    direct   b= 16 (tiles=  624 W= 4):  0.535 ms =   82.6 GB/s
+    job-list b= 16 (tiles=  624 W= 4):  0.534 ms =   82.9 GB/s
+    direct   b= 32 (tiles= 1248 W= 8):  0.593 ms =  149.2 GB/s
+    job-list b= 32 (tiles= 1248 W= 8):  0.593 ms =  149.3 GB/s
+    direct   b= 64 (tiles= 2496 W=16):  0.687 ms =  257.6 GB/s
+    job-list b= 64 (tiles= 2496 W=16):  0.687 ms =  257.4 GB/s
+  [bridge e2e from pinned host, median of 15]
+    bridge   b=  1: sync  0.611 ms (  4.5 GB/s) | async2  0.329 ms (  8.4 GB/s)
+    bridge   b=  8: sync  0.946 ms ( 23.4 GB/s) | async2  0.536 ms ( 41.2 GB/s)
+    bridge   b= 16: sync  1.293 ms ( 34.2 GB/s) | async2  0.790 ms ( 56.0 GB/s)
+    bridge   b= 32: sync  2.045 ms ( 43.3 GB/s) | async2  1.452 ms ( 61.0 GB/s)
+    bridge   b= 64: sync  3.595 ms ( 49.2 GB/s) | async2  2.859 ms ( 61.9 GB/s)
+  [fault isolation] 32/32 corrupted refused, 32/32 clean bit-exact OK
+pack v41-mx-G32        : kind=0 pb=5 G= 32 n=16 raw=18800640 B stored/raw=0.85089
+  [kernel-only, L2 96 MiB flushed, median of 20]
+    direct   b=  1 (tiles= 1080 W= 8):  0.105 ms =  178.6 GB/s
+    job-list b=  1 (tiles= 1080 W= 8):  0.105 ms =  178.6 GB/s
+    direct   b=  4 (tiles= 4320 W=16):  0.255 ms =  294.5 GB/s
+    job-list b=  4 (tiles= 4320 W=16):  0.257 ms =  292.6 GB/s
+    direct   b=  8 (tiles= 8640 W=16):  0.500 ms =  301.0 GB/s
+    job-list b=  8 (tiles= 8640 W=16):  0.499 ms =  301.4 GB/s
+    direct   b= 16 (tiles=17280 W=16):  0.825 ms =  364.8 GB/s
+    job-list b= 16 (tiles=17280 W=16):  0.820 ms =  366.6 GB/s
+  [bridge e2e from pinned host, median of 15]
+    bridge   b=  1: sync  0.451 ms ( 41.7 GB/s) | async2  0.300 ms ( 62.7 GB/s)
+    bridge   b=  4: sync  1.450 ms ( 51.9 GB/s) | async2  1.154 ms ( 65.2 GB/s)
+    bridge   b=  8: sync  2.809 ms ( 53.5 GB/s) | async2  2.313 ms ( 65.0 GB/s)
+    bridge   b= 16: sync  5.489 ms ( 54.8 GB/s) | async2  4.582 ms ( 65.7 GB/s)
+  [fault isolation] 8/8 corrupted refused, 8/8 clean bit-exact OK
+pack v41-mx-G128       : kind=0 pb=5 G=128 n=16 raw=18800640 B stored/raw=0.84880
+  [kernel-only, L2 96 MiB flushed, median of 20]
+    direct   b=  1 (tiles=  270 W= 2):  0.329 ms =   57.2 GB/s
+    job-list b=  1 (tiles=  270 W= 2):  0.333 ms =   56.5 GB/s
+    direct   b=  4 (tiles= 1080 W= 8):  0.401 ms =  187.7 GB/s
+    job-list b=  4 (tiles= 1080 W= 8):  0.402 ms =  187.0 GB/s
+    direct   b=  8 (tiles= 2160 W=16):  0.520 ms =  289.2 GB/s
+    job-list b=  8 (tiles= 2160 W=16):  0.515 ms =  292.1 GB/s
+    direct   b= 16 (tiles= 4320 W=16):  0.931 ms =  323.1 GB/s
+    job-list b= 16 (tiles= 4320 W=16):  0.931 ms =  323.3 GB/s
+  [bridge e2e from pinned host, median of 15]
+    bridge   b=  1: sync  0.673 ms ( 27.9 GB/s) | async2  0.401 ms ( 46.9 GB/s)
+    bridge   b=  4: sync  1.566 ms ( 48.0 GB/s) | async2  1.181 ms ( 63.7 GB/s)
+    bridge   b=  8: sync  2.876 ms ( 52.3 GB/s) | async2  2.307 ms ( 65.2 GB/s)
+    bridge   b= 16: sync  5.573 ms ( 54.0 GB/s) | async2  4.580 ms ( 65.7 GB/s)
+  [fault isolation] 8/8 corrupted refused, 8/8 clean bit-exact OK
+ALL OK
+exit 0
