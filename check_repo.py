@@ -345,9 +345,10 @@ def check_privacy(files):
 
 def commit_mail_errors(author, committer, message):
     """The fields of one commit that expose an address: author / committer when its address is not a GitHub
-    noreply one, message when it holds an address the e-mail pattern counts (a trailer, for one)."""
+    noreply one, message when it holds an address the e-mail pattern counts (a trailer, for one). Not counted:
+    GitHub's own address in the sign-off of a Dependabot commit, which is nobody's."""
     return ([name for name, mail in (('author', author), ('committer', committer)) if not GITHUB_NOREPLY.fullmatch(mail)]
-            + ['message'] * bool(PRIVACY[1][1].search(message)))
+            + ['message'] * bool(PRIVACY[1][1].search(message.replace('<support@github.com>', ''))))
 
 
 def check_commits(rev_range):
@@ -433,7 +434,9 @@ def self_test():
         assert not lan.search(miss), miss
     gh = '1+some-one@users.noreply.github.com'
     assert commit_mail_errors(gh, 'noreply@github.com', 's\n\nCo-Authored-By: A <noreply@example.org>\n') == []
-    assert commit_mail_errors('49699333+dependabot[bot]@users.noreply.github.com', gh, 's') == []
+    assert commit_mail_errors('49699333+dependabot[bot]@users.noreply.github.com', 'noreply@github.com',
+                              's\n\nSigned-off-by: dependabot[bot] <support@github.com>\n') == [], 'a Dependabot commit'
+    assert commit_mail_errors(gh, gh, 's\n\nSigned-off-by: A <a.support@github.com>\n') == ['message']
     assert commit_mail_errors('a.b@example.org', gh, 's') == ['author']
     assert commit_mail_errors(gh, 'a.b@example.org', 's') == ['committer']
     assert commit_mail_errors(gh, gh, 's\n\nSigned-off-by: A <a.b@example.org>\n') == ['message']
