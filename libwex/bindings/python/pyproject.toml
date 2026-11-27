@@ -1,0 +1,36 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Ludovico Zanichelli
+
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pywex"
+version = "0.1.0"
+description = "Zero-dependency Python ctypes bindings and PyTorch zero-copy CUDA extension for libwex (WEX4 expert & tensor store)."
+requires-python = ">=3.9"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Ludovico Zanichelli" }]
+keywords = ["wex", "wex4", "wnr4", "moe", "nvme", "inference", "pytorch", "cuda"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = []
+
+[project.optional-dependencies]
+torch = ["torch>=2.1"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["pywex*"]
