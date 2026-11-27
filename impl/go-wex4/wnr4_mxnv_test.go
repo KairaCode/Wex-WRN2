@@ -409,4 +409,3 @@ func TestWNR4NVContainer(t *testing.T) {
 		t.Fatalf("corrupt NV codec-8 record: got %v, want %s", e, EData)
 	}
 }
-
