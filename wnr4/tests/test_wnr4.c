@@ -148,10 +148,130 @@ static int roundtrip(const char *name, const Wnr4Geo *g, uint32_t pb, int cz, in
     return 0;
 }
 
+/* test wnr4_prepare() on MX (plain, CZ, ceil gate, in-place alias) and NV (plain, CZ, no ceil) */
+static void test_prepare(void) {
+    Wnr4Geo g;
+    /* MX: even_blocks=1 passes ceil gate on all 3 matrices */
+    geo_mx(&g, 8, 20, 6, 16);
+    {
+        unsigned char *src = malloc(g.raw), *coded = malloc(g.raw), *alias = malloc(g.raw), *ref = malloc(g.raw);
+        unsigned char *out = malloc(g.raw);
+        size_t cap = (size_t)g.raw * 3u + 65536u, mb = wnr4_model_bytes(0, 1);
+        unsigned char *rec = malloc(cap), *blob = malloc(mb);
+        uint64_t *counts = calloc(wnr4_counts_words(0, 1), 8), mapped = 999, neg0 = 0;
+        Wnr4Model model;
+        unsigned char a[3];
+        uint32_t m, flags, f_ref, f_alias;
+        make_slab(&g, src, 0, 1);
+        for (m = 0; m < 3u; m++) {
+            size_t nb = (size_t)g.cells[m] * 16u, b;
+            for (b = 0; b < nb; b++) {
+                unsigned char v = src[g.woff[m] + b];
+                if ((v & 15u) == 8u) neg0++;
+                if ((v >> 4) == 8u) neg0++;
+            }
+        }
+        /* plain MX: ceil mask = 7, cz_mapped = 0, matches ceil_forward, alias == out-of-place */
+        memcpy(ref, src, g.raw);
+        f_ref = ceil_forward(&g, ref);
+        flags = wnr4_prepare(&g, src, coded, 0, &mapped);
+        memcpy(alias, src, g.raw);
+        f_alias = wnr4_prepare(&g, alias, alias, 0, NULL);
+        CHECK(flags == 7u && flags == f_ref && f_alias == flags && mapped == 0 && !memcmp(coded, ref, g.raw) &&
+              !memcmp(alias, coded, g.raw), "prepare MX plain (flags %u ref %u mapped %llu)", flags, f_ref,
+              (unsigned long long)mapped);
+        for (m = 0; m < 3u; m++) a[m] = wnr4_anchor(coded + g.soff[m], g.scount[m]);
+        wnr4_count(&g, coded, a, 1, counts);
+        wnr4_model_build(0, 1, counts, blob);
+        CHECK(!wnr4_model_open(blob, mb, &model), "prepare MX model");
+        {
+            size_t n = wnr4_encode(&model, &g, coded, flags, 42u, 4u, rec, cap);
+            CHECK(n && !wnr4_decode(&model, &g, rec, n, 42u, out, 2) && !memcmp(out, src, g.raw),
+                  "prepare MX plain round-trip");
+        }
+        /* MX with CZ: maps exact -0 count, round-trips to Z(src) */
+        src[g.woff[0]] = (unsigned char)((src[g.woff[0]] & 0xf0u) | 8u);   /* ensure at least one -0 */
+        neg0 = 0;
+        memcpy(ref, src, g.raw);
+        for (m = 0; m < 3u; m++) {
+            size_t nb = (size_t)g.cells[m] * 16u, b;
+            for (b = 0; b < nb; b++) {
+                unsigned char v = ref[g.woff[m] + b];
+                if ((v & 15u) == 8u) { v &= 0xf0u; neg0++; }
+                if ((v >> 4) == 8u) { v &= 0x0fu; neg0++; }
+                ref[g.woff[m] + b] = v;
+            }
+        }
+        flags = wnr4_prepare(&g, src, coded, 1, &mapped);
+        CHECK(flags == (7u | WNR4_FLAG_CZ) && mapped == neg0 && neg0 > 0, "prepare MX CZ (flags %u mapped %llu want %llu)",
+              flags, (unsigned long long)mapped, (unsigned long long)neg0);
+        {
+            size_t n = wnr4_encode(&model, &g, coded, flags, 43u, 4u, rec, cap);
+            CHECK(n && !wnr4_decode(&model, &g, rec, n, 43u, out, 2) && !memcmp(out, ref, g.raw),
+                  "prepare MX CZ round-trip");
+        }
+        /* MX ceil gate: inject a block of max magnitude 5 in matrix 1 -> bit 1 cleared */
+        memset(src + g.woff[1], 0x11, 16u);
+        src[g.woff[1]] = 0x15u;
+        flags = wnr4_prepare(&g, src, coded, 0, &mapped);
+        CHECK(flags == 5u && !memcmp(coded + g.soff[1], src + g.soff[1], g.scount[1]) &&
+              !memcmp(coded + g.woff[1], src + g.woff[1], (size_t)g.cells[1] * 16u),
+              "prepare MX ceil gate (flags %u)", flags);
+        {
+            size_t n = wnr4_encode(&model, &g, coded, flags, 44u, 4u, rec, cap);
+            CHECK(n && !wnr4_decode(&model, &g, rec, n, 44u, out, 2) && !memcmp(out, src, g.raw),
+                  "prepare MX ceil gate round-trip");
+        }
+        wnr4_model_free(&model);
+        free(src); free(coded); free(alias); free(ref); free(out); free(rec); free(blob); free(counts);
+    }
+    /* NV: never sets ceil bits, plain leaves slab unchanged, CZ maps -0 only */
+    geo_nv(&g, 8, 20, 6, 12);
+    {
+        unsigned char *src = malloc(g.raw), *coded = malloc(g.raw), *ref = malloc(g.raw), *out = malloc(g.raw);
+        size_t cap = (size_t)g.raw * 3u + 65536u, mb = wnr4_model_bytes(1, 1);
+        unsigned char *rec = malloc(cap), *blob = malloc(mb);
+        uint64_t *counts = calloc(wnr4_counts_words(1, 1), 8), mapped = 999, neg0 = 0;
+        Wnr4Model model;
+        unsigned char a[3];
+        uint32_t m, flags;
+        make_slab(&g, src, 0, 1);
+        src[g.woff[2]] = 0x88u;   /* guarantee -0 nibbles */
+        flags = wnr4_prepare(&g, src, coded, 0, &mapped);
+        CHECK(flags == 0u && mapped == 0 && !memcmp(coded, src, g.raw), "prepare NV plain (flags %u)", flags);
+        memcpy(ref, src, g.raw);
+        for (m = 0; m < 3u; m++) {
+            size_t nb = (size_t)g.cells[m] * 16u, b;
+            for (b = 0; b < nb; b++) {
+                unsigned char v = ref[g.woff[m] + b];
+                if ((v & 15u) == 8u) { v &= 0xf0u; neg0++; }
+                if ((v >> 4) == 8u) { v &= 0x0fu; neg0++; }
+                ref[g.woff[m] + b] = v;
+            }
+        }
+        flags = wnr4_prepare(&g, src, coded, 1, &mapped);
+        CHECK(flags == WNR4_FLAG_CZ && mapped == neg0 && neg0 >= 2 && !memcmp(coded, ref, g.raw),
+              "prepare NV CZ (flags %u mapped %llu want %llu)", flags, (unsigned long long)mapped, (unsigned long long)neg0);
+        for (m = 0; m < 3u; m++) a[m] = wnr4_anchor(coded + g.soff[m], g.scount[m]);
+        wnr4_count(&g, coded, a, 1, counts);
+        wnr4_model_build(1, 1, counts, blob);
+        CHECK(!wnr4_model_open(blob, mb, &model), "prepare NV model");
+        {
+            size_t n = wnr4_encode(&model, &g, coded, flags, 45u, 4u, rec, cap);
+            CHECK(n && !wnr4_decode(&model, &g, rec, n, 45u, out, 2) && !memcmp(out, ref, g.raw),
+                  "prepare NV CZ round-trip");
+        }
+        wnr4_model_free(&model);
+        free(src); free(coded); free(ref); free(out); free(rec); free(blob); free(counts);
+    }
+    printf("prepare tests done\n");
+}
+
 int main(int argc, char **argv) {
     int fuzz = argc > 1 ? atoi(argv[1]) : 2000;
     static const uint32_t Gs[] = {1, 2, 3, 7, 32, 128, 256};
     Wnr4Geo g;
+    test_prepare();
     /* MX: matrices of 1000 cells (31.25 lanes-rounds at G=1), 357 cells (odd) */
     geo_mx(&g, 25, 40, 21, 17);
     roundtrip("mx-plain", &g, 1, 0, 0, Gs, 7, fuzz);

@@ -17,6 +17,14 @@ WNR4_EXPORT uint32_t wnr4t_abi(void) { return 1u; }
 WNR4_EXPORT size_t wnr4t_counts_words(uint32_t kind, uint32_t pb) { return kind > 1u ? 0 : wnr4_counts_words(kind, pb); }
 WNR4_EXPORT size_t wnr4t_model_bytes(uint32_t kind, uint32_t pb) { return kind > 1u ? 0 : wnr4_model_bytes(kind, pb); }
 
+/* raw slab -> coded domain (src and coded may alias); returns flags (ceil_mask | CZ) or UINT32_MAX on error */
+WNR4_EXPORT uint32_t wnr4t_prepare(const uint32_t *geo, const unsigned char *src, unsigned char *coded, int cz,
+                                   uint64_t *cz_mapped) {
+    Wnr4Geo g;
+    if (geo_of(geo, &g) || !src || !coded) return 0xffffffffu;
+    return wnr4_prepare(&g, src, coded, cz, cz_mapped);
+}
+
 /* adds the coded slab's counts (anchors: rule g of its coded scales) */
 WNR4_EXPORT int wnr4t_count(const uint32_t *geo, const unsigned char *coded, uint32_t pb, uint64_t *counts) {
     Wnr4Geo g;

@@ -104,6 +104,9 @@ static void index_rules(const unsigned char *w4, size_t bytes) {
         {"total_decoded one byte more", {88, 0}, {8, 0}, {total + 1, 0}, WEX4_E_RECORD},
         {"max_decoded one byte less", {68, 0}, {4, 0}, {maximum - 1u, 0}, WEX4_E_RECORD},
         {"a WNM2 blob of another size", {(size_t)index_offset, 0}, {4, 0}, {WEX4_BLOB_WNM2, 0}, WEX4_E_BLOB},
+        {"required bit 1 still unknown", {8, 0}, {8, 0}, {2, 0}, WEX4_E_FEATURE},
+        {"required bit 2 (WNR4_EXPERT) accepted", {8, 0}, {8, 0}, {WEX4_REQ_WNR4_EXPERT, 0}, WEX4_OK},
+        {"an expert record of codec 8 without required bit 2", {R + 16, R + 8}, {2, 4}, {WEX4_CODEC_WNR4, WEX4_PAGE}, WEX4_E_EXPERT},
     };
     unsigned char *c = malloc(bytes);
     int bad = 0;
@@ -252,6 +255,149 @@ static void sha256_tests(void) {
     free(buf);
 }
 
+/* Build a minimal valid uniform WNM4 blob of kind 0 (MX pb=1), 2 (GG), or 3 (I4) and return its FNV-1a id. */
+static uint32_t make_uniform_wnm4(uint32_t kind, unsigned char **out_blob, size_t *out_bytes) {
+    size_t n = kind == 0u ? WEX4_WNM4_MX_PB1_BYTES : kind == 2u ? WEX4_WNM4_GG_BYTES : WEX4_WNM4_I4_BYTES;
+    unsigned char *b = calloc(1, n), *p;
+    uint32_t hdr[8] = {WEX4_WNM4_MAGIC, 1u, kind, 14u, 0, 0, 0, 0}, i, s, h = UINT32_C(2166136261);
+    unsigned char cdf16[34], cdf256[514];
+    assert(b);
+    for (i = 0; i <= 16u; i++) { uint16_t v = (uint16_t)(i * 1024u); cdf16[2 * i] = (unsigned char)v; cdf16[2 * i + 1] = (unsigned char)(v >> 8); }
+    for (i = 0; i <= 256u; i++) { uint16_t v = (uint16_t)(i * 64u); cdf256[2 * i] = (unsigned char)v; cdf256[2 * i + 1] = (unsigned char)(v >> 8); }
+    if (kind == 0u) { hdr[4] = 567u; hdr[5] = 1u; hdr[6] = 1u; }
+    else if (kind == 2u) { hdr[4] = 32u; hdr[5] = 2u; }
+    else { hdr[4] = 900u; hdr[5] = 68u; }
+    for (i = 0; i < 8u; i++) memcpy(b + 4u * i, &hdr[i], 4u);
+    p = b + 32u;
+    if (kind == 0u) {
+        for (i = 0; i < 3u * 567u; i++, p += 34u) memcpy(p, cdf16, 34u);
+        for (i = 0; i < 3u; i++, p += 514u) memcpy(p, cdf256, 514u);
+    } else if (kind == 2u) {
+        for (s = 0; s < 2u; s++) {
+            for (i = 0; i < 256u; i++) p[i] = (unsigned char)(i & 31u);
+            p += 256u;
+            memcpy(p, cdf256, 514u); p += 514u;
+            for (i = 0; i < 32u; i++, p += 514u) memcpy(p, cdf256, 514u);
+            for (i = 0; i < 32u; i++, p += 34u) memcpy(p, cdf16, 34u);
+        }
+    } else {
+        for (i = 0; i < 3u * 900u; i++, p += 34u) memcpy(p, cdf16, 34u);
+        for (i = 0; i < 3u * 68u; i++, p += 514u) memcpy(p, cdf256, 514u);
+    }
+    assert((size_t)(p - b) == n);
+    for (size_t k = 0; k < n; k++) { h ^= b[k]; h *= UINT32_C(16777619); }
+    *out_blob = b; *out_bytes = n;
+    return h ? h : 1u;
+}
+
+/* WNR4 standalone rules: wex4_wnm4_blob_ok (kinds 0, 2, 3), NVFP4 geometry gating, and wex4_verify_file on WNM4 blobs. */
+static void wnr4_rules(void) {
+    static const uint32_t kinds[3] = {0u, 2u, 3u};
+    for (int k = 0; k < 3; k++) {
+        unsigned char *blob = NULL;
+        size_t n = 0;
+        uint32_t id = make_uniform_wnm4(kinds[k], &blob, &n);
+        assert(wex4_wnm4_blob_ok(blob, n, id));
+        assert(!wex4_wnm4_blob_ok(blob, n, id ^ 1u));
+        assert(!wex4_wnm4_blob_ok(blob, n - 1u, id));
+        blob[32u + (kinds[k] == 2u ? 256u : 0u)] ^= 1u;   /* break first CDF's cdf[0] == 0 */
+        {
+            uint32_t h = UINT32_C(2166136261);
+            for (size_t i = 0; i < n; i++) { h ^= blob[i]; h *= UINT32_C(16777619); }
+            assert(!wex4_wnm4_blob_ok(blob, n, h ? h : 1u));
+        }
+        if (kinds[k] == 2u) {
+            blob[32u + 256u] ^= 1u;
+            blob[32u] = 32u;   /* out-of-range GG class map entry */
+            uint32_t h = UINT32_C(2166136261);
+            for (size_t i = 0; i < n; i++) { h ^= blob[i]; h *= UINT32_C(16777619); }
+            assert(!wex4_wnm4_blob_ok(blob, n, h ? h : 1u));
+        }
+        free(blob);
+    }
+
+    /* Minimal container with 1 unused MX WNM4 blob + 1 RAW NVFP4 EXPERT record:
+     * requires WEX4_REQ_WNR4_EXPERT, and wex4_verify_file rejects a corrupt WNM4 blob with exit 1. */
+    unsigned char *wnm4 = NULL;
+    size_t wnm4_n = 0;
+    uint32_t wnm4_id = make_uniform_wnm4(0u, &wnm4, &wnm4_n);
+    const uint32_t rows = 4, scols = 4, wcols = 32;   /* NVFP4: wcols = 8 * scols, rows * scols = 16 (even) */
+    const uint32_t raw = 3u * rows * (scols + wcols); /* 432 B -> 1 page */
+    const size_t blob_span = (size_t)wex4_align(wnm4_n), rec_span = WEX4_PAGE;
+    const char *tnames[6] = {"e.0.s0", "e.0.s1", "e.0.s2", "e.0.w0", "e.0.w1", "e.0.w2"};
+    const size_t name_bytes = 6u * 6u;
+    const size_t idx_bytes = WEX4_BLOB_BYTES + WEX4_RECORD_BYTES + 6u * (WEX4_TENSOR_BYTES + 4u) + name_bytes;
+    const size_t idx_span = (size_t)wex4_align(idx_bytes);
+    const size_t file_n = WEX4_PAGE + idx_span + blob_span + rec_span;
+    unsigned char *f = calloc(1, file_n), *x;
+    size_t at = 0;
+    assert(f);
+    memcpy(f + WEX4_PAGE + idx_span, wnm4, wnm4_n);
+    x = f + WEX4_PAGE;
+#define PUT(val, ty) do { ty t_ = (ty)(val); memcpy(x + at, &t_, sizeof t_); at += sizeof t_; } while (0)
+    /* 1 blob: WNM4 */
+    PUT(WEX4_BLOB_WNM4, uint32_t); PUT(wnm4_id, uint32_t);
+    PUT(WEX4_PAGE + idx_span, uint64_t); PUT(wnm4_n, uint64_t);
+    wex4_sha256(wnm4, wnm4_n, x + at); at += 32u; PUT(0, uint64_t);
+    /* 1 record: RAW NVFP4 EXPERT */
+    PUT(WEX4_PAGE + idx_span + blob_span, uint64_t); PUT(rec_span, uint32_t); PUT(raw, uint32_t);
+    PUT(WEX4_CODEC_RAW, uint16_t); PUT(WEX4_REC_EXPERT, uint16_t); PUT(0, uint32_t);
+    PUT(0, uint32_t); PUT(0, uint32_t); PUT(6, uint32_t);
+    wex4_sha256(f + WEX4_PAGE + idx_span + blob_span, rec_span, x + at); at += 32u; PUT(0, uint32_t);
+    /* 6 tensors: 3 F8_E4M3 scales [4,4], 3 U8 weights [4,32] */
+    uint64_t off = 0;
+    for (uint32_t m = 0; m < 6u; m++) {
+        uint64_t c = m < 3u ? scols : wcols;
+        PUT(m * 6u, uint32_t); PUT(6u, uint16_t); PUT(m < 3u ? WEX4_DT_F8_E4M3 : WEX4_DT_U8, uint8_t); PUT(2u, uint8_t);
+        PUT(rows, uint64_t); PUT(c, uint64_t);
+        for (int d = 2; d < 8; d++) PUT(0, uint64_t);
+        PUT(0, uint32_t); PUT(1, uint32_t); PUT(off, uint64_t); PUT((uint64_t)rows * c, uint64_t);
+        off += (uint64_t)rows * c;
+    }
+    for (uint32_t m = 0; m < 6u; m++) PUT(m, uint32_t);
+    for (uint32_t m = 0; m < 6u; m++) { memcpy(x + at, tnames[m], 6u); at += 6u; }
+    assert(at == idx_bytes);
+    x = f; at = 0;
+    PUT(WEX4_MAGIC, uint32_t); PUT(4, uint16_t); PUT(0, uint16_t);
+    PUT(WEX4_REQ_WNR4_EXPERT, uint64_t); PUT(0, uint64_t);
+    PUT(file_n, uint64_t); PUT(WEX4_PAGE, uint64_t); PUT(idx_bytes, uint64_t);
+    PUT(1, uint32_t); PUT(1, uint32_t); PUT(6, uint32_t); PUT(1, uint32_t); PUT(1, uint32_t);
+    PUT(raw, uint32_t); PUT(name_bytes, uint64_t); PUT(0, uint64_t); PUT(raw, uint64_t);
+#undef PUT
+    char root[65], got[65];
+    wex4_fixture_reseal(f, root);
+    {
+        Wex4View v;
+        Wex4ExpertGeo g;
+        WexEntry legacy;
+        assert(!open_in_memory(f, file_n, &v));
+        assert(!wex4_expert_geometry(&v, 0, &g) && g.kind == 1u && g.raw == raw);
+        assert(wex4_expert_entry(&v, 0, &legacy) == WEX4_E_EXPERT);   /* legacy WexEntry stays MXFP4-only */
+    }
+    put(f, file_n);
+    assert(run(2, got) == 0 && !strcmp(got, root));
+    /* without WEX4_REQ_WNR4_EXPERT: NVFP4 EXPERT geometry is refused */
+    {
+        uint64_t zero = 0;
+        memcpy(f + 8u, &zero, 8u);
+        wex4_fixture_reseal(f, got);
+        Wex4View v;
+        assert(open_in_memory(f, file_n, &v) == WEX4_E_EXPERT);
+        uint64_t req = WEX4_REQ_WNR4_EXPERT;
+        memcpy(f + 8u, &req, 8u);
+        wex4_fixture_reseal(f, got);
+    }
+    /* corrupt the WNM4 blob and reseal its SHA-256 (keeping wrong id / broken CDF): verify must fail (exit 1) */
+    f[WEX4_PAGE + idx_span + 32u] ^= 1u;
+    wex4_sha256(f + WEX4_PAGE + idx_span, wnm4_n, f + WEX4_PAGE + 24u);
+    wex4_fixture_reseal(f, got);
+    put(f, file_n);
+    assert(run(2, got) == 1);
+    remove(path);
+    free(f); free(wnm4);
+    puts("wnr4_rules: OK");
+}
+
 int main(void) {
     sha256_tests();
     size_t old_bytes, bytes;
@@ -310,6 +456,7 @@ int main(void) {
     remove(path);
     index_rules(w4, bytes);
     unused_by_engines(w4, bytes);
+    wnr4_rules();
     free(old); free(w4);
     puts("test_wex4_verify: intact file passes with the fixture's root; changed record, padding and blob bytes fail; "
          "damaged index / header, truncated and WEX1 files do not open; a resealed wrong record hash fails (1 and 4 threads); "

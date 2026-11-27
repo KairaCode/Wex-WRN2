@@ -15,6 +15,9 @@
 #endif
 #include "wex4.h"
 #include "wex4_store.h"
+#include "../wnr4/wnr4.h"
+#include "../wnr4/wnr4_gg.h"
+#include "../wnr4/wnr4_i4.h"
 #ifdef _WIN32
 #include <windows.h>
 #define WEX4_EXPORT __declspec(dllexport)
@@ -60,6 +63,115 @@ static void guard_free(unsigned char *p, int guard) {
 
 static void put_u64(unsigned char *p, uint64_t v) { unsigned int i; for (i = 0; i < 8u; i++) p[i] = (unsigned char)(v >> (i * 8u)); }
 
+/* ---- WNR4 (codec 8, kinds 0..3) support for check_impl & wex4_decode_record_buf ---- */
+typedef struct {
+    int kind;   /* -1 = unopened, 0/1 = MX/NV, 2 = GG, 3 = I4 */
+    Wnr4Model mxnv;
+    Wnr4GgModel gg;
+    Wnr4I4Model i4;
+} Wnr4Slot;
+
+static void wnr4_slot_free(Wnr4Slot *s) {
+    if (!s) return;
+    if (s->kind == 0 || s->kind == 1) wnr4_model_free(&s->mxnv);
+    else if (s->kind == 2) wnr4_gg_model_free(&s->gg);
+    else if (s->kind == 3) wnr4_i4_model_free(&s->i4);
+    s->kind = -1;
+}
+
+static uint32_t wex4_ggml_type(uint32_t dtype) {
+    if (dtype == 128u + WNR4_GG_Q2_0) return WNR4_GG_Q2_0;
+    if (dtype == 128u + WNR4_GG_IQ4_NL) return WNR4_GG_IQ4_NL;
+    return 0x100u | dtype;
+}
+
+static int wex4_decode_wnr4(const Wex4View *v, uint32_t r, const unsigned char *stored, const unsigned char *blob_bytes,
+                            Wnr4Slot *slot, int check_sha, unsigned char *out) {
+    Wex4Record rec;
+    Wex4Blob b;
+    if (!v || !stored || !out || r >= v->h.records) return WEX4_E_ARG;
+    wex4_get_record(v, r, &rec);
+    if (check_sha) {
+        unsigned char d[32];
+        wex4_sha256(stored, rec.stored, d);
+        if (memcmp(d, rec.sha, 32u)) return WEX4_E_HASH;
+    }
+    if (rec.flags & WEX4_REC_EXPERT) {
+        Wex4ExpertGeo eg;
+        Wnr4Geo g;
+        if (!rec.blob || !blob_bytes || !slot) return WEX4_E_ARG;
+        wex4_get_blob(v, rec.blob - 1u, &b);
+        if (b.kind != WEX4_BLOB_WNM4) return WEX4_E_BLOB;
+        if (wex4_expert_geometry(v, r, &eg) || wnr4_geo(&g, eg.kind, eg.scount, eg.scols, eg.soff, eg.woff) ||
+            g.raw != rec.decoded) return WEX4_E_DATA;
+        if (slot->kind < 0) {
+            if (wnr4_model_open(blob_bytes, (size_t)b.bytes, &slot->mxnv) || slot->mxnv.id != b.id) {
+                wnr4_model_free(&slot->mxnv);
+                return WEX4_E_BLOB;
+            }
+            slot->kind = (int)slot->mxnv.kind;
+        }
+        if ((uint32_t)slot->kind != eg.kind || slot->mxnv.id != b.id) return WEX4_E_DATA;
+        if (!(stored[13] & WNR4_FLAG_CZ) != !(rec.flags & WEX4_REC_VALUE_EXACT)) return WEX4_E_DATA;
+        return wnr4_decode(&slot->mxnv, &g, stored, rec.stored, rec.owner, out, 1) ? WEX4_E_DATA : WEX4_OK;
+    }
+    /* Non-EXPERT codec 8 (GG kind 2 / I4 kind 3): fail closed to WEX4_E_UNSUPPORTED (WEX4-SPEC 7.3) */
+    if (!rec.blob || !blob_bytes || !slot) return WEX4_E_UNSUPPORTED;
+    wex4_get_blob(v, rec.blob - 1u, &b);
+    if (b.kind != WEX4_BLOB_WNM4) return WEX4_E_UNSUPPORTED;
+    if (stored[12] == WNR4_KIND_GG) {
+        uint32_t types[WNR4_GG_MAX_SEG], bytes[WNR4_GG_MAX_SEG], s;
+        Wnr4GgGeo gg;
+        if (!rec.tensor_count || rec.tensor_count > WNR4_GG_MAX_SEG) return WEX4_E_UNSUPPORTED;
+        for (s = 0; s < rec.tensor_count; s++) {
+            Wex4Tensor t;
+            wex4_get_tensor(v, rec.first_tensor + s, &t);
+            if (t.record_count != 1u || t.nbytes > UINT32_MAX) return WEX4_E_UNSUPPORTED;
+            types[s] = wex4_ggml_type(t.dtype);
+            bytes[s] = (uint32_t)t.nbytes;
+        }
+        if (wnr4_gg_geo(&gg, rec.tensor_count, types, bytes) || gg.raw != rec.decoded) return WEX4_E_UNSUPPORTED;
+        if (slot->kind < 0) {
+            if (wnr4_gg_model_open(blob_bytes, (size_t)b.bytes, &slot->gg) || slot->gg.id != b.id) {
+                wnr4_gg_model_free(&slot->gg);
+                return WEX4_E_UNSUPPORTED;
+            }
+            slot->kind = 2;
+        }
+        if (slot->kind != 2 || slot->gg.id != b.id) return WEX4_E_UNSUPPORTED;
+        return wnr4_gg_decode(&slot->gg, &gg, stored, rec.stored, rec.owner, out, 1) ? WEX4_E_UNSUPPORTED : WEX4_OK;
+    }
+    if (stored[12] == WNR4_KIND_I4) {
+        uint32_t rows[3], cols[3], n, m, pairs;
+        Wnr4I4Geo i4;
+        if (rec.tensor_count != 2u && rec.tensor_count != 4u && rec.tensor_count != 6u) return WEX4_E_UNSUPPORTED;
+        n = rec.tensor_count / 2u;
+        for (m = 0; m < n; m++) {
+            Wex4Tensor c, s;
+            wex4_get_tensor(v, rec.first_tensor + m, &c);
+            wex4_get_tensor(v, rec.first_tensor + n + m, &s);
+            if (c.record_count != 1u || s.record_count != 1u || c.rank != 2u || s.rank != 2u ||
+                c.dtype != WEX4_DT_U8 || s.dtype != 13u || c.shape[0] > UINT32_MAX || c.shape[1] > 0x7fffffffu ||
+                s.shape[0] != c.shape[0] || s.shape[1] > UINT32_MAX || 2u * c.shape[1] != 64u * s.shape[1] ||
+                (c.shape[1] % 32u)) return WEX4_E_UNSUPPORTED;
+            rows[m] = (uint32_t)c.shape[0];
+            cols[m] = (uint32_t)(2u * c.shape[1]);
+        }
+        pairs = stored[13] == 1u ? 1u : 0u;
+        if (wnr4_i4_geo(&i4, n, rows, cols, pairs) || i4.raw != rec.decoded) return WEX4_E_UNSUPPORTED;
+        if (slot->kind < 0) {
+            if (wnr4_i4_model_open(blob_bytes, (size_t)b.bytes, &slot->i4) || slot->i4.id != b.id) {
+                wnr4_i4_model_free(&slot->i4);
+                return WEX4_E_UNSUPPORTED;
+            }
+            slot->kind = 3;
+        }
+        if (slot->kind != 3 || slot->i4.id != b.id) return WEX4_E_UNSUPPORTED;
+        return wnr4_i4_decode(&slot->i4, &i4, stored, rec.stored, rec.owner, out, 1) ? WEX4_E_UNSUPPORTED : WEX4_OK;
+    }
+    return WEX4_E_UNSUPPORTED;
+}
+
 /* flags: 1 = verify every blob and record SHA-256 (and zero blob padding),
  * 2 = decode every record and write the content digest: SHA-256 over, per
  * tensor in table order, {u16 name_len, name, u8 dtype, u8 rank, u64 shape[8],
@@ -69,6 +181,7 @@ static int check_impl(const unsigned char *file, uint64_t len, int flags, unsign
     Wex4View v;
     Wex4Sha content;
     WexNr2Model *models = NULL;
+    Wnr4Slot *wnr4 = NULL;
     unsigned char *out = NULL;
     uint32_t i, r;
     int status;
@@ -76,9 +189,11 @@ static int check_impl(const unsigned char *file, uint64_t len, int flags, unsign
     if ((status = wex4_parse_header(file, len, &h)) != 0) return status;
     if ((status = wex4_open(&h, file + h.index_offset, (size_t)wex4_align(h.index_bytes), &v)) != 0) return status;
     models = (WexNr2Model *)calloc(h.blobs ? h.blobs : 1u, sizeof(*models));
+    wnr4 = (Wnr4Slot *)calloc(h.blobs ? h.blobs : 1u, sizeof(*wnr4));
     out = guard_alloc(h.max_decoded, guard);
     status = WEX4_E_ARG;
-    if (!models || !out) goto finish;
+    if (!models || !wnr4 || !out) goto finish;
+    for (i = 0; i < (h.blobs ? h.blobs : 1u); i++) wnr4[i].kind = -1;
     for (i = 0; i < h.blobs; i++) {
         Wex4Blob b;
         wex4_get_blob(&v, i, &b);
@@ -94,6 +209,8 @@ static int check_impl(const unsigned char *file, uint64_t len, int flags, unsign
         status = WEX4_E_BLOB;
         if (b.kind == WEX4_BLOB_WNM2 &&
             (wex_nr2_model_open(file + b.offset, (size_t)b.bytes, &models[i]) || models[i].id != b.id)) goto finish;
+        if (b.kind == WEX4_BLOB_WNM4 && (h.required & WEX4_REQ_WNR4_EXPERT) &&
+            !wex4_wnm4_blob_ok(file + b.offset, (size_t)b.bytes, b.id)) goto finish;
     }
     wex4_sha_init(&content);
     for (r = 0; r < h.records; r++) {
@@ -109,18 +226,31 @@ static int check_impl(const unsigned char *file, uint64_t len, int flags, unsign
             }
             continue;
         }
-        if (guard) {   /* record and output each end at an inaccessible page: any overrun faults */
-            unsigned char *in = guard_alloc(rec.stored, 1);
-            guard_free(out, 1);
-            out = guard_alloc(rec.decoded, 1);
-            status = WEX4_E_ARG;
-            if (in && out) {
-                memcpy(in, file + rec.offset, rec.stored);
-                status = wex4_decode_record(&v, r, in, out, rec.blob ? &models[rec.blob - 1u] : NULL, flags & 1);
+        {
+            const unsigned char *blob_ptr = NULL;
+            if (rec.blob) {
+                Wex4Blob b;
+                wex4_get_blob(&v, rec.blob - 1u, &b);
+                blob_ptr = file + b.offset;
             }
-            guard_free(in, 1);
-        } else
-            status = wex4_decode_record(&v, r, file + rec.offset, out, rec.blob ? &models[rec.blob - 1u] : NULL, flags & 1);
+            if (guard) {   /* record and output each end at an inaccessible page: any overrun faults */
+                unsigned char *in = guard_alloc(rec.stored, 1);
+                guard_free(out, 1);
+                out = guard_alloc(rec.decoded, 1);
+                status = WEX4_E_ARG;
+                if (in && out) {
+                    memcpy(in, file + rec.offset, rec.stored);
+                    status = rec.codec == WEX4_CODEC_WNR4
+                        ? wex4_decode_wnr4(&v, r, in, blob_ptr, rec.blob ? &wnr4[rec.blob - 1u] : NULL, flags & 1, out)
+                        : wex4_decode_record(&v, r, in, out, rec.blob ? &models[rec.blob - 1u] : NULL, flags & 1);
+                }
+                guard_free(in, 1);
+            } else {
+                status = rec.codec == WEX4_CODEC_WNR4
+                    ? wex4_decode_wnr4(&v, r, file + rec.offset, blob_ptr, rec.blob ? &wnr4[rec.blob - 1u] : NULL, flags & 1, out)
+                    : wex4_decode_record(&v, r, file + rec.offset, out, rec.blob ? &models[rec.blob - 1u] : NULL, flags & 1);
+            }
+        }
         if (status) goto finish;
         if (!rec.tensor_count) wex4_sha_update(&content, out, rec.decoded);   /* next part of a split tensor */
         for (k = 0; k < rec.tensor_count; k++) {
@@ -160,6 +290,10 @@ static int check_impl(const unsigned char *file, uint64_t len, int flags, unsign
     status = WEX4_OK;
 finish:
     guard_free(out, guard);
+    if (wnr4) {
+        for (i = 0; i < h.blobs; i++) wnr4_slot_free(&wnr4[i]);
+        free(wnr4);
+    }
     free(models);
     return status;
 }
@@ -200,6 +334,14 @@ WEX4_EXPORT int wex4_decode_record_buf(const unsigned char *page, uint64_t file_
     if (status) return status;
     if (r >= v.h.records) return WEX4_E_ARG;
     wex4_get_record(&v, r, &rec);
+    if (rec.codec == WEX4_CODEC_WNR4) {
+        Wnr4Slot slot;
+        memset(&slot, 0, sizeof(slot));
+        slot.kind = -1;
+        status = wex4_decode_wnr4(&v, r, stored, blob, &slot, check_sha, out);
+        wnr4_slot_free(&slot);
+        return status;
+    }
     if (rec.blob && blob) {
         Wex4Blob b;
         wex4_get_blob(&v, rec.blob - 1u, &b);

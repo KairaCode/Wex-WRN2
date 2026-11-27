@@ -186,7 +186,7 @@ static int q38_wex4_manifest(int fd,const Cfg *c,unsigned char *page,unsigned ch
     const char *pin=getenv("COLI_WEX_ROOT");
     int bad=1;
     /* int4 records are plain RAW records (no EXPERT flag, so no expert grid in the header) */
-    if(wex4_parse_header(page,(uint64_t)file_bytes,&h)||
+    if(wex4_parse_header(page,(uint64_t)file_bytes,&h)||(h.required&WEX4_REQ_WNR4_EXPERT)||
        (int4?h.layers!=0u:h.layers!=(uint32_t)c->layers||h.experts!=(uint32_t)c->experts))return -1;
     if(pin&&*pin){
         char hex[65];
@@ -205,6 +205,7 @@ static int q38_wex4_manifest(int fd,const Cfg *c,unsigned char *page,unsigned ch
     for(r=0;!int4&&r<h.records;r++){
         wex4_get_record(&v,r,&rec);
         if(!(rec.flags&WEX4_REC_EXPERT))continue;
+        if(rec.codec!=WEX4_CODEC_RAW&&rec.codec!=WEX4_CODEC_WNR3)goto done;
         size_t slot=(size_t)(rec.owner>>16)*h.experts+(rec.owner&0xffffu);
         memcpy((unsigned char*)t+span+slot*32u,rec.sha,32u);
         if(wex4_expert_entry(&v,r,&((WexEntry*)t)[slot]))goto done;

@@ -21,13 +21,20 @@ MAGIC = 0x57455834
 PAGE = 4096
 HEADER_HASHED = 4064
 REQ_VALUE_EXACT = 1
+REQ_WNR4_EXPERT = 4
+REQUIRED_KNOWN = REQ_VALUE_EXACT | REQ_WNR4_EXPERT
 OPT_ST_SOURCES = 1
 MAX_BLOBS, MAX_RECORDS, MAX_TENSORS = 1 << 16, 1 << 24, 1 << 24
 MAX_INDEX, MAX_DECODED = 1 << 28, 1 << 30
-CODEC_RAW, CODEC_WNR3, CODEC_WBP1 = 0, 5, 6
+CODEC_RAW, CODEC_WNR3, CODEC_WBP1, CODEC_WNR4 = 0, 5, 6, 8
 REC_VALUE_EXACT, REC_EXPERT = 1, 2
-BLOB_WNM2 = 1
+BLOB_WNM2, BLOB_WNM4 = 1, 3
 WNM2_BYTES = 59408
+WNM4_MAGIC = 0x344d4e57
+WNM4_MX_SIZES = (59408, 290744)
+WNM4_NV_SIZES = (6522158, 6951782)
+WNM4_GG_BYTES, WNM4_I4_BYTES = 36644, 196688
+WNM4_SIZES = WNM4_MX_SIZES + WNM4_NV_SIZES + (WNM4_GG_BYTES, WNM4_I4_BYTES)
 BP_MAGIC = 0x31504257
 U64_MAX = (1 << 64) - 1
 
@@ -273,19 +280,57 @@ def bp_decode(rec, decoded, owner):
     return rotate(out, planes, False) if transform else bytes(out)
 
 
-# ---- WNM2 model blob check (the rule of wex_nr2_model_open) ----
-def wnm2_id(blob):
-    need(len(blob) == WNM2_BYTES and struct.unpack_from('<8I', blob) == (0x324d4e57, 1, 14, 567, 3, 0, 0, 0), 'WNM2 header')
-    at = 32
-    for symbols, count in ((16, 3 * 567), (256, 3)):
-        for _ in range(count):
-            c = struct.unpack_from(f'<{symbols + 1}H', blob, at)
-            at += 2 * (symbols + 1)
-            need(c[0] == 0 and c[symbols] == TOTAL and all(c[i] < c[i + 1] for i in range(symbols)), 'WNM2 CDF')
+# ---- WNM2 & WNM4 model blob checks ----
+def _fnv1a(blob):
     h = 2166136261
     for b in blob:
         h = ((h ^ b) * 16777619) & M32
     return h or 1
+
+
+def _check_cdfs(blob, at, symbols, count):
+    step = 2 * (symbols + 1)
+    fmt = f'<{symbols + 1}H'
+    for _ in range(count):
+        c = struct.unpack_from(fmt, blob, at)
+        at += step
+        need(c[0] == 0 and c[symbols] == TOTAL and all(c[i] < c[i + 1] for i in range(symbols)), 'model CDF')
+    return at
+
+
+def wnm2_id(blob):
+    need(len(blob) == WNM2_BYTES and struct.unpack_from('<8I', blob) == (0x324d4e57, 1, 14, 567, 3, 0, 0, 0), 'WNM2 header')
+    at = _check_cdfs(blob, 32, 16, 3 * 567)
+    _check_cdfs(blob, at, 256, 3)
+    return _fnv1a(blob)
+
+
+def wnm4_id(blob):
+    need(len(blob) >= 32, 'WNM4 header')
+    magic, ver, kind, prec, w4, w5, w6, w7 = struct.unpack_from('<8I', blob)
+    need(magic == WNM4_MAGIC and ver == 1 and prec == 14 and w7 == 0, 'WNM4 header')
+    at = 32
+    if kind in (0, 1):
+        need(w6 in (1, 5), 'WNM4 pb')
+        wctx = (1053 if kind else 567) * w6
+        sctx = 4160 if kind else 1
+        need(w4 == wctx and w5 == sctx and len(blob) == 32 + 3 * wctx * 34 + 3 * sctx * 514, 'WNM4 MX/NV header')
+        at = _check_cdfs(blob, at, 16, 3 * wctx)
+        _check_cdfs(blob, at, 256, 3 * sctx)
+    elif kind == 2:
+        need(w4 == 32 and w5 == 2 and w6 == 0 and len(blob) == WNM4_GG_BYTES, 'WNM4 GG header')
+        for _ in range(2):
+            need(all(b < 32 for b in blob[at:at + 256]), 'WNM4 GG class map')
+            at += 256
+            at = _check_cdfs(blob, at, 256, 33)
+            at = _check_cdfs(blob, at, 16, 32)
+    elif kind == 3:
+        need(w4 == 900 and w5 == 68 and w6 == 0 and len(blob) == WNM4_I4_BYTES, 'WNM4 I4 header')
+        at = _check_cdfs(blob, at, 16, 3 * 900)
+        _check_cdfs(blob, at, 256, 3 * 68)
+    else:
+        raise FormatError(f'WNM4 kind {kind}')
+    return _fnv1a(blob)
 
 
 # ---- C backend ----
@@ -346,7 +391,7 @@ class Reader:
         self.root = sha256(page[:HEADER_HASHED])
         need(self.root == page[HEADER_HASHED:], 'header hash mismatch')
         need(self.major == 4, 'unsupported major version')
-        need(not self.required & ~REQ_VALUE_EXACT, 'unknown required feature')
+        need(not self.required & ~REQUIRED_KNOWN, 'unknown required feature')
         need(self.file_bytes == file_bytes and file_bytes % PAGE == 0, 'file size')
         need(nb <= MAX_BLOBS and nr <= MAX_RECORDS and nt <= MAX_TENSORS and names_bytes <= MAX_INDEX and
              meta_bytes <= MAX_INDEX, 'header counts')
@@ -407,6 +452,8 @@ class Reader:
         for kind, ident, offset, size, digest, reserved in self.blobs:
             need(0 < size <= MAX_DECODED and not reserved, 'blob entry')
             need(kind != BLOB_WNM2 or (size == WNM2_BYTES and ident), 'WNM2 blob entry')
+            if kind == BLOB_WNM4 and (self.required & REQ_WNR4_EXPERT):
+                need(size in WNM4_SIZES and ident, 'WNM4 blob entry')
 
         t = pending = pending_bytes = total = maximum = 0
         last_owner = -1
@@ -418,9 +465,16 @@ class Reader:
             else:
                 need(stored < align(decoded), 'compressed record is not smaller')
             need(codec != CODEC_WBP1 or (not (blob or flags) and stored >= align(16 + 6 * ((decoded + 32767) >> 15))), 'WBP1 record')
-            need(not flags & REC_VALUE_EXACT or (codec == CODEC_WNR3 and self.required & REQ_VALUE_EXACT), 'value-exact flag')
+            if flags & REC_VALUE_EXACT:
+                need(self.required & REQ_VALUE_EXACT, 'value-exact flag')
+                need(codec == CODEC_WNR3 or
+                     (codec == CODEC_WNR4 and (flags & REC_EXPERT) and (self.required & REQ_WNR4_EXPERT)),
+                     'value-exact flag')
             if codec == CODEC_WNR3:
                 need(flags & REC_EXPERT and blob and self.blobs[blob - 1][0] == BLOB_WNM2, 'WNR3 record')
+            if codec == CODEC_WNR4 and (flags & REC_EXPERT) and (self.required & REQ_WNR4_EXPERT):
+                need(blob and self.blobs[blob - 1][0] == BLOB_WNM4 and
+                     self.blobs[blob - 1][3] in (WNM4_MX_SIZES + WNM4_NV_SIZES), 'WNR4 expert record')
             total += decoded
             maximum = max(maximum, decoded)
             if pending:
@@ -445,14 +499,21 @@ class Reader:
             need(cursor == decoded, 'record not tiled by its tensors')
             t += count
             if flags & REC_EXPERT:
-                need(codec in (CODEC_RAW, CODEC_WNR3), 'expert codec')
+                need(codec in (CODEC_RAW, CODEC_WNR3) or (codec == CODEC_WNR4 and (self.required & REQ_WNR4_EXPERT)),
+                     'expert codec')
                 need(owner >> 16 < self.layers and owner & 0xffff < self.experts and owner > last_owner, 'expert owner')
                 last_owner = owner
-                entry = self.expert_entry(r)
+                geo = self.expert_geometry(r)
                 if codec == CODEC_WNR3:
-                    streams = sum((a * b + 16383) // 16384 for a, b in entry['scale_shapes']) + \
-                        sum((a * b * 2 + 16383) // 16384 for a, b in entry['weight_shapes'])
+                    need(geo['kind'] == 0, 'WNR3 requires MXFP4 expert')
+                    streams = sum((sc + 16383) // 16384 for sc in geo['scount']) + \
+                        sum((sc * 32 + 16383) // 16384 for sc in geo['scount'])
                     need(stored >= align(32 + streams * 6), 'WNR3 record too small')
+                elif codec == CODEC_WNR4:
+                    bsize = self.blobs[blob - 1][3]
+                    need(bsize in (WNM4_MX_SIZES if geo['kind'] == 0 else WNM4_NV_SIZES), 'WNR4 model kind mismatch')
+                    ntiles = sum((c + 131071) // 131072 for c in geo['cells'])
+                    need(stored >= align(68 + 132 * ntiles), 'WNR4 record too small')
             else:
                 need(owner == r, 'record owner')
         need(not pending and total == self.total_decoded and maximum == self.max_decoded, 'record totals')
@@ -477,6 +538,52 @@ class Reader:
             need(size <= self.file_bytes - pos, 'extent past the end')
             pos += size
         need(b == len(self.blobs) and r == len(self.records) and index_done and pos == self.file_bytes, 'file layout')
+
+    def expert_geometry(self, r):
+        """MXFP4 (kind 0) or NVFP4 (kind 1, requires REQ_WNR4_EXPERT) geometry of an EXPERT record."""
+        offset, stored, decoded, codec, flags, blob, owner, first, count = self.records[r][:9]
+        need(flags & REC_EXPERT and count == 6, 'expert record')
+        allow_nv = bool(self.required & REQ_WNR4_EXPERT)
+        ts = self.tensors[first:first + 6]
+        for m, t in enumerate(ts):
+            _, dtype, rank, shape, _, t_count, _, _ = t
+            need(rank == 2 and t_count == 1 and all(0 < d <= 65535 for d in shape), 'expert tensor shape')
+            if m >= 3:
+                need(dtype in (2, 3), 'expert weight dtype')
+        kind = None
+        for m in range(3):
+            sd, ss = ts[m][1], ts[m][3]
+            ws = ts[m + 3][3]
+            need(ss[0] == ws[0], 'expert matrix rows')
+            if sd in (2, 6) and ss[1] * 16 == ws[1]:
+                mk = 0
+            elif allow_nv and sd in (2, 5) and ss[1] * 8 == ws[1]:
+                mk = 1
+            else:
+                raise FormatError('expert tensor dtype or shape')
+            if kind is None:
+                kind = mk
+            else:
+                need(mk == kind, 'mixed MX/NV expert matrices')
+        spc, wmult = (2, 8) if kind else (1, 16)
+        rows, scols, scount, soff, woff, cells = [], [], [], [], [], []
+        cursor = 0
+        for m in range(3):
+            rr, sc = ts[m][3]
+            cnt = rr * sc
+            need(ts[m][6] == cursor and cnt % spc == 0 and cnt // spc < (1 << 27), 'expert scale layout')
+            rows.append(rr)
+            scols.append(sc)
+            scount.append(cnt)
+            soff.append(cursor)
+            cells.append(cnt // spc)
+            cursor += cnt
+        for m in range(3):
+            need(ts[m + 3][6] == cursor, 'expert weight layout')
+            woff.append(cursor)
+            cursor += scount[m] * wmult
+        need(cursor == decoded and cursor <= 0xffffffff, 'expert slab size')
+        return dict(kind=kind, rows=rows, scols=scols, scount=scount, soff=soff, woff=woff, cells=cells, raw=cursor)
 
     def expert_entry(self, r):
         """The legacy 72-byte entry fields of an EXPERT record (validates the slab layout)."""
@@ -515,6 +622,8 @@ class Reader:
             need(not any(data[size:]), 'blob padding')
         if kind == BLOB_WNM2:
             need(wnm2_id(data[:size]) == ident, 'WNM2 id')
+        elif kind == BLOB_WNM4 and (self.required & REQ_WNR4_EXPERT):
+            need(wnm4_id(data[:size]) == ident, 'WNM4 id')
         self._blobs[i, verify] = data[:size]
         return data[:size]
 
@@ -535,6 +644,14 @@ class Reader:
             return data[:decoded]
         if codec == CODEC_WBP1:
             return (self.clib or sys.modules[__name__]).bp_decode(data, decoded, owner)
+        if codec == CODEC_WNR4:
+            need(self.clib, 'unsupported codec 8 (WNR4 needs the C library: pass --dll wex4_tools.dll)')
+            out = ctypes.create_string_buffer(decoded)
+            bbytes = self.blob(blob - 1, verify) if blob else None
+            status = self.clib.lib.wex4_decode_record_buf(self.page, self.file_bytes, self.index, len(self.index), r,
+                                                          data, bbytes, 0, out)
+            need(status == 0, f'WNR4 record rejected ({status})')
+            return out.raw
         need(codec == CODEC_WNR3, f'unsupported codec {codec}')
         need(self.clib, 'codec 5 (WNR3) needs the C library: pass --dll wex4_tools.dll')
         out = ctypes.create_string_buffer(decoded)
@@ -635,7 +752,8 @@ def write(path, records, blobs=(), empty=(), meta=b'', layers=0, experts=0, requ
                     coded = rec.codec[2]()
                     if coded is not None and len(coded) < len(raw):
                         codec, stored = rec.codec[1], coded
-                flags = rec.flags if codec == CODEC_WNR3 else rec.flags & ~REC_VALUE_EXACT
+                flags = rec.flags if (codec == CODEC_WNR3 or (codec == CODEC_WNR4 and (rec.flags & REC_EXPERT))) \
+                    else rec.flags & ~REC_VALUE_EXACT
                 blob = rec.blob if codec not in (CODEC_RAW, CODEC_WBP1) else 0   # WNR3 and other 'pre' codecs name their model
                 first = t if rec.tensors else last_split
                 if rec.tensors and rec.parts > 1:

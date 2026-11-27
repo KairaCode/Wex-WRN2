@@ -24,6 +24,7 @@ PY_TESTS=(
   wex4/test_gguf2wex4.py
   wex4/test_wnr4gg.py
   wex4/test_wnr4i4.py
+  wex4/test_wnr4mx.py
 )
 if [ -n "${WEX_NO_PARALLEL-}" ]; then
   for t in "${PY_TESTS[@]}"; do

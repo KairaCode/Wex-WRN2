@@ -14,7 +14,8 @@
 | `tools/wnr4_gg_tools.c` | ctypes API of `wnr4_gg.h`, used by `wex4/wnr4gg.py` and its tests |
 | `tools/wnr4_i4_tools.c` | ctypes API of `wnr4_i4.h`, used by `wex4/wnr4i4.py` and its tests |
 | `tools/wnr4_cuda_bridge.cu` | prototype CUDA helper DLL for all four kinds (below) |
-| `tests/test_wnr4.c` | CPU tests of MX and NV: round trips over G 1..256, partial tiles, ceil form, canonical zero, refusals, a mutation fuzz |
+| `tests/test_wnr4.c` | CPU tests of MX and NV: `wnr4_prepare`, round trips over G 1..256, partial tiles, ceil form, canonical zero, refusals, a mutation fuzz |
+| `tests/test_wnr4_gpu.cu` | GPU correctness matrix and L2-flushed RTX 5090 benchmark of MX and NV (`wnr4_cuda.cuh` v2 + ABI-6 bridge: direct launch, job-list, mixed-G fallback, sync/async2, fault isolation, negative cases) |
 | `tests/test_wnr4_gg.c` | CPU tests of GG: round trips, refusals, a mutation fuzz, known answers that pin the format bytes |
 | `tests/test_wnr4_gg_gpu.cu` | GPU test of GG through the helper on sampled GGUF experts, with kernel-only GB/s |
 | `tests/sample_gg_experts.py` | writes the input of the GPU test from a GGUF part |
@@ -85,7 +86,7 @@ Up to 4 batches may be in flight per calling thread and device; a fifth submit b
 
 - **Kind GG:** `wex4/gguf2wex4.py pack RAW.wex4 MODEL.gguf` writes a RAW container (with `--experts-only`, of the routed experts alone); `wex4/wnr4gg.py` then trains a model (`train RAW.wex4 MODEL.wnm4 --dll D [--every K]`), packs a codec-8 container (`pack RAW.wex4 OUT.wex4 --model MODEL.wnm4 --dll D`, G = 32 unless `--G` says otherwise), decodes and compares every record (`verify OUT.wex4 --source RAW.wex4 --dll D`) and rebuilds the GGUF parts from a container that is not experts-only (`unpack`). D is `wnr4_gg_tools.dll` from above. Tests: `python -I wex4/test_wnr4gg.py`, which builds the library itself with `$CC`. See [wex4/README.md](../wex4/README.md).
 - **Kind I4:** `wex4/wnr4i4.py` takes any RAW WEX4 container whose int4-g64 expert records hold 1 to 3 U8 code tensors `[rows, cols / 2]` followed by their F32 scale tensors `[rows, cols / 64]`: `train RAW.wex4 MODEL.wnm4 --dll D [--every K]`, `pack RAW.wex4 OUT.wex4 --model MODEL.wnm4 --dll D [--G 32] [--pairs]`, `verify OUT.wex4 --source RAW.wex4 --dll D`. D is `wnr4_i4_tools.dll` from above. Tests: `python -I wex4/test_wnr4i4.py`, which builds the library itself with `$CC`.
-- **Kinds MX and NV:** there is no container writer. `research/wnr4-20261121/measure.py` trains a model on 256 records of an existing WEX4 container, encodes other records, decodes every one back and compares it, and gives the ratio against WNR3; `--pack` writes records for the GPU and CPU benches. The NVFP4 runs need the `nvfp4-wnr3` branch, which is not public yet.
+- **Kinds MX and NV:** `wex4/wnr4mx.py` trains (`train RAW.wex4 MODEL.wnm4 --dll D [--every K] [--pb 1|5] [--cz]`), packs (`pack RAW.wex4 OUT.wex4 --model MODEL.wnm4 --dll D [--G 32] [--cz]`), and verifies (`verify OUT.wex4 [--source RAW.wex4] --dll D`) MXFP4 and NVFP4 WEX4+WNR4 EXPERT containers (setting `required_features` bit 2 `WNR4_EXPERT = 0x4`). Tests: `python -I wex4/test_wnr4mx.py` (run by `scripts/check_all.sh`). `research/wnr4-20261121/measure.py` also trains/measures held-out records and `--pack` writes records for the earlier GPU/CPU benches.
 
 ## Not in CI
 

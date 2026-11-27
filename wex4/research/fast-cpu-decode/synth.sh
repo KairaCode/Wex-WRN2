@@ -33,14 +33,14 @@ case $(uname -m) in
   x86_64|amd64|i?86) MARCH=${WEX4_MARCH--march=haswell} ;;
   *) MARCH=${WEX4_MARCH-} ;;
 esac
-W="-std=c11 -Wall -Wextra -Wno-unused-function ${WEX_CFLAGS-} -I$ROOT/c -I$HERE"
+W="-std=c11 -Wall -Wextra -Wno-unused-function ${WEX_CFLAGS-}"
 if [ -n "${WEX_NO_PARALLEL-}" ]; then
-  "$CC" $W -O3 $MARCH $OMP "$HERE/test_fast_decode.c" -o "$O/t_simd.exe"
-  "$CC" $W -O3 $OMP -DWEX_FAST_SCALAR "$HERE/test_fast_decode.c" -o "$O/t_scalar.exe"
+  "$CC" $W "-I$ROOT/c" "-I$HERE" -O3 $MARCH $OMP "$HERE/test_fast_decode.c" -o "$O/t_simd.exe"
+  "$CC" $W "-I$ROOT/c" "-I$HERE" -O3 $OMP -DWEX_FAST_SCALAR "$HERE/test_fast_decode.c" -o "$O/t_scalar.exe"
   "$PY" -I "$HERE/extract.py" "$C" "$O" 0:0 0:1 0:2 0:3 > "$O/extract.log"
 else
-  "$CC" $W -O3 $MARCH $OMP "$HERE/test_fast_decode.c" -o "$O/t_simd.exe" & p1=$!
-  "$CC" $W -O3 $OMP -DWEX_FAST_SCALAR "$HERE/test_fast_decode.c" -o "$O/t_scalar.exe" & p2=$!
+  "$CC" $W "-I$ROOT/c" "-I$HERE" -O3 $MARCH $OMP "$HERE/test_fast_decode.c" -o "$O/t_simd.exe" & p1=$!
+  "$CC" $W "-I$ROOT/c" "-I$HERE" -O3 $OMP -DWEX_FAST_SCALAR "$HERE/test_fast_decode.c" -o "$O/t_scalar.exe" & p2=$!
   "$PY" -I "$HERE/extract.py" "$C" "$O" 0:0 0:1 0:2 0:3 > "$O/extract.log" & p3=$!
   rc=0
   wait "$p1" || rc=$?
@@ -101,10 +101,11 @@ case $MODE in
     # default entry point, whose number of streams is the one thing WEX_FAST_LANES changes
     if [ -n "${WEX_NO_PARALLEL-}" ]; then
       for n in 1 2 3 4 6 8; do
-        "$CC" $W -O3 $MARCH $OMP -DWEX_FAST_LANES=$n -DTEST_DEFAULT_ONLY "$HERE/test_fast_decode.c" -o "t_lanes$n.exe"
+        "$CC" $W "-I$ROOT/c" "-I$HERE" -O3 $MARCH $OMP -DWEX_FAST_LANES=$n -DTEST_DEFAULT_ONLY "$HERE/test_fast_decode.c" -o "t_lanes$n.exe"
         echo "== WEX_FAST_LANES=$n equal, mutate $CASES"
         ./t_lanes$n.exe equal model.wnm2 $R > "lanes$n.log" || { cat "lanes$n.log"; exit 1; }
         cat "lanes$n.log"
+        # the line proves that the build took the value: the default entry point was compared with it
         grep -q "^equal: .* + default (WEX_FAST_LANES $n), 0 mismatches" "lanes$n.log"
         ./t_lanes$n.exe mutate model.wnm2 "$CASES" 20261115 $R
       done
@@ -113,7 +114,7 @@ case $MODE in
       lane_pids=()
       for n in "${lane_vals[@]}"; do
         (
-          "$CC" $W -O3 $MARCH $OMP -DWEX_FAST_LANES=$n -DTEST_DEFAULT_ONLY "$HERE/test_fast_decode.c" -o "t_lanes$n.exe"
+          "$CC" $W "-I$ROOT/c" "-I$HERE" -O3 $MARCH $OMP -DWEX_FAST_LANES=$n -DTEST_DEFAULT_ONLY "$HERE/test_fast_decode.c" -o "t_lanes$n.exe"
           echo "== WEX_FAST_LANES=$n equal, mutate $CASES"
           ./t_lanes$n.exe equal model.wnm2 $R > "lanes$n.eq.log" || { cat "lanes$n.eq.log"; exit 1; }
           cat "lanes$n.eq.log"
@@ -133,7 +134,7 @@ case $MODE in
       [ "$rc" = 0 ] || exit "$rc"
     fi
     # compile only, so without the OpenMP flags (Apple clang would warn that the -L and -l of WEX_OPENMP are unused)
-    if "$CC" $W -O3 $MARCH -DWEX_FAST_LANES=5 -c "$HERE/test_fast_decode.c" -o t_lanes5.o > lanes5.log 2>&1; then
+    if "$CC" $W "-I$ROOT/c" "-I$HERE" -O3 $MARCH -DWEX_FAST_LANES=5 -c "$HERE/test_fast_decode.c" -o t_lanes5.o > lanes5.log 2>&1; then
       echo "-DWEX_FAST_LANES=5 compiled; it must not" >&2; exit 1
     fi
     grep -q 'WEX_FAST_LANES must be' lanes5.log

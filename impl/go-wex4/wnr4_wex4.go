@@ -85,20 +85,74 @@ type wnr4Container struct {
 	x     *Index
 	named map[uint32]bool   // the blobs (0-based) a codec-8 record names
 	blobs map[uint32][]byte // their bytes, kept by step 3 (0-based)
+	mxnv  map[uint32]*MXNVModel
 	gg    map[uint32]*GGModel
 	i4    map[uint32]*I4Model
 	fails map[[2]uint32]*Error // (blob, kind): the blob did not open as a model of that kind
 }
 
 func newWNR4Container(x *Index) *wnr4Container {
-	c := &wnr4Container{x: x, named: map[uint32]bool{}, blobs: map[uint32][]byte{}, gg: map[uint32]*GGModel{},
-		i4: map[uint32]*I4Model{}, fails: map[[2]uint32]*Error{}}
+	c := &wnr4Container{x: x, named: map[uint32]bool{}, blobs: map[uint32][]byte{},
+		mxnv: map[uint32]*MXNVModel{}, gg: map[uint32]*GGModel{}, i4: map[uint32]*I4Model{},
+		fails: map[[2]uint32]*Error{}}
 	for k := uint32(0); k < x.H.Records; k++ {
 		if r := x.Record(k); r.Codec == codecWNR4 && r.Blob != 0 && x.Blob(r.Blob-1).Kind == blobKindWNM4 {
 			c.named[r.Blob-1] = true
 		}
 	}
 	return c
+}
+
+// validateStrict checks a kind-3 (WNM4) blob in step 3 under REQ_WNR4_EXPERT: every WNM4 blob (used or
+// unused) must parse cleanly and match its entry id, else the container is refused with EBlob.
+func (c *wnr4Container) validateStrict(i uint32, b Blob, data []byte) *Error {
+	if len(data) < wnr4ModelHdr {
+		return fail(EBlob, "blob %d: WNM4 shorter than header", i)
+	}
+	kind := le.Uint32(data[8:])
+	var id uint32
+	switch kind {
+	case mxnvKindMX, mxnvKindNV:
+		m, e := OpenMXNVModel(data)
+		if e != nil {
+			return fail(EBlob, "blob %d: %s", i, e.Msg)
+		}
+		id = m.ID
+		c.mxnv[i+1] = m
+	case ggKind:
+		m, e := OpenGGModel(data)
+		if e != nil {
+			return fail(EBlob, "blob %d: %s", i, e.Msg)
+		}
+		id = m.ID
+		c.gg[i+1] = m
+	case i4Kind:
+		m, e := OpenI4Model(data)
+		if e != nil {
+			return fail(EBlob, "blob %d: %s", i, e.Msg)
+		}
+		id = m.ID
+		c.i4[i+1] = m
+	default:
+		return fail(EBlob, "blob %d: unknown WNM4 kind %d", i, kind)
+	}
+	if id != b.ID {
+		return fail(EBlob, "blob %d: id 0x%08x in the index, the WNM4 model's FNV-1a is 0x%08x", i, b.ID, id)
+	}
+	return nil
+}
+
+// decodeExpert decodes an EXPERT codec-8 record (MX or NV) under REQ_WNR4_EXPERT; any error rejects the file.
+func (c *wnr4Container) decodeExpert(i uint32, r Record, rec, out []byte) *Error {
+	g, e := c.x.ExpertGeo(i, r)
+	if e != nil {
+		return e
+	}
+	m := c.mxnv[r.Blob]
+	if m == nil {
+		return bad("EXPERT codec 8 without an opened MX/NV WNM4 model")
+	}
+	return decodeMXNV(rec, m, g, r.Owner, r.Flags&flagValueExact != 0, out)
 }
 
 // keep holds on to the bytes of blob i (checked by step 3) when a codec-8 record names it. An unused

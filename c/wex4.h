@@ -23,7 +23,8 @@
 #define WEX4_PAGE 4096u
 #define WEX4_HEADER_HASHED 4064u               /* header_sha256 = SHA-256(page[0..4064)) at 4064 */
 #define WEX4_REQ_VALUE_EXACT UINT64_C(1)       /* some records are value-exact, not byte-exact */
-#define WEX4_REQUIRED_KNOWN WEX4_REQ_VALUE_EXACT
+#define WEX4_REQ_WNR4_EXPERT UINT64_C(4)       /* WNR4 (codec 8) or NVFP4 on EXPERT records */
+#define WEX4_REQUIRED_KNOWN (WEX4_REQ_VALUE_EXACT | WEX4_REQ_WNR4_EXPERT)
 #define WEX4_OPT_ST_SOURCES UINT64_C(1)        /* meta holds the safetensors sources (tools only) */
 #define WEX4_MAX_BLOBS (1u << 16)
 #define WEX4_MAX_RECORDS (1u << 24)
@@ -36,9 +37,18 @@
 #define WEX4_CODEC_RAW 0u
 #define WEX4_CODEC_WNR3 5u
 #define WEX4_CODEC_WBP1 6u
+#define WEX4_CODEC_WNR4 8u
 #define WEX4_REC_VALUE_EXACT 1u
 #define WEX4_REC_EXPERT 2u
 #define WEX4_BLOB_WNM2 1u
+#define WEX4_BLOB_WNM4 3u
+#define WEX4_WNM4_MAGIC UINT32_C(0x344d4e57)   /* "WNM4" */
+#define WEX4_WNM4_MX_PB1_BYTES 59408u
+#define WEX4_WNM4_MX_PB5_BYTES 290744u
+#define WEX4_WNM4_NV_PB1_BYTES 6522158u
+#define WEX4_WNM4_NV_PB5_BYTES 6951782u
+#define WEX4_WNM4_GG_BYTES 36644u
+#define WEX4_WNM4_I4_BYTES 196688u
 #define WEX4_BP_MAGIC UINT32_C(0x31504257)     /* "WBP1" */
 #define WEX4_BP_HEADER 16u
 
@@ -358,6 +368,7 @@ typedef struct {
 static const unsigned char wex4_dtype_bits[23] = {0, 8, 8, 8, 8, 8, 8, 16, 16, 16, 16, 32, 32, 32, 64, 64, 64, 64, 4, 6, 6, 8, 8};
 #define WEX4_DT_U8 2u
 #define WEX4_DT_I8 3u
+#define WEX4_DT_F8_E4M3 5u
 #define WEX4_DT_F8_E8M0 6u
 
 /* Validate the 4096-byte header page of a file of file_bytes bytes. */
@@ -436,6 +447,114 @@ static inline int wex4_utf8_ok(const unsigned char *p, size_t n) {
         i += extra + 1u;
     }
     return 1;
+}
+
+/* Exact WNM4 model blob sizes (kinds 0..3) and standalone whole-blob check. */
+static inline int wex4_wnm4_size_ok(uint64_t n) {
+    return n == WEX4_WNM4_MX_PB1_BYTES || n == WEX4_WNM4_MX_PB5_BYTES ||
+           n == WEX4_WNM4_NV_PB1_BYTES || n == WEX4_WNM4_NV_PB5_BYTES ||
+           n == WEX4_WNM4_GG_BYTES || n == WEX4_WNM4_I4_BYTES;
+}
+static inline int wex4_wnm4_kind_size_ok(uint32_t kind, uint64_t n) {
+    if (kind == 0u) return n == WEX4_WNM4_MX_PB1_BYTES || n == WEX4_WNM4_MX_PB5_BYTES;
+    if (kind == 1u) return n == WEX4_WNM4_NV_PB1_BYTES || n == WEX4_WNM4_NV_PB5_BYTES;
+    return 0;
+}
+static inline int wex4_wnm4_blob_ok(const unsigned char *blob, size_t bytes, uint32_t expected_id) {
+    uint32_t kind, w4, w5, w6, i, s, h = UINT32_C(2166136261);
+    const unsigned char *p;
+    size_t k;
+    if (!blob || bytes < 32u || !expected_id) return 0;
+    if (wex_nr_u32(blob) != WEX4_WNM4_MAGIC || wex_nr_u32(blob + 4u) != 1u || wex_nr_u32(blob + 12u) != 14u ||
+        wex_nr_u32(blob + 28u)) return 0;
+    kind = wex_nr_u32(blob + 8u); w4 = wex_nr_u32(blob + 16u); w5 = wex_nr_u32(blob + 20u); w6 = wex_nr_u32(blob + 24u);
+    p = blob + 32u;
+    if (kind <= 1u) {
+        uint32_t wctx, sctx;
+        size_t need;
+        if (w6 != 1u && w6 != 5u) return 0;
+        wctx = (kind ? 1053u : 567u) * w6;
+        sctx = kind ? 4160u : 1u;
+        need = 32u + 3u * (size_t)wctx * 34u + 3u * (size_t)sctx * 514u;
+        if (w4 != wctx || w5 != sctx || bytes != need) return 0;
+        for (i = 0; i < 3u * wctx; i++, p += 34u) if (!wex_nr2_cdf_ok(p, 16u)) return 0;
+        for (i = 0; i < 3u * sctx; i++, p += 514u) if (!wex_nr2_cdf_ok(p, 256u)) return 0;
+    } else if (kind == 2u) {
+        if (w4 != 32u || w5 != 2u || w6 || bytes != WEX4_WNM4_GG_BYTES) return 0;
+        for (s = 0; s < 2u; s++) {
+            for (i = 0; i < 256u; i++) if (p[i] >= 32u) return 0;
+            p += 256u;
+            if (!wex_nr2_cdf_ok(p, 256u)) return 0;
+            p += 514u;
+            for (i = 0; i < 32u; i++, p += 514u) if (!wex_nr2_cdf_ok(p, 256u)) return 0;
+            for (i = 0; i < 32u; i++, p += 34u) if (!wex_nr2_cdf_ok(p, 16u)) return 0;
+        }
+    } else if (kind == 3u) {
+        if (w4 != 900u || w5 != 68u || w6 || bytes != WEX4_WNM4_I4_BYTES) return 0;
+        for (i = 0; i < 3u * 900u; i++, p += 34u) if (!wex_nr2_cdf_ok(p, 16u)) return 0;
+        for (i = 0; i < 3u * 68u; i++, p += 514u) if (!wex_nr2_cdf_ok(p, 256u)) return 0;
+    } else {
+        return 0;
+    }
+    for (k = 0; k < bytes; k++) { h ^= blob[k]; h *= UINT32_C(16777619); }
+    return (h ? h : 1u) == expected_id;
+}
+
+/* Geometry of an EXPERT record: MXFP4 (kind 0, always allowed) or NVFP4 (kind 1, requires WEX4_REQ_WNR4_EXPERT). */
+typedef struct {
+    uint32_t kind;
+    uint32_t rows[3], scols[3], scount[3], soff[3], woff[3], cells[3];
+    uint64_t raw;
+} Wex4ExpertGeo;
+
+static inline int wex4_expert_geometry(const Wex4View *v, uint32_t r, Wex4ExpertGeo *g) {
+    Wex4Record rec;
+    Wex4Tensor ts[6];
+    uint64_t cursor = 0;
+    uint32_t m, spc, wmult;
+    int allow_nv;
+    if (!v || !g || r >= v->h.records) return WEX4_E_ARG;
+    wex4_get_record(v, r, &rec);
+    if (!(rec.flags & WEX4_REC_EXPERT) || rec.tensor_count != 6u) return WEX4_E_EXPERT;
+    memset(g, 0, sizeof(*g));
+    allow_nv = (v->h.required & WEX4_REQ_WNR4_EXPERT) != 0;
+    for (m = 0; m < 6u; m++) {
+        wex4_get_tensor(v, rec.first_tensor + m, &ts[m]);
+        if (ts[m].rank != 2u || ts[m].record_count != 1u || !ts[m].shape[0] || !ts[m].shape[1] ||
+            ts[m].shape[0] > 65535u || ts[m].shape[1] > 65535u) return WEX4_E_EXPERT;
+        if (m >= 3u && ts[m].dtype != WEX4_DT_U8 && ts[m].dtype != WEX4_DT_I8) return WEX4_E_EXPERT;
+    }
+    for (m = 0; m < 3u; m++) {
+        uint32_t mk;
+        if (ts[m].shape[0] != ts[m + 3u].shape[0]) return WEX4_E_EXPERT;
+        if ((ts[m].dtype == WEX4_DT_U8 || ts[m].dtype == WEX4_DT_F8_E8M0) &&
+            ts[m].shape[1] * 16u == ts[m + 3u].shape[1]) mk = 0u;
+        else if (allow_nv && (ts[m].dtype == WEX4_DT_U8 || ts[m].dtype == WEX4_DT_F8_E4M3) &&
+                 ts[m].shape[1] * 8u == ts[m + 3u].shape[1]) mk = 1u;
+        else return WEX4_E_EXPERT;
+        if (m == 0u) g->kind = mk;
+        else if (mk != g->kind) return WEX4_E_EXPERT;
+    }
+    spc = g->kind ? 2u : 1u;
+    wmult = g->kind ? 8u : 16u;
+    for (m = 0; m < 3u; m++) {
+        uint64_t sc = ts[m].shape[0] * ts[m].shape[1];
+        if (ts[m].offset != cursor || sc % spc || sc / spc >= (UINT64_C(1) << 27)) return WEX4_E_EXPERT;
+        g->rows[m] = (uint32_t)ts[m].shape[0];
+        g->scols[m] = (uint32_t)ts[m].shape[1];
+        g->scount[m] = (uint32_t)sc;
+        g->soff[m] = (uint32_t)cursor;
+        g->cells[m] = (uint32_t)(sc / spc);
+        cursor += sc;
+    }
+    for (m = 0; m < 3u; m++) {
+        if (ts[m + 3u].offset != cursor) return WEX4_E_EXPERT;
+        g->woff[m] = (uint32_t)cursor;
+        cursor += (uint64_t)g->scount[m] * wmult;
+    }
+    if (cursor != rec.decoded || cursor > UINT32_MAX) return WEX4_E_EXPERT;
+    g->raw = cursor;
+    return WEX4_OK;
 }
 
 /* Legacy 72-byte entry of an EXPERT record (3 scale + 3 weight tensors): what
@@ -530,6 +649,8 @@ static inline int wex4_open(const Wex4Header *h, const unsigned char *index, siz
         wex4_get_blob(v, i, &blob);
         if (!blob.bytes || blob.bytes > WEX4_MAX_DECODED || wex4_u64(blob.sha + 32u)) return WEX4_E_BLOB;
         if (blob.kind == WEX4_BLOB_WNM2 && (blob.bytes != WEX_NR2_MODEL_BYTES || !blob.id)) return WEX4_E_BLOB;
+        if (blob.kind == WEX4_BLOB_WNM4 && (h->required & WEX4_REQ_WNR4_EXPERT) &&
+            (!wex4_wnm4_size_ok(blob.bytes) || !blob.id)) return WEX4_E_BLOB;
     }
 
     /* records and the tensors that tile them */
@@ -547,11 +668,21 @@ static inline int wex4_open(const Wex4Header *h, const unsigned char *index, siz
             (rec.blob || rec.flags || rec.stored < wex4_align(WEX4_BP_HEADER + 6u * (((uint64_t)rec.decoded + 32767u) >> 15))))
             return WEX4_E_RECORD;
         if ((rec.flags & WEX4_REC_VALUE_EXACT) &&
-            (rec.codec != WEX4_CODEC_WNR3 || !(h->required & WEX4_REQ_VALUE_EXACT))) return WEX4_E_RECORD;
+            (!(h->required & WEX4_REQ_VALUE_EXACT) ||
+             (rec.codec != WEX4_CODEC_WNR3 &&
+              !(rec.codec == WEX4_CODEC_WNR4 && (rec.flags & WEX4_REC_EXPERT) && (h->required & WEX4_REQ_WNR4_EXPERT)))))
+            return WEX4_E_RECORD;
         if (rec.codec == WEX4_CODEC_WNR3) {
             if (!(rec.flags & WEX4_REC_EXPERT) || !rec.blob) return WEX4_E_RECORD;
             wex4_get_blob(v, rec.blob - 1u, &blob);
             if (blob.kind != WEX4_BLOB_WNM2) return WEX4_E_RECORD;
+        }
+        if (rec.codec == WEX4_CODEC_WNR4 && (rec.flags & WEX4_REC_EXPERT) && (h->required & WEX4_REQ_WNR4_EXPERT)) {
+            if (!rec.blob) return WEX4_E_RECORD;
+            wex4_get_blob(v, rec.blob - 1u, &blob);
+            if (blob.kind != WEX4_BLOB_WNM4 ||
+                (!wex4_wnm4_kind_size_ok(0u, blob.bytes) && !wex4_wnm4_kind_size_ok(1u, blob.bytes)))
+                return WEX4_E_RECORD;
         }
         total += rec.decoded;
         if (rec.decoded > maximum) maximum = rec.decoded;
@@ -578,18 +709,28 @@ static inline int wex4_open(const Wex4Header *h, const unsigned char *index, siz
         if (cursor != rec.decoded) return WEX4_E_TENSOR;
         t += rec.tensor_count;
         if (rec.flags & WEX4_REC_EXPERT) {
-            WexEntry e;
-            if (rec.codec != WEX4_CODEC_RAW && rec.codec != WEX4_CODEC_WNR3) return WEX4_E_EXPERT;
+            Wex4ExpertGeo g;
+            if (rec.codec != WEX4_CODEC_RAW && rec.codec != WEX4_CODEC_WNR3 &&
+                !(rec.codec == WEX4_CODEC_WNR4 && (h->required & WEX4_REQ_WNR4_EXPERT)))
+                return WEX4_E_EXPERT;
             if ((rec.owner >> 16) >= h->layers || (rec.owner & 0xffffu) >= h->experts ||
-                (int64_t)rec.owner <= last_owner || wex4_expert_entry(v, r, &e)) return WEX4_E_EXPERT;
+                (int64_t)rec.owner <= last_owner || wex4_expert_geometry(v, r, &g)) return WEX4_E_EXPERT;
             last_owner = rec.owner;
             if (rec.codec == WEX4_CODEC_WNR3) {   /* smallest legal WNR3 record: longest chunks, 4-byte streams */
                 uint64_t streams = 0;
                 unsigned int m;
+                if (g.kind != 0u) return WEX4_E_EXPERT;
                 for (m = 0; m < 3u; m++)
-                    streams += wex_nr2_streams((uint32_t)e.scale_shapes[m][0] * e.scale_shapes[m][1], WEX_NR2_MAX_CHUNK) +
-                               wex_nr2_streams((uint32_t)e.weight_shapes[m][0] * e.weight_shapes[m][1] * 2u, WEX_NR2_MAX_CHUNK);
+                    streams += wex_nr2_streams(g.scount[m], WEX_NR2_MAX_CHUNK) +
+                               wex_nr2_streams(g.scount[m] * 32u, WEX_NR2_MAX_CHUNK);
                 if (rec.stored < wex4_align(WEX_NR2_HEADER_BYTES + streams * 6u)) return WEX4_E_EXPERT;
+            } else if (rec.codec == WEX4_CODEC_WNR4) {   /* smallest legal WNR4 record: G = 4096, 128 B/tile */
+                uint64_t ntiles = 0;
+                unsigned int m;
+                wex4_get_blob(v, rec.blob - 1u, &blob);
+                if (!wex4_wnm4_kind_size_ok(g.kind, blob.bytes)) return WEX4_E_EXPERT;
+                for (m = 0; m < 3u; m++) ntiles += ((uint64_t)g.cells[m] + 131071u) / 131072u;
+                if (rec.stored < wex4_align(68u + 132u * ntiles)) return WEX4_E_EXPERT;
             }
         } else if (rec.owner != r) return WEX4_E_RECORD;
     }
