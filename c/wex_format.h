@@ -31,11 +31,15 @@
 #define WEX_HEADER_NEURAL_RANS2 UINT32_C(16)  /* WNR2 records + a WNM2 model before the table */
 #define WEX_HEADER_NEURAL_RANS3 UINT32_C(32)  /* WNR3 records + a WNM2 model; excludes 8 and 16 */
 #define WEX_HEADER_CANONICAL_ZERO UINT32_C(64)  /* every WNR3 record value-exact (-0 stored as +0); needs 32 */
+#define WEX_HEADER_WNR4 UINT32_C(128)         /* WEX4 codec 8 (WNR4 kind MX) records + a WNM4 blob */
+#define WEX_HEADER_WNR4_I4 UINT32_C(256)      /* WEX4 codec 8 (WNR4 kind I4) records + a WNM4 kind-3 blob */
 #define WEX_ENTRY_SCALE_TILES UINT32_C(1)
 #define WEX_ENTRY_PALETTE3 UINT32_C(2)
 #define WEX_ENTRY_NEURAL_RANS UINT32_C(3)
 #define WEX_ENTRY_NEURAL_RANS2 UINT32_C(4)
 #define WEX_ENTRY_NEURAL_RANS3 UINT32_C(5)
+#define WEX_ENTRY_WNR4 UINT32_C(8)            /* WEX4 codec 8 (WNR4 kind MX; wex4.h WEX4_REQ_WNR4_EXPERT) */
+#define WEX_ENTRY_WNR4_I4 UINT32_C(9)         /* WEX4 codec 8 (WNR4 kind I4; int4-g64 experts) */
 #define WEX_ENTRY_CODEC_MASK UINT32_C(0xff)
 #define WEX_ENTRY_SCALE_PAGES_SHIFT 8u
 #define WEX_SCALE_STREAM_MAGIC UINT32_C(0x31534357)
@@ -161,8 +165,13 @@ static inline int wex_entry_raw_sizes(const WexEntry *entry,
 static inline size_t wex_record_read_offset(const WexEntry *entry) {
     uint64_t prefix;
     if (!entry || !entry->flags) return 0;
+    if (entry->flags == WEX_ENTRY_WNR4_I4) {
+        if (!entry->scale_bytes || entry->total_bytes >= entry->scale_bytes) return 0;
+        return (size_t)(entry->scale_bytes - entry->total_bytes);
+    }
     if (entry->flags == WEX_ENTRY_PALETTE3 || entry->flags == WEX_ENTRY_NEURAL_RANS ||
-        entry->flags == WEX_ENTRY_NEURAL_RANS2 || entry->flags == WEX_ENTRY_NEURAL_RANS3) {
+        entry->flags == WEX_ENTRY_NEURAL_RANS2 || entry->flags == WEX_ENTRY_NEURAL_RANS3 ||
+        entry->flags == WEX_ENTRY_WNR4) {
         uint64_t raw, aligned;
         if (wex_entry_raw_sizes(entry, &raw, &aligned) || entry->total_bytes >= aligned) return 0;
         return (size_t)(aligned - entry->total_bytes);
@@ -186,9 +195,20 @@ static inline uint32_t wex_entry_nr_magic(const WexEntry *e) {
 /* WNR3 owner check: 1 unless a codec-5 record names another (layer, expert)
  * (record bytes 28..31 = layer << 16 | expert) or its canonical-zero flag (byte 27
  * bit 3) differs from the container's (header_flags & WEX_HEADER_CANONICAL_ZERO). */
+static inline int wex_entry_is_wnr4(const WexEntry *e) {
+    return e && (e->flags & WEX_ENTRY_CODEC_MASK) == WEX_ENTRY_WNR4;
+}
+static inline int wex_entry_is_wnr4_i4(const WexEntry *e) {
+    return e && (e->flags & WEX_ENTRY_CODEC_MASK) == WEX_ENTRY_WNR4_I4;
+}
+
 static inline int wex_nr3_owner_ok(const WexEntry *e, const unsigned char *record, uint32_t layer, uint32_t expert,
                                    uint32_t header_flags) {
-    if (!e || e->flags != WEX_ENTRY_NEURAL_RANS3) return 1;
+    if (!e) return 1;
+    if (e->flags == WEX_ENTRY_WNR4)
+        return record && wex_read_u32_le(record + 8u) == (layer << 16 | expert) &&
+               !(record[13] & 8u) == !(header_flags & WEX_HEADER_CANONICAL_ZERO);
+    if (e->flags != WEX_ENTRY_NEURAL_RANS3) return 1;
     return record && wex_read_u32_le(record + 28u) == (layer << 16 | expert) &&
            !(record[27] & WEX_NR3_FLAG_CZ) == !(header_flags & WEX_HEADER_CANONICAL_ZERO);
 }
