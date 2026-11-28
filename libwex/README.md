@@ -76,6 +76,7 @@ python libwex/cli/wex_cli.py verify model.wex --root <64-hex-sha256>
 python libwex/cli/wex_cli.py bench model.wex --l2-mb 0,256,1024 --waves 64 --batch 4 --pattern zipf
 
 # Resumable HuggingFace download + immediate SHA-256 verification
+# (HF_TOKEN, when set, goes to huggingface.co only, not to the host a download is redirected to)
 python libwex/cli/wex_cli.py pull <org>/<repo> model.wex --out ./weights --verify
 
 # Threaded HTTP telemetry, prefetch & optional upstream inference proxy server
@@ -87,13 +88,32 @@ python libwex/cli/wex_cli.py serve model.wex --host 127.0.0.1 --port 8080 --l2-m
 python libwex/cli/wex_cli.py ipc model.wex --l2-mb auto
 ```
 
+### `serve` Access Control
+
+- `serve` binds to `127.0.0.1` by default and **refuses to start on a non-loopback `--host` without a token**.
+- Set the token with the `WEX_SERVE_TOKEN` environment variable (preferred, it stays out of the process list) or `--token <secret>`. Every route then requires `Authorization: Bearer <secret>` and answers `401` otherwise. OpenAI-compatible clients send their API key this way, so configure the token as the client's API key. On loopback the token is optional.
+- Without a token, a request whose `Origin` header names a non-loopback site is answered with `403`, so a web page of another site open in a browser cannot drive the local server. This does not stop DNS rebinding, which lets such a page read the `GET` routes; a token does.
+- The proxy routes never forward the client's `Authorization`, `X-Api-Key`, or `Cookie` headers to `--upstream`. An upstream that needs its own credential is not supported through the proxy.
+- The server speaks plain HTTP: on a non-loopback bind the token travels unencrypted, so use a trusted network or a TLS-terminating reverse proxy. Without a token, every local process can reach the server.
+
+```sh
+WEX_SERVE_TOKEN=<secret> python libwex/cli/wex_cli.py serve model.wex --host 0.0.0.0 --port 8080
+curl -H "Authorization: Bearer <secret>" http://<host>:8080/v1/telemetry
+```
+
 ### MCP Server
 
 [cli/wex_mcp.py](cli/wex_mcp.py) exposes a spec-compliant MCP JSON-RPC 2.0 stdio server (stdlib only) providing four tools: `wex_inspect`, `wex_verify`, `wex_bench`, and `wex_server_telemetry`.
 
 ```sh
-python libwex/cli/wex_mcp.py
+python libwex/cli/wex_mcp.py --root-dir /path/to/models
 ```
+
+What a tool call can reach is fixed when the server starts, not by the client:
+
+- The `libwex` library is chosen by `--lib` / `--cuda` or `WEX_LIB_PATH`. No tool takes a library path, and a call with an undeclared argument is rejected.
+- Tools open containers only under the `--root-dir` directories (repeatable; default: the current working directory). Paths are resolved (symlinks, `..`) before the check. On Windows a path on a drive or network share that holds no root is refused without being opened.
+- `wex_server_telemetry` queries loopback only. For a token-protected `wex serve` it sends `WEX_SERVE_TOKEN` from the MCP server's own environment.
 
 ## Measured Performance (Single NVMe + L2 Compressed RAM)
 

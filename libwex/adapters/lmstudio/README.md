@@ -24,11 +24,13 @@ If you use MCP tools inside LM Studio, register [`libwex/cli/wex_mcp.py`](../../
   "mcpServers": {
     "libwex": {
       "command": "python",
-      "args": ["libwex/cli/wex_mcp.py"]
+      "args": ["libwex/cli/wex_mcp.py", "--root-dir", "/path/to/models"]
     }
   }
 }
 ```
+
+The tools open containers only under `--root-dir` (default: the server's working directory); see [MCP Server](../../README.md#mcp-server).
 
 ## Approach B: Custom `llama.cpp` Runtime with `ggml-wex`
 

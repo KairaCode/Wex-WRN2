@@ -31,7 +31,7 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "path": {"type": "string", "description": "Path to the local .wex / .wex4 container file."},
+                "path": {"type": "string", "description": "Path to the local .wex / .wex4 container file (inside the server's root directories)."},
                 "cpu_only": {"type": "boolean", "description": "Disable GPU backend discovery.", "default": False},
             },
             "required": ["path"],
@@ -44,7 +44,7 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "path": {"type": "string", "description": "Path to the local .wex / .wex4 container file."},
+                "path": {"type": "string", "description": "Path to the local .wex / .wex4 container file (inside the server's root directories)."},
                 "root_hex": {"type": "string", "description": "Optional 64-char hex root SHA-256 to pin."},
                 "l2_mb": {"type": "integer", "description": "L2 cache size in MiB (default 0).", "default": 0, "minimum": 0},
                 "cpu_only": {"type": "boolean", "description": "Force CPU-only decode.", "default": False},
@@ -59,7 +59,7 @@ TOOLS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "path": {"type": "string", "description": "Path to the local .wex / .wex4 container file."},
+                "path": {"type": "string", "description": "Path to the local .wex / .wex4 container file (inside the server's root directories)."},
                 "l2_mb": {"type": "string", "description": "Comma-separated L2 sizes in MiB or 'auto' (e.g. '0,64,256').", "default": "0,64"},
                 "waves": {"type": "integer", "description": "Number of fetch waves.", "default": 32, "minimum": 1},
                 "batch": {"type": "integer", "description": "Records per wave.", "default": 4, "minimum": 1},
@@ -95,6 +95,13 @@ ENDPOINT_PATHS = {
 }
 
 
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    """wex serve never redirects; following one could carry the token to another host."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
 def query_server_telemetry(port=8080, host="127.0.0.1", endpoint="telemetry", timeout=5.0):
     if host not in ("127.0.0.1", "localhost", "::1"):
         raise ValueError("host must be a loopback address (127.0.0.1, localhost, or ::1)")
@@ -107,12 +114,18 @@ def query_server_telemetry(port=8080, host="127.0.0.1", endpoint="telemetry", ti
 
     host_fmt = f"[{host}]" if ":" in host else host
     url = f"http://{host_fmt}:{port_num}{route}"
-    req = urllib.request.Request(url, headers={"Accept": "application/json"})
+    headers = {"Accept": "application/json"}
+    # The token of a protected wex serve comes from this server's environment, never from a tool argument.
+    token = os.environ.get("WEX_SERVE_TOKEN")
+    if token:
+        headers["Authorization"] = "Bearer " + token
+    req = urllib.request.Request(url, headers=headers)
     try:
-        with urllib.request.urlopen(req, timeout=float(timeout)) as resp:
+        with urllib.request.build_opener(_NoRedirect).open(req, timeout=float(timeout)) as resp:
             raw = resp.read().decode("utf-8", errors="replace")
             return json.loads(raw)
     except urllib.error.HTTPError as exc:
+        exc.close()
         raise RuntimeError(f"HTTP {exc.code} from {url}") from exc
     except urllib.error.URLError as exc:
         raise RuntimeError(f"Unable to connect to {url}: {exc.reason}") from exc
@@ -121,17 +134,52 @@ def query_server_telemetry(port=8080, host="127.0.0.1", endpoint="telemetry", ti
 class WexMcpServer:
     """JSON-RPC 2.0 dispatcher for libwex MCP tools."""
 
-    def __init__(self, default_lib_path=None, default_cuda_path=None):
+    def __init__(self, default_lib_path=None, default_cuda_path=None, root_dirs=None):
         self.default_lib_path = default_lib_path
         self.default_cuda_path = default_cuda_path
+        roots = root_dirs or [os.getcwd()]
+        self.root_dirs = [os.path.normcase(os.path.realpath(d)) for d in roots]
+        # Windows drives and network shares that hold a root, as the root is spelled and as it resolves
+        self.root_drives = {
+            os.path.splitdrive(os.path.normcase(spelling(d)))[0]
+            for d in roots
+            for spelling in (os.path.abspath, os.path.realpath)
+        }
+
+    def _resolve_path(self, path):
+        """Return the symlink-free absolute path, refusing one outside the root directories."""
+        # realpath gives a path with a NUL back unresolved, and the C library reads the path up to the NUL
+        if "\0" in path:
+            raise ValueError("path contains a NUL character")
+        # On Windows realpath opens the path, and opening a network (UNC) path logs on to the host it
+        # names: a path on a drive or share that holds no root is refused before anything opens it.
+        if os.path.splitdrive(os.path.normcase(os.path.abspath(path)))[0] not in self.root_drives:
+            raise ValueError(f"path is outside the allowed root directories: {path}")
+        real = os.path.realpath(path)
+        key = os.path.normcase(real)
+        for root in self.root_dirs:
+            try:
+                if os.path.commonpath([key, root]) == root:
+                    return real
+            except ValueError:  # e.g. another drive
+                pass
+        raise ValueError(f"path is outside the allowed root directories: {path}")
 
     def _call_tool(self, name, arguments):
         args = arguments if isinstance(arguments, dict) else {}
+        schema = next((t["inputSchema"] for t in TOOLS if t["name"] == name), None)
+        if schema is None:
+            raise KeyError(f"Unknown tool: {name}")
+        # Enforce additionalProperties=false: clients choose neither the library nor any other undeclared input.
+        unknown = sorted(k for k in args if k not in schema["properties"])
+        if unknown:
+            raise ValueError(f"unexpected argument(s) for {name}: {', '.join(unknown)}")
         lib_path = self.default_lib_path
+        path = self._resolve_path(args["path"]) if "path" in schema["properties"] else None
 
         if name == "wex_inspect":
             return wex_cli.run_inspect(
-                args["path"],
+                path,
                 lib_path=lib_path,
                 cuda_path=self.default_cuda_path,
                 cpu_only=bool(args.get("cpu_only", False)),
@@ -139,7 +187,7 @@ class WexMcpServer:
 
         if name == "wex_verify":
             return wex_cli.run_verify(
-                args["path"],
+                path,
                 root_hex=args.get("root_hex"),
                 l2_mb=int(args.get("l2_mb", 0)),
                 cpu_only=bool(args.get("cpu_only", False)),
@@ -149,7 +197,7 @@ class WexMcpServer:
 
         if name == "wex_bench":
             return wex_cli.run_bench(
-                args["path"],
+                path,
                 l2_mb_list=str(args.get("l2_mb", "0,64")),
                 waves=int(args.get("waves", 32)),
                 batch=int(args.get("batch", 4)),
@@ -161,15 +209,12 @@ class WexMcpServer:
                 cuda_path=self.default_cuda_path,
             )
 
-        if name == "wex_server_telemetry":
-            return query_server_telemetry(
-                port=int(args.get("port", 8080)),
-                host=str(args.get("host", "127.0.0.1")),
-                endpoint=str(args.get("endpoint", "telemetry")),
-                timeout=float(args.get("timeout", 5.0)),
-            )
-
-        raise KeyError(f"Unknown tool: {name}")
+        return query_server_telemetry(
+            port=int(args.get("port", 8080)),
+            host=str(args.get("host", "127.0.0.1")),
+            endpoint=str(args.get("endpoint", "telemetry")),
+            timeout=float(args.get("timeout", 5.0)),
+        )
 
     def handle_message(self, msg):
         if not isinstance(msg, dict):
@@ -305,9 +350,15 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description="libwex MCP JSON-RPC 2.0 stdio server")
     parser.add_argument("--lib", dest="lib_path", default=None, help="Explicit path to libwex shared library")
     parser.add_argument("--cuda", dest="cuda_path", default=None, help="Explicit path to libwex_cuda shared library")
+    parser.add_argument("--root-dir", dest="root_dirs", action="append", default=None,
+                        help="Directory the tools may open containers under (repeatable; default: current directory)")
     args = parser.parse_args(argv)
 
-    server = WexMcpServer(default_lib_path=args.lib_path, default_cuda_path=args.cuda_path)
+    server = WexMcpServer(
+        default_lib_path=args.lib_path,
+        default_cuda_path=args.cuda_path,
+        root_dirs=args.root_dirs,
+    )
     serve_stdio(server)
     return 0
 
