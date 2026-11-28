@@ -210,7 +210,8 @@ measured; it is not known to fail.
   yet, each with its `MANIFEST.tsv` row and the expected verdict from both reference readers; the
   `go-reader` and `rust-reader` jobs of CI then run the Go and the Rust reader on the new rows too.
   Valid files are wanted as well. A new vector goes through an issue first.
-  - **Today:** 139 rows since 2026-11-22, when 3 files with a damaged blob that no record uses
+  - **Today:** 157 rows since 2026-11-27, when 18 codec-8 files were added (4 accepted, 14 refused:
+    [wex4/vectors/README.md](../wex4/vectors/README.md)); 139 since 2026-11-22, when 3 files with a damaged blob that no record uses
     were added ([issue 57](https://github.com/KairaCode/Wex-WRN2/issues/57)); 136 since 2026-11-15. The 24 files added that day cover the two lists of what
     the 112 rows did not exercise (finding 17 of the
     [spec review](../research/spec-review-20261114/README.md) and part D of the Go reader's
@@ -484,7 +485,7 @@ measured; it is not known to fail.
     report the last lines and the device line: that is the test that counts, and so far it has passed on
     one GPU only. The RTX 3070 showed that a driver can get this shader wrong, and only `run.sh` tells.
     The container of the run above is public
-    ([Kaira666/Kaira-WEX4-Experts](https://huggingface.co/Kaira666/Kaira-WEX4-Experts), 123 GB); the
+    ([KairaCode/Kaira-WEX4-Experts](https://huggingface.co/KairaCode/Kaira-WEX4-Experts), 123 GB); the
     records of `research/real-experts-20261115` (made by its `run.sh` from tensors its
     `fetch_experts.py` fetches) are a small test that needs no download of that size. The host program
     reads the file record by record and cuts its batches to the device's buffer limit, so the file size
@@ -605,7 +606,7 @@ measured; it is not known to fail.
     (scales and weights apart); zstd with a trained dictionary or long-distance matching; byte-shuffle
     filters (Blosc2) and OpenZL.
 - **WNR4, what is left** (help wanted; several items need an NVIDIA GPU):
-  - **Today (2026-11-26):** [WNR4-SPEC](WNR4-SPEC.md) defines all four kinds (**MX**, **NV**, **GG**, **I4**)
+  - **Today (2026-11-27):** [WNR4-SPEC](WNR4-SPEC.md) defines all four kinds (**MX**, **NV**, **GG**, **I4**)
     under WEX4 codec 8 and blob kind 3. The code is in `wnr4/`: C99 CPU reference codecs (`wnr4.h`,
     `wnr4_gg.h`, `wnr4_i4.h`), CUDA decoders (`wnr4_cuda.cuh`, `wnr4_gg_cuda.cuh`, `wnr4_i4_cuda.cuh`),
     and the ABI-6 CUDA helper DLL. Whole-model WEX4+WNR4 containers have been built for DeepSeek V4.1
@@ -613,13 +614,18 @@ measured; it is not known to fail.
     53.96 GB and `G=32` archive 53.29 GB, both verified byte-exact) and Qwen3.8 UD-IQ1_M (GG, 33.38 GB,
     verified byte-exact). Engine-side CPU/CUDA decode is wired in the maintainer's engine tree for kind MX
     (DeepSeek, helper feature 64) and kind I4 (`qwen38`, helper feature 128, live-verified on RTX 5090;
-    [STATUS.md](../STATUS.md)); the independent Go and Rust readers of `impl/` decode kinds GG and I4
-    (written from the specification).
+    [STATUS.md](../STATUS.md)); the Go and Rust readers of `impl/` decode all four kinds (GG and I4
+    written from the specification with the reference closed; MX and NV added on 2026-11-27).
+    Since 2026-11-27 EXPERT codec-8 records (kinds MX and NV) have their required feature bit (bit 2,
+    `WNR4_EXPERT`: [WEX4-SPEC](WEX4-SPEC.md) 7.3), a public writer (`wex4/wnr4mx.py`) and, with kinds GG
+    and I4, 18 conformance vectors in `wex4/vectors/`.
     The CPU tests (`bash scripts/build_wnr4_check.sh`, run in CI) include a mutation fuzz for each kind;
     the GPU code has run on one GPU only (an RTX 5090, `sm_120`).
   - **Still open:**
-    - independent decoders of kinds MX and NV (WNR4-SPEC sections 2 to 4 have no list of record checks
-      like 5.5 and 6.5);
+    - a decoder of kinds MX and NV written from the pages alone: the Go and Rust ones arrived on
+      2026-11-27 in the same commit as the reference's own container code, and nothing records that they
+      were written with it closed (WNR4-SPEC sections 2 to 4 have no list of record checks like 5.5 and
+      6.5);
     - a SIMD lane-parallel CPU decoder (8 lanes per AVX2 register): the reference decoder is scalar with
       an AVX2 16-symbol search, 0.057-0.060 GB/s per thread and 0.71 GB/s with 16-32 threads on Qwen3.8
       MXFP4 (report, section 5);
@@ -630,11 +636,9 @@ measured; it is not known to fail.
       bench of [research/wnr4-20261121](../research/wnr4-20261121/README.md)), which need a GPU runner;
     - fuzzing of the WNR4 record parser beyond the existing mutation fuzz of `wnr4/tests` (random flips of
       1 to 3 bits): no harness of [wex4/fuzz](../wex4/fuzz/README.md) reads WNR4 records;
-    - conformance vectors for codec 8, which wait until the `required_features` bit for EXPERT codec-8
-      records is frozen;
-    - a public container writer for kinds MX and NV (`wex4/wnr4gg.py` writes kind GG and `wex4/wnr4i4.py`
-      writes kind I4), together with the formal `required_features` bit for EXPERT records (WNR4-SPEC
-      section 8);
+    - an accepted conformance vector for kind NV and one for `pb = 5`: the 18 codec-8 vectors hold an
+      accepted file for kinds GG, I4 and MX with `pb = 1` only; NV (reject vectors only) and `pb = 5` are
+      checked by tests that build their files at run time (`wex4/test_wnr4mx.py`);
     - int4 exports that kind 3 (I4, WNR4-SPEC section 6) codes badly: its scale model is the lattice of an
       FP8 block-scaled source, and the scales of an int4 export of an NVFP4 checkpoint (Inkling-2-Mini)
       escape, 0.881 of raw against 0.841 for zstd -19; a palette or NVFP4-lattice scale mode would fix it
@@ -728,7 +732,7 @@ listed above as well.
   records is in (smaller files, slower CPU decode), and since 2026-11-21 nvCOMP and NVDEC against WNR3
   and WNR4 on one GPU (nvCOMP-ANS: larger files, much faster decode); whole checkpoints, other CPUs and
   other GPUs are open *(open to you, section 8)*.
-- **WNR4:** GPU-parallel successor of WNR3 (codec 8, blob kind 3: kinds MX, NV, GG and I4 implemented in `wnr4/` with CUDA helper ABI 6; Go and Rust decode GG and I4; maintainer's engine tree decodes MX with helper feature 64 and I4 with helper feature 128). Still open: formal `required_features` bit and conformance vectors for codec 8, Go/Rust decoders for MX and NV, SIMD lane-parallel CPU decoder, Vulkan/non-NVIDIA decoder, and libFuzzer harnesses for `wnr4/` ([WNR4-SPEC.md](WNR4-SPEC.md) section 8);
+- **WNR4:** GPU-parallel successor of WNR3 (codec 8, blob kind 3: kinds MX, NV, GG and I4 implemented in `wnr4/` with CUDA helper ABI 6; Go and Rust decode all four kinds; maintainer's engine tree decodes MX with helper feature 64 and I4 with helper feature 128). Since 2026-11-27 EXPERT codec-8 records have a required feature bit (bit 2) and codec 8 has 18 conformance vectors. Still open: SIMD lane-parallel CPU decoder, Vulkan/non-NVIDIA decoder, and libFuzzer harnesses for `wnr4/` ([WNR4-SPEC.md](WNR4-SPEC.md) section 8);
   the codec work left is open *(open to you, section 8)*.
 - **A first tagged release** of the specifications (WEX4 4.0, WNR3 v1) with the conformance vectors, so
   other implementations can name the version they pass.

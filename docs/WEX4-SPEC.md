@@ -1,6 +1,6 @@
 # WEX4 specification (format version 4.0)
 
-**Format version:** 4.0, frozen on 2026-11-11. **Document revision:** 2026-11-27. **Status:** stable, in production. **Change log:** "Document history" at the end.
+**Format version:** 4.0, frozen on 2026-11-11, and extended once since, on 2026-11-27, by the mechanism section 10 gives for it (rules 4 and 6): `required_features` bit 2 (`WNR4_EXPERT`, sections 4, 5.5 and 7.3). A file that does not set that bit is read exactly as before; a reader built to the 2026-11-11 text refuses a file that sets it. `version_minor` stays 0. **Document revision:** 2026-11-27. **Status:** stable, in production. **Change log:** "Document history" at the end.
 
 **In production** since 2026-11-11 for both models that use these containers: DeepSeek V4.1 REAP-192 (WNR3-CZ records) and Qwen3.8-Flash-Next MXFP4 (RAW records). What runs today, with files, roots and builds: [STATUS.md](../STATUS.md).
 
@@ -32,7 +32,7 @@ Paths: `wex4/...`, `c/...`, `docs/...` are in this repository; `<TREE>` is the m
 | G6 | **Cheap migration:** the production container is upgraded in place, reversibly, without rewriting 123 GB | 13 |
 | G7 | **Versioned:** explicit version and feature flags with reader rules for unknown values | 10 |
 
-Non-goals: a new expert codec (section 12 lists what a "WNR4" record could add and why it is not in this version; the name WNR4 now refers to the draft of [WNR4-SPEC.md](WNR4-SPEC.md), a different design, which section 7.3 of this spec admits as codec 8 for GGUF and int4-g64 expert records that are not EXPERT-flagged: experimental and outside the goals of this version), encryption, signatures (section 16), writing from the engine.
+Non-goals: a new expert codec (section 12 lists what a "WNR4" record could add and why it is not in this version; the name WNR4 now refers to [WNR4-SPEC.md](WNR4-SPEC.md), a different design, which section 7.3 of this spec admits as codec 8: for GGUF and int4-g64 expert records that are not EXPERT-flagged, and since 2026-11-27 for MXFP4 and NVFP4 EXPERT records in a file that sets `required_features` bit 2. It was not a goal of the version frozen on 2026-11-11), encryption, signatures (section 16), writing from the engine.
 
 ### 1.2 safetensors, verified facts
 
@@ -158,7 +158,7 @@ The index encoding is **canonical**: once the writer has fixed the layout, the g
 | 0 | 8 | offset | start of the extent |
 | 8 | 4 | stored_bytes | > 0, multiple of 4096, `<= align(decoded_bytes)` |
 | 12 | 4 | decoded_bytes | 1 .. 2^30 |
-| 16 | 2 | codec | 0 RAW, 5 WNR3, 6 WBP1, 8 WNR4 (draft) (section 7). Unknown, on a record that is neither EXPERT nor VALUE_EXACT: the file is still valid, that record cannot be decoded |
+| 16 | 2 | codec | 0 RAW, 5 WNR3, 6 WBP1, 8 WNR4 (section 7). Unknown, on a record that is neither EXPERT nor VALUE_EXACT: the file is still valid, that record cannot be decoded |
 | 18 | 2 | flags | bit 0 VALUE_EXACT, bit 1 EXPERT. Any other bit: the file is refused |
 | 20 | 4 | blob | 0 = none, else 1 + index of the record's blob (codec 5: its WNM2 model; codec 8: its WNM4 model); `<= blob_count` |
 | 24 | 4 | owner | EXPERT: `layer << 16 | expert` with `layer < num_layers` and `expert < num_experts`, strictly increasing over the expert records. Else: the record's own index |
@@ -234,9 +234,9 @@ Per record: read `stored_bytes` at `offset` into a buffer of `align(decoded_byte
 | 0 | RAW | anything; the fallback of every other codec | nothing: the bytes are the tensor (can be read straight into place, or memory-mapped) | zero padding; the record SHA-256 when asked |
 | 5 | WNR3 | MXFP4 routed experts | the container's WNM2 model (a blob) | everything of `docs/WNR3-SPEC.md`: structure, per-stream hash, owner, canonical-zero rule |
 | 6 | WBP1 | FP8, BF16, F16, F32, F64, integers, opaque bytes | nothing (tables are in the record) | structure, per-stream hash (rANS planes), per-chunk hash (raw planes), owner |
-| 8 | WNR4 (codec 8; draft for EXPERT records) | GGUF routed-expert records (kind GG, section 14.1), int4-g64 expert records (kind I4, 7.3), and MXFP4/NVFP4 expert slabs (kinds MX/NV; formal `required_features` bit for EXPERT records pending: 7.3) | the container's WNM4 model (a blob of kind 3) | everything of `docs/WNR4-SPEC.md`: structure, per-tile hash and end states, word count, owner, model id (section 7.3); verbatim slices of kind GG: record SHA-256 only, which a reader must check at the record's first read |
+| 8 | WNR4 (codec 8) | GGUF routed-expert records (kind GG, section 14.1), int4-g64 expert records (kind I4, 7.3), and MXFP4/NVFP4 expert slabs (kinds MX/NV, on EXPERT records of a file that sets `required_features` bit 2, `WNR4_EXPERT`: 7.3) | the container's WNM4 model (a blob of kind 3) | everything of `docs/WNR4-SPEC.md`: structure, per-tile hash and end states, word count, owner, model id (section 7.3); verbatim slices of kind GG: record SHA-256 only, which a reader must check at the record's first read |
 | 1-4 | (WEX2/WEX3 scale tiles, palette3, WNR1, WNR2) | not written into WEX4 | | a reader treats them like any unknown id |
-| 7, 9+ | reserved | | | unknown to a reader: that record cannot be decoded, the rest of the file can (whole-file verification then reports the file as not verifiable). A new codec for expert or value-exact records must come with a required feature bit, because EXPERT allows codec 0 or 5 only |
+| 7, 9+ | reserved | | | unknown to a reader: that record cannot be decoded, the rest of the file can (whole-file verification then reports the file as not verifiable). A new codec for expert or value-exact records must come with a required feature bit, because without one EXPERT allows codec 0 or 5 only (5.2; codec 8 came with bit 2) |
 
 Which codec a writer picks (the converters of this prototype): expert slab -> WNR3 when a model is given, else RAW; everything else -> WBP1 with `planes` = element size in bytes, `chunk_log2` = 12, and `transform` = 1 for a record that holds one float tensor (F16, BF16, F32, F64) or a part of one, 0 for a record of grouped small tensors (section 14); and in every case RAW when the coded record is not smaller. `wex4/gguf2wex4.py` writes RAW records only; `wex4/wnr4gg.py` re-codes as codec 8 those routed-expert records of such a container that hold a Q2_0 or IQ4_NL slice and get smaller, and leaves every other record RAW (section 14.1); `wex4/wnr4i4.py` does the same for the int4-g64 expert records of any RAW container (7.3).
 
@@ -302,7 +302,7 @@ The record format is [WNR4-SPEC.md](WNR4-SPEC.md) (kinds 0 MX, 1 NV, 2 GG, 3 I4)
 
 | level | covers | hash | where it is checked | cost |
 |---|---|---|---|---|
-| 1 | each rANS stream / raw chunk of a WNR3 or WBP1 record, each tile of a WNR4 record (draft, 7.3; not its verbatim slices): decoded symbols and their identity (model, owner, stream index, anchors and flags) | MurmurHash3, 23 bits in the rANS state (32 bits for raw chunks and WNR4 tiles) | always, inside the decoder, on CPU and GPU | WNR3: +1,352 B per record (+0.007 %), no measurable decode time (`docs/reports/WNR3-VERIFY.md`) |
+| 1 | each rANS stream / raw chunk of a WNR3 or WBP1 record, each tile of a WNR4 record (7.3; not its verbatim slices): decoded symbols and their identity (model, owner, stream index, anchors and flags) | MurmurHash3, 23 bits in the rANS state (32 bits for raw chunks and WNR4 tiles) | always, inside the decoder, on CPU and GPU | WNR3: +1,352 B per record (+0.007 %), no measurable decode time (`docs/reports/WNR3-VERIFY.md`) |
 | 2 | each record's stored bytes, each blob | SHA-256 in the index | tools always; the engine when asked (8.2) | 32 B per record; one hash pass over the bytes read |
 | 3 | the index; the header page | SHA-256 in the header page | always, at open | one hash of the index (section 11) |
 
@@ -577,7 +577,7 @@ A part whose bytes between or after its tensors are not zero is refused (unpack 
 
 **Unpack** (`... unpack IN.wex4 OUT_DIR`, or `--check` to hash without writing) rebuilds each part: the header blob, then each tensor at its offset with zero bytes between, zero bytes to the recorded size, and compares the SHA-256 with the recorded one. Tests: `wex4/test_gguf2wex4.py` (single file, split model with a metadata-only part, experts across parts, merged gate_up, another alignment, refusals). The engine side (the qwen36 engine's `Q36_WEX4=<file>`) reads a layer's experts with the packed read of the colibri GGUF container after checking that every part's header equals its blob.
 
-**WNR4-GG expert records (draft, experimental; section 7.3).** `wex4/wnr4gg.py` (train, pack, verify, and `unpack`, which rebuilds the GGUF parts through a reader that decodes codec 8) makes, from a RAW container written by `pack`, a container whose routed-expert records are codec 8 with WNR4 kind GG ([WNR4-SPEC.md](WNR4-SPEC.md) section 5). What changes in such a container:
+**WNR4-GG expert records (section 7.3).** `wex4/wnr4gg.py` (train, pack, verify, and `unpack`, which rebuilds the GGUF parts through a reader that decodes codec 8) makes, from a RAW container written by `pack`, a container whose routed-expert records are codec 8 with WNR4 kind GG ([WNR4-SPEC.md](WNR4-SPEC.md) section 5). What changes in such a container:
 
 - the model (a WNM4 model of WNR4 kind 2, 36,644 bytes) is one more blob, of blob kind 3, after the GGUF header blobs, which keep their indices; every codec-8 record names it in its `blob` field;
 - a routed-expert record keeps its tensors (names, dtypes, shapes, offsets) and its decoded bytes; inside the WNR4 record its Q2_0 slices (dtype 170) and IQ4_NL slices (dtype 148) are coded and the other slices are stored verbatim; the owner inside the WNR4 record is the entry's `owner`, for these records the record's own index (5.2);
@@ -585,7 +585,7 @@ A part whose bytes between or after its tensors are not zero is refused (unpack 
 - pack codes with G = 32 (WNR4-SPEC 5.3) unless `--G` says otherwise: against G = 128 it costs about 0.07 points of ratio and the prototype's CUDA decoder is about 3.4 times faster on batches of 32 records (WNR4-SPEC 5.5, first check);
 - a reader that decodes codec 8 must check each codec-8 record's SHA-256 at its first read (7.3), since nothing else covers the verbatim slices;
 - the experts of a layer no longer share one stored size, so `first + E * stride` holds only while they are all RAW: a reader takes each record's `offset` and `stored_bytes` from the index;
-- a reader without codec 8 (today `c/wex4.h`, `wex4/wex4.py` and so `gguf2wex4.py unpack`) opens such a container and refuses to decode those records (section 10, rule 6).
+- a reader without codec 8 (today `c/wex4.h` used on its own, `wex4/wex4.py` when it is not given the C library `wex4_tools`, and so `gguf2wex4.py unpack`) opens such a container and refuses to decode those records (section 10, rule 6).
 
 Tests: `wex4/test_wnr4gg.py`.
 
@@ -703,3 +703,4 @@ What the manifest asks of a reader is the verdict: accept or refuse. On the `inv
 | 2026-11-22 | Draft, experimental: codec 8 also carries WNR4 kind 3, I4 (int4-g64 expert records, `docs/WNR4-SPEC.md` section 6), on records that are neither EXPERT nor VALUE_EXACT; its model is a WNM4 blob of kind 3 (196,688 bytes); the geometry of an I4 record comes from its tensors (2, 4 or 6: U8 codes `[rows, cols / 2]`, then F32 scales `[rows, cols / 64]`, back to back from 0), the packing from record byte 13 (7.3). `wex4/wnr4i4.py` writes and reads such containers from any RAW container. No vector, no reader verdict and no production container changed |
 | 2026-11-23 | Section 7.3: the verdict of a codec-8 record that fails at decode, or is of kind 0 or 1, made explicit (an undecodable record, the file valid, reported as a record of an unknown codec; a record SHA-256 mismatch still refuses the file), as the sentence of "At open" already said; the Go and the Rust readers of `impl/` decode kinds GG and I4 (7.3 and section 17). No format change, no verdict of a vector changed |
 | 2026-11-27 | Formalized WNR4 (codec 8, blob kind 3) for EXPERT records (kinds MX and NV) under `required_features` bit 2 (`WEX4_REQ_WNR4_EXPERT = 0x4`; bit 1 `0x2` remains unassigned so `invalid/unknown-required-feature.wex4` is unchanged): added NVFP4 EXPERT geometry (section 5.5), standalone `wex4_wnm4_blob_ok()` in `c/wex4.h` + `wex4_verify`, full 4-kind decoding in `wex4/wex4_tools.c`, `wex4/wex4.py`, `impl/go-wex4`, and `impl/rust-wex4`, public `wex4/wnr4mx.py` packer + tests, and 18 new conformance vectors in `wex4/vectors/` (157 manifest rows total; all 139 earlier rows and all 23 non-EXPERT `wnr4-MANIFEST.tsv` rows unchanged) |
+| 2026-11-27 | Wording only, no rule, byte or verdict changed: the places that still called codec 8 a draft or the required bit of EXPERT codec-8 records pending (the non-goals of 1.1, the codec field of 5.2, the table of section 7, level 1 of 8.1, the WNR4-GG paragraph of 14.1) now say what section 7.3 and the vectors enforce; the first line says how bit 2 relates to format version 4.0 (an extension through section 10, rules 4 and 6; `version_minor` stays 0); 14.1 names which readers are without codec 8 today (`c/wex4.h` on its own, `wex4/wex4.py` without the C library) |

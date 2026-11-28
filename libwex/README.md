@@ -97,6 +97,8 @@ python libwex/cli/wex_mcp.py
 
 ## Measured Performance (Single NVMe + L2 Compressed RAM)
 
+*Reported by the maintainer; the output of the run is not tracked in this repository, so by rule 5 of [CONTRIBUTING.md](../CONTRIBUTING.md) the figures of this section are not verified here.*
+
 Measured on Windows (NVIDIA GeForce RTX 5090, single NVMe, `win-overlapped` direct I/O) streaming a real 40-layer x 192-expert WEX4 `WNR4-MX` container (114.43 GiB stored / 134.47 GiB decoded, 17.93 MiB decoded per expert, 4 experts per wave) directly into PyTorch CUDA VRAM (`wex_fetch_device` + in-VRAM E8M0-to-FP32 expansion):
 
 | Workload (1 NVMe) | L2 Cache | Verify (SHA-256 + Root) | L2 Hit Rate | NVMe Read | Wave Latency | Effective Decoded BW |

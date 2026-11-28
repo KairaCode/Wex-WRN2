@@ -125,11 +125,12 @@ def chart_codecs(t):
 
 def chart_wnr4_decode(t):
     # docs/BENCHMARKS.md, "WNR4 record codec: container sizes, ratio and decode speed":
-    # RTX 5090 (CUDA 13.4, sm_120), records resident in VRAM, kernel only.
+    # RTX 5090 (CUDA 13.4, sm_120), records resident in VRAM, kernel only. The I4 figures are those of the rerun
+    # of 2026-11-27 (research/wnr4-gpu-rerun-20261127: batch 32, and one record; where its 3 runs differ, their median).
     peak = [
-        ('WNR4-I4 · Qwen3.8 (G=32)', 347.2, 'aqua'),
-        ('WNR4-I4 · Qwen3.8 (G=16)', 344.6, 'aqua'),
-        ('WNR4-I4 · Qwen3.8 (G=4)', 341.7, 'aqua'),
+        ('WNR4-I4 · Qwen3.8 (G=32)', 347.0, 'aqua'),
+        ('WNR4-I4 · Qwen3.8 (G=16)', 345.5, 'aqua'),
+        ('WNR4-I4 · Qwen3.8 (G=4)', 339.9, 'aqua'),
         ('WNR4-MX · Qwen3.8', 209.0, 'aqua'),
         ('WNR4-MX · V4.1', 188.0, 'aqua'),
         ('WNR4-NV · Qwen3.8', 149.0, 'aqua'),
@@ -141,7 +142,7 @@ def chart_wnr4_decode(t):
     fig = cs.figure(t, h)
     cs.header(fig, t, 'WNR4 GPU decode: throughput and single-record latency',
               '32-lane warp-parallel rANS on RTX 5090 (CUDA 13.4, sm_120, kernel only, records in VRAM).\n'
-              'End-to-end PCIe 5 upload + decode from page-locked host memory: 70–72 GB/s (I4 async2), 48–60 GB/s (MX).', h)
+              'End-to-end PCIe 5 upload + decode from page-locked host memory: 48–60 GB/s (MX); I4: 70–72 GB/s reported, no tracked log.', h)
     ax1 = cs.axes(fig, t, [0.265, 0.18, 0.30, 0.54], 'Peak kernel decode (GB/s)')
     cs.hbars(ax1, [r[0] for r in peak], [r[1] for r in peak], [t[r[2]] for r in peak], t, 445,
              lambda v: f'{v:.0f}' if v == int(v) else f'{v:.1f}', height=0.58)
@@ -153,7 +154,7 @@ def chart_wnr4_decode(t):
     ax2.grid(axis='y', color=t['grid'], linewidth=0.8)
     ax2.grid(axis='x', color=t['grid'], linewidth=0.5, linestyle=':')
     series = [
-        ('I4 (Qwen3.8)', [4, 8, 16, 32, 64], [0.027, 0.044, 0.077, 0.147, 0.285], t['orange'], 's'),
+        ('I4 (Qwen3.8)', [4, 8, 16, 32, 64], [0.027, 0.046, 0.079, 0.146, 0.290], t['orange'], 's'),
         ('MX (Qwen3.8)', [32, 64, 128, 256], [0.19, 0.37, 0.75, 1.44], t['aqua'], 'o'),
         ('NV (Qwen3.8)', [32, 64, 128, 256], [0.25, 0.47, 0.90, 1.79], t['blue'], '^'),
         ('GG (whole)', [32, 128], [0.234, 0.872], t['muted'], 'D'),
@@ -177,7 +178,7 @@ def chart_wnr4_decode(t):
     for txt in leg.get_texts():
         txt.set_color(t['ink2'])
     cs.footer(fig, t, 'Sources: docs/BENCHMARKS.md ("WNR4 record codec"), research/wnr4-20261121 (MX/NV/V4.1, bench8/bench9),\n'
-              'research/wnr4-gg-20261121 (GG, batch 32), and 2026-11-26 I4 v2 kernel (batch 32). Kernel only; no RAM or drive.', h)
+              'research/wnr4-gg-20261121 (GG, batch 32), and research/wnr4-gpu-rerun-20261127 (I4 v2 kernel, median of its 3 runs). Kernel only; no RAM or drive.', h)
     return fig
 
 
@@ -232,7 +233,13 @@ def ci_jobs():
             if re.search(r'(?m)^    if:.*workflow_dispatch', block):
                 continue
             runner = re.search(r'runs-on:\s*(\S+)', block).group(1)
-            jobs[names.get(runner, runner)].append(m.group(1))
+            if runner.startswith('$'):   # `${{ matrix.os }}`: the job runs once on each runner of its `os:` list
+                runners = re.search(r'(?m)^ +os:\s*\[([^\]]+)\]', block).group(1).split(',')
+            else:
+                runners = [runner]
+            for r in runners:
+                jobs[names.get(r.strip(), r.strip())].append(m.group(1))
+    assert not any(k.startswith('$') for k in jobs), 'a runs-on expression that ci_jobs() cannot resolve'
     return jobs
 
 
@@ -255,12 +262,13 @@ def chart_tests(t):
     ax1.tick_params(axis='y', labelsize=8.5)
     ax1.set_xticks([0, 10, 20, 30])
     ax2 = cs.axes(fig, t, [0.69, 0.47, 0.25, 0.32], 'CI jobs per pull request')
-    cs.hbars(ax2, order, [len(jobs[k]) for k in order], [t['blue']] * len(order), t, 8.5, lambda v: f'{v:.0f}',
+    most = len(jobs[order[0]])
+    cs.hbars(ax2, order, [len(jobs[k]) for k in order], [t['blue']] * len(order), t, most * 1.2, lambda v: f'{v:.0f}',
              height=0.58)
-    ax2.set_xticks([0, 2, 4, 6, 8])
+    ax2.set_xticks(range(0, most + 1, 2 if most <= 8 else 4))
     ax2.tick_params(axis='y', labelsize=8.5)
     detail = '\n'.join(f'{k}: ' + ', '.join(sorted(jobs[k])) for k in order)
-    fig.text(0.535, 0.39, detail, fontsize=7.2, color=t['ink2'], va='top', linespacing=1.6, wrap=True)
+    fig.text(0.535, 0.39, detail, fontsize=7.0, color=t['ink2'], va='top', linespacing=1.6, wrap=True)
     cs.footer(fig, t, 'Source: wex4/vectors/MANIFEST.tsv (for a refused file, the first rule it breaks, as the C '
               'reader c/wex4.h reports it) and .github/workflows/ci.yml, fuzz.yml\n(jobs without a manual-run condition).', h)
     return fig

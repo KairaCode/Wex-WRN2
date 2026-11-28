@@ -1,5 +1,7 @@
 # WNR4 MXFP4 Prototypes: Per-Record Anchor-Relative Scales (`s_rec16`) and 63-Context Carry-Free 64-Bit SWAR 8-Magnitude Codec (`WNR4-SWAR-8MAG`) (2026-11-27)
 
+*Note, 2026-11-27: `bench_gpu.log` was committed as UTF-16 (a shell redirection), which git stores as a binary file; it is now the same text as UTF-8. Nothing else in this folder changed.*
+
 ## Verdict
 
 - **Prototype 3a (`s_rec16` per-record 16-symbol anchor-relative UE8M0 scale table): ADOPT.**

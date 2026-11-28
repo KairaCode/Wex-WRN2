@@ -379,7 +379,7 @@ WEX_CUDA_EXPORT int wex_cuda_decode_to_host(const WexEntry *entry,
 #define WEX_CUDA_FEATURE_BATCH    8u
 #define WEX_CUDA_FEATURE_NR3      16u
 #define WEX_CUDA_FEATURE_BATCH_HOST 32u
-/* Bits 64u (WNR4) and 128u (WNR4-I4) are reserved for KAIRA's WNR4 bridge extensions. */
+/* Bits 64u (WNR4) and 128u (WNR4-I4) are reserved for the WNR4 bridge extensions of the maintainer's engine tree. */
 #define WEX_CUDA_FEATURE_BATCH_HOST_SCRATCH 256u
 WEX_CUDA_EXPORT unsigned int wex_cuda_helper_features(void) {
     return WEX_CUDA_FEATURE_DEVICE | WEX_CUDA_FEATURE_REGISTER | WEX_CUDA_FEATURE_NR2 | WEX_CUDA_FEATURE_BATCH |

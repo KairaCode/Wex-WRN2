@@ -1,0 +1,48 @@
+name, driver_version, memory.used [MiB]
+NVIDIA GeForce RTX 5090, 621.40, 1391 MiB
+288 records (32 train), model d022a098
+group of 288 records, G 32: CPU encode + decode OK, stored/raw 0.78336
+group of 21 records, G 3: CPU encode + decode OK, stored/raw 0.76877
+group of 21 records, G 1: CPU encode + decode OK, stored/raw 0.92252
+model id 0xd022a098 registered
+real: 288 records, G 32, 2764800 B each, sync batches of 32: bit-exact 288/288
+  async batches of 16 (2 in flight): failures 0, bit-exact with status 0 288/288
+  one payload bit flipped in each odd record: refused 144/144, the even ones bit-exact with status 0 144/144
+synthetic: 21 records, G 3, 26640 B each, sync batches of 32: bit-exact 21/21
+  async batches of 16 (2 in flight): failures 0, bit-exact with status 0 21/21
+  one payload bit flipped in each odd record: refused 10/10, the even ones bit-exact with status 0 11/11
+synthetic, all scales escaped: 21 records, G 1, 26640 B each, sync batches of 32: bit-exact 21/21
+  async batches of 16 (2 in flight): failures 0, bit-exact with status 0 21/21
+  one payload bit flipped in each odd record: refused 10/10, the even ones bit-exact with status 0 11/11
+synthetic, 8 warps/block: 21 records, G 3, 26640 B each, sync batches of 32: bit-exact 21/21
+  async batches of 16 (2 in flight): failures 0, bit-exact with status 0 21/21
+  one payload bit flipped in each odd record: refused 10/10, the even ones bit-exact with status 0 11/11
+all escaped, 8 warps/block: 21 records, G 1, 26640 B each, sync batches of 32: bit-exact 21/21
+  async batches of 16 (2 in flight): failures 0, bit-exact with status 0 21/21
+  one payload bit flipped in each odd record: refused 10/10, the even ones bit-exact with status 0 11/11
+synthetic, 16 warps/block: 21 records, G 3, 26640 B each, sync batches of 32: bit-exact 21/21
+  async batches of 16 (2 in flight): failures 0, bit-exact with status 0 21/21
+  one payload bit flipped in each odd record: refused 10/10, the even ones bit-exact with status 0 11/11
+all escaped, 16 warps/block: 21 records, G 1, 26640 B each, sync batches of 32: bit-exact 21/21
+  async batches of 16 (2 in flight): failures 0, bit-exact with status 0 21/21
+  one payload bit flipped in each odd record: refused 10/10, the even ones bit-exact with status 0 11/11
+G 128 -> -1, unaligned destination -> -1, wrong owner -> -1, unknown model -> 1, bad geometry -> -1, other packing -> -1, bad blob -> -1: OK
+kernel only, records resident in VRAM, L2 (96 MiB) flushed before each run (G 32, 2764800 B decoded per record, stored/raw 0.78264, median of 20):
+  batch  1:   75 tiles,  1 warps/block: 0.146 ms =   18.9 GB/s of decoded records; bit-exact 1/1
+  batch  8:  600 tiles,  4 warps/block: 0.157 ms =  140.9 GB/s of decoded records; bit-exact 8/8
+  batch 16: 1200 tiles,  8 warps/block: 0.181 ms =  244.3 GB/s of decoded records; bit-exact 16/16
+  batch 32: 2400 tiles,  8 warps/block: 0.255 ms =  347.0 GB/s of decoded records; bit-exact 32/32
+group of 32 records, G 16: CPU encode + decode OK, stored/raw 0.78384
+kernel only, records resident in VRAM, L2 (96 MiB) flushed before each run (G 16, 2764800 B decoded per record, stored/raw 0.78384, median of 20):
+  batch  1:  150 tiles,  1 warps/block: 0.077 ms =   35.9 GB/s of decoded records; bit-exact 1/1
+  batch  8: 1200 tiles,  8 warps/block: 0.095 ms =  233.0 GB/s of decoded records; bit-exact 8/8
+  batch 16: 2400 tiles,  8 warps/block: 0.130 ms =  340.3 GB/s of decoded records; bit-exact 16/16
+  batch 32: 4800 tiles,  8 warps/block: 0.256 ms =  345.5 GB/s of decoded records; bit-exact 32/32
+group of 32 records, G 64: CPU encode + decode OK, stored/raw 0.78181
+kernel only, records resident in VRAM, L2 (96 MiB) flushed before each run (G 64, 2764800 B decoded per record, stored/raw 0.78181, median of 20):
+  batch  1:   39 tiles,  1 warps/block: 0.471 ms =    5.9 GB/s of decoded records; bit-exact 1/1
+  batch  8:  312 tiles,  2 warps/block: 0.304 ms =   72.7 GB/s of decoded records; bit-exact 8/8
+  batch 16:  624 tiles,  4 warps/block: 0.306 ms =  144.3 GB/s of decoded records; bit-exact 16/16
+  batch 32: 1248 tiles,  8 warps/block: 0.357 ms =  247.6 GB/s of decoded records; bit-exact 32/32
+ALL OK
+exit 0

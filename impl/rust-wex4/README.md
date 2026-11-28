@@ -12,7 +12,10 @@ code and notes were not opened until this reader gave the manifest's verdict, cl
 112 rows. What the text did not decide is in [SPEC-NOTES.md](SPEC-NOTES.md); its part E is the
 comparison with the other readers that came after, with [differential.py](differential.py).
 
-Since 2026-11-23 it also decodes codec 8 (WNR4, DRAFT; WEX4-SPEC 7.3), kinds GG (2) and I4 (3), with
+Since 2026-11-23 it also decodes codec 8 (WNR4; WEX4-SPEC 7.3), kinds GG (2) and I4 (3), and since
+2026-11-27 kinds MX (0) and NV (1) on EXPERT records of a file that sets required feature bit 2
+(`src/wnr4/mxnv.rs`, added in the same commit as the reference's own MX/NV container code: the next
+sentence, on how the decoders were written, is about GG and I4 only). GG and I4 are decoded with
 the decoders of `src/wnr4/`, written from [WNR4-SPEC](../../docs/WNR4-SPEC.md) sections 1 to 6 and
 WEX4-SPEC 7.3 with the reference code of WNR4 (`wnr4/`, `wex4/wnr4gg.py`, `wex4/wnr4i4.py`, their
 tests) and the Go reader's WNR4 code closed (SPEC-NOTES part G). The binding to the container in
@@ -32,8 +35,10 @@ tests) and the Go reader's WNR4 code closed (SPEC-NOTES part G). The binding to 
   then WNR3-SPEC sections 3 and 4 with errata 9 to 11 (stream hashes, canonical zero, the inverse of
   ceil form). WNR4 kinds GG and I4 (codec 8, since 2026-11-23): the WNM4 blob the record names, opened
   at first use as the model of the record's kind with its FNV-1a id, record kind 2 or 3, the geometry
-  from the record's tensors, then WNR4-SPEC sections 5 and 6. A codec-8 record that fails any of
-  these, or is of kind 0 or 1, is undecodable: the file is not refused for it (WEX4-SPEC 7.3).
+  from the record's tensors, then WNR4-SPEC sections 5 and 6. A codec-8 record without the EXPERT
+  flag that fails any of these, or is of kind 0 or 1, is undecodable: the file is not refused for it
+  (WEX4-SPEC 7.3). WNR4 kinds MX and NV (since 2026-11-27): EXPERT records of a file that sets
+  required feature bit 2, WNR4-SPEC sections 1 to 4; a failure refuses the file.
 
 When every record decodes it also prints the content digest of section 5. One line per file:
 
@@ -76,7 +81,8 @@ wex4r dump FILE                           # header page and index tables as read
 
 Exit status: 0 all accepted, or every row as the manifest says; 1 a refusal or a row that disagrees;
 2 usage; 3 a file with an undecodable record: of a codec it does not know, or (since 2026-11-23) a
-codec-8 record that fails a check of WEX4-SPEC 7.3 or of its decoder, or is of kind 0 or 1.
+codec-8 record without the EXPERT flag that fails a check of WEX4-SPEC 7.3 or of its decoder, or is
+of kind 0 or 1.
 
 The differential run compares this reader's verdicts with those of the C and the Python reader (and of
 the Go reader with `--go`) on 35 hand-made files and on as many mutated ones as `--count` asks for

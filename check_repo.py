@@ -3,10 +3,16 @@
 # Copyright 2026 Ludovico Zanichelli
 """Repository self-check. Python 3 standard library only.
 
-    python -I check_repo.py [--source <TREE> [--ref master]] [--self-test] [--line-id FILE N]
+    python -I check_repo.py [--source <TREE> [--ref master]] [--self-test] [--line-id FILE N] [--commits RANGE]
 
 One line per check, details indented below it; exit code 1 when links, mirror, licence or a strict
 privacy pattern fail. Tracked files only: run it after `git add`.
+  commits  with --commits RANGE (a git revision range, `origin/main..HEAD`), in place of the checks below:
+           every commit of the range has a GitHub noreply address as author and as committer
+           (`...@users.noreply.github.com`, or GitHub's own `noreply@github.com` on web merges and edits)
+           and no other address in its message (trailers included). A commit that fails is listed by
+           its short id and the fields at fault, never by the address. CI runs it on the commits of
+           every pull request.
   links    every relative Markdown link (and html href/src/srcset) in every tracked .md resolves to
            a tracked path, and its #anchor, when it points into a Markdown page, to a heading of that
            page (GitHub's slugs) or an <a id/name>. Links inside research/<run>/ folders are frozen:
@@ -72,6 +78,8 @@ PRIVACY = (
     ('machine name', re.compile(r'(?i)\b%s\b' % re.escape(HOST))),
 )
 STRICT_NAMES = [name for name, _ in PRIVACY[:STRICT]]
+# the only addresses a commit may carry as author or committer; the second is GitHub's own committer (web merges and edits)
+GITHUB_NOREPLY = re.compile(r'(?i)[\w.+\[\]-]+@users\.noreply\.github\.com|noreply@github\.com')
 # Warning matches that stay (header): (file, pattern, line_id() of the whole line).
 ALLOWED = (
     # byte copies of engine commits (`git format-patch`, see integration/README.md): the commit's
@@ -335,6 +343,30 @@ def check_privacy(files):
     return not any(hits[name][0] for name in STRICT_NAMES)
 
 
+def commit_mail_errors(author, committer, message):
+    """The fields of one commit that expose an address: author / committer when its address is not a GitHub
+    noreply one, message when it holds an address the e-mail pattern counts (a trailer, for one). Not counted:
+    GitHub's own address in the sign-off of a Dependabot commit, which is nobody's."""
+    return ([name for name, mail in (('author', author), ('committer', committer)) if not GITHUB_NOREPLY.fullmatch(mail)]
+            + ['message'] * bool(PRIVACY[1][1].search(message.replace('<support@github.com>', ''))))
+
+
+def check_commits(rev_range):
+    """Every commit of the range. The address itself is never printed: the output of CI is public too."""
+    try:
+        log = git('log', '-z', '--format=%h%x1f%ae%x1f%ce%x1f%B', rev_range, '--')
+    except subprocess.CalledProcessError:
+        print(f'commits  FAIL: git cannot list {rev_range} (a shallow clone? fetch the full history)')
+        return False
+    commits = [c.split('\x1f', 3) for c in log.split('\0') if c]
+    bad = [(c[0], commit_mail_errors(*c[1:])) for c in commits]
+    bad = [f'{sha}: {", ".join(fields)}' for sha, fields in bad if fields]
+    print(f'commits  {"FAIL" if bad else "ok"}: {len(commits)} commits in {rev_range}, {len(bad)} with an author or '
+          f'committer address that is not a GitHub noreply one, or another address in the message')
+    print(''.join(f'    {b}\n' for b in bad), end='')
+    return not bad
+
+
 def self_test():
     md = ('a [x](../b%20c.md#s) `[no](code.md)` <img src="i.svg"> <source srcset="j.svg">\n```\n[no](fence.md)\n```\n'
           '[r]: d/e.md\n[web](https://x.y/z)')
@@ -400,13 +432,25 @@ def self_test():
         assert lan.search(hit), hit
     for miss in ('Windows 10.0.26300.1234', '172.15.0.1', 'v1.10.0.1.5', '10.1.2.3.4', '127.0.0.1'):
         assert not lan.search(miss), miss
+    gh = '1+some-one@users.noreply.github.com'
+    assert commit_mail_errors(gh, 'noreply@github.com', 's\n\nCo-Authored-By: A <noreply@example.org>\n') == []
+    assert commit_mail_errors('49699333+dependabot[bot]@users.noreply.github.com', 'noreply@github.com',
+                              's\n\nSigned-off-by: dependabot[bot] <support@github.com>\n') == [], 'a Dependabot commit'
+    assert commit_mail_errors(gh, gh, 's\n\nSigned-off-by: A <a.support@github.com>\n') == ['message']
+    assert commit_mail_errors('a.b@example.org', gh, 's') == ['author']
+    assert commit_mail_errors(gh, 'a.b@example.org', 's') == ['committer']
+    assert commit_mail_errors(gh, gh, 's\n\nSigned-off-by: A <a.b@example.org>\n') == ['message']
+    assert commit_mail_errors('noreply@example.org', gh + '.example.org', 's') == ['author', 'committer'], \
+        'a noreply address of another host is not a GitHub one'
+    assert commit_mail_errors('', gh, 's') == ['author']
     print('self-test ok')
     return 0
 
 
 def main(argv):
     ap = argparse.ArgumentParser(usage='python -I check_repo.py [--source <TREE> [--ref master]] [--self-test]'
-                                       ' [--line-id FILE N]', allow_abbrev=False)
+                                       ' [--line-id FILE N] [--commits RANGE]', allow_abbrev=False)
+    ap.add_argument('--commits', metavar='RANGE')
     ap.add_argument('--source')
     ap.add_argument('--kaira', dest='source', help=argparse.SUPPRESS)   # old name, kept so existing commands work
     ap.add_argument('--ref', default='master')
@@ -415,6 +459,8 @@ def main(argv):
     args = ap.parse_args(argv)
     if args.self_test:
         return self_test()
+    if args.commits:
+        return 0 if check_commits(args.commits) else 1
     if args.line_id:   # FILE is relative to the repository root, as in ALLOWED; N counts from 1
         f, n = args.line_id
         try:
