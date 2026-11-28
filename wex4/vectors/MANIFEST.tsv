@@ -144,6 +144,7 @@ invalid/wnr4-expert-extra-zero-page.wex4	reject	WEX4_E_DATA	-	82265efe59941dbbac
 invalid/wnr4-expert-mixed-mx-nv-matrices.wex4	reject	WEX4_E_EXPERT	-	057ad126e5b2c014c1a37b440a7c059725ac5a5c18327dae77644f85c3a1f7f3	-	-
 invalid/wnr4-expert-non-zero-tail-pad.wex4	reject	WEX4_E_DATA	-	8021f8cc8407eb11185fbda17c4b970f4de3f82ee7504f9419639f7877ce289f	-	-
 invalid/wnr4-expert-owner-mismatch.wex4	reject	WEX4_E_DATA	-	df6f041f95510696fc9cce7277abf97d2c62e9a84e0be4600c057f4cf9759d5e	-	-
+invalid/wnr4-expert-pre-bit-canonical-zero.wex4	reject	WEX4_E_EXPERT	-	f4ed1ece18f2753d88b264c048a817c3a81d67d7c206f5dbd7ef2cb791f4d42a	-	-
 invalid/wnr4-expert-value-exact-without-required-bit-0.wex4	reject	WEX4_E_RECORD	-	93c4dd8132a3330013631a03fa4b15dc5d1086f4ceef737fc2ce3fab4b43419a	-	-
 invalid/wnr4-expert-with-wnm2-blob.wex4	reject	WEX4_E_RECORD	-	f91b0f3c3bbf8f2b1f120eff8745a697fa242922b4bb2b3862bd90d7c24fd00e	-	-
 invalid/wnr4-expert-without-model-blob.wex4	reject	WEX4_E_RECORD	-	9bc78b37deb4e2d337a6e80ff958b5ee8894c657c8fc16399d0b97ba87162453	-	-
@@ -156,3 +157,4 @@ valid/wnr4-gg.wex4	accept	-	c1694fc8588fedac07942496ad1fa9d15dfdee4d16d0c38f3ee4
 valid/wnr4-i4.wex4	accept	-	af08e542dcdaf401d68af5a202fee49acfe92ec7d24ec9c8e868b717333daded	7e38384566c0d3250246e66eb6649987c7ee42b2a274ee9426ec7f1820952a82	-	898384d9e3b30d1830457d34ec279de0a2b63996035f324e51cb23d816267207
 valid/wnr4-mx-pb1-cz.wex4	accept	-	3aa194d6535f1f6673404e3ba5f513846581307128da226df115cc32f2502518	b6a7d2505e0a05290fcb427c09438bd248cb77b6b2ddff34abc4401a06691331	-	9d3c71cbfc719601ba4b8c2940ebafe56fc1d63f5be1af6aafbd4fd03dfbddfb
 valid/wnr4-mx-pb1.wex4	accept	-	a64411e97676665a4a4eaaeb39de0dbe2ac3fd6b7681a317786ec8d9cdf946d3	42c19dc8a0affa9d007533c71bf6ea1dea7e350ed2763886c07b67487800cfb3	-	dc8118fb791a2666705a4ae5981111e7c25222ad70c2aebfae662679d7d30d40
+valid/wnr4-nv-pb1.wex4	accept	-	5bc7ba1b30337ba4dbbaff9ee0f8ff7efda8f66c94e4bffe561296b1692c2747	c974cedf2c4b456d103a9dcadddc4cd7b053bfe546cc58f37d43ff4200df4719	-	051ad607b38b9f98b17d27953ec1720f1b821c3b5569c2df8aae78a5a61c9785

@@ -1157,7 +1157,7 @@ def vector_name(label):
     return name.strip('-')
 
 
-def write_vectors(out, generic, hostile):
+def write_vectors(out, generic, hostile, nv):
     """Conformance vectors: the files these tests build, with their verdicts (wex4/vectors/README.md).
     The review files are read from wex4/review and not copied: their `../review` rows resolve only from wex4/vectors."""
     attacks, accepted = hostile
@@ -1168,9 +1168,20 @@ def write_vectors(out, generic, hostile):
              'legacy/tiny2-cz.wex3': open(os.path.join(WORK, 'tiny2_cz.wex'), 'rb').read()}
     files.update({f'valid/{vector_name(k)}.wex4': v for k, v in accepted.items()})
     files.update({f'invalid/{vector_name(k)}.wex4': v for k, v in attacks.items()})
+    # the codec-8 vectors: a block of rows of its own, after the review files. The 18 of 2026-11-27 are not built
+    # by these tests, so their files are kept as they are. Two are built here: the NVFP4 container of
+    # test_wnr4_dynamic and the pre-bit form of the canonical-zero vector (WEX4-SPEC 7.3.1)
+    codec8 = {}
+    for row in open(os.path.join(VECTORS, 'MANIFEST.tsv'), encoding='utf-8'):
+        if row.startswith(('valid/wnr4-', 'invalid/wnr4-')):
+            codec8[row.split('\t')[0]] = open(os.path.join(VECTORS, row.split('\t')[0]), 'rb').read()
+    codec8['valid/wnr4-nv-pb1.wex4'] = nv
+    codec8['invalid/wnr4-expert-pre-bit-canonical-zero.wex4'] = pre_bit(codec8['valid/wnr4-mx-pb1-cz.wex4'])
     review = os.path.join(HERE, 'review', 'security-c', 'findings')
     rows = ['# path\tverdict\tclass\troot\tsha256\tupgrade_of\tcontent']
-    for path in sorted(files) + sorted(f'../review/security-c/findings/{n}' for n in os.listdir(review) if n.endswith('.wex4')):
+    paths = sorted(files) + sorted(f'../review/security-c/findings/{n}' for n in os.listdir(review) if n.endswith('.wex4'))
+    files.update(codec8)
+    for path in paths + sorted(codec8):
         data = files.get(path)
         if data is None:
             data = open(os.path.join(review, os.path.basename(path)), 'rb').read()
@@ -1341,7 +1352,119 @@ def test_wnr4_dynamic():
     bad[r0_ent + 36:r0_ent + 68] = wex4.sha256(bad[r0_off:r0_off + r0_len])
     bad = bytes(reseal(bad))
     assert C.check(bad, 3, True)[0] == CREF.check(bad, 3, True)[0] == -14 and py_verdict(bad)[0] != 0
-    print('WNR4 NVFP4 dynamic: RAW, codec 8 plain (digest == RAW), codec 8 CZ, and refusals passed in C (fast/ref) and Python')
+    # the NVFP4 vector is such a container: it must decode to the RAW source built here, whatever encoder wrote it
+    vector = open(os.path.join(VECTORS, 'valid', 'wnr4-nv-pb1.wex4'), 'rb').read()
+    assert C.check(vector, 3, True) == CREF.check(vector, 3, True) == C.check(raw_b, 3, True), 'valid/wnr4-nv-pb1.wex4'
+    print('WNR4 NVFP4 dynamic: RAW, codec 8 plain (digest == RAW), codec 8 CZ, and refusals passed in C (fast/ref) and Python; '
+          'the vector valid/wnr4-nv-pb1.wex4 decodes to the RAW source built here')
+    return nv_b
+
+
+def pre_bit(data):
+    """The pre-bit form of a strict file with EXPERT records of codec 8 (WEX4-SPEC 7.3.1), as the packers wrote it
+    before required_features bit 2 existed: bits 0 and 2 cleared, no VALUE_EXACT on those records, resealed."""
+    rd = wex4.Reader(io.BytesIO(data))
+    blob = bytearray(data)
+    struct.pack_into('<Q', blob, 8, rd.required & ~(wex4.REQ_WNR4_EXPERT | wex4.REQ_VALUE_EXACT))
+    for r, rec in enumerate(rd.records):
+        if rec[3] == wex4.CODEC_WNR4 and rec[4] & wex4.REC_EXPERT:
+            struct.pack_into('<H', blob, rd.index_offset + len(rd.blobs) * 64 + r * 72 + 18, wex4.REC_EXPERT)
+    return bytes(reseal(blob))
+
+
+def test_restamp():
+    """Pre-bit files (WEX4-SPEC 7.3.1). Every strict reader refuses one; c/wex4.h opens it only under
+    WEX4_LEGACY_WNR4_EXPERT (flag 4 of wex4_check) and then decodes the content of the strict file; wex4_restamp.py
+    turns it into the strict file byte for byte: as a copy, in place, after an interrupted run, and not twice."""
+    import contextlib
+    import wex4_restamp as rs
+    null = open(os.devnull, 'w')
+    work, copy = os.path.join(WORK, 'restamp.wex4'), os.path.join(WORK, 'restamp_copy.wex4')
+
+    def put(data):
+        with open(work, 'wb') as f:
+            f.write(data)
+
+    def left_alone(data):   # refused, or nothing to do: not a byte written
+        put(data)
+        try:
+            done = rs.restamp(work, log=null)
+        except wex4.FormatError:
+            done = None
+        return done is None and open(work, 'rb').read() == data
+
+    pairs = {'invalid/wnr4-expert-without-required-feature.wex4': 'valid/wnr4-mx-pb1.wex4',
+             'invalid/wnr4-expert-pre-bit-canonical-zero.wex4': 'valid/wnr4-mx-pb1-cz.wex4'}
+    for name, strict_name in pairs.items():
+        strict = open(os.path.join(VECTORS, strict_name), 'rb').read()
+        legacy = pre_bit(strict)
+        assert legacy == open(os.path.join(VECTORS, name), 'rb').read(), f'{name} is not the pre-bit form of {strict_name}'
+        assert C.check(legacy, 3, True)[0] == CREF.check(legacy, 3, True)[0] == -13 and py_verdict(legacy)[0] != 0, name
+        assert C.check(legacy, 7, True) == CREF.check(legacy, 7, True) == C.check(strict, 7, True) == C.check(strict, 3, True)
+        put(legacy)
+        assert rs.restamp(work, dry_run=True, log=null) == strict[4064:4096] and open(work, 'rb').read() == legacy, name
+        assert rs.restamp(work, out=copy, log=null) == strict[4064:4096] and open(work, 'rb').read() == legacy, name
+        assert open(copy, 'rb').read() == strict, f'the re-stamped copy of {name} is not {strict_name}'
+        rd = wex4.Reader(io.BytesIO(strict))
+        index = slice(rd.index_offset, rd.index_offset + len(rd.index))
+        torn = legacy[:index.start] + strict[index] + legacy[index.stop:]
+        if torn != legacy:   # the index written, the header page not yet: no reader opens it, a second run finishes it
+            assert C.check(torn, 7, True)[0] == -3 and py_verdict(torn)[0] != 0, name
+            put(torn)
+        assert rs.restamp(work, log=null) == strict[4064:4096] and open(work, 'rb').read() == strict, name
+        assert rs.restamp(work, log=null) is None and open(work, 'rb').read() == strict, f'{name}: a second re-stamp'
+    assert torn != legacy, 'the canonical-zero pair must change the index'
+
+    # what is not exactly that shape is refused and left as it was (legacy: the canonical-zero pre-bit file)
+    rec0, entry0, blob0 = rd.records[0][0], rd.index_offset + len(rd.blobs) * 64, rd.blobs[0][2]
+    cases = {'record kind NV': (rec0 + 12, 1), 'another model id in the record': (rec0 + 4, legacy[rec0 + 4] ^ 1),
+             'another owner in the record': (rec0 + 8, legacy[rec0 + 8] ^ 1),
+             'an unknown record flag bit': (rec0 + 13, legacy[rec0 + 13] | 0x10), 'not a WNR4 record': (rec0, 0),
+             'a damaged model blob': (blob0 + 40, legacy[blob0 + 40] ^ 1)}
+    for what, (at, value) in cases.items():
+        bad = bytearray(legacy)
+        bad[at] = value
+        assert left_alone(bytes(bad)), what
+    sealed = {'VALUE_EXACT already on a record': (entry0 + 18, '<H', 3), 'an unknown required feature': (8, '<Q', 2),
+              'another blob id in the index': (rd.index_offset + 4, '<I', rd.blobs[0][1] ^ 1),
+              'required bit 0 without bit 2': (8, '<Q', wex4.REQ_VALUE_EXACT)}
+    for what, (at, fmt, value) in sealed.items():
+        bad = bytearray(legacy)
+        struct.pack_into(fmt, bad, at, value)
+        assert left_alone(bytes(reseal(bad))), what
+    # an NVFP4 slab next to the codec-8 records (the RAW expert of the plain vector, its six tensors rewritten):
+    # valid once bit 2 is set, but no pre-bit file held one, and c/wex4.h refuses it under the legacy flag too
+    plain = open(os.path.join(VECTORS, 'valid', 'wnr4-mx-pb1.wex4'), 'rb').read()
+    rd = wex4.Reader(io.BytesIO(plain))
+    raw = next(x for x in rd.records if x[3] == wex4.CODEC_RAW and x[4] & wex4.REC_EXPERT)
+    at, cursor, bad = rd.index_offset + len(rd.blobs) * 64 + len(rd.records) * 72 + raw[7] * 96, 0, bytearray(plain)
+    for m, (rows, cols) in enumerate(((16, 32), (16, 24), (12, 16), (16, 256), (16, 192), (12, 128))):
+        struct.pack_into('<B', bad, at + m * 96 + 6, wex4.DTYPE_CODE['F8_E4M3' if m < 3 else 'U8'])
+        struct.pack_into('<QQ', bad, at + m * 96 + 8, rows, cols)
+        struct.pack_into('<QQ', bad, at + m * 96 + 80, cursor, rows * cols)
+        cursor += rows * cols
+    assert cursor == raw[2] and wex4.Reader(io.BytesIO(reseal(bad))).expert_geometry(rd.records.index(raw))['kind'] == 1
+    bad = pre_bit(bytes(bad))
+    assert C.check(bad, 7, True)[0] == -13 and left_alone(bad), 'an NVFP4 slab in a pre-bit file'
+    assert left_alone(legacy[:-4096]) and left_alone(legacy[:2048]) and left_alone(b''), 'a truncated file'
+    put(legacy)
+    with contextlib.redirect_stdout(null):   # the command line: 2 = usage, 1 = refused
+        assert rs.main(['', work, '--dry-run']) == 0 and open(work, 'rb').read() == legacy
+        assert rs.main(['', work, '--out']) == 2 and rs.main(['', work, '--force']) == 2 and rs.main(['']) == 2
+        assert rs.main(['', work + '.none']) == 1 and rs.main(['', work, '--out', work]) == 1
+        assert rs.main(['', work]) == 0 and open(work, 'rb').read() == strict
+
+    # on every vector: the legacy flag changes the verdict of the two pre-bit files only, and the tool writes to no other
+    rows = [l.split('\t') for l in open(os.path.join(VECTORS, 'MANIFEST.tsv'), encoding='utf-8').read().splitlines()
+            if l and not l.startswith('#')]
+    for path, verdict, cls, *_ in rows:
+        data = open(os.path.join(VECTORS, path), 'rb').read()
+        if path not in pairs:
+            assert C_STATUS[C.check(data, 7, True)[0]] == cls and left_alone(data), path
+    print(f'pre-bit files: {len(pairs)} refused by C and Python, opened by C only under WEX4_LEGACY_WNR4_EXPERT with the '
+          f'content of their strict vectors; wex4_restamp.py gives those vectors byte for byte (dry run, copy, in place, '
+          f'after an interrupted run, once only) and leaves {len(cases) + len(sealed) + 4} files of another shape as they '
+          f'were; on the other {len(rows) - len(pairs)} vectors the legacy flag changes no verdict and the tool writes nothing')
 
 
 def main():
@@ -1355,7 +1478,7 @@ def main():
     test_wnr3_exact()
     test_profiles()
     test_store()
-    test_wnr4_dynamic()
+    nv = test_wnr4_dynamic()
     hostile = test_hostile(generic)
     expert_attacks = test_hostile_experts(upgraded)
     assert not set(expert_attacks) & set(hostile[0])
@@ -1366,8 +1489,9 @@ def main():
     hostile[1].update(spec_accepted)
     test_fuzz([('generic', generic), ('upgraded WNR3-CZ, 2 experts', upgraded), ('tiny model, WNR3-CZ', tiny)])
     if '--write-vectors' in sys.argv:
-        write_vectors(sys.argv[sys.argv.index('--write-vectors') + 1], generic, hostile)
+        write_vectors(sys.argv[sys.argv.index('--write-vectors') + 1], generic, hostile, nv)
     test_vectors()
+    test_restamp()
     print('WEX4 prototype: all tests passed')
 
 

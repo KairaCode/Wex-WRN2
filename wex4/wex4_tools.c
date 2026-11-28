@@ -112,7 +112,9 @@ static int wex4_decode_wnr4(const Wex4View *v, uint32_t r, const unsigned char *
             slot->kind = (int)slot->mxnv.kind;
         }
         if ((uint32_t)slot->kind != eg.kind || slot->mxnv.id != b.id) return WEX4_E_DATA;
-        if (!(stored[13] & WNR4_FLAG_CZ) != !(rec.flags & WEX4_REC_VALUE_EXACT)) return WEX4_E_DATA;
+        /* a pre-bit file (opened under WEX4_LEGACY_WNR4_EXPERT) says canonical zero in the record only */
+        if ((v->h.required & WEX4_REQ_WNR4_EXPERT) &&
+            !(stored[13] & WNR4_FLAG_CZ) != !(rec.flags & WEX4_REC_VALUE_EXACT)) return WEX4_E_DATA;
         return wnr4_decode(&slot->mxnv, &g, stored, rec.stored, rec.owner, out, 1) ? WEX4_E_DATA : WEX4_OK;
     }
     /* Non-EXPERT codec 8 (GG kind 2 / I4 kind 3): fail closed to WEX4_E_UNSUPPORTED (WEX4-SPEC 7.3) */
@@ -175,7 +177,8 @@ static int wex4_decode_wnr4(const Wex4View *v, uint32_t r, const unsigned char *
 /* flags: 1 = verify every blob and record SHA-256 (and zero blob padding),
  * 2 = decode every record and write the content digest: SHA-256 over, per
  * tensor in table order, {u16 name_len, name, u8 dtype, u8 rank, u64 shape[8],
- * u64 nbytes, data}. Returns 0 or a WEX4_E_* code. */
+ * u64 nbytes, data}, 4 = also open a pre-bit file (WEX4_LEGACY_WNR4_EXPERT of
+ * c/wex4.h; never set by default). Returns 0 or a WEX4_E_* code. */
 static int check_impl(const unsigned char *file, uint64_t len, int flags, unsigned char *digest, int guard) {
     Wex4Header h;
     Wex4View v;
@@ -187,6 +190,7 @@ static int check_impl(const unsigned char *file, uint64_t len, int flags, unsign
     int status;
     if (!file || len < WEX4_PAGE) return WEX4_E_HEADER;
     if ((status = wex4_parse_header(file, len, &h)) != 0) return status;
+    if (flags & 4) h.legacy = WEX4_LEGACY_WNR4_EXPERT;
     if ((status = wex4_open(&h, file + h.index_offset, (size_t)wex4_align(h.index_bytes), &v)) != 0) return status;
     models = (WexNr2Model *)calloc(h.blobs ? h.blobs : 1u, sizeof(*models));
     wnr4 = (Wnr4Slot *)calloc(h.blobs ? h.blobs : 1u, sizeof(*wnr4));
