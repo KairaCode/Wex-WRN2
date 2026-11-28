@@ -1,4 +1,4 @@
-# source_commit 640825581fde1e46bf079fa0efee9771effe391b 2026-11-18
+# source_commit 016746f04fd732f8320ed28e856f8342584c3b06 2026-11-28
 c/expert_store_wex.c	src/colibri/c/expert_store_wex.c
 c/expert_store_wex.h	src/colibri/c/expert_store_wex.h
 c/qwen38_wex.h	src/colibri/c/qwen38_wex.h
@@ -40,6 +40,16 @@ c/wex_format.h	src/colibri/c/wex_format.h
 c/wex_neural_rans.h	src/colibri/c/wex_neural_rans.h
 c/wex_palette.h	src/colibri/c/wex_palette.h
 c/v4_wex_crc_policy.h	src/colibri/c/v4_wex_crc_policy.h
-# 2026-11-27, ahead of the source tree: c/wex4.h and c/tests/test_wex4_verify.c (WEX4_LEGACY_WNR4_EXPERT, the
-# switch for pre-bit files of docs/WEX4-SPEC.md 7.3.1). The source tree takes them unchanged; line 1 is not updated
-# by this change (STATUS.md, "Other copies of c/")
+# 2026-11-28: compared with the commit of line 1 (STATUS.md, "Other copies of c/"); 29 files identical once the
+# licence header is removed, 12 differ and were not forced:
+# - the source tree's WNR4 engine support (codec 8 decode, helper features 64/128/512/1024), built on a copy of
+#   wnr4/ that c/ does not carry: c/wex_decode.c, c/wex_decode.h, c/qwen38_wex.h, c/tools/wex_cuda_bridge.cu,
+#   c/tests/test_wex_nr3_gpu.cu; both trees changed these since, each with changes the other lacks (here, among
+#   others, the review fixes of 2026-11-21 and helper feature 256, which the source tree wrote on its own)
+# - its WNR4 tests, otherwise behind here: c/tests/test_qwen38_mxfp4.c and c/tests/test_v4_wex_nr3.c include
+#   tests/wnr4_fixture.h, which needs that copy of wnr4/
+# - on purpose: c/tools/wex4_verify.c is strict here and opens pre-bit files there, with c/tests/test_wex4_verify.c
+#   to match; c/expert_store_wex.c refuses a missing container here and falls back to the planned store there, and
+#   the test of that is c/tests/test_expert_store_wex.c
+# - c/tests/fake_wex_cuda.c: feature 256 written in both trees; this one also checks its arguments and exports on
+#   Linux, and reports a record without its model as 1 where the source tree reports -1
